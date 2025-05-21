@@ -3,7 +3,7 @@
 )
 
 # 1. Gather tracked text files
-$extensions = '.cs','.csproj','.txt','.gox','.json','.xml','.yml','.mgcb','.spritefont','.md','.ps1','.godot','.tscn'
+$extensions = '.cs','.csproj','.gox','.json','.xml','.yml','.mgcb','.spritefont','.md','.ps1','.godot','.tscn'
 $files = git ls-files |
         Where-Object { $extensions -contains ([IO.Path]::GetExtension($_)) } |
         Where-Object { $_ -notmatch '(/\.vscode/|/\.idea/|README\.md|CLAUDE\.md|\.csproj$|\.sln$)' }

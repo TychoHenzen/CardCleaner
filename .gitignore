@@ -1,6 +1,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/godot,jetbrains+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=godot,jetbrains+all
 
+Card_Context.txt
+
 ### Godot ###
 # Godot 4+ specific ignores
 .godot/
