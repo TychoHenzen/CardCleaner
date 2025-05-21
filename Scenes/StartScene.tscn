@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://cpnq5feaqvlj1" path="res://Scenes/Card.tscn" id="1_dgtb2"]
-[ext_resource type="Script" uid="uid://dac0f7sf8nvmm" path="res://Scripts/FollowCamera.cs" id="1_k8nbv"]
 [ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/FlutterCard.cs" id="2_t5ln1"]
+[ext_resource type="PackedScene" uid="uid://wv6a67swhus" path="res://Scenes/player.tscn" id="3_k8nbv"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t5ln1"]
 size = Vector3(39.5682, 0.396362, 43.8758)
@@ -19,16 +19,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.8355, 0, 0.316311)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CSGBox3D/StaticBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.8355, 0.110413, -0.316311)
 shape = SubResource("BoxShape3D_t5ln1")
-
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.999558, 0.0146283, -0.0258891, 0.0141733, 0.530999, 0.847254, 0.0261409, -0.847246, 0.530557, -2.8434, 8.80421, 5.50315)
-fov = 90.7
-script = ExtResource("1_k8nbv")
-TargetPath = NodePath("../Card255")
-
-[node name="OmniLight3D" type="OmniLight3D" parent="Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-omni_range = 30.0
 
 [node name="Card" parent="." instance=ExtResource("1_dgtb2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, 0.0240238)
@@ -1952,3 +1942,6 @@ script = ExtResource("2_t5ln1")
 
 [node name="Node3D" type="Node3D" parent="."]
 transform = Transform3D(0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01, 0, 0, 0)
+
+[node name="Node3D2" parent="." instance=ExtResource("3_k8nbv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.63051, 1.30859, -2.37775)
