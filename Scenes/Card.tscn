@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://cpnq5feaqvlj1"]
+
+[node name="Card" type="Node3D"]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+size = Vector3(6.35, 0.029, 8.89)
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="CSGBox3D"]
+operation = 1
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="CSGBox3D/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.858, 0, -4.127)
+radius = 0.318
+sides = 16
+
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="CSGBox3D/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.857, 0, -4.127)
+radius = 0.318
+sides = 16
+
+[node name="CSGCylinder3D3" type="CSGCylinder3D" parent="CSGBox3D/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.857, 0, 4.128)
+radius = 0.318
+sides = 16
+
+[node name="CSGCylinder3D4" type="CSGCylinder3D" parent="CSGBox3D/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.858, 0, 4.128)
+radius = 0.318
+sides = 16
+
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGBox3D/CSGCombiner3D"]
+size = Vector3(6.35, 1, 8.254)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="CSGBox3D/CSGCombiner3D"]
+size = Vector3(5.714, 1, 8.89)

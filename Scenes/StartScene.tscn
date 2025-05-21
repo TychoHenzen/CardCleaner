@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://cc3ymqg03a2g5"]
+
+[ext_resource type="PackedScene" uid="uid://cpnq5feaqvlj1" path="res://Scenes/Card.tscn" id="1_dgtb2"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.8355, 0, -0.316311)
+size = Vector3(39.5682, 0.175537, 43.8758)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.870631, 0.491937, 0, -0.491937, 0.870631, -6.11734, 14.1317, 21.1508)
+
+[node name="Card" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6013, 23.3888, 2.40238)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.53957, 11.378, 0)
+omni_range = 22.6542
