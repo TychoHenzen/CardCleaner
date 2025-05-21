@@ -1,6 +1,9 @@
-[gd_scene format=3 uid="uid://cpnq5feaqvlj1"]
+[gd_scene load_steps=2 format=3 uid="uid://cpnq5feaqvlj1"]
 
-[node name="Card" type="Node3D"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_kudhx"]
+size = Vector3(6.35, 0.029, 8.89)
+
+[node name="Card" type="RigidBody3D"]
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 size = Vector3(6.35, 0.029, 8.89)
@@ -33,3 +36,6 @@ size = Vector3(6.35, 1, 8.254)
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="CSGBox3D/CSGCombiner3D"]
 size = Vector3(5.714, 1, 8.89)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_kudhx")

@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://cc3ymqg03a2g5"]
+[gd_scene load_steps=4 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://cpnq5feaqvlj1" path="res://Scenes/Card.tscn" id="1_dgtb2"]
+[ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/FlutterCard.cs" id="2_t5ln1"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_t5ln1"]
+size = Vector3(39.5682, 0.175537, 43.8758)
 
 [node name="Node3D" type="Node3D"]
 
@@ -8,12 +12,21 @@
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.8355, 0, -0.316311)
 size = Vector3(39.5682, 0.175537, 43.8758)
 
+[node name="StaticBody3D" type="StaticBody3D" parent="CSGBox3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.8355, 0, 0.316311)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CSGBox3D/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.8355, 0, -0.316311)
+shape = SubResource("BoxShape3D_t5ln1")
+
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.870631, 0.491937, 0, -0.491937, 0.870631, -6.11734, 14.1317, 21.1508)
+transform = Transform3D(1, 0, 0, 0, 0.870631, 0.491937, 0, -0.491937, 0.870631, -2.00909, 7.811, 21.3956)
+fov = 90.7
 
 [node name="Card" parent="." instance=ExtResource("1_dgtb2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6013, 23.3888, 2.40238)
+transform = Transform3D(1, 0, 0, 0, 0.86358, -0.504211, 0, 0.504211, 0.86358, -2.6013, 15.639, 2.40238)
+script = ExtResource("2_t5ln1")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.53957, 11.378, 0)
-omni_range = 22.6542
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.50352, 8.22158, 0)
+omni_range = 37.2972
