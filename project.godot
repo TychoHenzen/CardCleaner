@@ -23,3 +23,9 @@ project/assembly_name="CardCleaner"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/contextDumper/plugin.cfg")
+
+[physics]
+
+3d/run_on_separate_thread=true
+3d/physics_engine="Jolt Physics"
+3d/solver/solver_iterations=32

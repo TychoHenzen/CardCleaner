@@ -1,10 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://cc3ymqg03a2g5"]
+[gd_scene load_steps=5 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://cpnq5feaqvlj1" path="res://Scenes/Card.tscn" id="1_dgtb2"]
+[ext_resource type="Script" uid="uid://dac0f7sf8nvmm" path="res://Scripts/FollowCamera.cs" id="1_k8nbv"]
 [ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/FlutterCard.cs" id="2_t5ln1"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t5ln1"]
-size = Vector3(39.5682, 0.175537, 43.8758)
+size = Vector3(39.5682, 0.396362, 43.8758)
 
 [node name="Node3D" type="Node3D"]
 
@@ -16,17 +17,1938 @@ size = Vector3(39.5682, 0.175537, 43.8758)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.8355, 0, 0.316311)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CSGBox3D/StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.8355, 0, -0.316311)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.8355, 0.110413, -0.316311)
 shape = SubResource("BoxShape3D_t5ln1")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.870631, 0.491937, 0, -0.491937, 0.870631, -2.00909, 7.811, 21.3956)
+transform = Transform3D(0.999558, 0.0146283, -0.0258891, 0.0141733, 0.530999, 0.847254, 0.0261409, -0.847246, 0.530557, -2.8434, 8.80421, 5.50315)
 fov = 90.7
+script = ExtResource("1_k8nbv")
+TargetPath = NodePath("../Card255")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+omni_range = 30.0
 
 [node name="Card" parent="." instance=ExtResource("1_dgtb2")]
-transform = Transform3D(1, 0, 0, 0, 0.86358, -0.504211, 0, 0.504211, 0.86358, -2.6013, 15.639, 2.40238)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, 0.0240238)
 script = ExtResource("2_t5ln1")
 
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.50352, 8.22158, 0)
-omni_range = 37.2972
+[node name="Card2" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card3" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card4" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card5" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card6" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card7" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card8" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card9" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card10" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card11" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.120204, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card12" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.896031, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card13" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.120204, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card14" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.896031, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card15" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.120204, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card16" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card17" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card18" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card19" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card20" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card21" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card22" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card23" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card24" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card25" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card26" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card27" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card28" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card29" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card30" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card31" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card32" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card33" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card34" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card35" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.120204, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card36" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.896031, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card37" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.120204, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card38" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.896031, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card39" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.120204, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card40" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card41" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card42" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card43" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card44" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card45" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card46" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card47" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card48" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card49" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card50" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card51" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card52" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card53" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card54" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card55" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card56" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card57" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card58" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card59" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.120204, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card60" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.896031, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card61" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.120204, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card62" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.896031, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card63" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.120204, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card64" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card65" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card66" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card67" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card68" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card69" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card70" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card71" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card72" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card73" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card74" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card75" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card76" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card77" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card78" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card79" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card80" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card81" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.026013, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card82" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card83" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.120204, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card84" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.896031, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card85" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.120204, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card86" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.896031, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card87" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.120204, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card88" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03732, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card89" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card90" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card91" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card92" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card93" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card94" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card95" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0297627, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card96" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.03357, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card97" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card98" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card99" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card100" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card101" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card102" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card103" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card104" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card105" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card106" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card107" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card108" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card109" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card110" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card111" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card112" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card113" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card114" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card115" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card116" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card117" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card118" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card119" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card120" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card121" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card122" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card123" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card124" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card125" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card126" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card127" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card128" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card129" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card130" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card131" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card132" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card133" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card134" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card135" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card136" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card137" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card138" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card139" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card140" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card141" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card142" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card143" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card144" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card145" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card146" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card147" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card148" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card149" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card150" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card151" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card152" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card153" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card154" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card155" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card156" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card157" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card158" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card159" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card160" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card161" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card162" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card163" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card164" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card165" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card166" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card167" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card168" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card169" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card170" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card171" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card172" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card173" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card174" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card175" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card176" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card177" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card178" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card179" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card180" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card181" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card182" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card183" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card184" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card185" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card186" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card187" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card188" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card189" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card190" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card191" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card192" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card193" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card194" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card195" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card196" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card197" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card198" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card199" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card200" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card201" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card202" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card203" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card204" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card205" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card206" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card207" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card208" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card209" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card210" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card211" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card212" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card213" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card214" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card215" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card216" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card217" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card218" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card219" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card220" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card221" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card222" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card223" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card224" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card225" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card226" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card227" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card228" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card229" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card230" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card231" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card232" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card233" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card234" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card235" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card236" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card237" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card238" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card239" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card240" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card241" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card242" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card243" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card244" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card245" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card246" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card247" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card248" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card249" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card250" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card251" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card252" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card253" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card254" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card255" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card256" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card257" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card258" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card259" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card260" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card261" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card262" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card263" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card264" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card265" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card266" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card267" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card268" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card269" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card270" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card271" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card272" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card273" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card274" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card275" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card276" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card277" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card278" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card279" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card280" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card281" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card282" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card283" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card284" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card285" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card286" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card287" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card288" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card289" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card290" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card291" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card292" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card293" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card294" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card295" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card296" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card297" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card298" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card299" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card300" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card301" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card302" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card303" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card304" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card305" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card306" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card307" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card308" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card309" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card310" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card311" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card312" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card313" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card314" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card315" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card316" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card317" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card318" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card319" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card320" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card321" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card322" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card323" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card324" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card325" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card326" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card327" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card328" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card329" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card330" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card331" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card332" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card333" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card334" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card335" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card336" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card337" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card338" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card339" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card340" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card341" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card342" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card343" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card344" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card345" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card346" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card347" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card348" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card349" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card350" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card351" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card352" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card353" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card354" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card355" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card356" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card357" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card358" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card359" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card360" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card361" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card362" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card363" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card364" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card365" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card366" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card367" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card368" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card369" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card370" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card371" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card372" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card373" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card374" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card375" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card376" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card377" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card378" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card379" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card380" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card381" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card382" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card383" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card384" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card385" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card386" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card387" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card388" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card389" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card390" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card391" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card392" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card393" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card394" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card395" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card396" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card397" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card398" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card399" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card400" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card401" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card402" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card403" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card404" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card405" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card406" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card407" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card408" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card409" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card410" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card411" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card412" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card413" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card414" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card415" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card416" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card417" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card418" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card419" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card420" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card421" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card422" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card423" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card424" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card425" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card426" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card427" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card428" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card429" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card430" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card431" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card432" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card433" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card434" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card435" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card436" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card437" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card438" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card439" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card440" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card441" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card442" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card443" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card444" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card445" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card446" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card447" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card448" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card449" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card450" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card451" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card452" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card453" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card454" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card455" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card456" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card457" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card458" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card459" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card460" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card461" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card462" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card463" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card464" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 253.027, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card465" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18694, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card466" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 254.059, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card467" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28113, 253.8, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card468" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.05696, 254.448, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card469" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28113, 253.8, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card470" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.05696, 254.448, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card471" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28113, 253.8, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card472" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.19825, 254.059, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card473" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card474" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, 0.0240238)
+script = ExtResource("2_t5ln1")
+
+[node name="Card475" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card476" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, -0.605853)
+script = ExtResource("2_t5ln1")
+
+[node name="Card477" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card478" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, 1.78488)
+script = ExtResource("2_t5ln1")
+
+[node name="Card479" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.19069, 255.259, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Card480" parent="." instance=ExtResource("1_dgtb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.1945, 255.136, 1.15501)
+script = ExtResource("2_t5ln1")
+
+[node name="Node3D" type="Node3D" parent="."]
+transform = Transform3D(0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01, 0, 0, 0)
