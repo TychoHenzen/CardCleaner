@@ -9,7 +9,7 @@ public partial class CardHighlighter : Node3D
     [Export] public float RayLength = 100f;
     [Export] public bool UseMultipleRays = true;
     [Export] public float CrosshairSize = 0.01f;
-    [Export] public bool EnableDebug = false;
+    [Export] public bool EnableDebug;
     [Export] public float MaxHighlightDistance = 50f;
     
     // Collision layer settings

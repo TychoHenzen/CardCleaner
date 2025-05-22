@@ -1949,6 +1949,5 @@ script = ExtResource("2_t5ln1")
 [node name="CardHighlighter" type="Node3D" parent="."]
 script = ExtResource("4_ia2xn")
 CameraPath = NodePath("../Node3D2/Head/Camera3D")
-EnableDebug = true
 
 [editable path="Node3D2"]
