@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://cc3ymqg03a2g5"]
+[gd_scene load_steps=6 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://cpnq5feaqvlj1" path="res://Scenes/Card.tscn" id="1_dgtb2"]
+[ext_resource type="Script" uid="uid://b04t7ohl81ntt" path="res://Scripts/Controllers/PlayerController.cs" id="2_ia2xn"]
 [ext_resource type="PackedScene" uid="uid://wv6a67swhus" path="res://Scenes/player.tscn" id="3_k8nbv"]
 [ext_resource type="Script" uid="uid://coebm8tgbgmqv" path="res://Scripts/CardHighlighter.cs" id="4_ia2xn"]
 
@@ -22,6 +23,12 @@ shape = SubResource("BoxShape3D_t5ln1")
 
 [node name="Node3D2" parent="." instance=ExtResource("3_k8nbv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.63051, 1.30859, -2.37775)
+script = ExtResource("2_ia2xn")
+Speed = 5.0
+JumpVelocity = 10.0
+MouseSensitivity = 0.1
+MinPitch = -80.0
+MaxPitch = 80.0
 
 [node name="Cards" type="Node3D" parent="."]
 

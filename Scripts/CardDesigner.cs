@@ -1,10 +1,10 @@
 using Godot;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Interfaces;
 
 [Tool]
-public partial class CardDesigner : RigidBody3D
+public partial class CardDesigner : Node, ICardComponent
 {
-    
     // backing fields (no Export here)
     private float _width = 0.635f;
     private float _height = 0.889f;
@@ -12,9 +12,11 @@ public partial class CardDesigner : RigidBody3D
 
     // export *the* property so its setter runs on inspector-changes
     [Export(PropertyHint.Range, "0.1,3.0,0.01")]
-    public float Width {
+    public float Width
+    {
         get => _width;
-        set {
+        set
+        {
             if (Mathf.IsEqualApprox(_width, value)) return;
             _width = value;
             UpdateShape();
@@ -22,9 +24,11 @@ public partial class CardDesigner : RigidBody3D
     }
 
     [Export(PropertyHint.Range, "0.1,3.0,0.01")]
-    public float Height {
+    public float Height
+    {
         get => _height;
-        set {
+        set
+        {
             if (Mathf.IsEqualApprox(_height, value)) return;
             _height = value;
             UpdateShape();
@@ -32,9 +36,11 @@ public partial class CardDesigner : RigidBody3D
     }
 
     [Export]
-    public float Thickness {
+    public float Thickness
+    {
         get => _thickness;
-        set {
+        set
+        {
             if (Mathf.IsEqualApprox(_thickness, value)) return;
             _thickness = value;
             UpdateShape();
@@ -42,8 +48,13 @@ public partial class CardDesigner : RigidBody3D
     }
 
     // Bevel parameters
-    [Export(PropertyHint.Range, "0.0,1.0,0.001")] public float BevelSize = 0.032f;
+    [Export(PropertyHint.Range, "0.0,1.0,0.001")]
+    public float BevelSize = 0.032f;
+
     [Export] public int BevelSides = 16;
+    private CsgBox3D _outlineBox;
+    [Export] public float OutlineMargin = 0.01f;
+
 
     // Small extra penetration for inner cuts
     private const float InnerThicknessOffset = 0.002f;
@@ -55,31 +66,41 @@ public partial class CardDesigner : RigidBody3D
     private CollisionShape3D _collisionShape;
     private BoxShape3D _collisionBoxShape;
 
-    public override void _Ready()
+    public void Setup(RigidBody3D cardRoot)
     {
         // Grab references
-        _outerBox = GetNode<CsgBox3D>("OuterBox");
+        _outerBox = cardRoot.GetNode<CsgBox3D>("OuterBox");
         _combiner = _outerBox.GetNode<CsgCombiner3D>("Combiner");
 
         // Collect all CSGCylinder3D children (the corners)
         var cylList = new List<CsgCylinder3D>();
         foreach (var child in _combiner.GetChildren())
-            if (child is CsgCylinder3D c) cylList.Add(c);
+            if (child is CsgCylinder3D c)
+                cylList.Add(c);
         _cornerCylinders = cylList.ToArray();
 
         // Collect the two inner CSGBox3D children (edge trims)
         var boxList = new List<CsgBox3D>();
         foreach (var child in _combiner.GetChildren())
-            if (child is CsgBox3D b) boxList.Add(b);
+            if (child is CsgBox3D b)
+                boxList.Add(b);
         _trimBoxes = boxList.ToArray();
 
         // Collision shape
-        _collisionShape = GetNode<CollisionShape3D>("CardCollision");
+        _collisionShape = cardRoot.GetNode<CollisionShape3D>("CardCollision");
         _collisionBoxShape = _collisionShape.Shape as BoxShape3D;
+        
+        _outlineBox = cardRoot.GetNode<CsgBox3D>("OutlineBox");
+        _outlineBox.Visible = false;
 
         // Initial shape setup
 
         UpdateShape();
+    }
+
+    public void IntegrateForces(PhysicsDirectBodyState3D state)
+    {
+        // No per-frame forces here
     }
 
     private void UpdateShape()
@@ -123,6 +144,13 @@ public partial class CardDesigner : RigidBody3D
         if (_collisionBoxShape != null)
             _collisionBoxShape.Size = new Vector3(Width, Thickness, Height);
         
-
+        if (_outlineBox != null)
+        {
+            _outlineBox.Size = new Vector3(
+                Width  + OutlineMargin,
+                Thickness + OutlineMargin,
+                Height + OutlineMargin
+            );
+        }
     }
 }

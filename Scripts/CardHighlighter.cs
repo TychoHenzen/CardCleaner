@@ -19,13 +19,10 @@ public partial class CardHighlighter : Node3D
 
     private Camera3D _camera;
     private RigidBody3D _lastCard;
-    private Material _standardMat;
-    private ShaderMaterial _outlineMat = GD.Load<ShaderMaterial>("res://Shaders/OutlineMaterial.tres");
 
     public override void _Ready()
     {
         _camera = GetNode<Camera3D>(CameraPath);
-        _standardMat = GD.Load<Material>("res://Materials/StandardMaterial.tres");
         
         // Set all cards to the specified collision layer
         SetupCardCollisionLayers();
@@ -67,7 +64,7 @@ public partial class CardHighlighter : Node3D
         return cards;
     }
 
-    private void SearchForCards(Node parent, Godot.Collections.Array<Node> cards)
+    private static void SearchForCards(Node parent, Godot.Collections.Array<Node> cards)
     {
         if (parent is RigidBody3D rb && rb.Name.ToString().StartsWith("Card"))
         {
@@ -82,7 +79,7 @@ public partial class CardHighlighter : Node3D
 
     public override void _PhysicsProcess(double delta)
     {
-        RigidBody3D targetCard = null;
+        RigidBody3D targetCard;
 
         if (UseMultipleRays)
         {
@@ -180,24 +177,21 @@ public partial class CardHighlighter : Node3D
             };
 
             var result = GetWorld3D().DirectSpaceState.IntersectRay(rayQuery);
+
+            if (result.Count == 0) continue;
             
-            if (result.Count > 0)
-            {
-                var collider = result["collider"].Obj;
-                if (collider is RigidBody3D rb && rb.Name.ToString().StartsWith("Card"))
-                {
-                    float distance = origin.DistanceTo(rb.GlobalPosition);
+            var collider = result["collider"].Obj;
+            if (collider is not RigidBody3D rb || !rb.Name.ToString().StartsWith("Card")) continue;
+                
+            float distance = origin.DistanceTo(rb.GlobalPosition);
                     
-                    if (cardHits.ContainsKey(rb))
-                    {
-                        var existing = cardHits[rb];
-                        cardHits[rb] = (existing.hits + 1, Math.Min(existing.distance, distance));
-                    }
-                    else
-                    {
-                        cardHits[rb] = (1, distance);
-                    }
-                }
+            if (cardHits.TryGetValue(rb, out var existing))
+            {
+                cardHits[rb] = (existing.hits + 1, Math.Min(existing.distance, distance));
+            }
+            else
+            {
+                cardHits[rb] = (1, distance);
             }
         }
 
@@ -213,13 +207,13 @@ public partial class CardHighlighter : Node3D
     {
         try
         {
-            var mesh = card.GetNode<CsgBox3D>("OuterBox");
-            mesh.Material = _outlineMat;
+            var outline = card.GetNode<CsgBox3D>("OutlineBox");
+            outline.Visible = true;
             _lastCard = card;
         }
         catch (Exception e)
         {
-            GD.PrintErr($"Failed to apply outline to {card.Name}: {e.Message}");
+            GD.PrintErr($"Outline show failed on {card.Name}: {e.Message}");
         }
     }
 
@@ -229,13 +223,15 @@ public partial class CardHighlighter : Node3D
 
         try
         {
-            var mesh = _lastCard.GetNode<CsgBox3D>("OuterBox");
-            mesh.Material = _standardMat;
-            _lastCard = null;
+            var outline = _lastCard.GetNode<CsgBox3D>("OutlineBox");
+            outline.Visible = false;
         }
         catch (Exception e)
         {
-            GD.PrintErr($"Failed to clear outline: {e.Message}");
+            GD.PrintErr($"Outline hide failed: {e.Message}");
+        }
+        finally
+        {
             _lastCard = null;
         }
     }
