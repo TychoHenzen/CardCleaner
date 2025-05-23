@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://cpnq5feaqvlj1"]
+[gd_scene load_steps=8 format=3 uid="uid://cpnq5feaqvlj1"]
 
 [ext_resource type="Script" uid="uid://blu0six20pl7f" path="res://Scripts/Controllers/CardController.cs" id="1_3m7nw"]
 [ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/FlutterCard.cs" id="1_3p273"]
 [ext_resource type="Material" uid="uid://05iutag61jce" path="res://Materials/StandardMaterial.tres" id="1_pnb5n"]
 [ext_resource type="Script" uid="uid://bsbw0i4pq1mve" path="res://Scripts/CardDesigner.cs" id="3_kphy1"]
+[ext_resource type="Script" uid="uid://nrgkkbg2lwbr" path="res://Scripts/CsgBaker.cs" id="3_wejov"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kudhx"]
 size = Vector3(0.45, 0.005, 0.32)
@@ -20,6 +21,7 @@ script = ExtResource("1_3m7nw")
 [node name="OuterBox" type="CSGBox3D" parent="."]
 size = Vector3(0.45, 0.005, 0.32)
 material = ExtResource("1_pnb5n")
+script = ExtResource("3_wejov")
 
 [node name="Combiner" type="CSGCombiner3D" parent="OuterBox"]
 operation = 1
