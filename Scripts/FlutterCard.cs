@@ -1,7 +1,7 @@
 using Godot;
-using System;
 
-public partial class FlutterCard : RigidBody3D
+[Tool]
+public partial class FlutterCard : CardDesigner
 {
     // Aerodynamic coefficients
     [Export] public float DragCoeff = 0.5f;
@@ -17,6 +17,8 @@ public partial class FlutterCard : RigidBody3D
 
     public override void _Ready()
     {
+        base._Ready();
+        
         _rng = new RandomNumberGenerator();
         _rng.Seed = (uint)GetInstanceId();
 

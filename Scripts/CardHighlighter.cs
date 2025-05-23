@@ -213,7 +213,7 @@ public partial class CardHighlighter : Node3D
     {
         try
         {
-            var mesh = card.GetNode<CsgBox3D>("CSGBox3D");
+            var mesh = card.GetNode<CsgBox3D>("OuterBox");
             mesh.Material = _outlineMat;
             _lastCard = card;
         }
@@ -229,7 +229,7 @@ public partial class CardHighlighter : Node3D
 
         try
         {
-            var mesh = _lastCard.GetNode<CsgBox3D>("CSGBox3D");
+            var mesh = _lastCard.GetNode<CsgBox3D>("OuterBox");
             mesh.Material = _standardMat;
             _lastCard = null;
         }

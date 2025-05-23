@@ -2,12 +2,44 @@ using Godot;
 using System.Collections.Generic;
 
 [Tool]
-public partial class CardDesigner : Node3D
+public partial class CardDesigner : RigidBody3D
 {
-    // Card dimensions
-    [Export] public float Width = 0.635f;
-    [Export] public float Height = 0.889f;
-    [Export] public float Thickness = 0.005f;
+    
+    // backing fields (no Export here)
+    private float _width = 0.635f;
+    private float _height = 0.889f;
+    private float _thickness = 0.005f;
+
+    // export *the* property so its setter runs on inspector-changes
+    [Export(PropertyHint.Range, "0.1,3.0,0.01")]
+    public float Width {
+        get => _width;
+        set {
+            if (Mathf.IsEqualApprox(_width, value)) return;
+            _width = value;
+            UpdateShape();
+        }
+    }
+
+    [Export(PropertyHint.Range, "0.1,3.0,0.01")]
+    public float Height {
+        get => _height;
+        set {
+            if (Mathf.IsEqualApprox(_height, value)) return;
+            _height = value;
+            UpdateShape();
+        }
+    }
+
+    [Export]
+    public float Thickness {
+        get => _thickness;
+        set {
+            if (Mathf.IsEqualApprox(_thickness, value)) return;
+            _thickness = value;
+            UpdateShape();
+        }
+    }
 
     // Bevel parameters
     [Export(PropertyHint.Range, "0.0,1.0,0.001")] public float BevelSize = 0.032f;
@@ -26,8 +58,8 @@ public partial class CardDesigner : Node3D
     public override void _Ready()
     {
         // Grab references
-        _outerBox = GetNode<CsgBox3D>("CSGBox3D");
-        _combiner = _outerBox.GetNode<CsgCombiner3D>("CSGCombiner3D");
+        _outerBox = GetNode<CsgBox3D>("OuterBox");
+        _combiner = _outerBox.GetNode<CsgCombiner3D>("Combiner");
 
         // Collect all CSGCylinder3D children (the corners)
         var cylList = new List<CsgCylinder3D>();
@@ -42,17 +74,12 @@ public partial class CardDesigner : Node3D
         _trimBoxes = boxList.ToArray();
 
         // Collision shape
-        _collisionShape = GetNode<CollisionShape3D>("CollisionShape3D");
+        _collisionShape = GetNode<CollisionShape3D>("CardCollision");
         _collisionBoxShape = _collisionShape.Shape as BoxShape3D;
 
-        UpdateShape();
-    }
+        // Initial shape setup
 
-    public override void _Process(double delta)
-    {
-        // In the editor, keep shapes in sync as you tweak exports
-        if (Engine.IsEditorHint())
-            UpdateShape();
+        UpdateShape();
     }
 
     private void UpdateShape()
@@ -70,23 +97,21 @@ public partial class CardDesigner : Node3D
             cyl.Sides = BevelSides;
 
             // Determine X/Z sign by node name suffix
-            float x = (cyl.Name.ToString().EndsWith("2") || cyl.Name.ToString().EndsWith("3")) ? -halfW : halfW;
-            float z = (cyl.Name.ToString().EndsWith("3") || cyl.Name.ToString().EndsWith("4")) ? halfH : -halfH;
+            bool negX = cyl.Name.ToString().EndsWith("2") || cyl.Name.ToString().EndsWith("3");
+            bool negZ = cyl.Name.ToString().EndsWith("3") || cyl.Name.ToString().EndsWith("4");
             var t = cyl.Transform;
-            t.Origin = new Vector3(x, 0, z);
+            t.Origin = new Vector3(negX ? -halfW : halfW, 0, negZ ? halfH : -halfH);
             cyl.Transform = t;
         }
 
         // 3) Trim boxes for straight edges
         if (_trimBoxes.Length >= 2)
         {
-            // First box: full width, cut height
             _trimBoxes[0].Size = new Vector3(
                 Width,
                 Thickness + InnerThicknessOffset,
                 Height - 2 * BevelSize
             );
-            // Second box: cut width, full height
             _trimBoxes[1].Size = new Vector3(
                 Width - 2 * BevelSize,
                 Thickness + InnerThicknessOffset,
@@ -97,5 +122,7 @@ public partial class CardDesigner : Node3D
         // 4) Match collision shape to outer card
         if (_collisionBoxShape != null)
             _collisionBoxShape.Size = new Vector3(Width, Thickness, Height);
+        
+
     }
 }
