@@ -105,6 +105,8 @@ public partial class CardDesigner : Node, ICardComponent
 
     private void UpdateShape()
     {
+        if (_outerBox == null)
+            return;
         // 1) Outer card
         _outerBox.Size = new Vector3(Width, Thickness, Height);
 

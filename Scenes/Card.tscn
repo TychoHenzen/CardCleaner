@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://bsbw0i4pq1mve" path="res://Scripts/CardDesigner.cs" id="3_kphy1"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kudhx"]
-size = Vector3(0.635, 0.005, 0.889)
+size = Vector3(0.45, 0.005, 0.32)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3m7nw"]
 emission_enabled = true
@@ -18,47 +18,49 @@ angular_damp = 0.05
 script = ExtResource("1_3m7nw")
 
 [node name="OuterBox" type="CSGBox3D" parent="."]
-size = Vector3(0.635, 0.005, 0.889)
+size = Vector3(0.45, 0.005, 0.32)
 material = ExtResource("1_pnb5n")
 
 [node name="Combiner" type="CSGCombiner3D" parent="OuterBox"]
 operation = 1
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="OuterBox/Combiner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2855, 0, -0.4125)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.193, 0, -0.128)
 radius = 0.032
 height = 0.005
 sides = 16
 
 [node name="CSGCylinder3D2" type="CSGCylinder3D" parent="OuterBox/Combiner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2855, 0, -0.4125)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.193, 0, -0.128)
 radius = 0.032
 height = 0.005
 sides = 16
 
 [node name="CSGCylinder3D3" type="CSGCylinder3D" parent="OuterBox/Combiner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2855, 0, 0.4125)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.193, 0, 0.128)
 radius = 0.032
 height = 0.005
 sides = 16
 
 [node name="CSGCylinder3D4" type="CSGCylinder3D" parent="OuterBox/Combiner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2855, 0, 0.4125)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.193, 0, 0.128)
 radius = 0.032
 height = 0.005
 sides = 16
 
 [node name="CSGBox3D" type="CSGBox3D" parent="OuterBox/Combiner"]
-size = Vector3(0.635, 0.007, 0.825)
+size = Vector3(0.45, 0.007, 0.256)
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="OuterBox/Combiner"]
-size = Vector3(0.571, 0.007, 0.889)
+size = Vector3(0.386, 0.007, 0.32)
 
 [node name="CardCollision" type="CollisionShape3D" parent="."]
 shape = SubResource("BoxShape3D_kudhx")
 
 [node name="Designer" type="Node" parent="."]
 script = ExtResource("3_kphy1")
+Width = 0.45
+Height = 0.32
 
 [node name="Flutter" type="Node" parent="."]
 script = ExtResource("1_3p273")
@@ -66,5 +68,5 @@ script = ExtResource("1_3p273")
 [node name="OutlineBox" type="CSGBox3D" parent="."]
 visible = false
 flip_faces = true
-size = Vector3(0.645, 0.015, 0.899)
+size = Vector3(0.46, 0.015, 0.33)
 material = SubResource("StandardMaterial3D_3m7nw")

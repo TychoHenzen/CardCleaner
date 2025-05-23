@@ -14,9 +14,6 @@ public partial class PlayerController : CharacterBody3D
 
     public override void _Ready()
     {
-        // Capture the mouse pointer
-        Input.SetMouseMode(Input.MouseModeEnum.Captured);
-        // Get pivot for pitch
         _head = GetNode<Node3D>("Head");
     }
 
@@ -24,11 +21,9 @@ public partial class PlayerController : CharacterBody3D
     {
         if (@event is InputEventMouseMotion motion)
         {
-            // Yaw: rotate player around Y-axis
             float yawDelta = -motion.Relative.X * MouseSensitivity;
             RotateY(Mathf.DegToRad(yawDelta));
 
-            // Pitch: rotate head around local X-axis
             _pitchDeg = Mathf.Clamp(_pitchDeg - motion.Relative.Y * MouseSensitivity, MinPitch, MaxPitch);
             _head.RotationDegrees = new Vector3(_pitchDeg, 0, 0);
         }
@@ -36,7 +31,6 @@ public partial class PlayerController : CharacterBody3D
 
     public override void _PhysicsProcess(double delta)
     {
-        // Movement & gravity logic (unchanged from before)
         Vector2 input = new Vector2(
             Input.GetActionStrength("ui_right") - Input.GetActionStrength("ui_left"),
             Input.GetActionStrength("ui_down")  - Input.GetActionStrength("ui_up")

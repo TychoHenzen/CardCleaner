@@ -3,19 +3,22 @@ using Godot;
 public partial class PauseController : Node
 {
     [Export] public CanvasLayer PauseMenuLayer;
+    [Export] public CanvasLayer UILayer;
     private Control _pauseMenuRoot;
 
     public override void _Ready()
     {
-        // Keep this manager running always so it can un-pause
+        // Always run so we can unpause via input
         ProcessMode = ProcessModeEnum.Always;
 
-        // The Panel (or root Control) under your CanvasLayer
+        // Cache and hide the pause menu
         _pauseMenuRoot = PauseMenuLayer.GetNode<Control>("Panel");
         _pauseMenuRoot.Visible = false;
-
-        // Only process (draw & handle UI) when the tree is paused
         _pauseMenuRoot.SetProcessMode(ProcessModeEnum.WhenPaused);
+
+        // Start with cursor captured and in-game UI visible
+        Input.SetMouseMode(Input.MouseModeEnum.Captured);
+        UILayer.Visible = true;
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -26,10 +29,17 @@ public partial class PauseController : Node
         bool nowPaused = !GetTree().Paused;
         GetTree().Paused = nowPaused;
 
+        // Show or hide pause menu
         _pauseMenuRoot.Visible = nowPaused;
 
-        Input.MouseMode = nowPaused
-            ? Input.MouseModeEnum.Visible
-            : Input.MouseModeEnum.Captured;
+        // Toggle in-game UI opposite of pause menu
+        UILayer.Visible = !nowPaused;
+
+        // Toggle cursor between captured and visible
+        Input.SetMouseMode(
+            nowPaused
+                ? Input.MouseModeEnum.Visible
+                : Input.MouseModeEnum.Captured
+        );
     }
 }
