@@ -1,13 +1,17 @@
-[gd_scene load_steps=8 format=3 uid="uid://cpnq5feaqvlj1"]
+[gd_scene load_steps=10 format=3 uid="uid://cpnq5feaqvlj1"]
 
 [ext_resource type="Script" uid="uid://blu0six20pl7f" path="res://Scripts/Controllers/CardController.cs" id="1_3m7nw"]
 [ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/FlutterCard.cs" id="1_3p273"]
-[ext_resource type="Material" uid="uid://05iutag61jce" path="res://Materials/StandardMaterial.tres" id="1_pnb5n"]
+[ext_resource type="Material" uid="uid://bpus1epha57go" path="res://Shaders/CardMaterial.tres" id="2_kphy1"]
+[ext_resource type="Texture2D" uid="uid://ctag8g6u0x1kl" path="res://Graphics/Card front2.png" id="2_wejov"]
 [ext_resource type="Script" uid="uid://bsbw0i4pq1mve" path="res://Scripts/CardDesigner.cs" id="3_kphy1"]
 [ext_resource type="Script" uid="uid://nrgkkbg2lwbr" path="res://Scripts/CsgBaker.cs" id="3_wejov"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c6tr3"]
+albedo_texture = ExtResource("2_wejov")
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_kudhx"]
-size = Vector3(0.45, 0.005, 0.32)
+size = Vector3(0.32, 0.005, 0.45)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3m7nw"]
 emission_enabled = true
@@ -19,50 +23,51 @@ angular_damp = 0.05
 script = ExtResource("1_3m7nw")
 
 [node name="OuterBox" type="CSGBox3D" parent="."]
-size = Vector3(0.45, 0.005, 0.32)
-material = ExtResource("1_pnb5n")
+material_override = SubResource("StandardMaterial3D_c6tr3")
+size = Vector3(0.32, 0.005, 0.45)
+material = ExtResource("2_kphy1")
 script = ExtResource("3_wejov")
 
 [node name="Combiner" type="CSGCombiner3D" parent="OuterBox"]
 operation = 1
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="OuterBox/Combiner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.193, 0, -0.128)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.128, 0, -0.193)
 radius = 0.032
 height = 0.005
 sides = 16
 
 [node name="CSGCylinder3D2" type="CSGCylinder3D" parent="OuterBox/Combiner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.193, 0, -0.128)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.128, 0, -0.193)
 radius = 0.032
 height = 0.005
 sides = 16
 
 [node name="CSGCylinder3D3" type="CSGCylinder3D" parent="OuterBox/Combiner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.193, 0, 0.128)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.128, 0, 0.193)
 radius = 0.032
 height = 0.005
 sides = 16
 
 [node name="CSGCylinder3D4" type="CSGCylinder3D" parent="OuterBox/Combiner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.193, 0, 0.128)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.128, 0, 0.193)
 radius = 0.032
 height = 0.005
 sides = 16
 
 [node name="CSGBox3D" type="CSGBox3D" parent="OuterBox/Combiner"]
-size = Vector3(0.45, 0.007, 0.256)
+size = Vector3(0.32, 0.007, 0.386)
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="OuterBox/Combiner"]
-size = Vector3(0.386, 0.007, 0.32)
+size = Vector3(0.256, 0.007, 0.45)
 
 [node name="CardCollision" type="CollisionShape3D" parent="."]
 shape = SubResource("BoxShape3D_kudhx")
 
 [node name="Designer" type="Node" parent="."]
 script = ExtResource("3_kphy1")
-Width = 0.45
-Height = 0.32
+Width = 0.32
+Height = 0.45
 
 [node name="Flutter" type="Node" parent="."]
 script = ExtResource("1_3p273")
@@ -70,5 +75,9 @@ script = ExtResource("1_3p273")
 [node name="OutlineBox" type="CSGBox3D" parent="."]
 visible = false
 flip_faces = true
-size = Vector3(0.46, 0.015, 0.33)
+size = Vector3(0.33, 0.015, 0.46)
 material = SubResource("StandardMaterial3D_3m7nw")
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0714729, 0)
+radius = 0.0426682

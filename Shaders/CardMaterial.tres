@@ -1,0 +1,18 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://bpus1epha57go"]
+
+[ext_resource type="Shader" uid="uid://dpa0nhnpierg4" path="res://Shaders/CardShader.gdshader" id="1_upfg2"]
+[ext_resource type="Texture2D" uid="uid://dl120toc8kpsh" path="res://Graphics/Card back.png" id="2_hlmeg"]
+[ext_resource type="Texture2D" uid="uid://dhigwqrjst3cf" path="res://Graphics/ce3655f19d71d38b7e2450a086fd69901ca45c96.png" id="3_hlmeg"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_upfg2")
+shader_parameter/back_texture = ExtResource("2_hlmeg")
+shader_parameter/front_texture = ExtResource("3_hlmeg")
+shader_parameter/border_region = Vector4(0, 0, 0, 0)
+shader_parameter/art_region = Vector4(0, 0, 0, 0)
+shader_parameter/symbol_region = Vector4(0, 0, 0, 0)
+shader_parameter/name_region = Vector4(0, 0, 0, 0)
+shader_parameter/attribute_region = Vector4(0, 0, 0, 0)
+shader_parameter/attribute_text_region = Vector4(0, 0, 0, 0)
+shader_parameter/blacklight_enabled = 0.0
