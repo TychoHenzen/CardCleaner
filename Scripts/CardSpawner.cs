@@ -60,10 +60,10 @@ public partial class CardSpawner : Node3D
             // Apply offset relative to the spawn parent's global transform
             var spawnTransform = _spawnParent.GlobalTransform;
             spawnTransform.Origin += randomOffset;
-            if (cardInstance != null)
-            {
-                cardInstance.GlobalTransform = spawnTransform;
-            }
+            if (cardInstance == null) continue;
+            
+            cardInstance.GlobalTransform = spawnTransform;
+            cardInstance.Name = "Card";
         }
 
         GD.Print($"Spawned {count} card(s) with random offset up to {OffsetRange}.");

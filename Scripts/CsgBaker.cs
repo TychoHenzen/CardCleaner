@@ -28,7 +28,7 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
         CsgShape3D rootCsg = this;
         while (rootCsg.GetParent() is CsgShape3D parent) rootCsg = parent;
 
-        var bakedMesh = rootCsg.BakeStaticMesh() as ArrayMesh;
+        var bakedMesh = rootCsg.BakeStaticMesh();
         if (bakedMesh == null)
         {
             GD.PrintErr($"CSGBaker: BakeStaticMesh returned null on '{rootCsg.Name}'");

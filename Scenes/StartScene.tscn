@@ -24,11 +24,6 @@ shape = SubResource("BoxShape3D_t5ln1")
 
 [node name="Node3D2" parent="." instance=ExtResource("3_k8nbv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.63051, 1.30859, -2.37775)
-Speed = 5.0
-JumpVelocity = 10.0
-MouseSensitivity = 0.1
-MinPitch = -80.0
-MaxPitch = 80.0
 
 [node name="SpotLight3D" parent="Node3D2/Head/Camera3D" index="0"]
 spot_range = 46.3397
