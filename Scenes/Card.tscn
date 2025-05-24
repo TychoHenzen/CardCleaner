@@ -7,9 +7,8 @@
 [ext_resource type="Script" uid="uid://nrgkkbg2lwbr" path="res://Scripts/CsgBaker.cs" id="3_wejov"]
 [ext_resource type="Script" uid="uid://domry0gy3r3q3" path="res://Scripts/CardRenderer.cs" id="6_1geux"]
 [ext_resource type="SystemFont" uid="uid://dqhsx42f1ax5r" path="res://Fonts/BaseFont.tres" id="7_13sua"]
-[ext_resource type="Texture2D" uid="uid://djxqle6g4s6j1" path="res://Graphics/Card front1.png" id="7_pbuqb"]
-[ext_resource type="Texture2D" uid="uid://dhigwqrjst3cf" path="res://Graphics/ce3655f19d71d38b7e2450a086fd69901ca45c96.png" id="8_f3ywt"]
-[ext_resource type="PackedScene" uid="uid://dqby7bd56mkta" path="res://Scenes/Viewport.tscn" id="8_pbuqb"]
+[ext_resource type="Texture2D" uid="uid://b3y0utinrhn4" path="res://Graphics/CardAssets/back_aqua.png" id="7_pbuqb"]
+[ext_resource type="Texture2D" uid="uid://3qf7wd64sfls" path="res://Graphics/CardAssets/border_black.png" id="8_f3ywt"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kudhx"]
 size = Vector3(0.32, 0.005, 0.45)
@@ -19,6 +18,19 @@ emission_enabled = true
 emission = Color(1, 1, 1, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pbuqb"]
+
+[sub_resource type="PackedScene" id="PackedScene_13sua"]
+_bundled = {
+"conn_count": 0,
+"conns": PackedInt32Array(),
+"editable_instances": [],
+"names": PackedStringArray("Viewport", "render_target_update_mode", "SubViewport"),
+"node_count": 1,
+"node_paths": [],
+"nodes": PackedInt32Array(-1, -1, 2, 0, -1, 1, 1, 0, 0),
+"variants": [1],
+"version": 3
+}
 
 [node name="Card" type="RigidBody3D"]
 collision_layer = 2
@@ -85,9 +97,11 @@ material = SubResource("StandardMaterial3D_3m7nw")
 [node name="CardRenderer" type="Node" parent="."]
 script = ExtResource("6_1geux")
 FrontTemplate = ExtResource("7_pbuqb")
-BackTexture = ExtResource("8_f3ywt")
+BorderTexture = ExtResource("8_f3ywt")
+BorderRegion = Vector4(0, 0, 1, 1)
+BackTexture = ExtResource("7_pbuqb")
 TextFont = ExtResource("7_13sua")
 NameText = "testy"
 AttributesText = "asdfasdf"
 CardMaterial = SubResource("StandardMaterial3D_pbuqb")
-ViewportScene = ExtResource("8_pbuqb")
+ViewportScene = SubResource("PackedScene_13sua")

@@ -34,7 +34,6 @@ public partial class CardRenderer : Node, ICardComponent
 
     // --- Material to receive baked texture ---
     [Export] public StandardMaterial3D CardMaterial;
-    [Export] public PackedScene ViewportScene;
 
     private bool _baked;
 
@@ -105,36 +104,74 @@ public partial class CardRenderer : Node, ICardComponent
     {
         // 1) Create an empty RGBA image and fill with white
         var img = Image.CreateEmpty(TextureWidth, TextureHeight, false, Image.Format.Rgba8);
-        img.Fill(new Color(1f, 0f, 0f, 1f));
+        img.Fill(new Color(1f, 0f, 0f, 0f));
 
         // 2) Blit the back half (opaque) into the right side
         var backImg = BackTexture.GetImage();
+        backImg.Resize(TextureWidth / 2, TextureHeight, Image.Interpolation.Nearest);
         BlitLayer(backImg,
             new Rect2I(Vector2I.Zero, backImg.GetSize()),
             new Vector2I(TextureWidth / 2, 0), true, img);
 
         // 3) Blit the front template into the left half
         var frontImg = FrontTemplate.GetImage();
+        frontImg.Resize(TextureWidth / 2, TextureHeight, Image.Interpolation.Nearest);
         BlitLayer(frontImg,
-            new Rect2I(Vector2I.Zero, frontImg?.GetSize() ?? Vector2I.Zero)
+            new Rect2I(Vector2I.Zero, frontImg.GetSize())
             , Vector2I.Zero, true, img);
 
         // 4) Blend the remaining layers with alpha
-        var borderImg = BorderTexture?.GetImage();
-        BlitLayer(borderImg, new Rect2I(Vector2I.Zero, borderImg?.GetSize() ?? Vector2I.Zero),
-            new Vector2I((int)(BorderRegion.X * TextureWidth * 0.5f), (int)(BorderRegion.Y * TextureHeight)),true, img);
+        if (BorderTexture != null)
+        {
+            var borderImg = BorderTexture.GetImage();
+            int bw = (int)((BorderRegion.Z - BorderRegion.X) * TextureWidth * 0.5f);
+            int bh = (int)((BorderRegion.W - BorderRegion.Y) * TextureHeight);
+            borderImg.Resize(bw, bh, Image.Interpolation.Nearest);
+            int bx = (int)(BorderRegion.X * TextureWidth * 0.5f);
+            int by = (int)(BorderRegion.Y * TextureHeight);
+            BlitLayer(borderImg,
+                new Rect2I(Vector2I.Zero, borderImg.GetSize()),
+                new Vector2I(bx, by), true, img);
+        }
         
-        var artImg = ArtTexture?.GetImage();
-        BlitLayer(artImg, new Rect2I(Vector2I.Zero, artImg?.GetSize() ?? Vector2I.Zero),
-            new Vector2I((int)(ArtRegion.X * TextureWidth * 0.5f), (int)(ArtRegion.Y * TextureHeight)),true, img);
+        if (ArtTexture != null)
+        {
+            var artImg = ArtTexture.GetImage();
+            int aw = (int)((ArtRegion.Z - ArtRegion.X) * TextureWidth * 0.5f);
+            int ah = (int)((ArtRegion.W - ArtRegion.Y) * TextureHeight);
+            artImg.Resize(aw, ah, Image.Interpolation.Nearest);
+            int ax = (int)(ArtRegion.X * TextureWidth * 0.5f);
+            int ay = (int)(ArtRegion.Y * TextureHeight);
+            BlitLayer(artImg,
+                new Rect2I(Vector2I.Zero, artImg.GetSize()),
+                new Vector2I(ax, ay), true, img);
+        }
         
-        var symbolImg = SymbolTexture?.GetImage();
-        BlitLayer(symbolImg, new Rect2I(Vector2I.Zero, symbolImg?.GetSize() ?? Vector2I.Zero),
-            new Vector2I((int)(SymbolRegion.X * TextureWidth * 0.5f), (int)(SymbolRegion.Y * TextureHeight)),true, img);
+        if (SymbolTexture != null)
+        {
+            var symbolImg = SymbolTexture.GetImage();
+            int sw = (int)((SymbolRegion.Z - SymbolRegion.X) * TextureWidth * 0.5f);
+            int sh = (int)((SymbolRegion.W - SymbolRegion.Y) * TextureHeight);
+            symbolImg.Resize(sw, sh, Image.Interpolation.Nearest);
+            int sx = (int)(SymbolRegion.X * TextureWidth * 0.5f);
+            int sy = (int)(SymbolRegion.Y * TextureHeight);
+            BlitLayer(symbolImg,
+                new Rect2I(Vector2I.Zero, symbolImg.GetSize()),
+                new Vector2I(sx, sy), true, img);
+        }
         
-        var attrBoxImg = AttrBoxTexture?.GetImage();
-        BlitLayer(attrBoxImg, new Rect2I(Vector2I.Zero, attrBoxImg?.GetSize() ?? Vector2I.Zero),
-            new Vector2I((int)(AttrBoxRegion.X * TextureWidth * 0.5f), (int)(AttrBoxRegion.Y * TextureHeight)),true, img);
+        if (AttrBoxTexture != null)
+        {
+            var attrImg = AttrBoxTexture.GetImage();
+            int cw = (int)((AttrBoxRegion.Z - AttrBoxRegion.X) * TextureWidth * 0.5f);
+            int ch = (int)((AttrBoxRegion.W - AttrBoxRegion.Y) * TextureHeight);
+            attrImg.Resize(cw, ch, Image.Interpolation.Nearest);
+            int cx = (int)(AttrBoxRegion.X * TextureWidth * 0.5f);
+            int cy = (int)(AttrBoxRegion.Y * TextureHeight);
+            BlitLayer(attrImg,
+                new Rect2I(Vector2I.Zero, attrImg.GetSize()),
+                new Vector2I(cx, cy), true, img);
+        }
         
 
         // 5) Pack into an ImageTexture and return
