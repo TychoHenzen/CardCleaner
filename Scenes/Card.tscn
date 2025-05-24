@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://cpnq5feaqvlj1"]
+[gd_scene load_steps=22 format=3 uid="uid://cpnq5feaqvlj1"]
 
 [ext_resource type="Script" uid="uid://blu0six20pl7f" path="res://Scripts/Controllers/CardController.cs" id="1_3m7nw"]
 [ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/FlutterCard.cs" id="1_3p273"]
@@ -6,7 +6,6 @@
 [ext_resource type="Script" uid="uid://bsbw0i4pq1mve" path="res://Scripts/CardDesigner.cs" id="3_kphy1"]
 [ext_resource type="Script" uid="uid://nrgkkbg2lwbr" path="res://Scripts/CsgBaker.cs" id="3_wejov"]
 [ext_resource type="Script" uid="uid://domry0gy3r3q3" path="res://Scripts/CardRenderer.cs" id="6_1geux"]
-[ext_resource type="Material" uid="uid://05iutag61jce" path="res://Materials/StandardMaterial.tres" id="8_1geux"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8p48n"]
 transparency = 2
@@ -20,8 +19,77 @@ size = Vector3(0.32, 0.005, 0.45)
 emission_enabled = true
 emission = Color(1, 1, 1, 1)
 
+[sub_resource type="CSharpScript" id="CSharpScript_wejov"]
+
+[sub_resource type="Resource" id="Resource_c6tr3"]
+script = SubResource("CSharpScript_wejov")
+Region = Vector4(0, 0, 1, 1)
+RenderOnFront = true
+RenderOnBack = true
+
+[sub_resource type="Resource" id="Resource_1geux"]
+script = SubResource("CSharpScript_wejov")
+Region = Vector4(0, 0, 1, 1)
+RenderOnFront = true
+RenderOnBack = true
+
+[sub_resource type="Resource" id="Resource_13sua"]
+script = SubResource("CSharpScript_wejov")
+Region = Vector4(0, 0, 1, 1)
+RenderOnFront = true
+RenderOnBack = true
+
+[sub_resource type="Resource" id="Resource_pbuqb"]
+script = SubResource("CSharpScript_wejov")
+Region = Vector4(0.1, 0.1, 0.8, 0.35)
+RenderOnFront = true
+RenderOnBack = false
+
+[sub_resource type="Resource" id="Resource_f3ywt"]
+script = SubResource("CSharpScript_wejov")
+Region = Vector4(0.2, 0.2, 0.6, 0.6)
+RenderOnFront = false
+RenderOnBack = true
+
+[sub_resource type="Resource" id="Resource_6elyo"]
+script = SubResource("CSharpScript_wejov")
+Region = Vector4(0, 0, 1, 0.5)
+RenderOnFront = true
+RenderOnBack = false
+
+[sub_resource type="Resource" id="Resource_gnfes"]
+script = SubResource("CSharpScript_wejov")
+Region = Vector4(0.1, 0.43, 0.8, 0.2)
+RenderOnFront = true
+RenderOnBack = false
+
+[sub_resource type="Resource" id="Resource_swj2d"]
+script = SubResource("CSharpScript_wejov")
+Region = Vector4(0.015, 0.43, 1.01, 0.59)
+RenderOnFront = true
+RenderOnBack = false
+
+[sub_resource type="Resource" id="Resource_co2vc"]
+script = SubResource("CSharpScript_wejov")
+Region = Vector4(0.8, 0, 0.2, 0.15)
+RenderOnFront = true
+RenderOnBack = false
+
+[sub_resource type="Resource" id="Resource_tayg5"]
+script = SubResource("CSharpScript_wejov")
+Region = Vector4(0.8, 0, 0.2, 0.15)
+RenderOnFront = true
+RenderOnBack = false
+
+[sub_resource type="Resource" id="Resource_w84x6"]
+script = SubResource("CSharpScript_wejov")
+Region = Vector4(0.8, 0, 0.2, 0.15)
+RenderOnFront = true
+RenderOnBack = false
+
 [node name="Card" type="RigidBody3D"]
 collision_layer = 2
+collision_mask = 3
 linear_damp = 0.1
 angular_damp = 0.05
 script = ExtResource("1_3m7nw")
@@ -85,4 +153,14 @@ material = SubResource("StandardMaterial3D_3m7nw")
 
 [node name="CardRenderer" type="Node" parent="."]
 script = ExtResource("6_1geux")
-CardMaterial = ExtResource("8_1geux")
+CardBase = SubResource("Resource_c6tr3")
+Border = SubResource("Resource_1geux")
+Corners = SubResource("Resource_13sua")
+Art = SubResource("Resource_pbuqb")
+Symbol = SubResource("Resource_f3ywt")
+ImageBackground = SubResource("Resource_6elyo")
+Banner = SubResource("Resource_gnfes")
+DescriptionBox = SubResource("Resource_swj2d")
+EnergyContainer = SubResource("Resource_co2vc")
+EnergyFill1 = SubResource("Resource_tayg5")
+EnergyFill2 = SubResource("Resource_w84x6")

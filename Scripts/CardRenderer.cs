@@ -66,9 +66,11 @@ namespace CardCleaner.Scripts
 
         public void Setup(RigidBody3D cardRoot)
         {
-            if (_baked || CardMaterial == null)
+            if (_baked)
                 return;
 
+            CardMaterial ??= new StandardMaterial3D();
+            
             CallDeferred(nameof(DeferredAssign));
             _baked = true;
         }

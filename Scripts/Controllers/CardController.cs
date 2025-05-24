@@ -16,7 +16,6 @@ public partial class CardController : RigidBody3D {
             _components.Add(comp);
             
         }
-        SetCollisionLayer(2);
         
     }
 
