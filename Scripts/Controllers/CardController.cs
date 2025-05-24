@@ -1,6 +1,8 @@
-﻿using Godot;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CardCleaner.Scripts.Interfaces;
+using Godot;
+
+namespace CardCleaner.Scripts.Controllers;
 
 [Tool]
 public partial class CardController : RigidBody3D {

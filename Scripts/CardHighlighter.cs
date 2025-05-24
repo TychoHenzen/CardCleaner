@@ -69,13 +69,15 @@ public partial class CardHighlighter : Node3D
         card.Freeze = true;
         var shape = card.GetNode<CollisionShape3D>("CardCollision");
         if (shape != null) shape.Disabled = true;
+        var designer = card.GetNode<CardCleaner.Scripts.CardDesigner>("Designer");
 
         // Reparent to camera and stack
         card.GetParent().RemoveChild(card);
         _handAnchor.AddChild(card);
-        float thickness = 0.005f;
-        float yOffset = _heldCards.Count * (thickness + 0.002f);
-        card.Transform = new Transform3D(Basis.Identity.Rotated(Vector3.Right, 90), new Vector3(1-yOffset*10, -yOffset, -HoldDistance));
+        float thickness = designer.Thickness;
+        float yOffset = _heldCards.Count * thickness;
+        card.Transform = new Transform3D(Basis.Identity.Rotated(Vector3.Right, Mathf.DegToRad(90)), 
+            new Vector3(1-yOffset*10, 0, -HoldDistance+yOffset));
 
         _heldCards.Add(card);
     }
@@ -161,16 +163,20 @@ public partial class CardHighlighter : Node3D
 
     private void ApplyOutline(RigidBody3D card)
     {
-        try { card.GetNode<CsgBox3D>("OutlineBox").Visible = true; _lastCard = card; }
-        catch { }
+        var outline = card.GetNodeOrNull<CsgBox3D>("OutlineBox");
+        if (outline == null) return;
+        
+        outline.Visible = true; 
+        _lastCard = card;
     }
 
     private void ClearOutline()
     {
-        if (_lastCard == null) return;
-        try { _lastCard.GetNode<CsgBox3D>("OutlineBox").Visible = false; }
-        catch { }
-        finally { _lastCard = null; }
+        var outline = _lastCard?.GetNodeOrNull<CsgBox3D>("OutlineBox");
+        
+        if (outline == null) return;
+         outline.Visible = false;
+         _lastCard = null; 
     }
 
     private void SetupCardCollisionLayers()

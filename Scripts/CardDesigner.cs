@@ -1,6 +1,8 @@
-using Godot;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Interfaces;
+using Godot;
+
+namespace CardCleaner.Scripts;
 
 [Tool]
 public partial class CardDesigner : Node, ICardComponent

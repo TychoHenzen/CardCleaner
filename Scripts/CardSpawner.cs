@@ -22,6 +22,8 @@ public partial class CardSpawner : Node3D
     [Export] public Texture2D[] EnergyFill1Options { get; set; } = new Texture2D[0];
     [Export] public Texture2D[] EnergyFill2Options { get; set; } = new Texture2D[0];
     [Export] public Texture2D[] EnergyFillFullOptions { get; set; } = new Texture2D[0];
+    [Export] public Texture2D[] GemSocketsOptions { get; set; } = new Texture2D[0];
+    [Export] public Texture2D[] GemsOptions { get; set; } = new Texture2D[0];
 
     private Node3D _spawnParent;
     private RandomNumberGenerator _rng = new();
@@ -54,6 +56,9 @@ public partial class CardSpawner : Node3D
         VerifyTextures(EnergyFill1Options);
         VerifyTextures(EnergyFill2Options);
         VerifyTextures(EnergyFillFullOptions);
+        VerifyTextures(GemSocketsOptions);
+        VerifyTextures(GemsOptions);
+        
     }
 
     public override void _Input(InputEvent @event)
@@ -135,6 +140,12 @@ public partial class CardSpawner : Node3D
         else
         {
             Randomize(renderer.EnergyFill1, EnergyFillFullOptions, _rng);
+        }
+
+        for (int i = 0; i < 8; i++)
+        {
+            Randomize(renderer.GemSockets[i], GemSocketsOptions, _rng);
+            Randomize(renderer.Gems[i], GemsOptions, _rng);
         }
     }
 }

@@ -1,4 +1,4 @@
-[gd_scene load_steps=262 format=3 uid="uid://cc3ymqg03a2g5"]
+[gd_scene load_steps=288 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://cpnq5feaqvlj1" path="res://Scenes/Card.tscn" id="1_dgtb2"]
 [ext_resource type="Script" uid="uid://bo8luaias82fj" path="res://Scripts/CardSpawner.cs" id="3_6nqof"]
@@ -260,6 +260,32 @@
 [ext_resource type="Texture2D" uid="uid://by5r7hks3bd2g" path="res://Graphics/CardAssets/energy_full_red.png" id="255_jsrve"]
 [ext_resource type="Texture2D" uid="uid://rb70dx0nuh6j" path="res://Graphics/CardAssets/energy_full_white.png" id="256_rhg8e"]
 [ext_resource type="Texture2D" uid="uid://b13qwuxde0lhq" path="res://Graphics/CardAssets/energy_full_yellow.png" id="257_c4hve"]
+[ext_resource type="Texture2D" uid="uid://drixrse0t8e2w" path="res://Graphics/CardAssets/socket_aqua.png" id="258_4bcsh"]
+[ext_resource type="Texture2D" uid="uid://b3w4oys3c6fxv" path="res://Graphics/CardAssets/socket_black.png" id="259_k3fjn"]
+[ext_resource type="Texture2D" uid="uid://cujjppei3n5yb" path="res://Graphics/CardAssets/socket_blue.png" id="260_8o5hv"]
+[ext_resource type="Texture2D" uid="uid://7qu8xdxnv2si" path="res://Graphics/CardAssets/socket_blue_light.png" id="261_y0gim"]
+[ext_resource type="Texture2D" uid="uid://1ci6let0xth" path="res://Graphics/CardAssets/socket_brown.png" id="262_20nvw"]
+[ext_resource type="Texture2D" uid="uid://cwpawp5npbh4n" path="res://Graphics/CardAssets/socket_gray.png" id="263_3vguv"]
+[ext_resource type="Texture2D" uid="uid://wde2pq8bk3ki" path="res://Graphics/CardAssets/socket_green.png" id="264_os8n5"]
+[ext_resource type="Texture2D" uid="uid://cy6ew77186jst" path="res://Graphics/CardAssets/socket_magenta.png" id="265_djui3"]
+[ext_resource type="Texture2D" uid="uid://clg52ovflrn4f" path="res://Graphics/CardAssets/socket_pink.png" id="266_xkege"]
+[ext_resource type="Texture2D" uid="uid://dcaa85jlro5mg" path="res://Graphics/CardAssets/socket_purple.png" id="267_aqtow"]
+[ext_resource type="Texture2D" uid="uid://dpj8e6c14032r" path="res://Graphics/CardAssets/socket_red.png" id="268_m41c1"]
+[ext_resource type="Texture2D" uid="uid://dmucoftn5difk" path="res://Graphics/CardAssets/socket_white.png" id="269_1ypq5"]
+[ext_resource type="Texture2D" uid="uid://daf5b8acl1v24" path="res://Graphics/CardAssets/socket_yellow.png" id="270_0o4pa"]
+[ext_resource type="Texture2D" uid="uid://b5hidn87uxh02" path="res://Graphics/CardAssets/gem_aqua.png" id="271_k8ww5"]
+[ext_resource type="Texture2D" uid="uid://cl1or6g4pobps" path="res://Graphics/CardAssets/gem_black.png" id="272_afeby"]
+[ext_resource type="Texture2D" uid="uid://co2j26n2272a2" path="res://Graphics/CardAssets/gem_blue.png" id="273_lp8hg"]
+[ext_resource type="Texture2D" uid="uid://dubqfig3a8a3j" path="res://Graphics/CardAssets/gem_blue_light.png" id="274_brdci"]
+[ext_resource type="Texture2D" uid="uid://e87my4c4yq7g" path="res://Graphics/CardAssets/gem_brown.png" id="275_1ka0w"]
+[ext_resource type="Texture2D" uid="uid://bmj4a31jvqq5n" path="res://Graphics/CardAssets/gem_gray.png" id="276_m4pam"]
+[ext_resource type="Texture2D" uid="uid://dpkgjhd52qe35" path="res://Graphics/CardAssets/gem_green.png" id="277_mj1n4"]
+[ext_resource type="Texture2D" uid="uid://dg47d4awu8abe" path="res://Graphics/CardAssets/gem_magenta.png" id="278_n5n8u"]
+[ext_resource type="Texture2D" uid="uid://bbagdmhjy0gwq" path="res://Graphics/CardAssets/gem_pink.png" id="279_yg0vq"]
+[ext_resource type="Texture2D" uid="uid://4n5i2ipcfd8u" path="res://Graphics/CardAssets/gem_purple.png" id="280_fc8ae"]
+[ext_resource type="Texture2D" uid="uid://c3ghasn1l5kv4" path="res://Graphics/CardAssets/gem_red.png" id="281_mbchl"]
+[ext_resource type="Texture2D" uid="uid://diya50ve3o7r6" path="res://Graphics/CardAssets/gem_white.png" id="282_13puv"]
+[ext_resource type="Texture2D" uid="uid://ddbr7ve2f3wod" path="res://Graphics/CardAssets/gem_yellow.png" id="283_0bhah"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t5ln1"]
 size = Vector3(39.5682, 0.396362, 43.8758)
@@ -278,11 +304,6 @@ shape = SubResource("BoxShape3D_t5ln1")
 
 [node name="Node3D2" parent="." instance=ExtResource("3_k8nbv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.63051, 1.30859, -2.37775)
-Speed = 5.0
-JumpVelocity = 10.0
-MouseSensitivity = 0.1
-MinPitch = -80.0
-MaxPitch = 80.0
 
 [node name="SpotLight3D" parent="Node3D2/Head/Camera3D" index="0"]
 spot_range = 46.3397
@@ -305,6 +326,8 @@ EnergyContainerOptions = [ExtResource("186_ck67h"), ExtResource("187_3wnck"), Ex
 EnergyFill1Options = [ExtResource("219_xmrp6"), ExtResource("220_b64bv"), ExtResource("221_yu7pm"), ExtResource("222_k4n23"), ExtResource("223_b51f7"), ExtResource("224_bhepe"), ExtResource("225_josi3"), ExtResource("226_c51lt"), ExtResource("227_ng4ev"), ExtResource("228_ths81"), ExtResource("229_fy3uj"), ExtResource("230_3255k"), ExtResource("231_o4xle")]
 EnergyFill2Options = [ExtResource("232_ktl8g"), ExtResource("233_eybpo"), ExtResource("234_6gou6"), ExtResource("235_xg2au"), ExtResource("236_p43c2"), ExtResource("237_7xp1f"), ExtResource("238_st5bq"), ExtResource("239_tkgy6"), ExtResource("240_jmpj8"), ExtResource("241_i7cfy"), ExtResource("242_m5qx7"), ExtResource("243_nqvld"), ExtResource("244_b7piw")]
 EnergyFillFullOptions = [ExtResource("245_hjugq"), ExtResource("246_vl3qe"), ExtResource("247_3ovoq"), ExtResource("248_2u72i"), ExtResource("249_t6ljj"), ExtResource("250_tifeb"), ExtResource("251_mrdwk"), ExtResource("252_pmyn6"), ExtResource("253_ox6gc"), ExtResource("254_a674s"), ExtResource("255_jsrve"), ExtResource("256_rhg8e"), ExtResource("257_c4hve")]
+GemSocketsOptions = [ExtResource("258_4bcsh"), ExtResource("259_k3fjn"), ExtResource("260_8o5hv"), ExtResource("261_y0gim"), ExtResource("262_20nvw"), ExtResource("263_3vguv"), ExtResource("264_os8n5"), ExtResource("265_djui3"), ExtResource("266_xkege"), ExtResource("267_aqtow"), ExtResource("268_m41c1"), ExtResource("269_1ypq5"), ExtResource("270_0o4pa")]
+GemsOptions = [ExtResource("271_k8ww5"), ExtResource("272_afeby"), ExtResource("273_lp8hg"), ExtResource("274_brdci"), ExtResource("275_1ka0w"), ExtResource("276_m4pam"), ExtResource("277_mj1n4"), ExtResource("278_n5n8u"), ExtResource("279_yg0vq"), ExtResource("280_fc8ae"), ExtResource("281_mbchl"), ExtResource("282_13puv"), ExtResource("283_0bhah")]
 
 [node name="CardHighlighter" type="Node3D" parent="."]
 script = ExtResource("4_ia2xn")
