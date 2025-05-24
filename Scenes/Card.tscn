@@ -18,11 +18,13 @@ emission_enabled = true
 emission = Color(1, 1, 1, 1)
 
 [node name="Card" type="RigidBody3D"]
+collision_layer = 2
 linear_damp = 0.1
 angular_damp = 0.05
 script = ExtResource("1_3m7nw")
 
 [node name="OuterBox" type="CSGBox3D" parent="."]
+visible = false
 material_override = SubResource("StandardMaterial3D_c6tr3")
 size = Vector3(0.32, 0.005, 0.45)
 material = ExtResource("2_kphy1")
