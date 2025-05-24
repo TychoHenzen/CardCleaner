@@ -3,20 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dl120toc8kpsh"
-path.s3tc="res://.godot/imported/Card back.png-587bbaed18f3f0b4382b9c568d40eed3.s3tc.ctex"
+path="res://.godot/imported/Card back.png-587bbaed18f3f0b4382b9c568d40eed3.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://Graphics/Card back.png"
-dest_files=["res://.godot/imported/Card back.png-587bbaed18f3f0b4382b9c568d40eed3.s3tc.ctex"]
+dest_files=["res://.godot/imported/Card back.png-587bbaed18f3f0b4382b9c568d40eed3.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
