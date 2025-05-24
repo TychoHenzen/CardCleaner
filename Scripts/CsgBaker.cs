@@ -5,7 +5,7 @@ using CardCleaner.Scripts.Interfaces;
 public partial class CsgBaker : CsgBox3D, ICardComponent
 {
     [Export] public bool BakeOnSetup = true;
-    private bool _baked = false;
+    private bool _baked;
 
     public void Setup(RigidBody3D cardRoot)
     {
