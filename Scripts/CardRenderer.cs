@@ -4,6 +4,7 @@ using CardCleaner.Scripts.Interfaces;
 namespace CardCleaner.Scripts
 {
     [Tool]
+    [GlobalClass]
     public partial class LayerData : Resource
     {
         [Export] public Texture2D Texture { get; set; }
@@ -23,24 +24,24 @@ namespace CardCleaner.Scripts
         [Export] public bool BakeInEditor { get; set; } = false;
 
         // --- Front & back base templates ---
-        [Export] public LayerData CardBase { get; set; } = new() { RenderOnFront = true, RenderOnBack = true };
-        [Export] public LayerData Border { get; set; } = new() { RenderOnFront = true, RenderOnBack = true };
+        [Export(PropertyHint.ResourceType, "LayerData")] public LayerData CardBase { get; set; } = new() { RenderOnFront = true, RenderOnBack = true };
+        [Export(PropertyHint.ResourceType, "LayerData")] public LayerData Border { get; set; } = new() { RenderOnFront = true, RenderOnBack = true };
 
-        [Export] public LayerData Corners { get; set; } = new() { RenderOnFront = true, RenderOnBack = true };
+        [Export(PropertyHint.ResourceType, "LayerData")] public LayerData Corners { get; set; } = new() { RenderOnFront = true, RenderOnBack = true };
 
         // --- LayerData for paired texture+region+side ---
-        [Export] public LayerData Art { get; set; } = new() { RenderOnFront = true , Region = new Vector4(0.1f, 0.1f, 0.8f, 0.35f)};
-        [Export] public LayerData Symbol { get; set; } = new() { RenderOnBack = true, RenderOnFront = false, Region = new Vector4(0.2f, 0.2f, 0.6f, 0.6f) };
+        [Export(PropertyHint.ResourceType, "LayerData")] public LayerData Art { get; set; } = new() { RenderOnFront = true , Region = new Vector4(0.1f, 0.1f, 0.8f, 0.35f)};
+        [Export(PropertyHint.ResourceType, "LayerData")] public LayerData Symbol { get; set; } = new() { RenderOnBack = true, RenderOnFront = false, Region = new Vector4(0.2f, 0.2f, 0.6f, 0.6f) };
 
-        [Export] public LayerData ImageBackground { get; set; } = new() { RenderOnFront = true, Region = new Vector4(0, 0, 1f, 0.5f) };
-        [Export] public LayerData Banner { get; set; } = new() { RenderOnFront = true, Region = new Vector4(0.1f, 0.43f, 0.8f, 0.2f) };
-        [Export] public LayerData DescriptionBox { get; set; } = new() { RenderOnFront = true, Region = new Vector4(0.015f, 0.43f, 1.01f, 0.59f) };
-        [Export] public LayerData EnergyContainer { get; set; } = new() { RenderOnFront = true , Region = new Vector4(0.8f, 0, 0.2f, 0.15f)};
-        [Export] public LayerData EnergyFill1 { get; set; } = new() { RenderOnFront = true, Region = new Vector4(0.8f, 0, 0.2f, 0.15f)};
-        [Export] public LayerData EnergyFill2 { get; set; } = new() { RenderOnFront = true , Region = new Vector4(0.8f, 0, 0.2f, 0.15f)};
+        [Export(PropertyHint.ResourceType, "LayerData")] public LayerData ImageBackground { get; set; } = new() { RenderOnFront = true, Region = new Vector4(0, 0, 1f, 0.5f) };
+        [Export(PropertyHint.ResourceType, "LayerData")] public LayerData Banner { get; set; } = new() { RenderOnFront = true, Region = new Vector4(0.1f, 0.43f, 0.8f, 0.2f) };
+        [Export(PropertyHint.ResourceType, "LayerData")] public LayerData DescriptionBox { get; set; } = new() { RenderOnFront = true, Region = new Vector4(0.015f, 0.43f, 1.01f, 0.59f) };
+        [Export(PropertyHint.ResourceType, "LayerData")] public LayerData EnergyContainer { get; set; } = new() { RenderOnFront = true , Region = new Vector4(0.8f, 0, 0.2f, 0.15f)};
+        [Export(PropertyHint.ResourceType, "LayerData")] public LayerData EnergyFill1 { get; set; } = new() { RenderOnFront = true, Region = new Vector4(0.8f, 0, 0.2f, 0.15f)};
+        [Export(PropertyHint.ResourceType, "LayerData")] public LayerData EnergyFill2 { get; set; } = new() { RenderOnFront = true , Region = new Vector4(0.8f, 0, 0.2f, 0.15f)};
 
-        [Export] public LayerData[] GemSockets { get; set; } = new LayerData[8];
-        [Export] public LayerData[] Gems { get; set; } = new LayerData[8];
+        [Export(PropertyHint.ArrayType, "LayerData")] public LayerData[] GemSockets { get; set; } = new LayerData[8];
+        [Export(PropertyHint.ArrayType, "LayerData")] public LayerData[] Gems { get; set; } = new LayerData[8];
 
         // --- Text fields (front only) ---
         [Export] public Font TextFont { get; set; }

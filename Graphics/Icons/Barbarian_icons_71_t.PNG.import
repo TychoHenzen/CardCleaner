@@ -3,20 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cwyilksp7orpp"
-path.s3tc="res://.godot/imported/Barbarian_icons_71_t.PNG-8410e109b2c9fdb75afa9c54013b2208.s3tc.ctex"
+path="res://.godot/imported/Barbarian_icons_71_t.PNG-8410e109b2c9fdb75afa9c54013b2208.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://Graphics/Icons/Barbarian_icons_71_t.PNG"
-dest_files=["res://.godot/imported/Barbarian_icons_71_t.PNG-8410e109b2c9fdb75afa9c54013b2208.s3tc.ctex"]
+dest_files=["res://.godot/imported/Barbarian_icons_71_t.PNG-8410e109b2c9fdb75afa9c54013b2208.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
