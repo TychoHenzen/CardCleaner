@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://cpnq5feaqvlj1"]
+[gd_scene load_steps=9 format=3 uid="uid://cpnq5feaqvlj1"]
 
 [ext_resource type="Script" uid="uid://blu0six20pl7f" path="res://Scripts/Controllers/CardController.cs" id="1_3m7nw"]
 [ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/FlutterCard.cs" id="1_3p273"]
 [ext_resource type="Script" uid="uid://bsbw0i4pq1mve" path="res://Scripts/CardDesigner.cs" id="3_kphy1"]
 [ext_resource type="Script" uid="uid://nrgkkbg2lwbr" path="res://Scripts/CsgBaker.cs" id="3_wejov"]
 [ext_resource type="Script" uid="uid://domry0gy3r3q3" path="res://Scripts/CardRenderer.cs" id="6_1geux"]
+[ext_resource type="SystemFont" uid="uid://dqhsx42f1ax5r" path="res://Fonts/BaseFont.tres" id="6_wejov"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kudhx"]
 size = Vector3(0.32, 0.005, 0.45)
@@ -77,20 +78,23 @@ material = SubResource("StandardMaterial3D_3m7nw")
 
 [node name="CardRenderer" type="Node" parent="." node_paths=PackedStringArray("NameLabel", "AttrLabel")]
 script = ExtResource("6_1geux")
+TextFont = ExtResource("6_wejov")
+TextColor = Color(1, 1, 1, 1)
 NameText = "testing title"
 NameLabel = NodePath("../Title")
 AttributesText = "test description of long effect and other things"
 AttrLabel = NodePath("../Description")
 
 [node name="Title" type="Label3D" parent="."]
-transform = Transform3D(0.05, 0, 0, 0, -2.18557e-09, 0.05, 0, -0.05, -2.18557e-09, 0, 0.006, 0)
+transform = Transform3D(0.05, 0, 0, 0, -2.18557e-09, 0.05, 0, -0.05, -2.18557e-09, 0, 0.006, 0.00742067)
 text = "test"
 font_size = 120
 
 [node name="Description" type="Label3D" parent="."]
 transform = Transform3D(0.05, 0, 0, 0, -2.18557e-09, 0.05, 0, -0.05, -2.18557e-09, -8.03098e-05, 0.00622179, 0.110162)
-text = "testafgsg
+text = "testafgsasdfasdfasdas
 
 asggasfg"
-font_size = 120
+font_size = 100
 autowrap_mode = 3
+width = 1000.0

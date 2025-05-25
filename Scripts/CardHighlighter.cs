@@ -46,14 +46,12 @@ public partial class CardHighlighter : Node3D
 
     public override void _PhysicsProcess(double delta)
     {
-        RigidBody3D target = UseMultipleRays ? FindCardWithMultipleRays() : FindCardWithSingleRay();
+        RigidBody3D target = FindCard();
         if (target != null && _camera.GlobalPosition.DistanceTo(target.GlobalPosition) <= MaxHighlightDistance)
         {
-            if (target != _lastCard)
-            {
-                ClearOutline();
-                ApplyOutline(target);
-            }
+            if (target == _lastCard) return;
+            ClearOutline();
+            ApplyOutline(target);
         }
         else
         {
@@ -109,7 +107,7 @@ public partial class CardHighlighter : Node3D
     }
 
     // --- Ray‐casting methods unchanged ---
-    private RigidBody3D FindCardWithSingleRay()
+    private RigidBody3D FindCard()
     {
         var origin = _camera.GlobalTransform.Origin;
         var forward = -_camera.GlobalTransform.Basis.Z;
@@ -121,44 +119,6 @@ public partial class CardHighlighter : Node3D
         if (result.Count > 0 && result["collider"].Obj is RigidBody3D rb && rb.Name.ToString().StartsWith("Card"))
             return rb;
         return null;
-    }
-
-    private RigidBody3D FindCardWithMultipleRays()
-    {
-        var origin = _camera.GlobalTransform.Origin;
-        var forward = -_camera.GlobalTransform.Basis.Z;
-        var right = _camera.GlobalTransform.Basis.X;
-        var up = _camera.GlobalTransform.Basis.Y;
-
-        var directions = new List<Vector3> {
-            forward,
-            forward + right * CrosshairSize,
-            forward - right * CrosshairSize,
-            forward + up * CrosshairSize,
-            forward - up * CrosshairSize
-        };
-
-        var hits = new Dictionary<RigidBody3D, (int hits, float dist)>();
-        foreach (var dir in directions)
-        {
-            var to = origin + dir.Normalized() * RayLength;
-            var res = GetWorld3D().DirectSpaceState.IntersectRay(new PhysicsRayQueryParameters3D {
-                From = origin, To = to,
-                CollideWithBodies = true, CollideWithAreas = false,
-                CollisionMask = CardCollisionLayer
-            });
-            if (res.Count == 0) continue;
-            if (res["collider"].Obj is not RigidBody3D rb || !rb.Name.ToString().StartsWith("Card")) continue;
-            float d = origin.DistanceTo(rb.GlobalPosition);
-            if (hits.TryGetValue(rb, out var e)) hits[rb] = (e.hits + 1, Math.Min(e.dist, d));
-            else hits[rb] = (1, d);
-        }
-
-        return hits.Count == 0
-            ? null
-            : hits.OrderByDescending(kvp => kvp.Value.hits)
-                  .ThenBy(kvp => kvp.Value.dist)
-                  .First().Key;
     }
 
     private void ApplyOutline(RigidBody3D card)

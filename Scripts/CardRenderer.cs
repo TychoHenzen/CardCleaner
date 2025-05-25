@@ -81,6 +81,7 @@ namespace CardCleaner.Scripts
 
         // --- Text fields (front only) ---
         [Export] public Font TextFont { get; set; }
+        [Export] public Color  TextColor  { get; set; } = new Color(0, 0, 0, 1);
         [Export] public string NameText { get; set; } = "";
         [Export] public Label3D NameLabel { get; set; }
         [Export] public string AttributesText { get; set; } = "";
@@ -90,15 +91,6 @@ namespace CardCleaner.Scripts
         [Export] public StandardMaterial3D CardMaterial { get; set; }
 
         private bool _baked = false;
-
-        public override void _Process(double delta)
-        {
-            if (Engine.IsEditorHint() && BakeInEditor)
-            {
-                BakeInEditor = false;
-                CallDeferred(nameof(DeferredEditorBake));
-            }
-        }
 
         public void Setup(RigidBody3D cardRoot)
         {
@@ -183,107 +175,23 @@ namespace CardCleaner.Scripts
             return atlas;
         }
 
-        private void DeferredEditorBake()
-        {
-            var box = GetParent().GetNodeOrNull<CsgBox3D>("OuterBox");
-            if (box == null)
-            {
-                GD.PrintErr("OuterBox not found for editor bake.");
-                return;
-            }
-
-            if (CardMaterial.Duplicate() is not StandardMaterial3D mat) return;
-            mat.AlbedoTexture = GenerateCompositeTexture();
-            mat.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
-            mat.AlphaScissorThreshold = 0.5f;
-            box.MaterialOverride = mat;
-
-            // Update and add the exported Label3D nodes
-            if (NameLabel != null)
-            {
-                NameLabel.Text = NameText;
-                PositionLabel3D(NameLabel, Banner.Region, box);
-            }
-
-            if (AttrLabel != null)
-            {
-                AttrLabel.Text = AttributesText;
-                PositionLabel3D(AttrLabel, DescriptionBox.Region, box);
-            }
-        }
-
         private void DeferredAssign()
         {
             var box = GetParent().GetNodeOrNull<MeshInstance3D>("OuterBox_Baked");
             if (box == null)
+            {
                 CallDeferred(nameof(DeferredAssign));
-            var mat = CardMaterial.Duplicate() as StandardMaterial3D;
+                return;
+            }
+
+            // Bake material as before…
+            var mat = CardMaterial?.Duplicate() as StandardMaterial3D;
             if (mat == null) return;
             mat.AlbedoTexture = GenerateCompositeTexture();
             mat.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
             mat.AlphaScissorThreshold = 0.5f;
             box.MaterialOverride = mat;
-
-            // Update and add the exported Label3D nodes
-            if (NameLabel != null)
-            {
-                NameLabel.Text = NameText;
-                PositionLabel3D(NameLabel, Banner.Region, box);
-            }
-
-            if (AttrLabel != null)
-            {
-                AttrLabel.Text = AttributesText;
-                PositionLabel3D(AttrLabel, DescriptionBox.Region, box);
-            }
         }
 
-        /// <summary>
-        /// Ensures the given Label3D is parented under `boxNode` and sized+translated
-        /// so it exactly overlays the normalized UV region on the front face.
-        /// </summary>
-        private void PositionLabel3D(Label3D label, Vector4 region, Node3D boxNode)
-        {
-            if (label == null) return;
-            if (boxNode is not MeshInstance3D meshInst || meshInst.Mesh == null) return;
-            // Get the box's axis-aligned bounds
-            var aabb = meshInst.Mesh.GetAabb();
-            var size = aabb.Size;
-
-            // Half extents on X and Z (width and height of front face)
-            float halfX = size.X * 0.5f;
-            float halfZ = size.Z * 0.5f;
-
-            // Compute center of the UV region in local space:
-            //   X axis: left→right
-            float x = -halfX + (region.X + region.Z * 0.5f) * size.X;
-            //   Z axis: top→down (inverted because Godot's Z+ is "back")
-            float z = halfZ - (region.Y + region.W * 0.5f) * size.Z;
-            //   Y axis: push out along thickness
-            float y = aabb.Position.Y + halfX * 0; // unchanged X
-            y = aabb.Position.Y + size.Y * 0.5f + 0.01f;
-
-            // Apply the computed position
-            label.Position = new Vector3(x, y, z);
-
-            // Resize the label's custom AABB to match the region (width along X, depth along Z)
-            var bounds = label.CustomAabb;
-            bounds.Size = new Vector3(region.Z * size.X, 0f, region.W * size.Z);
-            label.CustomAabb = bounds;
-        }
-
-        private TextureRect PlaceLayer(Texture2D tex, Vector4 region)
-        {
-            if (tex == null) return null;
-            return new TextureRect
-            {
-                Texture = tex,
-                Position = new Vector2(region.X * TextureWidth, region.Y * TextureHeight),
-                Size = new Vector2((region.Z - region.X) * TextureWidth,
-                    (region.W - region.Y) * TextureHeight),
-                StretchMode = TextureRect.StretchModeEnum.Scale,
-                ExpandMode = TextureRect.ExpandModeEnum.FitHeight
-            };
-        }
     }
 }

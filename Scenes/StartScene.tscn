@@ -332,7 +332,9 @@ GemsOptions = [ExtResource("271_k8ww5"), ExtResource("272_afeby"), ExtResource("
 [node name="CardHighlighter" type="Node3D" parent="."]
 script = ExtResource("4_ia2xn")
 CameraPath = NodePath("../Node3D2/Head/Camera3D")
+UseMultipleRays = false
 EnableDebug = true
+HoldDistance = 1.0
 
 [node name="Node" type="Node" parent="." node_paths=PackedStringArray("PauseMenuLayer", "UILayer")]
 script = ExtResource("5_u668n")
