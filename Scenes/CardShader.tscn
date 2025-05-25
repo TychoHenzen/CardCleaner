@@ -1,10 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://cpnq5feaqvlj1"]
+[gd_scene load_steps=11 format=4 uid="uid://oqrxpyj8qkim"]
 
-[ext_resource type="Script" uid="uid://blu0six20pl7f" path="res://Scripts/Controllers/CardController.cs" id="1_3m7nw"]
-[ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/FlutterCard.cs" id="1_3p273"]
-[ext_resource type="Script" uid="uid://bsbw0i4pq1mve" path="res://Scripts/CardDesigner.cs" id="3_kphy1"]
-[ext_resource type="Script" uid="uid://nrgkkbg2lwbr" path="res://Scripts/CsgBaker.cs" id="3_wejov"]
-[ext_resource type="Script" uid="uid://domry0gy3r3q3" path="res://Scripts/CardRenderer.cs" id="6_1geux"]
+[ext_resource type="Script" uid="uid://blu0six20pl7f" path="res://Scripts/Controllers/CardController.cs" id="1_btmnp"]
+[ext_resource type="Script" uid="uid://nrgkkbg2lwbr" path="res://Scripts/CsgBaker.cs" id="2_hllmr"]
+[ext_resource type="Script" uid="uid://bsbw0i4pq1mve" path="res://Scripts/CardDesigner.cs" id="3_53u5m"]
+[ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/FlutterCard.cs" id="4_ycqko"]
+[ext_resource type="Script" uid="uid://bgwgo4ybh5igi" path="res://Scripts/CardShaderRenderer.cs" id="5_1sx76"]
+[ext_resource type="SystemFont" uid="uid://dqhsx42f1ax5r" path="res://Fonts/BaseFont.tres" id="6_4gl8e"]
+[ext_resource type="Shader" uid="uid://b5vmfs2yq4u8" path="res://Shaders/card_layers.gdshader" id="6_btmnp"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kudhx"]
 size = Vector3(0.32, 0.005, 0.45)
@@ -13,17 +15,24 @@ size = Vector3(0.32, 0.005, 0.45)
 emission_enabled = true
 emission = Color(1, 1, 1, 1)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hllmr"]
+render_priority = 0
+shader = ExtResource("6_btmnp")
+shader_parameter/textures = null
+shader_parameter/regions = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/frontFlags = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/backFlags = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
 [node name="Card" type="RigidBody3D"]
 collision_layer = 2
 collision_mask = 3
 linear_damp = 0.1
 angular_damp = 0.05
-script = ExtResource("1_3m7nw")
+script = ExtResource("1_btmnp")
 
 [node name="OuterBox" type="CSGBox3D" parent="."]
-visible = false
 size = Vector3(0.32, 0.005, 0.45)
-script = ExtResource("3_wejov")
+script = ExtResource("2_hllmr")
 
 [node name="Combiner" type="CSGCombiner3D" parent="OuterBox"]
 operation = 1
@@ -62,12 +71,12 @@ size = Vector3(0.256, 0.007, 0.45)
 shape = SubResource("BoxShape3D_kudhx")
 
 [node name="Designer" type="Node" parent="."]
-script = ExtResource("3_kphy1")
+script = ExtResource("3_53u5m")
 Width = 0.32
 Height = 0.45
 
 [node name="Flutter" type="Node" parent="."]
-script = ExtResource("1_3p273")
+script = ExtResource("4_ycqko")
 
 [node name="OutlineBox" type="CSGBox3D" parent="."]
 visible = false
@@ -75,8 +84,15 @@ flip_faces = true
 size = Vector3(0.33, 0.015, 0.46)
 material = SubResource("StandardMaterial3D_3m7nw")
 
-[node name="CardRenderer" type="Node" parent="."]
-script = ExtResource("6_1geux")
+[node name="CardRenderer" type="Node" parent="." node_paths=PackedStringArray("NameLabel", "AttrLabel")]
+script = ExtResource("5_1sx76")
+TextFont = ExtResource("6_4gl8e")
+TextColor = Color(0.942823, 0.942823, 0.942823, 1)
+NameText = "testy"
+NameLabel = NodePath("../Title")
+AttributesText = "zcxvzcxvzxcvzxcvzxcvzcxvzcxvzcxvzxcv"
+AttrLabel = NodePath("../Description")
+CardMaterial = SubResource("ShaderMaterial_hllmr")
 
 [node name="Title" type="Label3D" parent="."]
 transform = Transform3D(0.05, 0, 0, 0, -2.18557e-09, 0.05, 0, -0.05, -2.18557e-09, 0, 0.006, 0.00742067)

@@ -118,7 +118,7 @@ public partial class CardSpawner : Node3D
 
     private void RandomizeCardRenderer(Node3D cardInstance)
     {
-        var renderer = cardInstance.GetNode<CardRenderer>("CardRenderer");
+        var renderer = cardInstance.GetNode<CardShaderRenderer>("CardRenderer");
         if (renderer == null) return;
 
         Randomize(renderer.CardBase, CardBaseOptions, _rng);
@@ -147,5 +147,6 @@ public partial class CardSpawner : Node3D
             Randomize(renderer.GemSockets[i], GemSocketsOptions, _rng);
             Randomize(renderer.Gems[i], GemsOptions, _rng);
         }
+        renderer.Bake();
     }
 }

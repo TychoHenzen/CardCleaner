@@ -4,16 +4,6 @@ using CardCleaner.Scripts.Interfaces;
 namespace CardCleaner.Scripts
 {
     [Tool]
-    [GlobalClass]
-    public partial class LayerData : Resource
-    {
-        [Export] public Texture2D Texture { get; set; }
-        [Export] public Vector4 Region { get; set; } = new(0, 0, 1, 1);
-        [Export] public bool RenderOnFront { get; set; } = true;
-        [Export] public bool RenderOnBack { get; set; } = false;
-    }
-
-    [Tool]
     public partial class CardRenderer : Node, ICardComponent
     {
         // --- Atlas resolution ---
@@ -107,16 +97,6 @@ namespace CardCleaner.Scripts
         {
         }
 
-        private void BlitLayer(Image srcImg, Rect2I srcRect, Vector2I dstPos, bool alphaBlend, Image dstImg)
-        {
-            if (srcImg == null) return;
-            if (srcImg.GetFormat() != dstImg.GetFormat())
-                srcImg.Convert(dstImg.GetFormat());
-            if (alphaBlend)
-                dstImg.BlendRect(srcImg, srcRect, dstPos);
-            else
-                dstImg.BlitRect(srcImg, srcRect, dstPos);
-        }
 
         private void Blend(LayerData layer, Image img)
         {
@@ -142,6 +122,16 @@ namespace CardCleaner.Scripts
             int x = xOffset + (int)(region.X * TextureWidth * 0.5f);
             int y = (int)(region.Y * TextureHeight);
             BlitLayer(src, new Rect2I(Vector2I.Zero, src.GetSize()), new Vector2I(x, y), true, img);
+        }
+        private void BlitLayer(Image srcImg, Rect2I srcRect, Vector2I dstPos, bool alphaBlend, Image dstImg)
+        {
+            if (srcImg == null) return;
+            if (srcImg.GetFormat() != dstImg.GetFormat())
+                srcImg.Convert(dstImg.GetFormat());
+            if (alphaBlend)
+                dstImg.BlendRect(srcImg, srcRect, dstPos);
+            else
+                dstImg.BlitRect(srcImg, srcRect, dstPos);
         }
 
         private ImageTexture GenerateCompositeTexture()
@@ -185,8 +175,7 @@ namespace CardCleaner.Scripts
             }
 
             // Bake material as before…
-            var mat = CardMaterial?.Duplicate() as StandardMaterial3D;
-            if (mat == null) return;
+            if (CardMaterial?.Duplicate() is not StandardMaterial3D mat) return;
             mat.AlbedoTexture = GenerateCompositeTexture();
             mat.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
             mat.AlphaScissorThreshold = 0.5f;

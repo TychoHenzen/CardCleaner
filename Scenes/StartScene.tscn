@@ -1,6 +1,6 @@
 [gd_scene load_steps=288 format=3 uid="uid://cc3ymqg03a2g5"]
 
-[ext_resource type="PackedScene" uid="uid://cpnq5feaqvlj1" path="res://Scenes/Card.tscn" id="1_dgtb2"]
+[ext_resource type="PackedScene" uid="uid://oqrxpyj8qkim" path="res://Scenes/CardShader.tscn" id="3_4bcsh"]
 [ext_resource type="Script" uid="uid://bo8luaias82fj" path="res://Scripts/CardSpawner.cs" id="3_6nqof"]
 [ext_resource type="PackedScene" uid="uid://wv6a67swhus" path="res://Scenes/player.tscn" id="3_k8nbv"]
 [ext_resource type="Script" uid="uid://coebm8tgbgmqv" path="res://Scripts/CardHighlighter.cs" id="4_ia2xn"]
@@ -311,7 +311,7 @@ spot_range = 46.3397
 [node name="Cards" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
 script = ExtResource("3_6nqof")
-CardScene = ExtResource("1_dgtb2")
+CardScene = ExtResource("3_4bcsh")
 SpawnParentPath = NodePath(".")
 OffsetRange = Vector3(3, 1, 3)
 CardBaseOptions = [ExtResource("4_m88x8"), ExtResource("5_k847o"), ExtResource("6_gjmrx"), ExtResource("7_lrr6e"), ExtResource("8_1jsqp"), ExtResource("9_bwydk"), ExtResource("10_ghn8f"), ExtResource("11_buxek"), ExtResource("12_ch7b1"), ExtResource("13_ywr64"), ExtResource("14_mgsv0")]
