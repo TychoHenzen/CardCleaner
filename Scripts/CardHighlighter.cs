@@ -134,6 +134,21 @@ public partial class CardHighlighter : Node3D
     {
         _isPreparingDrop = false;
         _previewInstance.Visible = false;
+
+        // Reset card positions and rotations
+        foreach (var card in _heldCards)
+        {
+            var designer = card.GetNode<CardCleaner.Scripts.CardDesigner>("Designer");
+            float thickness = designer.Thickness;
+            float indexOffset = _heldCards.IndexOf(card) * thickness;
+            var rotation = Basis.Identity.Rotated(Vector3.Right, Mathf.DegToRad(90));
+            var localPos = new Vector3(
+                1 - indexOffset * 10,
+                0,
+                -HoldDistance + indexOffset
+            );
+            card.Transform = new Transform3D(rotation, localPos);
+        }
     }
 
     private void ReleasePrepareDrop()

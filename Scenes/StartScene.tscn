@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cc3ymqg03a2g5"]
+[gd_scene load_steps=16 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://oqrxpyj8qkim" path="res://Scenes/CardShader.tscn" id="3_4bcsh"]
 [ext_resource type="Script" uid="uid://bo8luaias82fj" path="res://Scripts/CardSpawner.cs" id="3_6nqof"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://coebm8tgbgmqv" path="res://Scripts/CardHighlighter.cs" id="4_ia2xn"]
 [ext_resource type="Script" uid="uid://dckadi8fdva0e" path="res://Scripts/Controllers/PauseController.cs" id="5_u668n"]
 [ext_resource type="Texture2D" uid="uid://c22xilhi7cap1" path="res://Graphics/tile_0001.png" id="6_28ir6"]
+[ext_resource type="Script" uid="uid://w4pvfesladcg" path="res://Scripts/ConveyorBelt.cs" id="9_dr1m3"]
 [ext_resource type="PackedScene" uid="uid://bccp7atjb5kg1" path="res://Models/Untitled-1.fbx" id="446_f3eyv"]
 [ext_resource type="Texture2D" uid="uid://cjf73kdfrsdm2" path="res://Models/Textures/foliage(Clone).png" id="447_pkdvy"]
 [ext_resource type="PackedScene" uid="uid://bhej7eb5s3qao" path="res://Models/Conveyor_Corner.fbx" id="448_pkdvy"]
@@ -18,7 +19,7 @@ size = Vector3(39.5682, 0.396362, 43.8758)
 albedo_texture = ExtResource("447_pkdvy")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_f3eyv"]
-size = Vector3(1, 0.1, 1)
+size = Vector3(1, 0.113074, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4gx4c"]
 albedo_texture = ExtResource("447_pkdvy")
@@ -108,6 +109,8 @@ shape = SubResource("BoxShape3D_f3eyv")
 
 [node name="StaticBody3D2" type="StaticBody3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 2, 0.5, 4)
+script = ExtResource("9_dr1m3")
+Direction = Vector3(1, 0.1, 0)
 
 [node name="Untitled-1" parent="StaticBody3D2" instance=ExtResource("446_f3eyv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00338078, -0.00247896, -0.000344753)
@@ -115,8 +118,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00338078, -0.00247896, -0.0
 [node name="straight" parent="StaticBody3D2/Untitled-1/workbenchCopy" index="0"]
 surface_material_override/1 = SubResource("StandardMaterial3D_ucc6g")
 
+[node name="Area3D" type="Area3D" parent="StaticBody3D2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0623732, 0)
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="StaticBody3D2/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0807102, 0)
+shape = SubResource("BoxShape3D_f3eyv")
+
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0565369, 0)
 shape = SubResource("BoxShape3D_f3eyv")
 
 [node name="Conveyor_Corner" parent="." instance=ExtResource("448_pkdvy")]

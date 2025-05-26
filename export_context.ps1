@@ -2,8 +2,11 @@
     [string]$Output = ".\Card_Context.txt"
 )
 
+
 # 1. Gather tracked text files
-$extensions = '.cs','.csproj','.gox','.json','.xml','.yml','.mgcb','.spritefont','.gdshader','.md','.ps1','.godot','.tscn'
+#$extensions = '.cs','.csproj','.gox','.json','.xml','.yml','.mgcb','.spritefont','.gdshader','.md','.ps1','.godot','.tscn'
+$extensions = '.cs','.json','.xml','.yml','.gdshader','.md'
+
 $files = git ls-files |
         Where-Object { $extensions -contains ([IO.Path]::GetExtension($_)) } |
         Where-Object { $_ -notmatch '(/\.vscode/|/\.idea/|README\.md|CLAUDE\.md|\.csproj$|\.sln$)' }
