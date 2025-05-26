@@ -11,7 +11,7 @@ public partial class CardSpawner : Node3D
     [Export] public NodePath SpawnParentPath { get; set; }
     [Export] public Vector3 OffsetRange { get; set; } = Vector3.Zero;
 
-    [Export] public CardTemplate Card { get; set; }
+    [Export] public TextureLoader Card { get; set; }
 
     private Node3D _spawnParent;
     private int _spawnQueue = 0;
@@ -22,9 +22,14 @@ public partial class CardSpawner : Node3D
     public override void _Ready()
     {
         _spawnParent = GetNode<Node3D>(SpawnParentPath);
-        _randomizer = new CardRandomizer(_rng, Card);
+        
+        CallDeferred(nameof(DeferredAssign));
     }
 
+    public void DeferredAssign()
+    {
+        _randomizer = new CardRandomizer(_rng, new CardTemplate(Card));
+    }
     public override void _Input(InputEvent @event)
     {
         if (@event is InputEventKey { Pressed: true, Echo: false } keyEvent)
