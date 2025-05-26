@@ -8,34 +8,68 @@ $files = git ls-files |
         Where-Object { $extensions -contains ([IO.Path]::GetExtension($_)) } |
         Where-Object { $_ -notmatch '(/\.vscode/|/\.idea/|README\.md|CLAUDE\.md|\.csproj$|\.sln$)' }
 
-# 2. Write a simple “tree” view
-$files | ForEach-Object {
-    $segments = $_ -split '[\\/]'
-    for ($i = 0; $i -lt $segments.Length; $i++) {
-        $indent = '-' * $i
-        Write-Output ("{0}{1}" -f $indent, $segments[$i])
+# 2. Build hierarchical tree structure
+function New-TreeNode($name) {
+    [PSCustomObject]@{
+        Name     = $name
+        Children = [System.Collections.ArrayList]@()
     }
-} | Out-File -FilePath $Output -Encoding UTF8
+}
 
-# 3. Append file contents
-Add-Content $Output ""
+function Add-PathToTree($rootNode, $segments) {
+    $current = $rootNode
+    foreach ($seg in $segments) {
+        $child = $current.Children | Where-Object { $_.Name -eq $seg } | Select-Object -First 1
+        if (-not $child) {
+            $child = New-TreeNode $seg
+            $null = $current.Children.Add($child)
+        }
+        $current = $child
+    }
+}
+
+function Write-TreeLines($node, $indent, [System.Collections.ArrayList]$lines) {
+    $suffix = if ($node.Children.Count -gt 0) { '/' } else { '' }
+    $lines.Add("$indent$($node.Name)$suffix") | Out-Null
+    foreach ($child in $node.Children | Sort-Object Name) {
+        Write-TreeLines $child ($indent + '-') $lines
+    }
+}
+
+# Determine repo root (absolute) and initialize tree
+$repoRoot = (& git rev-parse --show-toplevel).Trim()
+$rootNode = New-TreeNode $repoRoot
+
+# Insert each tracked file path into the tree
+foreach ($file in $files) {
+    $segs = $file -split '[\\/]'
+    Add-PathToTree $rootNode $segs
+}
+
+# Emit tree lines
+$treeLines = [System.Collections.ArrayList]@()
+Write-TreeLines $rootNode '' $treeLines
+$treeLines | Out-File -FilePath $Output -Encoding UTF8
+
+# 3. Blank line before contents
+Add-Content $Output ''
+
+# 4. Append each file’s contents
 foreach ($file in $files) {
     Add-Content $Output "=== Begin $file ==="
-    Get-Content $file | Add-Content -Path $Output
+    if ([IO.Path]::GetExtension($file) -eq '.gox') {
+        Add-Content $Output '[Contents of binary file omitted]'
+    } else {
+        Get-Content $file | Add-Content -Path $Output
+    }
     Add-Content $Output "=== End $file ===`n"
 }
 
 Write-Host "Context dumped to $Output"
 
-
-# load WinForms for Clipboard support
+# 5. Copy the output file to the clipboard
 Add-Type -AssemblyName System.Windows.Forms
-
-# create a StringCollection with the full path
-$files = New-Object System.Collections.Specialized.StringCollection
-$files.Add((Resolve-Path $Output).Path)
-
-# put it on the clipboard as a FileDropList
-[System.Windows.Forms.Clipboard]::SetFileDropList($files)
-
+$dropList = New-Object System.Collections.Specialized.StringCollection
+$dropList.Add((Resolve-Path $Output).Path)
+[System.Windows.Forms.Clipboard]::SetFileDropList($dropList)
 Write-Host "Copied file [$Output] itself to the clipboard. You can now Paste it in Explorer."
