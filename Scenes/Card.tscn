@@ -1,10 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://cpnq5feaqvlj1"]
+[gd_scene load_steps=7 format=3 uid="uid://m8fcf17yadkd"]
 
 [ext_resource type="Script" uid="uid://blu0six20pl7f" path="res://Scripts/Controllers/CardController.cs" id="1_3m7nw"]
 [ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/FlutterCard.cs" id="1_3p273"]
 [ext_resource type="Script" uid="uid://bsbw0i4pq1mve" path="res://Scripts/CardDesigner.cs" id="3_kphy1"]
 [ext_resource type="Script" uid="uid://nrgkkbg2lwbr" path="res://Scripts/CsgBaker.cs" id="3_wejov"]
-[ext_resource type="Script" uid="uid://domry0gy3r3q3" path="res://Scripts/CardRenderer.cs" id="6_1geux"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kudhx"]
 size = Vector3(0.32, 0.005, 0.45)
@@ -76,7 +75,6 @@ size = Vector3(0.33, 0.015, 0.46)
 material = SubResource("StandardMaterial3D_3m7nw")
 
 [node name="CardRenderer" type="Node" parent="."]
-script = ExtResource("6_1geux")
 
 [node name="Title" type="Label3D" parent="."]
 transform = Transform3D(0.05, 0, 0, 0, -2.18557e-09, 0.05, 0, -0.05, -2.18557e-09, 0, 0.006, 0.00742067)

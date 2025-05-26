@@ -5,6 +5,5 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="addons\" />
-    <Folder Include="Scripts\ContextCreator\" />
   </ItemGroup>
 </Project>
