@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CardCleaner.Scripts.Interfaces;
 using Godot;
 
@@ -8,6 +9,8 @@ namespace CardCleaner.Scripts
     {
         [Export] public bool BakeOnSetup = true;
         [Export] public bool DebugUVs = false;
+        private static readonly Dictionary<string, ArrayMesh> _meshCache = new();
+
 
         private bool _baked;
 
@@ -23,34 +26,32 @@ namespace CardCleaner.Scripts
             BakeToMesh(cardRoot);
             _baked = true;
         }
-
         private void BakeToMesh(RigidBody3D cardRoot)
         {
-            CsgShape3D rootCsg = this;
-            while (rootCsg.GetParent() is CsgShape3D parent) rootCsg = parent;
-
-            var bakedMesh = rootCsg.BakeStaticMesh();
-            if (bakedMesh == null)
-            {
-                GD.PrintErr($"CSGBaker: BakeStaticMesh returned null on '{rootCsg.Name}'");
-                return;
-            }
-
             var designer = cardRoot.GetNode<CardDesigner>("Designer");
-            float width  = designer.Width;
-            float height = designer.Height;
-
-            var correctedMesh = RemapBoxUVs(bakedMesh, width, height);
-
+            string cacheKey = $"{designer.Width}x{designer.Height}x{designer.Thickness}";
+        
+            if (!_meshCache.TryGetValue(cacheKey, out var cachedMesh))
+            {
+                // Only bake if not cached
+                CsgShape3D rootCsg = this;
+                while (rootCsg.GetParent() is CsgShape3D parent) rootCsg = parent;
+            
+                var bakedMesh = rootCsg.BakeStaticMesh();
+                cachedMesh = RemapBoxUVs(bakedMesh, designer.Width, designer.Height);
+                _meshCache[cacheKey] = cachedMesh;
+            }
+        
             var meshInstance = new MeshInstance3D
             {
-                Name = $"{rootCsg.Name}_Baked",
-                Mesh = correctedMesh,
+                Name = $"{Name}_Baked",
+                Mesh = cachedMesh,
                 MaterialOverride = MaterialOverride
             };
             cardRoot.AddChild(meshInstance);
-            rootCsg.Visible = false;
+            Visible = false;
         }
+
 
         private ArrayMesh RemapBoxUVs(ArrayMesh source, float width, float height)
         {

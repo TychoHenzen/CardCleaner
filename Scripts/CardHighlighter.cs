@@ -138,26 +138,34 @@ public partial class CardHighlighter : Node3D
          outline.Visible = false;
          _lastCard = null; 
     }
-
+    
     private void SetupCardCollisionLayers()
     {
         var cards = GetTree().GetNodesInGroup("Cards");
-        if (cards.Count == 0) cards = FindCardsByName();
-
-        foreach (Node node in cards)
-            if (node is RigidBody3D rb)
-                rb.CollisionLayer = CardCollisionLayer;
-    }
-
-    private Godot.Collections.Array<Node> FindCardsByName()
-    {
-        var list = new Godot.Collections.Array<Node>();
-        Search(GetTree().Root);
-        return list;
-
-        void Search(Node p) {
-            if (p is RigidBody3D r && r.Name.ToString().StartsWith("Card")) list.Add(r);
-            foreach (Node c in p.GetChildren()) Search(c);
+        foreach (var card in cards.Cast<RigidBody3D>())
+        {
+            card.CollisionLayer = CardCollisionLayer;
         }
     }
+    // private void SetupCardCollisionLayers()
+    // {
+    //     var cards = GetTree().GetNodesInGroup("Cards");
+    //     if (cards.Count == 0) cards = FindCardsByName();
+    //
+    //     foreach (Node node in cards)
+    //         if (node is RigidBody3D rb)
+    //             rb.CollisionLayer = CardCollisionLayer;
+    // }
+    //
+    // private Godot.Collections.Array<Node> FindCardsByName()
+    // {
+    //     var list = new Godot.Collections.Array<Node>();
+    //     Search(GetTree().Root);
+    //     return list;
+    //
+    //     void Search(Node p) {
+    //         if (p is RigidBody3D r && r.Name.ToString().StartsWith("Card")) list.Add(r);
+    //         foreach (Node c in p.GetChildren()) Search(c);
+    //     }
+    // }
 }

@@ -107,10 +107,9 @@ public partial class CardShaderRenderer : Node, ICardComponent
     {
         // Find the player's blacklight
         var player = GetTree().GetFirstNodeInGroup("player");
-        if (player == null) return 0.0f;
 
-        var spotlight = player.GetNodeOrNull<SpotLight3D>("Head/Camera3D/SpotLight3D");
-        if (spotlight == null || !spotlight.Visible) return 0.0f;
+        var spotlight = player?.GetNodeOrNull<SpotLight3D>("Head/Camera3D/SpotLight3D");
+        if (spotlight is not { Visible: true }) return 0.0f;
 
         var cardPos = _cardRoot.GlobalPosition;
         var lightPos = spotlight.GlobalPosition;
@@ -156,7 +155,7 @@ public partial class CardShaderRenderer : Node, ICardComponent
         var allLayers = new[]
             {
                 CardBase, Border, Corners, ImageBackground, DescriptionBox,
-                Art, Banner, Symbol, EnergyContainer, EnergyFill1, EnergyFill2
+                Art, Banner, Symbol, EnergyFill1, EnergyFill2,EnergyContainer
             }
             .Concat(GemSockets)
             .Concat(Gems)

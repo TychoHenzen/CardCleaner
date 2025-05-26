@@ -16,8 +16,8 @@ public partial class CardController : RigidBody3D {
             
             comp.Setup(this);
             _components.Add(comp);
-            
         }
+        AddToGroup("Cards");
         
     }
 
