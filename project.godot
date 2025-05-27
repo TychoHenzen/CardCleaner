@@ -85,8 +85,10 @@ ui_down={
 
 3d/run_on_separate_thread=true
 3d/physics_engine="Jolt Physics"
+jolt_physics_3d/simulation/velocity_steps=4
+jolt_physics_3d/simulation/sleep_velocity_threshold=0.1
 jolt_physics_3d/limits/temporary_memory_buffer_size=128
-3d/solver/solver_iterations=32
+common/physics_interpolation=true
 
 [rendering]
 

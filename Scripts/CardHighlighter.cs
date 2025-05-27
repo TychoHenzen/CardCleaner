@@ -83,11 +83,9 @@ public partial class CardHighlighter : Node3D
         var target = FindCard();
         if (target != null && _camera.GlobalPosition.DistanceTo(target.GlobalPosition) <= MaxHighlightDistance)
         {
-            if (target != _lastCard)
-            {
-                ClearOutline();
-                ApplyOutline(target);
-            }
+            if (target == _lastCard) return;
+            ClearOutline();
+            ApplyOutline(target);
         }
         else
         {
@@ -104,11 +102,9 @@ public partial class CardHighlighter : Node3D
         card.Freeze = true;
         var shape = card.GetNode<CollisionShape3D>("CardCollision");
         if (shape != null) shape.Disabled = true;
-        var designer = card.GetNode<CardCleaner.Scripts.CardDesigner>("Designer");
+        var designer = card.GetNode<CardDesigner>("Designer");
 
-        // Reparent to hand anchor and stack flat
-        card.GetParent().RemoveChild(card);
-        _handAnchor.AddChild(card);
+        card.Reparent(_handAnchor);
         float thickness = designer.Thickness;
         float indexOffset = _heldCards.Count * thickness;
         var rotation = Basis.Identity.Rotated(Vector3.Right, Mathf.DegToRad(90));
@@ -138,7 +134,7 @@ public partial class CardHighlighter : Node3D
         // Reset card positions and rotations
         foreach (var card in _heldCards)
         {
-            var designer = card.GetNode<CardCleaner.Scripts.CardDesigner>("Designer");
+            var designer = card.GetNode<CardDesigner>("Designer");
             float thickness = designer.Thickness;
             float indexOffset = _heldCards.IndexOf(card) * thickness;
             var rotation = Basis.Identity.Rotated(Vector3.Right, Mathf.DegToRad(90));
@@ -166,10 +162,7 @@ public partial class CardHighlighter : Node3D
         var card = _heldCards[i];
         EnablePhysics(card);
         // Remove from hand and reparent
-        var temp = card.GlobalTransform;
-        card.GetParent().RemoveChild(card);
-        _cardsParent.AddChild(card);
-        card.GlobalTransform = temp;
+        card.Reparent(_cardsParent);
         _heldCards.RemoveAt(i);
     }
 
@@ -179,10 +172,7 @@ public partial class CardHighlighter : Node3D
         {
             EnablePhysics(card);
             // Remove from hand and reparent
-            var temp = card.GlobalTransform;
-            card.GetParent().RemoveChild(card);
-            _cardsParent.AddChild(card);
-            card.GlobalTransform = temp;
+            card.Reparent(_cardsParent);
         }
         _heldCards.Clear();
     }

@@ -1,72 +1,124 @@
+// ConveyorTrack.cs
+using System;
 using System.Collections.Generic;
 using Godot;
 
 [Tool]
-public partial class ConveyorBelt : StaticBody3D
+public partial class ConveyorBelt : Node3D
 {
-    [Export] public NodePath AreaPath { get; set; } = "Area3D";
-    [Export] public Vector3 Direction { get; set; } = new(1, 0, 0);
+    [Export] public Path3D Rail;               
+    [Export] public MeshInstance3D BeltMesh;   
+    [Export] public Area3D DetectionArea;      
     [Export] public float Speed { get; set; } = 1.0f;
 
-    private Area3D _detectionArea;
-    private readonly List<RigidBody3D> _bodiesOnBelt = new();
+    private StandardMaterial3D _beltMaterial;
+    private readonly List<PathFollow3D> _followers = [];
+    private readonly List<RigidBody3D> _cardData = [];
 
     public override void _Ready()
     {
-        GD.Print($"[ConveyorBelt:{Name}] _Ready called");
-        SetPhysicsProcess(true);
-
-        _detectionArea = GetNodeOrNull<Area3D>(AreaPath);
-        if (_detectionArea != null)
+        if (Rail == null || BeltMesh == null || DetectionArea == null)
         {
-            // Debug the area’s state
-            GD.Print($"[ConveyorBelt:{Name}] Found Area3D at '{AreaPath}'; " +
-                     $"Monitoring={_detectionArea.Monitoring}, Mask={_detectionArea.CollisionMask}");
+            GD.PrintErr("[ConveyorTrack] Assign Rail, BeltMesh, and DetectionArea in the inspector!");
+            return;
+        }
 
-            // Ensure it’s listening
-            _detectionArea.Monitoring = true;
-
-            _detectionArea.BodyEntered += body => OnBodyEntered(body as RigidBody3D);
-            _detectionArea.BodyExited  += body => OnBodyExited(body as RigidBody3D);
+        // Ensure we have our own material instance to scroll
+        if (BeltMesh.MaterialOverride is StandardMaterial3D matOverride)
+        {
+            _beltMaterial = matOverride;
+        }
+        else if (BeltMesh.Mesh?.GetSurfaceCount() > 0 &&
+                 BeltMesh.Mesh.SurfaceGetMaterial(0) is StandardMaterial3D sharedMat)
+        {
+            var inst = sharedMat.Duplicate() as StandardMaterial3D;
+            BeltMesh.SetSurfaceOverrideMaterial(0, inst);
+            _beltMaterial = inst;
         }
         else
         {
-            GD.PrintErr($"[ConveyorBelt:{Name}] ERROR: Could not find Area3D at '{AreaPath}'");
+            GD.PrintErr("[ConveyorTrack] BeltMesh needs a StandardMaterial3D on surface 0.");
         }
+
+        DetectionArea.Monitoring = true;
+        DetectionArea.BodyEntered += (body) => CallDeferred(nameof(HandleEnter), body);
+        DetectionArea.BodyExited  += (body) => CallDeferred(nameof(HandleExit),  body);
+
+        SetProcess(true);
     }
 
-    public override void _PhysicsProcess(double delta)
+    public override void _Process(double delta)
     {
-        // Optional debug: show how many bodies the area currently overlaps:
-        var overlaps = _detectionArea?.GetOverlappingBodies().Count ?? 0;
-        if (overlaps > 0)
-            GD.Print($"[ConveyorBelt:{Name}] Overlapping bodies: {overlaps}");
+        AnimateBeltUV((float)delta);
+        MoveCardsAlongRail((float)delta);
+    }
 
-        // Push only the ones we’ve registered
-        var push = Direction.Normalized() * Speed;
-        foreach (var body in _bodiesOnBelt)
+    private void AnimateBeltUV(float dt)
+    {
+        if (_beltMaterial == null) return;
+        var uv = _beltMaterial.Uv1Offset;
+        uv.X = (uv.X + Speed * dt) % 1.0f;
+        _beltMaterial.Uv1Offset = uv;
+    }
+
+    private void MoveCardsAlongRail(float dt)
+    {
+        float length = Rail.Curve.GetBakedLength();
+        float step   = Speed * dt;
+        for (int i = _followers.Count - 1; i >= 0; i--)
         {
-            if (!IsInstanceValid(body))
+            var pf = _followers[i];
+            if (!IsInstanceValid(pf))
+            {
+                _followers.RemoveAt(i);
                 continue;
-
-            body.LinearVelocity = push;
-            GD.Print($"[ConveyorBelt:{Name}] Pushing {body.Name}");
+            }
+            pf.Progress = (pf.Progress + step) % length;
         }
     }
 
-    private void OnBodyEntered(RigidBody3D body)
+    private void HandleEnter(object arg)
     {
-        if (body == null || _bodiesOnBelt.Contains(body)) 
-            return;
-        GD.Print($"[ConveyorBelt:{Name}] Adding {body.Name}");
-        _bodiesOnBelt.Add(body);
+        if (arg is not RigidBody3D card) return;
+        if (_cardData.Contains(card)) return;
+
+        // Save its original state
+        _cardData.Add(card);
+
+        // Make it static so physics stops applying
+        card.Freeze = true;
+
+        // Create the follower
+        var pf = new PathFollow3D
+        {
+            RotationMode = PathFollow3D.RotationModeEnum.Oriented,
+            Progress = 0f
+        };
+        Rail.AddChild(pf);
+        _followers.Add(pf);
+
+        // Reparent the card under the follower
+        card.Reparent(pf);;
+        card.Transform = Transform3D.Identity;
     }
 
-    private void OnBodyExited(RigidBody3D body)
+    private void HandleExit(object arg)
     {
-        if (body == null) 
-            return;
-        GD.Print($"[ConveyorBelt:{Name}] Removing {body.Name}");
-        _bodiesOnBelt.Remove(body);
+        if (arg is not RigidBody3D card) return;
+
+        // Find its follower
+        var pf = _followers.Find(p => p.GetChildCount() > 0 && p.GetChild(0) == card);
+        if (pf != null)
+        {
+            pf.RemoveChild(card);
+            _followers.Remove(pf);
+            pf.QueueFree();
+        }
+
+        // Restore physics and transform
+        GetParent<Node3D>().AddChild(card);
+        card.Freeze = false;
+
+        _cardData.Remove(card);
     }
 }

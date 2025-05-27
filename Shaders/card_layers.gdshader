@@ -26,7 +26,7 @@ void fragment() {
     );
     vec4 outCol = vec4(0.0);
     vec3 emission = vec3(0.0);
-    
+
     // Blend each layer in order (same as original)
     for (int i = 0; i < LAYER_COUNT; i++) {
         if ((isFront && frontFlags[i]) || (!isFront && backFlags[i])) {
@@ -42,12 +42,12 @@ void fragment() {
                         // Make gem glow with emission
                         float glow = blacklight_exposure * gem_emission_strength;
                         emission += sample.rgb * sample.a * glow;
-                        
+
                         vec3 fluorescent_tint = mix(sample.rgb, gem_emission_color, 0.5);
                         outCol.rgb += fluorescent_tint * sample.a * blacklight_exposure * (1.0 - outCol.a);
                         outCol.a   += sample.a * blacklight_exposure * (1.0 - outCol.a);
                     // If no blacklight, gem is invisible (skip blending)
-                } 
+                }
                 else
                 {
                     outCol.rgb += sample.rgb * sample.a * (1.0 - outCol.a);

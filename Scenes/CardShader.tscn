@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=4 uid="uid://oqrxpyj8qkim"]
+[gd_scene load_steps=12 format=4 uid="uid://oqrxpyj8qkim"]
 
 [ext_resource type="Script" uid="uid://blu0six20pl7f" path="res://Scripts/Controllers/CardController.cs" id="1_btmnp"]
 [ext_resource type="Script" uid="uid://nrgkkbg2lwbr" path="res://Scripts/CsgBaker.cs" id="2_hllmr"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://bgwgo4ybh5igi" path="res://Scripts/CardShaderRenderer.cs" id="5_1sx76"]
 [ext_resource type="SystemFont" uid="uid://dqhsx42f1ax5r" path="res://Fonts/BaseFont.tres" id="6_4gl8e"]
 [ext_resource type="Shader" uid="uid://b5vmfs2yq4u8" path="res://Shaders/card_layers.gdshader" id="6_btmnp"]
+[ext_resource type="Script" uid="uid://chw4rd8wcr8qv" path="res://Scripts/CardSleepEnforcer.cs" id="8_53u5m"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kudhx"]
 size = Vector3(0.32, 0.005, 0.45)
@@ -27,9 +28,12 @@ shader_parameter/gem_emission_color = Color(0.3, 0.8, 1, 1)
 shader_parameter/gem_emission_strength = 3.0
 
 [node name="Card" type="RigidBody3D"]
+physics_interpolation_mode = 2
 collision_layer = 2
 collision_mask = 3
+linear_damp_mode = 1
 linear_damp = 0.1
+angular_damp_mode = 1
 angular_damp = 0.05
 script = ExtResource("1_btmnp")
 
@@ -114,3 +118,6 @@ asggasfg"
 font_size = 100
 autowrap_mode = 3
 width = 1000.0
+
+[node name="SleepEnforcer" type="Node" parent="."]
+script = ExtResource("8_53u5m")
