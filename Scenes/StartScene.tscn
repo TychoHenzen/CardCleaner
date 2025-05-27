@@ -91,6 +91,9 @@ FolderPaths = PackedStringArray("CardBaseOptions", "res://Graphics/CardSorted/Ca
 [node name="StaticBody3D2" parent="." instance=ExtResource("9_dr1m3")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 2, 0.508978, 4)
 
+[node name="StaticBody3D4" parent="." instance=ExtResource("9_dr1m3")]
+transform = Transform3D(1, 0, -1.06581e-14, 0, 1, 0, 1.06581e-14, 0, 1, 4, 0.508978, 4)
+
 [node name="StaticBody3D3" parent="." instance=ExtResource("9_dr1m3")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 3, 0.508978, 4)
 
