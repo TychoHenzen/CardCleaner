@@ -1,20 +1,18 @@
 [gd_scene load_steps=5 format=3 uid="uid://dqq5wm3t0cskf"]
 
+[ext_resource type="Script" uid="uid://w4pvfesladcg" path="res://Scripts/ConveyorBelt.cs" id="1_sg0yf"]
 [ext_resource type="PackedScene" uid="uid://bccp7atjb5kg1" path="res://Models/Untitled-1.fbx" id="2_e1yij"]
 [ext_resource type="Material" uid="uid://d3a32wxqj0c47" path="res://Materials/Conveyor_Straight.tres" id="3_sg0yf"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_f3eyv"]
-size = Vector3(1, 0.113074, 1)
+size = Vector3(1, 0.113, 1.1)
 
-[sub_resource type="Curve3D" id="Curve3D_sg0yf"]
-_data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-"tilts": PackedFloat32Array(0, 0)
-}
-point_count = 2
-
-[node name="StaticBody3D2" type="StaticBody3D"]
+[node name="StaticBody3D2" type="StaticBody3D" node_paths=PackedStringArray("DetectionArea", "DestinationMarker")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+script = ExtResource("1_sg0yf")
+DetectionArea = NodePath("Area3D")
+DestinationMarker = NodePath("TweenDestination")
+Speed = 1.0
 
 [node name="Untitled-1" parent="." instance=ExtResource("2_e1yij")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00338078, -0.00247896, -0.000344753)
@@ -27,16 +25,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0623732, 0)
 collision_layer = 3
 collision_mask = 3
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="Area3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0807102, 0)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 0.999391, -0.0348995, 0, 0.0348995, 0.999391, 0, 0.0807102, 0)
 shape = SubResource("BoxShape3D_f3eyv")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0565369, 0)
+transform = Transform3D(1, 0, 0, 0, 0.999391, -0.0348995, 0, 0.0348995, 0.999391, 0, 0.05, 0)
 shape = SubResource("BoxShape3D_f3eyv")
 
-[node name="Path3D" type="Path3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, -0.5)
-curve = SubResource("Curve3D_sg0yf")
+[node name="TweenDestination" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.49358e-08, 0.15, -1.07047)
 
 [editable path="Untitled-1"]
