@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://bsbw0i4pq1mve" path="res://Scripts/CardDesigner.cs" id="3_53u5m"]
 [ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/FlutterCard.cs" id="4_ycqko"]
 [ext_resource type="Script" uid="uid://bgwgo4ybh5igi" path="res://Scripts/CardShaderRenderer.cs" id="5_1sx76"]
-[ext_resource type="SystemFont" uid="uid://dqhsx42f1ax5r" path="res://Fonts/BaseFont.tres" id="6_4gl8e"]
+[ext_resource type="SystemFont" uid="uid://dqhsx42f1ax5r" path="res://Assets/Fonts/BaseFont.tres" id="6_4gl8e"]
 [ext_resource type="Shader" uid="uid://b5vmfs2yq4u8" path="res://Shaders/card_layers.gdshader" id="6_btmnp"]
 [ext_resource type="Script" uid="uid://chw4rd8wcr8qv" path="res://Scripts/CardSleepEnforcer.cs" id="8_53u5m"]
 

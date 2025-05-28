@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://b177ogs48ul5x"
-path="res://.godot/imported/Conveyor_Straight.fbx-3095521652dbeef9bd9591f7ff35b837.scn"
+path="res://.godot/imported/Conveyor_Straight.fbx-48fd4a9afea681c28a797dc69290a0bb.scn"
 
 [deps]
 
-source_file="res://Models/Conveyor_Straight.fbx"
-dest_files=["res://.godot/imported/Conveyor_Straight.fbx-3095521652dbeef9bd9591f7ff35b837.scn"]
+source_file="res://Assets/Models/Conveyor_Straight.fbx"
+dest_files=["res://.godot/imported/Conveyor_Straight.fbx-48fd4a9afea681c28a797dc69290a0bb.scn"]
 
 [params]
 

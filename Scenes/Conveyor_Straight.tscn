@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://dqq5wm3t0cskf"]
 
 [ext_resource type="Script" uid="uid://w4pvfesladcg" path="res://Scripts/ConveyorBelt.cs" id="1_sg0yf"]
-[ext_resource type="PackedScene" uid="uid://bccp7atjb5kg1" path="res://Models/Untitled-1.fbx" id="2_e1yij"]
-[ext_resource type="Material" uid="uid://d3a32wxqj0c47" path="res://Materials/Conveyor_Straight.tres" id="3_sg0yf"]
+[ext_resource type="PackedScene" uid="uid://b177ogs48ul5x" path="res://Assets/Models/Conveyor_Straight.fbx" id="2_e1yij"]
+[ext_resource type="Material" uid="uid://d3a32wxqj0c47" path="res://Assets/Materials/Conveyor_Straight.tres" id="3_sg0yf"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_f3eyv"]
 size = Vector3(1, 0.113, 1.1)

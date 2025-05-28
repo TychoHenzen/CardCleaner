@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cjf73kdfrsdm2"
-path="res://.godot/imported/foliage(Clone).png-a670df92c68e3ba071b4746bfb4d1d41.ctex"
+path="res://.godot/imported/foliage(Clone).png-c2d94ed4d3f1ed750edc0de926a70773.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Models/Textures/foliage(Clone).png"
-dest_files=["res://.godot/imported/foliage(Clone).png-a670df92c68e3ba071b4746bfb4d1d41.ctex"]
+source_file="res://Assets/Models/Textures/foliage(Clone).png"
+dest_files=["res://.godot/imported/foliage(Clone).png-c2d94ed4d3f1ed750edc0de926a70773.ctex"]
 
 [params]
 
