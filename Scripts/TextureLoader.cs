@@ -5,7 +5,7 @@ namespace CardCleaner.Scripts;
 
 public partial class TextureLoader : Node
 {
-    [Export] public string[] FolderPaths { get; set; } = [];
+    [Export] public string[] FolderPaths { get; set; } = {};
 
     public Dictionary<string,Texture2D[]> Textures { get; } = new();
 

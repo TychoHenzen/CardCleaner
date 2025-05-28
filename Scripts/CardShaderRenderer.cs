@@ -37,7 +37,7 @@ public partial class CardShaderRenderer : Node, ICardComponent
         new() { RenderOnFront = true, Region = new Vector4(0.8f, 0, 0.2f, 0.15f) };
 
     public LayerData[] GemSockets { get; set; } =
-    [
+    {
         new() { RenderOnFront = true, Region = new Vector4(0.9f, 0.25f, 0.1f, 0.075f) },
         new() { RenderOnFront = true, Region = new Vector4(0.9f, 0.4f, 0.1f, 0.075f) },
         new() { RenderOnFront = true, Region = new Vector4(0.9f, 0.55f, 0.1f, 0.075f) },
@@ -46,10 +46,10 @@ public partial class CardShaderRenderer : Node, ICardComponent
         new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.4f, 0.1f, 0.075f) },
         new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.55f, 0.1f, 0.075f) },
         new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.7f, 0.1f, 0.075f) },
-    ];
+    };
 
     public LayerData[] Gems { get; set; } =
-    [
+    {
         new() { RenderOnFront = true, Region = new Vector4(0.9f, 0.25f, 0.1f, 0.075f) },
         new() { RenderOnFront = true, Region = new Vector4(0.9f, 0.4f, 0.1f, 0.075f) },
         new() { RenderOnFront = true, Region = new Vector4(0.9f, 0.55f, 0.1f, 0.075f) },
@@ -58,7 +58,7 @@ public partial class CardShaderRenderer : Node, ICardComponent
         new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.4f, 0.1f, 0.075f) },
         new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.55f, 0.1f, 0.075f) },
         new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.7f, 0.1f, 0.075f) },
-    ];
+    };
 
     // --- Blacklight security effect controls ---
     [Export] public Color FluorescentColor { get; set; } = new Color(0.0f, 1.0f, 0.5f);
@@ -125,7 +125,7 @@ public partial class CardShaderRenderer : Node, ICardComponent
         var toCard = (cardPos - lightPos).Normalized();
         float angle = lightForward.Dot(toCard);
         float spotAngleRad = Mathf.DegToRad(spotlight.SpotAngle);
-        
+
         if (angle < Mathf.Cos(spotAngleRad)) return 0.0f;
 
         float angleFactor = (angle - Mathf.Cos(spotAngleRad)) / (1.0f - Mathf.Cos(spotAngleRad));
@@ -155,7 +155,7 @@ public partial class CardShaderRenderer : Node, ICardComponent
         var allLayers = new[]
             {
                 CardBase, Border, Corners, ImageBackground, DescriptionBox,
-                Art, Banner, Symbol, EnergyFill1, EnergyFill2,EnergyContainer
+                Art, Banner, Symbol, EnergyFill1, EnergyFill2, EnergyContainer
             }
             .Concat(GemSockets)
             .Concat(Gems)
@@ -163,22 +163,23 @@ public partial class CardShaderRenderer : Node, ICardComponent
             .ToArray();
 
         // Build arrays for shader uniforms
-        var texturesArr   = new Godot.Collections.Array<Texture2D>();
-        var regionsArr    = new Godot.Collections.Array<Vector4>();
+        var texturesArr = new Godot.Collections.Array<Texture2D>();
+        var regionsArr = new Godot.Collections.Array<Vector4>();
         var frontFlagsArr = new Godot.Collections.Array<bool>();
-        var backFlagsArr  = new Godot.Collections.Array<bool>();
-        var gemFlagsArr   = new Godot.Collections.Array<bool>();
+        var backFlagsArr = new Godot.Collections.Array<bool>();
+        var gemFlagsArr = new Godot.Collections.Array<bool>();
 
         // Mark gem layers (last 8 layers are gems)
         int gemStartIndex = allLayers.Length - Gems.Length;
 
-        for (int i = 0; i < allLayers.Length; i++) {
+        for (int i = 0; i < allLayers.Length; i++)
+        {
             var ld = allLayers[i];
             texturesArr.Add(ld.Texture);
             regionsArr.Add(ld.Region);
             frontFlagsArr.Add(ld.RenderOnFront);
             backFlagsArr.Add(ld.RenderOnBack);
-            
+
             bool isGem = i >= gemStartIndex;
             gemFlagsArr.Add(isGem);
         }
@@ -193,10 +194,11 @@ public partial class CardShaderRenderer : Node, ICardComponent
         mat.SetShaderParameter("frontFlags", frontFlagsArr);
         mat.SetShaderParameter("backFlags", backFlagsArr);
         mat.SetShaderParameter("gem_flags", gemFlagsArr);
-        
+
         // Security effect parameters
         mat.SetShaderParameter("blacklight_exposure", 0.0f);
-        mat.SetShaderParameter("fluorescent_color", new Vector3(FluorescentColor.R, FluorescentColor.G, FluorescentColor.B));
+        mat.SetShaderParameter("fluorescent_color",
+            new Vector3(FluorescentColor.R, FluorescentColor.G, FluorescentColor.B));
         mat.SetShaderParameter("fluorescent_intensity", FluorescentIntensity);
         mat.SetShaderParameter("visibility_threshold", VisibilityThreshold);
 

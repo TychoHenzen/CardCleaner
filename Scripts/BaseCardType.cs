@@ -34,9 +34,9 @@ public partial class BaseCardType : Resource
     [Export] public float MatchRadius { get; set; } = 0.5f; // How far signatures can be to match this base
     
     // Visual assets specific to this card type
-    [Export] public Texture2D[] ArtOptions { get; set; } = [];
-    [Export] public Texture2D[] SymbolOptions { get; set; } = [];
-    [Export] public Texture2D[] BannerOptions { get; set; } = [];
+    [Export] public Texture2D[] ArtOptions { get; set; } = {  };
+    [Export] public Texture2D[] SymbolOptions { get; set; } = {};
+    [Export] public Texture2D[] BannerOptions { get; set; } = { };
     
     // Base stats before residual energy modifiers
     [Export] public float BasePower { get; set; } = 1.0f;

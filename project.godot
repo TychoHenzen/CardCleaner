@@ -22,7 +22,11 @@ project/assembly_name="CardCleaner"
 
 [editor_plugins]
 
-enabled=PackedStringArray()
+enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")
+
+[gdunit4]
+
+settings/test/test_discovery=true
 
 [importer_defaults]
 

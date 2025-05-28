@@ -2,6 +2,8 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
+    <LangVersion>11.0</LangVersion>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="addons\" />
@@ -10,5 +12,8 @@
     <Folder Include="Scripts\Generators\" />
     <Folder Include="Scripts\Models\" />
     <Folder Include="Scripts\Utilities\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="gdUnit4.api" Version="4.3.1" />
   </ItemGroup>
 </Project>
