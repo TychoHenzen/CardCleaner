@@ -5,5 +5,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="addons\" />
+    <Folder Include="Scripts\Components\Card\" />
+    <Folder Include="Scripts\Components\Conveyor\" />
+    <Folder Include="Scripts\Generators\" />
+    <Folder Include="Scripts\Models\" />
+    <Folder Include="Scripts\Utilities\" />
   </ItemGroup>
 </Project>
