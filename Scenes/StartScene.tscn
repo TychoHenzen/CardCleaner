@@ -1,13 +1,13 @@
 [gd_scene load_steps=10 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://oqrxpyj8qkim" path="res://Scenes/CardShader.tscn" id="3_4bcsh"]
-[ext_resource type="Script" uid="uid://bo8luaias82fj" path="res://Scripts/Services/CardSpawner.cs" id="3_6nqof"]
+[ext_resource type="Script" uid="uid://bo8luaias82fj" path="res://Scripts/Features/Card/Services/CardSpawner.cs" id="3_6nqof"]
 [ext_resource type="PackedScene" uid="uid://wv6a67swhus" path="res://Scenes/player.tscn" id="3_k8nbv"]
-[ext_resource type="Script" uid="uid://coebm8tgbgmqv" path="res://Scripts/Components/Card/CardHighlighter.cs" id="4_ia2xn"]
-[ext_resource type="Script" uid="uid://dckadi8fdva0e" path="res://Scripts/Controllers/PauseController.cs" id="5_u668n"]
+[ext_resource type="Script" uid="uid://coebm8tgbgmqv" path="res://Scripts/Features/Card/Components/CardHighlighter.cs" id="4_ia2xn"]
+[ext_resource type="Script" uid="uid://dckadi8fdva0e" path="res://Scripts/Features/Pause/Controllers/PauseController.cs" id="5_u668n"]
 [ext_resource type="Texture2D" uid="uid://c22xilhi7cap1" path="res://Graphics/tile_0001.png" id="6_28ir6"]
 [ext_resource type="PackedScene" uid="uid://dqq5wm3t0cskf" path="res://Scenes/Conveyor_Straight.tscn" id="9_dr1m3"]
-[ext_resource type="Script" uid="uid://bn02ohsh8gfn4" path="res://Scripts/Services/TextureLoader.cs" id="449_ucc6g"]
+[ext_resource type="Script" uid="uid://bn02ohsh8gfn4" path="res://Scripts/Features/Card/Services/TextureLoader.cs" id="449_ucc6g"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t5ln1"]
 size = Vector3(39.5682, 0.396362, 43.8758)
