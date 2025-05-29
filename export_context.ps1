@@ -3,11 +3,11 @@
 )
 
 # 1. Gather tracked text files
-$extensions = '.cs','.csproj','.gox','.json','.xml','.yml','.mgcb','.spritefont','.gdshader','.md','.ps1','.godot','.tscn'
+#$extensions = '.cs','.csproj','.gox','.json','.xml','.yml','.mgcb','.spritefont','.gdshader','.md','.ps1','.godot','.tscn'
 
 $files = git ls-files |
-        Where-Object { $extensions -contains ([IO.Path]::GetExtension($_)) } |
-        Where-Object { $_ -notmatch '(/\.vscode/|/\.idea/|addons/|README\.md|CLAUDE\.md|\.csproj$|\.sln$)' }
+#        Where-Object { $extensions -contains ([IO.Path]::GetExtension($_)) } |
+        Where-Object { $_ -notmatch '(/\.vscode/|/\.idea/|addons/|Graphics/|.uid$)' }
 
 # 2. Prompt for additional files (via <request> tag contents)
 $input = Read-Host "Enter files or patterns to include (newline- or comma-separated, leave blank to show tree only)"

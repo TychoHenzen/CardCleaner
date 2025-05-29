@@ -2,8 +2,9 @@
 
 namespace CardCleaner.Scripts.Interfaces;
 
+
 public interface ICardGenerator
 {
-    void RandomizeCardRenderer(CardShaderRenderer cardInstance);
+    void GenerateCardRenderer(CardShaderRenderer renderer, CardSignature signature);
     void Verify();
 }

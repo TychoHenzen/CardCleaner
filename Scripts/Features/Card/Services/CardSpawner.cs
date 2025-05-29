@@ -15,7 +15,7 @@ public partial class CardSpawner : Node3D
 
     private Node3D _spawnParent;
     private int _spawnQueue = 0;
-    private ICardGenerator _randomizer;
+    private ICardGenerator _generator;
 
     private RandomNumberGenerator _rng = new();
 
@@ -28,7 +28,7 @@ public partial class CardSpawner : Node3D
 
     public void DeferredAssign()
     {
-        _randomizer = new CardRandomizer(_rng, new CardTemplate(Card));
+        _generator = new CardRandomizer(_rng, new CardTemplate(Card));
     }
     public override void _Input(InputEvent @event)
     {
@@ -64,7 +64,8 @@ public partial class CardSpawner : Node3D
             return;
         var renderer = cardInstance.GetNode<CardShaderRenderer>("CardRenderer");
         if (renderer == null) return;
-        _randomizer.RandomizeCardRenderer(renderer);
+        
+        _generator.GenerateCardRenderer(renderer, CardSignature.Random(_rng));
         renderer.Bake();
 
         _spawnParent.AddChild(cardInstance);

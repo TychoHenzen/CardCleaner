@@ -45,7 +45,7 @@ public class CardRandomizer : ICardGenerator
         VerifyTextures(_template.GemsOptions);
 #endif
     }
-    public void RandomizeCardRenderer(CardShaderRenderer renderer)
+    public void GenerateCardRenderer(CardShaderRenderer renderer, CardSignature signature)
     {
 
         Randomize(renderer.CardBase, _template.CardBaseOptions);
