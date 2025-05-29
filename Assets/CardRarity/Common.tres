@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="RarityVisual" load_steps=17 format=3 uid="uid://c1pvj6bchej3"]
+[gd_resource type="Resource" script_class="RarityVisual" load_steps=25 format=3 uid="uid://c1pvj6bchej3"]
 
 [ext_resource type="Texture2D" uid="uid://d3khc7kvhuhiy" path="res://Graphics/CardSorted/CardBanner/banner_black.png" id="1_kbvka"]
 [ext_resource type="Texture2D" uid="uid://cat2idtyvybeq" path="res://Graphics/CardSorted/CardBanner/banner_gray.png" id="2_5jkig"]
@@ -16,6 +16,14 @@
 [ext_resource type="Texture2D" uid="uid://br3nfuxfv1hyj" path="res://Graphics/CardSorted/CardCorner/corner_white.png" id="14_rktil"]
 [ext_resource type="Texture2D" uid="uid://djsb4lenr2sc3" path="res://Graphics/CardSorted/CardCorner/corner_green.png" id="15_mifid"]
 [ext_resource type="Script" uid="uid://53b4xsinfimc" path="res://Scripts/Features/Card/Models/RarityVisual.cs" id="16_cn5wx"]
+[ext_resource type="Texture2D" uid="uid://dqiu2sbtgnjhp" path="res://Graphics/CardSorted/CardDescriptionBackground/description_brown.png" id="16_ff1cw"]
+[ext_resource type="Texture2D" uid="uid://cxmbvkr4f5sa7" path="res://Graphics/CardSorted/CardDescriptionBackground/description_paper.png" id="17_1kyh7"]
+[ext_resource type="Texture2D" uid="uid://o8laxsls0uqf" path="res://Graphics/CardSorted/CardEnergyContainer/container_black3.png" id="18_loapv"]
+[ext_resource type="Texture2D" uid="uid://b483xstb44dht" path="res://Graphics/CardSorted/CardEnergyContainer/container_brown3.png" id="19_eve8k"]
+[ext_resource type="Texture2D" uid="uid://0qxgdir8e3gb" path="res://Graphics/CardSorted/CardEnergyContainer/container_gray3.png" id="20_x2yx2"]
+[ext_resource type="Texture2D" uid="uid://dchnd53a26ahb" path="res://Graphics/CardSorted/CardEnergyContainer/container_white3.png" id="21_rktil"]
+[ext_resource type="Texture2D" uid="uid://dafcma3ourois" path="res://Graphics/CardSorted/CardArtBackground/BG_brown.png" id="22_mifid"]
+[ext_resource type="Texture2D" uid="uid://0jr2mhub1rb3" path="res://Graphics/CardSorted/CardArtBackground/BG_paper.png" id="23_cn5wx"]
 
 [resource]
 script = ExtResource("16_cn5wx")
@@ -24,4 +32,7 @@ BaseOptions = [ExtResource("4_mc2cb"), ExtResource("5_fcy1r"), ExtResource("6_w0
 BorderOptions = [ExtResource("7_1qiqv"), ExtResource("8_fwsdx"), ExtResource("9_ff1cw"), ExtResource("10_1kyh7")]
 CornerOptions = [ExtResource("11_loapv"), ExtResource("12_eve8k"), ExtResource("13_x2yx2"), ExtResource("14_rktil"), ExtResource("15_mifid")]
 BannerOptions = [ExtResource("1_kbvka"), ExtResource("2_5jkig"), ExtResource("3_4bh7g")]
+ImageBackgroundOptions = [ExtResource("22_mifid"), ExtResource("23_cn5wx")]
+DescriptionBoxOptions = [ExtResource("16_ff1cw"), ExtResource("17_1kyh7")]
+EnergyContainerOptions = [ExtResource("18_loapv"), ExtResource("19_eve8k"), ExtResource("20_x2yx2"), ExtResource("21_rktil")]
 metadata/_custom_type_script = "uid://53b4xsinfimc"

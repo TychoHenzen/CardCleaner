@@ -36,6 +36,10 @@ public partial class BaseCardType : Resource
     // Visual assets specific to this card type
     [Export] public Texture2D[] ArtOptions { get; set; } = {  };
     [Export] public Texture2D[] SymbolOptions { get; set; } = {};
+
+    // New exports for energy fill based on base type
+    [Export] public Texture2D[] EnergyFill1Options { get; set; } = { };
+    [Export] public Texture2D[] EnergyFill2Options { get; set; } = { };
     
     // Base stats before residual energy modifiers
     [Export] public float BasePower { get; set; } = 1.0f;

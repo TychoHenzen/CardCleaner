@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://cc3ymqg03a2g5"]
+[gd_scene load_steps=27 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://oqrxpyj8qkim" path="res://Scenes/CardShader.tscn" id="3_4bcsh"]
 [ext_resource type="Script" uid="uid://bo8luaias82fj" path="res://Scripts/Features/Card/Services/CardSpawner.cs" id="3_6nqof"]
@@ -26,6 +26,23 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_t5ln1"]
 size = Vector3(39.5682, 0.396362, 43.8758)
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3xlss"]
+sky_top_color = Color(0.298438, 0.416512, 0.800947, 1)
+sky_horizon_color = Color(0.529934, 0.324572, 0.268542, 1)
+ground_bottom_color = Color(0, 0, 0, 1)
+ground_horizon_color = Color(0.529412, 0.32549, 0.266667, 1)
+
+[sub_resource type="Sky" id="Sky_3xlss"]
+sky_material = SubResource("ProceduralSkyMaterial_3xlss")
+process_mode = 1
+
+[sub_resource type="Environment" id="Environment_3xlss"]
+background_mode = 2
+sky = SubResource("Sky_3xlss")
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.1
+
 [node name="Node3D" type="Node3D"]
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
@@ -38,13 +55,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.8355, 0, 0.316311)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.8355, 0.110413, -0.316311)
 shape = SubResource("BoxShape3D_t5ln1")
 
-[node name="OmniLight3D" type="OmniLight3D" parent="CSGBox3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 32.744, 0)
-omni_range = 50.0
-omni_attenuation = 0.0
-
 [node name="Node3D2" parent="." instance=ExtResource("3_k8nbv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.63051, 1.30859, -2.37775)
+
+[node name="Camera3D" parent="Node3D2/Head" index="0"]
+environment = SubResource("Environment_3xlss")
+fov = 89.7
 
 [node name="SpotLight3D" parent="Node3D2/Head/Camera3D" index="0"]
 spot_range = 46.3397
