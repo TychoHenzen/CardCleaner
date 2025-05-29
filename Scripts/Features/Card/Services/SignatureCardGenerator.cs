@@ -11,23 +11,15 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 /// </summary>
 public class SignatureCardGenerator : ICardGenerator
 {
-    private CardSignature _signature;
-    private readonly RandomNumberGenerator _rng;
     private readonly RarityVisual[] _rarityVisuals;
     private readonly BaseCardType[] _baseTypes;
     private readonly GemVisual[] _gemVisuals;
 
     public SignatureCardGenerator(
-        CardSignature signature,
         RarityVisual[] rarityVisuals,
         BaseCardType[] baseTypes,
         GemVisual[] gemVisuals)
     {
-        _signature = signature;
-        _rng = new RandomNumberGenerator
-        {
-            Seed = (uint)ComputeSeed(signature)
-        };
         _rarityVisuals = rarityVisuals;
         _baseTypes = baseTypes;
         _gemVisuals = gemVisuals;
@@ -42,47 +34,72 @@ public class SignatureCardGenerator : ICardGenerator
 
     public void GenerateCardRenderer(CardShaderRenderer renderer, CardSignature signature)
     {
+        
+        var rng = new RandomNumberGenerator
+        {
+            Seed = (uint)ComputeSeed(signature)
+        };
         // 1. Determine rarity
-        var rarity = DetermineRarity(_signature);
+        var rarity = DetermineRarity(signature);
         GD.Print($"[SignatureGenerator] Rarity: {rarity}");
 
         // 2. Apply per‐rarity visuals
         var visuals = _rarityVisuals.FirstOrDefault(rv => rv.Rarity == rarity);
         if (visuals != null)
         {
-            Apply(renderer.CardBase, visuals.BaseOptions);
-            Apply(renderer.Border, visuals.BorderOptions);
-            Apply(renderer.Corners, visuals.CornerOptions);
-            Apply(renderer.Banner, visuals.BannerOptions);
+            Apply(rng,renderer.CardBase, visuals.BaseOptions);
+            Apply(rng,renderer.Border, visuals.BorderOptions);
+            Apply(rng,renderer.Corners, visuals.CornerOptions);
+            Apply(rng,renderer.Banner, visuals.BannerOptions);
         }
 
         // 3. Select matching BaseCardType
         var candidates = _baseTypes
-            .Where(bt => bt.CanMatch(_signature))
+            .Where(bt => bt.CanMatch(signature))
             .ToArray();
         if (candidates.Length > 0)
         {
-            var chosenBase = SelectWeighted(candidates, bt => bt.CalculateMatchWeight(_signature));
-            Apply(renderer.Art, chosenBase.ArtOptions);
-            Apply(renderer.Symbol, chosenBase.SymbolOptions);
+            var chosenBase = SelectWeighted(rng,candidates, bt => bt.CalculateMatchWeight(signature));
+            Apply(rng,renderer.Art, chosenBase.ArtOptions);
+            Apply(rng,renderer.Symbol, chosenBase.SymbolOptions);
         }
 
         // 4. Assign gems by dominant aspect
         for (int i = 0; i < renderer.GemSockets.Length; i++)
         {
-            var element = (Element)i;
-            var aspect = _signature.GetDominantAspect(element);
-            var gemVis = _gemVisuals.FirstOrDefault(gv => gv.Aspect == aspect);
+            var element  = (Element)i;
+            var rawValue = signature[element];
+            var intensity = Mathf.Abs(rawValue);       // 0..1
+            bool isPos   = rawValue >= 0;
+
+            var gemVis = _gemVisuals.FirstOrDefault(gv => gv.Element == element);
             if (gemVis != null)
             {
-                renderer.GemSockets[i].Texture = gemVis.SocketTexture;
-                renderer.Gems[i].Texture = gemVis.GemTexture;
+                // Select textures based on sign
+                var socketTex = gemVis.SocketTexture;
+                var gemTex    = isPos
+                    ? gemVis.PositiveGemTexture
+                    : gemVis.NegativeGemTexture;
+                renderer.GemSockets[i].Texture = socketTex;
+                renderer.Gems[i].Texture       = gemTex;
+
+                // Select emission settings based on sign and scale by intensity
+                var tint    = isPos 
+                    ? gemVis.PositiveEmissionColor 
+                    : gemVis.NegativeEmissionColor;
+                var strength= intensity * (isPos
+                    ? gemVis.PositiveEmissionStrength
+                    : gemVis.NegativeEmissionStrength);
+
+                renderer.SetGemEmission(i, tint, strength);
             }
         }
+
+
     }
 
 
-    private int ComputeSeed(CardSignature signature)
+    private static int ComputeSeed(CardSignature signature)
     {
         int seed = 17;
         foreach (var v in signature.Elements)
@@ -90,7 +107,7 @@ public class SignatureCardGenerator : ICardGenerator
         return seed;
     }
 
-    private CardRarity DetermineRarity(CardSignature signature)
+    private static CardRarity DetermineRarity(CardSignature signature)
     {
         // Simple intensity-based thresholds
         float intensity = signature.Elements.Select(Math.Abs).Sum() / signature.Elements.Length;
@@ -106,23 +123,23 @@ public class SignatureCardGenerator : ICardGenerator
     }
 
         
-    private void Apply(LayerData layer, Texture2D[] options)
+    private static void Apply(RandomNumberGenerator rng, LayerData layer, Texture2D[] options)
     {
         if (options == null || options.Length == 0) return;
         var idx = options.Length == 1
             ? 0
-            : _rng.RandiRange(0, options.Length - 1);
+            : rng.RandiRange(0, options.Length - 1);
         layer.Texture = options[idx];
     }
         
 
-    private T SelectWeighted<T>(T[] items, Func<T, float> weightFn)
+    private static T SelectWeighted<T>(RandomNumberGenerator rng, T[] items, Func<T, float> weightFn)
     {
         var weights = items.Select(weightFn).ToArray();
         float total = weights.Sum();
         if (total <= 0f) return items[0];
 
-        float pick = _rng.Randf() * total;
+        float pick = rng.Randf() * total;
         float cumulative = 0f;
         for (int i = 0; i < items.Length; i++)
         {

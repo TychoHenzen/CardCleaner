@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="GemVisual" load_steps=5 format=3 uid="uid://kbbcimmj8rjt"]
+
+[ext_resource type="Texture2D" uid="uid://co2j26n2272a2" path="res://Graphics/CardSorted/CardGem/gem_blue.png" id="1_ctl12"]
+[ext_resource type="Texture2D" uid="uid://c3ghasn1l5kv4" path="res://Graphics/CardSorted/CardGem/gem_red.png" id="2_y733t"]
+[ext_resource type="Texture2D" uid="uid://dpj8e6c14032r" path="res://Graphics/CardSorted/CardGemSocket/socket_red.png" id="3_4ao8x"]
+[ext_resource type="Script" uid="uid://cijubad8hygh4" path="res://Scripts/Features/Card/Models/GemVisual.cs" id="4_ayogv"]
+
+[resource]
+script = ExtResource("4_ayogv")
+Element = 4
+SocketTexture = ExtResource("3_4ao8x")
+PositiveGemTexture = ExtResource("2_y733t")
+PositiveEmissionColor = Color(1, 0.0941176, 0, 1)
+PositiveEmissionStrength = 1.0
+NegativeGemTexture = ExtResource("1_ctl12")
+NegativeEmissionColor = Color(0.0588235, 0, 1, 1)
+NegativeEmissionStrength = 1.0
+metadata/_custom_type_script = "uid://cijubad8hygh4"

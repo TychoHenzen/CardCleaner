@@ -61,9 +61,6 @@ public partial class CardShaderRenderer : Node, ICardComponent
     };
 
     // --- Blacklight security effect controls ---
-    [Export] public Color FluorescentColor { get; set; } = new Color(0.0f, 1.0f, 0.5f);
-    [Export] public float FluorescentIntensity { get; set; } = 5.0f;
-    [Export] public float VisibilityThreshold { get; set; } = 0.1f;
     [Export] public float BlacklightRange { get; set; } = 5.0f;
 
     // --- Text fields (front only) ---
@@ -76,6 +73,10 @@ public partial class CardShaderRenderer : Node, ICardComponent
 
     // --- Material to receive baked texture ---
     [Export] public ShaderMaterial CardMaterial { get; set; }
+    
+    private Vector3[] _gemEmissionColors    = new Vector3[8];
+    private float[]   _gemEmissionStrengths = new float[8];
+
 
     private bool _baked = false;
     private RigidBody3D _cardRoot;
@@ -141,6 +142,15 @@ public partial class CardShaderRenderer : Node, ICardComponent
         CallDeferred(nameof(DeferredAssign));
         _baked = true;
     }
+    /// <summary>
+    /// Called by generator to supply color and strength for gem index.
+    /// </summary>
+    public void SetGemEmission(int index, Color color, float strength)
+    {
+        _gemEmissionColors[index]    = new Vector3(color.R, color.G, color.B);
+        _gemEmissionStrengths[index] = strength;
+    }
+
 
     private void DeferredAssign()
     {
@@ -167,10 +177,6 @@ public partial class CardShaderRenderer : Node, ICardComponent
         var regionsArr = new Godot.Collections.Array<Vector4>();
         var frontFlagsArr = new Godot.Collections.Array<bool>();
         var backFlagsArr = new Godot.Collections.Array<bool>();
-        var gemFlagsArr = new Godot.Collections.Array<bool>();
-
-        // Mark gem layers (last 8 layers are gems)
-        int gemStartIndex = allLayers.Length - Gems.Length;
 
         for (int i = 0; i < allLayers.Length; i++)
         {
@@ -179,9 +185,6 @@ public partial class CardShaderRenderer : Node, ICardComponent
             regionsArr.Add(ld.Region);
             frontFlagsArr.Add(ld.RenderOnFront);
             backFlagsArr.Add(ld.RenderOnBack);
-
-            bool isGem = i >= gemStartIndex;
-            gemFlagsArr.Add(isGem);
         }
 
         // Create material
@@ -193,15 +196,14 @@ public partial class CardShaderRenderer : Node, ICardComponent
         mat.SetShaderParameter("regions", regionsArr);
         mat.SetShaderParameter("frontFlags", frontFlagsArr);
         mat.SetShaderParameter("backFlags", backFlagsArr);
-        mat.SetShaderParameter("gem_flags", gemFlagsArr);
 
         // Security effect parameters
         mat.SetShaderParameter("blacklight_exposure", 0.0f);
-        mat.SetShaderParameter("fluorescent_color",
-            new Vector3(FluorescentColor.R, FluorescentColor.G, FluorescentColor.B));
-        mat.SetShaderParameter("fluorescent_intensity", FluorescentIntensity);
-        mat.SetShaderParameter("visibility_threshold", VisibilityThreshold);
 
+        mat.SetShaderParameter("gem_emission_colors",    new Godot.Collections.Array<Vector3>(_gemEmissionColors));
+        mat.SetShaderParameter("gem_emission_strengths", new Godot.Collections.Array<float>(_gemEmissionStrengths));
+
+        
         box.MaterialOverride = mat;
         _activeMaterial = mat;
     }

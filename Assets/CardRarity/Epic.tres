@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="RarityVisual" load_steps=21 format=3 uid="uid://c8eyaxwe0si1t"]
+
+[ext_resource type="Texture2D" uid="uid://d0hgdnjvcpwhv" path="res://Graphics/CardSorted/CardBanner/banner_yellow.png" id="4_1cvyb"]
+[ext_resource type="Texture2D" uid="uid://bsbm3vo8u5gq6" path="res://Graphics/CardSorted/CardBanner/banner_magenta.png" id="4_h1mwa"]
+[ext_resource type="Texture2D" uid="uid://qcay471aa5h7" path="res://Graphics/CardSorted/CardBanner/banner_purple.png" id="5_jrh25"]
+[ext_resource type="Texture2D" uid="uid://c7byd4hbbusan" path="res://Graphics/CardSorted/CardBase/back_gold.png" id="5_p0s6n"]
+[ext_resource type="Texture2D" uid="uid://bn7e87ebp7q7t" path="res://Graphics/CardSorted/CardBanner/banner_red.png" id="6_fy3lx"]
+[ext_resource type="Texture2D" uid="uid://43mnaqa5gx6d" path="res://Graphics/CardSorted/CardBase/back_purple (2).png" id="6_rjebn"]
+[ext_resource type="Texture2D" uid="uid://bqdf5ffndsnfu" path="res://Graphics/CardSorted/CardBorder/border_gold.png" id="11_lgpp7"]
+[ext_resource type="Texture2D" uid="uid://1x1n4mr55toc" path="res://Graphics/CardSorted/CardBorder/border_purple.png" id="13_xdybt"]
+[ext_resource type="Texture2D" uid="uid://blbw4e0w0mk8c" path="res://Graphics/CardSorted/CardBase/back_purple.png" id="17_kkq6p"]
+[ext_resource type="Texture2D" uid="uid://wuq6x2veeqq4" path="res://Graphics/CardSorted/CardBase/back_red (2).png" id="18_ml84o"]
+[ext_resource type="Texture2D" uid="uid://ds0jku4lkolxk" path="res://Graphics/CardSorted/CardCorner/corner_yellow.png" id="19_5inx8"]
+[ext_resource type="Texture2D" uid="uid://bfntvqlyr50ot" path="res://Graphics/CardSorted/CardBase/back_red.png" id="19_px72a"]
+[ext_resource type="Texture2D" uid="uid://bsehf186n7gic" path="res://Graphics/CardSorted/CardBase/back_yellow.png" id="22_1pfbh"]
+[ext_resource type="Texture2D" uid="uid://djc68uejlgyte" path="res://Graphics/CardSorted/CardBorder/border_purple (2).png" id="29_fpyp8"]
+[ext_resource type="Texture2D" uid="uid://wkat2q86xht3" path="res://Graphics/CardSorted/CardBorder/border_red (2).png" id="30_ty6gv"]
+[ext_resource type="Texture2D" uid="uid://b0bxy08h33te2" path="res://Graphics/CardSorted/CardBorder/border_red.png" id="31_3vibf"]
+[ext_resource type="Texture2D" uid="uid://cihsykvpsftgg" path="res://Graphics/CardSorted/CardCorner/corner_magenta.png" id="37_1iseu"]
+[ext_resource type="Texture2D" uid="uid://3onds0b447c6" path="res://Graphics/CardSorted/CardCorner/corner_purple.png" id="38_pedho"]
+[ext_resource type="Texture2D" uid="uid://by46ktcprsdwv" path="res://Graphics/CardSorted/CardCorner/corner_red.png" id="39_5nh4e"]
+[ext_resource type="Script" uid="uid://53b4xsinfimc" path="res://Scripts/Features/Card/Models/RarityVisual.cs" id="41_i3hf6"]
+
+[resource]
+script = ExtResource("41_i3hf6")
+Rarity = 3
+BaseOptions = [ExtResource("5_p0s6n"), ExtResource("6_rjebn"), ExtResource("17_kkq6p"), ExtResource("18_ml84o"), ExtResource("19_px72a"), ExtResource("22_1pfbh")]
+BorderOptions = [ExtResource("11_lgpp7"), ExtResource("29_fpyp8"), ExtResource("13_xdybt"), ExtResource("30_ty6gv"), ExtResource("31_3vibf")]
+CornerOptions = [ExtResource("37_1iseu"), ExtResource("38_pedho"), ExtResource("39_5nh4e"), ExtResource("19_5inx8")]
+BannerOptions = [ExtResource("4_h1mwa"), ExtResource("5_jrh25"), ExtResource("6_fy3lx"), ExtResource("4_1cvyb")]
+metadata/_custom_type_script = "uid://53b4xsinfimc"

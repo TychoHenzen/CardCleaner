@@ -1,5 +1,6 @@
 using Godot;
 using CardCleaner.Scripts;
+using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Interfaces;
 
 /// <summary>
@@ -12,6 +13,10 @@ public partial class CardSpawner : Node3D
     [Export] public Vector3 OffsetRange { get; set; } = Vector3.Zero;
 
     [Export] public TextureLoader Card { get; set; }
+    
+    [Export] public RarityVisual[] RarityVisuals { get; set; }
+    [Export] public BaseCardType[] BaseCardTypes { get; set; }
+    [Export] public GemVisual[] GemVisuals { get; set; }
 
     private Node3D _spawnParent;
     private int _spawnQueue = 0;
@@ -28,7 +33,8 @@ public partial class CardSpawner : Node3D
 
     public void DeferredAssign()
     {
-        _generator = new CardRandomizer(_rng, new CardTemplate(Card));
+        _generator = new SignatureCardGenerator(RarityVisuals, BaseCardTypes, GemVisuals);
+        // _generator = new CardRandomizer(_rng, new CardTemplate(Card));
     }
     public override void _Input(InputEvent @event)
     {

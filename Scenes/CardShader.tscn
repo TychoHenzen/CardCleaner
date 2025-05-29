@@ -23,9 +23,9 @@ shader_parameter/textures = null
 shader_parameter/regions = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/frontFlags = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/backFlags = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/gem_emission_colors = PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/gem_emission_strengths = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/blacklight_exposure = 0.0
-shader_parameter/gem_emission_color = Color(0.3, 0.8, 1, 1)
-shader_parameter/gem_emission_strength = 3.0
 
 [node name="Card" type="RigidBody3D"]
 physics_interpolation_mode = 2
@@ -94,7 +94,6 @@ material = SubResource("StandardMaterial3D_3m7nw")
 
 [node name="CardRenderer" type="Node" parent="." node_paths=PackedStringArray("NameLabel", "AttrLabel")]
 script = ExtResource("5_1sx76")
-FluorescentIntensity = 1.0
 TextFont = ExtResource("6_4gl8e")
 TextColor = Color(0.942823, 0.942823, 0.942823, 1)
 NameText = "testy"

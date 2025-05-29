@@ -1,12 +1,26 @@
-[gd_scene load_steps=10 format=3 uid="uid://cc3ymqg03a2g5"]
+[gd_scene load_steps=24 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://oqrxpyj8qkim" path="res://Scenes/CardShader.tscn" id="3_4bcsh"]
 [ext_resource type="Script" uid="uid://bo8luaias82fj" path="res://Scripts/Features/Card/Services/CardSpawner.cs" id="3_6nqof"]
 [ext_resource type="PackedScene" uid="uid://wv6a67swhus" path="res://Scenes/player.tscn" id="3_k8nbv"]
 [ext_resource type="Script" uid="uid://coebm8tgbgmqv" path="res://Scripts/Features/Card/Components/CardHighlighter.cs" id="4_ia2xn"]
+[ext_resource type="Resource" uid="uid://c1pvj6bchej3" path="res://Assets/CardRarity/Common.tres" id="4_vkee2"]
+[ext_resource type="Resource" uid="uid://crj4wbejtk751" path="res://Assets/CardRarity/Uncommon.tres" id="5_otk7d"]
 [ext_resource type="Script" uid="uid://dckadi8fdva0e" path="res://Scripts/Features/Pause/Controllers/PauseController.cs" id="5_u668n"]
 [ext_resource type="Texture2D" uid="uid://c22xilhi7cap1" path="res://Graphics/tile_0001.png" id="6_28ir6"]
+[ext_resource type="Resource" uid="uid://cyqbkl4lcnxak" path="res://Assets/CardRarity/Rare.tres" id="6_ypprn"]
+[ext_resource type="Resource" uid="uid://c8eyaxwe0si1t" path="res://Assets/CardRarity/Epic.tres" id="7_ioitf"]
+[ext_resource type="Resource" uid="uid://vnmarlrtxlog" path="res://Assets/CardRarity/Legendary.tres" id="8_3rand"]
+[ext_resource type="Resource" uid="uid://bjkeuqtf31pgv" path="res://Assets/CardBases/Weapon.tres" id="9_3xlss"]
 [ext_resource type="PackedScene" uid="uid://dqq5wm3t0cskf" path="res://Scenes/Conveyor_Straight.tscn" id="9_dr1m3"]
+[ext_resource type="Resource" uid="uid://d3fbjw1jow8u" path="res://Assets/CardGems/Solidum.tres" id="9_h03qd"]
+[ext_resource type="Resource" uid="uid://ddus141l1tre8" path="res://Assets/CardGems/Febris.tres" id="10_3xlss"]
+[ext_resource type="Resource" uid="uid://c4f2ur76sh6x4" path="res://Assets/CardGems/Ordinem.tres" id="11_o6inp"]
+[ext_resource type="Resource" uid="uid://ejpaypuubynl" path="res://Assets/CardGems/Lumines.tres" id="12_f1k1t"]
+[ext_resource type="Resource" uid="uid://dv5fb1isui8m8" path="res://Assets/CardGems/Varias.tres" id="13_6aa2p"]
+[ext_resource type="Resource" uid="uid://kbbcimmj8rjt" path="res://Assets/CardGems/Inertiae.tres" id="14_sstrp"]
+[ext_resource type="Resource" uid="uid://cgt57r6nssi2m" path="res://Assets/CardGems/Subsidium.tres" id="15_dta7m"]
+[ext_resource type="Resource" uid="uid://bo8ktcdqa516m" path="res://Assets/CardGems/Spatium.tres" id="16_r0o6j"]
 [ext_resource type="Script" uid="uid://bn02ohsh8gfn4" path="res://Scripts/Features/Card/Services/TextureLoader.cs" id="449_ucc6g"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t5ln1"]
@@ -42,6 +56,9 @@ CardScene = ExtResource("3_4bcsh")
 SpawnParentPath = NodePath(".")
 OffsetRange = Vector3(3, 1, 3)
 Card = NodePath("../CardTemplates/CardArt")
+RarityVisuals = Array[Object]([ExtResource("4_vkee2"), ExtResource("5_otk7d"), ExtResource("6_ypprn"), ExtResource("7_ioitf"), ExtResource("8_3rand")])
+BaseCardTypes = Array[Object]([ExtResource("9_3xlss")])
+GemVisuals = Array[Object]([ExtResource("9_h03qd"), ExtResource("10_3xlss"), ExtResource("11_o6inp"), ExtResource("12_f1k1t"), ExtResource("13_6aa2p"), ExtResource("14_sstrp"), ExtResource("15_dta7m"), ExtResource("16_r0o6j")])
 
 [node name="Node" type="Node" parent="Cards"]
 
