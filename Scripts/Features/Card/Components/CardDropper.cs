@@ -1,4 +1,6 @@
-﻿using Godot;
+﻿using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
+using Godot;
 
 public partial class CardDropper : Node3D
 {
@@ -10,6 +12,7 @@ public partial class CardDropper : Node3D
     private CardHolder _cardHolder;
     private DropPreview _dropPreview;
     private Camera3D _camera;
+    private IInputService _inputService;
 
     public bool IsPreparingDrop => _isPreparingDrop;
 
@@ -18,6 +21,16 @@ public partial class CardDropper : Node3D
         _cardHolder = cardHolder;
         _dropPreview = dropPreview;
         _camera = camera;
+        ServiceLocator.Get<IInputService>(input =>
+        {
+            _inputService = input;
+            _inputService.RegisterAction("card_drop_single", Key.X, DropSingleCard);
+        });
+    }
+    public override void _ExitTree()
+    {
+        // Clean up input registrations when component is destroyed
+        _inputService?.UnregisterAllActions(this);
     }
 
     public void StartDropPreparation()

@@ -1,3 +1,5 @@
+using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using Godot;
 
@@ -6,12 +8,12 @@ public partial class CardHighlighter : Node3D
     [Export] public Camera3D Camera;
     [Export] public Node3D CardsParent;
     [Export] public float MaxHighlightDistance = 50f;
-    
-    [Export] public InputHandler Input;
+
     [Export] public CardPicker Picker;
     [Export] public DropPreview Preview;
     [Export] public CardHolder CardHolder;
     [Export] public CardDropper CardDropper;
+    private IInputService _inputService;
     private RigidBody3D _lastCard;
 
     public override void _Ready()
@@ -21,15 +23,30 @@ public partial class CardHighlighter : Node3D
         CardDropper.Initialize(CardHolder, Preview, Camera);
 
         // Wire signals
-        Input.Connect("RightPress", Callable.From(OnRightPress));
-        Input.Connect("RightRelease", Callable.From(OnRightRelease));
-        Input.Connect("LeftPress", Callable.From(OnLeftPress));
-        Input.Connect("KeyPressed", Callable.From<InputEventKey>(OnKeyPressed));
-        
+        ServiceLocator.Get<IInputService>(input =>
+        {
+            _inputService = input;
+            _inputService.RegisterAction("card_drop_prepare", MouseButton.Right,OnRightPress);
+            _inputService.RegisterAction("card_grab", MouseButton.Left, OnLeftPress);
+        });
+
         Picker.Connect("CardDetected", Callable.From<RigidBody3D>(OnCardDetected));
         Picker.Connect("NoCardDetected", Callable.From(OnNoCardDetected));
-        
+
         SetupCardCollisionLayers();
+    }
+    public override void _ExitTree()
+    {
+        // Clean up input registrations when component is destroyed
+        _inputService?.UnregisterAllActions(this);
+    }
+
+    private void RegisterInputActions()
+    {
+        // Register card interaction actions directly with InputService
+        _inputService.RegisterAction("card_drop_single", Key.X, CardDropper.DropSingleCard);
+
+        GD.Print("[CardHighlighter] Registered card interaction inputs directly");
     }
 
     public override void _PhysicsProcess(double delta)
@@ -42,44 +59,36 @@ public partial class CardHighlighter : Node3D
         }
     }
 
-    private void OnRightPress()
+    private void OnRightPress(bool pressed)
     {
-        CardDropper.StartDropPreparation();
+        if (pressed)
+            CardDropper.StartDropPreparation();
+        else
+            CardDropper.CompleteDropPreparation();
     }
 
-    private void OnRightRelease()
+    private void OnLeftPress(bool pressed)
     {
-        CardDropper.CompleteDropPreparation();
-    }
-
-    private void OnLeftPress()
-    {
+        if (!pressed) return;
         if (CardDropper.IsPreparingDrop)
         {
             CardDropper.CancelDropPreparation();
         }
-        else if (_lastCard != null && Camera.GlobalPosition.DistanceTo(_lastCard.GlobalPosition) <= MaxHighlightDistance)
+        else if (_lastCard != null &&
+                 Camera.GlobalPosition.DistanceTo(_lastCard.GlobalPosition) <= MaxHighlightDistance)
         {
             CardHolder.AddCard(_lastCard);
             ClearHighlight(_lastCard);
         }
     }
 
-    private void OnKeyPressed(InputEventKey keyEvent)
-    {
-        if (CardDropper.IsPreparingDrop && keyEvent.Keycode == Key.X)
-        {
-            CardDropper.DropSingleCard();
-        }
-    }
-
     private void OnCardDetected(RigidBody3D card)
     {
         if (CardDropper.IsPreparingDrop) return; // Don't highlight during drop prep
-        
+
         if (_lastCard == card) return;
         ClearHighlight(_lastCard);
-        if(card != null)
+        if (card != null)
             HighlightCard(card);
         _lastCard = card;
     }
@@ -87,15 +96,15 @@ public partial class CardHighlighter : Node3D
     private void OnNoCardDetected()
     {
         if (CardDropper.IsPreparingDrop) return; // Don't change highlights during drop prep
-        
+
         ClearHighlight(_lastCard);
         _lastCard = null;
     }
-    
+
     private void HighlightCard(RigidBody3D card)
     {
         if (Camera.GlobalPosition.DistanceTo(card.GlobalPosition) > MaxHighlightDistance) return;
-        
+
         var outline = card.GetNodeOrNull<CsgBox3D>("OutlineBox");
         if (outline == null) return;
         outline.Visible = true;

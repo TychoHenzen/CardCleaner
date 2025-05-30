@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using Godot;
 
 namespace CardCleaner.Scripts.Core.DependencyInjection;
@@ -40,6 +41,10 @@ public partial class ServiceLocator : Node
         // Register RandomNumberGenerator as singleton
         _container.RegisterSingleton<RandomNumberGenerator>(new RandomNumberGenerator());
 
+        var inputService = new InputService();
+        AddChild(inputService);
+        _container.RegisterSingleton<IInputService>(inputService);
+        
         // Register factories for Godot resources that need special handling
         _container.RegisterFactory<PackedScene>(() =>
             GD.Load<PackedScene>("res://Scenes/Card.tscn"));

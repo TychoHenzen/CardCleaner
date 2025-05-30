@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b04t7ohl81ntt" path="res://Scripts/Features/Player/Controllers/PlayerController.cs" id="1_v0iea"]
 [ext_resource type="Script" uid="uid://coebm8tgbgmqv" path="res://Scripts/Features/Card/Components/CardHighlighter.cs" id="2_cvnsp"]
-[ext_resource type="Script" uid="uid://fjtf4so4ye3y" path="res://Scripts/Features/Card/Components/InputHandler.cs" id="3_3smsa"]
+[ext_resource type="Script" path="res://Scripts/Features/Card/Components/InputHandler.cs" id="3_3smsa"]
 [ext_resource type="Script" uid="uid://d0dftkyftp081" path="res://Scripts/Features/Card/Components/CardPicker.cs" id="4_8erm5"]
 [ext_resource type="Script" uid="uid://dvoklxj3c2cba" path="res://Scripts/Features/Card/Components/DropPreview.cs" id="5_f1ek2"]
 [ext_resource type="Script" uid="uid://cgcld0ulj1e3p" path="res://Scripts/Features/Card/Components/CardHolder.cs" id="6_tx1dd"]
@@ -32,10 +32,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.520677, -0.145628, 0)
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Head/Camera3D"]
 
-[node name="CardInteraction" type="Node3D" parent="." node_paths=PackedStringArray("Camera", "Input", "Picker", "Preview", "CardHolder", "CardDropper")]
+[node name="CardInteraction" type="Node3D" parent="." node_paths=PackedStringArray("Camera", "Picker", "Preview", "CardHolder", "CardDropper")]
 script = ExtResource("2_cvnsp")
 Camera = NodePath("../Head/Camera3D")
-Input = NodePath("InputHandler")
 Picker = NodePath("CardPicker")
 Preview = NodePath("DropPreview")
 CardHolder = NodePath("CardHolder")
