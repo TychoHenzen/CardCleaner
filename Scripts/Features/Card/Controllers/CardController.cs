@@ -8,11 +8,9 @@ namespace CardCleaner.Scripts.Controllers;
 public partial class CardController : RigidBody3D {
     private readonly List<ICardComponent> _components = new();
     private readonly List<IPhysicsComponent> _physicsComponents = new();
-    private readonly List<IRenderComponent> _renderComponents = new();
     public CardSignature Signature;
     public override void _Ready() 
     {
-        
         DiscoverComponents(this);
         AddToGroup("Cards");
         CollisionLayer = 2;
@@ -31,9 +29,6 @@ public partial class CardController : RigidBody3D {
                 {
                     case IPhysicsComponent physicsComp:
                         _physicsComponents.Add(physicsComp);
-                        break;
-                    case IRenderComponent renderComp:
-                        _renderComponents.Add(renderComp);
                         break;
                 }
             }

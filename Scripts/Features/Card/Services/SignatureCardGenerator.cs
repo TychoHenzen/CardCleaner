@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Interfaces;
 using Godot;
 using Godot.Collections;
@@ -35,16 +36,8 @@ public class SignatureCardGenerator : ICardGenerator
         _gemVisuals = gemVisuals;
     }
 
-
-    public void Verify()
+    public void GenerateCardRenderer(CardShaderRenderer renderer, CardSignature signature, CardTemplate template)
     {
-        // No verification implemented yet
-    }
-
-
-    public void GenerateCardRenderer(Components.CardShaderRenderer renderer, CardSignature signature)
-    {
-        
         var rng = new RandomNumberGenerator
         {
             Seed = (uint)SignatureCardHelper.ComputeSeed(signature)
@@ -66,13 +59,13 @@ public class SignatureCardGenerator : ICardGenerator
         var visuals = _rarityVisuals.FirstOrDefault(rv => rv.Rarity == rarity);
         if (visuals != null)
         {
-            SignatureCardHelper.Apply(rng,renderer.CardBase, visuals.BaseOptions);
-            SignatureCardHelper.Apply(rng,renderer.Border, visuals.BorderOptions);
-            SignatureCardHelper.Apply(rng,renderer.Corners, visuals.CornerOptions);
-            SignatureCardHelper.Apply(rng,renderer.Banner, visuals.BannerOptions);
-            SignatureCardHelper.Apply(rng, renderer.ImageBackground,    visuals.ImageBackgroundOptions);
-            SignatureCardHelper.Apply(rng, renderer.DescriptionBox,     visuals.DescriptionBoxOptions);
-            SignatureCardHelper.Apply(rng, renderer.EnergyContainer,    visuals.EnergyContainerOptions);
+            SignatureCardHelper.Apply(rng,template.CardBase, visuals.BaseOptions);
+            SignatureCardHelper.Apply(rng,template.Border, visuals.BorderOptions);
+            SignatureCardHelper.Apply(rng,template.Corners, visuals.CornerOptions);
+            SignatureCardHelper.Apply(rng,template.Banner, visuals.BannerOptions);
+            SignatureCardHelper.Apply(rng, template.ImageBackground,    visuals.ImageBackgroundOptions);
+            SignatureCardHelper.Apply(rng, template.DescriptionBox,     visuals.DescriptionBoxOptions);
+            SignatureCardHelper.Apply(rng, template.EnergyContainer,    visuals.EnergyContainerOptions);
 
         }
 
@@ -83,14 +76,14 @@ public class SignatureCardGenerator : ICardGenerator
         if (candidates.Length > 0)
         {
             var chosenBase = SignatureCardHelper.SelectWeighted(rng,candidates, bt => bt.CalculateMatchWeight(signature));
-            SignatureCardHelper.Apply(rng,renderer.Art, chosenBase.ArtOptions);
-            SignatureCardHelper.Apply(rng,renderer.Symbol, chosenBase.SymbolOptions);
-            SignatureCardHelper.Apply(rng, renderer.EnergyFill1, chosenBase.EnergyFill1Options);
-            SignatureCardHelper.Apply(rng, renderer.EnergyFill2, chosenBase.EnergyFill2Options);
+            SignatureCardHelper.Apply(rng, template.Art, chosenBase.ArtOptions);
+            SignatureCardHelper.Apply(rng, template.Symbol, chosenBase.SymbolOptions);
+            SignatureCardHelper.Apply(rng, template.EnergyFill1, chosenBase.EnergyFill1Options);
+            SignatureCardHelper.Apply(rng, template.EnergyFill2, chosenBase.EnergyFill2Options);
         }
 
         // 4. Assign gems by dominant aspect
-        for (int i = 0; i < renderer.GemSockets.Length; i++)
+        for (int i = 0; i < template.GemSockets.Length; i++)
         {
             var element  = (Element)i;
             var rawValue = signature[element];
@@ -105,8 +98,8 @@ public class SignatureCardGenerator : ICardGenerator
                 var gemTex    = isPos
                     ? gemVis.PositiveGemTexture
                     : gemVis.NegativeGemTexture;
-                renderer.GemSockets[i].Texture = socketTex;
-                renderer.Gems[i].Texture       = gemTex;
+                template.GemSockets[i].Texture = socketTex;
+                template.Gems[i].Texture       = gemTex;
 
                 // Select emission settings based on sign and scale by intensity
                 var tint    = isPos 

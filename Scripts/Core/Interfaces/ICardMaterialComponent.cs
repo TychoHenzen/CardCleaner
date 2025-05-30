@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace CardCleaner.Scripts.Interfaces;
+namespace CardCleaner.Scripts.Core.Interfaces;
 
 public interface ICardMaterialComponent
 {

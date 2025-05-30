@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Interfaces;
 using Godot;
 

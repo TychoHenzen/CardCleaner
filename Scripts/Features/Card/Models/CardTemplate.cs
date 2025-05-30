@@ -1,41 +1,71 @@
 ﻿using System;
+using System.Linq;
 using Godot;
 
 namespace CardCleaner.Scripts;
-[System.Serializable]
-[GlobalClass]
 public partial class CardTemplate : Resource
 {
-    public CardTemplate(TextureLoader loader)
-    {
-        CardBaseOptions = loader.Textures["CardBaseOptions"];
-        BorderOptions = loader.Textures["BorderOptions"];
-        CornerOptions = loader.Textures["CornerOptions"];
-        ArtOptions = loader.Textures["ArtOptions"];
-        SymbolOptions = loader.Textures["SymbolOptions"];
-        ImageBackgroundOptions = loader.Textures["ImageBackgroundOptions"];
-        BannerOptions = loader.Textures["BannerOptions"];
-        DescriptionBoxOptions = loader.Textures["DescriptionBoxOptions"];
-        EnergyContainerOptions = loader.Textures["EnergyContainerOptions"];
-        EnergyFill1Options = loader.Textures["EnergyFill1Options"];
-        EnergyFill2Options = loader.Textures["EnergyFill2Options"];
-        EnergyFillFullOptions = loader.Textures["EnergyFillFullOptions"];
-        GemSocketsOptions = loader.Textures["GemSocketsOptions"];
-        GemsOptions = loader.Textures["GemsOptions"];
-    }
-    [Export] public Texture2D[] CardBaseOptions { get; set; } = new Texture2D[0];
-    [Export] public Texture2D[] BorderOptions { get; set; } = new Texture2D[0];
-    [Export] public Texture2D[] CornerOptions { get; set; } = new Texture2D[0];
-    [Export] public Texture2D[] ArtOptions { get; set; } = new Texture2D[0];
-    [Export] public Texture2D[] SymbolOptions { get; set; } = new Texture2D[0];
-    [Export] public Texture2D[] ImageBackgroundOptions { get; set; } = new Texture2D[0];
-    [Export] public Texture2D[] BannerOptions { get; set; } = new Texture2D[0];
-    [Export] public Texture2D[] DescriptionBoxOptions { get; set; } = new Texture2D[0];
-    [Export] public Texture2D[] EnergyContainerOptions { get; set; } = new Texture2D[0];
-    [Export] public Texture2D[] EnergyFill1Options { get; set; } = new Texture2D[0];
-    [Export] public Texture2D[] EnergyFill2Options { get; set; } = new Texture2D[0];
-    [Export] public Texture2D[] EnergyFillFullOptions { get; set; } = new Texture2D[0];
-    [Export] public Texture2D[] GemSocketsOptions { get; set; } = new Texture2D[0];
-    [Export] public Texture2D[] GemsOptions { get; set; } = new Texture2D[0];
     
+    // --- Front & back base templates ---
+    public LayerData CardBase { get; set; } = new() { RenderOnFront = true, RenderOnBack = true };
+    public LayerData Border { get; set; } = new() { RenderOnFront = true, RenderOnBack = true };
+    public LayerData Corners { get; set; } = new() { RenderOnFront = true, RenderOnBack = true };
+
+    // --- LayerData for paired texture+region+side ---
+    public LayerData Art { get; set; } =
+        new() { RenderOnFront = true, Region = new Vector4(0.1f, 0.1f, 0.8f, 0.35f) };
+
+    public LayerData Symbol { get; set; } = new()
+        { RenderOnBack = true, RenderOnFront = false, Region = new Vector4(0.2f, 0.2f, 0.6f, 0.6f) };
+
+    public LayerData ImageBackground { get; set; } =
+        new() { RenderOnFront = true, Region = new Vector4(0, 0, 1f, 0.5f) };
+
+    public LayerData Banner { get; set; } = new()
+        { RenderOnFront = true, Region = new Vector4(0.1f, 0.43f, 0.8f, 0.2f) };
+
+    public LayerData DescriptionBox { get; set; } = new()
+        { RenderOnFront = true, Region = new Vector4(0.015f, 0.43f, 1.01f, 0.59f) };
+
+    public LayerData EnergyContainer { get; set; } =
+        new() { RenderOnFront = true, Region = new Vector4(0.8f, 0, 0.2f, 0.15f) };
+
+    public LayerData EnergyFill1 { get; set; } =
+        new() { RenderOnFront = true, Region = new Vector4(0.8f, 0, 0.2f, 0.15f) };
+
+    public LayerData EnergyFill2 { get; set; } =
+        new() { RenderOnFront = true, Region = new Vector4(0.8f, 0, 0.2f, 0.15f) };
+
+    public LayerData[] GemSockets { get; set; } =
+    {
+        new() { RenderOnFront = true, Region = new Vector4(0.9f, 0.25f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.9f, 0.4f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.9f, 0.55f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.9f, 0.7f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.25f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.4f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.55f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.7f, 0.1f, 0.075f) },
+    };
+
+    public LayerData[] Gems { get; set; } =
+    {
+        new() { RenderOnFront = true, Region = new Vector4(0.9f, 0.25f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.9f, 0.4f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.9f, 0.55f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.9f, 0.7f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.25f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.4f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.55f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.7f, 0.1f, 0.075f) },
+    };
+    
+    public LayerData[] GatherAllLayers()
+    {
+        return new[] { CardBase, Border, Corners, ImageBackground, DescriptionBox, Art, Banner, Symbol, EnergyFill1, EnergyFill2, EnergyContainer }
+            .Concat(GemSockets)
+            .Concat(Gems)
+            .Reverse()
+            .ToArray();
+    }
 }

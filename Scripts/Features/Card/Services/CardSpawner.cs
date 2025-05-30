@@ -17,8 +17,6 @@ public partial class CardSpawner : Node3D
     [Export] public NodePath SpawnParentPath { get; set; }
     [Export] public Vector3 OffsetRange { get; set; } = Vector3.Zero;
 
-    [Export] public TextureLoader Card { get; set; }
-
     private Node3D _spawnParent;
     private int _spawnQueue = 0;
     private ICardGenerator _generator;
@@ -83,7 +81,8 @@ public partial class CardSpawner : Node3D
 
     private void BakeCardRenderer(CardShaderRenderer renderer, CardSignature signature)
     {
-        _generator.GenerateCardRenderer(renderer, signature);
-        renderer.Bake();
+        var template = new CardTemplate();
+        _generator.GenerateCardRenderer(renderer, signature, template);
+        renderer.Bake(template);
     }
 }
