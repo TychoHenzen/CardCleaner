@@ -1,6 +1,8 @@
 using Godot;
 using CardCleaner.Scripts;
 using CardCleaner.Scripts.Controllers;
+using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.DI;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Interfaces;
@@ -15,29 +17,20 @@ public partial class CardSpawner : Node3D
     [Export] public Vector3 OffsetRange { get; set; } = Vector3.Zero;
 
     [Export] public TextureLoader Card { get; set; }
-    
-    [Export] public RarityVisual[] RarityVisuals { get; set; }
-    [Export] public BaseCardType[] BaseCardTypes { get; set; }
-    [Export] public GemVisual[] GemVisuals { get; set; }
 
     private Node3D _spawnParent;
     private int _spawnQueue = 0;
     private ICardGenerator _generator;
 
-    private RandomNumberGenerator _rng = new();
+    private RandomNumberGenerator _rng;
 
     public override void _Ready()
     {
         _spawnParent = GetNode<Node3D>(SpawnParentPath);
-        
-        CallDeferred(nameof(DeferredAssign));
+        ServiceLocator.Get<RandomNumberGenerator>(rng => _rng = rng);
+        ServiceLocator.Get<ICardGenerator>(gen => _generator = gen);
     }
 
-    public void DeferredAssign()
-    {
-        _generator = new SignatureCardGenerator(RarityVisuals, BaseCardTypes, GemVisuals);
-        // _generator = new CardRandomizer(_rng, new CardTemplate(Card));
-    }
     public override void _Input(InputEvent @event)
     {
         if (@event is InputEventKey { Pressed: true, Echo: false } keyEvent)
@@ -80,17 +73,17 @@ public partial class CardSpawner : Node3D
         transform.Origin += offset;
         cardInstance.GlobalTransform = transform;
         cardInstance.Name = "Card";
-        
+
         if (cardInstance is CardController controller)
             controller.Signature = signature;
         var renderer = cardInstance.GetNode<CardShaderRenderer>("CardRenderer");
         if (renderer == null) return;
         CallDeferred(nameof(BakeCardRenderer), renderer, signature);
     }
+
     private void BakeCardRenderer(CardShaderRenderer renderer, CardSignature signature)
     {
         _generator.GenerateCardRenderer(renderer, signature);
         renderer.Bake();
     }
-
 }

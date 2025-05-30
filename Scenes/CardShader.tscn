@@ -91,7 +91,6 @@ NameText = "testy"
 NameLabel = NodePath("../Title")
 AttributesText = "zcxvzcxvzxcvzxcvzxcvzcxvzcxvzcxvzxcv"
 AttrLabel = NodePath("../Description")
-CardMaterial = ExtResource("7_r6y7f")
 
 [node name="MaterialManager" type="Node" parent="CardRenderer"]
 script = ExtResource("8_r6y7f")

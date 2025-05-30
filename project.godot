@@ -16,6 +16,10 @@ config/features=PackedStringArray("4.4", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 config/defaults/default_clear_color=Color(0.3, 0.3, 0.3, 1)
 
+[autoload]
+
+Services="*res://Scripts/Core/DependencyInjection/ServiceLocator.cs"
+
 [dotnet]
 
 project/assembly_name="CardCleaner"
