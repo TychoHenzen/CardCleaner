@@ -1,10 +1,12 @@
 ﻿using System.Linq;
-using CardCleaner.Scripts;
-using Godot;
+using CardCleaner.Scripts.Controllers;
 using CardCleaner.Scripts.Interfaces;
+using Godot;
+
+namespace CardCleaner.Scripts.Features.Card.Components;
 
 [Tool]
-public partial class CardShaderRenderer : Node, ICardComponent
+public partial class CardShaderRenderer : Node, IRenderComponent
 {
     // --- Front & back base templates ---
     public LayerData CardBase { get; set; } = new() { RenderOnFront = true, RenderOnBack = true };
@@ -72,144 +74,69 @@ public partial class CardShaderRenderer : Node, ICardComponent
     [Export] public Label3D AttrLabel { get; set; }
 
     // --- Material to receive baked texture ---
-    [Export] public ShaderMaterial CardMaterial { get; set; }
+    // [Export] public ShaderMaterial CardMaterial { get; set; }
     
     private Vector3[] _gemEmissionColors    = new Vector3[8];
     private float[]   _gemEmissionStrengths = new float[8];
-
-
+    
+    private ICardMaterialComponent _materialManager;
+    private IBlacklightController _blacklightController;
     private bool _baked = false;
+
     private RigidBody3D _cardRoot;
-    private ShaderMaterial _activeMaterial;
+    // private ShaderMaterial _activeMaterial;
 
     public void Setup(RigidBody3D cardRoot)
     {
         _cardRoot = cardRoot;
+        _materialManager = GetNode<CardMaterialManager>("MaterialManager");
+        _blacklightController = GetNode<BlacklightController>("BlacklightController");
     }
-
-    public override void _Ready()
-    {
-        if (!Engine.IsEditorHint())
-        {
-            SetPhysicsProcess(true);
-        }
-    }
-
-    public override void _PhysicsProcess(double delta)
-    {
-        if (Engine.IsEditorHint() || _cardRoot == null || _activeMaterial == null) return;
-
-        // Calculate blacklight exposure
-        float exposure = CalculateBlacklightExposure();
-        _activeMaterial.SetShaderParameter("blacklight_exposure", exposure);
-    }
-
-    private float CalculateBlacklightExposure()
-    {
-        // Find the player's blacklight
-        var player = GetTree().GetFirstNodeInGroup("player");
-
-        var spotlight = player?.GetNodeOrNull<SpotLight3D>("Head/Camera3D/SpotLight3D");
-        if (spotlight is not { Visible: true }) return 0.0f;
-
-        var cardPos = _cardRoot.GlobalPosition;
-        var lightPos = spotlight.GlobalPosition;
-        var lightForward = -spotlight.GlobalTransform.Basis.Z;
-
-        // Calculate distance factor
-        float distance = lightPos.DistanceTo(cardPos);
-        if (distance > BlacklightRange) return 0.0f;
-
-        float distanceFactor = 1.0f - (distance / BlacklightRange);
-
-        // Calculate angle factor
-        var toCard = (cardPos - lightPos).Normalized();
-        float angle = lightForward.Dot(toCard);
-        float spotAngleRad = Mathf.DegToRad(spotlight.SpotAngle);
-
-        if (angle < Mathf.Cos(spotAngleRad)) return 0.0f;
-
-        float angleFactor = (angle - Mathf.Cos(spotAngleRad)) / (1.0f - Mathf.Cos(spotAngleRad));
-
-        // Combine factors
-        return Mathf.Clamp(distanceFactor * angleFactor * spotlight.LightEnergy, 0.0f, 1.0f);
-    }
-
+    
+    
     public void Bake()
     {
         if (_baked) return;
-
-        CallDeferred(nameof(DeferredAssign));
+        CallDeferred(nameof(DeferredBake));
         _baked = true;
     }
-    /// <summary>
-    /// Called by generator to supply color and strength for gem index.
-    /// </summary>
-    public void SetGemEmission(int index, Color color, float strength)
-    {
-        _gemEmissionColors[index]    = new Vector3(color.R, color.G, color.B);
-        _gemEmissionStrengths[index] = strength;
-    }
 
-
-    private void DeferredAssign()
+    private void DeferredBake()
     {
         var box = GetParent().GetNodeOrNull<MeshInstance3D>("OuterBox_Baked");
         if (box == null)
         {
-            CallDeferred(nameof(DeferredAssign));
+            CallDeferred(nameof(DeferredBake));
             return;
         }
-
-        // Gather all LayerData into arrays
-        var allLayers = new[]
-            {
-                CardBase, Border, Corners, ImageBackground, DescriptionBox,
-                Art, Banner, Symbol, EnergyFill1, EnergyFill2, EnergyContainer
-            }
+        var layers = GatherAllLayers();
+        _materialManager.SetLayerTextures(layers);
+        _materialManager.ApplyMaterial(box);
+        
+        if (box.MaterialOverride is ShaderMaterial material)
+        {
+            CallDeferred(nameof(EnableBlacklightUpdates), material);
+        }
+    }
+    
+    private void EnableBlacklightUpdates(ShaderMaterial material)
+    {
+        _blacklightController?.UpdateBlacklightEffect(material);
+    }
+    private LayerData[] GatherAllLayers()
+    {
+        return new[] { CardBase, Border, Corners, ImageBackground, DescriptionBox, Art, Banner, Symbol, EnergyFill1, EnergyFill2, EnergyContainer }
             .Concat(GemSockets)
             .Concat(Gems)
             .Reverse()
             .ToArray();
-
-        // Build arrays for shader uniforms
-        var texturesArr = new Godot.Collections.Array<Texture2D>();
-        var regionsArr = new Godot.Collections.Array<Vector4>();
-        var frontFlagsArr = new Godot.Collections.Array<bool>();
-        var backFlagsArr = new Godot.Collections.Array<bool>();
-
-        for (int i = 0; i < allLayers.Length; i++)
-        {
-            var ld = allLayers[i];
-            texturesArr.Add(ld.Texture);
-            regionsArr.Add(ld.Region);
-            frontFlagsArr.Add(ld.RenderOnFront);
-            backFlagsArr.Add(ld.RenderOnBack);
-        }
-
-        // Create material
-        if (CardMaterial?.Duplicate() is not ShaderMaterial mat)
-            return;
-
-        // Set all shader parameters
-        mat.SetShaderParameter("textures", texturesArr);
-        mat.SetShaderParameter("regions", regionsArr);
-        mat.SetShaderParameter("frontFlags", frontFlagsArr);
-        mat.SetShaderParameter("backFlags", backFlagsArr);
-
-        // Security effect parameters
-        mat.SetShaderParameter("blacklight_exposure", 0.0f);
-
-        mat.SetShaderParameter("gem_emission_colors",    new Godot.Collections.Array<Vector3>(_gemEmissionColors));
-        mat.SetShaderParameter("gem_emission_strengths", new Godot.Collections.Array<float>(_gemEmissionStrengths));
-
-        
-        box.MaterialOverride = mat;
-        _activeMaterial = mat;
     }
-
-    public void IntegrateForces(PhysicsDirectBodyState3D state)
+    /// <summary>
+    /// Called by generator to supply color and strength for gem index.
+    /// </summary>
+    /// 
+    public void SetGemEmission(int index, Color color, float strength)
     {
-        // No physics integration needed
+        _materialManager.SetGemEmission(index, color, strength);
     }
 }

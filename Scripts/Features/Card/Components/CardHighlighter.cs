@@ -27,6 +27,7 @@ public partial class CardHighlighter : Node3D
         Input.Connect("KeyPressed", Callable.From<InputEventKey>(OnKeyPressed));
         
         Picker.Connect("CardDetected", Callable.From<RigidBody3D>(OnCardDetected));
+        Picker.Connect("NoCardDetected", Callable.From(OnNoCardDetected));
         
         SetupCardCollisionLayers();
     }
@@ -78,10 +79,19 @@ public partial class CardHighlighter : Node3D
         
         if (_lastCard == card) return;
         ClearHighlight(_lastCard);
-        HighlightCard(card);
+        if(card != null)
+            HighlightCard(card);
         _lastCard = card;
     }
 
+    private void OnNoCardDetected()
+    {
+        if (CardDropper.IsPreparingDrop) return; // Don't change highlights during drop prep
+        
+        ClearHighlight(_lastCard);
+        _lastCard = null;
+    }
+    
     private void HighlightCard(RigidBody3D card)
     {
         if (Camera.GlobalPosition.DistanceTo(card.GlobalPosition) > MaxHighlightDistance) return;

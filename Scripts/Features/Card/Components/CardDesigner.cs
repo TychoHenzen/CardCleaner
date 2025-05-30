@@ -80,10 +80,6 @@ public partial class CardDesigner : Node, ICardComponent
         UpdateShape();
     }
 
-    public void IntegrateForces(PhysicsDirectBodyState3D state)
-    {
-    }
-
     private void UpdateShape()
     {
         if (_outerBox == null) return;

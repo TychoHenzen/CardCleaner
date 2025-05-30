@@ -42,7 +42,7 @@ public class SignatureCardGenerator : ICardGenerator
     }
 
 
-    public void GenerateCardRenderer(CardShaderRenderer renderer, CardSignature signature)
+    public void GenerateCardRenderer(Components.CardShaderRenderer renderer, CardSignature signature)
     {
         
         var rng = new RandomNumberGenerator

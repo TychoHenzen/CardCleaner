@@ -36,8 +36,8 @@ public partial class DropPreview : Node3D
         _previewMesh.ClearSurfaces();
         _previewMesh.SurfaceBegin(Mesh.PrimitiveType.Lines);
         _previewMesh.SurfaceSetColor(Colors.Red);
-        _previewMesh.SurfaceAddVertex(origin);
-        _previewMesh.SurfaceAddVertex(hit);
+        _previewMesh.SurfaceAddVertex(ToLocal(origin));
+        _previewMesh.SurfaceAddVertex(ToLocal(hit));
         _previewMesh.SurfaceEnd();
     }
 }
