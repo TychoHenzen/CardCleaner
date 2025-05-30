@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
-using CardCleaner.Scripts.Features.DeckBuilder;
 using Godot;
+using CardSlot = CardCleaner.Scripts.Features.Deckbuilder.Models.CardSlot;
+using DeckSlot = CardCleaner.Scripts.Features.Deckbuilder.Models.DeckSlot;
+using TileMapScreen = CardCleaner.Scripts.Features.Deckbuilder.Models.TileMapScreen;
 
 // for CardSignature
 

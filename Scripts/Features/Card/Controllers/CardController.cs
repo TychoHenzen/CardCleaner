@@ -18,7 +18,8 @@ public partial class CardController : RigidBody3D {
             _components.Add(comp);
         }
         AddToGroup("Cards");
-        
+        CollisionLayer = 2;
+
     }
 
     public override void _IntegrateForces(PhysicsDirectBodyState3D state) {

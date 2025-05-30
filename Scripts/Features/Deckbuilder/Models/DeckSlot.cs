@@ -1,10 +1,9 @@
-﻿using Godot;
-using System;
-using System.Collections.Generic;
-using CardCleaner.Scripts;
-using CardCleaner.Scripts.Controllers; // assumes Card and CardSignature live here
+﻿using System.Collections.Generic;
+using CardCleaner.Scripts.Controllers;
+using Godot;
 
-namespace CardCleaner.Scripts.Features.DeckBuilder
+
+namespace CardCleaner.Scripts.Features.Deckbuilder.Models
 {
     [Tool]
     public partial class DeckSlot : Node3D

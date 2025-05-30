@@ -1,9 +1,8 @@
-[gd_scene load_steps=29 format=3 uid="uid://cc3ymqg03a2g5"]
+[gd_scene load_steps=28 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://oqrxpyj8qkim" path="res://Scenes/CardShader.tscn" id="3_4bcsh"]
 [ext_resource type="Script" uid="uid://bo8luaias82fj" path="res://Scripts/Features/Card/Services/CardSpawner.cs" id="3_6nqof"]
 [ext_resource type="PackedScene" uid="uid://wv6a67swhus" path="res://Scenes/player.tscn" id="3_k8nbv"]
-[ext_resource type="Script" uid="uid://coebm8tgbgmqv" path="res://Scripts/Features/Card/Components/CardHighlighter.cs" id="4_ia2xn"]
 [ext_resource type="Resource" uid="uid://c1pvj6bchej3" path="res://Assets/CardRarity/Common.tres" id="4_vkee2"]
 [ext_resource type="Resource" uid="uid://crj4wbejtk751" path="res://Assets/CardRarity/Uncommon.tres" id="5_otk7d"]
 [ext_resource type="Script" uid="uid://dckadi8fdva0e" path="res://Scripts/Features/Pause/Controllers/PauseController.cs" id="5_u668n"]
@@ -67,6 +66,9 @@ fov = 89.7
 [node name="SpotLight3D" parent="Node3D2/Head/Camera3D" index="0"]
 spot_range = 46.3397
 
+[node name="CardInteraction" parent="Node3D2" index="3" node_paths=PackedStringArray("CardsParent")]
+CardsParent = NodePath("../../Cards")
+
 [node name="Cards" type="Node3D" parent="." node_paths=PackedStringArray("Card")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
 script = ExtResource("3_6nqof")
@@ -77,15 +79,6 @@ Card = NodePath("../CardTemplates/CardArt")
 RarityVisuals = Array[Object]([ExtResource("4_vkee2"), ExtResource("5_otk7d"), ExtResource("6_ypprn"), ExtResource("7_ioitf"), ExtResource("8_3rand")])
 BaseCardTypes = Array[Object]([ExtResource("9_3xlss")])
 GemVisuals = Array[Object]([ExtResource("9_h03qd"), ExtResource("10_3xlss"), ExtResource("11_o6inp"), ExtResource("12_f1k1t"), ExtResource("13_6aa2p"), ExtResource("14_sstrp"), ExtResource("15_dta7m"), ExtResource("16_r0o6j")])
-
-[node name="Node" type="Node" parent="Cards"]
-
-[node name="CardHighlighter" type="Node3D" parent="."]
-script = ExtResource("4_ia2xn")
-CameraPath = NodePath("../Node3D2/Head/Camera3D")
-UseMultipleRays = false
-EnableDebug = true
-HoldDistance = 1.0
 
 [node name="Node" type="Node" parent="." node_paths=PackedStringArray("PauseMenuLayer", "UILayer")]
 script = ExtResource("5_u668n")

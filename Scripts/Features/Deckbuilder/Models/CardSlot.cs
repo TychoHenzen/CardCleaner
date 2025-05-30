@@ -1,9 +1,8 @@
-﻿using Godot;
-using System;
-using CardCleaner.Scripts;
-using CardCleaner.Scripts.Controllers; // assumes Card and CardSignature live here
+﻿using CardCleaner.Scripts.Controllers;
+using Godot;
 
-namespace CardCleaner.Scripts.Features.DeckBuilder
+
+namespace CardCleaner.Scripts.Features.Deckbuilder.Models
 {
     [Tool]
     public partial class CardSlot : Node3D

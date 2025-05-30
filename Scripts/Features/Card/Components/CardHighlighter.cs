@@ -1,262 +1,100 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using CardCleaner.Scripts;
+using CardCleaner.Scripts.Features.Card.Components;
 using Godot;
 
 public partial class CardHighlighter : Node3D
 {
-    [Export] public NodePath CameraPath;
-    [Export] public float RayLength = 100f;
-    [Export] public bool UseMultipleRays = true;
-    [Export] public float CrosshairSize = 0.01f;
-    [Export] public bool EnableDebug;
+    [Export] public Camera3D Camera;
+    [Export] public Node3D CardsParent;
     [Export] public float MaxHighlightDistance = 50f;
-    [Export] public uint CardCollisionLayer = 2;
-    [Export] public float HoldDistance = 2f;
-
-    private Camera3D _camera;
-    private Node3D _handAnchor;
-    private Node3D _cardsParent;
-    private readonly List<RigidBody3D> _heldCards = new();
+    
+    [Export] public InputHandler Input;
+    [Export] public CardPicker Picker;
+    [Export] public DropPreview Preview;
+    [Export] public CardHolder CardHolder;
+    [Export] public CardDropper CardDropper;
     private RigidBody3D _lastCard;
-
-    // Drop-prep and preview
-    private bool _isPreparingDrop = false;
-    private MeshInstance3D _previewInstance;
-    private ImmediateMesh _previewMesh;
 
     public override void _Ready()
     {
-        _camera = GetNode<Camera3D>(CameraPath);
-        _handAnchor = _camera;
-        _cardsParent = GetParent().GetNode<Node3D>("Cards");
+        // Get references
+        CardHolder.SetReferences(Camera, CardsParent);
+        CardDropper.Initialize(CardHolder, Preview, Camera);
+
+        // Wire signals
+        Input.Connect("RightPress", Callable.From(OnRightPress));
+        Input.Connect("RightRelease", Callable.From(OnRightRelease));
+        Input.Connect("LeftPress", Callable.From(OnLeftPress));
+        Input.Connect("KeyPressed", Callable.From<InputEventKey>(OnKeyPressed));
+        
+        Picker.Connect("CardDetected", Callable.From<RigidBody3D>(OnCardDetected));
+        
         SetupCardCollisionLayers();
-
-        _previewMesh = new ImmediateMesh();
-        _previewInstance = new MeshInstance3D
-        {
-            Mesh = _previewMesh,
-            Visible = false
-        };
-        AddChild(_previewInstance);
-    }
-
-    public override void _Input(InputEvent @event)
-    {
-        if (Engine.IsEditorHint()) return;
-
-        if (@event is InputEventMouseButton mb)
-        {
-            if (mb.ButtonIndex == MouseButton.Right)
-            {
-                if (mb.Pressed)
-                    StartPrepareDrop();
-                else
-                    ReleasePrepareDrop();
-            }
-            else if (mb.ButtonIndex == MouseButton.Left && mb.Pressed)
-            {
-                if (_isPreparingDrop)
-                    CancelPrepareDrop();
-                else if (_lastCard != null)
-                    PickUpCard(_lastCard);
-            }
-        }
-
-        if (_isPreparingDrop && @event is InputEventKey keyEvt && keyEvt.Pressed && !keyEvt.Echo)
-        {
-            if (keyEvt.Keycode == Key.X)
-                DropOneCard();
-        }
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        if (_isPreparingDrop)
+        base._PhysicsProcess(delta);
+        // Update drop preview while preparing drop
+        if (CardDropper.IsPreparingDrop)
         {
-            UpdateHeldCardPositions();
-            UpdatePreview();
-            return;
-        }
-
-        var target = FindCard();
-        if (target != null && _camera.GlobalPosition.DistanceTo(target.GlobalPosition) <= MaxHighlightDistance)
-        {
-            if (target == _lastCard) return;
-            ClearOutline();
-            ApplyOutline(target);
-        }
-        else
-        {
-            ClearOutline();
+            CardDropper.UpdateDropPreview();
         }
     }
 
-    private void PickUpCard(RigidBody3D card)
+    private void OnRightPress()
     {
-        if (_heldCards.Contains(card)) return;
-
-        // Clear highlight and disable physics
-        ClearOutline();
-        card.Freeze = true;
-        var shape = card.GetNode<CollisionShape3D>("CardCollision");
-        if (shape != null) shape.Disabled = true;
-        var designer = card.GetNode<CardDesigner>("Designer");
-
-        card.Reparent(_handAnchor);
-        float thickness = designer.Thickness;
-        float indexOffset = _heldCards.Count * thickness;
-        var rotation = Basis.Identity.Rotated(Vector3.Right, Mathf.DegToRad(90));
-        var localPos = new Vector3(
-            1 - indexOffset * 10,
-            0,
-            -HoldDistance + indexOffset
-        );
-        card.Transform = new Transform3D(rotation, localPos);
-
-        _heldCards.Add(card);
-        _lastCard = null;
+        CardDropper.StartDropPreparation();
     }
 
-    private void StartPrepareDrop()
+    private void OnRightRelease()
     {
-        if (_heldCards.Count == 0) return;
-        _isPreparingDrop = true;
-        _previewInstance.Visible = true;
+        CardDropper.CompleteDropPreparation();
     }
 
-    private void CancelPrepareDrop()
+    private void OnLeftPress()
     {
-        _isPreparingDrop = false;
-        _previewInstance.Visible = false;
-
-        // Reset card positions and rotations
-        foreach (var card in _heldCards)
+        if (CardDropper.IsPreparingDrop)
         {
-            var designer = card.GetNode<CardDesigner>("Designer");
-            float thickness = designer.Thickness;
-            float indexOffset = _heldCards.IndexOf(card) * thickness;
-            var rotation = Basis.Identity.Rotated(Vector3.Right, Mathf.DegToRad(90));
-            var localPos = new Vector3(
-                1 - indexOffset * 10,
-                0,
-                -HoldDistance + indexOffset
-            );
-            card.Transform = new Transform3D(rotation, localPos);
+            CardDropper.CancelDropPreparation();
+        }
+        else if (_lastCard != null && Camera.GlobalPosition.DistanceTo(_lastCard.GlobalPosition) <= MaxHighlightDistance)
+        {
+            CardHolder.AddCard(_lastCard);
+            ClearHighlight(_lastCard);
         }
     }
 
-    private void ReleasePrepareDrop()
+    private void OnKeyPressed(InputEventKey keyEvent)
     {
-        if (!_isPreparingDrop) return;
-        DropAllHeldAtCurrent();
-        _isPreparingDrop = false;
-        _previewInstance.Visible = false;
-    }
-
-    private void DropOneCard()
-    {
-        if (_heldCards.Count == 0) return;
-        int i = _heldCards.Count - 1;
-        var card = _heldCards[i];
-        EnablePhysics(card);
-        // Remove from hand and reparent
-        card.Reparent(_cardsParent);
-        _heldCards.RemoveAt(i);
-    }
-
-    private void DropAllHeldAtCurrent()
-    {
-        foreach (var card in _heldCards)
+        if (CardDropper.IsPreparingDrop && keyEvent.Keycode == Key.X)
         {
-            EnablePhysics(card);
-            // Remove from hand and reparent
-            card.Reparent(_cardsParent);
-        }
-        _heldCards.Clear();
-    }
-
-    
-
-    private void UpdateHeldCardPositions()
-    {
-        // Drop-prep: face camera yaw, hold horizontally, stacked up
-        var camTransform = _camera.GlobalTransform;
-        var forwardCam = -camTransform.Basis.Z;
-        // Compute camera yaw only in XZ plane
-        float yaw = Mathf.Atan2(forwardCam.X, forwardCam.Z);
-        // Rotation: yaw around Y, then tilt flat
-        var faceYaw = Basis.Identity.Rotated(Vector3.Up, yaw+Mathf.DegToRad(180));
-
-        var downOffset = forwardCam * HoldDistance;
-        var upAxis = Vector3.Up;
-
-        for (int i = 0; i < _heldCards.Count; i++)
-        {
-            var card = _heldCards[i];
-            float thickness = card.GetNode<CardDesigner>("Designer").Thickness;
-            var worldPos = camTransform.Origin + downOffset + upAxis * (i * thickness);
-            card.GlobalTransform = new Transform3D(faceYaw, worldPos);
+            CardDropper.DropSingleCard();
         }
     }
 
-    private void UpdatePreview()
+    private void OnCardDetected(RigidBody3D card)
     {
-        if (_heldCards.Count == 0) return;
-
-        var bottom = _heldCards[0];
-        var origin = bottom.GlobalTransform.Origin;
-        var to = origin + Vector3.Down * RayLength;
-        var result = GetWorld3D().DirectSpaceState.IntersectRay(new PhysicsRayQueryParameters3D {
-            From = origin, To = to, CollideWithBodies = true
-        });
-
-        var hit = result.Count > 0 ? (Vector3)result["position"] : to;
-
-        _previewMesh.ClearSurfaces();
-        _previewMesh.SurfaceBegin(Mesh.PrimitiveType.Lines);
-        _previewMesh.SurfaceSetColor(Colors.Red);
-        _previewMesh.SurfaceAddVertex(origin);
-        _previewMesh.SurfaceAddVertex(hit);
-        _previewMesh.SurfaceEnd();
+        if (CardDropper.IsPreparingDrop) return; // Don't highlight during drop prep
+        
+        if (_lastCard == card) return;
+        ClearHighlight(_lastCard);
+        HighlightCard(card);
+        _lastCard = card;
     }
 
-    private void EnablePhysics(RigidBody3D card)
+    private void HighlightCard(RigidBody3D card)
     {
-        card.Freeze = false;
-        var shape = card.GetNode<CollisionShape3D>("CardCollision");
-        if (shape != null) shape.Disabled = false;
-        card.CollisionLayer = CardCollisionLayer;
-    }
-
-    private RigidBody3D FindCard()
-    {
-        var origin = _camera.GlobalTransform.Origin;
-        var forward = -_camera.GlobalTransform.Basis.Z;
-        var result = GetWorld3D().DirectSpaceState.IntersectRay(new PhysicsRayQueryParameters3D {
-            From = origin,
-            To = origin + forward * RayLength,
-            CollideWithBodies = true,
-            CollideWithAreas = false,
-            CollisionMask = CardCollisionLayer
-        });
-        if (result.Count > 0 && result["collider"].Obj is RigidBody3D rb && rb.Name.ToString().StartsWith("Card"))
-            return rb;
-        return null;
-    }
-
-    private void ApplyOutline(RigidBody3D card)
-    {
+        if (Camera.GlobalPosition.DistanceTo(card.GlobalPosition) > MaxHighlightDistance) return;
+        
         var outline = card.GetNodeOrNull<CsgBox3D>("OutlineBox");
         if (outline == null) return;
         outline.Visible = true;
         _lastCard = card;
     }
 
-    private void ClearOutline()
+    private void ClearHighlight(RigidBody3D card)
     {
-        var outline = _lastCard?.GetNodeOrNull<CsgBox3D>("OutlineBox");
+        var outline = card?.GetNodeOrNull<CsgBox3D>("OutlineBox");
         if (outline == null) return;
         outline.Visible = false;
         _lastCard = null;
@@ -265,7 +103,9 @@ public partial class CardHighlighter : Node3D
     private void SetupCardCollisionLayers()
     {
         var cards = GetTree().GetNodesInGroup("Cards");
-        foreach (var card in cards.Cast<RigidBody3D>())
-            card.CollisionLayer = CardCollisionLayer;
+        foreach (RigidBody3D card in cards)
+        {
+            card.CollisionLayer = CardHolder.CardCollisionLayer;
+        }
     }
 }

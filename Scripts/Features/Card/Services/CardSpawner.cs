@@ -73,8 +73,8 @@ public partial class CardSpawner : Node3D
         if (renderer == null) return;
 
         _generator.GenerateCardRenderer(renderer, signature);
-        renderer.Bake();
-        cardInstance.GetNode<CardController>("Card").Signature = signature;
+        if (cardInstance is CardController controller)
+            controller.Signature = signature;
 
         _spawnParent.AddChild(cardInstance);
 
@@ -87,6 +87,11 @@ public partial class CardSpawner : Node3D
         transform.Origin += offset;
         cardInstance.GlobalTransform = transform;
         cardInstance.Name = "Card";
+        CallDeferred(nameof(BakeCardRenderer), renderer);
+    }
+    private static void BakeCardRenderer(CardShaderRenderer renderer)
+    {
+        renderer.Bake();
     }
 
 }

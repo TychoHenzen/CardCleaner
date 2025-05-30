@@ -1,8 +1,7 @@
-﻿using Godot;
-using System.Collections.Generic;
-using CardCleaner.Scripts;
+﻿using System.Collections.Generic;
+using Godot;
 
-namespace CardCleaner.Scripts.Features.DeckBuilder
+namespace CardCleaner.Scripts.Features.Deckbuilder.Models
 {
     public partial class TileMapScreen : Node2D
     {
