@@ -2,7 +2,7 @@ using CardCleaner.Scripts.Interfaces;
 using Godot;
 
 [Tool]
-public partial class FlutterCard : Node, ICardComponent
+public partial class FlutterCard : Node, IPhysicsComponent
 {
     // Aerodynamic coefficients
     [Export] public float DragCoeff = 0.5f;
@@ -75,5 +75,10 @@ public partial class FlutterCard : Node, ICardComponent
 
         // Apply both
         state.ApplyTorque(twistTorque + pitchTorque);
+    }
+
+    public void PhysicsProcess(double delta)
+    {
+        //no-op
     }
 }

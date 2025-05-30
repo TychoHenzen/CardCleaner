@@ -7,25 +7,60 @@ namespace CardCleaner.Scripts.Controllers;
 [Tool]
 public partial class CardController : RigidBody3D {
     private readonly List<ICardComponent> _components = new();
+    private readonly List<IPhysicsComponent> _physicsComponents = new();
+    private readonly List<IRenderComponent> _renderComponents = new();
     public CardSignature Signature;
-    public override void _Ready() {
-        // Discover and initialize all child components
-        foreach (var child in GetChildren())
-        {
-            if (child is not ICardComponent comp) continue;
-            
-            comp.Setup(this);
-            _components.Add(comp);
-        }
+    public override void _Ready() 
+    {
+        
+        DiscoverComponents(this);
         AddToGroup("Cards");
         CollisionLayer = 2;
-
     }
-
-    public override void _IntegrateForces(PhysicsDirectBodyState3D state) {
-        // Delegate physics updates
-        foreach (var comp in _components) {
-            comp.IntegrateForces(state);
+    
+    private void DiscoverComponents(Node node)
+    {
+        foreach (var child in node.GetChildren())
+        {
+            if (child is ICardComponent comp)
+            {
+                comp.Setup(this);
+                _components.Add(comp);
+            
+                switch (child)
+                {
+                    case IPhysicsComponent physicsComp:
+                        _physicsComponents.Add(physicsComp);
+                        break;
+                    case IRenderComponent renderComp:
+                        _renderComponents.Add(renderComp);
+                        break;
+                }
+            }
+        
+            // Recurse into children
+            DiscoverComponents(child);
         }
     }
+
+
+    public override void _IntegrateForces(PhysicsDirectBodyState3D state) 
+    {
+        // Only call physics on components that actually need it
+        foreach (var physicsComp in _physicsComponents) 
+        {
+            physicsComp.IntegrateForces(state);
+        }
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        base._PhysicsProcess(delta);
+        // Only call physics on components that actually need it
+        foreach (var physicsComp in _physicsComponents) 
+        {
+            physicsComp.PhysicsProcess(delta);
+        }
+    }
+
 }

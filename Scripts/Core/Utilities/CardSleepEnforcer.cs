@@ -8,7 +8,7 @@ namespace CardCleaner.Scripts;
 /// to prevent wakeups from other cards landing on it.
 /// </summary>
 [Tool]
-public partial class CardSleepEnforcer : Node, ICardComponent
+public partial class CardSleepEnforcer : Node, IPhysicsComponent
 {
     [Export] public float LinearSleepThreshold = 0.05f;
     [Export] public float AngularSleepThreshold = 0.05f;
@@ -27,5 +27,10 @@ public partial class CardSleepEnforcer : Node, ICardComponent
         {
             _body.Freeze = true;
         }
+    }
+
+    public void PhysicsProcess(double delta)
+    {
+        //no-op
     }
 }

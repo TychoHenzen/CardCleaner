@@ -5,8 +5,8 @@
 
 # 1. Gather tracked text files
 #$extensions = '.cs','.csproj','.gox','.json','.xml','.yml','.mgcb','.spritefont','.gdshader','.md','.godot','.tscn','.tres'
-$extensions = '.cs','.json','.xml','.yml','.gdshader','.md','.ps1','.tscn','.tres'
-#$extensions = '.cs','.json','.xml','.yml','.gdshader','.md'
+#$extensions = '.cs','.json','.xml','.yml','.gdshader','.md','.ps1','.tscn','.tres'
+$extensions = '.cs','.json','.xml','.yml','.gdshader','.md'
 
 
 $files = git ls-files |

@@ -4,6 +4,8 @@ public partial class CardPicker : Node3D
 {
     [Signal]
     public delegate void CardDetectedEventHandler(RigidBody3D card);
+    [Signal]
+    public delegate void NoCardDetectedEventHandler();
 
     public float RayLength = 100f;
     public uint CollisionMask = 2;
@@ -26,6 +28,10 @@ public partial class CardPicker : Node3D
             && rb.Name.ToString().StartsWith("Card"))
         {
             EmitSignal(nameof(CardDetected), rb);
+        }
+        else
+        {
+            EmitSignal(nameof(NoCardDetected));
         }
     }
 }

@@ -46,27 +46,27 @@ ambient_light_energy = 0.1
 
 [node name="Node3D" type="Node3D"]
 
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
+[node name="World" type="CSGBox3D" parent="."]
 size = Vector3(40, 0.176, 40)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="CSGBox3D"]
+[node name="StaticBody3D" type="StaticBody3D" parent="World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.8355, 0, 0.316311)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CSGBox3D/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/StaticBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.8355, 0.110413, -0.316311)
 shape = SubResource("BoxShape3D_t5ln1")
 
-[node name="Node3D2" parent="." instance=ExtResource("3_k8nbv")]
+[node name="Player" parent="." instance=ExtResource("3_k8nbv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.63051, 1.30859, -2.37775)
 
-[node name="Camera3D" parent="Node3D2/Head" index="0"]
+[node name="Camera3D" parent="Player/Head" index="0"]
 environment = SubResource("Environment_3xlss")
 fov = 89.7
 
-[node name="SpotLight3D" parent="Node3D2/Head/Camera3D" index="0"]
+[node name="SpotLight3D" parent="Player/Head/Camera3D" index="0"]
 spot_range = 46.3397
 
-[node name="CardInteraction" parent="Node3D2" index="3" node_paths=PackedStringArray("CardsParent")]
+[node name="CardInteraction" parent="Player" index="3" node_paths=PackedStringArray("CardsParent")]
 CardsParent = NodePath("../../Cards")
 
 [node name="Cards" type="Node3D" parent="." node_paths=PackedStringArray("Card")]
@@ -80,23 +80,23 @@ RarityVisuals = Array[Object]([ExtResource("4_vkee2"), ExtResource("5_otk7d"), E
 BaseCardTypes = Array[Object]([ExtResource("9_3xlss")])
 GemVisuals = Array[Object]([ExtResource("9_h03qd"), ExtResource("10_3xlss"), ExtResource("11_o6inp"), ExtResource("12_f1k1t"), ExtResource("13_6aa2p"), ExtResource("14_sstrp"), ExtResource("15_dta7m"), ExtResource("16_r0o6j")])
 
-[node name="Node" type="Node" parent="." node_paths=PackedStringArray("PauseMenuLayer", "UILayer")]
+[node name="Ui" type="Node" parent="." node_paths=PackedStringArray("PauseMenuLayer", "UILayer")]
 script = ExtResource("5_u668n")
-PauseMenuLayer = NodePath("../PauseMenu")
-UILayer = NodePath("../UI")
+PauseMenuLayer = NodePath("PauseMenu")
+UILayer = NodePath("UI")
 
-[node name="PauseMenu" type="CanvasLayer" parent="."]
+[node name="PauseMenu" type="CanvasLayer" parent="Ui"]
 
-[node name="Panel" type="Panel" parent="PauseMenu"]
+[node name="Panel" type="Panel" parent="Ui/PauseMenu"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="Ui"]
 
-[node name="Panel" type="Panel" parent="UI"]
+[node name="Panel" type="Panel" parent="Ui/UI"]
 custom_minimum_size = Vector2(10, 10)
 anchors_preset = 8
 anchor_left = 0.5
@@ -110,12 +110,12 @@ offset_bottom = 5.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Tile0001" type="Sprite2D" parent="UI/Panel"]
+[node name="Tile0001" type="Sprite2D" parent="Ui/UI/Panel"]
 texture_filter = 1
 position = Vector2(5, 5)
 texture = ExtResource("6_28ir6")
 
-[node name="SingleCard" parent="." instance=ExtResource("22_o6inp")]
+[node name="SingleCardHolder" parent="." instance=ExtResource("22_o6inp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.85722, 0.308594, 4.87963)
 
 [node name="CardTemplates" type="Node" parent="."]
@@ -136,4 +136,4 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 3, 0.5
 [node name="CardStack" parent="." instance=ExtResource("24_f1k1t")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.22896, 0.308594, 4.90923)
 
-[editable path="Node3D2"]
+[editable path="Player"]

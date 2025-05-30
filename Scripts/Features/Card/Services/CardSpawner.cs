@@ -1,6 +1,7 @@
 using Godot;
 using CardCleaner.Scripts;
 using CardCleaner.Scripts.Controllers;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Interfaces;
 
@@ -60,8 +61,8 @@ public partial class CardSpawner : Node3D
     {
         if (_spawnQueue > 0)
         {
-            SpawnSingleCard(CardSignature.Random(_rng));
             _spawnQueue--;
+            SpawnSingleCard(CardSignature.Random(_rng));
         }
     }
 
@@ -69,15 +70,7 @@ public partial class CardSpawner : Node3D
     {
         if (CardScene.Instantiate() is not Node3D cardInstance)
             return;
-        var renderer = cardInstance.GetNode<CardShaderRenderer>("CardRenderer");
-        if (renderer == null) return;
-
-        _generator.GenerateCardRenderer(renderer, signature);
-        if (cardInstance is CardController controller)
-            controller.Signature = signature;
-
         _spawnParent.AddChild(cardInstance);
-
         var offset = new Vector3(
             (_rng.Randf() * 2 - 1) * OffsetRange.X,
             (_rng.Randf() * 2 - 1) * OffsetRange.Y,
@@ -87,10 +80,16 @@ public partial class CardSpawner : Node3D
         transform.Origin += offset;
         cardInstance.GlobalTransform = transform;
         cardInstance.Name = "Card";
-        CallDeferred(nameof(BakeCardRenderer), renderer);
+        
+        if (cardInstance is CardController controller)
+            controller.Signature = signature;
+        var renderer = cardInstance.GetNode<CardShaderRenderer>("CardRenderer");
+        if (renderer == null) return;
+        CallDeferred(nameof(BakeCardRenderer), renderer, signature);
     }
-    private static void BakeCardRenderer(CardShaderRenderer renderer)
+    private void BakeCardRenderer(CardShaderRenderer renderer, CardSignature signature)
     {
+        _generator.GenerateCardRenderer(renderer, signature);
         renderer.Bake();
     }
 

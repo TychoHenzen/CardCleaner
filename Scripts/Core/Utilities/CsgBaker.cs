@@ -113,7 +113,5 @@ namespace CardCleaner.Scripts
 
             return result;
         }
-
-        public void IntegrateForces(PhysicsDirectBodyState3D state) { /* no-op */ }
     }
 }
