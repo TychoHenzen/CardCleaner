@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://cc3ymqg03a2g5"]
+[gd_scene load_steps=33 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://oqrxpyj8qkim" path="res://Scenes/CardShader.tscn" id="3_4bcsh"]
 [ext_resource type="Script" uid="uid://bo8luaias82fj" path="res://Scripts/Features/Card/Services/CardSpawner.cs" id="3_6nqof"]
@@ -25,7 +25,9 @@
 [ext_resource type="PackedScene" uid="uid://bj1xb35l41wmy" path="res://Assets/Models/CardStack.fbx" id="24_f1k1t"]
 [ext_resource type="Script" uid="uid://b4jd1xcck85xb" path="res://Scripts/Core/Utilities/GameSettingsProvider.cs" id="25_sstrp"]
 [ext_resource type="Script" uid="uid://da31spt6lbnn6" path="res://Scripts/Core/Utilities/GameSettings.cs" id="26_dta7m"]
-[ext_resource type="Script" uid="uid://bn02ohsh8gfn4" path="res://Scripts/Features/Card/Services/TextureLoader.cs" id="449_ucc6g"]
+[ext_resource type="Script" uid="uid://6wu6tpceqfcc" path="res://Scripts/Features/Card/Components/CardMaterialManager.cs" id="26_r0o6j"]
+[ext_resource type="Material" uid="uid://d368k11s8ohrk" path="res://Assets/Materials/CardMaterial.tres" id="27_1ia11"]
+[ext_resource type="Script" uid="uid://dmqf3ccuvfg32" path="res://Scripts/Features/Card/Controllers/BlacklightController.cs" id="28_up2yq"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t5ln1"]
 size = Vector3(39.5682, 0.396362, 43.8758)
@@ -52,13 +54,12 @@ ambient_light_energy = 0.1
 [node name="World" type="CSGBox3D" parent="."]
 size = Vector3(40, 0.176, 40)
 
-[node name="Cards" type="Node3D" parent="World" node_paths=PackedStringArray("Card")]
+[node name="Cards" type="Node3D" parent="World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
 script = ExtResource("3_6nqof")
 CardScene = ExtResource("3_4bcsh")
 SpawnParentPath = NodePath(".")
 OffsetRange = Vector3(3, 1, 3)
-Card = NodePath("../../Services/CardServiceProvider/CardArt")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.8355, 0, 0.316311)
@@ -144,8 +145,11 @@ RarityVisuals = Array[Object]([ExtResource("4_vkee2"), ExtResource("5_otk7d"), E
 BaseCardTypes = Array[Object]([ExtResource("9_3xlss")])
 GemVisuals = Array[Object]([ExtResource("9_h03qd"), ExtResource("10_3xlss"), ExtResource("11_o6inp"), ExtResource("12_f1k1t"), ExtResource("13_6aa2p"), ExtResource("14_sstrp"), ExtResource("15_dta7m"), ExtResource("16_r0o6j")])
 
-[node name="CardArt" type="Node" parent="Services/CardServiceProvider"]
-script = ExtResource("449_ucc6g")
-FolderPaths = PackedStringArray("CardBaseOptions", "res://Graphics/CardSorted/CardBase/", "BorderOptions", "res://Graphics/CardSorted/CardBorder/", "CornerOptions", "res://Graphics/CardSorted/CardCorner/", "ArtOptions", "res://Graphics/CardSorted/CardArt/", "SymbolOptions", "res://Graphics/CardSorted/CardSymbols/", "ImageBackgroundOptions", "res://Graphics/CardSorted/CardArtBackground/", "BannerOptions", "res://Graphics/CardSorted/CardBanner/", "DescriptionBoxOptions", "res://Graphics/CardSorted/CardDescriptionBackground/", "EnergyContainerOptions", "res://Graphics/CardSorted/CardEnergyContainer/", "EnergyFill1Options", "res://Graphics/CardSorted/CardEnergyTopHalf/", "EnergyFill2Options", "res://Graphics/CardSorted/CardEnergyBottomHalf/", "EnergyFillFullOptions", "res://Graphics/CardSorted/CardEnergyFull/", "GemSocketsOptions", "res://Graphics/CardSorted/CardGemSocket/", "GemsOptions", "res://Graphics/CardSorted/CardGem/")
+[node name="MaterialManager" type="Node" parent="Services/CardServiceProvider"]
+script = ExtResource("26_r0o6j")
+CardMaterialTemplate = ExtResource("27_1ia11")
+
+[node name="BlacklightController" type="Node" parent="Services/CardServiceProvider"]
+script = ExtResource("28_up2yq")
 
 [editable path="Player"]

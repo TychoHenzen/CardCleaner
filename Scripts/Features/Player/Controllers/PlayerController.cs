@@ -2,12 +2,7 @@
 using System;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
-public enum LightMode
-{
-    Off,
-    Blacklight,
-    Flashlight
-}
+
 public partial class PlayerController : CharacterBody3D
 {
     private Node3D _head;
@@ -156,18 +151,6 @@ public partial class PlayerController : CharacterBody3D
         _pitchDeg = Mathf.Clamp(_pitchDeg - delta.Y * _settings.MouseSensitivity, _settings.MinPitch, _settings.MaxPitch);
         _head.RotationDegrees = new Vector3(_pitchDeg, 0, 0);
     }
-    private void AdjustBlacklightIntensity(float delta)
-    {
-        _settings.LightIntensity = Mathf.Clamp(_settings.LightIntensity + delta, 0.1f, 3.0f);
-        
-        if (_spotlight != null)
-        {
-            _spotlight.LightEnergy = _settings.LightIntensity;
-        }
-        
-        GD.Print($"💡 Blacklight Intensity: {_settings.LightIntensity:F1}");
-    }
-
     public override void _PhysicsProcess(double delta)
     {
         if (_settings == null) return;

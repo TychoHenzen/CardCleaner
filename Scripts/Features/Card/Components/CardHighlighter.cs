@@ -41,14 +41,6 @@ public partial class CardHighlighter : Node3D
         _inputService?.UnregisterAllActions(this);
     }
 
-    private void RegisterInputActions()
-    {
-        // Register card interaction actions directly with InputService
-        _inputService.RegisterAction("card_drop_single", Key.X, CardDropper.DropSingleCard);
-
-        GD.Print("[CardHighlighter] Registered card interaction inputs directly");
-    }
-
     public override void _PhysicsProcess(double delta)
     {
         base._PhysicsProcess(delta);

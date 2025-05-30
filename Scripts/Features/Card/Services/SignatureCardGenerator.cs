@@ -17,15 +17,6 @@ public class SignatureCardGenerator : ICardGenerator
     private readonly BaseCardType[] _baseTypes;
     private readonly GemVisual[] _gemVisuals;
 
-    private Dictionary<CardRarity, int> raritiesSpawned = new()
-    {
-        { CardRarity.Common, 0 },
-        { CardRarity.Uncommon, 0 },
-        { CardRarity.Rare, 0 },
-        { CardRarity.Epic, 0 },
-        { CardRarity.Legendary, 0 },
-    };
-
     public SignatureCardGenerator(
         RarityVisual[] rarityVisuals,
         BaseCardType[] baseTypes,
@@ -44,16 +35,6 @@ public class SignatureCardGenerator : ICardGenerator
         };
         // 1. Determine rarity
         var rarity = SignatureCardHelper.DetermineRarity(signature);
-        raritiesSpawned[rarity]++;
-
-        // Build totals string in enum order: Common, Uncommon, Rare, Epic, Legendary
-        var totalsString = string.Join(",",
-            raritiesSpawned
-                .OrderBy(kv => kv.Key)
-                .Select(kv => kv.Value)
-        );
-        GD.Print($"[SignatureGenerator] Rarity: {rarity} (Totals: {totalsString})");
-
 
         // 2. Apply per‐rarity visuals
         var visuals = _rarityVisuals.FirstOrDefault(rv => rv.Rarity == rarity);

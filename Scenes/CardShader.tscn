@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://oqrxpyj8qkim"]
+[gd_scene load_steps=10 format=3 uid="uid://oqrxpyj8qkim"]
 
 [ext_resource type="Script" uid="uid://blu0six20pl7f" path="res://Scripts/Features/Card/Controllers/CardController.cs" id="1_btmnp"]
 [ext_resource type="Script" uid="uid://nrgkkbg2lwbr" path="res://Scripts/Core/Utilities/CsgBaker.cs" id="2_hllmr"]
@@ -6,10 +6,7 @@
 [ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/Features/Card/Components/FlutterCard.cs" id="4_ycqko"]
 [ext_resource type="Script" uid="uid://bgwgo4ybh5igi" path="res://Scripts/Features/Card/Components/CardShaderRenderer.cs" id="5_1sx76"]
 [ext_resource type="SystemFont" uid="uid://dqhsx42f1ax5r" path="res://Assets/Fonts/BaseFont.tres" id="6_4gl8e"]
-[ext_resource type="Material" uid="uid://d368k11s8ohrk" path="res://Assets/Materials/CardMaterial.tres" id="7_r6y7f"]
 [ext_resource type="Script" uid="uid://chw4rd8wcr8qv" path="res://Scripts/Core/Utilities/CardSleepEnforcer.cs" id="8_53u5m"]
-[ext_resource type="Script" uid="uid://6wu6tpceqfcc" path="res://Scripts/Features/Card/Components/CardMaterialManager.cs" id="8_r6y7f"]
-[ext_resource type="Script" uid="uid://dmqf3ccuvfg32" path="res://Scripts/Features/Card/Controllers/BlacklightController.cs" id="9_4gl8e"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kudhx"]
 size = Vector3(0.32, 0.005, 0.45)
@@ -91,13 +88,6 @@ NameText = "testy"
 NameLabel = NodePath("../Title")
 AttributesText = "zcxvzcxvzxcvzxcvzxcvzcxvzcxvzcxvzxcv"
 AttrLabel = NodePath("../Description")
-
-[node name="MaterialManager" type="Node" parent="CardRenderer"]
-script = ExtResource("8_r6y7f")
-CardMaterialTemplate = ExtResource("7_r6y7f")
-
-[node name="BlacklightController" type="Node" parent="CardRenderer"]
-script = ExtResource("9_4gl8e")
 
 [node name="Title" type="Label3D" parent="."]
 transform = Transform3D(0.05, 0, 0, 0, -2.18557e-09, 0.05, 0, -0.05, -2.18557e-09, 0, 0.006, 0.00742067)

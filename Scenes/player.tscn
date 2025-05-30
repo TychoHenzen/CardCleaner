@@ -1,8 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://wv6a67swhus"]
+[gd_scene load_steps=9 format=3 uid="uid://wv6a67swhus"]
 
 [ext_resource type="Script" uid="uid://b04t7ohl81ntt" path="res://Scripts/Features/Player/Controllers/PlayerController.cs" id="1_v0iea"]
 [ext_resource type="Script" uid="uid://coebm8tgbgmqv" path="res://Scripts/Features/Card/Components/CardHighlighter.cs" id="2_cvnsp"]
-[ext_resource type="Script" path="res://Scripts/Features/Card/Components/InputHandler.cs" id="3_3smsa"]
 [ext_resource type="Script" uid="uid://d0dftkyftp081" path="res://Scripts/Features/Card/Components/CardPicker.cs" id="4_8erm5"]
 [ext_resource type="Script" uid="uid://dvoklxj3c2cba" path="res://Scripts/Features/Card/Components/DropPreview.cs" id="5_f1ek2"]
 [ext_resource type="Script" uid="uid://cgcld0ulj1e3p" path="res://Scripts/Features/Card/Components/CardHolder.cs" id="6_tx1dd"]
@@ -39,9 +38,6 @@ Picker = NodePath("CardPicker")
 Preview = NodePath("DropPreview")
 CardHolder = NodePath("CardHolder")
 CardDropper = NodePath("CardDropper")
-
-[node name="InputHandler" type="Node3D" parent="CardInteraction"]
-script = ExtResource("3_3smsa")
 
 [node name="CardPicker" type="Node3D" parent="CardInteraction" node_paths=PackedStringArray("Camera")]
 script = ExtResource("4_8erm5")

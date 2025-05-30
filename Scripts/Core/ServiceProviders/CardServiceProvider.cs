@@ -1,6 +1,8 @@
-﻿using CardCleaner.Scripts.Core.DependencyInjection;
+﻿using CardCleaner.Scripts.Controllers;
+using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.DI;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Interfaces;
 using Godot;
@@ -16,6 +18,8 @@ namespace CardCleaner.Scripts.Features.Card.Services
         [Export] public RarityVisual[] RarityVisuals { get; set; }
         [Export] public BaseCardType[] BaseCardTypes { get; set; }
         [Export] public GemVisual[] GemVisuals { get; set; }
+        [Export] public CardMaterialManager CardMaterial { get; set; }
+        [Export] public BlacklightController Blacklight { get; set; }
 
         public override void _Ready()
         {
@@ -30,6 +34,9 @@ namespace CardCleaner.Scripts.Features.Card.Services
                 // Register the signature-based card generator
                 container.RegisterSingleton<ICardGenerator>(
                     new SignatureCardGenerator(RarityVisuals, BaseCardTypes, GemVisuals));
+
+                container.RegisterSingleton<ICardMaterialComponent>(CardMaterial);
+                container.RegisterSingleton<IBlacklightController>(Blacklight);
 
                 // Register individual visual configurations
                 container.RegisterSingleton(RarityVisuals);
