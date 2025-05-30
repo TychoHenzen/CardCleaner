@@ -1,10 +1,8 @@
 ﻿using CardCleaner.Scripts.Features.Card.Components;
-using Godot;
 
-namespace CardCleaner.Scripts.Interfaces;
-
+namespace CardCleaner.Scripts.Core.Interfaces;
 
 public interface ICardGenerator
 {
-    void GenerateCardRenderer(CardShaderRenderer renderer, CardSignature signature, CardTemplate template);
+    void GenerateCardRenderer(CardShaderRenderer renderer, Features.Card.Models.CardSignature signature, Data.CardTemplate template);
 }

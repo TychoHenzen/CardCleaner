@@ -1,33 +1,32 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
+using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
-using CardCleaner.Scripts.Interfaces;
 using Godot;
-using Godot.Collections;
 
 namespace CardCleaner.Scripts.Features.Card.Services;
 
 /// <summary>
-/// Generates card visuals deterministically from a CardSignature.
-/// Picks base, border, corners, and banner textures based on signature-derived rarity.
+///     Generates card visuals deterministically from a CardSignature.
+///     Picks base, border, corners, and banner textures based on signature-derived rarity.
 /// </summary>
 public class SignatureCardGenerator : ICardGenerator
 {
-    private readonly RarityVisual[] _rarityVisuals;
-    private readonly BaseCardType[] _baseTypes;
-    private readonly GemVisual[] _gemVisuals;
+    private readonly Models.BaseCardType[] _baseTypes;
+    private readonly Models.GemVisual[] _gemVisuals;
+    private readonly Models.RarityVisual[] _rarityVisuals;
 
     public SignatureCardGenerator(
-        RarityVisual[] rarityVisuals,
-        BaseCardType[] baseTypes,
-        GemVisual[] gemVisuals)
+        Models.RarityVisual[] rarityVisuals,
+        Models.BaseCardType[] baseTypes,
+        Models.GemVisual[] gemVisuals)
     {
         _rarityVisuals = rarityVisuals;
         _baseTypes = baseTypes;
         _gemVisuals = gemVisuals;
     }
 
-    public void GenerateCardRenderer(CardShaderRenderer renderer, CardSignature signature, CardTemplate template)
+    public void GenerateCardRenderer(CardShaderRenderer renderer, Models.CardSignature signature, Core.Data.CardTemplate template)
     {
         var rng = new RandomNumberGenerator
         {
@@ -40,14 +39,13 @@ public class SignatureCardGenerator : ICardGenerator
         var visuals = _rarityVisuals.FirstOrDefault(rv => rv.Rarity == rarity);
         if (visuals != null)
         {
-            SignatureCardHelper.Apply(rng,template.CardBase, visuals.BaseOptions);
-            SignatureCardHelper.Apply(rng,template.Border, visuals.BorderOptions);
-            SignatureCardHelper.Apply(rng,template.Corners, visuals.CornerOptions);
-            SignatureCardHelper.Apply(rng,template.Banner, visuals.BannerOptions);
-            SignatureCardHelper.Apply(rng, template.ImageBackground,    visuals.ImageBackgroundOptions);
-            SignatureCardHelper.Apply(rng, template.DescriptionBox,     visuals.DescriptionBoxOptions);
-            SignatureCardHelper.Apply(rng, template.EnergyContainer,    visuals.EnergyContainerOptions);
-
+            SignatureCardHelper.Apply(rng, template.CardBase, visuals.BaseOptions);
+            SignatureCardHelper.Apply(rng, template.Border, visuals.BorderOptions);
+            SignatureCardHelper.Apply(rng, template.Corners, visuals.CornerOptions);
+            SignatureCardHelper.Apply(rng, template.Banner, visuals.BannerOptions);
+            SignatureCardHelper.Apply(rng, template.ImageBackground, visuals.ImageBackgroundOptions);
+            SignatureCardHelper.Apply(rng, template.DescriptionBox, visuals.DescriptionBoxOptions);
+            SignatureCardHelper.Apply(rng, template.EnergyContainer, visuals.EnergyContainerOptions);
         }
 
         // 3. Select matching BaseCardType
@@ -56,7 +54,8 @@ public class SignatureCardGenerator : ICardGenerator
             .ToArray();
         if (candidates.Length > 0)
         {
-            var chosenBase = SignatureCardHelper.SelectWeighted(rng,candidates, bt => bt.CalculateMatchWeight(signature));
+            var chosenBase =
+                SignatureCardHelper.SelectWeighted(rng, candidates, bt => bt.CalculateMatchWeight(signature));
             SignatureCardHelper.Apply(rng, template.Art, chosenBase.ArtOptions);
             SignatureCardHelper.Apply(rng, template.Symbol, chosenBase.SymbolOptions);
             SignatureCardHelper.Apply(rng, template.EnergyFill1, chosenBase.EnergyFill1Options);
@@ -64,29 +63,29 @@ public class SignatureCardGenerator : ICardGenerator
         }
 
         // 4. Assign gems by dominant aspect
-        for (int i = 0; i < template.GemSockets.Length; i++)
+        for (var i = 0; i < template.GemSockets.Length; i++)
         {
-            var element  = (Element)i;
+            var element = (Element)i;
             var rawValue = signature[element];
-            var intensity = Mathf.Abs(rawValue);       // 0..1
-            bool isPos   = rawValue >= 0;
+            var intensity = Mathf.Abs(rawValue); // 0..1
+            var isPos = rawValue >= 0;
 
             var gemVis = _gemVisuals.FirstOrDefault(gv => gv.Element == element);
             if (gemVis != null)
             {
                 // Select textures based on sign
                 var socketTex = gemVis.SocketTexture;
-                var gemTex    = isPos
+                var gemTex = isPos
                     ? gemVis.PositiveGemTexture
                     : gemVis.NegativeGemTexture;
                 template.GemSockets[i].Texture = socketTex;
-                template.Gems[i].Texture       = gemTex;
+                template.Gems[i].Texture = gemTex;
 
                 // Select emission settings based on sign and scale by intensity
-                var tint    = isPos 
-                    ? gemVis.PositiveEmissionColor 
+                var tint = isPos
+                    ? gemVis.PositiveEmissionColor
                     : gemVis.NegativeEmissionColor;
-                var strength= intensity * (isPos
+                var strength = intensity * (isPos
                     ? gemVis.PositiveEmissionStrength
                     : gemVis.NegativeEmissionStrength);
 
@@ -95,9 +94,5 @@ public class SignatureCardGenerator : ICardGenerator
         }
 
         renderer.NameLabel.Text = rarity.ToString();
-
-
     }
-
-
 }

@@ -1,15 +1,19 @@
 ﻿using Godot;
 
+namespace CardCleaner.Scripts.Features.Card.Components;
+
 public partial class CardPicker : Node3D
 {
     [Signal]
     public delegate void CardDetectedEventHandler(RigidBody3D card);
+
     [Signal]
     public delegate void NoCardDetectedEventHandler();
 
-    public float RayLength = 100f;
-    public uint CollisionMask = 2;
     [Export] public Camera3D Camera;
+    public uint CollisionMask = 2;
+
+    public float RayLength = 100f;
 
     public override void _PhysicsProcess(double delta)
     {
@@ -26,12 +30,8 @@ public partial class CardPicker : Node3D
         if (result.Count > 0
             && result["collider"].Obj is RigidBody3D rb
             && rb.Name.ToString().StartsWith("Card"))
-        {
             EmitSignal(nameof(CardDetected), rb);
-        }
         else
-        {
             EmitSignal(nameof(NoCardDetected));
-        }
     }
 }

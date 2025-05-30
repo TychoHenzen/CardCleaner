@@ -1,19 +1,18 @@
-using CardCleaner.Scripts.Interfaces;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
-namespace CardCleaner.Scripts;
+namespace CardCleaner.Scripts.Core.Utilities;
 
 /// <summary>
-/// Forces the card to re-enter sleep if motion is below threshold,
-/// to prevent wakeups from other cards landing on it.
+///     Forces the card to re-enter sleep if motion is below threshold,
+///     to prevent wakeups from other cards landing on it.
 /// </summary>
 [Tool]
 public partial class CardSleepEnforcer : Node, IPhysicsComponent
 {
-    [Export] public float LinearSleepThreshold = 0.05f;
-    [Export] public float AngularSleepThreshold = 0.05f;
-
     private RigidBody3D _body;
+    [Export] public float AngularSleepThreshold = 0.05f;
+    [Export] public float LinearSleepThreshold = 0.05f;
 
     public void Setup(RigidBody3D cardRoot)
     {
@@ -24,9 +23,7 @@ public partial class CardSleepEnforcer : Node, IPhysicsComponent
     {
         if (state.LinearVelocity.LengthSquared() < LinearSleepThreshold * LinearSleepThreshold &&
             state.AngularVelocity.LengthSquared() < AngularSleepThreshold * AngularSleepThreshold)
-        {
             _body.Freeze = true;
-        }
     }
 
     public void PhysicsProcess(double delta)

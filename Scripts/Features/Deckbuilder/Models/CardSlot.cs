@@ -1,80 +1,78 @@
 ﻿using CardCleaner.Scripts.Controllers;
 using Godot;
+using CardController = CardCleaner.Scripts.Features.Card.Controllers.CardController;
 
+namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 
-namespace CardCleaner.Scripts.Features.Deckbuilder.Models
+[Tool]
+public partial class CardSlot : Node3D
 {
-    [Tool]
-    public partial class CardSlot : Node3D
+    [Signal]
+    public delegate void CardChangedEventHandler();
+
+    private Area3D _area;
+    private RigidBody3D _card;
+    [Export] public NodePath AreaPath;
+    [Export] public float EjectForce = 2f;
+
+    public bool HasCard => _card != null;
+
+    public override void _Ready()
     {
-        [Export] public NodePath AreaPath;
-        [Export] public float EjectForce = 2f;
+        _area = GetNode<Area3D>(AreaPath);
+        _area.BodyEntered += OnBodyEntered;
+    }
 
-        private Area3D _area;
-        private RigidBody3D _card;
+    private void OnBodyEntered(Node3D body)
+    {
+        if (body is not RigidBody3D card
+            || !card.Name.ToString().StartsWith("Card"))
+            return;
 
-        [Signal]
-        public delegate void CardChangedEventHandler();
-
-        public override void _Ready()
+        if (_card == null)
         {
-            _area = GetNode<Area3D>(AreaPath);
-            _area.BodyEntered += OnBodyEntered;
+            LockCard(card);
+            _card = card;
+            EmitSignal(nameof(CardChanged));
         }
-
-        private void OnBodyEntered(Node3D body)
+        else
         {
-            if (body is not RigidBody3D card
-                || !card.Name.ToString().StartsWith("Card"))
-                return;
-
-            if (_card == null)
-            {
-                LockCard(card);
-                _card = card;
-                EmitSignal(nameof(CardChanged));
-            }
-            else
-            {
-                EjectCard(card);
-            }
+            EjectCard(card);
         }
+    }
 
-        private void LockCard(RigidBody3D card)
-        {
-            card.Freeze = true;
-            card.LinearVelocity = Vector3.Zero;
-            card.AngularVelocity = Vector3.Zero;
-            AddChild(card);
-            card.GlobalPosition = GlobalPosition;
-            card.GlobalRotation = GlobalRotation;
-        }
+    private void LockCard(RigidBody3D card)
+    {
+        card.Freeze = true;
+        card.LinearVelocity = Vector3.Zero;
+        card.AngularVelocity = Vector3.Zero;
+        AddChild(card);
+        card.GlobalPosition = GlobalPosition;
+        card.GlobalRotation = GlobalRotation;
+    }
 
-        private void EjectCard(RigidBody3D card)
-        {
-            card.Freeze = false;
-            card.ApplyImpulse(Vector3.Up * EjectForce);
-        }
+    private void EjectCard(RigidBody3D card)
+    {
+        card.Freeze = false;
+        card.ApplyImpulse(Vector3.Up * EjectForce);
+    }
 
-        public bool HasCard => _card != null;
+    public Card.Models.CardSignature ConsumeCardSignature()
+    {
+        if (_card == null)
+            return null;
+        var sig = _card.GetNode<CardController>(".").Signature;
+        _card.QueueFree();
+        _card = null;
+        EmitSignal(nameof(CardChanged));
+        return sig;
+    }
 
-        public CardSignature ConsumeCardSignature()
-        {
-            if (_card == null)
-                return null;
-            var sig = _card.GetNode<CardController>(".").Signature;
+    public void Clear()
+    {
+        if (_card != null)
             _card.QueueFree();
-            _card = null;
-            EmitSignal(nameof(CardChanged));
-            return sig;
-        }
-
-        public void Clear()
-        {
-            if (_card != null)
-                _card.QueueFree();
-            _card = null;
-            EmitSignal(nameof(CardChanged));
-        }
+        _card = null;
+        EmitSignal(nameof(CardChanged));
     }
 }

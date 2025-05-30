@@ -1,8 +1,5 @@
-﻿using System.Linq;
-using CardCleaner.Scripts.Controllers;
-using CardCleaner.Scripts.Core.DependencyInjection;
+﻿using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
@@ -10,18 +7,19 @@ namespace CardCleaner.Scripts.Features.Card.Components;
 [Tool]
 public partial class CardShaderRenderer : Node, ICardComponent
 {
-    // --- Text fields (front only) ---
-    [Export] public Label3D NameLabel { get; set; }
-    [Export] public Label3D AttrLabel { get; set; }
+    private bool _baked;
+    private IBlacklightController _blacklightController;
+
+    private RigidBody3D _cardRoot;
 
     private Vector3[] _gemEmissionColors = new Vector3[8];
     private float[] _gemEmissionStrengths = new float[8];
 
     private ICardMaterialComponent _materialManager;
-    private IBlacklightController _blacklightController;
-    private bool _baked = false;
 
-    private RigidBody3D _cardRoot;
+    // --- Text fields (front only) ---
+    [Export] public Label3D NameLabel { get; set; }
+    [Export] public Label3D AttrLabel { get; set; }
 
 
     public void Setup(RigidBody3D cardRoot)
@@ -32,14 +30,14 @@ public partial class CardShaderRenderer : Node, ICardComponent
     }
 
 
-    public void Bake(CardTemplate template)
+    public void Bake(Core.Data.CardTemplate template)
     {
         if (_baked) return;
         CallDeferred(nameof(DeferredBake), template);
         _baked = true;
     }
 
-    private void DeferredBake(CardTemplate template)
+    private void DeferredBake(Core.Data.CardTemplate template)
     {
         var box = GetParent().GetNodeOrNull<MeshInstance3D>("OuterBox_Baked");
         if (box == null)
@@ -52,10 +50,7 @@ public partial class CardShaderRenderer : Node, ICardComponent
         _materialManager.SetLayerTextures(layers);
         _materialManager.ApplyMaterial(box);
 
-        if (box.MaterialOverride is ShaderMaterial material)
-        {
-            CallDeferred(nameof(EnableBlacklightUpdates), material);
-        }
+        if (box.MaterialOverride is ShaderMaterial material) CallDeferred(nameof(EnableBlacklightUpdates), material);
     }
 
     private void EnableBlacklightUpdates(ShaderMaterial material)
@@ -70,7 +65,7 @@ public partial class CardShaderRenderer : Node, ICardComponent
             CallDeferred(nameof(SetGemEmission), index, color, strength);
             return;
         }
-        
+
         _materialManager.SetGemEmission(index, color, strength);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace CardCleaner.Scripts;
+﻿namespace CardCleaner.Scripts.Core.Enum;
 
 public enum Element
 {

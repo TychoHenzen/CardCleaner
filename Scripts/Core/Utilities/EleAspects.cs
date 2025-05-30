@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Enum;
 
-namespace CardCleaner.Scripts;
+namespace CardCleaner.Scripts.Core.Utilities;
 
 public static class EleAspects
 {
     public static Aspect Positive(this Element e)
     {
-        Dictionary<Element, Aspect> conversion = new Dictionary<Element, Aspect>()
+        var conversion = new Dictionary<Element, Aspect>
         {
             { Element.Solidum, Aspect.Tellus },
             { Element.Febris, Aspect.Ignis },
@@ -22,7 +23,7 @@ public static class EleAspects
 
     public static Aspect Negative(this Element e)
     {
-        Dictionary<Element, Aspect> conversion = new Dictionary<Element, Aspect>()
+        var conversion = new Dictionary<Element, Aspect>
         {
             { Element.Solidum, Aspect.Aeolis },
             { Element.Febris, Aspect.Hydris },
@@ -38,7 +39,7 @@ public static class EleAspects
 
     public static Element IsElement(this Aspect a)
     {
-        Dictionary<Aspect, Element> conversion = new Dictionary<Aspect, Element>()
+        var conversion = new Dictionary<Aspect, Element>
         {
             { Aspect.Aeolis, Element.Solidum },
             { Aspect.Hydris, Element.Febris },

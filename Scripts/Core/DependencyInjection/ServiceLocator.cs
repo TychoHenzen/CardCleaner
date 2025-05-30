@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using Godot;
+using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
 namespace CardCleaner.Scripts.Core.DependencyInjection;
 
 /// <summary>
-/// Global service locator that integrates with Godot's autoload system.
-/// Add this as an autoload named "Services" in project settings.
+///     Global service locator that integrates with Godot's autoload system.
+///     Add this as an autoload named "Services" in project settings.
 /// </summary>
 public partial class ServiceLocator : Node
 {
@@ -36,6 +37,7 @@ public partial class ServiceLocator : Node
         // Execute any pending callbacks after all services are registered
         ExecutePendingCallbacks();
     }
+
     private void RegisterCoreServices()
     {
         // Register RandomNumberGenerator as singleton
@@ -50,12 +52,8 @@ public partial class ServiceLocator : Node
     {
         var providers = GetTree().GetNodesInGroup("service_providers");
         foreach (var node in providers)
-        {
             if (node is IServiceProvider provider)
-            {
                 provider.RegisterServices(_container);
-            }
-        }
     }
 
     public static void ExecutePendingCallbacks()
@@ -64,7 +62,7 @@ public partial class ServiceLocator : Node
         {
             var serviceType = kvp.Key;
             var callbacks = kvp.Value;
-            
+
             if (_instance._container.IsRegistered(serviceType))
             {
                 var service = _instance._container.Resolve(serviceType);
@@ -73,25 +71,29 @@ public partial class ServiceLocator : Node
                     GD.Print($"Running callback for {serviceType.Name}");
                     callback(service);
                 }
+
                 GD.Print($"Removing callback for {serviceType.Name}");
                 _instance._pendingCallbacks.Remove(serviceType);
             }
-            
         }
     }
 
-    public static T Get<T>() where T : class => Container.Resolve<T>();
+    public static T Get<T>() where T : class
+    {
+        return Container.Resolve<T>();
+    }
+
     public static void Get<T>(Action<T> callback) where T : class
     {
         var serviceType = typeof(T);
-        
+
         // If service is already available, call callback immediately
         if (Container.IsRegistered<T>())
         {
             callback(Container.Resolve<T>());
             return;
         }
-        
+
         // Otherwise, store callback for later execution
         if (!_instance._pendingCallbacks.TryGetValue(serviceType, out var value))
         {
@@ -102,5 +104,8 @@ public partial class ServiceLocator : Node
         value.Add(obj => callback((T)obj));
     }
 
-    public static bool Has<T>() where T : class => Container.IsRegistered<T>();
+    public static bool Has<T>() where T : class
+    {
+        return Container.IsRegistered<T>();
+    }
 }

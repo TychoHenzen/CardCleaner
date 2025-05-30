@@ -1,11 +1,10 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Godot;
 
-namespace CardCleaner.Scripts;
+namespace CardCleaner.Scripts.Core.Data;
+
 public partial class CardTemplate : Resource
 {
-    
     // --- Front & back base templates ---
     public LayerData CardBase { get; set; } = new() { RenderOnFront = true, RenderOnBack = true };
     public LayerData Border { get; set; } = new() { RenderOnFront = true, RenderOnBack = true };
@@ -45,7 +44,7 @@ public partial class CardTemplate : Resource
         new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.25f, 0.1f, 0.075f) },
         new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.4f, 0.1f, 0.075f) },
         new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.55f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.7f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.7f, 0.1f, 0.075f) }
     };
 
     public LayerData[] Gems { get; set; } =
@@ -57,12 +56,16 @@ public partial class CardTemplate : Resource
         new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.25f, 0.1f, 0.075f) },
         new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.4f, 0.1f, 0.075f) },
         new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.55f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.7f, 0.1f, 0.075f) },
+        new() { RenderOnFront = true, Region = new Vector4(0.0f, 0.7f, 0.1f, 0.075f) }
     };
-    
+
     public LayerData[] GatherAllLayers()
     {
-        return new[] { CardBase, Border, Corners, ImageBackground, DescriptionBox, Art, Banner, Symbol, EnergyFill1, EnergyFill2, EnergyContainer }
+        return new[]
+            {
+                CardBase, Border, Corners, ImageBackground, DescriptionBox, Art, Banner, Symbol, EnergyFill1,
+                EnergyFill2, EnergyContainer
+            }
             .Concat(GemSockets)
             .Concat(Gems)
             .Reverse()

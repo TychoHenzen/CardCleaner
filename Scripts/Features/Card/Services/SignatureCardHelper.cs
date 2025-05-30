@@ -1,23 +1,25 @@
 ﻿using System;
 using System.Linq;
-using CardCleaner.Scripts;
+using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
+
+namespace CardCleaner.Scripts.Features.Card.Services;
 
 public static class SignatureCardHelper
 {
-    public static int ComputeSeed(CardSignature signature)
+    public static int ComputeSeed(Models.CardSignature signature)
     {
-        int seed = 17;
+        var seed = 17;
         foreach (var v in signature.Elements)
             seed = seed * 23 + Mathf.RoundToInt(v * 1000);
         return seed;
     }
 
-    public static CardRarity DetermineRarity(CardSignature signature)
+    public static CardRarity DetermineRarity(Models.CardSignature signature)
     {
-        int totalPoints = signature.Elements.Sum(e =>
+        var totalPoints = signature.Elements.Sum(e =>
         {
-            float v = Mathf.Abs(Math.Abs(e)-0.5f);
+            var v = Mathf.Abs(Math.Abs(e) - 0.5f);
             return v switch
             {
                 < 0.1f => 0,
@@ -27,9 +29,9 @@ public static class SignatureCardHelper
                 _ => 8
             };
         });
-        int maxPoints = signature.Elements.Length * 8;
-        float rarityRatio = (float)totalPoints / maxPoints;
-        float logScaled = (float)Math.Log10(1f + 9f * rarityRatio);
+        var maxPoints = signature.Elements.Length * 8;
+        var rarityRatio = (float)totalPoints / maxPoints;
+        var logScaled = (float)Math.Log10(1f + 9f * rarityRatio);
 
         return logScaled switch
         {
@@ -41,10 +43,10 @@ public static class SignatureCardHelper
         };
     }
 
-    public static void Apply(RandomNumberGenerator rng, LayerData layer, Texture2D[] options)
+    public static void Apply(RandomNumberGenerator rng, Core.Data.LayerData layer, Texture2D[] options)
     {
         if (options == null || options.Length == 0) return;
-        int idx = options.Length == 1
+        var idx = options.Length == 1
             ? 0
             : rng.RandiRange(0, options.Length - 1);
         layer.Texture = options[idx];
@@ -56,12 +58,12 @@ public static class SignatureCardHelper
         Func<T, float> weightFn)
     {
         var weights = items.Select(weightFn).ToArray();
-        float total = weights.Sum();
+        var total = weights.Sum();
         if (total <= 0f) return items[0];
 
-        float pick = rng.Randf() * total;
-        float cum = 0f;
-        for (int i = 0; i < items.Length; i++)
+        var pick = rng.Randf() * total;
+        var cum = 0f;
+        for (var i = 0; i < items.Length; i++)
         {
             cum += weights[i];
             if (pick <= cum)

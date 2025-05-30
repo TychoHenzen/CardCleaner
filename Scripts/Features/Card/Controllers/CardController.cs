@@ -1,21 +1,23 @@
 ﻿using System.Collections.Generic;
-using CardCleaner.Scripts.Interfaces;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
-namespace CardCleaner.Scripts.Controllers;
+namespace CardCleaner.Scripts.Features.Card.Controllers;
 
 [Tool]
-public partial class CardController : RigidBody3D {
+public partial class CardController : RigidBody3D
+{
     private readonly List<ICardComponent> _components = new();
     private readonly List<IPhysicsComponent> _physicsComponents = new();
-    public CardSignature Signature;
-    public override void _Ready() 
+    public Models.CardSignature Signature;
+
+    public override void _Ready()
     {
         DiscoverComponents(this);
         AddToGroup("Cards");
         CollisionLayer = 2;
     }
-    
+
     private void DiscoverComponents(Node node)
     {
         foreach (var child in node.GetChildren())
@@ -24,7 +26,7 @@ public partial class CardController : RigidBody3D {
             {
                 comp.Setup(this);
                 _components.Add(comp);
-            
+
                 switch (child)
                 {
                     case IPhysicsComponent physicsComp:
@@ -32,30 +34,23 @@ public partial class CardController : RigidBody3D {
                         break;
                 }
             }
-        
+
             // Recurse into children
             DiscoverComponents(child);
         }
     }
 
 
-    public override void _IntegrateForces(PhysicsDirectBodyState3D state) 
+    public override void _IntegrateForces(PhysicsDirectBodyState3D state)
     {
         // Only call physics on components that actually need it
-        foreach (var physicsComp in _physicsComponents) 
-        {
-            physicsComp.IntegrateForces(state);
-        }
+        foreach (var physicsComp in _physicsComponents) physicsComp.IntegrateForces(state);
     }
 
     public override void _PhysicsProcess(double delta)
     {
         base._PhysicsProcess(delta);
         // Only call physics on components that actually need it
-        foreach (var physicsComp in _physicsComponents) 
-        {
-            physicsComp.PhysicsProcess(delta);
-        }
+        foreach (var physicsComp in _physicsComponents) physicsComp.PhysicsProcess(delta);
     }
-
 }

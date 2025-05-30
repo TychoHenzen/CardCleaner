@@ -1,15 +1,24 @@
 using System.Linq;
-using CardCleaner.Scripts.Interfaces;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
-namespace CardCleaner.Scripts;
+namespace CardCleaner.Scripts.Features.Card.Components;
 
 [Tool]
 public partial class CardDesigner : Node, ICardComponent
 {
-    private float _width = 0.635f;
+    private const float InnerThicknessOffset = 0.002f;
+    private BoxShape3D _collisionBoxShape;
+    private CollisionShape3D _collisionShape;
+    private CsgCombiner3D _combiner;
+    private CsgCylinder3D[] _cornerCylinders;
     private float _height = 0.889f;
+
+    private CsgBox3D _outerBox;
+    private CsgBox3D _outlineBox;
     private float _thickness = 0.005f;
+    private CsgBox3D[] _trimBoxes;
+    private float _width = 0.635f;
 
     [Export(PropertyHint.Range, "0.1,3.0,0.01")]
     public float Width
@@ -53,16 +62,6 @@ public partial class CardDesigner : Node, ICardComponent
     [Export] public int BevelSides { get; set; } = 16;
     [Export] public float OutlineMargin { get; set; } = 0.01f;
 
-    private const float InnerThicknessOffset = 0.002f;
-
-    private CsgBox3D _outerBox;
-    private CsgCombiner3D _combiner;
-    private CsgCylinder3D[] _cornerCylinders;
-    private CsgBox3D[] _trimBoxes;
-    private CollisionShape3D _collisionShape;
-    private BoxShape3D _collisionBoxShape;
-    private CsgBox3D _outlineBox;
-
     public void Setup(RigidBody3D cardRoot)
     {
         _outerBox = cardRoot.GetNode<CsgBox3D>("OuterBox");
@@ -86,8 +85,8 @@ public partial class CardDesigner : Node, ICardComponent
 
         _outerBox.Size = new Vector3(Width, Thickness, Height);
 
-        float halfW = Width * 0.5f - BevelSize;
-        float halfH = Height * 0.5f - BevelSize;
+        var halfW = Width * 0.5f - BevelSize;
+        var halfH = Height * 0.5f - BevelSize;
 
         foreach (var cyl in _cornerCylinders)
         {
@@ -95,8 +94,8 @@ public partial class CardDesigner : Node, ICardComponent
             cyl.Height = Thickness;
             cyl.Sides = BevelSides;
 
-            bool negX = cyl.Name.ToString().EndsWith("2") || cyl.Name.ToString().EndsWith("3");
-            bool negZ = cyl.Name.ToString().EndsWith("3") || cyl.Name.ToString().EndsWith("4");
+            var negX = cyl.Name.ToString().EndsWith("2") || cyl.Name.ToString().EndsWith("3");
+            var negZ = cyl.Name.ToString().EndsWith("3") || cyl.Name.ToString().EndsWith("4");
             var t = cyl.Transform;
             t.Origin = new Vector3(negX ? -halfW : halfW, 0, negZ ? halfH : -halfH);
             cyl.Transform = t;
@@ -111,8 +110,6 @@ public partial class CardDesigner : Node, ICardComponent
         _collisionBoxShape.Size = new Vector3(Width, Thickness, Height);
 
         if (_outlineBox != null)
-        {
             _outlineBox.Size = new Vector3(Width + OutlineMargin, Thickness + OutlineMargin, Height + OutlineMargin);
-        }
     }
 }

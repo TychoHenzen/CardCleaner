@@ -2,19 +2,25 @@
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
+namespace CardCleaner.Scripts.Features.Card.Components;
+
 public partial class CardDropper : Node3D
 {
-    [Signal] public delegate void DropStartedEventHandler();
-    [Signal] public delegate void DropCancelledEventHandler();
-    [Signal] public delegate void DropCompletedEventHandler();
-    
-    private bool _isPreparingDrop = false;
+    [Signal]
+    public delegate void DropCancelledEventHandler();
+
+    [Signal]
+    public delegate void DropCompletedEventHandler();
+
+    [Signal]
+    public delegate void DropStartedEventHandler();
+
+    private Camera3D _camera;
     private CardHolder _cardHolder;
     private DropPreview _dropPreview;
-    private Camera3D _camera;
     private IInputService _inputService;
 
-    public bool IsPreparingDrop => _isPreparingDrop;
+    public bool IsPreparingDrop { get; private set; }
 
     public void Initialize(CardHolder cardHolder, DropPreview dropPreview, Camera3D camera)
     {
@@ -27,6 +33,7 @@ public partial class CardDropper : Node3D
             _inputService.RegisterAction("card_drop_single", Key.X, DropSingleCard);
         });
     }
+
     public override void _ExitTree()
     {
         // Clean up input registrations when component is destroyed
@@ -36,34 +43,34 @@ public partial class CardDropper : Node3D
     public void StartDropPreparation()
     {
         if (!_cardHolder.HasCards) return;
-        
-        _isPreparingDrop = true;
+
+        IsPreparingDrop = true;
         _dropPreview.ShowPreview(true);
         _cardHolder.PositionCardsForDrop();
-        
-        EmitSignal(nameof(DropStarted));
+
+        EmitSignal(nameof(global::CardDropper.DropStarted));
     }
 
     public void CancelDropPreparation()
     {
-        if (!_isPreparingDrop) return;
-        
-        _isPreparingDrop = false;
+        if (!IsPreparingDrop) return;
+
+        IsPreparingDrop = false;
         _dropPreview.ShowPreview(false);
         _cardHolder.PositionCards(); // Reset to normal hand position
-        
-        EmitSignal(nameof(DropCancelled));
+
+        EmitSignal(nameof(global::CardDropper.DropCancelled));
     }
 
     public void CompleteDropPreparation()
     {
-        if (!_isPreparingDrop) return;
-        
+        if (!IsPreparingDrop) return;
+
         _cardHolder.RemoveAllCards();
-        _isPreparingDrop = false;
+        IsPreparingDrop = false;
         _dropPreview.ShowPreview(false);
-        
-        EmitSignal(nameof(DropCompleted));
+
+        EmitSignal(nameof(global::CardDropper.DropCompleted));
     }
 
     public void DropSingleCard()
@@ -74,17 +81,16 @@ public partial class CardDropper : Node3D
 
     public void UpdateDropPreview()
     {
-        if (!_isPreparingDrop || !_cardHolder.HasCards) return;
-    
+        if (!IsPreparingDrop || !_cardHolder.HasCards) return;
+
         // Update card positions to follow camera
         _cardHolder.PositionCardsForDrop();
-    
+
         // Update preview ray
         var bottomCard = _cardHolder.HeldCards[0];
         var origin = bottomCard.GlobalTransform.Origin;
         var direction = Vector3.Down;
-    
+
         _dropPreview.UpdatePreview(origin, direction);
     }
-
 }

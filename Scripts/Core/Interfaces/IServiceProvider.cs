@@ -1,4 +1,4 @@
-﻿using CardCleaner.Scripts.Core.Interfaces;
+﻿namespace CardCleaner.Scripts.Core.Interfaces;
 
 public interface IServiceProvider
 {

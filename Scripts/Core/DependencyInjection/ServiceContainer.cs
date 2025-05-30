@@ -6,9 +6,9 @@ namespace CardCleaner.Scripts.Core.DependencyInjection;
 
 public class ServiceContainer : IServiceContainer
 {
+    private readonly Dictionary<Type, Func<object>> _factories = new();
     private readonly Dictionary<Type, object> _singletons = new();
     private readonly Dictionary<Type, Type> _transients = new();
-    private readonly Dictionary<Type, Func<object>> _factories = new();
 
     public void RegisterSingleton<T>(T instance) where T : class
     {
@@ -60,7 +60,7 @@ public class ServiceContainer : IServiceContainer
     {
         return IsRegistered(typeof(T));
     }
-    
+
     public bool IsRegistered(Type type)
     {
         return _singletons.ContainsKey(type) ||

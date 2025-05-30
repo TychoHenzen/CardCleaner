@@ -1,18 +1,19 @@
-﻿using System;
+﻿using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Utilities;
 using Godot;
 
-namespace CardCleaner.Scripts;
+namespace CardCleaner.Scripts.Features.Card.Services;
 
 public enum ModifierType
 {
-    Power,           // Affects damage/effectiveness
-    Cost,            // Affects energy/mana cost
-    Duration,        // Affects how long effects last
-    Range,           // Affects area of effect/targeting range
-    Healing,         // Adds healing effects
-    Speed,           // Affects attack speed or movement
-    Defense,         // Adds defensive properties
-    Special          // Custom effect modifications
+    Power, // Affects damage/effectiveness
+    Cost, // Affects energy/mana cost
+    Duration, // Affects how long effects last
+    Range, // Affects area of effect/targeting range
+    Healing, // Adds healing effects
+    Speed, // Affects attack speed or movement
+    Defense, // Adds defensive properties
+    Special // Custom effect modifications
 }
 
 [Tool]
@@ -24,30 +25,30 @@ public partial class ResidualEnergyModifier : Resource
     [Export] public Element SourceElement { get; set; } = Element.Solidum;
     [Export] public float Intensity { get; set; } = 1.0f; // How strongly this element affects the modifier
     [Export] public bool UsePositiveAspect { get; set; } = true; // Whether to use positive or negative aspect
-    [Export] public float BaseValue { get; set; } = 0.0f; // Starting value before residual energy
+    [Export] public float BaseValue { get; set; } // Starting value before residual energy
     [Export] public string EffectTemplate { get; set; } = ""; // Text template for describing the effect
 
-    public float CalculateEffect(CardSignature residualEnergy)
+    public float CalculateEffect(Models.CardSignature residualEnergy)
     {
-        float elementValue = residualEnergy[SourceElement];
-        
+        var elementValue = residualEnergy[SourceElement];
+
         // If we want negative aspect, flip the value
         if (!UsePositiveAspect)
             elementValue = -elementValue;
-        
+
         // Only apply if the element is aligned with our desired aspect
         if (elementValue < 0) return BaseValue;
-        
-        return BaseValue + (elementValue * Intensity);
+
+        return BaseValue + elementValue * Intensity;
     }
 
-    public string GenerateEffectText(CardSignature residualEnergy)
+    public string GenerateEffectText(Models.CardSignature residualEnergy)
     {
-        float effect = CalculateEffect(residualEnergy);
-        
+        var effect = CalculateEffect(residualEnergy);
+
         if (string.IsNullOrEmpty(EffectTemplate))
             return $"{Type}: {effect:F1}";
-        
+
         // Replace placeholders in template
         return EffectTemplate
             .Replace("{VALUE}", effect.ToString("F1"))
@@ -60,7 +61,8 @@ public partial class ResidualEnergyModifier : Resource
         return UsePositiveAspect ? SourceElement.Positive() : SourceElement.Negative();
     }
 
-    public static ResidualEnergyModifier CreatePowerModifier(Element element, bool positive = true, float intensity = 1.0f)
+    public static ResidualEnergyModifier CreatePowerModifier(Element element, bool positive = true,
+        float intensity = 1.0f)
     {
         return new ResidualEnergyModifier
         {
@@ -74,7 +76,8 @@ public partial class ResidualEnergyModifier : Resource
         };
     }
 
-    public static ResidualEnergyModifier CreateCostModifier(Element element, bool positive = true, float intensity = 0.5f)
+    public static ResidualEnergyModifier CreateCostModifier(Element element, bool positive = true,
+        float intensity = 0.5f)
     {
         return new ResidualEnergyModifier
         {

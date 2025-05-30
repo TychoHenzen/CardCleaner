@@ -1,18 +1,22 @@
-﻿using Godot;
-using System.Collections.Generic;
-using CardCleaner.Scripts;
+﻿using System.Collections.Generic;
+using Godot;
+
+namespace CardCleaner.Scripts.Features.Card.Components;
 
 public partial class CardHolder : Node3D
 {
-    [Signal] public delegate void CardAddedEventHandler(RigidBody3D card);
-    [Signal] public delegate void CardRemovedEventHandler(RigidBody3D card);
-    
-    [Export] public float HoldDistance = 2f;
-    [Export] public uint CardCollisionLayer = 2;
-    
+    [Signal]
+    public delegate void CardAddedEventHandler(RigidBody3D card);
+
+    [Signal]
+    public delegate void CardRemovedEventHandler(RigidBody3D card);
+
     public readonly List<RigidBody3D> HeldCards = new();
-    private Node3D _handParent;
     private Node3D _cardParent;
+    private Node3D _handParent;
+    [Export] public uint CardCollisionLayer = 2;
+
+    [Export] public float HoldDistance = 2f;
 
     public int HeldCount => HeldCards.Count;
     public bool HasCards => HeldCards.Count > 0;
@@ -35,21 +39,21 @@ public partial class CardHolder : Node3D
         // Reparent to hand
         card.Reparent(_handParent);
         HeldCards.Add(card);
-        
+
         PositionCards();
-        EmitSignal(nameof(CardAdded), card);
+        EmitSignal(nameof(global::CardHolder.CardAdded), card);
     }
 
     public void RemoveCard(RigidBody3D card)
     {
         if (!HeldCards.Contains(card)) return;
-        
+
         HeldCards.Remove(card);
         EnablePhysics(card);
         card.Reparent(_cardParent);
-        
+
         PositionCardsForDrop();
-        EmitSignal(nameof(CardRemoved), card);
+        EmitSignal(nameof(global::CardHolder.CardRemoved), card);
     }
 
     public void RemoveTopCard()
@@ -61,21 +65,18 @@ public partial class CardHolder : Node3D
 
     public void RemoveAllCards()
     {
-        while (HeldCards.Count > 0)
-        {
-            RemoveCard(HeldCards[^1]);
-        }
+        while (HeldCards.Count > 0) RemoveCard(HeldCards[^1]);
     }
 
     public void PositionCards()
     {
-        for (int i = 0; i < HeldCards.Count; i++)
+        for (var i = 0; i < HeldCards.Count; i++)
         {
             var card = HeldCards[i];
             var designer = card.GetNode<CardDesigner>("Designer");
-            float thickness = designer.Thickness;
-            float indexOffset = i * thickness;
-            
+            var thickness = designer.Thickness;
+            var indexOffset = i * thickness;
+
             var rotation = Basis.Identity.Rotated(Vector3.Right, Mathf.DegToRad(90));
             var localPos = new Vector3(
                 1 - indexOffset * 10,
@@ -91,17 +92,17 @@ public partial class CardHolder : Node3D
         // Drop-prep: face camera yaw, hold horizontally, stacked up
         var camTransform = _handParent.GlobalTransform;
         var forwardCam = -camTransform.Basis.Z;
-        float yaw = Mathf.Atan2(forwardCam.X, forwardCam.Z);
+        var yaw = Mathf.Atan2(forwardCam.X, forwardCam.Z);
         var faceYaw = Basis.Identity.Rotated(Vector3.Up, yaw + Mathf.DegToRad(180));
 
         var downOffset = forwardCam * HoldDistance;
         var upAxis = Vector3.Up;
 
-        for (int i = 0; i < HeldCards.Count; i++)
+        for (var i = 0; i < HeldCards.Count; i++)
         {
             var card = HeldCards[i];
             var designer = card.GetNode("Designer");
-            float thickness = designer.Get("Thickness").AsSingle();
+            var thickness = designer.Get("Thickness").AsSingle();
             var worldPos = camTransform.Origin + downOffset + upAxis * (i * thickness);
             card.GlobalTransform = new Transform3D(faceYaw, worldPos);
         }

@@ -1,56 +1,51 @@
 ﻿using System.Collections.Generic;
 using Godot;
 
-namespace CardCleaner.Scripts.Features.Deckbuilder.Models
+namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
+
+public partial class TileMapScreen : Node2D
 {
-    public partial class TileMapScreen : Node2D
+    private List<Card.Models.CardSignature> _abilityDeck;
+
+    private Card.Models.CardSignature _mapSeed;
+    private Node2D _playerAgent;
+
+    private TileMapLayer _tileMap;
+    [Export] public NodePath PlayerAgentPath;
+    [Export] public NodePath TileMapPath;
+    [Export] public PackedScene TileSetScene;
+
+    public override void _Ready()
     {
-        [Export] public PackedScene TileSetScene;
-        [Export] public NodePath TileMapPath;
-        [Export] public NodePath PlayerAgentPath;
+        _tileMap = GetNode<TileMapLayer>(TileMapPath);
+        _playerAgent = GetNode<Node2D>(PlayerAgentPath);
+    }
 
-        private TileMapLayer _tileMap;
-        private Node2D _playerAgent;
+    public void Initialize(Card.Models.CardSignature mapSeed, List<Card.Models.CardSignature> abilities)
+    {
+        _mapSeed = mapSeed;
+        _abilityDeck = abilities;
 
-        private CardSignature _mapSeed;
-        private List<CardSignature> _abilityDeck;
+        GenerateMap();
+        SpawnPlayer();
+    }
 
-        public override void _Ready()
-        {
-            _tileMap = GetNode<TileMapLayer>(TileMapPath);
-            _playerAgent = GetNode<Node2D>(PlayerAgentPath);
-        }
+    private void GenerateMap()
+    {
+        // TODO: generate tile layout based on _mapSeed.signatureBytes
+        // placeholder: fill a 10x10 area with tile ID 0
+        for (var x = 0; x < 10; x++)
+        for (var y = 0; y < 10; y++)
+            _tileMap.SetCell(new Vector2I(x, y), 0);
+    }
 
-        public void Initialize(CardSignature mapSeed, List<CardSignature> abilities)
-        {
-            _mapSeed = mapSeed;
-            _abilityDeck = abilities;
+    private void SpawnPlayer()
+    {
+        // position player at center of map
+        var center = new Vector2I(5, 5);
+        Vector2 worldPos = _tileMap.GetCellAtlasCoords(center);
+        _playerAgent.Position = worldPos;
 
-            GenerateMap();
-            SpawnPlayer();
-        }
-
-        private void GenerateMap()
-        {
-            // TODO: generate tile layout based on _mapSeed.signatureBytes
-            // placeholder: fill a 10x10 area with tile ID 0
-            for (int x = 0; x < 10; x++)
-            {
-                for (int y = 0; y < 10; y++)
-                {
-                    _tileMap.SetCell(new Vector2I(x, y), 0);
-                }
-            }
-        }
-
-        private void SpawnPlayer()
-        {
-            // position player at center of map
-            Vector2I center = new Vector2I(5, 5);
-            Vector2 worldPos = _tileMap.GetCellAtlasCoords(center);
-            _playerAgent.Position = worldPos;
-
-            // TODO: start autonomous movement
-        }
+        // TODO: start autonomous movement
     }
 }

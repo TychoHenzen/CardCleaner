@@ -1,20 +1,21 @@
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Card.Components;
 using Godot;
+
+namespace CardCleaner.Scripts.Features.Card.Components;
 
 public partial class CardHighlighter : Node3D
 {
+    private IInputService _inputService;
+    private RigidBody3D _lastCard;
     [Export] public Camera3D Camera;
+    [Export] public CardDropper CardDropper;
+    [Export] public CardHolder CardHolder;
     [Export] public Node3D CardsParent;
     [Export] public float MaxHighlightDistance = 50f;
 
     [Export] public CardPicker Picker;
     [Export] public DropPreview Preview;
-    [Export] public CardHolder CardHolder;
-    [Export] public CardDropper CardDropper;
-    private IInputService _inputService;
-    private RigidBody3D _lastCard;
 
     public override void _Ready()
     {
@@ -26,7 +27,7 @@ public partial class CardHighlighter : Node3D
         ServiceLocator.Get<IInputService>(input =>
         {
             _inputService = input;
-            _inputService.RegisterAction("card_drop_prepare", MouseButton.Right,OnRightPress);
+            _inputService.RegisterAction("card_drop_prepare", MouseButton.Right, OnRightPress);
             _inputService.RegisterAction("card_grab", MouseButton.Left, OnLeftPress);
         });
 
@@ -35,6 +36,7 @@ public partial class CardHighlighter : Node3D
 
         SetupCardCollisionLayers();
     }
+
     public override void _ExitTree()
     {
         // Clean up input registrations when component is destroyed
@@ -45,10 +47,7 @@ public partial class CardHighlighter : Node3D
     {
         base._PhysicsProcess(delta);
         // Update drop preview while preparing drop
-        if (CardDropper.IsPreparingDrop)
-        {
-            CardDropper.UpdateDropPreview();
-        }
+        if (CardDropper.IsPreparingDrop) CardDropper.UpdateDropPreview();
     }
 
     private void OnRightPress(bool pressed)
@@ -114,9 +113,6 @@ public partial class CardHighlighter : Node3D
     private void SetupCardCollisionLayers()
     {
         var cards = GetTree().GetNodesInGroup("Cards");
-        foreach (RigidBody3D card in cards)
-        {
-            card.CollisionLayer = CardHolder.CardCollisionLayer;
-        }
+        foreach (RigidBody3D card in cards) card.CollisionLayer = CardHolder.CardCollisionLayer;
     }
 }

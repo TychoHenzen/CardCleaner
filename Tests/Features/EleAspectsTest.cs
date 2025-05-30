@@ -1,7 +1,9 @@
-﻿using CardCleaner.Scripts;
+﻿using System;
+using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Utilities;
 using GdUnit4;
 
-namespace CardCleaner.test;
+namespace CardCleaner.Tests.Features;
 
 [TestSuite]
 public class EleAspectsTest
@@ -18,7 +20,7 @@ public class EleAspectsTest
         Assertions.AssertThat(Element.Subsidium.Positive()).IsEqual(Aspect.Auxillus);
         Assertions.AssertThat(Element.Spatium.Positive()).IsEqual(Aspect.Disis);
     }
-        
+
     [TestCase]
     public void TestNegativeConversions()
     {
@@ -31,7 +33,7 @@ public class EleAspectsTest
         Assertions.AssertThat(Element.Subsidium.Negative()).IsEqual(Aspect.Malus);
         Assertions.AssertThat(Element.Spatium.Negative()).IsEqual(Aspect.Iuxta);
     }
-        
+
     [TestCase]
     public void TestIsElementConversions()
     {
@@ -39,26 +41,26 @@ public class EleAspectsTest
         Assertions.AssertThat(Aspect.Tellus.IsElement()).IsEqual(Element.Solidum);
         Assertions.AssertThat(Aspect.Ignis.IsElement()).IsEqual(Element.Febris);
         Assertions.AssertThat(Aspect.Vitrio.IsElement()).IsEqual(Element.Ordinem);
-            
+
         // Test negative aspects
         Assertions.AssertThat(Aspect.Aeolis.IsElement()).IsEqual(Element.Solidum);
         Assertions.AssertThat(Aspect.Hydris.IsElement()).IsEqual(Element.Febris);
         Assertions.AssertThat(Aspect.Empyrus.IsElement()).IsEqual(Element.Ordinem);
     }
-        
+
     [TestCase]
     public void TestBidirectionalConversion()
     {
         // Test that Element -> Positive Aspect -> Element works
-        foreach (Element element in System.Enum.GetValues<Element>())
+        foreach (var element in Enum.GetValues<Element>())
         {
             var positiveAspect = element.Positive();
             var backToElement = positiveAspect.IsElement();
             Assertions.AssertThat(backToElement).IsEqual(element);
         }
-            
+
         // Test that Element -> Negative Aspect -> Element works
-        foreach (Element element in System.Enum.GetValues<Element>())
+        foreach (var element in Enum.GetValues<Element>())
         {
             var negativeAspect = element.Negative();
             var backToElement = negativeAspect.IsElement();

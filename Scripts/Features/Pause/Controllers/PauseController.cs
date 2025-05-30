@@ -1,10 +1,12 @@
 using Godot;
 
+namespace CardCleaner.Scripts.Features.Pause.Controllers;
+
 public partial class PauseController : Node
 {
+    private Control _pauseMenuRoot;
     [Export] public CanvasLayer PauseMenuLayer;
     [Export] public CanvasLayer UILayer;
-    private Control _pauseMenuRoot;
 
     public override void _Ready()
     {
@@ -26,7 +28,7 @@ public partial class PauseController : Node
         if (!@event.IsActionPressed("ui_cancel"))
             return;
 
-        bool nowPaused = !GetTree().Paused;
+        var nowPaused = !GetTree().Paused;
         GetTree().Paused = nowPaused;
 
         // Show or hide pause menu

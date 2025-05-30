@@ -1,24 +1,23 @@
-﻿using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Interfaces;
+﻿using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
+using Godot.Collections;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
 [Tool]
 public partial class CardMaterialManager : Node, ICardMaterialComponent
 {
-    [Export] public ShaderMaterial CardMaterialTemplate { get; set; }
-    
-    private ShaderMaterial _activeMaterial;
-    private readonly Dictionary<string, Variant> _shaderParameters = new();
+    private readonly System.Collections.Generic.Dictionary<string, Variant> _shaderParameters = new();
 
-    public void SetLayerTextures(LayerData[] layers)
+    private ShaderMaterial _activeMaterial;
+    [Export] public ShaderMaterial CardMaterialTemplate { get; set; }
+
+    public void SetLayerTextures(Core.Data.LayerData[] layers)
     {
-        var texturesArr = new Godot.Collections.Array<Texture2D>();
-        var regionsArr = new Godot.Collections.Array<Vector4>();
-        var frontFlagsArr = new Godot.Collections.Array<bool>();
-        var backFlagsArr = new Godot.Collections.Array<bool>();
+        var texturesArr = new Array<Texture2D>();
+        var regionsArr = new Array<Vector4>();
+        var frontFlagsArr = new Array<bool>();
+        var backFlagsArr = new Array<bool>();
 
         foreach (var layer in layers)
         {
@@ -39,23 +38,23 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         // Ensure arrays exist with proper size
         if (!_shaderParameters.ContainsKey("gem_emission_colors"))
         {
-            var colors = new Godot.Collections.Array<Vector3>();
-            var strengths = new Godot.Collections.Array<float>();
-        
+            var colors = new Array<Vector3>();
+            var strengths = new Array<float>();
+
             // Initialize with 8 empty slots
-            for (int i = 0; i < 8; i++)
+            for (var i = 0; i < 8; i++)
             {
                 colors.Add(Vector3.Zero);
                 strengths.Add(0.0f);
             }
-        
+
             _shaderParameters["gem_emission_colors"] = colors;
             _shaderParameters["gem_emission_strengths"] = strengths;
         }
-    
-        var existingColors = _shaderParameters["gem_emission_colors"].As<Godot.Collections.Array<Vector3>>();
-        var existingStrengths = _shaderParameters["gem_emission_strengths"].As<Godot.Collections.Array<float>>();
-    
+
+        var existingColors = _shaderParameters["gem_emission_colors"].As<Array<Vector3>>();
+        var existingStrengths = _shaderParameters["gem_emission_strengths"].As<Array<float>>();
+
         if (index >= 0 && index < 8)
         {
             existingColors[index] = new Vector3(color.R, color.G, color.B);
@@ -67,10 +66,7 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
     {
         if (CardMaterialTemplate?.Duplicate() is not ShaderMaterial material) return;
 
-        foreach (var param in _shaderParameters)
-        {
-            material.SetShaderParameter(param.Key, param.Value);
-        }
+        foreach (var param in _shaderParameters) material.SetShaderParameter(param.Key, param.Value);
 
         target.MaterialOverride = material;
         _activeMaterial = material;
