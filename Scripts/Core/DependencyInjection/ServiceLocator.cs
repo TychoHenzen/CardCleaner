@@ -39,15 +39,11 @@ public partial class ServiceLocator : Node
     private void RegisterCoreServices()
     {
         // Register RandomNumberGenerator as singleton
-        _container.RegisterSingleton<RandomNumberGenerator>(new RandomNumberGenerator());
+        _container.RegisterSingleton(new RandomNumberGenerator());
 
         var inputService = new InputService();
         AddChild(inputService);
         _container.RegisterSingleton<IInputService>(inputService);
-        
-        // Register factories for Godot resources that need special handling
-        _container.RegisterFactory<PackedScene>(() =>
-            GD.Load<PackedScene>("res://Scenes/Card.tscn"));
     }
 
     private void RegisterFromProviders()

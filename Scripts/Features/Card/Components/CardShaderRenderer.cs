@@ -8,7 +8,7 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Card.Components;
 
 [Tool]
-public partial class CardShaderRenderer : Node
+public partial class CardShaderRenderer : Node, ICardComponent
 {
     // --- Text fields (front only) ---
     [Export] public Label3D NameLabel { get; set; }
@@ -65,6 +65,12 @@ public partial class CardShaderRenderer : Node
 
     public void SetGemEmission(int index, Color color, float strength)
     {
+        if (_materialManager == null)
+        {
+            CallDeferred(nameof(SetGemEmission), index, color, strength);
+            return;
+        }
+        
         _materialManager.SetGemEmission(index, color, strength);
     }
 }

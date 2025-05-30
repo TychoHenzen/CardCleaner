@@ -12,10 +12,6 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
     
     private ShaderMaterial _activeMaterial;
     private readonly Dictionary<string, Variant> _shaderParameters = new();
-    public override void _Ready()
-    {
-        
-    }
 
     public void SetLayerTextures(LayerData[] layers)
     {

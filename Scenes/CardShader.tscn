@@ -1,11 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://oqrxpyj8qkim"]
+[gd_scene load_steps=9 format=3 uid="uid://oqrxpyj8qkim"]
 
 [ext_resource type="Script" uid="uid://blu0six20pl7f" path="res://Scripts/Features/Card/Controllers/CardController.cs" id="1_btmnp"]
 [ext_resource type="Script" uid="uid://nrgkkbg2lwbr" path="res://Scripts/Core/Utilities/CsgBaker.cs" id="2_hllmr"]
 [ext_resource type="Script" uid="uid://bsbw0i4pq1mve" path="res://Scripts/Features/Card/Components/CardDesigner.cs" id="3_53u5m"]
 [ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/Features/Card/Components/FlutterCard.cs" id="4_ycqko"]
 [ext_resource type="Script" uid="uid://bgwgo4ybh5igi" path="res://Scripts/Features/Card/Components/CardShaderRenderer.cs" id="5_1sx76"]
-[ext_resource type="SystemFont" uid="uid://dqhsx42f1ax5r" path="res://Assets/Fonts/BaseFont.tres" id="6_4gl8e"]
 [ext_resource type="Script" uid="uid://chw4rd8wcr8qv" path="res://Scripts/Core/Utilities/CardSleepEnforcer.cs" id="8_53u5m"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kudhx"]
@@ -82,11 +81,7 @@ material = SubResource("StandardMaterial3D_3m7nw")
 
 [node name="CardRenderer" type="Node" parent="." node_paths=PackedStringArray("NameLabel", "AttrLabel")]
 script = ExtResource("5_1sx76")
-TextFont = ExtResource("6_4gl8e")
-TextColor = Color(0.942823, 0.942823, 0.942823, 1)
-NameText = "testy"
 NameLabel = NodePath("../Title")
-AttributesText = "zcxvzcxvzxcvzxcvzxcvzcxvzcxvzcxvzxcv"
 AttrLabel = NodePath("../Description")
 
 [node name="Title" type="Label3D" parent="."]
