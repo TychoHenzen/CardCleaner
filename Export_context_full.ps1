@@ -4,13 +4,15 @@
 
 
 # 1. Gather tracked text files
-#$extensions = '.cs','.csproj','.gox','.json','.xml','.yml','.mgcb','.spritefont','.gdshader','.md','.ps1','.godot','.tscn'
-$extensions = '.cs','.json','.xml','.yml','.gdshader','.md','.tscn'
+#$extensions = '.cs','.csproj','.gox','.json','.xml','.yml','.mgcb','.spritefont','.gdshader','.md','.godot','.tscn','.tres'
+$extensions = '.cs','.json','.xml','.yml','.gdshader','.md','.ps1','.tscn','.tres'
+#$extensions = '.cs','.json','.xml','.yml','.gdshader','.md'
+
 
 $files = git ls-files |
         Where-Object { $extensions -contains ([IO.Path]::GetExtension($_)) } |
         Where-Object { $_ -notmatch '(/\.vscode/|/\.idea/|addons/|README\.md|CLAUDE\.md|\.csproj$|\.sln$)' }
-#        Where-Object { $_ -notmatch '(/\.vscode/|/\.idea/|test/|addons/|README\.md|CLAUDE\.md|\.csproj$|\.sln$)' }
+#        Where-Object { $_ -notmatch '(/\.vscode/|/\.idea/|Tests/|addons/|README\.md|CLAUDE\.md|\.csproj$|\.sln$)' }
 
 # 2. Build hierarchical tree structure
 function New-TreeNode($name) {

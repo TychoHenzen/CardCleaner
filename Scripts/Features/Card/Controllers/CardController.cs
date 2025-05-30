@@ -7,7 +7,7 @@ namespace CardCleaner.Scripts.Controllers;
 [Tool]
 public partial class CardController : RigidBody3D {
     private readonly List<ICardComponent> _components = new();
-
+    public CardSignature Signature;
     public override void _Ready() {
         // Discover and initialize all child components
         foreach (var child in GetChildren())

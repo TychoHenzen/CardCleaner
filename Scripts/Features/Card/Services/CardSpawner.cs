@@ -1,5 +1,6 @@
 using Godot;
 using CardCleaner.Scripts;
+using CardCleaner.Scripts.Controllers;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Interfaces;
 
@@ -59,20 +60,21 @@ public partial class CardSpawner : Node3D
     {
         if (_spawnQueue > 0)
         {
-            SpawnSingleCard();
+            SpawnSingleCard(CardSignature.Random(_rng));
             _spawnQueue--;
         }
     }
 
-    private void SpawnSingleCard()
+    private void SpawnSingleCard(CardSignature signature)
     {
         if (CardScene.Instantiate() is not Node3D cardInstance)
             return;
         var renderer = cardInstance.GetNode<CardShaderRenderer>("CardRenderer");
         if (renderer == null) return;
-        
-        _generator.GenerateCardRenderer(renderer, CardSignature.Random(_rng));
+
+        _generator.GenerateCardRenderer(renderer, signature);
         renderer.Bake();
+        cardInstance.GetNode<CardController>("Card").Signature = signature;
 
         _spawnParent.AddChild(cardInstance);
 

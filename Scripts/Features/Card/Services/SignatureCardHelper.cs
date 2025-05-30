@@ -31,11 +31,14 @@ public static class SignatureCardHelper
         float rarityRatio = (float)totalPoints / maxPoints;
         float logScaled = (float)Math.Log10(1f + 9f * rarityRatio);
 
-        if (logScaled < 0.70f) return CardRarity.Common;
-        if (logScaled < 0.80f) return CardRarity.Uncommon;
-        if (logScaled < 0.92f) return CardRarity.Rare;
-        if (logScaled < 0.96f) return CardRarity.Epic;
-        return CardRarity.Legendary;
+        return logScaled switch
+        {
+            < 0.70f => CardRarity.Common,
+            < 0.80f => CardRarity.Uncommon,
+            < 0.92f => CardRarity.Rare,
+            < 0.96f => CardRarity.Epic,
+            _ => CardRarity.Legendary
+        };
     }
 
     public static void Apply(RandomNumberGenerator rng, LayerData layer, Texture2D[] options)

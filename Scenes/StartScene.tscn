@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://cc3ymqg03a2g5"]
+[gd_scene load_steps=29 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://oqrxpyj8qkim" path="res://Scenes/CardShader.tscn" id="3_4bcsh"]
 [ext_resource type="Script" uid="uid://bo8luaias82fj" path="res://Scripts/Features/Card/Services/CardSpawner.cs" id="3_6nqof"]
@@ -21,6 +21,8 @@
 [ext_resource type="Resource" uid="uid://kbbcimmj8rjt" path="res://Assets/CardGems/Inertiae.tres" id="14_sstrp"]
 [ext_resource type="Resource" uid="uid://cgt57r6nssi2m" path="res://Assets/CardGems/Subsidium.tres" id="15_dta7m"]
 [ext_resource type="Resource" uid="uid://bo8ktcdqa516m" path="res://Assets/CardGems/Spatium.tres" id="16_r0o6j"]
+[ext_resource type="PackedScene" uid="uid://yk0lld10yvq3" path="res://Assets/Models/SingleCard.fbx" id="22_o6inp"]
+[ext_resource type="PackedScene" uid="uid://bj1xb35l41wmy" path="res://Assets/Models/CardStack.fbx" id="24_f1k1t"]
 [ext_resource type="Script" uid="uid://bn02ohsh8gfn4" path="res://Scripts/Features/Card/Services/TextureLoader.cs" id="449_ucc6g"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t5ln1"]
@@ -120,6 +122,9 @@ texture_filter = 1
 position = Vector2(5, 5)
 texture = ExtResource("6_28ir6")
 
+[node name="SingleCard" parent="." instance=ExtResource("22_o6inp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.85722, 0.308594, 4.87963)
+
 [node name="CardTemplates" type="Node" parent="."]
 
 [node name="CardArt" type="Node" parent="CardTemplates"]
@@ -134,5 +139,8 @@ transform = Transform3D(1, 0, -1.06581e-14, 0, 1, 0, 1.06581e-14, 0, 1, 4, 0.508
 
 [node name="StaticBody3D3" parent="." instance=ExtResource("9_dr1m3")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 3, 0.508978, 4)
+
+[node name="CardStack" parent="." instance=ExtResource("24_f1k1t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.22896, 0.308594, 4.90923)
 
 [editable path="Node3D2"]
