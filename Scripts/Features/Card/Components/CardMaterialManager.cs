@@ -70,12 +70,6 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         foreach (var param in _shaderParameters) 
         {
             material.SetShaderParameter(param.Key, param.Value);
-        
-            // Debug emission arrays specifically
-            if (param.Key == "gem_emission_colors" || param.Key == "gem_emission_strengths")
-            {
-                GD.Print($"[CardMaterialManager] Applied {param.Key}: {param.Value}");
-            }
         }
 
         target.MaterialOverride = material;
