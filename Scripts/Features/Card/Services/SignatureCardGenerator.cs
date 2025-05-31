@@ -1,7 +1,10 @@
 ﻿using System.Linq;
+using CardCleaner.Scripts.Core.Data;
+using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enum;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Services;
@@ -12,21 +15,18 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 /// </summary>
 public class SignatureCardGenerator : ICardGenerator
 {
-    private readonly Models.BaseCardType[] _baseTypes;
-    private readonly Models.GemVisual[] _gemVisuals;
-    private readonly Models.RarityVisual[] _rarityVisuals;
+    private BaseCardType[] _baseTypes;
+    private GemVisual[] _gemVisuals;
+    private RarityVisual[] _rarityVisuals;
 
-    public SignatureCardGenerator(
-        Models.RarityVisual[] rarityVisuals,
-        Models.BaseCardType[] baseTypes,
-        Models.GemVisual[] gemVisuals)
+    public SignatureCardGenerator()
     {
-        _rarityVisuals = rarityVisuals;
-        _baseTypes = baseTypes;
-        _gemVisuals = gemVisuals;
+        ServiceLocator.Get<RarityVisual[]>(visual => _rarityVisuals = visual);
+        ServiceLocator.Get<BaseCardType[]>(bases => _baseTypes = bases);
+        ServiceLocator.Get<GemVisual[]>(gems => _gemVisuals = gems);
     }
 
-    public void GenerateCardRenderer(CardShaderRenderer renderer, Models.CardSignature signature, Core.Data.CardTemplate template)
+    public void GenerateCardRenderer(CardShaderRenderer renderer, CardSignature signature, Core.Data.CardTemplate template)
     {
         var rng = new RandomNumberGenerator
         {
@@ -73,26 +73,33 @@ public class SignatureCardGenerator : ICardGenerator
             var gemVis = _gemVisuals.FirstOrDefault(gv => gv.Element == element);
             if (gemVis != null)
             {
-                // Select textures based on sign
-                var socketTex = gemVis.SocketTexture;
-                var gemTex = isPos
-                    ? gemVis.PositiveGemTexture
-                    : gemVis.NegativeGemTexture;
-                template.GemSockets[i].Texture = socketTex;
-                template.Gems[i].Texture = gemTex;
-
-                // Select emission settings based on sign and scale by intensity
-                var tint = isPos
-                    ? gemVis.PositiveEmissionColor
-                    : gemVis.NegativeEmissionColor;
-                var strength = intensity * (isPos
-                    ? gemVis.PositiveEmissionStrength
-                    : gemVis.NegativeEmissionStrength);
-
-                renderer.SetGemEmission(i, tint, strength);
+                SetGemVisuals(renderer, template, gemVis, isPos, i, intensity);
             }
         }
 
         renderer.NameLabel.Text = rarity.ToString();
+        renderer.AttrLabel.Text = signature.ToString();
+    }
+
+    private static void SetGemVisuals(CardShaderRenderer renderer, CardTemplate template, GemVisual gemVis, bool isPos,
+        int i, float intensity)
+    {
+        // Select textures based on sign
+        var socketTex = gemVis.SocketTexture;
+        var gemTex = isPos
+            ? gemVis.PositiveGemTexture
+            : gemVis.NegativeGemTexture;
+        template.GemSockets[i].Texture = socketTex;
+        template.Gems[i].Texture = gemTex;
+
+        // Select emission settings based on sign and scale by intensity
+        var tint = isPos
+            ? gemVis.PositiveEmissionColor
+            : gemVis.NegativeEmissionColor;
+        var strength = intensity * (isPos
+            ? gemVis.PositiveEmissionStrength
+            : gemVis.NegativeEmissionStrength);
+
+        renderer.SetGemEmission(i, tint, strength);
     }
 }

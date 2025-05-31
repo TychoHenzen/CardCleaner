@@ -7,7 +7,7 @@ namespace CardCleaner.Scripts.Features.Card.Components;
 [Tool]
 public partial class CardMaterialManager : Node, ICardMaterialComponent
 {
-    private readonly System.Collections.Generic.Dictionary<string, Variant> _shaderParameters = new();
+    private readonly Dictionary<string, Variant> _shaderParameters = new();
 
     private ShaderMaterial _activeMaterial;
     [Export] public ShaderMaterial CardMaterialTemplate { get; set; }
@@ -31,9 +31,7 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         _shaderParameters["regions"] = regionsArr;
         _shaderParameters["frontFlags"] = frontFlagsArr;
         _shaderParameters["backFlags"] = backFlagsArr;
-    }
-
-    public void SetGemEmission(int index, Color color, float strength)
+    }public void SetGemEmission(int index, Color color, float strength)
     {
         // Ensure arrays exist with proper size
         if (!_shaderParameters.ContainsKey("gem_emission_colors"))
@@ -55,18 +53,30 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         var existingColors = _shaderParameters["gem_emission_colors"].As<Array<Vector3>>();
         var existingStrengths = _shaderParameters["gem_emission_strengths"].As<Array<float>>();
 
-        if (index >= 0 && index < 8)
+        if (index is < 0 or >= 8) 
         {
-            existingColors[index] = new Vector3(color.R, color.G, color.B);
-            existingStrengths[index] = strength;
+            GD.PrintErr($"[CardMaterialManager] Invalid gem index: {index}");
+            return;
         }
+    
+        existingColors[index] = new Vector3(color.R, color.G, color.B);
+        existingStrengths[index] = strength;
     }
 
     public void ApplyMaterial(MeshInstance3D target)
     {
         if (CardMaterialTemplate?.Duplicate() is not ShaderMaterial material) return;
-
-        foreach (var param in _shaderParameters) material.SetShaderParameter(param.Key, param.Value);
+        
+        foreach (var param in _shaderParameters) 
+        {
+            material.SetShaderParameter(param.Key, param.Value);
+        
+            // Debug emission arrays specifically
+            if (param.Key == "gem_emission_colors" || param.Key == "gem_emission_strengths")
+            {
+                GD.Print($"[CardMaterialManager] Applied {param.Key}: {param.Value}");
+            }
+        }
 
         target.MaterialOverride = material;
         _activeMaterial = material;

@@ -16,21 +16,13 @@ public partial class CardServiceProvider : Node, IServiceProvider
     [Export] public RarityVisual[] RarityVisuals { get; set; }
     [Export] public BaseCardType[] BaseCardTypes { get; set; }
     [Export] public GemVisual[] GemVisuals { get; set; }
-    [Export] public CardMaterialManager CardMaterial { get; set; }
-    [Export] public BlacklightController Blacklight { get; set; }
+    [Export] public CardSpawningService SpawningService { get; set; }
 
     public void RegisterServices(IServiceContainer container)
     {
         // Only register if we have the required data
         if (RarityVisuals != null && BaseCardTypes != null && GemVisuals != null)
         {
-            // Register the signature-based card generator
-            container.RegisterSingleton<ICardGenerator>(
-                new SignatureCardGenerator(RarityVisuals, BaseCardTypes, GemVisuals));
-
-            container.RegisterSingleton<ICardMaterialComponent>(CardMaterial);
-            container.RegisterSingleton<IBlacklightController>(Blacklight);
-
             // Register individual visual configurations
             container.RegisterSingleton(RarityVisuals);
             container.RegisterSingleton(BaseCardTypes);
@@ -41,6 +33,17 @@ public partial class CardServiceProvider : Node, IServiceProvider
         else
         {
             GD.PrintErr("[CardServiceProvider] Missing required visual data for service registration");
+        }
+        container.RegisterSingleton<ICardGenerator,SignatureCardGenerator>();
+        
+        if (SpawningService != null)
+        {
+            container.RegisterSingleton<ICardSpawningService>(SpawningService);
+            GD.Print("[CardServiceProvider] Registered SpawningService");
+        }
+        else
+        {
+            GD.PrintErr("[CardServiceProvider] SpawningService not assigned - skipping registration");
         }
     }
 

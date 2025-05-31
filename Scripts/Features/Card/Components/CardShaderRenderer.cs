@@ -1,5 +1,6 @@
 ﻿using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Controllers;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
@@ -8,7 +9,6 @@ namespace CardCleaner.Scripts.Features.Card.Components;
 public partial class CardShaderRenderer : Node, ICardComponent
 {
     private bool _baked;
-    private IBlacklightController _blacklightController;
 
     private RigidBody3D _cardRoot;
 
@@ -25,8 +25,7 @@ public partial class CardShaderRenderer : Node, ICardComponent
     public void Setup(RigidBody3D cardRoot)
     {
         _cardRoot = cardRoot;
-        ServiceLocator.Get<ICardMaterialComponent>(component => _materialManager = component);
-        ServiceLocator.Get<IBlacklightController>(component => _blacklightController = component);
+        _materialManager = _cardRoot.GetNodeOrNull<CardMaterialManager>("MaterialManager");
     }
 
 
@@ -50,12 +49,14 @@ public partial class CardShaderRenderer : Node, ICardComponent
         _materialManager.SetLayerTextures(layers);
         _materialManager.ApplyMaterial(box);
 
-        if (box.MaterialOverride is ShaderMaterial material) CallDeferred(nameof(EnableBlacklightUpdates), material);
+        if (box.MaterialOverride is ShaderMaterial material) 
+            CallDeferred(nameof(EnableBlacklightUpdates), material);
     }
 
     private void EnableBlacklightUpdates(ShaderMaterial material)
     {
-        _blacklightController?.UpdateBlacklightEffect(material);
+        var blacklightController = _cardRoot.GetNodeOrNull<BlacklightController>("BlacklightController");
+        blacklightController?.UpdateBlacklightEffect(material);
     }
 
     public void SetGemEmission(int index, Color color, float strength)

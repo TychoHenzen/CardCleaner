@@ -43,6 +43,7 @@ public partial class CardController : RigidBody3D
 
     public override void _IntegrateForces(PhysicsDirectBodyState3D state)
     {
+        base._IntegrateForces(state);
         // Only call physics on components that actually need it
         foreach (var physicsComp in _physicsComponents) physicsComp.IntegrateForces(state);
     }

@@ -2,6 +2,7 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
+using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Services;
@@ -11,21 +12,19 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 /// </summary>
 public partial class CardSpawner : Node3D
 {
-    private ICardGenerator _generator;
+    private ICardSpawningService _spawningService;
     private IInputService _inputService;
-    private RandomNumberGenerator _rng;
 
     private Node3D _spawnParent;
     private int _spawnQueue;
-    [Export] public PackedScene CardScene { get; set; }
     [Export] public NodePath SpawnParentPath { get; set; }
     [Export] public Vector3 OffsetRange { get; set; } = Vector3.Zero;
 
     public override void _Ready()
     {
         _spawnParent = GetNode<Node3D>(SpawnParentPath);
-        ServiceLocator.Get<RandomNumberGenerator>(rng => _rng = rng);
-        ServiceLocator.Get<ICardGenerator>(gen => _generator = gen);
+        
+        ServiceLocator.Get<ICardSpawningService>(service => _spawningService = service);
         ServiceLocator.Get<IInputService>(input =>
         {
             input.RegisterAction("spawn_one", Key.Key1, () => QueueCards(1));
@@ -43,11 +42,9 @@ public partial class CardSpawner : Node3D
 
     public override void _Process(double delta)
     {
-        if (_spawnQueue > 0)
-        {
-            _spawnQueue--;
-            SpawnSingleCard(Models.CardSignature.Random(_rng));
-        }
+        if (_spawnQueue <= 0) return;
+        _spawnQueue--;
+        SpawnSingleCard();
     }
 
     public override void _ExitTree()
@@ -56,32 +53,30 @@ public partial class CardSpawner : Node3D
         _inputService?.UnregisterAllActions(this);
     }
 
-    private void SpawnSingleCard(Models.CardSignature signature)
+    private void SpawnSingleCard()
     {
-        if (CardScene.Instantiate() is not Node3D cardInstance)
-            return;
-        _spawnParent.AddChild(cardInstance);
-        var offset = new Vector3(
-            (_rng.Randf() * 2 - 1) * OffsetRange.X,
-            (_rng.Randf() * 2 - 1) * OffsetRange.Y,
-            (_rng.Randf() * 2 - 1) * OffsetRange.Z
-        );
-        var transform = _spawnParent.GlobalTransform;
-        transform.Origin += offset;
-        cardInstance.GlobalTransform = transform;
-        cardInstance.Name = "Card";
+        // Calculate spawn transform with random offset
+        var offset = _spawningService.GetRandomOffset(OffsetRange);
+        var spawnTransform = _spawnParent.GlobalTransform;
+        spawnTransform.Origin += offset;
 
-        if (cardInstance is CardController controller)
-            controller.Signature = signature;
-        var renderer = cardInstance.GetNode<CardShaderRenderer>("CardRenderer");
-        if (renderer == null) return;
-        CallDeferred(nameof(BakeCardRenderer), renderer, signature);
+        // Use the spawning service to handle all the complex spawning logic
+        _spawningService.SpawnRandomCard(spawnTransform, _spawnParent);
     }
-
-    private void BakeCardRenderer(CardShaderRenderer renderer, Models.CardSignature signature)
+    
+    /// <summary>
+    /// Public method to spawn a card with a specific signature (useful for other systems)
+    /// </summary>
+    /// <param name="signature">The card signature to spawn</param>
+    /// <param name="position">Optional world position, defaults to spawn parent position</param>
+    public Node3D SpawnSpecificCard(CardSignature signature, Vector3? position = null)
     {
-        var template = new Core.Data.CardTemplate();
-        _generator.GenerateCardRenderer(renderer, signature, template);
-        renderer.Bake(template);
+        if (_spawningService == null) return null;
+
+        var spawnTransform = _spawnParent.GlobalTransform;
+        if (position.HasValue)
+            spawnTransform.Origin = position.Value;
+
+        return _spawningService.SpawnCard(signature, spawnTransform, _spawnParent);
     }
 }

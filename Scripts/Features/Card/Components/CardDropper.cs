@@ -48,7 +48,7 @@ public partial class CardDropper : Node3D
         _dropPreview.ShowPreview(true);
         _cardHolder.PositionCardsForDrop();
 
-        EmitSignal(nameof(global::CardDropper.DropStarted));
+        EmitSignal(nameof(DropStarted));
     }
 
     public void CancelDropPreparation()
@@ -59,7 +59,7 @@ public partial class CardDropper : Node3D
         _dropPreview.ShowPreview(false);
         _cardHolder.PositionCards(); // Reset to normal hand position
 
-        EmitSignal(nameof(global::CardDropper.DropCancelled));
+        EmitSignal(nameof(DropCancelled));
     }
 
     public void CompleteDropPreparation()
@@ -70,7 +70,7 @@ public partial class CardDropper : Node3D
         IsPreparingDrop = false;
         _dropPreview.ShowPreview(false);
 
-        EmitSignal(nameof(global::CardDropper.DropCompleted));
+        EmitSignal(nameof(DropCompleted));
     }
 
     public void DropSingleCard()

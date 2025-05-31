@@ -1,5 +1,4 @@
-﻿using CardCleaner.Scripts.Controllers;
-using Godot;
+﻿using Godot;
 using CardController = CardCleaner.Scripts.Features.Card.Controllers.CardController;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
@@ -70,8 +69,7 @@ public partial class CardSlot : Node3D
 
     public void Clear()
     {
-        if (_card != null)
-            _card.QueueFree();
+        _card?.QueueFree();
         _card = null;
         EmitSignal(nameof(CardChanged));
     }

@@ -41,7 +41,7 @@ public partial class CardHolder : Node3D
         HeldCards.Add(card);
 
         PositionCards();
-        EmitSignal(nameof(global::CardHolder.CardAdded), card);
+        EmitSignal(nameof(CardAdded), card);
     }
 
     public void RemoveCard(RigidBody3D card)
@@ -53,7 +53,7 @@ public partial class CardHolder : Node3D
         card.Reparent(_cardParent);
 
         PositionCardsForDrop();
-        EmitSignal(nameof(global::CardHolder.CardRemoved), card);
+        EmitSignal(nameof(CardRemoved), card);
     }
 
     public void RemoveTopCard()
