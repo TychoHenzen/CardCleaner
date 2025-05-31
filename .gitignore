@@ -2,6 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=godot,jetbrains+all
 
 Card_Context.txt
+.Serena
 
 ### Godot ###
 # Godot 4+ specific ignores

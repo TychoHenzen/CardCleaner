@@ -1,8 +1,10 @@
-[gd_scene load_steps=31 format=3 uid="uid://cc3ymqg03a2g5"]
+[gd_scene load_steps=34 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://oqrxpyj8qkim" path="res://Scenes/CardShader.tscn" id="3_4bcsh"]
 [ext_resource type="Script" uid="uid://bo8luaias82fj" path="res://Scripts/Features/Card/Services/CardSpawner.cs" id="3_6nqof"]
 [ext_resource type="PackedScene" uid="uid://wv6a67swhus" path="res://Scenes/player.tscn" id="3_k8nbv"]
+[ext_resource type="PackedScene" uid="uid://5pktuq08ry2m" path="res://Scenes/CardSlot.tscn" id="4_dta7m"]
+[ext_resource type="PackedScene" uid="uid://7stut08s5ui3" path="res://Scenes/DeckSlot.tscn" id="4_sstrp"]
 [ext_resource type="Resource" uid="uid://c1pvj6bchej3" path="res://Assets/CardRarity/Common.tres" id="4_vkee2"]
 [ext_resource type="Resource" uid="uid://crj4wbejtk751" path="res://Assets/CardRarity/Uncommon.tres" id="5_otk7d"]
 [ext_resource type="Script" uid="uid://dckadi8fdva0e" path="res://Scripts/Features/Pause/Controllers/PauseController.cs" id="5_u668n"]
@@ -23,12 +25,13 @@
 [ext_resource type="Resource" uid="uid://kbbcimmj8rjt" path="res://Assets/CardGems/Inertiae.tres" id="14_sstrp"]
 [ext_resource type="Resource" uid="uid://cgt57r6nssi2m" path="res://Assets/CardGems/Subsidium.tres" id="15_dta7m"]
 [ext_resource type="Resource" uid="uid://bo8ktcdqa516m" path="res://Assets/CardGems/Spatium.tres" id="16_r0o6j"]
-[ext_resource type="PackedScene" uid="uid://yk0lld10yvq3" path="res://Assets/Models/SingleCard.fbx" id="22_o6inp"]
-[ext_resource type="PackedScene" uid="uid://bj1xb35l41wmy" path="res://Assets/Models/CardStack.fbx" id="24_f1k1t"]
+[ext_resource type="Script" uid="uid://c6kxkpqfiolok" path="res://Scripts/Features/Deckbuilder/ServiceProviders/DeckbuilderServiceProvider.cs" id="27_1ia11"]
 [ext_resource type="Script" uid="uid://cngswvwuwm4cg" path="res://Scripts/Features/Card/Services/CardSpawningService.cs" id="28_1ia11"]
+[ext_resource type="Script" uid="uid://bwc5dxw38wqj" path="res://Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs" id="28_up2yq"]
+[ext_resource type="Script" uid="uid://cegl6bvhw8hui" path="res://Scripts/Features/Deckbuilder/Services/GameSessionService.cs" id="29_k3dcv"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t5ln1"]
-size = Vector3(39.5682, 0.396362, 43.8758)
+size = Vector3(40, 0.396, 40)
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3xlss"]
 sky_top_color = Color(0.298438, 0.416512, 0.800947, 1)
@@ -47,38 +50,39 @@ ambient_light_source = 2
 ambient_light_color = Color(1, 1, 1, 1)
 ambient_light_energy = 0.1
 
-[node name="Node3D" type="Node3D"]
+[node name="Root" type="Node3D"]
 
-[node name="World" type="CSGBox3D" parent="."]
-size = Vector3(40, 0.176, 40)
+[node name="World" type="Node3D" parent="."]
 
 [node name="Cards" type="Node3D" parent="World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
 script = ExtResource("3_6nqof")
-SpawnParentPath = NodePath(".")
 OffsetRange = Vector3(3, 1, 3)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.8355, 0, 0.316311)
+[node name="Floor" type="CSGBox3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
+size = Vector3(40, 0.1, 40)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="World/StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.8355, 0.110413, -0.316311)
+[node name="StaticBody3D" type="StaticBody3D" parent="World/Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Floor/StaticBody3D"]
 shape = SubResource("BoxShape3D_t5ln1")
 
-[node name="SingleCardHolder" parent="World" instance=ExtResource("22_o6inp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.85722, 0.308594, 4.87963)
-
 [node name="StaticBody3D2" parent="World" instance=ExtResource("9_dr1m3")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 2, 0.508978, 4)
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 2, 0.458978, 4)
 
 [node name="StaticBody3D4" parent="World" instance=ExtResource("9_dr1m3")]
-transform = Transform3D(1, 0, -1.06581e-14, 0, 1, 0, 1.06581e-14, 0, 1, 4, 0.508978, 4)
+transform = Transform3D(1, 0, -1.06581e-14, 0, 1, 0, 1.06581e-14, 0, 1, 4, 0.458978, 4)
 
 [node name="StaticBody3D3" parent="World" instance=ExtResource("9_dr1m3")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 3, 0.508978, 4)
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 3, 0.458978, 4)
 
-[node name="CardStack" parent="World" instance=ExtResource("24_f1k1t")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.22896, 0.308594, 4.90923)
+[node name="DeckSlot" parent="World" instance=ExtResource("4_sstrp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 5)
+
+[node name="CardSlot" parent="World" instance=ExtResource("4_dta7m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 5)
 
 [node name="Player" parent="." instance=ExtResource("3_k8nbv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.63051, 1.30859, -2.37775)
@@ -89,9 +93,6 @@ fov = 89.7
 
 [node name="SpotLight3D" parent="Player/Head/Camera3D" index="0"]
 spot_range = 46.3397
-
-[node name="CardInteraction" parent="Player" index="3" node_paths=PackedStringArray("CardsParent")]
-CardsParent = NodePath("../../World/Cards")
 
 [node name="Ui" type="Node" parent="." node_paths=PackedStringArray("PauseMenuLayer", "UILayer")]
 script = ExtResource("5_u668n")
@@ -136,16 +137,31 @@ script = ExtResource("9_r0o6j")
 [node name="GameSettings" type="Node" parent="Services/GameSettingsProvider"]
 script = ExtResource("10_1ia11")
 
-[node name="CardServiceProvider" type="Node" parent="Services" node_paths=PackedStringArray("CardMaterial", "SpawningService")]
+[node name="CardServiceProvider" type="Node" parent="Services" node_paths=PackedStringArray("SpawningService", "CardRoot")]
 script = ExtResource("11_r0o6j")
 RarityVisuals = Array[Object]([ExtResource("4_vkee2"), ExtResource("5_otk7d"), ExtResource("6_ypprn"), ExtResource("7_ioitf"), ExtResource("8_3rand")])
 BaseCardTypes = Array[Object]([ExtResource("9_3xlss")])
 GemVisuals = Array[Object]([ExtResource("9_h03qd"), ExtResource("10_3xlss"), ExtResource("11_o6inp"), ExtResource("12_f1k1t"), ExtResource("13_6aa2p"), ExtResource("14_sstrp"), ExtResource("15_dta7m"), ExtResource("16_r0o6j")])
-CardMaterial = NodePath("")
 SpawningService = NodePath("SpawningService")
+CardRoot = NodePath("../../World/Cards")
 
 [node name="SpawningService" type="Node" parent="Services/CardServiceProvider"]
 script = ExtResource("28_1ia11")
 CardScene = ExtResource("3_4bcsh")
 
+[node name="DeckbuilderServiceProvider" type="Node" parent="Services" node_paths=PackedStringArray("GameSessionService")]
+script = ExtResource("27_1ia11")
+GameSessionService = NodePath("GameSessionService")
+
+[node name="DeckbuilderController" type="Node" parent="Services/DeckbuilderServiceProvider" node_paths=PackedStringArray("AbilityDeckSlot", "MapCardSlot")]
+script = ExtResource("28_up2yq")
+AbilityDeckSlot = NodePath("../../../World/DeckSlot")
+MapCardSlot = NodePath("../../../World/CardSlot")
+BattleScreenScene = ExtResource("4_dta7m")
+TileMapScreenScene = ExtResource("4_dta7m")
+
+[node name="GameSessionService" type="Node" parent="Services/DeckbuilderServiceProvider"]
+script = ExtResource("29_k3dcv")
+
+[editable path="World/CardSlot"]
 [editable path="Player"]

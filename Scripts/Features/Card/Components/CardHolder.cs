@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CardCleaner.Scripts.Core.DependencyInjection;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
@@ -12,7 +13,7 @@ public partial class CardHolder : Node3D
     public delegate void CardRemovedEventHandler(RigidBody3D card);
 
     public readonly List<RigidBody3D> HeldCards = new();
-    private Node3D _cardParent;
+    // private Node3D _cardParent;
     private Node3D _handParent;
     [Export] public uint CardCollisionLayer = 2;
 
@@ -21,10 +22,9 @@ public partial class CardHolder : Node3D
     public int HeldCount => HeldCards.Count;
     public bool HasCards => HeldCards.Count > 0;
 
-    public void SetReferences(Node3D handAnchor, Node3D cardsParent)
+    public void SetReferences(Node3D handAnchor)
     {
         _handParent = handAnchor;
-        _cardParent = cardsParent;
     }
 
     public void AddCard(RigidBody3D card)
@@ -50,7 +50,7 @@ public partial class CardHolder : Node3D
 
         HeldCards.Remove(card);
         EnablePhysics(card);
-        card.Reparent(_cardParent);
+        card.Reparent(ServiceLocator.Get<ICardSpawner>().GetNode());
 
         PositionCardsForDrop();
         EmitSignal(nameof(CardRemoved), card);

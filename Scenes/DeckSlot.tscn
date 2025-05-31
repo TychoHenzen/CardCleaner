@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://7stut08s5ui3"]
+
+[ext_resource type="Script" uid="uid://c5gsvnqi64ss8" path="res://Scripts/Features/Deckbuilder/Models/DeckSlot.cs" id="1_qw16h"]
+[ext_resource type="PackedScene" uid="uid://bj1xb35l41wmy" path="res://Assets/Models/CardStack.fbx" id="2_24yx1"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qw16h"]
+size = Vector3(0.328613, 0.250977, 0.557617)
+
+[node name="DeckSlot" type="Node3D"]
+script = ExtResource("1_qw16h")
+AreaPath = NodePath("Area3D")
+
+[node name="Mesh" parent="." instance=ExtResource("2_24yx1")]
+
+[node name="Area3D" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00756836, 0.252441, 0.221191)
+shape = SubResource("BoxShape3D_qw16h")

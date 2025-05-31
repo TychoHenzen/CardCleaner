@@ -64,7 +64,7 @@ void fragment() {
                         // ALBEDO TINT — factor by final_intensity to avoid outright occluding underlying layers
                         // We interpolate between the base sample color and the fluorescent tint,
                         // weighted by how “strong” the emission is. That way a weak gem glow looks dimmer.
-                        vec3 fluorescent_color = pure_emission; 
+                        vec3 fluorescent_color = pure_emission;
                         // Blend amount = blacklight_exposure * final_intensity.
                         float blend_amount = blacklight_exposure * final_intensity;
                         vec3 mixed_color = mix(sample.rgb, fluorescent_color, blend_amount);

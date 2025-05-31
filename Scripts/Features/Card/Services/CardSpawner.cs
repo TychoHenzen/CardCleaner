@@ -10,20 +10,16 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 /// <summary>
 ///     Spawns Card instances one per frame at runtime when pressing 1, 2, or 3.
 /// </summary>
-public partial class CardSpawner : Node3D
+public partial class CardSpawner : Node3D, ICardSpawner
 {
     private ICardSpawningService _spawningService;
     private IInputService _inputService;
 
-    private Node3D _spawnParent;
     private int _spawnQueue;
-    [Export] public NodePath SpawnParentPath { get; set; }
     [Export] public Vector3 OffsetRange { get; set; } = Vector3.Zero;
 
     public override void _Ready()
     {
-        _spawnParent = GetNode<Node3D>(SpawnParentPath);
-        
         ServiceLocator.Get<ICardSpawningService>(service => _spawningService = service);
         ServiceLocator.Get<IInputService>(input =>
         {
@@ -57,11 +53,11 @@ public partial class CardSpawner : Node3D
     {
         // Calculate spawn transform with random offset
         var offset = _spawningService.GetRandomOffset(OffsetRange);
-        var spawnTransform = _spawnParent.GlobalTransform;
+        var spawnTransform = GlobalTransform;
         spawnTransform.Origin += offset;
 
         // Use the spawning service to handle all the complex spawning logic
-        _spawningService.SpawnRandomCard(spawnTransform, _spawnParent);
+        _spawningService.SpawnRandomCard(spawnTransform, this);
     }
     
     /// <summary>
@@ -73,10 +69,15 @@ public partial class CardSpawner : Node3D
     {
         if (_spawningService == null) return null;
 
-        var spawnTransform = _spawnParent.GlobalTransform;
+        var spawnTransform = GlobalTransform;
         if (position.HasValue)
             spawnTransform.Origin = position.Value;
 
-        return _spawningService.SpawnCard(signature, spawnTransform, _spawnParent);
+        return _spawningService.SpawnCard(signature, spawnTransform, this);
+    }
+
+    public Node3D GetNode()
+    {
+        return this;
     }
 }

@@ -11,7 +11,6 @@ public partial class CardHighlighter : Node3D
     [Export] public Camera3D Camera;
     [Export] public CardDropper CardDropper;
     [Export] public CardHolder CardHolder;
-    [Export] public Node3D CardsParent;
     [Export] public float MaxHighlightDistance = 50f;
 
     [Export] public CardPicker Picker;
@@ -20,7 +19,7 @@ public partial class CardHighlighter : Node3D
     public override void _Ready()
     {
         // Get references
-        CardHolder.SetReferences(Camera, CardsParent);
+        CardHolder.SetReferences(Camera);
         CardDropper.Initialize(CardHolder, Preview, Camera);
 
         // Wire signals

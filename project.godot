@@ -20,6 +20,10 @@ config/defaults/default_clear_color=Color(0.3, 0.3, 0.3, 1)
 
 Services="*res://Scripts/Core/DependencyInjection/ServiceLocator.cs"
 
+[debug]
+
+shader_language/warnings/treat_warnings_as_errors=true
+
 [dotnet]
 
 project/assembly_name="CardCleaner"

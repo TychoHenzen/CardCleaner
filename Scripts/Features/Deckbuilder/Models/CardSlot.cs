@@ -45,7 +45,7 @@ public partial class CardSlot : Node3D
         card.Freeze = true;
         card.LinearVelocity = Vector3.Zero;
         card.AngularVelocity = Vector3.Zero;
-        AddChild(card);
+        card.Reparent(this);
         card.GlobalPosition = GlobalPosition;
         card.GlobalRotation = GlobalRotation;
     }

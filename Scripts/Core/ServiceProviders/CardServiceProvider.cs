@@ -17,6 +17,7 @@ public partial class CardServiceProvider : Node, IServiceProvider
     [Export] public BaseCardType[] BaseCardTypes { get; set; }
     [Export] public GemVisual[] GemVisuals { get; set; }
     [Export] public CardSpawningService SpawningService { get; set; }
+    [Export] public CardSpawner CardRoot { get; set; }
 
     public void RegisterServices(IServiceContainer container)
     {
@@ -35,6 +36,7 @@ public partial class CardServiceProvider : Node, IServiceProvider
             GD.PrintErr("[CardServiceProvider] Missing required visual data for service registration");
         }
         container.RegisterSingleton<ICardGenerator,SignatureCardGenerator>();
+        container.RegisterSingleton<ICardSpawner>(CardRoot);
         
         if (SpawningService != null)
         {
