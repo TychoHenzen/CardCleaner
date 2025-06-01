@@ -30,7 +30,7 @@ public partial class CardDropper : Node3D
         ServiceLocator.Get<IInputService>(input =>
         {
             _inputService = input;
-            _inputService.RegisterAction("card_drop_single", Key.X, DropSingleCard);
+            _inputService.RegisterAction(this, "card_drop_single", Key.X, DropSingleCard);
         });
     }
 

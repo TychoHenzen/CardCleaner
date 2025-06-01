@@ -22,7 +22,7 @@ public partial class InteractionSystem : Node3D
         ServiceLocator.Get<IInputService>(input =>
         {
             _inputService = input;
-            _inputService.RegisterAction("interact", MouseButton.Left, OnInteractPressed);
+            _inputService.RegisterAction(this ,"interact", MouseButton.Left, OnInteractPressed);
         });
     }
 

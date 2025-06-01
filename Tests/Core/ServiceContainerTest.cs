@@ -1,6 +1,6 @@
 ﻿using System;
 using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Tests.Mocking;
 using GdUnit4;
 
 namespace CardCleaner.Tests.Core;
@@ -12,7 +12,7 @@ public class ServiceContainerTest
 {
     private ServiceContainer _container;
 
-    [Before]
+    [BeforeTest]
     public void Setup()
     {
         _container = new ServiceContainer();

@@ -13,30 +13,30 @@ namespace CardCleaner.Tests.Core;
 public class ServiceLocatorTest
 {
     private ServiceLocator _locator;
-    private SceneTree _testTree;
+    private Node3D _testTree;
 
-    [Before]
+    [BeforeTest]
     public void Setup()
     {
         // Reset static state before each test
         ServiceLocator.ResetForTesting();
     
         // Create a minimal scene tree for testing
-        _testTree = new SceneTree();
+        _testTree = new Node3D();
     
         _locator = new ServiceLocator();
         _locator.Name = "Services";
     
         // Simulate the autoload setup
-        _testTree.Root.AddChild(_locator);
+        _testTree.AddChild(_locator);
     }
 
 
-    [After]
+    [AfterTest]
     public void Cleanup()
     {
         _locator?.QueueFree();
-        _testTree?.Quit();
+        _testTree?.QueueFree();
     }
 
     [TestCase]
@@ -192,7 +192,7 @@ public class ServiceLocatorTest
         // Create a mock service provider
         var mockProvider = new MockServiceProvider();
         mockProvider.AddToGroup("service_providers");
-        _testTree.Root.AddChild(mockProvider);
+        _testTree.AddChild(mockProvider);
         
         // Simulate the service provider registration process
         // Note: In real usage, this happens in _Ready() via CallDeferred

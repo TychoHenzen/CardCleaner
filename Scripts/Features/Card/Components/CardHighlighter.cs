@@ -26,8 +26,8 @@ public partial class CardHighlighter : Node3D
         ServiceLocator.Get<IInputService>(input =>
         {
             _inputService = input;
-            _inputService.RegisterAction("card_drop_prepare", MouseButton.Right, OnRightPress);
-            _inputService.RegisterAction("card_grab", MouseButton.Left, OnLeftPress);
+            _inputService.RegisterAction(this, "card_drop_prepare", MouseButton.Right, OnRightPress);
+            _inputService.RegisterAction(this, "card_grab", MouseButton.Left, OnLeftPress);
         });
 
         Picker.Connect("CardDetected", Callable.From<RigidBody3D>(OnCardDetected));

@@ -1,9 +1,21 @@
-﻿using System;
+﻿namespace CardCleaner.Tests.Mocking;
 
-namespace CardCleaner.Tests.Core
+public interface ITestService
 {
-    public interface ITestService
+    string GetValue();
+}
+public class TestServiceImpl : ITestService
+{
+    public string GetValue() => "test_value";
+}
+public class TestServiceWithDependency : ITestService
+{
+    private readonly ITestService _dependency;
+    
+    public TestServiceWithDependency(ITestService dependency)
     {
-        string GetValue();
+        _dependency = dependency;
     }
+    
+    public string GetValue() => $"wrapped_{_dependency.GetValue()}";
 }

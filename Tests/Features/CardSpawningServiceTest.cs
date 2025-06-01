@@ -19,7 +19,7 @@ public class CardSpawningServiceTest
     private Node3D _testParent;
     private PackedScene _mockCardScene;
 
-    [Before]
+    [BeforeTest]
     public void Setup()
     {
         // Create a minimal scene for testing
@@ -53,7 +53,7 @@ public class CardSpawningServiceTest
         _service.CardScene = _mockCardScene;
     }
 
-    [After]
+    [AfterTest]
     public void Cleanup()
     {
         _testParent?.QueueFree();

@@ -23,9 +23,9 @@ public partial class CardSpawner : Node3D, ICardSpawner
         ServiceLocator.Get<ICardSpawningService>(service => _spawningService = service);
         ServiceLocator.Get<IInputService>(input =>
         {
-            input.RegisterAction("spawn_one", Key.Key1, () => QueueCards(1));
-            input.RegisterAction("spawn_ten", Key.Key2, () => QueueCards(10));
-            input.RegisterAction("spawn_hundred", Key.Key3, () => QueueCards(100));
+            input.RegisterAction(this, "spawn_one", Key.Key1, () => QueueCards(1));
+            input.RegisterAction(this, "spawn_ten", Key.Key2, () => QueueCards(10));
+            input.RegisterAction(this, "spawn_hundred", Key.Key3, () => QueueCards(100));
             _inputService = input;
         });
     }

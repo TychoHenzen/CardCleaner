@@ -40,10 +40,10 @@ public partial class PlayerController : CharacterBody3D
     private void RegisterInputActions()
     {
         // Register light cycling control
-        _inputService.RegisterAction("cycle_light", Key.F, CycleLightMode);
-        _inputService.RegisterAction("increase_light_intensity", Key.Plus, () => AdjustLightIntensity(0.2f));
-        _inputService.RegisterAction("decrease_light_intensity", Key.Minus, () => AdjustLightIntensity(-0.2f));
-        _inputService.RegisterAction("increase_light_intensity_alt", Key.Equal, () => AdjustLightIntensity(0.2f));
+        _inputService.RegisterAction(this , "cycle_light", Key.F, CycleLightMode);
+        _inputService.RegisterAction(this, "increase_light_intensity", Key.Plus, () => AdjustLightIntensity(0.2f));
+        _inputService.RegisterAction(this, "decrease_light_intensity", Key.Minus, () => AdjustLightIntensity(-0.2f));
+        _inputService.RegisterAction(this, "increase_light_intensity_alt", Key.Equal, () => AdjustLightIntensity(0.2f));
 
         // Subscribe to mouse movement
         _inputService.MouseMoved += OnMouseMoved;

@@ -14,7 +14,7 @@ public class GameSessionServiceTest
     private List<CardSignature> _lastLootGenerated;
     private int _stateChangeCount;
 
-    [Before]
+    [BeforeTest]
     public void Setup()
     {
         _service = new GameSessionService();
@@ -26,7 +26,7 @@ public class GameSessionServiceTest
         _service.LootGenerated += OnLootGenerated;
     }
 
-    [After]
+    [AfterTest]
     public void Cleanup()
     {
         _service?.QueueFree();

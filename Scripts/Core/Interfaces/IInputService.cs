@@ -17,9 +17,9 @@ public interface IInputService
     bool IsActionJustReleased(string actionName);
 
     // Action registration system
-    void RegisterAction(string actionName, Key key, Action callback);
-    void RegisterAction(string actionName, MouseButton button, Action<bool> callback); // bool = pressed
-    void UnregisterAction(string actionName, object owner);
+    void RegisterAction(object owner, string actionName, Key key, Action callback);
+    void RegisterAction(object owner, string actionName, MouseButton button, Action<bool> callback); // bool = pressed
+    void UnregisterAction(object owner, string actionName);
     void UnregisterAllActions(object owner);
 
     // Key mapping management

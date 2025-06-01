@@ -13,7 +13,7 @@ public class InputServiceTest
     private bool _mouseActionPressed;
     private int _actionCallCount;
 
-    [Before]
+    [BeforeTest]
     public void Setup()
     {
         _service = new InputService();
@@ -22,7 +22,7 @@ public class InputServiceTest
         _actionCallCount = 0;
     }
 
-    [After]
+    [AfterTest]
     public void Cleanup()
     {
         _service?.QueueFree();
@@ -31,7 +31,7 @@ public class InputServiceTest
     [TestCase]
     public void TestRegisterKeyAction()
     {
-        _service.RegisterAction("test_action", Key.Space, () => _actionTriggered = true);
+        _service.RegisterAction(this, "test_action", Key.Space, () => _actionTriggered = true);
         
         Assertions.AssertThat(_service.GetKeyForAction("test_action")).IsEqual(Key.Space);
         Assertions.AssertBool(_service.IsActionPressed("test_action")).IsFalse();
@@ -40,7 +40,7 @@ public class InputServiceTest
     [TestCase]
     public void TestRegisterMouseAction()
     {
-        _service.RegisterAction("test_mouse", MouseButton.Left, (pressed) => 
+        _service.RegisterAction(this, "test_mouse", MouseButton.Left, (pressed) => 
         {
             _mouseActionPressed = pressed;
             _actionCallCount++;
@@ -52,11 +52,10 @@ public class InputServiceTest
     [TestCase]
     public void TestUnregisterAction()
     {
-        var owner = "test_owner";
-        _service.RegisterAction("test_action", Key.Space, () => _actionTriggered = true);
+        _service.RegisterAction(this, "test_action", Key.Space, () => _actionTriggered = true);
         
         // Unregister the action
-        _service.UnregisterAction("test_action", owner);
+        _service.UnregisterAction(this, "test_action");
         
         // Key mapping should be cleared
         Assertions.AssertThat(_service.GetKeyForAction("test_action")).IsEqual(Key.Unknown);
@@ -66,11 +65,10 @@ public class InputServiceTest
     [TestCase]
     public void TestUnregisterAllActions()
     {
-        var owner = "test_owner";
-        _service.RegisterAction("action1", Key.Space, () => { });
-        _service.RegisterAction("action2", Key.Enter, () => { });
+        _service.RegisterAction(this , "action1", Key.Space, () => { });
+        _service.RegisterAction(this, "action2", Key.Enter, () => { });
         
-        _service.UnregisterAllActions(owner);
+        _service.UnregisterAllActions(this);
         
         Assertions.AssertThat(_service.GetKeyForAction("action1")).IsEqual(Key.Unknown);
         Assertions.AssertThat(_service.GetKeyForAction("action2")).IsEqual(Key.Unknown);
@@ -79,7 +77,7 @@ public class InputServiceTest
     [TestCase]
     public void TestRemapKeyAction()
     {
-        _service.RegisterAction("test_action", Key.Space, () => _actionTriggered = true);
+        _service.RegisterAction(this, "test_action", Key.Space, () => _actionTriggered = true);
         
         _service.RemapAction("test_action", Key.Enter);
         
@@ -90,7 +88,7 @@ public class InputServiceTest
     [TestCase]
     public void TestRemapMouseAction()
     {
-        _service.RegisterAction("test_action", MouseButton.Left, (pressed) => { });
+        _service.RegisterAction(this, "test_action", MouseButton.Left, (pressed) => { });
         
         _service.RemapAction("test_action", MouseButton.Right);
         
@@ -101,7 +99,7 @@ public class InputServiceTest
     [TestCase]
     public void TestSimulateKeyPress()
     {
-        _service.RegisterAction("test_action", Key.Space, () => _actionTriggered = true);
+        _service.RegisterAction(this, "test_action", Key.Space, () => _actionTriggered = true);
         
         // Simulate key press event
         var keyEvent = new InputEventKey();
@@ -118,7 +116,7 @@ public class InputServiceTest
     [TestCase]
     public void TestSimulateKeyRelease()
     {
-        _service.RegisterAction("test_action", Key.Space, () => _actionTriggered = true);
+        _service.RegisterAction(this, "test_action", Key.Space, () => _actionTriggered = true);
         
         // First press the key
         var pressEvent = new InputEventKey();
@@ -144,7 +142,7 @@ public class InputServiceTest
     [TestCase]
     public void TestSimulateMousePress()
     {
-        _service.RegisterAction("test_mouse", MouseButton.Left, (pressed) => 
+        _service.RegisterAction(this, "test_mouse", MouseButton.Left, (pressed) => 
         {
             _mouseActionPressed = pressed;
             _actionCallCount++;
@@ -164,7 +162,7 @@ public class InputServiceTest
     [TestCase]
     public void TestSimulateMouseRelease()
     {
-        _service.RegisterAction("test_mouse", MouseButton.Left, (pressed) => 
+        _service.RegisterAction(this, "test_mouse", MouseButton.Left, (pressed) => 
         {
             _mouseActionPressed = pressed;
             _actionCallCount++;
@@ -188,7 +186,7 @@ public class InputServiceTest
     [TestCase]
     public void TestJustPressedAndJustReleased()
     {
-        _service.RegisterAction("test_action", Key.Space, () => { });
+        _service.RegisterAction(this, "test_action", Key.Space, () => { });
         
         // Initially nothing should be just pressed
         Assertions.AssertBool(_service.IsActionJustPressed("test_action")).IsFalse();
@@ -237,7 +235,7 @@ public class InputServiceTest
     [TestCase]
     public void TestKeyEchoIgnored()
     {
-        _service.RegisterAction("test_action", Key.Space, () => _actionCallCount++);
+        _service.RegisterAction(this, "test_action", Key.Space, () => _actionCallCount++);
         
         // First press (not echo)
         var firstPress = new InputEventKey();

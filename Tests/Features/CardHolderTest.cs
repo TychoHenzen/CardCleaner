@@ -1,4 +1,5 @@
-﻿using CardCleaner.Scripts.Core.DependencyInjection;
+﻿using System.Threading.Tasks;
+using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
@@ -18,35 +19,39 @@ public class CardHolderTest
     private CollisionShape3D _testCollision;
     private MockCardSpawner _mockSpawner;
     private ServiceContainer _container;
+    private ISceneRunner _testScene;
+    private Node _testRoot;
     private int _cardAddedCount;
     private int _cardRemovedCount;
 
-    [Before]
-    public void Setup()
+    [BeforeTest]
+    public async Task Setup()
     {
+        // Create root node for scene tree context
+        _testScene = ISceneRunner.Load("res://Scenes/TestScene.tscn");
+        _testRoot = _testScene.Scene();
+        _testRoot.Name = "TestRoot";
+        
+        
         // Set up service container with mock spawner
-        _container = new ServiceContainer();
         _mockSpawner = new MockCardSpawner();
-        _container.RegisterSingleton<ICardSpawner>(_mockSpawner);
+        _mockSpawner.Name = "MockSpawner";
+        _testRoot.AddChild(_mockSpawner);
+        ServiceLocator.Container.RegisterSingleton<ICardSpawner>(_mockSpawner);
         
         // Create holder
         _holder = new CardHolder();
         _holder.HoldDistance = 2.0f;
+        _testRoot.AddChild(_holder);
         
-        // Create hand anchor
+        // Create hand anchor and add to scene tree
         _handAnchor = new Node3D();
         _handAnchor.Name = "HandAnchor";
+        _testRoot.AddChild(_handAnchor);
         _holder.SetReferences(_handAnchor);
         
-        // Create test card
-        _testCard = new RigidBody3D();
-        _testCard.Name = "Card";
-        
-        // Add collision shape
-        _testCollision = new CollisionShape3D();
-        _testCollision.Name = "CardCollision";
-        _testCollision.Shape = new BoxShape3D();
-        _testCard.AddChild(_testCollision);
+        // Create test card and add to scene tree
+        _testCard = CreateTestCard("Card");
         
         // Connect signals for testing
         _holder.CardAdded += OnCardAdded;
@@ -54,15 +59,13 @@ public class CardHolderTest
         
         _cardAddedCount = 0;
         _cardRemovedCount = 0;
+        await _testScene.SimulateFrames(1).ConfigureAwait(false);
     }
 
-    [After]
-    public void Cleanup()
+    [AfterTest]
+    public void TearDown()
     {
-        _testCard?.QueueFree();
-        _handAnchor?.QueueFree();
-        _holder?.QueueFree();
-        _mockSpawner?.QueueFree();
+        ServiceLocator.ResetForTesting();
     }
 
     private void OnCardAdded(RigidBody3D card)
@@ -73,6 +76,25 @@ public class CardHolderTest
     private void OnCardRemoved(RigidBody3D card)
     {
         _cardRemovedCount++;
+    }
+
+    private RigidBody3D CreateTestCard(string name)
+    {
+        var card = new RigidBody3D();
+        card.Name = name;
+        
+        _testCollision = new CollisionShape3D();
+        _testCollision.Name = "CardCollision";
+        _testCollision.Shape = new BoxShape3D();
+        card.AddChild(_testCollision);
+        
+        var designer1 = new CardDesigner();
+        designer1.Name = "Designer";
+        card.AddChild(designer1);
+        
+        
+        _testRoot.AddChild(card);
+        return card;
     }
 
     [TestCase]
@@ -127,8 +149,7 @@ public class CardHolderTest
     [TestCase]
     public void TestRemoveCardNotInHolder()
     {
-        var otherCard = new RigidBody3D();
-        otherCard.Name = "OtherCard";
+        var otherCard = CreateTestCard("OtherCard");
         
         _holder.RemoveCard(otherCard); // Try to remove card that wasn't added
         
@@ -141,10 +162,8 @@ public class CardHolderTest
     [TestCase]
     public void TestRemoveTopCard()
     {
-        var card1 = new RigidBody3D();
-        card1.Name = "Card1";
-        var card2 = new RigidBody3D();
-        card2.Name = "Card2";
+        var card1 = CreateTestCard("Card1");
+        var card2  = CreateTestCard("Card2");
         
         _holder.AddCard(card1);
         _holder.AddCard(card2);
@@ -173,12 +192,9 @@ public class CardHolderTest
     [TestCase]
     public void TestRemoveAllCards()
     {
-        var card1 = new RigidBody3D();
-        card1.Name = "Card1";
-        var card2 = new RigidBody3D();
-        card2.Name = "Card2";
-        var card3 = new RigidBody3D();
-        card3.Name = "Card3";
+        var card1 = CreateTestCard("Card1");
+        var card2 = CreateTestCard("Card2");
+        var card3 = CreateTestCard("Card3");
         
         _holder.AddCard(card1);
         _holder.AddCard(card2);
@@ -200,19 +216,8 @@ public class CardHolderTest
     [TestCase]
     public void TestPositionCards()
     {
-        var card1 = new RigidBody3D();
-        card1.Name = "Card1";
-        var card2 = new RigidBody3D();
-        card2.Name = "Card2";
-        
-        // Add CardDesigner component for thickness
-        var designer1 = new CardDesigner();
-        designer1.Name = "Designer";
-        card1.AddChild(designer1);
-        
-        var designer2 = new CardDesigner();
-        designer2.Name = "Designer";
-        card2.AddChild(designer2);
+        var card1 = CreateTestCard("Card1");
+        var card2 = CreateTestCard("Card2");
         
         _holder.AddCard(card1);
         _holder.AddCard(card2);
@@ -233,15 +238,7 @@ public class CardHolderTest
     [TestCase]
     public void TestPositionCardsForDrop()
     {
-        var card1 = new RigidBody3D();
-        card1.Name = "Card1";
-        
-        // Add CardDesigner component
-        var designer1 = new CardDesigner();
-        designer1.Name = "Designer";
-        card1.AddChild(designer1);
-        
-        _holder.AddCard(card1);
+        _holder.AddCard(_testCard);
         
         // Set hand anchor transform
         _handAnchor.GlobalTransform = new Transform3D(Basis.Identity, new Vector3(0, 5, 0));
@@ -249,21 +246,16 @@ public class CardHolderTest
         _holder.PositionCardsForDrop();
         
         // Card should be positioned relative to camera forward direction
-        var cardPos = card1.GlobalTransform.Origin;
+        var cardPos = _testCard.GlobalTransform.Origin;
         Assertions.AssertThat(cardPos.Y).IsEqual(5.0f); // Should match hand anchor Y
-        
-        card1.QueueFree();
     }
 
     [TestCase]
     public void TestCardOrderMaintained()
     {
-        var card1 = new RigidBody3D();
-        card1.Name = "Card1";
-        var card2 = new RigidBody3D();
-        card2.Name = "Card2";
-        var card3 = new RigidBody3D();
-        card3.Name = "Card3";
+        var card1 = CreateTestCard("Card1");
+        var card2 = CreateTestCard("Card2");
+        var card3 = CreateTestCard("Card3");
         
         _holder.AddCard(card1);
         _holder.AddCard(card2);

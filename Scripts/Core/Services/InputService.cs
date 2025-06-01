@@ -29,13 +29,13 @@ public partial class InputService : Node, IInputService
     // Movement input (polled)
     public Vector2 MovementInput { get; private set; }
 
-    public void RegisterAction(string actionName, Key key, Action callback)
+    public void RegisterAction(object owner, string actionName, Key key, Action callback)
     {
         var action = new InputAction
         {
             Name = actionName,
             Key = key,
-            Owner = GetStackOwner(),
+            Owner = owner,
             Callback = callback
         };
 
@@ -45,13 +45,13 @@ public partial class InputService : Node, IInputService
         GD.Print($"[InputService] Registered action '{actionName}' -> {key}");
     }
 
-    public void RegisterAction(string actionName, MouseButton button, Action<bool> callback)
+    public void RegisterAction(object owner, string actionName, MouseButton button, Action<bool> callback)
     {
         var action = new InputAction
         {
             Name = actionName,
             MouseButton = button,
-            Owner = GetStackOwner(),
+            Owner = owner,
             MouseCallback = callback
         };
 
@@ -61,15 +61,15 @@ public partial class InputService : Node, IInputService
         GD.Print($"[InputService] Registered action '{actionName}' -> {button}");
     }
 
-    public void UnregisterAction(string actionName, object owner)
+    public void UnregisterAction(object owner,string actionName)
     {
-        _registeredActions.RemoveAll(a => a.Name == actionName && a.Owner == owner);
+        _registeredActions.RemoveAll(a => a.Name == actionName && OwnersMatch(a.Owner, owner));
         _actionStates.Remove(actionName);
     }
 
     public void UnregisterAllActions(object owner)
     {
-        var actionsToRemove = _registeredActions.Where(a => a.Owner == owner).ToList();
+        var actionsToRemove = _registeredActions.Where(a => OwnersMatch(a.Owner, owner)).ToList();
         foreach (var action in actionsToRemove)
         {
             _registeredActions.Remove(action);
@@ -77,6 +77,16 @@ public partial class InputService : Node, IInputService
         }
     }
 
+    private bool OwnersMatch(object owner1, object owner2)
+    {
+        if (owner1 == null || owner2 == null) return false;
+    
+        // Direct equality check
+        if (owner1.Equals(owner2)) return true;
+    
+        // String representation check for cross-type comparison
+        return owner1.ToString() == owner2.ToString();
+    }
     public void RemapAction(string actionName, Key newKey)
     {
         var action = _registeredActions.FirstOrDefault(a => a.Name == actionName);
@@ -91,12 +101,12 @@ public partial class InputService : Node, IInputService
     public void RemapAction(string actionName, MouseButton newButton)
     {
         var action = _registeredActions.FirstOrDefault(a => a.Name == actionName);
-        if (action != null)
-        {
-            action.MouseButton = newButton;
-            action.Key = null; // Clear key if it was set
-            GD.Print($"[InputService] Remapped '{actionName}' to {newButton}");
-        }
+        if (action == null) 
+            return;
+        
+        action.MouseButton = newButton;
+        action.Key = null; // Clear key if it was set
+        GD.Print($"[InputService] Remapped '{actionName}' to {newButton}");
     }
 
     public Key GetKeyForAction(string actionName)
@@ -204,15 +214,6 @@ public partial class InputService : Node, IInputService
         else if (!pressed && wasPressed)
             _actionJustReleased[actionName] = true;
     }
-
-    private object GetStackOwner()
-    {
-        // Try to get the calling object from the stack
-        var frame = new StackFrame(2);
-        var method = frame.GetMethod();
-        return method?.DeclaringType?.Name ?? "Unknown";
-    }
-
     private void RegisterDefaultActions()
     {
         // These are common actions that many components might need

@@ -55,7 +55,7 @@ public partial class CardHolder : Node3D
         if (!HeldCards.Contains(card)) return;
 
         HeldCards.Remove(card);
-        
+
         // Reparent first, then enable physics with a delay to avoid conflicts
         card.Reparent(ServiceLocator.Get<ICardSpawner>().GetNode());
         CallDeferred(nameof(EnablePhysicsDeferred), card);

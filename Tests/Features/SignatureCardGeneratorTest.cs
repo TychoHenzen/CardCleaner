@@ -19,7 +19,7 @@ public class SignatureCardGeneratorTest
     private BaseCardType[] _baseTypes;
     private GemVisual[] _gemVisuals;
 
-    [Before]
+    [BeforeTest]
     public void Setup()
     {
         _container = new ServiceContainer();
