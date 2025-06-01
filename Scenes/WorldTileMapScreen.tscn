@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://cdss6ca0j5q5f"]
+
+[ext_resource type="Script" uid="uid://bo6ioy4iawnq6" path="res://Scripts/Features/Deckbuilder/Models/WorldTileMapScreen.cs" id="1_q7ehv"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n2gqn"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_q7ehv"]
+material = SubResource("StandardMaterial3D_n2gqn")
+size = Vector2(5.333, 3)
+
+[node name="WorldTileMapScreen" type="Node3D" node_paths=PackedStringArray("Viewport", "ScreenMesh")]
+script = ExtResource("1_q7ehv")
+Viewport = NodePath("SubViewport")
+ScreenMesh = NodePath("CSGMesh3D")
+
+[node name="CSGMesh3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("QuadMesh_q7ehv")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="SubViewport"]
+
+[node name="PlayerAgent" type="Node2D" parent="SubViewport"]

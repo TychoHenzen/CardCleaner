@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://wv6a67swhus"]
+[gd_scene load_steps=10 format=3 uid="uid://wv6a67swhus"]
 
 [ext_resource type="Script" uid="uid://b04t7ohl81ntt" path="res://Scripts/Features/Player/Controllers/PlayerController.cs" id="1_v0iea"]
+[ext_resource type="Script" uid="uid://ck2dgpln07wf4" path="res://Scripts/Features/Player/Controllers/InteractionSystem.cs" id="2_3smsa"]
 [ext_resource type="Script" uid="uid://coebm8tgbgmqv" path="res://Scripts/Features/Card/Components/CardHighlighter.cs" id="2_cvnsp"]
 [ext_resource type="Script" uid="uid://d0dftkyftp081" path="res://Scripts/Features/Card/Components/CardPicker.cs" id="4_8erm5"]
 [ext_resource type="Script" uid="uid://dvoklxj3c2cba" path="res://Scripts/Features/Card/Components/DropPreview.cs" id="5_f1ek2"]
@@ -30,6 +31,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.520677, -0.145628, 0)
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Head/Camera3D"]
+
+[node name="InteractionSystem" type="Node3D" parent="Head/Camera3D" node_paths=PackedStringArray("Camera")]
+script = ExtResource("2_3smsa")
+Camera = NodePath("..")
 
 [node name="CardInteraction" type="Node3D" parent="." node_paths=PackedStringArray("Camera", "CardDropper", "CardHolder", "Picker", "Preview")]
 script = ExtResource("2_cvnsp")

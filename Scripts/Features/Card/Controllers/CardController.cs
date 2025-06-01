@@ -7,6 +7,9 @@ namespace CardCleaner.Scripts.Features.Card.Controllers;
 [Tool]
 public partial class CardController : RigidBody3D
 {
+    [Signal]
+    public delegate void CardPickedUpEventHandler(CardController card);
+    
     private readonly List<ICardComponent> _components = new();
     private readonly List<IPhysicsComponent> _physicsComponents = new();
     public Models.CardSignature Signature;
@@ -16,6 +19,10 @@ public partial class CardController : RigidBody3D
         DiscoverComponents(this);
         AddToGroup("Cards");
         CollisionLayer = 2;
+    }
+    public void EmitPickupSignal()
+    {
+        EmitSignal(nameof(CardPickedUp), this);
     }
 
     private void DiscoverComponents(Node node)

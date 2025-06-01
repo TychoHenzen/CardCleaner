@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Features.Card.Controllers;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
@@ -13,7 +14,6 @@ public partial class CardHolder : Node3D
     public delegate void CardRemovedEventHandler(RigidBody3D card);
 
     public readonly List<RigidBody3D> HeldCards = new();
-    // private Node3D _cardParent;
     private Node3D _handParent;
     [Export] public uint CardCollisionLayer = 2;
 
@@ -40,6 +40,12 @@ public partial class CardHolder : Node3D
         card.Reparent(_handParent);
         HeldCards.Add(card);
 
+        // Emit pickup signal AFTER successful reparenting
+        if (card is CardController cardController)
+        {
+            cardController.EmitPickupSignal();
+        }
+
         PositionCards();
         EmitSignal(nameof(CardAdded), card);
     }
@@ -49,11 +55,21 @@ public partial class CardHolder : Node3D
         if (!HeldCards.Contains(card)) return;
 
         HeldCards.Remove(card);
-        EnablePhysics(card);
+        
+        // Reparent first, then enable physics with a delay to avoid conflicts
         card.Reparent(ServiceLocator.Get<ICardSpawner>().GetNode());
+        CallDeferred(nameof(EnablePhysicsDeferred), card);
 
         PositionCardsForDrop();
         EmitSignal(nameof(CardRemoved), card);
+    }
+
+    private void EnablePhysicsDeferred(RigidBody3D card)
+    {
+        if (IsInstanceValid(card))
+        {
+            EnablePhysics(card);
+        }
     }
 
     public void RemoveTopCard()
