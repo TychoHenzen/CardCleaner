@@ -51,10 +51,14 @@ public class ServiceContainer : IServiceContainer
             return singleton;
 
         // Try transients third
-        if (_transients.TryGetValue(type, out var implementationType))
-            return Activator.CreateInstance(implementationType);
+        if (!_transients.TryGetValue(type, out var implementationType))
+            throw new InvalidOperationException($"Service {type.Name} not registered");
+        
+        var returned = Activator.CreateInstance(implementationType);
+        if(returned == null)
+            throw new InvalidOperationException($"Failed to create service {type.Name}");
+        return returned;
 
-        throw new InvalidOperationException($"Service {type.Name} not registered");
     }
 
     public bool IsRegistered<T>() where T : class

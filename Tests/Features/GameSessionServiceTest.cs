@@ -10,26 +10,19 @@ namespace CardCleaner.Tests.Features;
 [TestSuite]
 public class GameSessionServiceTest
 {
-    private GameSessionService _service;
+    private GameSessionService _service = null!;
     private SessionState _lastStateChange;
-    private List<CardSignature> _lastLootGenerated;
+    private List<CardSignature> _lastLootGenerated = new();
     private int _stateChangeCount;
-    private ISceneRunner _testScene;
-    private Node _testRoot;
-
     [BeforeTest]
     public void Setup()
     {
         
         // Create root node for scene tree context
-        _testScene = ISceneRunner.Load("res://Scenes/TestScene.tscn");
-        _testRoot = _testScene.Scene();
-        _testRoot.Name = "TestRoot";
 
         _service = new GameSessionService();
-        _testRoot.AddChild(_service);
+        Assertions.AddNode(_service);
         _lastStateChange = SessionState.WaitingForCards;
-        _lastLootGenerated = null;
         _stateChangeCount = 0;
         
         _service.StateChanged += OnStateChanged;
@@ -75,7 +68,7 @@ public class GameSessionServiceTest
     {
         var abilityCards = new List<CardSignature>
         {
-            new CardSignature(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
+            new(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
         };
 
         _service.StartSession(null, abilityCards);
@@ -203,7 +196,7 @@ public class GameSessionServiceTest
     public void TestLootGenerationVariation()
     {
         var mapSeed = new CardSignature(new[] { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
-        var abilityCards = new List<CardSignature> { new CardSignature() };
+        var abilityCards = new List<CardSignature> { new() };
         
         // Generate loot twice to ensure variation
         _service.StartSession(mapSeed, abilityCards);

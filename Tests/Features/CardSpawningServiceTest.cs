@@ -18,8 +18,6 @@ public class CardSpawningServiceTest
     private MockCardGenerator _mockGenerator;
     private RandomNumberGenerator _rng;
     
-    private ISceneRunner _testScene;
-    private Node _testRoot;
     private Node3D _cardParent;
     private PackedScene _mockCardScene;
 
@@ -27,11 +25,8 @@ public class CardSpawningServiceTest
     public void Setup()
     {
         // Create root node for scene tree context
-        _testScene = ISceneRunner.Load("res://Scenes/TestScene.tscn");
-        _testRoot = _testScene.Scene();
-        _testRoot.Name = "TestRoot";
         _cardParent = new Node3D();
-        _testRoot.AddChild(_cardParent);
+        Assertions.AddNode(_cardParent);
         
         // Create mock services
         _mockGenerator = new MockCardGenerator();
@@ -44,7 +39,7 @@ public class CardSpawningServiceTest
         
         // Create the service
         _service = new CardSpawningService();
-        _testRoot.AddChild(_service);
+        Assertions.AddNode(_service);
         
         // Create a mock card scene
         _mockCardScene = GD.Load<PackedScene>("res://Scenes/CardShader.tscn");
@@ -93,13 +88,10 @@ public class CardSpawningServiceTest
         spawnTransform.Origin = new Vector3(1, 2, 3);
         
         var spawnedCard = _service.SpawnRandomCard(spawnTransform, _cardParent);
-        
-        if (spawnedCard != null)
-        {
-            Assertions.AssertThat(spawnedCard.Name).IsEqual("Card");
-            Assertions.AssertThat(spawnedCard.GetParent()).IsEqual(_cardParent);
-            Assertions.AssertThat(spawnedCard.GlobalTransform.Origin).IsEqual(spawnTransform.Origin);
-        }
+
+        Assertions.AssertThat(spawnedCard.Name).IsEqual("Card");
+        Assertions.AssertThat(spawnedCard.GetParent()).IsEqual(_cardParent);
+        Assertions.AssertThat(spawnedCard.GlobalTransform.Origin).IsEqual(spawnTransform.Origin);
     }
 
     [TestCase]
@@ -145,7 +137,7 @@ public class CardSpawningServiceTest
     [TestCase]
     public void TestSpawnCardHandlesNullScene()
     {
-        _service.CardScene = null;
+        _service.CardScene = null!;
         var signature = new CardSignature();
         var spawnTransform = Transform3D.Identity;
         

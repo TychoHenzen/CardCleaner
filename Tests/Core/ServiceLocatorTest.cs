@@ -11,23 +11,18 @@ namespace CardCleaner.Tests.Core;
 [TestSuite]
 public class ServiceLocatorTest
 {
-    private ServiceLocator _locator;
-    private ISceneRunner _testScene;
-    private Node _testRoot;
+    private ServiceLocator _locator = null!;
 
     [BeforeTest]
     public void Setup()
     {
         // Create root node for scene tree context
-        _testScene = ISceneRunner.Load("res://Scenes/TestScene.tscn");
-        _testRoot = _testScene.Scene();
-        _testRoot.Name = "TestRoot";
     
         _locator = new ServiceLocator();
         _locator.Name = "Services";
     
         // Simulate the autoload setup
-        _testRoot.AddChild(_locator);
+        Assertions.AddNode(_locator);
     }
 
 
@@ -70,7 +65,7 @@ public class ServiceLocatorTest
     [TestCase]
     public void TestAsyncServiceCallback()
     {
-        IAsyncTestService callbackService = null;
+        IAsyncTestService? callbackService = null;
         var callbackExecuted = false;
         
         // Register callback before service is available
@@ -90,7 +85,7 @@ public class ServiceLocatorTest
         
         Assertions.AssertBool(callbackExecuted).IsTrue();
         Assertions.AssertThat(callbackService).IsNotNull();
-        Assertions.AssertThat(callbackService.GetData()).IsEqual("async_test_data");
+        Assertions.AssertThat(callbackService?.GetData()).IsEqual("async_test_data");
     }
 
     [TestCase]
@@ -99,7 +94,7 @@ public class ServiceLocatorTest
         var testService = new AsyncTestServiceImpl();
         ServiceLocator.Container.RegisterSingleton<IAsyncTestService>(testService);
         
-        IAsyncTestService callbackService = null;
+        IAsyncTestService? callbackService = null;
         var callbackExecuted = false;
         
         // Callback should execute immediately since service is already registered
@@ -118,8 +113,8 @@ public class ServiceLocatorTest
     {
         var callback1Executed = false;
         var callback2Executed = false;
-        IAsyncTestService service1 = null;
-        IAsyncTestService service2 = null;
+        IAsyncTestService? service1 = null;
+        IAsyncTestService? service2 = null;
         
         // Register multiple callbacks
         ServiceLocator.Get<IAsyncTestService>(service => 
@@ -151,7 +146,7 @@ public class ServiceLocatorTest
     {
         var callbackExecuted = false;
         
-        ServiceLocator.Get<IAsyncTestService>(service => 
+        ServiceLocator.Get<IAsyncTestService>(_ => 
         {
             callbackExecuted = true;
         });
@@ -190,7 +185,7 @@ public class ServiceLocatorTest
         // Create a mock service provider
         var mockProvider = new MockServiceProvider();
         mockProvider.AddToGroup("service_providers");
-        _testRoot.AddChild(mockProvider);
+        Assertions.AddNode(mockProvider);
         
         // Simulate the service provider registration process
         // Note: In real usage, this happens in _Ready() via CallDeferred

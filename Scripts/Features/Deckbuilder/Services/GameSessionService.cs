@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
@@ -27,15 +26,15 @@ public partial class GameSessionService : Node, IGameSessionService
         }
     }
 
-    public event Action<SessionState> StateChanged;
-    public event Action<List<CardSignature>> LootGenerated;
+    public event Action<SessionState>? StateChanged;
+    public event Action<List<CardSignature>>? LootGenerated;
 
     public override void _Ready()
     {
         _rng.Randomize();
     }
 
-    public void StartSession(CardSignature mapSeed, List<CardSignature> abilityCards)
+    public void StartSession(CardSignature? mapSeed, List<CardSignature>? abilityCards)
     {
         if (CurrentState != SessionState.WaitingForCards)
         {

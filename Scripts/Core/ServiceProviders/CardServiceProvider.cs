@@ -1,6 +1,4 @@
 ﻿using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Card.Components;
-using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
 using Godot;
@@ -13,40 +11,26 @@ namespace CardCleaner.Scripts.Core.ServiceProviders;
 /// </summary>
 public partial class CardServiceProvider : Node, IServiceProvider
 {
-    [Export] public RarityVisual[] RarityVisuals { get; set; }
-    [Export] public BaseCardType[] BaseCardTypes { get; set; }
-    [Export] public GemVisual[] GemVisuals { get; set; }
-    [Export] public CardSpawningService SpawningService { get; set; }
-    [Export] public CardSpawner CardRoot { get; set; }
+    [Export] public required RarityVisual[] RarityVisuals { get; set; }
+    [Export] public required BaseCardType[] BaseCardTypes { get; set; }
+    [Export] public required GemVisual[] GemVisuals { get; set; }
+    [Export] public required CardSpawningService SpawningService { get; set; }
+    [Export] public required CardSpawner CardRoot { get; set; }
 
     public void RegisterServices(IServiceContainer container)
     {
         // Only register if we have the required data
-        if (RarityVisuals != null && BaseCardTypes != null && GemVisuals != null)
-        {
-            // Register individual visual configurations
-            container.RegisterSingleton(RarityVisuals);
-            container.RegisterSingleton(BaseCardTypes);
-            container.RegisterSingleton(GemVisuals);
+        // Register individual visual configurations
+        container.RegisterSingleton(RarityVisuals);
+        container.RegisterSingleton(BaseCardTypes);
+        container.RegisterSingleton(GemVisuals);
 
-            GD.Print("[CardServiceProvider] Registered card generation services");
-        }
-        else
-        {
-            GD.PrintErr("[CardServiceProvider] Missing required visual data for service registration");
-        }
+        GD.Print("[CardServiceProvider] Registered card generation services");
         container.RegisterSingleton<ICardGenerator,SignatureCardGenerator>();
         container.RegisterSingleton<ICardSpawner>(CardRoot);
-        
-        if (SpawningService != null)
-        {
-            container.RegisterSingleton<ICardSpawningService>(SpawningService);
-            GD.Print("[CardServiceProvider] Registered SpawningService");
-        }
-        else
-        {
-            GD.PrintErr("[CardServiceProvider] SpawningService not assigned - skipping registration");
-        }
+
+        container.RegisterSingleton<ICardSpawningService>(SpawningService);
+        GD.Print("[CardServiceProvider] Registered SpawningService");
     }
 
     public override void _Ready()

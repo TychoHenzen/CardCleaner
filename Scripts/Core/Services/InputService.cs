@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -22,9 +21,9 @@ public partial class InputService : Node, IInputService
     private readonly List<InputAction> _registeredActions = new();
 
     // Raw input events
-    public event Action<Vector2> MouseMoved;
-    public event Action<MouseButton, bool> MouseButtonChanged;
-    public event Action<Key, bool> KeyChanged;
+    public event Action<Vector2>? MouseMoved;
+    public event Action<MouseButton, bool>? MouseButtonChanged;
+    public event Action<Key, bool>? KeyChanged;
 
     // Movement input (polled)
     public Vector2 MovementInput { get; private set; }
@@ -80,12 +79,12 @@ public partial class InputService : Node, IInputService
     public void RemapAction(string actionName, Key newKey)
     {
         var action = _registeredActions.FirstOrDefault(a => a.Name == actionName);
-        if (action != null)
-        {
-            action.Key = newKey;
-            action.MouseButton = null; // Clear mouse button if it was set
-            GD.Print($"[InputService] Remapped '{actionName}' to {newKey}");
-        }
+        if (action == null) 
+            return;
+        
+        action.Key = newKey;
+        action.MouseButton = null; // Clear mouse button if it was set
+        GD.Print($"[InputService] Remapped '{actionName}' to {newKey}");
     }
 
     public void RemapAction(string actionName, MouseButton newButton)

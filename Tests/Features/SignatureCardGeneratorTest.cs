@@ -18,19 +18,14 @@ public class SignatureCardGeneratorTest
     private RarityVisual[] _rarityVisuals;
     private BaseCardType[] _baseTypes;
     private GemVisual[] _gemVisuals;
-    private ISceneRunner _testScene;
-    private Node _testRoot;
 
     private Mocking.MockCardShaderRenderer _renderer;
+    private Node3D _cardRoot;
     private CardTemplate _template;
 
     [BeforeTest]
     public void Setup()
     {
-        // Create root node for scene tree context
-        _testScene = ISceneRunner.Load("res://Scenes/TestScene.tscn");
-        _testRoot = _testScene.Scene();
-        _testRoot.Name = "TestRoot";
 
         // Create test data
         _rarityVisuals = CreateTestRarityVisuals();
@@ -44,7 +39,8 @@ public class SignatureCardGeneratorTest
 
         var material = new CardMaterialManager();
         material.Name = "MaterialManager";
-        _testRoot.AddChild(material);
+        _cardRoot = Assertions.AddNode(new Node3D());
+        _cardRoot.AddChild(material);
         // Create generator (it will pull from ServiceLocator)
         _generator = new SignatureCardGenerator();
 
@@ -210,7 +206,7 @@ public class SignatureCardGeneratorTest
     private Mocking.MockCardShaderRenderer CreateMockRenderer()
     {
         var renderer = new Mocking.MockCardShaderRenderer();
-        _testRoot.AddChild(renderer);
+        _cardRoot.AddChild(renderer);
         var name = new Label3D();
         var desc = new Label3D();
         renderer.AddChild(name);
@@ -218,7 +214,7 @@ public class SignatureCardGeneratorTest
         renderer.AddChild(desc);
         renderer.AttrLabel = desc;
 
-        renderer.Setup(_testRoot);
+        renderer.Setup(_cardRoot);
         return renderer;
     }
 
