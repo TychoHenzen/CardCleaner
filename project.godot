@@ -37,6 +37,7 @@ enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")
 settings/test/test_discovery=true
 ui/toolbar/run_overall=true
 settings/test/test_lookup_folder="Tests"
+ui/inspector/tree_view_mode=1
 
 [importer_defaults]
 

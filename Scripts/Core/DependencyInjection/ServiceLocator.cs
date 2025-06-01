@@ -14,7 +14,7 @@ namespace CardCleaner.Scripts.Core.DependencyInjection;
 public partial class ServiceLocator : Node
 {
     private static ServiceLocator _instance;
-    private readonly IServiceContainer _container = new ServiceContainer();
+    private IServiceContainer _container = new ServiceContainer();
     private readonly Dictionary<Type, List<Action<object>>> _pendingCallbacks = new();
 
 
@@ -25,6 +25,14 @@ public partial class ServiceLocator : Node
         _instance = this;
 
         CallDeferred(nameof(ResolveServices));
+    }
+    public static void ResetForTesting()
+    {
+        if (_instance != null)
+        {
+            _instance._container = new ServiceContainer();
+            _instance._pendingCallbacks.Clear();
+        }
     }
 
     private void ResolveServices()
