@@ -18,7 +18,6 @@ public class CardHolderTest
     private RigidBody3D _testCard;
     private CollisionShape3D _testCollision;
     private MockCardSpawner _mockSpawner;
-    private ServiceContainer _container;
     private ISceneRunner _testScene;
     private Node _testRoot;
     private int _cardAddedCount;

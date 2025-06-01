@@ -24,7 +24,7 @@ public partial class CardSpawningService : Node, ICardSpawningService
     }
     public Node3D SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent)
     {
-        if (CardScene.Instantiate() is not Node3D cardInstance)
+        if (CardScene?.Instantiate() is not Node3D cardInstance)
             return null;
 
         // Add to parent and set transform
