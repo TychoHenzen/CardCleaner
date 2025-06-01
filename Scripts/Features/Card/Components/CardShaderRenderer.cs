@@ -10,7 +10,7 @@ public partial class CardShaderRenderer : Node, ICardComponent
 {
     private bool _baked;
 
-    private RigidBody3D _cardRoot;
+    private Node _cardRoot;
 
     private Vector3[] _gemEmissionColors = new Vector3[8];
     private float[] _gemEmissionStrengths = new float[8];
@@ -22,10 +22,10 @@ public partial class CardShaderRenderer : Node, ICardComponent
     [Export] public Label3D AttrLabel { get; set; }
 
 
-    public void Setup(RigidBody3D cardRoot)
+    public void Setup(Node cardRoot)
     {
         _cardRoot = cardRoot;
-        _materialManager = _cardRoot.GetNodeOrNull<CardMaterialManager>("MaterialManager");
+        _materialManager = _cardRoot.GetNode<CardMaterialManager>("MaterialManager");
     }
 
 
@@ -59,7 +59,7 @@ public partial class CardShaderRenderer : Node, ICardComponent
         blacklightController?.UpdateBlacklightEffect(material);
     }
 
-    public void SetGemEmission(int index, Color color, float strength)
+    public virtual void SetGemEmission(int index, Color color, float strength)
     {
         if (_materialManager == null)
         {

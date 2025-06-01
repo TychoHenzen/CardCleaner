@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using GdUnit4;
+using Godot;
 
 namespace CardCleaner.Tests.Features;
 
@@ -13,23 +14,26 @@ public class GameSessionServiceTest
     private SessionState _lastStateChange;
     private List<CardSignature> _lastLootGenerated;
     private int _stateChangeCount;
+    private ISceneRunner _testScene;
+    private Node _testRoot;
 
     [BeforeTest]
     public void Setup()
     {
+        
+        // Create root node for scene tree context
+        _testScene = ISceneRunner.Load("res://Scenes/TestScene.tscn");
+        _testRoot = _testScene.Scene();
+        _testRoot.Name = "TestRoot";
+
         _service = new GameSessionService();
+        _testRoot.AddChild(_service);
         _lastStateChange = SessionState.WaitingForCards;
         _lastLootGenerated = null;
         _stateChangeCount = 0;
         
         _service.StateChanged += OnStateChanged;
         _service.LootGenerated += OnLootGenerated;
-    }
-
-    [AfterTest]
-    public void Cleanup()
-    {
-        _service?.QueueFree();
     }
 
     private void OnStateChanged(SessionState newState)

@@ -14,20 +14,20 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
     [Export] public bool BakeOnSetup = true;
     [Export] public bool DebugUVs;
 
-    public void Setup(RigidBody3D cardRoot)
+    public void Setup(Node cardRoot)
     {
         if (_baked || !BakeOnSetup) return;
         CallDeferred(nameof(PerformDeferredBake), cardRoot);
     }
 
-    private void PerformDeferredBake(RigidBody3D cardRoot)
+    private void PerformDeferredBake(Node cardRoot)
     {
         if (_baked) return;
         BakeToMesh(cardRoot);
         _baked = true;
     }
 
-    private void BakeToMesh(RigidBody3D cardRoot)
+    private void BakeToMesh(Node cardRoot)
     {
         var designer = cardRoot.GetNode<Features.Card.Components.CardDesigner>("Designer");
         var cacheKey = $"{designer.Width}x{designer.Height}x{designer.Thickness}";

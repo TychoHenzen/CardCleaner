@@ -4,5 +4,5 @@ namespace CardCleaner.Scripts.Core.Interfaces;
 
 public interface ICardComponent
 {
-    void Setup(RigidBody3D cardRoot);
+    void Setup(Node cardRoot);
 }

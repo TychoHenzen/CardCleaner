@@ -8,12 +8,12 @@ public partial class BlacklightController : Node, IBlacklightController
 {
     private ShaderMaterial _activeMaterial;
 
-    private RigidBody3D _cardRoot;
+    private Node3D _cardRoot;
     [Export] public float BlacklightRange { get; set; } = 5.0f;
 
-    public void Setup(RigidBody3D cardRoot)
+    public void Setup(Node cardRoot)
     {
-        _cardRoot = cardRoot;
+        _cardRoot = cardRoot as Node3D;
     }
 
     public float CalculateExposure(Vector3 cardPosition)

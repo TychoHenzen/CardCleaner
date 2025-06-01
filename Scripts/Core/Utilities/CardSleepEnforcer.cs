@@ -14,9 +14,9 @@ public partial class CardSleepEnforcer : Node, IPhysicsComponent
     [Export] public float AngularSleepThreshold = 0.05f;
     [Export] public float LinearSleepThreshold = 0.05f;
 
-    public void Setup(RigidBody3D cardRoot)
+    public void Setup(Node cardRoot)
     {
-        _body = cardRoot;
+        _body = cardRoot as RigidBody3D;
     }
 
     public void IntegrateForces(PhysicsDirectBodyState3D state)

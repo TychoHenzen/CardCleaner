@@ -20,7 +20,7 @@ public partial class FlutterCard : Node, IPhysicsComponent
     [Export] public float FlutterTwist = 0.1f; // twist around normal
     [Export] public float LiftCoeff = 0.2f;
 
-    public void Setup(RigidBody3D cardRoot)
+    public void Setup(Node cardRoot)
     {
         _rng = new RandomNumberGenerator();
         _rng.Seed = (uint)GetInstanceId();

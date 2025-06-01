@@ -62,7 +62,7 @@ public partial class CardDesigner : Node, ICardComponent
     [Export] public int BevelSides { get; set; } = 16;
     [Export] public float OutlineMargin { get; set; } = 0.01f;
 
-    public void Setup(RigidBody3D cardRoot)
+    public void Setup(Node cardRoot)
     {
         _outerBox = cardRoot.GetNode<CsgBox3D>("OuterBox");
         _combiner = _outerBox.GetNode<CsgCombiner3D>("Combiner");

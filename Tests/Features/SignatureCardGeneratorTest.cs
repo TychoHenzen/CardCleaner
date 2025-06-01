@@ -1,6 +1,7 @@
 ﻿using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
 using GdUnit4;
@@ -14,28 +15,44 @@ namespace CardCleaner.Tests.Features;
 public class SignatureCardGeneratorTest
 {
     private SignatureCardGenerator _generator;
-    private ServiceContainer _container;
     private RarityVisual[] _rarityVisuals;
     private BaseCardType[] _baseTypes;
     private GemVisual[] _gemVisuals;
+    private ISceneRunner _testScene;
+    private Node _testRoot;
+
+    private Mocking.MockCardShaderRenderer _renderer;
+    private CardTemplate _template;
 
     [BeforeTest]
     public void Setup()
     {
-        _container = new ServiceContainer();
-        
+        // Create root node for scene tree context
+        _testScene = ISceneRunner.Load("res://Scenes/TestScene.tscn");
+        _testRoot = _testScene.Scene();
+        _testRoot.Name = "TestRoot";
+
         // Create test data
         _rarityVisuals = CreateTestRarityVisuals();
         _baseTypes = CreateTestBaseTypes();
         _gemVisuals = CreateTestGemVisuals();
-        
+
         // Register test data in container
-        _container.RegisterSingleton(_rarityVisuals);
-        _container.RegisterSingleton(_baseTypes);
-        _container.RegisterSingleton(_gemVisuals);
-        
+        ServiceLocator.Container.RegisterSingleton(_rarityVisuals);
+        ServiceLocator.Container.RegisterSingleton(_baseTypes);
+        ServiceLocator.Container.RegisterSingleton(_gemVisuals);
+
         // Create generator (it will pull from ServiceLocator)
         _generator = new SignatureCardGenerator();
+
+        _renderer = CreateMockRenderer();
+        _template = new CardTemplate();
+    }
+
+    [AfterTest]
+    public void TearDown()
+    {
+        ServiceLocator.ResetForTesting();
     }
 
     private RarityVisual[] CreateTestRarityVisuals()
@@ -44,12 +61,13 @@ public class SignatureCardGeneratorTest
         commonVisual.Rarity = CardRarity.Common;
         commonVisual.BaseOptions = new[] { CreateMockTexture("common_base") };
         commonVisual.BorderOptions = new[] { CreateMockTexture("common_border") };
-        
+
+        //the test base type signature has epic rarity
         var rareVisual = new RarityVisual();
-        rareVisual.Rarity = CardRarity.Rare;
-        rareVisual.BaseOptions = new[] { CreateMockTexture("rare_base") };
-        rareVisual.BorderOptions = new[] { CreateMockTexture("rare_border") };
-        
+        rareVisual.Rarity = CardRarity.Epic;
+        rareVisual.BaseOptions = new[] { CreateMockTexture("epic_base") };
+        rareVisual.BorderOptions = new[] { CreateMockTexture("epic_border") };
+
         return new[] { commonVisual, rareVisual };
     }
 
@@ -61,14 +79,14 @@ public class SignatureCardGeneratorTest
         baseType.MatchRadius = 1.0f; // Match anything for testing
         baseType.ArtOptions = new[] { CreateMockTexture("test_art") };
         baseType.SymbolOptions = new[] { CreateMockTexture("test_symbol") };
-        
+
         return new[] { baseType };
     }
 
     private GemVisual[] CreateTestGemVisuals()
     {
         var gemVisuals = new GemVisual[8];
-        
+
         for (int i = 0; i < 8; i++)
         {
             var gem = new GemVisual();
@@ -80,10 +98,10 @@ public class SignatureCardGeneratorTest
             gem.NegativeEmissionColor = new Color(0.0f, 0.0f, 1.0f); // Blue
             gem.PositiveEmissionStrength = 1.0f;
             gem.NegativeEmissionStrength = 0.8f;
-            
+
             gemVisuals[i] = gem;
         }
-        
+
         return gemVisuals;
     }
 
@@ -91,7 +109,7 @@ public class SignatureCardGeneratorTest
     {
         // Create a minimal 1x1 texture for testing
         var image = Image.CreateEmpty(1, 1, false, Image.Format.Rgb8);
-        image.Fill(Color.Color8(255,255,255));
+        image.Fill(Color.Color8(255, 255, 255));
         var texture = ImageTexture.CreateFromImage(image);
         return texture;
     }
@@ -100,13 +118,12 @@ public class SignatureCardGeneratorTest
     public void TestGenerateCardRenderer_SetsGemEmissions()
     {
         var signature = new CardSignature(new[] { 0.7f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
-        var renderer = new MockCardShaderRenderer();
-        var template = new CardTemplate();
-        
-        _generator.GenerateCardRenderer(renderer, signature, template);
-        
+
+
+        _generator.GenerateCardRenderer(_renderer, signature, _template);
+
         // Should have called SetGemEmission for gems with non-zero values
-        Assertions.AssertThat(renderer.SetGemEmissionCallCount).IsGreaterEqual(2); // At least for indices 0 and 1
+        Assertions.AssertThat(_renderer.SetGemEmissionCallCount).IsGreaterEqual(2); // At least for indices 0 and 1
     }
 
     [TestCase]
@@ -114,19 +131,14 @@ public class SignatureCardGeneratorTest
     {
         var signature = new CardSignature();
         signature.Solidum = 0.8f; // Positive value for element 0
-        
-        var renderer = new MockCardShaderRenderer();
-        var template = new CardTemplate();
-        
-        _generator.GenerateCardRenderer(renderer, signature, template);
-        
+
+
+        _generator.GenerateCardRenderer(_renderer, signature, _template);
+
         // Check that positive gem settings were used
-        var (index, color, strength) = renderer.LastGemEmission;
-        if (renderer.SetGemEmissionCallCount > 0)
-        {
-            Assertions.AssertThat(color.R).IsGreater(0.5f); // Should be reddish (positive color)
-            Assertions.AssertThat(strength).IsGreater(0.0f);
-        }
+        var (index, color, strength) = _renderer.LastGemEmission[0];
+        Assertions.AssertThat(color.R).IsGreater(0.5f); // Should be reddish (positive color)
+        Assertions.AssertThat(strength).IsGreater(0.0f);
     }
 
     [TestCase]
@@ -134,30 +146,24 @@ public class SignatureCardGeneratorTest
     {
         var signature = new CardSignature();
         signature.Solidum = -0.8f; // Negative value for element 0
-        
-        var renderer = new MockCardShaderRenderer();
-        var template = new CardTemplate();
-        
-        _generator.GenerateCardRenderer(renderer, signature, template);
-        
+
+
+        _generator.GenerateCardRenderer(_renderer, signature, _template);
+
         // Check that negative gem settings were used
-        var (index, color, strength) = renderer.LastGemEmission;
-        if (renderer.SetGemEmissionCallCount > 0)
-        {
-            Assertions.AssertThat(color.B).IsGreater(0.5f); // Should be bluish (negative color)
-            Assertions.AssertThat(strength).IsGreater(0.0f);
-        }
+        var (index, color, strength) = _renderer.LastGemEmission[0];
+
+        Assertions.AssertThat(color.B).IsGreater(0.5f); // Should be bluish (negative color)
+        Assertions.AssertThat(strength).IsGreater(0.0f);
     }
 
     [TestCase]
     public void TestGenerateCardRenderer_ZeroValueNoEmission()
     {
         var signature = new CardSignature(); // All zeros
-        var renderer = new MockCardShaderRenderer();
-        var template = new CardTemplate();
-        
-        _generator.GenerateCardRenderer(renderer, signature, template);
-        
+
+        _generator.GenerateCardRenderer(_renderer, signature, _template);
+
         // Should not set any gem emissions for zero values
         // Note: This depends on implementation - zero intensity might still call SetGemEmission with 0 strength
         // The important thing is that the strength should be 0 for zero signature values
@@ -166,58 +172,80 @@ public class SignatureCardGeneratorTest
     [TestCase]
     public void TestGenerateCardRenderer_SetsTextures()
     {
-        var signature = new CardSignature();
-        var renderer = new MockCardShaderRenderer();
-        var template = new CardTemplate();
-        
-        _generator.GenerateCardRenderer(renderer, signature, template);
-        
+        var signature = new CardSignature(new[] { -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f });
+
+        _generator.GenerateCardRenderer(_renderer, signature, _template);
+
         // Should have set textures from rarity visuals
-        Assertions.AssertThat(template.CardBase.Texture).IsNotNull();
-        
+        Assertions.AssertThat(_template.CardBase.Texture).IsNotNull();
+
         // Should have set textures from base card type
-        Assertions.AssertThat(template.Art.Texture).IsNotNull();
+        Assertions.AssertThat(_template.Art.Texture).IsNull();
     }
 
     [TestCase]
     public void TestGenerateCardRenderer_DeterministicGeneration()
     {
         var signature = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
-        
+
         // Generate twice with same signature
-        var renderer1 = new MockCardShaderRenderer();
+        var renderer1 = CreateMockRenderer();
         var template1 = new CardTemplate();
         _generator.GenerateCardRenderer(renderer1, signature, template1);
-        
-        var renderer2 = new MockCardShaderRenderer();
+
+        var renderer2 = CreateMockRenderer();
         var template2 = new CardTemplate();
         _generator.GenerateCardRenderer(renderer2, signature, template2);
-        
+
         // Results should be identical (same textures assigned)
         Assertions.AssertThat(template1.CardBase.Texture).IsEqual(template2.CardBase.Texture);
         Assertions.AssertThat(template1.Art.Texture).IsEqual(template2.Art.Texture);
+        Assertions.AssertThat(renderer1.NameLabel.Text).IsEqual(renderer2.NameLabel.Text);
+        Assertions.AssertThat(renderer1.AttrLabel.Text).IsEqual(renderer2.AttrLabel.Text);
+    }
+
+    private Mocking.MockCardShaderRenderer CreateMockRenderer()
+    {
+        var renderer = new Mocking.MockCardShaderRenderer();
+        _testRoot.AddChild(renderer);
+        var name = new Label3D();
+        var desc = new Label3D();
+        renderer.AddChild(name);
+        renderer.NameLabel = name;
+        renderer.AddChild(desc);
+        renderer.AttrLabel = desc;
+
+        var material = new CardMaterialManager();
+        material.Name = "MaterialManager";
+        renderer.AddChild(material);
+        renderer.Setup(_testRoot);
+        return renderer;
     }
 
     [TestCase]
     public void TestGenerateCardRenderer_HandlesNoMatchingBaseType()
     {
         // Create a signature that won't match any base type
-        var signature = new CardSignature(new[] { -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f });
-        
-        // Create base type with very small match radius
-        var restrictiveBaseType = new BaseCardType();
-        restrictiveBaseType.BaseSignature = new CardSignature(); // All zeros
-        restrictiveBaseType.MatchRadius = 0.1f; // Very small radius
-        
-        _container.RegisterSingleton(new[] { restrictiveBaseType });
-        
-        var renderer = new MockCardShaderRenderer();
-        var template = new CardTemplate();
+        var signature1 = new CardSignature(new[] { -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f });
         
         // Should not throw, but might not set art/symbol textures
-        _generator.GenerateCardRenderer(renderer, signature, template);
-        
+        _generator.GenerateCardRenderer(_renderer, signature1, _template);
+
         // At minimum, rarity visuals should still be applied
-        Assertions.AssertThat(template.CardBase.Texture).IsNotNull();
+        Assertions.AssertThat(_template.CardBase.Texture).IsNotNull();
+        Assertions.AssertThat(_template.Art.Texture).IsNull();
+    }
+    [TestCase]
+    public void TestGenerateCardRenderer_HandlesMatchingBaseType()
+    {
+        // Create a signature that matches the registered base type
+        var signature1 = new CardSignature(new[] { 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
+
+        // Should not throw, but might not set art/symbol textures
+        _generator.GenerateCardRenderer(_renderer, signature1, _template);
+
+        // At minimum, rarity visuals should still be applied
+        Assertions.AssertThat(_template.CardBase.Texture).IsNotNull();
+        Assertions.AssertThat(_template.Art.Texture).IsNotNull();
     }
 }

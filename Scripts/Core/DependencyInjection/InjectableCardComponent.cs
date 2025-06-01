@@ -11,7 +11,7 @@ public abstract partial class InjectableCardComponent : Node, ICardComponent
 {
     protected bool _injected;
 
-    public virtual void Setup(RigidBody3D cardRoot)
+    public virtual void Setup(Node cardRoot)
     {
         if (!_injected)
         {
@@ -27,7 +27,7 @@ public abstract partial class InjectableCardComponent : Node, ICardComponent
         // Override in derived classes to inject specific services
     }
 
-    protected abstract void OnSetup(RigidBody3D cardRoot);
+    protected abstract void OnSetup(Node cardRoot);
 
     protected T Inject<T>() where T : class
     {
