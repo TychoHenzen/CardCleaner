@@ -112,6 +112,10 @@ public partial class CardHighlighter : Node3D
     private void SetupCardCollisionLayers()
     {
         var cards = GetTree().GetNodesInGroup("Cards");
-        foreach (RigidBody3D card in cards) card.CollisionLayer = CardHolder.CardCollisionLayer;
+        foreach (var node in cards)
+        {
+            var card = (RigidBody3D)node;
+            card.CollisionLayer = CardHolder.CardCollisionLayer;
+        }
     }
 }

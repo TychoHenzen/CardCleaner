@@ -58,35 +58,35 @@ public class SignatureCardGeneratorTest
         ServiceLocator.ResetForTesting();
     }
 
-    private RarityVisual[] CreateTestRarityVisuals()
+    private static RarityVisual[] CreateTestRarityVisuals()
     {
         var commonVisual = new RarityVisual();
         commonVisual.Rarity = CardRarity.Common;
-        commonVisual.BaseOptions = new[] { CreateMockTexture("common_base") };
-        commonVisual.BorderOptions = new[] { CreateMockTexture("common_border") };
+        commonVisual.BaseOptions = new[] { CreateMockTexture() };
+        commonVisual.BorderOptions = new[] { CreateMockTexture() };
 
         //the test base type signature has epic rarity
         var rareVisual = new RarityVisual();
         rareVisual.Rarity = CardRarity.Epic;
-        rareVisual.BaseOptions = new[] { CreateMockTexture("epic_base") };
-        rareVisual.BorderOptions = new[] { CreateMockTexture("epic_border") };
+        rareVisual.BaseOptions = new[] { CreateMockTexture() };
+        rareVisual.BorderOptions = new[] { CreateMockTexture() };
 
         return new[] { commonVisual, rareVisual };
     }
 
-    private BaseCardType[] CreateTestBaseTypes()
+    private static BaseCardType[] CreateTestBaseTypes()
     {
         var baseType = new BaseCardType();
         baseType.TypeName = "Test Card";
         baseType.BaseSignature = new CardSignature(new[] { 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
         baseType.MatchRadius = 1.0f; // Match anything for testing
-        baseType.ArtOptions = new[] { CreateMockTexture("test_art") };
-        baseType.SymbolOptions = new[] { CreateMockTexture("test_symbol") };
+        baseType.ArtOptions = new[] { CreateMockTexture() };
+        baseType.SymbolOptions = new[] { CreateMockTexture() };
 
         return new[] { baseType };
     }
 
-    private GemVisual[] CreateTestGemVisuals()
+    private static GemVisual[] CreateTestGemVisuals()
     {
         var gemVisuals = new GemVisual[8];
 
@@ -94,9 +94,9 @@ public class SignatureCardGeneratorTest
         {
             var gem = new GemVisual();
             gem.Element = (Element)i;
-            gem.SocketTexture = CreateMockTexture($"socket_{i}");
-            gem.PositiveGemTexture = CreateMockTexture($"pos_gem_{i}");
-            gem.NegativeGemTexture = CreateMockTexture($"neg_gem_{i}");
+            gem.SocketTexture = CreateMockTexture();
+            gem.PositiveGemTexture = CreateMockTexture();
+            gem.NegativeGemTexture = CreateMockTexture();
             gem.PositiveEmissionColor = new Color(1.0f, 0.0f, 0.0f); // Red
             gem.NegativeEmissionColor = new Color(0.0f, 0.0f, 1.0f); // Blue
             gem.PositiveEmissionStrength = 1.0f;
@@ -108,7 +108,7 @@ public class SignatureCardGeneratorTest
         return gemVisuals;
     }
 
-    private Texture2D CreateMockTexture(string name)
+    private static Texture2D CreateMockTexture()
     {
         // Create a minimal 1x1 texture for testing
         var image = Image.CreateEmpty(1, 1, false, Image.Format.Rgb8);
@@ -139,7 +139,7 @@ public class SignatureCardGeneratorTest
         _generator.GenerateCardRenderer(_renderer, signature, _template);
 
         // Check that positive gem settings were used
-        var (index, color, strength) = _renderer.LastGemEmission[0];
+        var (_, color, strength) = _renderer.LastGemEmission[0];
         Assertions.AssertThat(color.R).IsGreater(0.5f); // Should be reddish (positive color)
         Assertions.AssertThat(strength).IsGreater(0.0f);
     }
@@ -154,7 +154,7 @@ public class SignatureCardGeneratorTest
         _generator.GenerateCardRenderer(_renderer, signature, _template);
 
         // Check that negative gem settings were used
-        var (index, color, strength) = _renderer.LastGemEmission[0];
+        var (_, color, strength) = _renderer.LastGemEmission[0];
 
         Assertions.AssertThat(color.B).IsGreater(0.5f); // Should be bluish (negative color)
         Assertions.AssertThat(strength).IsGreater(0.0f);
@@ -227,7 +227,7 @@ public class SignatureCardGeneratorTest
     {
         // Create a signature that won't match any base type
         var signature1 = new CardSignature(new[] { -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f });
-        
+
         // Should not throw, but might not set art/symbol textures
         _generator.GenerateCardRenderer(_renderer, signature1, _template);
 
@@ -235,6 +235,7 @@ public class SignatureCardGeneratorTest
         Assertions.AssertThat(_template.CardBase.Texture).IsNotNull();
         Assertions.AssertThat(_template.Art.Texture).IsNull();
     }
+
     [TestCase]
     public void TestGenerateCardRenderer_HandlesMatchingBaseType()
     {

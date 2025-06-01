@@ -4,6 +4,7 @@
         <EnableDynamicLoading>true</EnableDynamicLoading>
         <LangVersion>11.0</LangVersion>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
         <Folder Include="addons\"/>

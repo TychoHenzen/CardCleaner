@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using Godot;
 
@@ -13,14 +14,15 @@ public partial class CardHolder : Node3D
     [Signal]
     public delegate void CardRemovedEventHandler(RigidBody3D card);
 
-    public readonly List<RigidBody3D> HeldCards = new();
+    public RigidBody3D[] HeldCards => _heldCards.ToArray();
+    private readonly List<RigidBody3D> _heldCards = new();
     private Node3D _handParent;
     [Export] public uint CardCollisionLayer = 2;
 
     [Export] public float HoldDistance = 2f;
 
-    public int HeldCount => HeldCards.Count;
-    public bool HasCards => HeldCards.Count > 0;
+    public int HeldCount => _heldCards.Count;
+    public bool HasCards => _heldCards.Count > 0;
 
     public void SetReferences(Node3D handAnchor)
     {
@@ -29,7 +31,7 @@ public partial class CardHolder : Node3D
 
     public void AddCard(RigidBody3D card)
     {
-        if (HeldCards.Contains(card)) return;
+        if (_heldCards.Contains(card)) return;
 
         // Disable physics and collision
         card.Freeze = true;
@@ -38,7 +40,7 @@ public partial class CardHolder : Node3D
 
         // Reparent to hand
         card.Reparent(_handParent);
-        HeldCards.Add(card);
+        _heldCards.Add(card);
 
         // Emit pickup signal AFTER successful reparenting
         if (card is CardController cardController)
@@ -52,9 +54,9 @@ public partial class CardHolder : Node3D
 
     public void RemoveCard(RigidBody3D card)
     {
-        if (!HeldCards.Contains(card)) return;
+        if (!_heldCards.Contains(card)) return;
 
-        HeldCards.Remove(card);
+        _heldCards.Remove(card);
 
         // Reparent first, then enable physics with a delay to avoid conflicts
         card.Reparent(ServiceLocator.Get<ICardSpawner>().GetNode());
@@ -74,21 +76,21 @@ public partial class CardHolder : Node3D
 
     public void RemoveTopCard()
     {
-        if (HeldCards.Count == 0) return;
-        var topCard = HeldCards[^1];
+        if (_heldCards.Count == 0) return;
+        var topCard = _heldCards[^1];
         RemoveCard(topCard);
     }
 
     public void RemoveAllCards()
     {
-        while (HeldCards.Count > 0) RemoveCard(HeldCards[^1]);
+        while (_heldCards.Count > 0) RemoveCard(_heldCards[^1]);
     }
 
     public void PositionCards()
     {
-        for (var i = 0; i < HeldCards.Count; i++)
+        for (var i = 0; i < _heldCards.Count; i++)
         {
-            var card = HeldCards[i];
+            var card = _heldCards[i];
             var designer = card.GetNode<CardDesigner>("Designer");
             var thickness = designer.Thickness;
             var indexOffset = i * thickness;
@@ -114,9 +116,9 @@ public partial class CardHolder : Node3D
         var downOffset = forwardCam * HoldDistance;
         var upAxis = Vector3.Up;
 
-        for (var i = 0; i < HeldCards.Count; i++)
+        for (var i = 0; i < _heldCards.Count; i++)
         {
-            var card = HeldCards[i];
+            var card = _heldCards[i];
             var designer = card.GetNode("Designer");
             var thickness = designer.Get("Thickness").AsSingle();
             var worldPos = camTransform.Origin + downOffset + upAxis * (i * thickness);

@@ -63,13 +63,13 @@ public partial class InputService : Node, IInputService
 
     public void UnregisterAction(object owner,string actionName)
     {
-        _registeredActions.RemoveAll(a => a.Name == actionName && OwnersMatch(a.Owner, owner));
+        _registeredActions.RemoveAll(a => a.Name == actionName && a.Owner.Equals(owner));
         _actionStates.Remove(actionName);
     }
 
     public void UnregisterAllActions(object owner)
     {
-        var actionsToRemove = _registeredActions.Where(a => OwnersMatch(a.Owner, owner)).ToList();
+        var actionsToRemove = _registeredActions.Where(a => a.Owner.Equals(owner)).ToList();
         foreach (var action in actionsToRemove)
         {
             _registeredActions.Remove(action);
@@ -77,16 +77,6 @@ public partial class InputService : Node, IInputService
         }
     }
 
-    private bool OwnersMatch(object owner1, object owner2)
-    {
-        if (owner1 == null || owner2 == null) return false;
-    
-        // Direct equality check
-        if (owner1.Equals(owner2)) return true;
-    
-        // String representation check for cross-type comparison
-        return owner1.ToString() == owner2.ToString();
-    }
     public void RemapAction(string actionName, Key newKey)
     {
         var action = _registeredActions.FirstOrDefault(a => a.Name == actionName);

@@ -8,7 +8,7 @@ namespace CardCleaner.Tests.Features;
 [TestSuite]
 public class BaseCardTypeTest
 {
-    private BaseCardType CreateTestCardType()
+    private static BaseCardType CreateTestCardType()
     {
         var cardType = new BaseCardType();
         cardType.TypeName = "Test Card";

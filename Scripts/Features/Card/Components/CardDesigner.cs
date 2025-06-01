@@ -94,8 +94,8 @@ public partial class CardDesigner : Node, ICardComponent
             cyl.Height = Thickness;
             cyl.Sides = BevelSides;
 
-            var negX = cyl.Name.ToString().EndsWith("2") || cyl.Name.ToString().EndsWith("3");
-            var negZ = cyl.Name.ToString().EndsWith("3") || cyl.Name.ToString().EndsWith("4");
+            var negX = cyl.Name.ToString().EndsWith('2') || cyl.Name.ToString().EndsWith('3');
+            var negZ = cyl.Name.ToString().EndsWith('3') || cyl.Name.ToString().EndsWith('4');
             var t = cyl.Transform;
             t.Origin = new Vector3(negX ? -halfW : halfW, 0, negZ ? halfH : -halfH);
             cyl.Transform = t;

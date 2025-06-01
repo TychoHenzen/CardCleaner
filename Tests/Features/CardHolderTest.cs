@@ -13,13 +13,13 @@ namespace CardCleaner.Tests.Features;
 [TestSuite]
 public class CardHolderTest
 {
-    private CardHolder _holder;
-    private Node3D _handAnchor;
-    private RigidBody3D _testCard;
-    private CollisionShape3D _testCollision;
-    private MockCardSpawner _mockSpawner;
-    private ISceneRunner _testScene;
-    private Node _testRoot;
+    private CardHolder? _holder;
+    private Node3D? _handAnchor;
+    private RigidBody3D? _testCard;
+    private CollisionShape3D? _testCollision;
+    private MockCardSpawner? _mockSpawner;
+    private ISceneRunner? _testScene;
+    private Node? _testRoot;
     private int _cardAddedCount;
     private int _cardRemovedCount;
 
@@ -115,7 +115,7 @@ public class CardHolderTest
         
         // Card should be frozen and collision disabled
         Assertions.AssertBool(_testCard.Freeze).IsTrue();
-        Assertions.AssertBool(_testCollision.Disabled).IsTrue();
+        Assertions.AssertBool(_testCollision is { Disabled: true }).IsTrue();
         
         // Card should be reparented to hand anchor
         Assertions.AssertThat(_testCard.GetParent()).IsEqual(_handAnchor);

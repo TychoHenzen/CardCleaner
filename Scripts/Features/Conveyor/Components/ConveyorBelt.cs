@@ -8,12 +8,11 @@ namespace CardCleaner.Scripts.Features.Conveyor.Components;
 [Tool]
 public partial class ConveyorBelt : Node3D
 {
-    private const string TweenMetaKey = "active_conveyor_tween";
     private readonly List<RigidBody3D> _onBelt = new();
 
-    private BoxShape3D _areaBox;
-    [Export] public Area3D DetectionArea { get; set; }
-    [Export] public Node3D DestinationMarker { get; set; }
+    private BoxShape3D? _areaBox;
+    [Export] public Area3D? DetectionArea { get; set; }
+    [Export] public Node3D? DestinationMarker { get; set; }
 
     [Export(PropertyHint.Range, "0.1, 20.0, 0.1")]
     public float Speed { get; set; } = 5.0f;
@@ -52,8 +51,6 @@ public partial class ConveyorBelt : Node3D
         // Cancel any falling motion immediately
         var v = card.LinearVelocity;
         card.LinearVelocity = v;
-        // Make sure no unexpected damping slows it
-        // card.LinearDamp = 0;
     }
 
     private void OnBodyExited(Node3D body)

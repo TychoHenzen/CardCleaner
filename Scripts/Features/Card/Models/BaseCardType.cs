@@ -90,7 +90,7 @@ public partial class BaseCardType : Resource
         return BaseValue * rarityMultiplier * (1f + powerModifier * 0.5f);
     }
 
-    private float CalculateUnusualness(CardSignature residual)
+    private static float CalculateUnusualness(CardSignature residual)
     {
         // How far the residual energy deviates from the base
         var totalDeviation = 0f;
