@@ -3,7 +3,6 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using GdUnit4;
 using Godot;
-using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
 namespace CardCleaner.Tests.Core;
 
@@ -13,30 +12,29 @@ namespace CardCleaner.Tests.Core;
 public class ServiceLocatorTest
 {
     private ServiceLocator _locator;
-    private Node3D _testTree;
+    private ISceneRunner _testScene;
+    private Node _testRoot;
 
     [BeforeTest]
     public void Setup()
     {
-        // Reset static state before each test
-        ServiceLocator.ResetForTesting();
-    
-        // Create a minimal scene tree for testing
-        _testTree = new Node3D();
+        // Create root node for scene tree context
+        _testScene = ISceneRunner.Load("res://Scenes/TestScene.tscn");
+        _testRoot = _testScene.Scene();
+        _testRoot.Name = "TestRoot";
     
         _locator = new ServiceLocator();
         _locator.Name = "Services";
     
         // Simulate the autoload setup
-        _testTree.AddChild(_locator);
+        _testRoot.AddChild(_locator);
     }
 
 
     [AfterTest]
-    public void Cleanup()
+    public void TearDown()
     {
-        _locator?.QueueFree();
-        _testTree?.QueueFree();
+        ServiceLocator.ResetForTesting();
     }
 
     [TestCase]
@@ -192,7 +190,7 @@ public class ServiceLocatorTest
         // Create a mock service provider
         var mockProvider = new MockServiceProvider();
         mockProvider.AddToGroup("service_providers");
-        _testTree.AddChild(mockProvider);
+        _testRoot.AddChild(mockProvider);
         
         // Simulate the service provider registration process
         // Note: In real usage, this happens in _Ready() via CallDeferred
@@ -205,14 +203,3 @@ public class ServiceLocatorTest
 }
 
 // Mock service provider for testing
-public partial class MockServiceProvider : Node, IServiceProvider
-{
-    public bool RegisterServicesCalled { get; private set; }
-    
-    public void RegisterServices(IServiceContainer container)
-    {
-        RegisterServicesCalled = true;
-        // Register a test service
-        container.RegisterSingleton<IAsyncTestService, AsyncTestServiceImpl>();
-    }
-}

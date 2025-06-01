@@ -42,6 +42,9 @@ public class SignatureCardGeneratorTest
         ServiceLocator.Container.RegisterSingleton(_baseTypes);
         ServiceLocator.Container.RegisterSingleton(_gemVisuals);
 
+        var material = new CardMaterialManager();
+        material.Name = "MaterialManager";
+        _testRoot.AddChild(material);
         // Create generator (it will pull from ServiceLocator)
         _generator = new SignatureCardGenerator();
 
@@ -215,9 +218,6 @@ public class SignatureCardGeneratorTest
         renderer.AddChild(desc);
         renderer.AttrLabel = desc;
 
-        var material = new CardMaterialManager();
-        material.Name = "MaterialManager";
-        renderer.AddChild(material);
         renderer.Setup(_testRoot);
         return renderer;
     }
