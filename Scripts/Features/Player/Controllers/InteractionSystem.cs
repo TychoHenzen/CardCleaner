@@ -68,32 +68,18 @@ public partial class InteractionSystem : Node3D
 
         IInteractable? newTarget = null;
 
-        if (result.Count > 0)
+        if (result.Count > 0 && result["collider"].Obj is Node3D body)
         {
-            var body = result["collider"].Obj as Node3D;
-            GD.Print($"[InteractionSystem] Hit: {body?.Name}, Type: {body?.GetType().Name}");
-            
-            if (body != null)
+            // Look for IInteractable on the body or its parents
+            var current = body;
+            while (current != null)
             {
-                // Check collision layer
-                if (body is RigidBody3D rb)
+                if (current is IInteractable interactable)
                 {
-                    GD.Print($"[InteractionSystem] Hit RigidBody3D with CollisionLayer: {rb.CollisionLayer}");
+                    newTarget = interactable;
+                    break;
                 }
-                
-                // Look for IInteractable on the body or its parents
-                Node3D? current = body;
-                while (current != null)
-                {
-                    GD.Print($"[InteractionSystem] Checking {current.Name} for IInteractable");
-                    if (current is IInteractable interactable)
-                    {
-                        GD.Print($"[InteractionSystem] Found IInteractable: {current.Name}, CanInteract: {interactable.CanInteract}");
-                        newTarget = interactable;
-                        break;
-                    }
-                    current = current.GetParent() as Node3D;
-                }
+                current = current.GetParent() as Node3D;
             }
         }
 

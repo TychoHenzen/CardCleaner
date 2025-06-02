@@ -44,15 +44,6 @@ public partial class DeckBuilderController : Node
     {
         bool canActivate = AbilityDeckSlot.HasCards && MapCardSlot.HasCard;
         ActivateButton.SetEnabled(canActivate);
-        
-        if (canActivate)
-        {
-            GD.Print("[DeckBuilder] Ready to generate! Press the activation button.");
-        }
-        else
-        {
-            GD.Print("[DeckBuilder] Need cards in both slots before activation.");
-        }
     }
 
     /// <summary>

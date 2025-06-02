@@ -4,15 +4,15 @@
 
 
 # 1. Gather tracked text files
-#$extensions = '.cs','.csproj','.gox','.json','.xml','.yml','.mgcb','.spritefont','.gdshader','.md','.godot','.tscn','.tres'
+$extensions = '.cs','.csproj','.gox','.json','.xml','.yml','.mgcb','.spritefont','.gdshader','.md','.godot','.tscn','.tres'
 #$extensions = '.cs','.json','.xml','.yml','.gdshader','.md','.ps1','.tscn','.tres'
-$extensions = '.cs','.json','.xml','.yml','.gdshader','.md'
+#$extensions = '.cs','.json','.xml','.yml','.gdshader','.md'
 
 
 $files = git ls-files |
         Where-Object { $extensions -contains ([IO.Path]::GetExtension($_)) } |
-#        Where-Object { $_ -notmatch '(/\.vscode/|/\.idea/|addons/|README\.md|CLAUDE\.md|\.csproj$|\.sln$)' }
-        Where-Object { $_ -notmatch '(/\.vscode/|/\.idea/|Tests/|addons/|README\.md|CLAUDE\.md|\.csproj$|\.sln$)' }
+        Where-Object { $_ -notmatch '(/\.vscode/|/\.idea/|addons/|README\.md|CLAUDE\.md|\.csproj$|\.sln$)' }
+#        Where-Object { $_ -notmatch '(/\.vscode/|/\.idea/|Tests/|addons/|README\.md|CLAUDE\.md|\.csproj$|\.sln$)' }
 
 # 2. Build hierarchical tree structure
 function New-TreeNode($name) {
@@ -61,15 +61,15 @@ $treeLines | Out-File -FilePath $Output -Encoding UTF8
 Add-Content $Output ''
 
 # 4. Append each file’s contents
-foreach ($file in $files) {
-    Add-Content $Output "=== Begin $file ==="
-    if ([IO.Path]::GetExtension($file) -eq '.gox') {
-        Add-Content $Output '[Contents of binary file omitted]'
-    } else {
-        Get-Content $file | Add-Content -Path $Output
-    }
-    Add-Content $Output "=== End $file ===`n"
-}
+#foreach ($file in $files) {
+#    Add-Content $Output "=== Begin $file ==="
+#    if ([IO.Path]::GetExtension($file) -eq '.gox') {
+#        Add-Content $Output '[Contents of binary file omitted]'
+#    } else {
+#        Get-Content $file | Add-Content -Path $Output
+#    }
+#    Add-Content $Output "=== End $file ===`n"
+#}
 
 Write-Host "Context dumped to $Output"
 
