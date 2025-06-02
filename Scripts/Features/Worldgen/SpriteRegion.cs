@@ -37,11 +37,11 @@ public partial class SpriteRegion : Resource
             var layerData = new LayerData
             {
                 Texture = texture,
-                Region = new Vector4(
-                    (float)rect.Position.X / texture.GetWidth(),
-                    (float)rect.Position.Y / texture.GetHeight(),
-                    (float)rect.Size.X / texture.GetWidth(),
-                    (float)rect.Size.Y / texture.GetHeight()
+                Region = new Rect2I(
+                    rect.Position.X / texture.GetWidth(),
+                    rect.Position.Y / texture.GetHeight(),
+                    rect.Size.X / texture.GetWidth(),
+                    rect.Size.Y / texture.GetHeight()
                 )
             };
             _layers = new[] { layerData };
@@ -70,10 +70,10 @@ public partial class SpriteRegion : Resource
             {
                 var layerSize = layer.Texture.GetSize();
                 var region = new Rect2I(
-                    (int)(layer.Region.X * layerSize.X),
-                    (int)(layer.Region.Y * layerSize.Y),
-                    (int)(layer.Region.Z * layerSize.X),
-                    (int)(layer.Region.W * layerSize.Y)
+                    (int)(layer.Region.Position.X * layerSize.X),
+                    (int)(layer.Region.Position.Y * layerSize.Y),
+                    (int)(layer.Region.Size.X * layerSize.X),
+                    (int)(layer.Region.Size.Y * layerSize.Y)
                 );
                 baseSize = region.Size;
                 break;
@@ -98,10 +98,10 @@ public partial class SpriteRegion : Resource
             
             var layerSize = layer.Texture.GetSize();
             var region = new Rect2I(
-                (int)(layer.Region.X * layerSize.X),
-                (int)(layer.Region.Y * layerSize.Y),
-                (int)(layer.Region.Z * layerSize.X),
-                (int)(layer.Region.W * layerSize.Y)
+                (int)(layer.Region.Position.X * layerSize.X),
+                (int)(layer.Region.Position.Y * layerSize.Y),
+                (int)(layer.Region.Size.X * layerSize.X),
+                (int)(layer.Region.Size.Y * layerSize.Y)
             );
             
             if (region.Size.X <= 0 || region.Size.Y <= 0) continue;

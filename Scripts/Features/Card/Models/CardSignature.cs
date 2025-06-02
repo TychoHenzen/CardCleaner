@@ -26,56 +26,56 @@ public partial class CardSignature : Resource
             _elements[i] = Mathf.Clamp(elements[i], -1f, 1f);
     }
 
-    [Export]
+    [Export(PropertyHint.Range, "-1,1,0.01")]
     public float Solidum
     {
         get => _elements[0];
         set => _elements[0] = Mathf.Clamp(value, -1f, 1f);
     }
 
-    [Export]
+    [Export(PropertyHint.Range, "-1,1,0.01")]
     public float Febris
     {
         get => _elements[1];
         set => _elements[1] = Mathf.Clamp(value, -1f, 1f);
     }
 
-    [Export]
+    [Export(PropertyHint.Range, "-1,1,0.01")]
     public float Ordinem
     {
         get => _elements[2];
         set => _elements[2] = Mathf.Clamp(value, -1f, 1f);
     }
 
-    [Export]
+    [Export(PropertyHint.Range, "-1,1,0.01")]
     public float Lumines
     {
         get => _elements[3];
         set => _elements[3] = Mathf.Clamp(value, -1f, 1f);
     }
 
-    [Export]
+    [Export(PropertyHint.Range, "-1,1,0.01")]
     public float Varias
     {
         get => _elements[4];
         set => _elements[4] = Mathf.Clamp(value, -1f, 1f);
     }
 
-    [Export]
+    [Export(PropertyHint.Range, "-1,1,0.01")]
     public float Inertiae
     {
         get => _elements[5];
         set => _elements[5] = Mathf.Clamp(value, -1f, 1f);
     }
 
-    [Export]
+    [Export(PropertyHint.Range, "-1,1,0.01")]
     public float Subsidium
     {
         get => _elements[6];
         set => _elements[6] = Mathf.Clamp(value, -1f, 1f);
     }
 
-    [Export]
+    [Export(PropertyHint.Range, "-1,1,0.01")]
     public float Spatium
     {
         get => _elements[7];

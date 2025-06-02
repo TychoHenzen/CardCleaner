@@ -15,11 +15,11 @@ public static class SpriteSheetHelper
         return new LayerData
         {
             Texture = texture,
-            Region = new Vector4(
-                (float)rect.Position.X / texture.GetWidth(),
-                (float)rect.Position.Y / texture.GetHeight(),
-                (float)rect.Size.X / texture.GetWidth(),
-                (float)rect.Size.Y / texture.GetHeight()
+            Region = new Rect2I(
+                rect.Position.X / texture.GetWidth(),
+                rect.Position.Y / texture.GetHeight(),
+                rect.Size.X / texture.GetWidth(),
+                rect.Size.Y / texture.GetHeight()
             )
         };
     }

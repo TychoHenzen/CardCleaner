@@ -40,20 +40,15 @@ public partial class CardShaderRenderer : Node, ICardComponent
         var box = GetParent().GetNodeOrNull<MeshInstance3D>("OuterBox_Baked");
         if (box == null)
         {
-            CallDeferred(nameof(DeferredBake));
+            CallDeferred(nameof(DeferredBake), template);
             return;
         }
 
         var layers = template.GatherAllLayers();
         _materialManager.SetLayerTextures(layers);
-        _materialManager.ApplyMaterial(box);
+        var material = _materialManager.ApplyMaterial(box);
 
-        if (box.MaterialOverride is ShaderMaterial material) 
-            CallDeferred(nameof(EnableBlacklightUpdates), material);
-    }
-
-    private void EnableBlacklightUpdates(ShaderMaterial material)
-    {
+        if (material == null) return;
         var blacklightController = _cardRoot.GetNodeOrNull<BlacklightController>("BlacklightController");
         blacklightController?.UpdateBlacklightEffect(material);
     }

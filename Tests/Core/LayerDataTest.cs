@@ -21,7 +21,7 @@ public class LayerDataTest
     public void TestPropertyAssignment()
     {
         var layer = new LayerData();
-        var region = new Vector4(0.1f, 0.2f, 0.5f, 0.6f);
+        var region = new Rect2(0.1f, 0.2f, 0.5f, 0.6f);
 
         layer.Region = region;
         layer.RenderOnFront = false;

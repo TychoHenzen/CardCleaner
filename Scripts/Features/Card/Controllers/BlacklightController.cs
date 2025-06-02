@@ -4,7 +4,7 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Card.Controllers;
 
 [Tool]
-public partial class BlacklightController : Node
+public partial class BlacklightController : Node, IPhysicsComponent
 {
     private ShaderMaterial? _activeMaterial;
 

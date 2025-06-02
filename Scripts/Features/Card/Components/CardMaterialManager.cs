@@ -22,7 +22,7 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         foreach (var layer in layers)
         {
             texturesArr.Add(layer.Texture);
-            regionsArr.Add(layer.Region);
+            regionsArr.Add(new Vector4(layer.Region.Position.X, layer.Region.Position.Y, layer.Region.Size.X, layer.Region.Size.Y));
             frontFlagsArr.Add(layer.RenderOnFront);
             backFlagsArr.Add(layer.RenderOnBack);
         }
@@ -63,10 +63,10 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         existingStrengths[index] = strength;
     }
 
-    public void ApplyMaterial(MeshInstance3D target)
+    public ShaderMaterial? ApplyMaterial(MeshInstance3D target)
     {
-        if (CardMaterialTemplate?.Duplicate() is not ShaderMaterial material) return;
-        
+        if (CardMaterialTemplate.Duplicate() is not ShaderMaterial material) return null;
+    
         foreach (var param in _shaderParameters) 
         {
             material.SetShaderParameter(param.Key, param.Value);
@@ -74,5 +74,7 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
 
         target.MaterialOverride = material;
         _activeMaterial = material;
+        return material;
     }
+
 }
