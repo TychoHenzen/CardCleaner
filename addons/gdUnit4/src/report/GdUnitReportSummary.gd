@@ -26,9 +26,25 @@ func name() -> String:
 func name_html_encoded() -> String:
 	return html_encode(_name)
 
-
+	
 func path() -> String:
-	return _resource_path.get_base_dir().replace("res://", "")
+	var base_path := _resource_path.get_base_dir().replace("res://", "")
+	return normalize_path_for_reports(base_path)
+
+func normalize_path_for_reports(file_path: String) -> String:
+	# Handle both forward and backward slashes
+	var normalized := file_path.replace("\\", "/")
+
+	# Remove drive letters (e.g., "C:") for Windows paths
+	var drive_pattern := RegEx.new()
+	drive_pattern.compile("^[A-Za-z]:")
+	normalized = drive_pattern.sub(normalized, "", true)
+
+	# Remove leading slashes and clean up
+	normalized = normalized.strip_edges().lstrip("/")
+
+	return normalized
+
 
 
 func resource_path() -> String:
