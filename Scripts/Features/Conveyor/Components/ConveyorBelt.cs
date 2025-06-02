@@ -1,6 +1,7 @@
 // ConveyorBeltTweenToMarker.cs
 
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Conveyor.Components;
@@ -24,7 +25,7 @@ public partial class ConveyorBelt : Node3D
     {
         if (DetectionArea == null || DestinationMarker == null)
         {
-            GD.PushError("[ConveyorBelt] Assign DetectionArea and DestinationMarker.");
+            ILog.Error("Assign DetectionArea and DestinationMarker.");
             return;
         }
 
@@ -32,7 +33,7 @@ public partial class ConveyorBelt : Node3D
         _areaBox = collision?.Shape as BoxShape3D;
         if (_areaBox == null)
         {
-            GD.PushError("[ConveyorBelt] DetectionArea needs a BoxShape3D child.");
+            ILog.Error("DetectionArea needs a BoxShape3D child.");
             return;
         }
 

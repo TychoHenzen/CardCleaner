@@ -1,4 +1,5 @@
-﻿using CardCleaner.Scripts.Features.Deckbuilder.Components;
+﻿using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using Godot;
 
@@ -54,24 +55,25 @@ public partial class DeckBuilderController : Node
         // Double-check that we have cards in both slots
         if (!AbilityDeckSlot.HasCards || !MapCardSlot.HasCard)
         {
-            GD.PrintErr("[DeckBuilder] Button pressed but slots not properly filled!");
+            ILog.Error("Button pressed but slots not properly filled!");
             return;
         }
 
-        GD.Print("[DeckBuilder] Activation button pressed! Processing cards...");
+        ILog.Print("Activation button pressed! Processing cards...");
 
         // Consume the seed card and ability deck
         var mapSeed = MapCardSlot.ConsumeCardSignature();
         var abilities = AbilityDeckSlot.ConsumeAllCardSignatures();
 
         // Instantiate and initialize the 3D map screen
-        WorldTileMapScreenScene.Initialize(mapSeed, abilities);
+        if(mapSeed != null)
+            WorldTileMapScreenScene.Initialize(mapSeed, abilities);
 
         // Clear slots and disable button
         AbilityDeckSlot.Clear();
         MapCardSlot.Clear();
         UpdateButtonState();
         
-        GD.Print("[DeckBuilder] 3D map screen generated successfully!");
+        ILog.Print("3D map screen generated successfully!");
     }
 }

@@ -10,8 +10,8 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 /// </summary>
 public partial class CardSpawner : Node3D, ICardSpawner
 {
-    private ICardSpawningService _spawningService;
-    private IInputService _inputService;
+    private ICardSpawningService? _spawningService;
+    private IInputService? _inputService;
 
     private int _spawnQueue;
     [Export] public Vector3 OffsetRange { get; set; } = Vector3.Zero;
@@ -31,7 +31,7 @@ public partial class CardSpawner : Node3D, ICardSpawner
     private void QueueCards(int count)
     {
         _spawnQueue += count;
-        GD.Print($"Queued {count} card(s). {_spawnQueue} remaining.");
+        ILog.Print($"Queued {count} card(s). {_spawnQueue} remaining.");
     }
 
     public override void _Process(double delta)
@@ -49,6 +49,11 @@ public partial class CardSpawner : Node3D, ICardSpawner
 
     private void SpawnSingleCard()
     {
+        if (_spawningService is null)
+        {
+            CallDeferred(nameof(SpawnSingleCard));
+            return;
+        }
         // Calculate spawn transform with random offset
         var offset = _spawningService.GetRandomOffset(OffsetRange);
         var spawnTransform = GlobalTransform;
@@ -65,7 +70,10 @@ public partial class CardSpawner : Node3D, ICardSpawner
     /// <param name="position">Optional world position, defaults to spawn parent position</param>
     public Node3D SpawnSpecificCard(CardSignature signature, Vector3? position = null)
     {
-        if (_spawningService == null) return null;
+        if (_spawningService == null)
+        {
+            return (Node3D)CallDeferred(nameof(SpawnSpecificCard),signature);
+        }
 
         var spawnTransform = GlobalTransform;
         if (position.HasValue)

@@ -10,18 +10,18 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.ServiceProviders;
 /// </summary>
 public partial class DeckbuilderServiceProvider : Node, IServiceProvider
 {
-    [Export] public GameSessionService GameSessionService { get; set; }
+    [Export] public GameSessionService? GameSessionService { get; set; }
 
     public void RegisterServices(IServiceContainer container)
     {
         if (GameSessionService != null)
         {
             container.RegisterSingleton<IGameSessionService>(GameSessionService);
-            GD.Print("[DeckbuilderServiceProvider] Registered GameSessionService");
+            ILog.Print("Registered GameSessionService");
         }
         else
         {
-            GD.PrintErr("[DeckbuilderServiceProvider] GameSessionService not assigned - skipping registration");
+            ILog.Error("GameSessionService not assigned - skipping registration");
         }
     }
 

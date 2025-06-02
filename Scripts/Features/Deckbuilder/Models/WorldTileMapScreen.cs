@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
 using Godot;
@@ -28,7 +29,7 @@ public partial class WorldTileMapScreen : Node3D
 
     public void Initialize(CardSignature mapSeed, List<CardSignature> abilities)
     {
-        GD.Print("Initializing WorldTileMapScreen");
+        ILog.Print("Initializing");
         _mapSeed = mapSeed;
         _abilityDeck = abilities;
 
@@ -40,7 +41,7 @@ public partial class WorldTileMapScreen : Node3D
     {
         if (Viewport == null)
         {
-            GD.PrintErr("[WorldTileMapScreen] SubViewport not assigned");
+            ILog.Error("SubViewport not assigned");
             return;
         }
 
@@ -61,23 +62,23 @@ public partial class WorldTileMapScreen : Node3D
         }
 
         // Ensure TileMapLayer has a valid TileSet
-        if (_tileMap is { TileSet: null })
+        if (_tileMap is not { TileSet: null }) 
+            return;
+        
+        var tileSet = new TileSet();
+        var source = new TileSetAtlasSource();
+        source.Texture = GD.Load<Texture2D>("res://icon.svg");
+        source.TextureRegionSize = new Vector2I(128, 128);
+
+        for (int i = 0; i < 3; i++)
         {
-            var tileSet = new TileSet();
-            var source = new TileSetAtlasSource();
-            source.Texture = GD.Load<Texture2D>("res://icon.svg");
-            source.TextureRegionSize = new Vector2I(128, 128);
-
-            for (int i = 0; i < 3; i++)
-            {
-                source.CreateTile(new Vector2I(i, 0));
-            }
-
-            tileSet.AddSource(source, 0);
-            _tileMap.TileSet = tileSet;
-
-            GD.Print("[WorldTileMapScreen] Created basic TileSet for TileMapLayer");
+            source.CreateTile(new Vector2I(i, 0));
         }
+
+        tileSet.AddSource(source, 0);
+        _tileMap.TileSet = tileSet;
+
+        ILog.Print("Created basic TileSet for TileMapLayer");
     }
 
     private void SetupScreenMaterial()
@@ -94,7 +95,7 @@ public partial class WorldTileMapScreen : Node3D
         }
         else
         {
-            GD.PrintErr("[WorldTileMapScreen] ScreenMesh needs StandardMaterial3D");
+            ILog.Error("ScreenMesh needs StandardMaterial3D");
         }
     }
 
@@ -125,7 +126,7 @@ public partial class WorldTileMapScreen : Node3D
         ConfigureCamera();
     }
 
-    private Vector2I GetMapSizeForRarity(CardRarity rarity)
+    private static Vector2I GetMapSizeForRarity(CardRarity rarity)
     {
         var height = rarity switch
         {
@@ -158,7 +159,7 @@ public partial class WorldTileMapScreen : Node3D
         // Calculate zoom to fit the entire tilemap in the 
         if (_tileMap.TileSet.GetSource(0) is not TileSetAtlasSource atlasTileset)
         {
-            GD.Print("[WorldTileMapScreen] TileSet must use AtlasSource");
+            ILog.Error("TileSet must use AtlasSource");
             return;
         }
 

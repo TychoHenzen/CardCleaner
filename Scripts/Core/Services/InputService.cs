@@ -41,7 +41,7 @@ public partial class InputService : Node, IInputService
         _registeredActions.Add(action);
         _actionStates[actionName] = false;
 
-        GD.Print($"[InputService] Registered action '{actionName}' -> {key}");
+        ILog.Print($"Registered action '{actionName}' -> {key}");
     }
 
     public void RegisterAction(object owner, string actionName, MouseButton button, Action<bool> callback)
@@ -57,7 +57,7 @@ public partial class InputService : Node, IInputService
         _registeredActions.Add(action);
         _actionStates[actionName] = false;
 
-        GD.Print($"[InputService] Registered action '{actionName}' -> {button}");
+        ILog.Print($"Registered action '{actionName}' -> {button}");
     }
 
     public void UnregisterAction(object owner,string actionName)
@@ -84,7 +84,7 @@ public partial class InputService : Node, IInputService
         
         action.Key = newKey;
         action.MouseButton = null; // Clear mouse button if it was set
-        GD.Print($"[InputService] Remapped '{actionName}' to {newKey}");
+        ILog.Print($"Remapped '{actionName}' to {newKey}");
     }
 
     public void RemapAction(string actionName, MouseButton newButton)
@@ -95,7 +95,7 @@ public partial class InputService : Node, IInputService
         
         action.MouseButton = newButton;
         action.Key = null; // Clear key if it was set
-        GD.Print($"[InputService] Remapped '{actionName}' to {newButton}");
+        ILog.Print($"Remapped '{actionName}' to {newButton}");
     }
 
     public Key GetKeyForAction(string actionName)

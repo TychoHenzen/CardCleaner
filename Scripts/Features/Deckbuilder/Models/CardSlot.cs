@@ -1,4 +1,5 @@
-﻿using CardCleaner.Scripts.Features.Card.Models;
+﻿using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 using CardController = CardCleaner.Scripts.Features.Card.Controllers.CardController;
 
@@ -22,7 +23,7 @@ public partial class CardSlot : Node3D
     {
         if (Area == null)
         {
-            GD.PushError("[CardSlot] Must have an Area");
+            ILog.Error("Must have an Area");
             return;
         }
         Area.BodyEntered += OnBodyEntered;
@@ -36,7 +37,7 @@ public partial class CardSlot : Node3D
             || !card.Name.ToString().StartsWith("Card"))
             return;
 
-        GD.Print("Body entered CardSlot");
+        ILog.Print("Body entered CardSlot");
         if (_card == null)
         {
             _processingEntry = true;
@@ -87,7 +88,7 @@ public partial class CardSlot : Node3D
         _card = null;
         EmitSignal(nameof(CardChanged));
         
-        GD.Print("CardSlot released card due to pickup");
+        ILog.Print("CardSlot released card due to pickup");
     }
 
     private void EjectCard(RigidBody3D card)

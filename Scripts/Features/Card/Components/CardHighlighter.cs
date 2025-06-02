@@ -21,7 +21,7 @@ public partial class CardHighlighter : Node3D
         // Get reference to the generic interaction system
         if (CardDropper == null! || CardHolder == null! || Preview == null! || InteractionSystem == null!)
         {
-            GD.PrintErr($"CardHighlighter: Missing required Export field references");
+            ILog.Error($"Missing required Export field references");
             return;
         }
 
@@ -29,7 +29,7 @@ public partial class CardHighlighter : Node3D
         var camera = InteractionSystem.Camera;
         if (camera == null)
         {
-            GD.PrintErr("Camera not found");
+            ILog.Error("Camera not found");
             return;
         }
         CardHolder.SetReferences(camera);

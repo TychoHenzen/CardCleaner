@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
@@ -17,12 +18,11 @@ public partial class GameSessionService : Node, IGameSessionService
         get => _currentState;
         private set
         {
-            if (_currentState != value)
-            {
-                _currentState = value;
-                StateChanged?.Invoke(value);
-                GD.Print($"Session state changed to: {value}");
-            }
+            if (_currentState == value) 
+                return;
+            _currentState = value;
+            StateChanged?.Invoke(value);
+            ILog.Error($"Session state changed to: {value}");
         }
     }
 
@@ -38,13 +38,13 @@ public partial class GameSessionService : Node, IGameSessionService
     {
         if (CurrentState != SessionState.WaitingForCards)
         {
-            GD.PrintErr("Cannot start session - session already in progress");
+            ILog.Error("Cannot start session - session already in progress");
             return;
         }
 
         if (mapSeed == null || abilityCards == null || abilityCards.Count == 0)
         {
-            GD.PrintErr("Cannot start session with null or empty inputs");
+            ILog.Error("Cannot start session with null or empty inputs");
             return;
         }
 
@@ -52,7 +52,7 @@ public partial class GameSessionService : Node, IGameSessionService
         _abilityCards = new List<CardSignature>(abilityCards);
         CurrentState = SessionState.GeneratingMap;
         
-        GD.Print($"Started session with map seed and {_abilityCards.Count} ability cards");
+        ILog.Print($"Started session with map seed and {_abilityCards.Count} ability cards");
         
         // Auto-advance to next phase
         CallDeferred(nameof(AdvanceSession));
@@ -75,10 +75,10 @@ public partial class GameSessionService : Node, IGameSessionService
                 GenerateLoot();
                 break;
             case SessionState.SessionComplete:
-                GD.Print("Session already complete");
+                ILog.Print("Session already complete");
                 break;
             default:
-                GD.PrintErr($"Cannot advance from state: {CurrentState}");
+                ILog.Error($"Cannot advance from state: {CurrentState}");
                 break;
         }
     }
@@ -88,12 +88,12 @@ public partial class GameSessionService : Node, IGameSessionService
         _mapSeed = null!;
         _abilityCards.Clear();
         CurrentState = SessionState.WaitingForCards;
-        GD.Print("Session reset");
+        ILog.Print("Session reset");
     }
 
     private void GenerateMap()
     {
-        GD.Print($"Generating map from seed signature: {_mapSeed}");
+        ILog.Print($"Generating map from seed signature: {_mapSeed}");
         
         // TODO: Implement actual map generation from card signatures
         // For now, just simulate map generation
@@ -106,7 +106,7 @@ public partial class GameSessionService : Node, IGameSessionService
 
     private void ExploreMap()
     {
-        GD.Print("Autonomous agent exploring map...");
+        ILog.Print("Autonomous agent exploring map...");
         
         // TODO: Implement actual exploration logic
         // For now, immediately find an enemy
@@ -119,7 +119,7 @@ public partial class GameSessionService : Node, IGameSessionService
 
     private void ResolveCombat()
     {
-        GD.Print($"Resolving combat with {_abilityCards.Count} ability cards...");
+        ILog.Print($"Resolving combat with {_abilityCards.Count} ability cards...");
         
         // TODO: Implement actual combat resolution using ability cards
         // For now, always win combat
@@ -132,7 +132,7 @@ public partial class GameSessionService : Node, IGameSessionService
 
     private void GenerateLoot()
     {
-        GD.Print("Generating loot from defeated enemy...");
+        ILog.Print("Generating loot from defeated enemy...");
         
         // Generate ~10 card signatures as specified
         var lootSignatures = new List<CardSignature>();
@@ -156,6 +156,6 @@ public partial class GameSessionService : Node, IGameSessionService
         CurrentState = SessionState.SessionComplete;
         LootGenerated?.Invoke(lootSignatures);
         
-        GD.Print($"Session complete! Generated {lootSignatures.Count} loot signatures");
+        ILog.Print($"Session complete! Generated {lootSignatures.Count} loot signatures");
     }
 }

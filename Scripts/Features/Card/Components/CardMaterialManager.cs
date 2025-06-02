@@ -55,7 +55,7 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
 
         if (index is < 0 or >= 8) 
         {
-            GD.PrintErr($"[CardMaterialManager] Invalid gem index: {index}");
+            ILog.Error($"Invalid gem index: {index}");
             return;
         }
     

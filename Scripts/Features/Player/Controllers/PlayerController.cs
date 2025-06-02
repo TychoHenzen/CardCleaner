@@ -34,7 +34,7 @@ public partial class PlayerController : CharacterBody3D
         // Add to group for easy finding
         AddToGroup("player");
 
-        GD.Print("Controls: F = Toggle Blacklight, +/- = Adjust Intensity");
+        ILog.Print("Controls: F = Toggle Blacklight, +/- = Adjust Intensity");
     }
 
     private void RegisterInputActions()
@@ -49,7 +49,7 @@ public partial class PlayerController : CharacterBody3D
         // Subscribe to mouse movement
         _inputService.MouseMoved += OnMouseMoved;
 
-        GD.Print("[PlayerController] Registered light controls and mouse input");
+        ILog.Print("Registered light controls and mouse input");
     }
 
     public override void _ExitTree()
@@ -64,12 +64,12 @@ public partial class PlayerController : CharacterBody3D
 
     private void ConfigureSpotlight()
     {
-        if (_spotlight != null)
-        {
-            _spotlight.SpotAngle = 60.0f; // Wide cone
-            _spotlight.SpotRange = 8.0f; // Good range for cards
-            ApplyLightMode();
-        }
+        if (_spotlight == null) 
+            return;
+        
+        _spotlight.SpotAngle = 60.0f; // Wide cone
+        _spotlight.SpotRange = 8.0f; // Good range for cards
+        ApplyLightMode();
     }
 
     private void CycleLightMode()
@@ -101,7 +101,7 @@ public partial class PlayerController : CharacterBody3D
             _ => "❓"
         };
 
-        GD.Print($"{emoji} Light Mode: {status}");
+        ILog.Print($"{emoji} Light Mode: {status}");
     }
 
 
@@ -140,11 +140,11 @@ public partial class PlayerController : CharacterBody3D
             ApplyLightMode();
 
             var modeText = _settings.CurrentLightMode == LightMode.Blacklight ? "Blacklight" : "Flashlight";
-            GD.Print($"💡 {modeText} Intensity: {_settings.LightIntensity:F1}");
+            ILog.Print($"💡 {modeText} Intensity: {_settings.LightIntensity:F1}");
         }
         else
         {
-            GD.Print($"💡 Light Intensity set to: {_settings.LightIntensity:F1} (currently off)");
+            ILog.Print($"💡 Light Intensity set to: {_settings.LightIntensity:F1} (currently off)");
         }
     }
 

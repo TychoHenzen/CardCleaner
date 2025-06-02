@@ -15,14 +15,14 @@ public partial class InteractableButton : StaticBody3D, IInteractable
     public delegate void ButtonPressedEventHandler();
 
     private Vector3 _originalPosition;
-    private Tween _pressTween;
+    private Tween? _pressTween;
     
     [Export] public bool Enabled { get; set; } = true;
     [Export] public float InteractionRange { get; set; } = 5.0f;
     [Export] public float PressDepth { get; set; } = 0.02f;
     [Export] public float PressAnimationSpeed { get; set; } = 0.1f;
-    [Export] public MeshInstance3D ButtonMesh { get; set; }
-    [Export] public MeshInstance3D HighlightMesh { get; set; }
+    [Export] public MeshInstance3D? ButtonMesh { get; set; }
+    [Export] public MeshInstance3D? HighlightMesh { get; set; }
 
     public bool CanInteract => Enabled;
     public Node3D InteractionBody => this;
@@ -44,7 +44,7 @@ public partial class InteractableButton : StaticBody3D, IInteractable
         // Ensure we have a collision shape
         if (GetChildren().OfType<CollisionShape3D>().FirstOrDefault() == null)
         {
-            GD.PrintErr($"[InteractableButton] {Name} needs a CollisionShape3D child for interaction detection");
+            ILog.Error($"{Name} needs a CollisionShape3D child for interaction detection");
         }
     }
 
@@ -52,7 +52,7 @@ public partial class InteractableButton : StaticBody3D, IInteractable
     {
         if (!CanInteract) return;
         
-        GD.Print($"[InteractableButton] Button '{Name}' pressed!");
+        ILog.Print($"Button '{Name}' pressed!");
         
         // Play press animation
         PlayPressAnimation();
@@ -101,7 +101,8 @@ public partial class InteractableButton : StaticBody3D, IInteractable
     public void SetEnabled(bool enabled)
     {
         Enabled = enabled;
-        ButtonMesh.Visible = enabled;
+        if(ButtonMesh != null)
+            ButtonMesh.Visible = enabled;
         // Clear highlight if disabling
         if (!enabled)
         {

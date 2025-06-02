@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 using CardController = CardCleaner.Scripts.Features.Card.Controllers.CardController;
 
@@ -92,7 +93,7 @@ public partial class DeckSlot : Node3D
         
         EmitSignal(nameof(CardsChanged));
         
-        GD.Print($"DeckSlot released card due to pickup. {_cards.Count} cards remaining.");
+        ILog.Print($"DeckSlot released card due to pickup. {_cards.Count} cards remaining.");
     }
 
     private void RepositionCards()

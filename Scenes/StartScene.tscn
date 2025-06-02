@@ -144,8 +144,9 @@ texture = ExtResource("6_28ir6")
 
 [node name="Services" type="Node" parent="."]
 
-[node name="GameSettingsProvider" type="Node" parent="Services"]
+[node name="GameSettingsProvider" type="Node" parent="Services" node_paths=PackedStringArray("GameSettings")]
 script = ExtResource("9_r0o6j")
+GameSettings = NodePath("GameSettings")
 
 [node name="GameSettings" type="Node" parent="Services/GameSettingsProvider"]
 script = ExtResource("10_1ia11")

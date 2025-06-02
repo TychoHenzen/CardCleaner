@@ -11,28 +11,26 @@ namespace CardCleaner.Scripts.Core.ServiceProviders;
 /// </summary>
 public partial class GameSettingsProvider : Node, IServiceProvider
 {
-    private GameSettings _gameSettings;
-    [Export] public NodePath GameSettingsPath { get; set; } = "GameSettings";
+    [Export] public GameSettings? GameSettings { get; set; }
 
     public void RegisterServices(IServiceContainer container)
     {
-        if (_gameSettings != null)
+        if (GameSettings != null)
         {
-            container.RegisterSingleton<IGameSettings>(_gameSettings);
-            GD.Print("[GameSettingsProvider] Registered game settings service");
+            container.RegisterSingleton<IGameSettings>(GameSettings);
+            ILog.Print("Registered game settings service");
         }
         else
         {
-            GD.PrintErr("[GameSettingsProvider] Cannot register GameSettings - node not found");
+            ILog.Error("Cannot register GameSettings - node not found");
         }
     }
 
     public override void _Ready()
     {
         AddToGroup("service_providers");
-        _gameSettings = GetNode<GameSettings>(GameSettingsPath);
 
-        if (_gameSettings == null)
-            GD.PrintErr("[GameSettingsProvider] GameSettings node not found. Add a GameSettings child node.");
+        if (GameSettings == null)
+            ILog.Error("GameSettings node not found. Assign export.");
     }
 }

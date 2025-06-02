@@ -7,9 +7,7 @@ namespace CardCleaner.Scripts.Core.Utilities;
 [Tool]
 public partial class CsgBaker : CsgBox3D, ICardComponent
 {
-    private static readonly Dictionary<string, ArrayMesh> _meshCache = new();
-
-
+    private static readonly Dictionary<string, ArrayMesh> MeshCache = new();
     private bool _baked;
     [Export] public bool BakeOnSetup = true;
     [Export] public bool DebugUVs;
@@ -32,7 +30,7 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
         var designer = cardRoot.GetNode<Features.Card.Components.CardDesigner>("Designer");
         var cacheKey = $"{designer.Width}x{designer.Height}x{designer.Thickness}";
 
-        if (!_meshCache.TryGetValue(cacheKey, out var cachedMesh))
+        if (!MeshCache.TryGetValue(cacheKey, out var cachedMesh))
         {
             // Only bake if not cached
             CsgShape3D rootCsg = this;
@@ -40,7 +38,7 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
 
             var bakedMesh = rootCsg.BakeStaticMesh();
             cachedMesh = RemapBoxUVs(bakedMesh, designer.Width, designer.Height);
-            _meshCache[cacheKey] = cachedMesh;
+            MeshCache[cacheKey] = cachedMesh;
         }
 
         var meshInstance = new MeshInstance3D
@@ -54,7 +52,7 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
     }
 
 
-    private ArrayMesh RemapBoxUVs(ArrayMesh source, float width, float height)
+    private static ArrayMesh RemapBoxUVs(ArrayMesh source, float width, float height)
     {
         var result = new ArrayMesh();
         var surfaces = source.GetSurfaceCount();
@@ -64,55 +62,50 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
             var arrays = source.SurfaceGetArrays(s);
             var verts = arrays[(int)Mesh.ArrayType.Vertex].As<Vector3[]>();
             var norms = arrays[(int)Mesh.ArrayType.Normal].As<Vector3[]>();
-
-            var uvs = new Vector2[verts.Length];
-
-            for (var i = 0; i < verts.Length; i++)
-            {
-                // Normalize planar coords: X → U, Z → V
-                var uBase = verts[i].X / width + 0.5f;
-                var vBase = verts[i].Z / height + 0.5f;
-                float u, v = Mathf.Clamp(vBase, 0, 1);
-
-                if (norms != null && norms.Length == verts.Length)
-                {
-                    var ny = norms[i].Y;
-                    if (ny > 0.9f)
-                    {
-                        // Front face → left half [0, 0.5]
-                        u = uBase * 0.5f;
-                        u = Mathf.Clamp(u, 0f, 0.5f);
-                    }
-                    else if (ny < -0.9f)
-                    {
-                        // Back face → right half [0.5, 1]
-                        u = uBase * 0.5f + 0.5f;
-                        u = Mathf.Clamp(u, 0.5f, 1f);
-                    }
-                    else
-                    {
-                        // Side faces → full width (optional)
-                        u = Mathf.Clamp(uBase, 0, 1);
-                    }
-                }
-                else
-                {
-                    u = Mathf.Clamp(uBase, 0, 1);
-                }
-
-                uvs[i] = new Vector2(u, v);
-
-                if (DebugUVs)
-                    GD.Print(
-                        $"[CsgBaker] Surface {s}, Vertex {i}: Pos={verts[i]}, Norm={(norms != null ? norms[i] : Vector3.Zero)}, UV={uvs[i]}");
-            }
+            var uvs = CalculateUVsForSurface(verts, norms, width, height);
 
             arrays[(int)Mesh.ArrayType.TexUV] = uvs;
-
             var primType = source.SurfaceGetPrimitiveType(s);
             result.AddSurfaceFromArrays(primType, arrays);
         }
 
         return result;
+    }
+
+    private static Vector2[] CalculateUVsForSurface(Vector3[] vertices, Vector3[] normals, float width, float height)
+    {
+        var uvs = new Vector2[vertices.Length];
+
+        for (var i = 0; i < vertices.Length; i++)
+        {
+            uvs[i] = CalculateVertexUv(vertices[i], normals?[i], width, height);
+        }
+
+        return uvs;
+    }
+
+    private static Vector2 CalculateVertexUv(Vector3 vertex, Vector3? normal, float width, float height)
+    {
+        var uBase = vertex.X / width + 0.5f;
+        var vBase = vertex.Z / height + 0.5f;
+        var v = Mathf.Clamp(vBase, 0, 1);
+
+        var u = normal.HasValue && HasValidNormals(normal.Value)
+            ? CalculateUBasedOnNormal(uBase, normal.Value)
+            : Mathf.Clamp(uBase, 0, 1);
+
+        return new Vector2(u, v);
+    }
+
+    private static bool HasValidNormals(Vector3 normal) => normal != Vector3.Zero;
+
+    private static float CalculateUBasedOnNormal(float uBase, Vector3 normal)
+    {
+        return normal.Y switch
+        {
+            > 0.9f => Mathf.Clamp(uBase * 0.5f, 0f, 0.5f),
+            < -0.9f => Mathf.Clamp(uBase * 0.5f + 0.5f, 0.5f, 1f),
+            _ => Mathf.Clamp(uBase, 0, 1)
+        };
     }
 }

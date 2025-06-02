@@ -24,7 +24,7 @@ public partial class ServiceLocator : Node
     {
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if(_instance != null)
-            GD.PrintErr("!!!Duplicate service locator!!!");
+            ILog.Error("!!!Duplicate service locator!!!");
         _instance = this;
         CallDeferred(nameof(ResolveServices));
     }
@@ -47,9 +47,10 @@ public partial class ServiceLocator : Node
 
     private void RegisterCoreServices()
     {
-        // Register RandomNumberGenerator as singleton
         _container.RegisterSingleton(new RandomNumberGenerator());
 
+        _container.RegisterSingleton<ILog, LoggingService>();
+        
         var inputService = new InputService();
         AddChild(inputService);
         _container.RegisterSingleton<IInputService>(inputService);
@@ -73,11 +74,11 @@ public partial class ServiceLocator : Node
             var service = _instance._container.Resolve(serviceType);
             foreach (var callback in callbacks)
             {
-                GD.Print($"Running callback for {serviceType.Name}");
+                ILog.Print($"Running callback for {serviceType.Name}");
                 callback(service);
             }
 
-            GD.Print($"Removing callback for {serviceType.Name}");
+            ILog.Print($"Removing callback for {serviceType.Name}");
             _instance._pendingCallbacks.Remove(serviceType);
         }
     }

@@ -25,12 +25,12 @@ public partial class CardServiceProvider : Node, IServiceProvider
         container.RegisterSingleton(BaseCardTypes);
         container.RegisterSingleton(GemVisuals);
 
-        GD.Print("[CardServiceProvider] Registered card generation services");
+        ILog.Print("Registered card generation services");
         container.RegisterSingleton<ICardGenerator,SignatureCardGenerator>();
         container.RegisterSingleton<ICardSpawner>(CardRoot);
 
         container.RegisterSingleton<ICardSpawningService>(SpawningService);
-        GD.Print("[CardServiceProvider] Registered SpawningService");
+        ILog.Print("Registered SpawningService");
     }
 
     public override void _Ready()
