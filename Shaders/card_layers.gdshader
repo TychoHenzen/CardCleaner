@@ -18,8 +18,6 @@ uniform float gem_emission_strengths[8];
 // Enhanced blacklight controls
 uniform float blacklight_exposure : hint_range(0.0, 1.0) = 0.0;
 uniform float emission_intensity : hint_range(0.0, 5.0) = 1.0;
-uniform float saturation_boost : hint_range(1.0, 3.0) = 1.0;
-uniform float ambient_emission : hint_range(0.0, 0.3) = 0.05;
 uniform float strength_curve : hint_range(1.0, 4.0) = 1.3;
 
 void fragment() {

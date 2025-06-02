@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="WfcTileSet" load_steps=3 format=3 uid="uid://5pn8llcwm6jr"]
+
+[ext_resource type="Script" uid="uid://dg2j5y6p16lgh" path="res://Scripts/Features/Worldgen/WfcTile.cs" id="1_xu3c0"]
+[ext_resource type="Script" uid="uid://der7se48qcoqa" path="res://Scripts/Features/Worldgen/WfcTileSet.cs" id="2_ule5b"]
+
+[resource]
+script = ExtResource("2_ule5b")
+Tiles = Array[ExtResource("1_xu3c0")]([])
+TileSize = Vector2i(64, 64)
+AtlasSize = 1024
+metadata/_custom_type_script = "uid://der7se48qcoqa"
