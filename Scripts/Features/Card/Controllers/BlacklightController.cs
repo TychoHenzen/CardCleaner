@@ -4,11 +4,11 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Card.Controllers;
 
 [Tool]
-public partial class BlacklightController : Node, IBlacklightController
+public partial class BlacklightController : Node
 {
-    private ShaderMaterial _activeMaterial;
+    private ShaderMaterial? _activeMaterial;
 
-    private Node3D _cardRoot;
+    private Node3D? _cardRoot;
     [Export] public float BlacklightRange { get; set; } = 5.0f;
 
     public void Setup(Node cardRoot)
@@ -41,10 +41,8 @@ public partial class BlacklightController : Node, IBlacklightController
         return Mathf.Clamp(distanceFactor * angleFactor * spotlight.LightEnergy, 0.0f, 1.0f);
     }
 
-    public void UpdateBlacklightEffect(ShaderMaterial material)
+    public void UpdateBlacklightEffect(ShaderMaterial? material)
     {
-        if (_cardRoot == null || material == null) return;
-
         _activeMaterial = material;
     }
 

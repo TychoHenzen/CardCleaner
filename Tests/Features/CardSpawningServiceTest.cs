@@ -4,6 +4,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Tests.Mocking;
 using GdUnit4;
 using Godot;
 
@@ -14,12 +15,12 @@ namespace CardCleaner.Tests.Features;
 [TestSuite]
 public class CardSpawningServiceTest
 {
-    private CardSpawningService _service;
-    private MockCardGenerator _mockGenerator;
-    private RandomNumberGenerator _rng;
+    private CardSpawningService _service= null!;
+    private MockCardGenerator _mockGenerator= null!;
+    private RandomNumberGenerator _rng= null!;
     
-    private Node3D _cardParent;
-    private PackedScene _mockCardScene;
+    private Node3D _cardParent= null!;
+    private PackedScene _mockCardScene= null!;
 
     [BeforeTest]
     public void Setup()

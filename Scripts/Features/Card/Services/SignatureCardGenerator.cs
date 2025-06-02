@@ -15,9 +15,9 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 /// </summary>
 public class SignatureCardGenerator : ICardGenerator
 {
-    private BaseCardType[] _baseTypes;
-    private GemVisual[] _gemVisuals;
-    private RarityVisual[] _rarityVisuals;
+    private BaseCardType[]? _baseTypes;
+    private GemVisual[]? _gemVisuals;
+    private RarityVisual[]? _rarityVisuals;
 
     public SignatureCardGenerator()
     {
@@ -28,6 +28,8 @@ public class SignatureCardGenerator : ICardGenerator
 
     public void GenerateCardRenderer(CardShaderRenderer renderer, CardSignature signature, Core.Data.CardTemplate template)
     {
+        if (_rarityVisuals == null || _baseTypes == null || _gemVisuals == null)
+            return;   
         var rng = new RandomNumberGenerator
         {
             Seed = (uint)SignatureCardHelper.ComputeSeed(signature)

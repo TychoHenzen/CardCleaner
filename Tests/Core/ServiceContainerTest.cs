@@ -10,7 +10,7 @@ namespace CardCleaner.Tests.Core;
 [TestSuite]
 public class ServiceContainerTest
 {
-    private ServiceContainer _container;
+    private ServiceContainer _container= null!;
 
     [BeforeTest]
     public void Setup()

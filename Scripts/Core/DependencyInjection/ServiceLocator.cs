@@ -13,7 +13,7 @@ namespace CardCleaner.Scripts.Core.DependencyInjection;
 /// </summary>
 public partial class ServiceLocator : Node
 {
-    private static ServiceLocator _instance;
+    private static ServiceLocator _instance = null!;
     private IServiceContainer _container = new ServiceContainer();
     private readonly Dictionary<Type, List<Action<object>>> _pendingCallbacks = new();
 
@@ -22,17 +22,16 @@ public partial class ServiceLocator : Node
 
     public override void _Ready()
     {
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if(_instance != null)
+            GD.PrintErr("!!!Duplicate service locator!!!");
         _instance = this;
-
         CallDeferred(nameof(ResolveServices));
     }
     public static void ResetForTesting()
     {
-        if (_instance != null)
-        {
-            _instance._container = new ServiceContainer();
-            _instance._pendingCallbacks.Clear();
-        }
+        _instance._container = new ServiceContainer();
+        _instance._pendingCallbacks.Clear();
     }
 
     private void ResolveServices()
@@ -66,23 +65,20 @@ public partial class ServiceLocator : Node
 
     public static void ExecutePendingCallbacks()
     {
-        foreach (var kvp in _instance._pendingCallbacks)
+        foreach (var (serviceType, callbacks) in _instance._pendingCallbacks)
         {
-            var serviceType = kvp.Key;
-            var callbacks = kvp.Value;
-
-            if (_instance._container.IsRegistered(serviceType))
+            if (!_instance._container.IsRegistered(serviceType)) 
+                continue;
+            
+            var service = _instance._container.Resolve(serviceType);
+            foreach (var callback in callbacks)
             {
-                var service = _instance._container.Resolve(serviceType);
-                foreach (var callback in callbacks)
-                {
-                    GD.Print($"Running callback for {serviceType.Name}");
-                    callback(service);
-                }
-
-                GD.Print($"Removing callback for {serviceType.Name}");
-                _instance._pendingCallbacks.Remove(serviceType);
+                GD.Print($"Running callback for {serviceType.Name}");
+                callback(service);
             }
+
+            GD.Print($"Removing callback for {serviceType.Name}");
+            _instance._pendingCallbacks.Remove(serviceType);
         }
     }
 

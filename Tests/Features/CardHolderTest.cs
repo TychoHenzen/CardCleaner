@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
+﻿using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using GdUnit4;
@@ -16,7 +15,7 @@ public class CardHolderTest
     private Node3D _handAnchor = null!;
     private RigidBody3D _testCard = null!;
     private CollisionShape3D _testCollision = null!;
-    private MockCardSpawner _mockSpawner = null!;
+    private Mocking.MockCardSpawner _mockSpawner = null!;
     private int _cardAddedCount;
     private int _cardRemovedCount;
 
@@ -24,7 +23,7 @@ public class CardHolderTest
     public void Setup()
     {
         // Set up service container with mock spawner
-        _mockSpawner = new MockCardSpawner();
+        _mockSpawner = new Mocking.MockCardSpawner();
         _mockSpawner.Name = "MockSpawner";
         Assertions.AddNode(_mockSpawner);
         ServiceLocator.Container.RegisterSingleton<ICardSpawner>(_mockSpawner);

@@ -5,14 +5,50 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Card.Controllers;
 
 [Tool]
-public partial class CardController : RigidBody3D
+public partial class CardController : RigidBody3D, IInteractable
 {
     [Signal]
     public delegate void CardPickedUpEventHandler(CardController card);
     
+    [Signal] 
+    public delegate void CardInteractionRequestedEventHandler(CardController card);
+    
     private readonly List<ICardComponent> _components = new();
     private readonly List<IPhysicsComponent> _physicsComponents = new();
     public Models.CardSignature Signature;
+
+    // IInteractable implementation
+    public bool CanInteract => !IsHeld;
+    public Node3D InteractionBody => this;
+    public float InteractionRange => 50f;
+    
+    private bool IsHeld => GetParent() is Camera3D; // Check if reparented to camera
+
+    public void Interact()
+    {
+        if (CanInteract)
+        {
+            EmitSignal(nameof(CardInteractionRequested), this);
+        }
+    }
+
+    public void Highlight()
+    {
+        var outline = GetNodeOrNull<CsgBox3D>("OutlineBox");
+        if (outline != null) 
+        {
+            outline.Visible = true;
+        }
+    }
+
+    public void ClearHighlight()
+    {
+        var outline = GetNodeOrNull<CsgBox3D>("OutlineBox");
+        if (outline != null) 
+        {
+            outline.Visible = false;
+        }
+    }
 
     public override void _Ready()
     {
@@ -20,6 +56,7 @@ public partial class CardController : RigidBody3D
         AddToGroup("Cards");
         CollisionLayer = 2;
     }
+    
     public void EmitPickupSignal()
     {
         EmitSignal(nameof(CardPickedUp), this);
@@ -46,7 +83,6 @@ public partial class CardController : RigidBody3D
             DiscoverComponents(child);
         }
     }
-
 
     public override void _IntegrateForces(PhysicsDirectBodyState3D state)
     {

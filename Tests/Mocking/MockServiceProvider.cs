@@ -1,7 +1,7 @@
 ﻿using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
-namespace CardCleaner.Tests.Core;
+namespace CardCleaner.Tests.Mocking;
 
 public partial class MockServiceProvider : Node, IServiceProvider
 {

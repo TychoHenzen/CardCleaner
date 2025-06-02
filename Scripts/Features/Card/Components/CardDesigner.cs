@@ -1,23 +1,22 @@
+using System;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
-[Tool]
 public partial class CardDesigner : Node, ICardComponent
 {
     private const float InnerThicknessOffset = 0.002f;
-    private BoxShape3D _collisionBoxShape;
-    private CollisionShape3D _collisionShape;
-    private CsgCombiner3D _combiner;
-    private CsgCylinder3D[] _cornerCylinders;
+    private BoxShape3D? _collisionBoxShape;
+    private CollisionShape3D? _collisionShape;
+    private CsgCombiner3D? _combiner;
+    private CsgCylinder3D[] _cornerCylinders = Array.Empty<CsgCylinder3D>();
     private float _height = 0.889f;
-
-    private CsgBox3D _outerBox;
-    private CsgBox3D _outlineBox;
+    private CsgBox3D? _outerBox;
+    private CsgBox3D? _outlineBox;
     private float _thickness = 0.005f;
-    private CsgBox3D[] _trimBoxes;
+    private CsgBox3D[] _trimBoxes = Array.Empty<CsgBox3D>();
     private float _width = 0.635f;
 
     [Export(PropertyHint.Range, "0.1,3.0,0.01")]
@@ -64,24 +63,31 @@ public partial class CardDesigner : Node, ICardComponent
 
     public void Setup(Node cardRoot)
     {
-        _outerBox = cardRoot.GetNode<CsgBox3D>("OuterBox");
-        _combiner = _outerBox.GetNode<CsgCombiner3D>("Combiner");
+        _outerBox = cardRoot.GetNode<CsgBox3D>("OuterBox") ?? 
+                    throw new InvalidOperationException("OuterBox node not found");
+    
+        _combiner = _outerBox.GetNode<CsgCombiner3D>("Combiner") ?? 
+                    throw new InvalidOperationException("Combiner node not found");
 
         _cornerCylinders = _combiner.GetChildren().OfType<CsgCylinder3D>().ToArray();
         _trimBoxes = _combiner.GetChildren().OfType<CsgBox3D>().ToArray();
 
-        _collisionShape = cardRoot.GetNode<CollisionShape3D>("CardCollision");
-        _collisionBoxShape = _collisionShape.Shape as BoxShape3D;
+        _collisionShape = cardRoot.GetNode<CollisionShape3D>("CardCollision") ?? 
+                          throw new InvalidOperationException("CardCollision node not found");
+    
+        _collisionBoxShape = _collisionShape.Shape as BoxShape3D ?? 
+                             throw new InvalidOperationException("CardCollision shape is not BoxShape3D");
 
         _outlineBox = cardRoot.GetNode<CsgBox3D>("OutlineBox");
-        _outlineBox.Visible = false;
+        if (_outlineBox != null)
+            _outlineBox.Visible = false;
 
         UpdateShape();
     }
 
     private void UpdateShape()
     {
-        if (_outerBox == null) return;
+        if (_outerBox == null || _combiner == null || _collisionBoxShape == null) return;
 
         _outerBox.Size = new Vector3(Width, Thickness, Height);
 

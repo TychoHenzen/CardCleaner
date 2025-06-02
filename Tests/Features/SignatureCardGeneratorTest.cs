@@ -14,14 +14,14 @@ namespace CardCleaner.Tests.Features;
 [TestSuite]
 public class SignatureCardGeneratorTest
 {
-    private SignatureCardGenerator _generator;
-    private RarityVisual[] _rarityVisuals;
-    private BaseCardType[] _baseTypes;
-    private GemVisual[] _gemVisuals;
+    private SignatureCardGenerator _generator= null!;
+    private RarityVisual[] _rarityVisuals= null!;
+    private BaseCardType[] _baseTypes= null!;
+    private GemVisual[] _gemVisuals= null!;
 
-    private Mocking.MockCardShaderRenderer _renderer;
-    private Node3D _cardRoot;
-    private CardTemplate _template;
+    private Mocking.MockCardShaderRenderer _renderer= null!;
+    private Node3D _cardRoot= null!;
+    private CardTemplate _template= null!;
 
     [BeforeTest]
     public void Setup()

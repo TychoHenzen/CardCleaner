@@ -10,9 +10,9 @@ public partial class CardSlot : Node3D
     [Signal]
     public delegate void CardChangedEventHandler();
 
-    private RigidBody3D _card;
-    private bool _processingEntry = false;
-    [Export] public Area3D Area;
+    private RigidBody3D? _card;
+    private bool _processingEntry;
+    [Export] public Area3D? Area;
     [Export] public float EjectForce = 2f;
     [Export] public Vector3 PositionOffset = Vector3.Zero;
 
@@ -20,6 +20,11 @@ public partial class CardSlot : Node3D
 
     public override void _Ready()
     {
+        if (Area == null)
+        {
+            GD.PushError("[CardSlot] Must have an Area");
+            return;
+        }
         Area.BodyEntered += OnBodyEntered;
     }
 
@@ -75,8 +80,6 @@ public partial class CardSlot : Node3D
 
     private void OnCardPickedUp(CardController card)
     {
-        if (card == null) return;
-
         // Disconnect from pickup signal
         card.CardPickedUp -= OnCardPickedUp;
 
@@ -93,7 +96,7 @@ public partial class CardSlot : Node3D
         card.ApplyImpulse(Vector3.Up * EjectForce);
     }
 
-    public CardSignature ConsumeCardSignature()
+    public CardSignature? ConsumeCardSignature()
     {
         if (_card == null)
             return null;

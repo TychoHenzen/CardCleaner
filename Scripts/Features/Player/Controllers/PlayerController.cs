@@ -9,12 +9,12 @@ public partial class PlayerController : CharacterBody3D
 {
     private readonly Color BlacklightColor = new(0.4f, 0.2f, 1.0f); // UV purple
     private readonly Color FlashlightColor = new(1.0f, 0.95f, 0.8f); // Warm white
-    private Node3D _head;
-    private IInputService _inputService;
+    private Node3D? _head;
+    private IInputService? _inputService;
     private float _pitchDeg;
-    private IGameSettings _settings;
-    private SpotLight3D _spotlight;
-
+    private IGameSettings? _settings;
+    private SpotLight3D? _spotlight;
+    
     public override void _Ready()
     {
         _head = GetNode<Node3D>("Head");
@@ -39,6 +39,7 @@ public partial class PlayerController : CharacterBody3D
 
     private void RegisterInputActions()
     {
+        if (_inputService == null) return;
         // Register light cycling control
         _inputService.RegisterAction(this , "cycle_light", Key.F, CycleLightMode);
         _inputService.RegisterAction(this, "increase_light_intensity", Key.Plus, () => AdjustLightIntensity(0.2f));
@@ -73,6 +74,7 @@ public partial class PlayerController : CharacterBody3D
 
     private void CycleLightMode()
     {
+        if (_settings == null) return;
         // Cycle through the three states
         _settings.CurrentLightMode = _settings.CurrentLightMode switch
         {
@@ -105,7 +107,7 @@ public partial class PlayerController : CharacterBody3D
 
     private void ApplyLightMode()
     {
-        if (_spotlight == null) return;
+        if (_spotlight == null || _settings == null) return;
 
         switch (_settings.CurrentLightMode)
         {
@@ -129,6 +131,7 @@ public partial class PlayerController : CharacterBody3D
 
     private void AdjustLightIntensity(float delta)
     {
+        if (_settings == null) return;
         _settings.LightIntensity = Mathf.Clamp(_settings.LightIntensity + delta, 0.1f, 5.0f);
 
         // Only apply if light is currently on
@@ -147,6 +150,7 @@ public partial class PlayerController : CharacterBody3D
 
     private void OnMouseMoved(Vector2 delta)
     {
+        if (_settings == null || _head == null) return;
         var yawDelta = -delta.X * _settings.MouseSensitivity;
         RotateY(Mathf.DegToRad(yawDelta));
 

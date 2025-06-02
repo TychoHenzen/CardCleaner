@@ -1,8 +1,8 @@
 ﻿using System;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Tests.Mocking;
 using GdUnit4;
-using Godot;
 
 namespace CardCleaner.Tests.Core;
 

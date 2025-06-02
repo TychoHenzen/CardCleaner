@@ -61,6 +61,8 @@ public partial class ConveyorBelt : Node3D
 
     public override void _PhysicsProcess(double delta)
     {
+        if (DestinationMarker == null)
+            return;
         for (var i = _onBelt.Count - 1; i >= 0; i--)
         {
             var card = _onBelt[i];

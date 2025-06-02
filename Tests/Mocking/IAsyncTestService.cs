@@ -1,4 +1,4 @@
-﻿namespace CardCleaner.Tests.Core;
+﻿namespace CardCleaner.Tests.Mocking;
 
 public interface IAsyncTestService
 {

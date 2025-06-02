@@ -85,7 +85,7 @@ public partial class GameSessionService : Node, IGameSessionService
 
     public void ResetSession()
     {
-        _mapSeed = null;
+        _mapSeed = null!;
         _abilityCards.Clear();
         CurrentState = SessionState.WaitingForCards;
         GD.Print("Session reset");

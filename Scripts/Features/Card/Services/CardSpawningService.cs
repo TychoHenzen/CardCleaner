@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
+using System;
 
 namespace CardCleaner.Scripts.Features.Card.Services;
 
@@ -13,7 +14,12 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 /// </summary>
 public partial class CardSpawningService : Node, ICardSpawningService
 {
-    [Export] public PackedScene CardScene;
+    /// <summary>
+    /// Emitted when a new card is spawned, allowing other systems to connect to it
+    /// </summary>
+    public event Action<CardController> CardSpawned;
+    
+    [Export] public PackedScene? CardScene;
     private ICardGenerator _generator;
     private RandomNumberGenerator _rng;
 
@@ -22,6 +28,7 @@ public partial class CardSpawningService : Node, ICardSpawningService
         ServiceLocator.Get<RandomNumberGenerator>(rng => _rng = rng);
         ServiceLocator.Get<ICardGenerator>(gen => _generator = gen);
     }
+    
     public Node3D SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent)
     {
         if (CardScene?.Instantiate() is not Node3D cardInstance)
@@ -36,6 +43,9 @@ public partial class CardSpawningService : Node, ICardSpawningService
         if (cardInstance is CardController controller)
         {
             controller.Signature = signature;
+            
+            // Emit signal so other systems can connect to this new card
+            CallDeferred(nameof(EmitCardSpawnedSignal), controller);
         }
 
         // Set up card renderer with deferred baking
@@ -69,5 +79,10 @@ public partial class CardSpawningService : Node, ICardSpawningService
         var template = new CardTemplate();
         _generator.GenerateCardRenderer(renderer, signature, template);
         renderer.Bake(template);
+    }
+    
+    private void EmitCardSpawnedSignal(CardController card)
+    {
+        CardSpawned?.Invoke(card);
     }
 }

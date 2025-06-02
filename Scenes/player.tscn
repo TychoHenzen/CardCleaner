@@ -36,12 +36,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.520677, -0.145628, 0)
 script = ExtResource("2_3smsa")
 Camera = NodePath("..")
 
-[node name="CardInteraction" type="Node3D" parent="." node_paths=PackedStringArray("Camera", "CardDropper", "CardHolder", "Picker", "Preview")]
+[node name="CardInteraction" type="Node3D" parent="." node_paths=PackedStringArray("InteractionSystem", "CardDropper", "CardHolder", "Preview")]
 script = ExtResource("2_cvnsp")
-Camera = NodePath("../Head/Camera3D")
+InteractionSystem = NodePath("../Head/Camera3D/InteractionSystem")
 CardDropper = NodePath("CardDropper")
 CardHolder = NodePath("CardHolder")
-Picker = NodePath("CardPicker")
 Preview = NodePath("DropPreview")
 
 [node name="CardPicker" type="Node3D" parent="CardInteraction" node_paths=PackedStringArray("Camera")]

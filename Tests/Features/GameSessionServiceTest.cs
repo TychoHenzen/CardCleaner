@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using GdUnit4;
-using Godot;
 
 namespace CardCleaner.Tests.Features;
 
@@ -223,11 +222,9 @@ public class GameSessionServiceTest
         {
             for (int j = 0; j < 8; j++)
             {
-                if (Math.Abs(firstLoot[i][j] - secondLoot[i][j]) > 0.001f)
-                {
-                    foundDifference = true;
-                    break;
-                }
+                if (Math.Abs(firstLoot[i][j] - secondLoot[i][j]) <= 0.001f) continue;
+                foundDifference = true;
+                break;
             }
             if (foundDifference) break;
         }
@@ -239,7 +236,7 @@ public class GameSessionServiceTest
     public void TestAdvanceFromSessionCompleteDoesNothing()
     {
         var mapSeed = new CardSignature();
-        var abilityCards = new List<CardSignature> { new CardSignature() };
+        var abilityCards = new List<CardSignature> { new() };
         
         // Get to session complete
         _service.StartSession(mapSeed, abilityCards);

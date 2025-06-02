@@ -1,52 +1,119 @@
+using System;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Controllers;
+using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Scripts.Features.Player.Controllers;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
 public partial class CardHighlighter : Node3D
 {
-    private IInputService _inputService;
-    private RigidBody3D _lastCard;
-    [Export] public Camera3D Camera;
-    [Export] public CardDropper CardDropper;
-    [Export] public CardHolder CardHolder;
-    [Export] public float MaxHighlightDistance = 50f;
-
-    [Export] public CardPicker Picker;
-    [Export] public DropPreview Preview;
+    private IInputService _inputService = null!;
+    [Export] public InteractionSystem InteractionSystem = null!;
+    [Export] public CardDropper CardDropper = null!;
+    [Export] public CardHolder CardHolder = null!;
+    [Export] public DropPreview Preview = null!;
 
     public override void _Ready()
     {
-        // Get references
-        CardHolder.SetReferences(Camera);
-        CardDropper.Initialize(CardHolder, Preview, Camera);
+        // Get reference to the generic interaction system
+        if (CardDropper == null! || CardHolder == null! || Preview == null! || InteractionSystem == null!)
+        {
+            GD.PrintErr($"CardHighlighter: Missing required Export field references");
+            return;
+        }
 
-        // Wire signals
+        // Initialize card systems
+        var camera = InteractionSystem.Camera;
+        if (camera == null)
+        {
+            GD.PrintErr("Camera not found");
+            return;
+        }
+        CardHolder.SetReferences(camera);
+        CardDropper.Initialize(CardHolder, Preview, camera);
+
+        // Register card-specific input (right-click for drop preparation)
         ServiceLocator.Get<IInputService>(input =>
         {
             _inputService = input;
             _inputService.RegisterAction(this, "card_drop_prepare", MouseButton.Right, OnRightPress);
-            _inputService.RegisterAction(this, "card_grab", MouseButton.Left, OnLeftPress);
         });
 
-        Picker.Connect("CardDetected", Callable.From<RigidBody3D>(OnCardDetected));
-        Picker.Connect("NoCardDetected", Callable.From(OnNoCardDetected));
+        // Listen for card interaction requests from the generic system
+        ConnectToCardInteractions();
+    }
 
+    private void ConnectToCardInteractions()
+    {
+        // Connect to all existing cards
+        var cards = GetTree().GetNodesInGroup("Cards");
+        foreach (var node in cards)
+        {
+            if (node is CardController card)
+            {
+                ConnectToCard(card);
+            }
+        }
+        
+        // Listen for new cards being spawned by connecting to the spawning service
+        ServiceLocator.Get<ICardSpawningService>(spawningService =>
+        {
+            if (spawningService is not CardSpawningService concreteService) 
+                return;
+            concreteService.CardSpawned += OnCardSpawned;
+        });
+        
+        // Set up collision layers for cards to be detected by interaction system
         SetupCardCollisionLayers();
+    }
+    
+    private void ConnectToCard(CardController card)
+    {
+        if (!card.IsConnected(nameof(CardController.CardInteractionRequested), Callable.From<CardController>(OnCardInteractionRequested)))
+        {
+            card.CardInteractionRequested += OnCardInteractionRequested;
+        }
+    }
+    
+    private void OnCardSpawned(CardController card)
+    {
+        ConnectToCard(card);
     }
 
     public override void _ExitTree()
     {
-        // Clean up input registrations when component is destroyed
         _inputService?.UnregisterAllActions(this);
+        
+        // Disconnect from card signals
+        var cards = GetTree().GetNodesInGroup("Cards");
+        foreach (var node in cards)
+        {
+            if (node is CardController card)
+            {
+                card.CardInteractionRequested -= OnCardInteractionRequested;
+            }
+        }
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        base._PhysicsProcess(delta);
         // Update drop preview while preparing drop
-        if (CardDropper.IsPreparingDrop) CardDropper.UpdateDropPreview();
+        if (CardDropper.IsPreparingDrop) 
+        {
+            CardDropper.UpdateDropPreview();
+        }
+    }
+
+    private void OnCardInteractionRequested(CardController card)
+    {
+        // Handle card pickup through the generic interaction system
+        if (!CardDropper.IsPreparingDrop)
+        {
+            CardHolder.AddCard(card);
+        }
     }
 
     private void OnRightPress(bool pressed)
@@ -57,65 +124,13 @@ public partial class CardHighlighter : Node3D
             CardDropper.CompleteDropPreparation();
     }
 
-    private void OnLeftPress(bool pressed)
-    {
-        if (!pressed) return;
-        if (CardDropper.IsPreparingDrop)
-        {
-            CardDropper.CancelDropPreparation();
-        }
-        else if (_lastCard != null &&
-                 Camera.GlobalPosition.DistanceTo(_lastCard.GlobalPosition) <= MaxHighlightDistance)
-        {
-            CardHolder.AddCard(_lastCard);
-            ClearHighlight(_lastCard);
-        }
-    }
-
-    private void OnCardDetected(RigidBody3D card)
-    {
-        if (CardDropper.IsPreparingDrop) return; // Don't highlight during drop prep
-
-        if (_lastCard == card) return;
-        ClearHighlight(_lastCard);
-        if (card != null)
-            HighlightCard(card);
-        _lastCard = card;
-    }
-
-    private void OnNoCardDetected()
-    {
-        if (CardDropper.IsPreparingDrop) return; // Don't change highlights during drop prep
-
-        ClearHighlight(_lastCard);
-        _lastCard = null;
-    }
-
-    private void HighlightCard(RigidBody3D card)
-    {
-        if (Camera.GlobalPosition.DistanceTo(card.GlobalPosition) > MaxHighlightDistance) return;
-
-        var outline = card.GetNodeOrNull<CsgBox3D>("OutlineBox");
-        if (outline == null) return;
-        outline.Visible = true;
-        _lastCard = card;
-    }
-
-    private void ClearHighlight(RigidBody3D card)
-    {
-        var outline = card?.GetNodeOrNull<CsgBox3D>("OutlineBox");
-        if (outline == null) return;
-        outline.Visible = false;
-        _lastCard = null;
-    }
-
     private void SetupCardCollisionLayers()
     {
         var cards = GetTree().GetNodesInGroup("Cards");
         foreach (var node in cards)
         {
             var card = (RigidBody3D)node;
-            card.CollisionLayer = CardHolder.CardCollisionLayer;
+            card.CollisionLayer = CardHolder.CardCollisionLayer; // Layer 2
         }
     }
 }

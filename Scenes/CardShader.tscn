@@ -19,7 +19,7 @@ emission = Color(1, 1, 1, 1)
 
 [node name="Card" type="RigidBody3D"]
 physics_interpolation_mode = 2
-collision_layer = 2
+collision_layer = 6
 collision_mask = 3
 linear_damp_mode = 1
 linear_damp = 0.1

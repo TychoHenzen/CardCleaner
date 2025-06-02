@@ -30,7 +30,6 @@ public class ServiceContainer : IServiceContainer
 
     public void RegisterFactory<T>(Func<T> factory) where T : class
     {
-        // Fix: Properly cast the factory function to return object
         _factories[typeof(T)] = factory;
     }
 
@@ -41,16 +40,12 @@ public class ServiceContainer : IServiceContainer
 
     public object Resolve(Type type)
     {
-        // Fix: Check factories first to allow them to override singletons
-        // This matches the test expectation in TestFactoryOverridesSingleton
         if (_factories.TryGetValue(type, out var factory))
             return factory();
 
-        // Try singletons second
         if (_singletons.TryGetValue(type, out var singleton))
             return singleton;
 
-        // Try transients third
         if (!_transients.TryGetValue(type, out var implementationType))
             throw new InvalidOperationException($"Service {type.Name} not registered");
         

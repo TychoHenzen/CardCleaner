@@ -2,12 +2,12 @@
 using GdUnit4;
 using Godot;
 
-namespace CardCleaner.Tests.Core;
+namespace CardCleaner.Tests.Features;
 
 [TestSuite]
 public class InputServiceTest
 {
-    private InputService _service;
+    private InputService _service= null!;
     private bool _actionTriggered;
     private bool _mouseActionPressed;
     private int _actionCallCount;
@@ -24,7 +24,7 @@ public class InputServiceTest
     [AfterTest]
     public void Cleanup()
     {
-        _service?.QueueFree();
+        _service.QueueFree();
     }
 
     [TestCase]
@@ -87,7 +87,7 @@ public class InputServiceTest
     [TestCase]
     public void TestRemapMouseAction()
     {
-        _service.RegisterAction(this, "test_action", MouseButton.Left, (pressed) => { });
+        _service.RegisterAction(this, "test_action", MouseButton.Left, _ => { });
         
         _service.RemapAction("test_action", MouseButton.Right);
         
