@@ -1,10 +1,11 @@
-[gd_scene load_steps=36 format=3 uid="uid://cc3ymqg03a2g5"]
+[gd_scene load_steps=37 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://oqrxpyj8qkim" path="res://Scenes/CardShader.tscn" id="3_4bcsh"]
 [ext_resource type="Script" uid="uid://bo8luaias82fj" path="res://Scripts/Features/Card/Services/CardSpawner.cs" id="3_6nqof"]
 [ext_resource type="PackedScene" uid="uid://cdss6ca0j5q5f" path="res://Scenes/WorldTileMapScreen.tscn" id="3_k3dcv"]
 [ext_resource type="PackedScene" uid="uid://wv6a67swhus" path="res://Scenes/player.tscn" id="3_k8nbv"]
 [ext_resource type="PackedScene" uid="uid://5pktuq08ry2m" path="res://Scenes/CardSlot.tscn" id="4_dta7m"]
+[ext_resource type="Resource" uid="uid://5pn8llcwm6jr" path="res://Assets/Tilesets/BaseTileset.tres" id="4_ihrxd"]
 [ext_resource type="PackedScene" uid="uid://7stut08s5ui3" path="res://Scenes/DeckSlot.tscn" id="4_sstrp"]
 [ext_resource type="Resource" uid="uid://c1pvj6bchej3" path="res://Assets/CardRarity/Common.tres" id="4_vkee2"]
 [ext_resource type="Resource" uid="uid://crj4wbejtk751" path="res://Assets/CardRarity/Uncommon.tres" id="5_otk7d"]
@@ -76,6 +77,7 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 2, 0.4
 
 [node name="WorldTileMapScreen" parent="World" instance=ExtResource("3_k3dcv")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -2.20681, 2.96636, 7)
+CustomTileSet = ExtResource("4_ihrxd")
 
 [node name="StaticBody3D4" parent="World" instance=ExtResource("9_dr1m3")]
 transform = Transform3D(1, 0, -1.06581e-14, 0, 1, 0, 1.06581e-14, 0, 1, 4, 0.458978, 4)
@@ -91,8 +93,8 @@ PositionOffset = Vector3(0, 0.135, 0.2)
 [node name="Button" parent="World" instance=ExtResource("30_up2yq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.83772, 0.127075, 5.26458)
 
-[node name="StaticBody3D" parent="World/Button" index="0"]
-collision_layer = 4
+[node name="icosphere_Disabled" parent="World/Button/workbenchCopy" index="2"]
+surface_material_override/0 = null
 
 [node name="CardSlot" parent="World" instance=ExtResource("4_dta7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.152501, 5)

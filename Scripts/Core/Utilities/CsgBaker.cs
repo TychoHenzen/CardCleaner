@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Components;
 using Godot;
 
 namespace CardCleaner.Scripts.Core.Utilities;
@@ -27,7 +28,7 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
 
     private void BakeToMesh(Node cardRoot)
     {
-        var designer = cardRoot.GetNode<Features.Card.Components.CardDesigner>("Designer");
+        var designer = cardRoot.GetNode<CardDesigner>("Designer");
         var cacheKey = $"{designer.Width}x{designer.Height}x{designer.Thickness}";
 
         if (!MeshCache.TryGetValue(cacheKey, out var cachedMesh))

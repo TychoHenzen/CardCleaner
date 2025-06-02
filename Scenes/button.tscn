@@ -83,6 +83,7 @@ shadow_mesh = SubResource("ArrayMesh_vthvc")
 [node name="Button" instance=ExtResource("1_1cmwl")]
 
 [node name="StaticBody3D" type="StaticBody3D" parent="." index="0" node_paths=PackedStringArray("ButtonMesh", "HighlightMesh")]
+collision_layer = 4
 script = ExtResource("2_0kpiu")
 ButtonMesh = NodePath("../workbenchCopy/icosphere_half")
 HighlightMesh = NodePath("../workbenchCopy/Highlight")

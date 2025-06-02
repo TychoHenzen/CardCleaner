@@ -12,7 +12,7 @@ public class LayerDataTest
     {
         var layer = new LayerData();
 
-        Assertions.AssertThat(layer.Region).IsEqual(new Vector4(0, 0, 1, 1));
+        Assertions.AssertThat(layer.Region).IsEqual(new Rect2(0, 0, 16, 16));
         Assertions.AssertBool(layer.RenderOnFront).IsTrue();
         Assertions.AssertBool(layer.RenderOnBack).IsFalse();
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using Godot;
@@ -66,20 +67,20 @@ public partial class ServiceLocator : Node
 
     public static void ExecutePendingCallbacks()
     {
-        foreach (var (serviceType, callbacks) in _instance._pendingCallbacks)
+        foreach (var keyValuePair in _instance._pendingCallbacks.ToList())
         {
-            if (!_instance._container.IsRegistered(serviceType)) 
+            if (!_instance._container.IsRegistered(keyValuePair.Key)) 
                 continue;
             
-            var service = _instance._container.Resolve(serviceType);
-            foreach (var callback in callbacks)
+            var service = _instance._container.Resolve(keyValuePair.Key);
+            foreach (var callback in keyValuePair.Value)
             {
-                ILog.Print($"Running callback for {serviceType.Name}");
+                ILog.Print($"Running callback for {keyValuePair.Key.Name}");
                 callback(service);
             }
 
-            ILog.Print($"Removing callback for {serviceType.Name}");
-            _instance._pendingCallbacks.Remove(serviceType);
+            ILog.Print($"Removing callback for {keyValuePair.Key.Name}");
+            _instance._pendingCallbacks.Remove(keyValuePair.Key);
         }
     }
 
