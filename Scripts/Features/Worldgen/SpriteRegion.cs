@@ -1,30 +1,19 @@
 ﻿using Godot;
+using CardCleaner.Scripts.Core.Data;
 
 [Tool]
 [GlobalClass]
 public partial class SpriteRegion : Resource
 {
-    private Texture2D? _sourceTexture;
-    private Rect2I _sourceRect;
+    private LayerData[] _layers = System.Array.Empty<LayerData>();
     
     [Export] 
-    public Texture2D? SourceTexture 
+    public LayerData[] Layers 
     { 
-        get => _sourceTexture;
+        get => _layers;
         set
         {
-            _sourceTexture = value;
-            UpdatePreview();
-        }
-    }
-    
-    [Export] 
-    public Rect2I SourceRect 
-    { 
-        get => _sourceRect;
-        set
-        {
-            _sourceRect = value;
+            _layers = value ?? System.Array.Empty<LayerData>();
             UpdatePreview();
         }
     }
@@ -33,59 +22,98 @@ public partial class SpriteRegion : Resource
         
     public SpriteRegion()
     {
-        // Default constructor for Godot
         UpdatePreview();
     }
         
-    public SpriteRegion(Texture2D texture, Rect2I rect, string name = "")
+    public SpriteRegion(LayerData[] layers)
     {
-        _sourceTexture = texture;
-        _sourceRect = rect;
+        _layers = layers ?? System.Array.Empty<LayerData>();
         UpdatePreview();
     }
+    public SpriteRegion(Texture2D? texture, Rect2I rect)
+    {
+        if (texture != null)
+        {
+            var layerData = new LayerData
+            {
+                Texture = texture,
+                Region = new Vector4(
+                    (float)rect.Position.X / texture.GetWidth(),
+                    (float)rect.Position.Y / texture.GetHeight(),
+                    (float)rect.Size.X / texture.GetWidth(),
+                    (float)rect.Size.Y / texture.GetHeight()
+                )
+            };
+            _layers = new[] { layerData };
+        }
+        else
+        {
+            _layers = System.Array.Empty<LayerData>();
+        }
+        UpdatePreview();
+    }
+
     
     private void UpdatePreview()
     {
-        if (_sourceTexture == null)
+        if (_layers == null || _layers.Length == 0)
         {
             PreviewTexture = null;
             return;
         }
+        
+        // Find the base layer size (first layer with valid texture)
+        Vector2I baseSize = Vector2I.Zero;
+        foreach (var layer in _layers)
+        {
+            if (layer?.Texture != null)
+            {
+                var layerSize = layer.Texture.GetSize();
+                var region = new Rect2I(
+                    (int)(layer.Region.X * layerSize.X),
+                    (int)(layer.Region.Y * layerSize.Y),
+                    (int)(layer.Region.Z * layerSize.X),
+                    (int)(layer.Region.W * layerSize.Y)
+                );
+                baseSize = region.Size;
+                break;
+            }
+        }
+        
+        if (baseSize == Vector2I.Zero)
+        {
+            PreviewTexture = null;
+            return;
+        }
+        
+        // Create composite image
+        var compositeImage = Image.CreateEmpty(baseSize.X, baseSize.Y, false, Image.Format.Rgba8);
+        compositeImage.Fill(Colors.Transparent);
+        
+        // Blend each layer in order
+        foreach (var layer in _layers)
+        {
+            var layerImage = layer?.Texture?.GetImage();
+            if (layerImage == null) continue;
             
-        var sourceImage = _sourceTexture.GetImage();
-        if (sourceImage == null)
-        {
-            PreviewTexture = null;
-            return;
-        }
+            var layerSize = layer.Texture.GetSize();
+            var region = new Rect2I(
+                (int)(layer.Region.X * layerSize.X),
+                (int)(layer.Region.Y * layerSize.Y),
+                (int)(layer.Region.Z * layerSize.X),
+                (int)(layer.Region.W * layerSize.Y)
+            );
             
-        // Validate the source rect bounds
-        var textureSize = _sourceTexture.GetSize();
-        if (_sourceRect.Position.X < 0 || _sourceRect.Position.Y < 0 ||
-            _sourceRect.End.X > textureSize.X || _sourceRect.End.Y > textureSize.Y ||
-            _sourceRect.Size.X <= 0 || _sourceRect.Size.Y <= 0)
-        {
-            PreviewTexture = null;
-            return;
-        }
-        // Create a cropped image from the source region
-        var croppedImage = sourceImage.GetRegion(_sourceRect);
-        
-        // Validate the cropped image
-        if (croppedImage == null || croppedImage.GetSize() == Vector2I.Zero)
-        {
-            PreviewTexture = null;
-            return;
+            if (region.Size.X <= 0 || region.Size.Y <= 0) continue;
+            
+            var croppedLayer = layerImage.GetRegion(region);
+            if (croppedLayer == null) continue;
+            
+            croppedLayer.Convert(Image.Format.Rgba8);
+            compositeImage.BlendRect(croppedLayer, new Rect2I(Vector2I.Zero, croppedLayer.GetSize()), Vector2I.Zero);
         }
         
-        // Convert to RGBA8 format to ensure compatibility
-        croppedImage.Convert(Image.Format.Rgba8);
-        
-        // Generate mipmaps for better display quality
-        croppedImage.GenerateMipmaps();
-        
-        // Create and set the preview texture
-        PreviewTexture = ImageTexture.CreateFromImage(croppedImage);
-
+        compositeImage.GenerateMipmaps();
+        PreviewTexture = ImageTexture.CreateFromImage(compositeImage);
     }
 }

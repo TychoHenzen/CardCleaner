@@ -39,6 +39,8 @@ public partial class WfcTile : Resource
             West = value[3];
         }
     }
+    [Export] public TilePassability Passability { get; set; } = TilePassability.Passable;
+
 
     // Probability weighting
     [Export] public float BaseWeight { get; set; } = 1.0f;

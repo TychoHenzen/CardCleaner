@@ -98,57 +98,84 @@ public partial class WfcTileSet : Resource
     }
 
     private Image CreateAtlasImage()
-{
-    // Calculate total atlas entries needed
-    int totalAtlasEntries = 0;
-    foreach (var tile in Tiles)
     {
-        totalAtlasEntries += tile.IsAnimated ? tile.SpriteRegion.Length : 1;
-    }
-
-    var tilesPerRow = GetTilesPerRow();
-    var rows = Mathf.CeilToInt((float)totalAtlasEntries / tilesPerRow);
-    var atlasWidth = tilesPerRow * TileSize.X;
-    var atlasHeight = rows * TileSize.Y;
-
-    if (atlasWidth > AtlasSize || atlasHeight > AtlasSize)
-    {
-        GD.PrintErr($"WfcTileSet: Atlas size {atlasWidth}x{atlasHeight} exceeds maximum {AtlasSize}");
-        return null;
-    }
-
-    var atlasImage = Image.CreateEmpty(atlasWidth, atlasHeight, false, Image.Format.Rgba8);
-    atlasImage.Fill(Colors.Transparent);
-
-    int atlasIndex = 0;
-    for (int i = 0; i < Tiles.Count; i++)
-    {
-        var tile = Tiles[i];
-        if (tile.SpriteRegion == null || tile.SpriteRegion.Length == 0)
+        // Calculate total atlas entries needed
+        int totalAtlasEntries = 0;
+        foreach (var tile in Tiles)
         {
-            GD.PrintErr($"WfcTileSet: Tile {i} ({tile.TileName}) has no sprite regions");
-            continue;
+            totalAtlasEntries += tile.IsAnimated ? tile.SpriteRegion.Length : 1;
         }
 
-        if (tile.IsAnimated)
+        var tilesPerRow = GetTilesPerRow();
+        var rows = Mathf.CeilToInt((float)totalAtlasEntries / tilesPerRow);
+        var atlasWidth = tilesPerRow * TileSize.X;
+        var atlasHeight = rows * TileSize.Y;
+
+        if (atlasWidth > AtlasSize || atlasHeight > AtlasSize)
         {
-            // Process each animation frame (SpriteRegion)
-            for (int frame = 0; frame < tile.SpriteRegion.Length; frame++)
+            GD.PrintErr($"WfcTileSet: Atlas size {atlasWidth}x{atlasHeight} exceeds maximum {AtlasSize}");
+            return null;
+        }
+
+        var atlasImage = Image.CreateEmpty(atlasWidth, atlasHeight, false, Image.Format.Rgba8);
+        atlasImage.Fill(Colors.Transparent);
+
+        int atlasIndex = 0;
+        for (int i = 0; i < Tiles.Count; i++)
+        {
+            var tile = Tiles[i];
+            if (tile.SpriteRegion == null || tile.SpriteRegion.Length == 0)
             {
-                var spriteRegion = tile.SpriteRegion[frame];
-                if (spriteRegion?.SourceTexture == null)
+                GD.PrintErr($"WfcTileSet: Tile {i} ({tile.TileName}) has no sprite regions");
+                continue;
+            }
+
+            if (tile.IsAnimated)
+            {
+                // Process each animation frame (SpriteRegion)
+                for (int frame = 0; frame < tile.SpriteRegion.Length; frame++)
                 {
-                    GD.PrintErr($"WfcTileSet: Tile {i} frame {frame} has no source texture");
+                    var spriteRegion = tile.SpriteRegion[frame];
+                    if (spriteRegion?.PreviewTexture == null)
+                    {
+                        GD.PrintErr($"WfcTileSet: Tile {i} frame {frame} has no preview texture");
+                        continue;
+                    }
+
+                    var frameImage = spriteRegion.PreviewTexture.GetImage();
+
+                    // Resize to tile size if necessary
+                    if (frameImage.GetSize() != TileSize)
+                    {
+                        frameImage.Resize(TileSize.X, TileSize.Y, Image.Interpolation.Nearest);
+                    }
+
+                    // Calculate position in atlas
+                    var atlasX = (atlasIndex % tilesPerRow) * TileSize.X;
+                    var atlasY = (atlasIndex / tilesPerRow) * TileSize.Y;
+
+                    // Blit to atlas
+                    atlasImage.BlitRect(frameImage, new Rect2I(Vector2I.Zero, TileSize),
+                        new Vector2I(atlasX, atlasY));
+                    atlasIndex++;
+                }
+            }
+            else
+            {
+                // Single frame for static tile (use first SpriteRegion)
+                var spriteRegion = tile.SpriteRegion[0];
+                if (spriteRegion?.PreviewTexture == null)
+                {
+                    GD.PrintErr($"WfcTileSet: Tile {i} has no preview texture");
                     continue;
                 }
 
-                var sourceImage = spriteRegion.SourceTexture.GetImage();
-                var frameImage = sourceImage.GetRegion(spriteRegion.SourceRect);
+                var spriteImage = spriteRegion.PreviewTexture.GetImage();
 
                 // Resize to tile size if necessary
-                if (frameImage.GetSize() != TileSize)
+                if (spriteImage.GetSize() != TileSize)
                 {
-                    frameImage.Resize(TileSize.X, TileSize.Y, Image.Interpolation.Nearest);
+                    spriteImage.Resize(TileSize.X, TileSize.Y, Image.Interpolation.Nearest);
                 }
 
                 // Calculate position in atlas
@@ -156,43 +183,14 @@ public partial class WfcTileSet : Resource
                 var atlasY = (atlasIndex / tilesPerRow) * TileSize.Y;
 
                 // Blit to atlas
-                atlasImage.BlitRect(frameImage, new Rect2I(Vector2I.Zero, TileSize),
+                atlasImage.BlitRect(spriteImage, new Rect2I(Vector2I.Zero, TileSize),
                     new Vector2I(atlasX, atlasY));
                 atlasIndex++;
             }
         }
-        else
-        {
-            // Single frame for static tile (use first SpriteRegion)
-            var spriteRegion = tile.SpriteRegion[0];
-            if (spriteRegion?.SourceTexture == null)
-            {
-                GD.PrintErr($"WfcTileSet: Tile {i} has no source texture");
-                continue;
-            }
 
-            var sourceImage = spriteRegion.SourceTexture.GetImage();
-            var spriteImage = sourceImage.GetRegion(spriteRegion.SourceRect);
-
-            // Resize to tile size if necessary
-            if (spriteImage.GetSize() != TileSize)
-            {
-                spriteImage.Resize(TileSize.X, TileSize.Y, Image.Interpolation.Nearest);
-            }
-
-            // Calculate position in atlas
-            var atlasX = (atlasIndex % tilesPerRow) * TileSize.X;
-            var atlasY = (atlasIndex / tilesPerRow) * TileSize.Y;
-
-            // Blit to atlas
-            atlasImage.BlitRect(spriteImage, new Rect2I(Vector2I.Zero, TileSize),
-                new Vector2I(atlasX, atlasY));
-            atlasIndex++;
-        }
+        return atlasImage;
     }
-
-    return atlasImage;
-}
 
     private int GetTilesPerRow()
     {
@@ -217,10 +215,10 @@ public partial class WfcTileSet : Resource
         var issues = new List<string>();
 
         // Check for tiles without sprites
-        var tilesWithoutSprites = Tiles.Where(t => t.SpriteRegion == null || 
-                                                   t.SpriteRegion.Length == 0 || 
-                                                   t.SpriteRegion[0]?.SourceTexture == null).ToList();
-        if (tilesWithoutSprites.Any())
+        var tilesWithoutSprites = Tiles.Where(t => t.SpriteRegion.Length == 0 ||
+                                                   t.SpriteRegion.Any(reg =>
+                                                       reg.Layers.Any(data => data.Texture == null))).ToList();
+        if (tilesWithoutSprites.Count != 0)
         {
             issues.Add($"{tilesWithoutSprites.Count} tiles missing sprite regions");
         }
@@ -230,21 +228,16 @@ public partial class WfcTileSet : Resource
             .GroupBy(t => t.TileName)
             .Where(g => g.Count() > 1);
 
-        foreach (var group in nameGroups)
-        {
-            issues.Add($"Duplicate tile name: {group.Key}");
-        }
+        issues.AddRange(
+            nameGroups
+                .Select(group => $"Duplicate tile name: {group.Key}"));
 
         // Check socket connectivity
         var socketTypes = Enum.GetValues<SocketType>();
-        foreach (var socketType in socketTypes)
-        {
-            var hasOutput = Tiles.Any(t => t.Sockets.Contains(socketType));
-            if (!hasOutput && socketType != SocketType.Mixed)
-            {
-                issues.Add($"No tiles have socket type: {socketType}");
-            }
-        }
+        issues.AddRange(socketTypes
+            .Select(socketType => new { socketType, hasOutput = Tiles.Any(t => t.Sockets.Contains(socketType)) })
+            .Where(@t1 => !@t1.hasOutput && @t1.socketType != SocketType.Mixed)
+            .Select(@t1 => $"No tiles have socket type: {@t1.socketType}"));
 
         return issues;
     }
