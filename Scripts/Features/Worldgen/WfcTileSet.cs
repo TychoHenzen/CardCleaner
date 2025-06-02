@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enum;
-using CardCleaner.Scripts.Features.Worldgen;
 using Godot;
+
+namespace CardCleaner.Scripts.Features.Worldgen;
 
 [Tool]
 [GlobalClass]

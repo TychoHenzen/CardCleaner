@@ -1,5 +1,7 @@
-﻿using Godot;
-using CardCleaner.Scripts.Core.Data;
+﻿using CardCleaner.Scripts.Core.Data;
+using Godot;
+
+namespace CardCleaner.Scripts.Features.Worldgen;
 
 [Tool]
 [GlobalClass]

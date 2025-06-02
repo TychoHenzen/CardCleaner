@@ -1,4 +1,6 @@
-﻿public enum SocketType
+﻿namespace CardCleaner.Scripts.Core.Enum;
+
+public enum SocketType
 {
     Grass,      // Green, natural
     Stone,      // Rocky, hard

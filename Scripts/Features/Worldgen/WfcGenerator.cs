@@ -81,11 +81,11 @@ public class WaveCollapseGenerator
             
             while (!IsFullyCollapsed())
             {
-                var (x, y) = FindLowestEntropyCell();
-                if (x == -1) break; // No valid cell found
+                var position = FindLowestEntropyCell();
+                if (position.X == -1) break; // No valid cell found
                 
-                CollapseCell(x, y);
-                Propagate(x, y);
+                CollapseCell(position);
+                Propagate(position);
             }
             
             // Convert wave to tile IDs
@@ -119,10 +119,10 @@ public class WaveCollapseGenerator
             return true;
         }
         
-        private (int x, int y) FindLowestEntropyCell()
+        private Vector2I FindLowestEntropyCell()
         {
             int minEntropy = int.MaxValue;
-            var candidates = new List<(int x, int y)>();
+            var candidates = new List<Vector2I>();
             
             for (int y = 0; y < _mapSize.Y; y++)
             {
@@ -131,37 +131,37 @@ public class WaveCollapseGenerator
                     if (_collapsed[y][x]) continue;
                     
                     int entropy = _wave[y][x].Count;
-                    if (entropy == 0) return (-1, -1); // Impossible state
+                    if (entropy == 0) return new Vector2I(-1, -1); // Impossible state
                     
                     if (entropy < minEntropy)
                     {
                         minEntropy = entropy;
                         candidates.Clear();
-                        candidates.Add((x, y));
+                        candidates.Add(new Vector2I(x, y));
                     }
                     else if (entropy == minEntropy)
                     {
-                        candidates.Add((x, y));
+                        candidates.Add(new Vector2I(x, y));
                     }
                 }
             }
             
-            if (candidates.Count == 0) return (-1, -1);
+            if (candidates.Count == 0) return new Vector2I(-1, -1);
             
             // Randomly pick from cells with lowest entropy
             var chosen = candidates[_rng.RandiRange(0, candidates.Count - 1)];
             return chosen;
         }
         
-        private void CollapseCell(int x, int y)
+        private void CollapseCell(Vector2I position)
         {
-            if (_collapsed[y][x] || _wave[y][x].Count == 0) return;
+            if (_collapsed[position.Y][position.X] || _wave[position.Y][position.X].Count == 0) return;
             
             // Choose tile based on weighted probability
-            var chosenTile = ChooseWeightedTile(_wave[y][x]);
-            _wave[y][x].Clear();
-            _wave[y][x].Add(chosenTile);
-            _collapsed[y][x] = true;
+            var chosenTile = ChooseWeightedTile(_wave[position.Y][position.X]);
+            _wave[position.Y][position.X].Clear();
+            _wave[position.Y][position.X].Add(chosenTile);
+            _collapsed[position.Y][position.X] = true;
         }
         
         private WfcTile ChooseWeightedTile(List<WfcTile> tiles)
@@ -180,32 +180,31 @@ public class WaveCollapseGenerator
                 }
             }
             
-            return tiles.Last(); // Fallback
+            return tiles[^1]; // Fallback
         }
         
-        private void Propagate(int startX, int startY)
+        private void Propagate(Vector2I start)
         {
-            var stack = new Stack<(int x, int y)>();
-            stack.Push((startX, startY));
+            var stack = new Stack<Vector2I>();
+            stack.Push(start);
             
             while (stack.Count > 0)
             {
-                var (x, y) = stack.Pop();
+                var position = stack.Pop();
                 
                 // Check all four directions
                 for (int dir = 0; dir < 4; dir++)
                 {
                     var direction = (Direction)dir;
-                    var (nx, ny) = GetNeighborCoords(x, y, direction);
+                    var neighbor = GetNeighborCoords(position, direction);
                     
-                    if (!IsValidCoord(nx, ny) || _collapsed[ny][nx]) continue;
+                    if (!IsValidCoord(neighbor) || _collapsed[neighbor.Y][neighbor.X]) continue;
                     
                     // Remove incompatible tiles from neighbor
-                    var neighborWave = _wave[ny][nx];
-                    var currentWave = _wave[y][x];
-                    
+                    var neighborWave = _wave[neighbor.Y][neighbor.X];
+                    var currentWave = _wave[position.Y][position.X];
                     var tilesToRemove = new List<WfcTile>();
-                    
+
                     foreach (var neighborTile in neighborWave)
                     {
                         bool canConnect = false;
@@ -226,32 +225,32 @@ public class WaveCollapseGenerator
                     }
                     
                     // If we removed any tiles, propagate further
-                    if (tilesToRemove.Count > 0)
+                    if (tilesToRemove.Count <= 0) 
+                        continue;
+                    
+                    foreach (var tile in tilesToRemove)
                     {
-                        foreach (var tile in tilesToRemove)
-                        {
-                            neighborWave.Remove(tile);
-                        }
-                        stack.Push((nx, ny));
+                        neighborWave.Remove(tile);
                     }
+                    stack.Push(neighbor);
                 }
             }
         }
         
-        private (int x, int y) GetNeighborCoords(int x, int y, Direction direction)
+        private static Vector2I GetNeighborCoords(Vector2I position, Direction direction)
         {
             return direction switch
             {
-                Direction.North => (x, y - 1),
-                Direction.East => (x + 1, y),
-                Direction.South => (x, y + 1),
-                Direction.West => (x - 1, y),
-                _ => (x, y)
+                Direction.North => new Vector2I(position.X, position.Y - 1),
+                Direction.East => new Vector2I(position.X + 1, position.Y),
+                Direction.South => new Vector2I(position.X, position.Y + 1),
+                Direction.West => new Vector2I(position.X - 1, position.Y),
+                _ => new Vector2I(position.X, position.Y)
             };
         }
         
-        private bool IsValidCoord(int x, int y)
+        private bool IsValidCoord(Vector2I coord)
         {
-            return x >= 0 && x < _mapSize.X && y >= 0 && y < _mapSize.Y;
+            return coord.X >= 0 && coord.X < _mapSize.X && coord.Y >= 0 && coord.Y < _mapSize.Y;
         }
     }

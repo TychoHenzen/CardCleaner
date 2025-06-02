@@ -20,7 +20,7 @@ public partial class WorldTileMapScreen : Node3D
     private Camera2D? _camera2D;
     
     // WFC system
-    private WfcTileSet _wfcTileSet;
+    private Worldgen.WfcTileSet _wfcTileSet;
     private WaveCollapseGenerator _wfcGenerator;
 
     [Export] public SubViewport? Viewport { get; set; }
@@ -31,7 +31,7 @@ public partial class WorldTileMapScreen : Node3D
     [Export] public string TileDefinitionsPath { get; set; } = "res://data/wfc_tiles/";
     
     // Alternative: direct tile set assignment
-    [Export] public WfcTileSet CustomTileSet { get; set; }
+    [Export] public Worldgen.WfcTileSet CustomTileSet { get; set; }
 
     public override void _Ready()
     {
