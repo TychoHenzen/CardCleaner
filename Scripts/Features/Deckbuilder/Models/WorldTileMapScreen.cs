@@ -5,11 +5,12 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Worldgen;
 using Godot;
+using Godot.Collections;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 
 /// <summary>
-/// Enhanced 3D world-space screen with WFC-based generation
+/// Enhanced 3D world-space screen with semantic WFC-based generation
 /// </summary>
 public partial class WorldTileMapScreen : Node3D
 {
@@ -19,30 +20,30 @@ public partial class WorldTileMapScreen : Node3D
     private TileMapLayer? _tileMap;
     private Camera2D? _camera2D;
     
-    // WFC system
-    private Worldgen.WfcTileSet _wfcTileSet;
-    private WaveCollapseGenerator _wfcGenerator;
+    // Semantic WFC system
+    private Array<SemanticTile> _semanticTiles;
+    private SemanticWfcGenerator _semanticGenerator;
 
     [Export] public SubViewport? Viewport { get; set; }
     [Export] public MeshInstance3D? ScreenMesh { get; set; }
     [Export] public Vector2I ScreenResolution { get; set; } = new(512, 512);
     
-    // Path to WFC tile definitions
-    [Export] public string TileDefinitionsPath { get; set; } = "res://data/wfc_tiles/";
+    // Path to semantic tile definitions
+    [Export] public string TileDefinitionsPath { get; set; } = "res://Assets/Tilesets/SemanticTiles/";
     
-    // Alternative: direct tile set assignment
-    [Export] public Worldgen.WfcTileSet CustomTileSet { get; set; }
+    // Alternative: direct semantic tile assignment
+    [Export] public Array<SemanticTile> CustomSemanticTiles { get; set; }
 
     public override void _Ready()
     {
         SetupViewport();
         SetupScreenMaterial();
-        LoadWfcTileSet();
+        LoadSemanticTiles();
     }
 
     public void Initialize(CardSignature mapSeed, List<CardSignature> abilities)
     {
-        ILog.Print("Initializing WorldTileMapScreen with WFC");
+        ILog.Print("Initializing WorldTileMapScreen with Semantic WFC");
         _mapSeed = mapSeed;
         _abilityDeck = abilities;
 
@@ -50,25 +51,61 @@ public partial class WorldTileMapScreen : Node3D
         SpawnPlayer();
     }
     
-    private void LoadWfcTileSet()
+    private void LoadSemanticTiles()
     {
-        // Use custom tile set if provided, otherwise load from directory
-        if (CustomTileSet != null)
+        // Use custom tiles if provided, otherwise load from directory
+        if (CustomSemanticTiles != null && CustomSemanticTiles.Count > 0)
         {
-            _wfcTileSet = CustomTileSet;
+            _semanticTiles = CustomSemanticTiles;
         }
         else if (!string.IsNullOrEmpty(TileDefinitionsPath))
         {
-            _wfcTileSet = WfcTileLoader.LoadFromDirectory(TileDefinitionsPath);
+            _semanticTiles = LoadSemanticTilesFromDirectory(TileDefinitionsPath);
         }
         
-        if (_wfcTileSet == null || _wfcTileSet.Tiles.Count == 0)
+        if (_semanticTiles == null || _semanticTiles.Count == 0)
         {
-            ILog.Error("Failed to load WFC tile set");
+            ILog.Error("Failed to load semantic tiles");
             return;
         }
         
-        ILog.Print($"Loaded WFC tile set with {_wfcTileSet.Tiles.Count} tiles");
+        ILog.Print($"Loaded {_semanticTiles.Count} semantic tiles");
+    }
+    
+    private Array<SemanticTile> LoadSemanticTilesFromDirectory(string path)
+    {
+        var tiles = new Array<SemanticTile>();
+        var dir = DirAccess.Open(path);
+        
+        if (dir == null)
+        {
+            ILog.Error($"Cannot open directory: {path}");
+            return tiles;
+        }
+        
+        dir.ListDirBegin();
+        string fileName = dir.GetNext();
+        
+        while (fileName != "")
+        {
+            if (fileName.EndsWith(".tres") && !dir.CurrentIsDir())
+            {
+                var tilePath = $"{path}/{fileName}";
+                var tile = GD.Load<SemanticTile>(tilePath);
+                
+                if (tile != null)
+                {
+                    tiles.Add(tile);
+                }
+                else
+                {
+                    ILog.Warning($"Failed to load semantic tile: {tilePath}");
+                }
+            }
+            fileName = dir.GetNext();
+        }
+        
+        return tiles;
     }
 
     private void SetupViewport()
@@ -110,17 +147,17 @@ public partial class WorldTileMapScreen : Node3D
 
     private void GenerateMap()
     {
-        if (_tileMap == null || _mapSeed == null || _wfcTileSet == null) 
+        if (_tileMap == null || _mapSeed == null || _semanticTiles == null || _semanticTiles.Count == 0) 
         {
             ILog.Error("Cannot generate map - missing required components");
             return;
         }
 
-        // Build the runtime TileSet from our WFC tile definitions
-        var godotTileSet = _wfcTileSet.BuildRuntimeTileSet();
+        // Build runtime TileSet from semantic tiles
+        var godotTileSet = BuildTileSetFromSemanticTiles();
         if (godotTileSet == null)
         {
-            ILog.Error("Failed to build runtime TileSet");
+            ILog.Error("Failed to build runtime TileSet from semantic tiles");
             return;
         }
         
@@ -133,44 +170,91 @@ public partial class WorldTileMapScreen : Node3D
         // Apply signature-based weight modifications to tiles
         ApplySignatureInfluence();
 
-        // Create WFC generator
+        // Create semantic WFC generator
         var seed = (uint)_mapSeed.GetHashCode();
-        _wfcGenerator = new WaveCollapseGenerator(_wfcTileSet.Tiles.ToList(), mapSize, seed);
+        _semanticGenerator = new SemanticWfcGenerator(_semanticTiles, mapSize, seed);
 
-        // Generate the map using WFC
-        var tileGrid = _wfcGenerator.Generate();
+        // Generate the map using semantic WFC
+        var tileGrid = _semanticGenerator.Generate();
         
         // Apply the generated tiles to the TileMapLayer
-        ApplyTilesToMap(tileGrid);
+        ApplySemanticTilesToMap(tileGrid);
 
         // Configure camera to frame the tilemap
         ConfigureCamera();
         
-        ILog.Print($"Generated {mapSize.X}x{mapSize.Y} map using WFC");
+        ILog.Print($"Generated {mapSize.X}x{mapSize.Y} map using Semantic WFC");
     }
+    private TileSet BuildTileSetFromSemanticTiles()
+    {
+        var tileSet = new TileSet();
+
+        // Create a single atlas source for now
+        var atlasSource = new TileSetAtlasSource();
+
+        // Instead of loading a hardcoded texture that doesn't exist,
+        // check if semantic tiles have texture information
+        if (_semanticTiles.Count > 0)
+        {
+            // Try to extract texture from first semantic tile if available
+            // For now, we'll create a minimal 1x1 white texture as fallback
+            var fallbackTexture = CreateFallbackTexture();
+            atlasSource.Texture = fallbackTexture;
+        
+            ILog.Warning("Using fallback texture for TileSet - semantic tile texture mapping not yet implemented");
+        }
+        else
+        {
+            ILog.Error("No semantic tiles available to build TileSet from");
+            return null;
+        }
+
+        tileSet.AddSource(atlasSource, 0);
+        return tileSet;
+    }
+
+    private ImageTexture CreateFallbackTexture()
+    {
+        // Create a minimal 32x32 white texture as fallback
+        var image = Image.CreateEmpty(32, 32, false, Image.Format.Rgb8);
+        image.Fill(Colors.White);
+    
+        var texture = new ImageTexture();
+        texture.SetImage(image);
+    
+        return texture;
+    }
+
     
     private void ApplySignatureInfluence()
     {
         if (_mapSeed == null || _abilityDeck == null) return;
-        
+    
         // Create combined signature from map seed and ability deck
         var combinedSignature = CalculateCombinedSignature();
-        
+    
         // Modify tile weights based on signature compatibility
-        foreach (var tile in _wfcTileSet.Tiles)
+        foreach (var tile in _semanticTiles)
         {
+            // Skip tiles without signatures - they remain at base weight
+            if (tile.Signature == null)
+            {
+                ILog.Warning($"Tile '{tile.TileName}' has no signature, skipping signature influence");
+                continue;
+            }
+        
             var compatibility = CalculateSignatureCompatibility(tile.Signature, combinedSignature);
-            
+        
             // Apply signature influence as a multiplier to base weight
             // Compatible signatures get boosted, incompatible ones get reduced
             var signatureMultiplier = Mathf.Lerp(0.1f, 2.0f, compatibility);
             tile.BaseWeight *= signatureMultiplier;
-            
+        
             // Ensure minimum weight to prevent tiles from becoming impossible
             tile.BaseWeight = Mathf.Max(tile.BaseWeight, 0.01f);
         }
-        
-        ILog.Print("Applied signature influence to tile weights");
+    
+        ILog.Print("Applied signature influence to semantic tile weights");
     }
     
     private CardSignature CalculateCombinedSignature()
@@ -192,48 +276,52 @@ public partial class WorldTileMapScreen : Node3D
         
         return combined;
     }
-    
     private static float CalculateSignatureCompatibility(CardSignature tileSignature, CardSignature targetSignature)
     {
+        // Handle null signatures - tiles without signatures have neutral compatibility
+        if (tileSignature == null || targetSignature == null)
+        {
+            return 0.5f; // Neutral compatibility for tiles without signatures
+        }
+    
         // Calculate how well the tile signature matches the target
         var distance = tileSignature.DistanceTo(targetSignature);
-        
+    
         // Convert distance to compatibility (0 = incompatible, 1 = perfect match)
         // Maximum possible distance in 8D space with values [-1,1] is sqrt(8*4) = sqrt(32)
         var maxDistance = Mathf.Sqrt(32);
         var compatibility = 1.0f - (distance / maxDistance);
-        
+    
         return Mathf.Clamp(compatibility, 0f, 1f);
     }
     
-    private void ApplyTilesToMap(int[,] tileGrid)
+    private void ApplySemanticTilesToMap(SemanticTile[,] tileGrid)
     {
         var height = tileGrid.GetLength(0);
         var width = tileGrid.GetLength(1);
-        
+    
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                var tileIndex = tileGrid[y, x];
-                
-                // Find the corresponding WFC tile
-                var wfcTile = _wfcTileSet.Tiles.FirstOrDefault(t => t.AtlasId == tileIndex);
-                
-                if (wfcTile != null)
+                var tile = tileGrid[y, x];
+            
+                if (tile != null)
                 {
-                    // Place tile using atlas coordinates
-                    _tileMap.SetCell(new Vector2I(x, y), 0, wfcTile.AtlasCoords);
+                    // Use a simple mapping system based on tile index
+                    var tileIndex = System.Array.IndexOf(_semanticTiles.ToArray(), tile);
+                    var atlasCoords = new Vector2I(tileIndex % 8, tileIndex / 8); // Arrange in 8x8 grid
+                
+                    _tileMap.SetCell(new Vector2I(x, y), 0, atlasCoords);
                 }
                 else
                 {
-                    // Fallback to first tile if mapping fails
+                    // Fallback to first tile
                     _tileMap.SetCell(new Vector2I(x, y), 0, Vector2I.Zero);
                 }
             }
         }
     }
-
     private static Vector2I GetMapSizeForRarity(CardRarity rarity)
     {
         var height = rarity switch
@@ -312,19 +400,14 @@ public partial class WorldTileMapScreen : Node3D
     public void SetTileDefinitionsPath(string newPath)
     {
         TileDefinitionsPath = newPath;
-        LoadWfcTileSet();
+        LoadSemanticTiles();
     }
     
-    public List<string> GetTileSetValidationIssues()
+    public System.Collections.Generic.Dictionary<string, float> GetTileWeights()
     {
-        return _wfcTileSet?.ValidateTileSet() ?? new List<string> { "No tile set loaded" };
-    }
-    
-    public Dictionary<string, float> GetTileWeights()
-    {
-        if (_wfcTileSet == null) return new Dictionary<string, float>();
+        if (_semanticTiles == null) return new System.Collections.Generic.Dictionary<string, float>();
         
-        return _wfcTileSet.Tiles.ToDictionary(
+        return _semanticTiles.ToDictionary(
             t => t.TileName ?? "unnamed", 
             t => t.BaseWeight
         );

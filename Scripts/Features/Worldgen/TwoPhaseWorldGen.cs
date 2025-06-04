@@ -36,38 +36,82 @@ public partial class TwoPhaseWorldGenerator : Node2D
             for (int x = 0; x < _semanticMap.GetLength(1); x++)
             {
                 var semanticTile = _semanticMap[y, x];
-                if (semanticTile?.BaseTexture != null)
-                {
-                    terrainLayer.SetCell(0, new Vector2I(x, y), 
-                        semanticTile.SourceId,
-                        semanticTile.BaseAtlasCoords);
-                }
+                if (semanticTile?.SpriteRegion == null)
+                    continue;
+                
+                // Use the first sprite region for base terrain
+                var baseSprite = semanticTile.SpriteRegion;
+                if (!(baseSprite?.Layers.Length > 0)) 
+                    continue;
+                
+                var tileRef = baseSprite.Layers[0];
+                terrainLayer.SetCell(0, new Vector2I(x, y), 
+                    tileRef.SourceId,
+                    tileRef.AtlasCoords);
             }
         }
     }
-    
     private void PlaceTilePatterns()
     {
         var rng = new RandomNumberGenerator();
-        
+    
         for (int y = 0; y < _semanticMap.GetLength(0); y++)
         {
             for (int x = 0; x < _semanticMap.GetLength(1); x++)
             {
                 if (_occupiedTiles[y, x]) continue;
-                
+            
                 var semanticTile = _semanticMap[y, x];
-                if (semanticTile?.SpawnPatterns == null) continue;
-                
-                foreach (var pattern in semanticTile.SpawnPatterns)
+                if (semanticTile?.SpawnPatterns == null || semanticTile.SpawnPatterns.Length == 0) continue;
+            
+                // First: Check if ANY pattern should spawn here
+                if (rng.Randf() > semanticTile.GlobalSpawnChance) continue;
+            
+                // Second: Weight-select which pattern to spawn
+                var selectedPattern = SelectPatternByWeight(semanticTile.SpawnPatterns, rng);
+                if (selectedPattern == null) continue;
+            
+                if (CanPlacePattern(new Vector2I(x, y), selectedPattern))
                 {
-                    if (rng.Randf() > pattern.SpawnChance) continue;
-                    
-                    if (CanPlacePattern(new Vector2I(x, y), pattern))
+                    PlacePattern(new Vector2I(x, y), selectedPattern);
+                    MarkTilesOccupiedSelective(new Vector2I(x, y), selectedPattern);
+                    break;
+                }
+            }
+        }
+    }
+
+    private TilePattern SelectPatternByWeight(TilePattern[] patterns, RandomNumberGenerator rng)
+    {
+        float totalWeight = patterns.Sum(p => p.Weight);
+        if (totalWeight <= 0) return null;
+    
+        float random = rng.Randf() * totalWeight;
+        float currentWeight = 0;
+    
+        foreach (var pattern in patterns)
+        {
+            currentWeight += pattern.Weight;
+            if (random <= currentWeight)
+                return pattern;
+        }
+    
+        return patterns[^1]; // Fallback to last pattern
+    }
+
+    private void MarkTilesOccupiedSelective(Vector2I position, TilePattern pattern)
+    {
+        for (int py = 0; py < pattern.Size.Y; py++)
+        {
+            for (int px = 0; px < pattern.Size.X; px++)
+            {
+                if (pattern.ShouldBlockAt(new Vector2I(px, py)))
+                {
+                    var markPos = position + new Vector2I(px, py);
+                    if (markPos.X < _occupiedTiles.GetLength(1) && 
+                        markPos.Y < _occupiedTiles.GetLength(0))
                     {
-                        PlacePattern(new Vector2I(x, y), pattern);
-                        MarkTilesOccupied(new Vector2I(x, y), pattern.Size);
-                        break; // Only one pattern per semantic tile
+                        _occupiedTiles[markPos.Y, markPos.X] = true;
                     }
                 }
             }
@@ -142,16 +186,4 @@ public partial class TwoPhaseWorldGenerator : Node2D
         }
     }
     
-    // Helper method to create common patterns
-    public static TilePattern CreateSimplePattern(string name, Vector2I size, TilePlacement[] tiles, TileLayer layer = TileLayer.Decoration)
-    {
-        return new TilePattern
-        {
-            PatternName = name,
-            Size = size,
-            Tiles = tiles,
-            Layer = layer,
-            SpawnChance = 0.3f
-        };
-    }
 }

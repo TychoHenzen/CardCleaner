@@ -8,6 +8,7 @@ namespace CardCleaner.Scripts.Features.Card.Components;
 public partial class CardShaderRenderer : Node, ICardComponent
 {
     private bool _baked;
+    private Core.Data.CardTemplate _pendingTemplate; // ADD: Store template as instance variable
 
     private Node _cardRoot;
 
@@ -31,26 +32,30 @@ public partial class CardShaderRenderer : Node, ICardComponent
     public void Bake(Core.Data.CardTemplate template)
     {
         if (_baked) return;
-        CallDeferred(nameof(DeferredBake), template);
+        _pendingTemplate = template; // CHG: Store template instead of passing through CallDeferred
+        CallDeferred(nameof(DeferredBake)); // CHG: Remove template parameter
         _baked = true;
     }
 
-    private void DeferredBake(Core.Data.CardTemplate template)
+    private void DeferredBake() // CHG: Remove parameter, use stored template
     {
         var box = GetParent().GetNodeOrNull<MeshInstance3D>("OuterBox_Baked");
         if (box == null)
         {
-            CallDeferred(nameof(DeferredBake), template);
+            // CHG: Use direct retry in next frame instead of recursive CallDeferred
+            CallDeferred(nameof(DeferredBake)); 
             return;
         }
 
-        var layers = template.GatherAllLayers();
+        var layers = _pendingTemplate.GatherAllLayers(); // CHG: Use stored template
         _materialManager.SetLayerTextures(layers);
         var material = _materialManager.ApplyMaterial(box);
 
         if (material == null) return;
         var blacklightController = _cardRoot.GetNodeOrNull<BlacklightController>("BlacklightController");
         blacklightController?.UpdateBlacklightEffect(material);
+        
+        _pendingTemplate = null; // ADD: Clear stored template when done
     }
 
     public virtual void SetGemEmission(int index, Color color, float strength)

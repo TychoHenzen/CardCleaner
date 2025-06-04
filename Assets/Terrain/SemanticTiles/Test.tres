@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="SemanticTile" load_steps=6 format=3 uid="uid://bar40msk1klug"]
+
+[ext_resource type="Script" uid="uid://chb1eie0w5etp" path="res://Scripts/Features/Worldgen/SemanticTile.cs" id="1_7xtna"]
+[ext_resource type="Script" uid="uid://ge6gvuoe7v5o" path="res://Scripts/Features/Worldgen/TilePlacement.cs" id="1_i7u4p"]
+[ext_resource type="Script" uid="uid://dg6bsa65td8dj" path="res://Scripts/Features/Worldgen/TilePattern.cs" id="2_bt565"]
+
+[sub_resource type="Resource" id="Resource_g8qs1"]
+script = ExtResource("1_i7u4p")
+SourceId = 0
+AtlasCoords = Vector2i(0, 0)
+BlocksMovement = false
+AnimationFrames = Array[Vector2i]([])
+AnimationSpeed = 1.0
+metadata/_custom_type_script = "uid://ge6gvuoe7v5o"
+
+[sub_resource type="Resource" id="Resource_3owue"]
+script = ExtResource("2_bt565")
+PatternName = ""
+SpawnChance = 0.3
+Size = Vector2i(1, 1)
+Layer = 1
+Tiles = [SubResource("Resource_g8qs1")]
+metadata/_custom_type_script = "uid://dg6bsa65td8dj"
+
+[resource]
+script = ExtResource("1_7xtna")
+TileName = ""
+Passability = 0
+BaseAtlasCoords = Vector2i(0, 0)
+SourceId = 0
+SpawnPatterns = [SubResource("Resource_3owue")]
+North = 0
+East = 0
+South = 0
+West = 0
+BaseWeight = 1.0
+metadata/_custom_type_script = "uid://chb1eie0w5etp"

@@ -12,11 +12,15 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
     private bool _baked;
     [Export] public bool BakeOnSetup = true;
     [Export] public bool DebugUVs;
-    [Export] public CardDesigner? Designer;
+    [Export] public CardDesigner? Designer { get; set; }
 
     public void Setup(Node cardRoot)
     {
         if (_baked || !BakeOnSetup) return;
+        if (Designer == null)
+        {
+            Designer = cardRoot.GetNodeOrNull<CardDesigner>("Designer");
+        }
         CallDeferred(nameof(PerformDeferredBake), cardRoot);
     }
 

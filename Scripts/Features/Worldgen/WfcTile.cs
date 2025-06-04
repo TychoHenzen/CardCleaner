@@ -16,6 +16,7 @@ public partial class WfcTile : Resource
     [Export] public string Description { get; set; } = "";
 
     // Graphics
+    [Export] public TileSet? TileSet { get; set; }
     [Export] public SpriteRegion[] SpriteRegion { get; set; }
     [Export] public float FrameDuration { get; set; } = 0.0f;
 

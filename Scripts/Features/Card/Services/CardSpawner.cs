@@ -68,11 +68,11 @@ public partial class CardSpawner : Node3D, ICardSpawner
     /// </summary>
     /// <param name="signature">The card signature to spawn</param>
     /// <param name="position">Optional world position, defaults to spawn parent position</param>
-    public Node3D SpawnSpecificCard(CardSignature signature, Vector3? position = null)
+    public Node3D? SpawnSpecificCard(CardSignature signature, Vector3? position = null)
     {
         if (_spawningService == null)
         {
-            return (Node3D)CallDeferred(nameof(SpawnSpecificCard),signature);
+            return null;
         }
 
         var spawnTransform = GlobalTransform;

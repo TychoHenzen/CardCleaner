@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Enum;
 using Godot;
 
@@ -11,8 +12,9 @@ namespace CardCleaner.Scripts.Features.Worldgen;
 public partial class WfcTileSet : Resource
 {
     [Export] public Godot.Collections.Array<WfcTile> Tiles { get; set; } = new();
+    [Export] public TileSet SourceTileSet { get; set; } // Add source tileset
     [Export] public Vector2I TileSize { get; set; } = new(64, 64);
-    [Export] public int AtlasSize { get; set; } = 1024; // Max atlas dimension
+    [Export] public int AtlasSize { get; set; } = 1024;
 
     // Runtime generated data
     public TileSet GeneratedTileSet { get; private set; }
@@ -101,6 +103,12 @@ public partial class WfcTileSet : Resource
 
     private Image CreateAtlasImage()
     {
+        if (SourceTileSet == null)
+        {
+            GD.PrintErr("WfcTileSet: No source TileSet configured");
+            return null;
+        }
+
         // Calculate total atlas entries needed
         int totalAtlasEntries = 0;
         foreach (var tile in Tiles)
@@ -138,18 +146,18 @@ public partial class WfcTileSet : Resource
                 for (int frame = 0; frame < tile.SpriteRegion.Length; frame++)
                 {
                     var spriteRegion = tile.SpriteRegion[frame];
-                    if (spriteRegion?.PreviewTexture == null)
+                    var compositeImage = CreateCompositeImage(spriteRegion);
+                    
+                    if (compositeImage == null)
                     {
-                        GD.PrintErr($"WfcTileSet: Tile {i} frame {frame} has no preview texture");
+                        GD.PrintErr($"WfcTileSet: Failed to create composite for tile {i} frame {frame}");
                         continue;
                     }
 
-                    var frameImage = spriteRegion.PreviewTexture.GetImage();
-
                     // Resize to tile size if necessary
-                    if (frameImage.GetSize() != TileSize)
+                    if (compositeImage.GetSize() != TileSize)
                     {
-                        frameImage.Resize(TileSize.X, TileSize.Y, Image.Interpolation.Nearest);
+                        compositeImage.Resize(TileSize.X, TileSize.Y, Image.Interpolation.Nearest);
                     }
 
                     // Calculate position in atlas
@@ -157,27 +165,27 @@ public partial class WfcTileSet : Resource
                     var atlasY = (atlasIndex / tilesPerRow) * TileSize.Y;
 
                     // Blit to atlas
-                    atlasImage.BlitRect(frameImage, new Rect2I(Vector2I.Zero, TileSize),
+                    atlasImage.BlitRect(compositeImage, new Rect2I(Vector2I.Zero, TileSize),
                         new Vector2I(atlasX, atlasY));
                     atlasIndex++;
                 }
             }
             else
             {
-                // Single frame for static tile (use first SpriteRegion)
+                // Single frame for static tile
                 var spriteRegion = tile.SpriteRegion[0];
-                if (spriteRegion?.PreviewTexture == null)
+                var compositeImage = CreateCompositeImage(spriteRegion);
+                
+                if (compositeImage == null)
                 {
-                    GD.PrintErr($"WfcTileSet: Tile {i} has no preview texture");
+                    GD.PrintErr($"WfcTileSet: Failed to create composite for tile {i}");
                     continue;
                 }
 
-                var spriteImage = spriteRegion.PreviewTexture.GetImage();
-
                 // Resize to tile size if necessary
-                if (spriteImage.GetSize() != TileSize)
+                if (compositeImage.GetSize() != TileSize)
                 {
-                    spriteImage.Resize(TileSize.X, TileSize.Y, Image.Interpolation.Nearest);
+                    compositeImage.Resize(TileSize.X, TileSize.Y, Image.Interpolation.Nearest);
                 }
 
                 // Calculate position in atlas
@@ -185,7 +193,7 @@ public partial class WfcTileSet : Resource
                 var atlasY = (atlasIndex / tilesPerRow) * TileSize.Y;
 
                 // Blit to atlas
-                atlasImage.BlitRect(spriteImage, new Rect2I(Vector2I.Zero, TileSize),
+                atlasImage.BlitRect(compositeImage, new Rect2I(Vector2I.Zero, TileSize),
                     new Vector2I(atlasX, atlasY));
                 atlasIndex++;
             }
@@ -193,6 +201,73 @@ public partial class WfcTileSet : Resource
 
         return atlasImage;
     }
+
+
+    private Image? CreateCompositeImage(SpriteRegion spriteRegion)
+    {
+        if (spriteRegion?.Layers == null || spriteRegion.Layers.Length == 0)
+            return null;
+
+        // Get base size from first valid tile
+        Vector2I baseSize = Vector2I.Zero;
+        foreach (var tileRef in spriteRegion.Layers)
+        {
+            var textureData = GetTextureRegion(tileRef);
+            if (textureData?.Texture != null)
+            {
+                baseSize = new Vector2I((int)textureData.Region.Size.X, (int)textureData.Region.Size.Y);
+                break;
+            }
+        }
+
+        if (baseSize.X <= 0 || baseSize.Y <= 0)
+            return null;
+
+        var compositeImage = Image.CreateEmpty(baseSize.X, baseSize.Y, false, Image.Format.Rgba8);
+        compositeImage.Fill(Colors.Transparent);
+
+        // Blend each tile reference in order
+        foreach (var tileRef in spriteRegion.Layers)
+        {
+            var textureData = GetTextureRegion(tileRef);
+            if (textureData?.Texture == null) continue;
+
+            var tileImage = textureData.Texture.GetImage();
+            if (tileImage == null) continue;
+
+            var regionRect = new Rect2I(
+                (int)textureData.Region.Position.X,
+                (int)textureData.Region.Position.Y,
+                (int)textureData.Region.Size.X,
+                (int)textureData.Region.Size.Y
+            );
+
+            if (regionRect.Size.X <= 0 || regionRect.Size.Y <= 0) continue;
+
+            var croppedTile = tileImage.GetRegion(regionRect);
+            if (croppedTile == null) continue;
+
+            croppedTile.Convert(Image.Format.Rgba8);
+            compositeImage.BlendRect(croppedTile, new Rect2I(Vector2I.Zero, croppedTile.GetSize()), Vector2I.Zero);
+        }
+
+        return compositeImage;
+    }
+
+    private LayerData? GetTextureRegion(TileReference tileRef)
+    {
+        var source = SourceTileSet?.GetSource(tileRef.SourceId);
+        if (source is not TileSetAtlasSource atlasSource)
+            return null;
+
+        var texture = atlasSource.Texture;
+        if (texture == null)
+            return null;
+
+        var region = atlasSource.GetTileTextureRegion(tileRef.AtlasCoords);
+        return new LayerData { Texture = texture, Region = region };
+    }
+
 
     private int GetTilesPerRow()
     {
@@ -218,8 +293,7 @@ public partial class WfcTileSet : Resource
 
         // Check for tiles without sprites
         var tilesWithoutSprites = Tiles.Where(t => t.SpriteRegion.Length == 0 ||
-                                                   t.SpriteRegion.Any(reg =>
-                                                       reg.TileSet == null)).ToList();
+                                                   t.TileSet == null).ToList();
         if (tilesWithoutSprites.Count != 0)
         {
             issues.Add($"{tilesWithoutSprites.Count} tiles missing sprite regions");

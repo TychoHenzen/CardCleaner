@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="WfcTile" load_steps=9 format=3 uid="uid://x4m4pnpscvmt"]
+
+[ext_resource type="Script" uid="uid://dfivx0g2ib815" path="res://Scripts/Features/Card/Models/CardSignature.cs" id="1_yghke"]
+[ext_resource type="Script" uid="uid://egcmko58j77h" path="res://Scripts/Core/Data/TileReference.cs" id="2_wuwpe"]
+[ext_resource type="Script" uid="uid://fdvjhheyuthc" path="res://Scripts/Features/Worldgen/SpriteRegion.cs" id="4_u0ese"]
+[ext_resource type="Script" uid="uid://dg2j5y6p16lgh" path="res://Scripts/Features/Worldgen/WfcTile.cs" id="5_ano00"]
+
+[sub_resource type="Resource" id="Resource_s08qa"]
+script = ExtResource("1_yghke")
+Solidum = 0.0
+Febris = 0.0
+Ordinem = 0.0
+Lumines = 0.0
+Varias = 0.0
+Inertiae = 0.0
+Subsidium = 0.0
+Spatium = 0.0
+metadata/_custom_type_script = "uid://dfivx0g2ib815"
+
+[sub_resource type="Resource" id="Resource_hp6pm"]
+script = ExtResource("2_wuwpe")
+SourceId = 39
+AtlasCoords = Vector2i(6, 0)
+metadata/_custom_type_script = "uid://egcmko58j77h"
+
+[sub_resource type="Resource" id="Resource_aa8ix"]
+script = ExtResource("2_wuwpe")
+SourceId = 5
+AtlasCoords = Vector2i(7, 27)
+metadata/_custom_type_script = "uid://egcmko58j77h"
+
+[sub_resource type="Resource" id="Resource_706ig"]
+script = ExtResource("4_u0ese")
+Layers = [SubResource("Resource_hp6pm"), SubResource("Resource_aa8ix")]
+metadata/_custom_type_script = "uid://fdvjhheyuthc"
+
+[resource]
+script = ExtResource("5_ano00")
+TileName = ""
+Description = ""
+SpriteRegion = [SubResource("Resource_706ig")]
+FrameDuration = 0.0
+Signature = SubResource("Resource_s08qa")
+North = 1
+East = 1
+South = 1
+West = 1
+Passability = 0
+BaseWeight = 1.0
+CanBeAtEdge = true
+CanBeAtCorner = true
+MinDistanceFromSameType = 0
+metadata/_custom_type_script = "uid://dg2j5y6p16lgh"
