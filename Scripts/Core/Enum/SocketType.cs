@@ -2,8 +2,12 @@
 
 public enum SocketType
 {
-    Grass,      // Green, natural
-    Stone,      // Rocky, hard
-    Water,      // Blue, fluid
-    Mixed       // Transition/border tiles
+    Any,
+    Desert,
+    Forest,
+    Grasslands,
+    Mountains,
+    Ruins,
+    Swamp
 }
+

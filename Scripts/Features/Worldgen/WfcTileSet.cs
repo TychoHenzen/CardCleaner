@@ -20,6 +20,7 @@ public partial class WfcTileSet : Resource
 
     private ImageTexture _atlasTexture;
     private TileSetAtlasSource _atlasSource;
+    
 
     public WfcTileSet()
     {
@@ -218,7 +219,7 @@ public partial class WfcTileSet : Resource
         // Check for tiles without sprites
         var tilesWithoutSprites = Tiles.Where(t => t.SpriteRegion.Length == 0 ||
                                                    t.SpriteRegion.Any(reg =>
-                                                       reg.Layers.Any(data => data.Texture == null))).ToList();
+                                                       reg.TileSet == null)).ToList();
         if (tilesWithoutSprites.Count != 0)
         {
             issues.Add($"{tilesWithoutSprites.Count} tiles missing sprite regions");
@@ -237,7 +238,7 @@ public partial class WfcTileSet : Resource
         var socketTypes = Enum.GetValues<SocketType>();
         issues.AddRange(socketTypes
             .Select(socketType => new { socketType, hasOutput = Tiles.Any(t => t.Sockets.Contains(socketType)) })
-            .Where(@t1 => !@t1.hasOutput && @t1.socketType != SocketType.Mixed)
+            .Where(@t1 => !t1.hasOutput && @t1.socketType != SocketType.Any)
             .Select(@t1 => $"No tiles have socket type: {@t1.socketType}"));
 
         return issues;

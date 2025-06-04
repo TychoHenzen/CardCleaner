@@ -12,6 +12,7 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
     private bool _baked;
     [Export] public bool BakeOnSetup = true;
     [Export] public bool DebugUVs;
+    [Export] public CardDesigner? Designer;
 
     public void Setup(Node cardRoot)
     {
@@ -28,8 +29,9 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
 
     private void BakeToMesh(Node cardRoot)
     {
-        var designer = cardRoot.GetNode<CardDesigner>("Designer");
-        var cacheKey = $"{designer.Width}x{designer.Height}x{designer.Thickness}";
+        if (Designer == null)
+            return;
+        var cacheKey = $"{Designer.Width}x{Designer.Height}x{Designer.Thickness}";
 
         if (!MeshCache.TryGetValue(cacheKey, out var cachedMesh))
         {
@@ -38,7 +40,7 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
             while (rootCsg.GetParent() is CsgShape3D parent) rootCsg = parent;
 
             var bakedMesh = rootCsg.BakeStaticMesh();
-            cachedMesh = RemapBoxUVs(bakedMesh, designer.Width, designer.Height);
+            cachedMesh = RemapBoxUVs(bakedMesh, Designer.Width, Designer.Height);
             MeshCache[cacheKey] = cachedMesh;
         }
 

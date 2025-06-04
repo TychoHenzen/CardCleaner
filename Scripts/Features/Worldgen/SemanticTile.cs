@@ -1,33 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using CardCleaner.Scripts.Core.Enum;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen;
 
-// WFC Tile as a Godot Resource
 [Tool]
 [GlobalClass]
-public partial class WfcTile : Resource
+public partial class SemanticTile : Resource
 {
     [Export] public string TileName { get; set; } = "";
-    [Export] public string Description { get; set; } = "";
-
-    // Graphics
-    [Export] public SpriteRegion[] SpriteRegion { get; set; }
-    [Export] public float FrameDuration { get; set; } = 0.0f;
-
-
-    // Signature for gameplay influence
-    [Export] public CardSignature Signature { get; set; }
-
-    // Sockets for WFC constraints (North, East, South, West)
-    [ExportCategory("Sockets")] [Export] public SocketType North { get; set; } = SocketType.Any;
-    [Export] public SocketType East { get; set; } = SocketType.Any;
+    [Export] public TilePassability Passability { get; set; } = TilePassability.Passable;
+    
+    // Base visual representation
+    [Export] public Texture2D BaseTexture { get; set; }
+    [Export] public Vector2I BaseAtlasCoords { get; set; }
+    [Export] public int SourceId { get; set; } = 0;
+    
+    // Tile pattern spawning rules (instead of scenes)
+    [Export] public TilePattern[] SpawnPatterns { get; set; } = Array.Empty<TilePattern>();
+    
+    // WFC constraint sockets
+    [Export] public SocketType North { get; set; } = SocketType.Any;
+    [Export] public SocketType East { get; set; } = SocketType.Any; 
     [Export] public SocketType South { get; set; } = SocketType.Any;
     [Export] public SocketType West { get; set; } = SocketType.Any;
+    
     public SocketType[] Sockets
     {
         get { return new[] { North, East, South, West }; }
@@ -39,27 +37,12 @@ public partial class WfcTile : Resource
             West = value[3];
         }
     }
-    [Export] public TilePassability Passability { get; set; } = TilePassability.Passable;
-
-
-    // Probability weighting
-    [Export] public float BaseWeight { get; set; } = 1.0f;
-
-    // Optional: specific placement rules
-    [Export] public bool CanBeAtEdge { get; set; } = true;
-    [Export] public bool CanBeAtCorner { get; set; } = true;
-    [Export] public int MinDistanceFromSameType { get; set; } = 0;
-
-    // Runtime properties (set during atlas generation)
-    public int AtlasId { get; set; } = -1;
-    public Vector2I AtlasCoords { get; set; }
     
-    public Vector2I[] AnimationFrames { get; set; } = System.Array.Empty<Vector2I>();
-    public bool IsAnimated => FrameDuration > 0.0f && SpriteRegion.Length > 1;
-
-
-    // Check if this tile can connect to another in a given direction
-    public bool CanConnectTo(WfcTile other, Direction direction)
+    [Export] public CardSignature Signature { get; set; }
+    [Export] public float BaseWeight { get; set; } = 1.0f;
+    
+    // WFC compatibility methods
+    public bool CanConnectTo(SemanticTile other, Direction direction)
     {
         if (other == null) return false;
 
@@ -72,13 +55,8 @@ public partial class WfcTile : Resource
 
     private static bool SocketsCompatible(SocketType socket1, SocketType socket2)
     {
-        // Same sockets always connect
         if (socket1 == socket2) return true;
-
-        // Mixed connects to everything
         if (socket1 == SocketType.Any || socket2 == SocketType.Any) return true;
-
-        // Add specific compatibility rules here
         return false;
     }
 
