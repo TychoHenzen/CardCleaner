@@ -67,7 +67,7 @@ public partial class DeckBuilderController : Node
 
         // Instantiate and initialize the 3D map screen
         if(mapSeed != null)
-            WorldTileMapScreenScene.Initialize(mapSeed, abilities);
+            WorldTileMapScreenScene.Initialize(mapSeed, abilities.ToArray());
 
         // Clear slots and disable button
         AbilityDeckSlot.Clear();

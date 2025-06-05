@@ -39,7 +39,6 @@ public class SemanticWfcGeneratorTest
             West = west,
             BaseWeight = weight,
             Passability = TilePassability.Passable,
-            SpriteRegion = new SpriteRegion(),
             Layer = TileLayer.Terrain
         };
         return tile;

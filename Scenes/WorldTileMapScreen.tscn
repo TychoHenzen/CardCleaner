@@ -1,10 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://cdss6ca0j5q5f"]
+[gd_scene load_steps=6 format=3 uid="uid://cdss6ca0j5q5f"]
 
 [ext_resource type="Script" uid="uid://bo6ioy4iawnq6" path="res://Scripts/Features/Deckbuilder/Models/WorldTileMapScreen.cs" id="1_q7ehv"]
 [ext_resource type="TileSet" uid="uid://brpid8vm4jt2e" path="res://Assets/Terrain/TileSets/Testing.tres" id="2_7gktn"]
-[ext_resource type="Resource" uid="uid://dtcirryli4bw4" path="res://Assets/Terrain/SemanticTiles/Terrain/Pure grasslands.tres" id="2_dwpdh"]
-[ext_resource type="Resource" uid="uid://ds18ftka66y34" path="res://Assets/Terrain/SemanticTiles/Terrain/Pure Forest.tres" id="3_c20vf"]
-[ext_resource type="Resource" uid="uid://bmsjq7ane5y1x" path="res://Assets/Terrain/SemanticTiles/Terrain/Pure Mountains.tres" id="4_2nnbp"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7gktn"]
 
@@ -14,12 +11,8 @@
 material = SubResource("StandardMaterial3D_n2gqn")
 size = Vector2(5.333, 3)
 
-[node name="WorldTileMapScreen" type="Node3D" node_paths=PackedStringArray("Viewport", "ScreenMesh")]
+[node name="WorldTileMapScreen" type="Node3D"]
 script = ExtResource("1_q7ehv")
-Viewport = NodePath("SubViewport")
-ScreenMesh = NodePath("CSGMesh3D")
-ScreenResolution = Vector2i(3840, 2160)
-CustomSemanticTiles = Array[Object]([ExtResource("2_dwpdh"), ExtResource("3_c20vf"), ExtResource("4_2nnbp")])
 
 [node name="CSGMesh3D" type="MeshInstance3D" parent="."]
 material_override = SubResource("StandardMaterial3D_7gktn")

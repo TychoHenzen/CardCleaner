@@ -3,7 +3,6 @@ using System.Linq;
 using CardCleaner.Scripts.Core.Enum;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Worldgen;
 using Godot;
 using Godot.Collections;
@@ -20,7 +19,14 @@ public partial class WorldTileMapScreen : Control
     [Export] public SpinBox? SeedInput { get; set; }
     [Export] public TextureRect? PreviewDisplay { get; set; }
     [Export] public Vector2I PreviewSize { get; set; } = new(15, 10);
+    [Export] public Vector2I RuntimeMapSize { get; set; } = new(100, 100);
     [Export] public int TileSize { get; set; } = 32;
+    
+    // Runtime TileMapLayer nodes for actual gameplay
+    [Export] public TileMapLayer? TerrainLayer { get; set; }
+    [Export] public TileMapLayer? StructureLayer { get; set; }
+    [Export] public TileMapLayer? DecorationLayer { get; set; }
+    [Export] public TileMapLayer? EffectLayer { get; set; }
     
     // Layer visibility toggles for preview
     [Export] public CheckBox? ShowTerrain { get; set; }
@@ -46,6 +52,46 @@ public partial class WorldTileMapScreen : Control
         if (ShowEffects != null) ShowEffects.ButtonPressed = true;
         
         GeneratePreview();
+    }
+
+    /// <summary>
+    /// Initialize the world map from deckbuilder cards - generates actual gameplay map
+    /// </summary>
+    public void Initialize(CardSignature mapSeed, CardSignature[] abilities)
+    {
+        if (SemanticTiles.Count == 0)
+        {
+            ILog.Error("No semantic tiles available for world generation");
+            return;
+        }
+
+        // Convert card signature to generation seed
+        uint generationSeed = GenerateSeedFromCard(mapSeed);
+        
+        // Apply abilities to modify generation parameters if needed
+        ModifyGenerationFromAbilities(abilities);
+        
+        // Generate the actual runtime map
+        _worldGenerator.Generate(generationSeed, TerrainLayer, StructureLayer, 
+            DecorationLayer, EffectLayer, RuntimeMapSize);
+        
+        ILog.Print($"Initialized world map from seed card '{mapSeed}' with {abilities.Length} abilities");
+    }
+    
+    private uint GenerateSeedFromCard(CardSignature mapSeed)
+    {
+        // Use card name hash as base seed for reproducible generation
+        return (uint)mapSeed.GetHashCode();
+    }
+    
+    private void ModifyGenerationFromAbilities(CardSignature[] abilities)
+    {
+        // TODO: Apply ability effects to modify tile weights, available tiles, etc.
+        // For now, just log the abilities being applied
+        foreach (var ability in abilities)
+        {
+            ILog.Print($"Applying ability: {ability}");
+        }
     }
     
     private void OnLayerVisibilityChanged(bool _)
@@ -200,14 +246,8 @@ public partial class WorldTileMapScreen : Control
         if (sourceImage == null) return null;
         
         var region = atlasSource.GetTileTextureRegion(tilePlacement.AtlasCoords);
-        var regionRect = new Rect2I(
-            (int)region.Position.X,
-            (int)region.Position.Y,
-            (int)region.Size.X,
-            (int)region.Size.Y
-        );
         
-        var tileImage = sourceImage.GetRegion(regionRect);
+        var tileImage = sourceImage.GetRegion(region);
         tileImage.Resize(TileSize, TileSize, Image.Interpolation.Nearest);
         
         return tileImage;
