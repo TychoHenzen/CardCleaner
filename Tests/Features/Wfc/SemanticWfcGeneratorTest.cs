@@ -40,7 +40,7 @@ public class SemanticWfcGeneratorTest
             BaseWeight = weight,
             Passability = TilePassability.Passable,
             SpriteRegion = new SpriteRegion(),
-            SpawnPatterns = Array.Empty<TilePattern>()
+            Layer = TileLayer.Terrain
         };
         return tile;
     }

@@ -17,7 +17,7 @@ public class SemanticWfcGenerator
     private List<SemanticTile>[][] _wave;
     private bool[][] _collapsed;
     
-    public SemanticWfcGenerator(Array<SemanticTile> tileSet, Vector2I mapSize, uint seed = 0)
+    public SemanticWfcGenerator(Array<SemanticTile> tileSet, Vector2I mapSize, ulong seed = 0)
     {
         _tileSet = tileSet;
         _mapSize = mapSize;
