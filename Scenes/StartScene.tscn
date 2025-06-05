@@ -1,10 +1,11 @@
-[gd_scene load_steps=36 format=3 uid="uid://cc3ymqg03a2g5"]
+[gd_scene load_steps=38 format=3 uid="uid://cc3ymqg03a2g5"]
 
 [ext_resource type="PackedScene" uid="uid://oqrxpyj8qkim" path="res://Scenes/CardShader.tscn" id="3_4bcsh"]
 [ext_resource type="Script" uid="uid://bo8luaias82fj" path="res://Scripts/Features/Card/Services/CardSpawner.cs" id="3_6nqof"]
 [ext_resource type="PackedScene" uid="uid://cdss6ca0j5q5f" path="res://Scenes/WorldTileMapScreen.tscn" id="3_k3dcv"]
 [ext_resource type="PackedScene" uid="uid://wv6a67swhus" path="res://Scenes/player.tscn" id="3_k8nbv"]
 [ext_resource type="PackedScene" uid="uid://5pktuq08ry2m" path="res://Scenes/CardSlot.tscn" id="4_dta7m"]
+[ext_resource type="Script" uid="uid://dfivx0g2ib815" path="res://Scripts/Features/Card/Models/CardSignature.cs" id="4_ihrxd"]
 [ext_resource type="PackedScene" uid="uid://7stut08s5ui3" path="res://Scenes/DeckSlot.tscn" id="4_sstrp"]
 [ext_resource type="Resource" uid="uid://c1pvj6bchej3" path="res://Assets/CardRarity/Common.tres" id="4_vkee2"]
 [ext_resource type="Resource" uid="uid://crj4wbejtk751" path="res://Assets/CardRarity/Uncommon.tres" id="5_otk7d"]
@@ -34,6 +35,17 @@
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t5ln1"]
 size = Vector3(40, 0.25415, 40)
+
+[sub_resource type="Resource" id="Resource_vmjlw"]
+script = ExtResource("4_ihrxd")
+Solidum = 0.0
+Febris = 0.0
+Ordinem = 0.0
+Lumines = 0.0
+Varias = 0.0
+Inertiae = 0.0
+Subsidium = 0.0
+Spatium = 0.0
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3xlss"]
 sky_top_color = Color(0.298438, 0.416512, 0.800947, 1)
@@ -76,6 +88,7 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 2, 0.4
 
 [node name="WorldTileMapScreen" parent="World" instance=ExtResource("3_k3dcv")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -2.20681, 2.96636, 7)
+Signature = SubResource("Resource_vmjlw")
 
 [node name="StaticBody3D4" parent="World" instance=ExtResource("9_dr1m3")]
 transform = Transform3D(1, 0, -1.06581e-14, 0, 1, 0, 1.06581e-14, 0, 1, 4, 0.458978, 4)

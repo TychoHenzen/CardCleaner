@@ -1,7 +1,24 @@
-[gd_scene load_steps=6 format=3 uid="uid://cdss6ca0j5q5f"]
+[gd_scene load_steps=13 format=3 uid="uid://cdss6ca0j5q5f"]
 
 [ext_resource type="Script" uid="uid://bo6ioy4iawnq6" path="res://Scripts/Features/Deckbuilder/Models/WorldTileMapScreen.cs" id="1_q7ehv"]
+[ext_resource type="Script" uid="uid://chb1eie0w5etp" path="res://Scripts/Features/Worldgen/SemanticTile.cs" id="2_2nnbp"]
 [ext_resource type="TileSet" uid="uid://brpid8vm4jt2e" path="res://Assets/Terrain/TileSets/Testing.tres" id="2_7gktn"]
+[ext_resource type="Resource" uid="uid://dtcirryli4bw4" path="res://Assets/Terrain/SemanticTiles/Terrain/Pure grasslands.tres" id="2_dwpdh"]
+[ext_resource type="Resource" uid="uid://ds18ftka66y34" path="res://Assets/Terrain/SemanticTiles/Terrain/Pure Forest.tres" id="3_c20vf"]
+[ext_resource type="Resource" uid="uid://bmsjq7ane5y1x" path="res://Assets/Terrain/SemanticTiles/Terrain/Pure Mountains.tres" id="4_2nnbp"]
+[ext_resource type="Script" uid="uid://dfivx0g2ib815" path="res://Scripts/Features/Card/Models/CardSignature.cs" id="6_1jn4e"]
+[ext_resource type="Resource" uid="uid://b124bh1y6w4cb" path="res://Assets/Terrain/SemanticTiles/Structure/GlowingStone.tres" id="6_71kd0"]
+
+[sub_resource type="Resource" id="Resource_71kd0"]
+script = ExtResource("6_1jn4e")
+Solidum = 1.0
+Febris = 0.0
+Ordinem = 0.0
+Lumines = 0.0
+Varias = 0.0
+Inertiae = 0.0
+Subsidium = 0.0
+Spatium = 0.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7gktn"]
 
@@ -11,8 +28,21 @@
 material = SubResource("StandardMaterial3D_n2gqn")
 size = Vector2(5.333, 3)
 
-[node name="WorldTileMapScreen" type="Node3D"]
+[node name="WorldTileMapScreen" type="Node3D" node_paths=PackedStringArray("TerrainLayer", "StructureLayer", "DecorationLayer", "EffectLayer", "Viewport", "ScreenMesh")]
 script = ExtResource("1_q7ehv")
+SemanticTiles = Array[ExtResource("2_2nnbp")]([ExtResource("3_c20vf"), ExtResource("2_dwpdh"), ExtResource("4_2nnbp"), ExtResource("6_71kd0")])
+TileSize = 16
+TerrainLayer = NodePath("SubViewport/TerrainLayer")
+StructureLayer = NodePath("SubViewport/StructureLayer")
+DecorationLayer = NodePath("SubViewport/DecorationLayer")
+EffectLayer = NodePath("SubViewport/EffectLayer")
+Viewport = NodePath("SubViewport")
+ScreenMesh = NodePath("CSGMesh3D")
+PreviewSize = Vector2i(30, 10)
+Seeded = false
+ShowDecoration = false
+ShowEffects = false
+Signature = SubResource("Resource_71kd0")
 
 [node name="CSGMesh3D" type="MeshInstance3D" parent="."]
 material_override = SubResource("StandardMaterial3D_7gktn")
@@ -22,7 +52,16 @@ mesh = SubResource("QuadMesh_q7ehv")
 size = Vector2i(2048, 2048)
 render_target_update_mode = 4
 
-[node name="TileMapLayer" type="TileMapLayer" parent="SubViewport"]
+[node name="TerrainLayer" type="TileMapLayer" parent="SubViewport"]
+tile_set = ExtResource("2_7gktn")
+
+[node name="StructureLayer" type="TileMapLayer" parent="SubViewport"]
+tile_set = ExtResource("2_7gktn")
+
+[node name="DecorationLayer" type="TileMapLayer" parent="SubViewport"]
+tile_set = ExtResource("2_7gktn")
+
+[node name="EffectLayer" type="TileMapLayer" parent="SubViewport"]
 tile_set = ExtResource("2_7gktn")
 
 [node name="PlayerAgent" type="Node2D" parent="SubViewport"]

@@ -1,5 +1,6 @@
 ﻿using System;
 using CardCleaner.Scripts.Core.DependencyInjection;
+using Godot;
 
 namespace CardCleaner.Scripts.Core.Interfaces;
 
@@ -18,7 +19,7 @@ public interface ILog
         }
         else
         {
-            ServiceLocator.Get<ILog>(log => log.LogMessage(message));
+            GD.Print(message);
         }
     }
     public static void Warning(string message)
@@ -29,7 +30,7 @@ public interface ILog
         }
         else
         {
-            ServiceLocator.Get<ILog>(log => log.LogWarning(message));
+            GD.PushWarning(message);
         }
     }
     public static void Error(string message)
@@ -40,7 +41,7 @@ public interface ILog
         }
         else
         {
-            ServiceLocator.Get<ILog>(log => log.LogError(message));
+            GD.PushError(message);
         }
     }
 }

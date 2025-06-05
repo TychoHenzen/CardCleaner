@@ -112,6 +112,6 @@ public partial class ServiceLocator : Node
 
     public static bool Has<T>() where T : class
     {
-        return Container.IsRegistered<T>();
+        return _instance != null && Container.IsRegistered<T>();
     }
 }

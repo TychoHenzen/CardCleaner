@@ -47,7 +47,7 @@ public partial class LayeredWorldGenerator
         }
     }
     
-    public void Generate(uint seed, TileMapLayer? terrainLayer, TileMapLayer? structureLayer, 
+    public void Generate(ulong seed, TileMapLayer? terrainLayer, TileMapLayer? structureLayer, 
         TileMapLayer? decorationLayer, TileMapLayer? effectLayer, Vector2I mapSize)
     {
         _rng.Seed = seed;
