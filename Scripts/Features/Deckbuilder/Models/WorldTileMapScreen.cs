@@ -4,6 +4,7 @@ using System.Linq;
 using CardCleaner.Scripts.Core.Enum;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Worldgen;
 using Godot;
 using Godot.Collections;
@@ -18,7 +19,6 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 public partial class WorldTileMapScreen : Node3D
 {
     [Export] public Array<SemanticTile> SemanticTiles { get; set; } = new();
-    [Export] public Vector2I MapSize { get; set; } = new(100, 100);
     [Export] public int TileSize { get; set; } = 32;
 
     // Runtime TileMapLayer nodes for actual gameplay
@@ -86,8 +86,11 @@ public partial class WorldTileMapScreen : Node3D
             ILog.Error("SubViewport not assigned to WorldTileMapScreen");
             return;
         }
+        // Calculate map size based on card rarity
+        var rarity = SignatureCardHelper.DetermineRarity(mapSeed);
+        var calculatedMapSize = GetMapSizeForRarity(rarity);
 
-        SetupViewport();
+        SetupViewport(calculatedMapSize);
         SetupScreenMaterial();
 
         // Convert card signature to generation seed
@@ -123,7 +126,7 @@ public partial class WorldTileMapScreen : Node3D
         // Generate using the existing layer system
         EnsureWorldGeneratorInitialized();
         _worldGenerator.Generate(generationSeed, TerrainLayer, StructureLayer, 
-            DecorationLayer, EffectLayer, MapSize);
+            DecorationLayer, EffectLayer, calculatedMapSize);
 
         // Configure camera to frame the tilemap
         ConfigureCamera();
@@ -131,12 +134,12 @@ public partial class WorldTileMapScreen : Node3D
         ILog.Print($"Initialized world map from seed card '{mapSeed}' with {abilities.Length} abilities");
     }
 
-private void SetupViewport()
+private void SetupViewport(Vector2I mapSize)
 {
     if (Viewport == null) return;
 
     // Configure viewport for 2D-only rendering
-    Viewport.Size = new Vector2I(512, 512);
+    Viewport.Size = mapSize*TileSize;
     Viewport.RenderTargetUpdateMode = SubViewport.UpdateMode.WhenParentVisible;
     Viewport.Disable3D = true;
 
@@ -172,16 +175,23 @@ private void ConfigureCamera()
 
     var centerTile = usedRect.GetCenter();
     var worldCenter = TerrainLayer.MapToLocal(new Vector2I(centerTile.X, centerTile.Y));
+    if (TerrainLayer.TileSet.GetSource(0) is not TileSetAtlasSource atlasSource)
+    {
+        ILog.Error("TileSet must use AtlasSource");
+        return;
+    }
+    var tileSize = atlasSource.TextureRegionSize;
+    worldCenter -= new Vector2(tileSize.X / 2f, tileSize.Y / 2f);
     
     _camera2D.GlobalPosition = worldCenter;
     
     // Calculate zoom to fit the entire tilemap
     var mapPixelSize = new Vector2(usedRect.Size.X * TileSize, usedRect.Size.Y * TileSize); // Assuming 32px tiles
-    var viewportSize = new Vector2(512, 512);
+    var viewportSize = Viewport.Size;
     
     var zoomX = viewportSize.X / mapPixelSize.X;
     var zoomY = viewportSize.Y / mapPixelSize.Y;
-    var zoom = Mathf.Min(zoomX, zoomY) * 0.9f; // 0.9f for padding
+    var zoom = Mathf.Min(zoomX, zoomY); // 0.9f for padding
     
     _camera2D.Zoom = new Vector2(zoom, zoom);
 }
@@ -447,4 +457,22 @@ private void ConfigureCamera()
         ILog.Warning($"Using fallback tile: {debugText}");
         return fallbackImage;
     }
+    private static Vector2I GetMapSizeForRarity(CardRarity rarity)
+    {
+        var height = rarity switch
+        {
+            CardRarity.Common => 16,
+            CardRarity.Uncommon => 32,
+            CardRarity.Rare => 64,
+            CardRarity.Epic => 128,
+            CardRarity.Legendary => 256,
+            _ => 16 // fallback to common size
+        };
+
+        // Calculate width using 16:9 aspect ratio
+        var width = Mathf.RoundToInt(height * 16f / 9f);
+
+        return new Vector2I(width, height);
+    }
+
 }

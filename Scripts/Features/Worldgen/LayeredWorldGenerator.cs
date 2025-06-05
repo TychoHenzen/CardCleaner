@@ -163,25 +163,30 @@ public partial class LayeredWorldGenerator
     private List<SemanticTile> GetCompatibleTiles(SemanticTile baseTile, List<SemanticTile> candidateTiles)
     {
         var compatible = new List<SemanticTile>();
-        
+
+        // Check if any socket on the base tile is "Selected"
+        if ((baseTile.Up & SocketType.Selected) != 0)
+        {
+            // If any socket has Selected flag, only the StackedTile is eligible
+            if (baseTile.StackedTile != null)
+            {
+                compatible.Add(baseTile.StackedTile);
+            }
+            return compatible;
+        }
+
+        // Normal compatibility checking for non-Selected sockets
         foreach (var candidate in candidateTiles)
         {
-            if (SocketsCompatible(baseTile.Up, candidate.Down))
+            if (SemanticTile.SocketsCompatible(baseTile.Up, candidate.Down))
             {
                 compatible.Add(candidate);
             }
         }
-        
+
         return compatible;
     }
-    
-    private static bool SocketsCompatible(SocketType socket1, SocketType socket2)
-    {
-        if (socket1 == socket2) return true;
-        if (socket1 == SocketType.Any || socket2 == SocketType.Any) return true;
-        return false;
-    }
-    
+
     private SemanticTile? SelectTileByWeight(List<SemanticTile> tiles, RandomNumberGenerator rng)
     {
         if (tiles.Count == 0) return null;

@@ -6,8 +6,8 @@
 
 [sub_resource type="Resource" id="Resource_h0qkv"]
 script = ExtResource("2_btn05")
-SourceId = 49
-AtlasCoords = Vector2i(1, 2)
+SourceId = 51
+AtlasCoords = Vector2i(9, 21)
 BlocksMovement = false
 BlocksTiles = false
 AnimationFrames = Array[Vector2i]([])
@@ -24,10 +24,14 @@ Tiles = [SubResource("Resource_h0qkv")]
 GlobalSpawnChance = 0.3
 Layer = 0
 BaseWeight = 1.0
-North = 3
-East = 3
-South = 3
-West = 3
-Down = 3
-Up = 3
+North = 32
+East = 32
+South = 32
+West = 32
+NorthEast = 1
+SouthEast = 1
+SouthWest = 1
+NorthWest = 1
+Down = 33
+Up = 33
 metadata/_custom_type_script = "uid://chb1eie0w5etp"
