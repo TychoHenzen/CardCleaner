@@ -17,17 +17,11 @@ public class InputServiceTest
     public void Setup()
     {
         _service = new InputService();
+        Assertions.AddNode(_service);
         _actionTriggered = false;
         _mouseActionPressed = false;
         _actionCallCount = 0;
     }
-
-    [AfterTest]
-    public void Cleanup()
-    {
-        _service.QueueFree();
-    }
-
     [TestCase]
     public void TestRegisterKeyAction()
     {
