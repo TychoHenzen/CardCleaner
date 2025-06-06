@@ -15,12 +15,14 @@
         <Folder Include="Scripts\Utilities\"/>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="gdUnit4.analyzers" Version="1.0.0-rc3">
+        <PackageReference Include="gdUnit4.analyzers" Version="1.0.0-rc7">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-        <PackageReference Include="gdUnit4.api" Version="4.3.1" />
-        <PackageReference Include="gdUnit4.test.adapter" Version="2.0.0" />
+        <PackageReference Include="gdUnit4.api" Version="5.0.0-rc2" />
+        <PackageReference Include="gdUnit4.test.adapter" Version="3.0.0-rc1" />
+        <PackageReference Update="GodotSharp" Version="4.5.0-dev.5" />
+        <PackageReference Update="Godot.SourceGenerators" Version="4.5.0-dev.5" />
     </ItemGroup>
 </Project>

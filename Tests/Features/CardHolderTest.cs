@@ -1,271 +1,424 @@
 ﻿using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Card.Controllers;
 using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features;
 
-// Mock implementations for testing
-
+/// <summary>
+/// Tests for CardHolder component focusing on card management and positioning behavior.
+/// </summary>
 [TestSuite]
+[RequireGodotRuntime]
 public class CardHolderTest
 {
-    private CardHolder _holder = null!;
+    private CardHolder _systemUnderTest = null!;
     private Node3D _handAnchor = null!;
-    private RigidBody3D _testCard = null!;
-    private CollisionShape3D _testCollision = null!;
     private Mocking.MockCardSpawner _mockSpawner = null!;
-    private int _cardAddedCount;
-    private int _cardRemovedCount;
+    
+    // Test state tracking
+    private int _cardAddedEventCount;
+    private int _cardRemovedEventCount;
+    private RigidBody3D? _lastCardAdded;
+    private RigidBody3D? _lastCardRemoved;
+
+    [Before]
+    public void SetupTestSuite()
+    {
+        // Setup service container once for all tests
+        ServiceLocator.ResetForTesting();
+    }
 
     [BeforeTest]
-    public void Setup()
+    public void SetupEachTest()
     {
-        // Set up service container with mock spawner
-        _mockSpawner = new Mocking.MockCardSpawner();
-        _mockSpawner.Name = "MockSpawner";
-        Assertions.AddNode(_mockSpawner);
+        // Arrange - Create and configure system dependencies
+        _mockSpawner = CreateMockSpawner();
         ServiceLocator.Container.RegisterSingleton<ICardSpawner>(_mockSpawner);
 
-        // Create holder
-        _holder = new CardHolder();
-        _holder.HoldDistance = 2.0f;
-        Assertions.AddNode(_holder);
-
-        // Create hand anchor and add to scene tree
-        _handAnchor = new Node3D();
-        _handAnchor.Name = "HandAnchor";
-        Assertions.AddNode(_handAnchor);
-        _holder.SetReferences(_handAnchor);
-
-        // Create test card and add to scene tree
-        _testCard = CreateTestCard("Card");
-
-        // Connect signals for testing
-        _holder.CardAdded += OnCardAdded;
-        _holder.CardRemoved += OnCardRemoved;
-
-        _cardAddedCount = 0;
-        _cardRemovedCount = 0;
+        _handAnchor = CreateHandAnchor();
+        _systemUnderTest = CreateCardHolder();
+        
+        // Reset event tracking
+        ResetEventTracking();
+        ConnectToCardHolderEvents();
     }
 
     [AfterTest]
-    public void TearDown()
+    public void CleanupEachTest()
     {
         ServiceLocator.ResetForTesting();
     }
 
-    private void OnCardAdded(RigidBody3D card)
+    #region Initial State Tests
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CardHolder_InitialState_HasNoCards()
     {
-        _cardAddedCount++;
+        // Arrange - System is already set up in BeforeTest
+        
+        // Act - No action needed for initial state test
+        
+        // Assert - Verify initial empty state
+        Assertions.AssertInt(_systemUnderTest.HeldCount).IsEqual(0);
+        Assertions.AssertBool(_systemUnderTest.HasCards).IsFalse();
+        Assertions.AssertThat(_systemUnderTest.HeldCards).IsEmpty();
     }
 
-    private void OnCardRemoved(RigidBody3D card)
+    #endregion
+
+    #region Add Card Tests
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AddCard_ValidCard_CardIsAddedSuccessfully()
     {
-        _cardRemovedCount++;
+        // Arrange
+        var testCard = CreateTestCard("TestCard");
+
+        // Act
+        _systemUnderTest.AddCard(testCard);
+
+        // Assert
+        Assertions.AssertInt(_systemUnderTest.HeldCount).IsEqual(1);
+        Assertions.AssertBool(_systemUnderTest.HasCards).IsTrue();
+        Assertions.AssertThat(_systemUnderTest.HeldCards).Contains(testCard);
+        Assertions.AssertInt(_cardAddedEventCount).IsEqual(1);
+        Assertions.AssertThat(_lastCardAdded).IsEqual(testCard);
     }
 
-    private RigidBody3D CreateTestCard(string name)
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AddCard_ValidCard_CardPhysicsDisabled()
     {
-        var card = new RigidBody3D();
-        card.Name = name;
+        // Arrange
+        var testCard = CreateTestCard("TestCard");
+        var collision = testCard.GetNode<CollisionShape3D>("CardCollision");
 
-        _testCollision = new CollisionShape3D();
-        _testCollision.Name = "CardCollision";
-        _testCollision.Shape = new BoxShape3D();
-        card.AddChild(_testCollision);
+        // Act
+        _systemUnderTest.AddCard(testCard);
 
-        var designer1 = new CardDesigner();
-        designer1.Name = "Designer";
-        card.AddChild(designer1);
+        // Assert - Verify card physics are properly disabled
+        Assertions.AssertBool(testCard.Freeze).IsTrue();
+        Assertions.AssertBool(collision.Disabled).IsTrue();
+    }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AddCard_ValidCard_CardReparentedToHandAnchor()
+    {
+        // Arrange
+        var testCard = CreateTestCard("TestCard");
+
+        // Act
+        _systemUnderTest.AddCard(testCard);
+
+        // Assert
+        Assertions.AssertThat(testCard.GetParent()).IsEqual(_handAnchor);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AddCard_DuplicateCard_CardNotAddedTwice()
+    {
+        // Arrange
+        var testCard = CreateTestCard("TestCard");
+        _systemUnderTest.AddCard(testCard);
+        ResetEventTracking();
+
+        // Act
+        _systemUnderTest.AddCard(testCard); // Attempt to add same card again
+
+        // Assert
+        Assertions.AssertInt(_systemUnderTest.HeldCount).IsEqual(1);
+        Assertions.AssertInt(_cardAddedEventCount).IsEqual(0); // No additional event
+    }
+
+    #endregion
+
+    #region Remove Card Tests
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RemoveCard_ExistingCard_CardRemovedSuccessfully()
+    {
+        // Arrange
+        var testCard = CreateTestCard("TestCard");
+        _systemUnderTest.AddCard(testCard);
+        ResetEventTracking();
+
+        // Act
+        _systemUnderTest.RemoveCard(testCard);
+
+        // Assert
+        Assertions.AssertInt(_systemUnderTest.HeldCount).IsEqual(0);
+        Assertions.AssertBool(_systemUnderTest.HasCards).IsFalse();
+        Assertions.AssertInt(_cardRemovedEventCount).IsEqual(1);
+        Assertions.AssertThat(_lastCardRemoved).IsEqual(testCard);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RemoveCard_ExistingCard_CardReparentedToSpawner()
+    {
+        // Arrange
+        var testCard = CreateTestCard("TestCard");
+        _systemUnderTest.AddCard(testCard);
+
+        // Act
+        _systemUnderTest.RemoveCard(testCard);
+
+        // Assert
+        Assertions.AssertThat(testCard.GetParent()).IsEqual(_mockSpawner);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RemoveCard_NonExistentCard_NoChangeToHolder()
+    {
+        // Arrange
+        var cardInHolder = CreateTestCard("CardInHolder");
+        var cardNotInHolder = CreateTestCard("CardNotInHolder");
+        _systemUnderTest.AddCard(cardInHolder);
+        ResetEventTracking();
+
+        // Act
+        _systemUnderTest.RemoveCard(cardNotInHolder);
+
+        // Assert
+        Assertions.AssertInt(_systemUnderTest.HeldCount).IsEqual(1);
+        Assertions.AssertInt(_cardRemovedEventCount).IsEqual(0);
+    }
+
+    #endregion
+
+    #region Remove Top Card Tests
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RemoveTopCard_MultipleCards_RemovesLastAddedCard()
+    {
+        // Arrange
+        var firstCard = CreateTestCard("FirstCard");
+        var secondCard = CreateTestCard("SecondCard");
+        _systemUnderTest.AddCard(firstCard);
+        _systemUnderTest.AddCard(secondCard);
+
+        // Act
+        _systemUnderTest.RemoveTopCard();
+
+        // Assert
+        Assertions.AssertInt(_systemUnderTest.HeldCount).IsEqual(1);
+        Assertions.AssertThat(_systemUnderTest.HeldCards).Contains(firstCard);
+        Assertions.AssertThat(_systemUnderTest.HeldCards).NotContains(secondCard);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RemoveTopCard_EmptyHolder_NoErrorThrown()
+    {
+        // Arrange - Holder is already empty from BeforeTest
+
+        // Act & Assert - Should not throw
+        _systemUnderTest.RemoveTopCard();
+        
+        Assertions.AssertInt(_systemUnderTest.HeldCount).IsEqual(0);
+        Assertions.AssertInt(_cardRemovedEventCount).IsEqual(0);
+    }
+
+    #endregion
+
+    #region Remove All Cards Tests
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RemoveAllCards_MultipleCards_AllCardsRemoved()
+    {
+        // Arrange
+        var cards = CreateMultipleTestCards(3);
+        foreach (var card in cards)
+        {
+            _systemUnderTest.AddCard(card);
+        }
+        ResetEventTracking();
+
+        // Act
+        _systemUnderTest.RemoveAllCards();
+
+        // Assert
+        Assertions.AssertInt(_systemUnderTest.HeldCount).IsEqual(0);
+        Assertions.AssertBool(_systemUnderTest.HasCards).IsFalse();
+        Assertions.AssertInt(_cardRemovedEventCount).IsEqual(3);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RemoveAllCards_EmptyHolder_NoErrorThrown()
+    {
+        // Arrange - Holder is already empty
+
+        // Act & Assert - Should not throw
+        _systemUnderTest.RemoveAllCards();
+        
+        Assertions.AssertInt(_cardRemovedEventCount).IsEqual(0);
+    }
+
+    #endregion
+
+    #region Card Positioning Tests
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void PositionCards_MultipleCards_CardsSeparatedByThickness()
+    {
+        // Arrange
+        var firstCard = CreateTestCard("FirstCard");
+        var secondCard = CreateTestCard("SecondCard");
+        _systemUnderTest.AddCard(firstCard);
+        _systemUnderTest.AddCard(secondCard);
+
+        // Act
+        _systemUnderTest.PositionCards();
+
+        // Assert - Cards should be positioned at different Z offsets
+        var firstPosition = firstCard.Transform.Origin;
+        var secondPosition = secondCard.Transform.Origin;
+        Assertions.AssertFloat(firstPosition.Z).IsNotEqual(secondPosition.Z);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void PositionCardsForDrop_WithHandAnchorTransform_CardsPositionedRelativeToAnchor()
+    {
+        // Arrange
+        var testCard = CreateTestCard("TestCard");
+        var expectedAnchorPosition = new Vector3(0, 5, 0);
+        _handAnchor.GlobalTransform = new Transform3D(Basis.Identity, expectedAnchorPosition);
+        _systemUnderTest.AddCard(testCard);
+
+        // Act
+        _systemUnderTest.PositionCardsForDrop();
+
+        // Assert
+        var cardPosition = testCard.GlobalTransform.Origin;
+        Assertions.AssertFloat(cardPosition.Y).IsEqual(expectedAnchorPosition.Y);
+    }
+
+    #endregion
+
+    #region Card Order Tests
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AddCard_MultipleCards_MaintainsAdditionOrder()
+    {
+        // Arrange
+        var cards = CreateMultipleTestCards(3);
+
+        // Act
+        foreach (var card in cards)
+        {
+            _systemUnderTest.AddCard(card);
+        }
+
+        // Assert
+        var heldCards = _systemUnderTest.HeldCards;
+        for (int i = 0; i < cards.Length; i++)
+        {
+            Assertions.AssertThat(heldCards[i]).IsEqual(cards[i]);
+        }
+    }
+
+    #endregion
+
+    #region Test Data Builders and Helpers
+
+    private CardHolder CreateCardHolder()
+    {
+        var holder = new CardHolder
+        {
+            HoldDistance = 2.0f,
+            CardCollisionLayer = 2
+        };
+        Assertions.AddNode(holder);
+        holder.SetReferences(_handAnchor);
+        return holder;
+    }
+
+    private Node3D CreateHandAnchor()
+    {
+        var anchor = new Node3D { Name = "HandAnchor" };
+        Assertions.AddNode(anchor);
+        return anchor;
+    }
+
+    private Mocking.MockCardSpawner CreateMockSpawner()
+    {
+        var spawner = new Mocking.MockCardSpawner { Name = "MockSpawner" };
+        Assertions.AddNode(spawner);
+        return spawner;
+    }
+
+    private RigidBody3D CreateTestCard(string cardName)
+    {
+        var card = new RigidBody3D { Name = cardName };
+
+        var collision = new CollisionShape3D
+        {
+            Name = "CardCollision",
+            Shape = new BoxShape3D()
+        };
+        card.AddChild(collision);
+
+        var designer = new CardDesigner { Name = "Designer" };
+        card.AddChild(designer);
+
+        // Add CardController for pickup signal testing
+        var controller = new CardController();
+        card.AddChild(controller);
 
         Assertions.AddNode(card);
         return card;
     }
 
-    [TestCase]
-    public void TestInitialState()
+    private RigidBody3D[] CreateMultipleTestCards(int count)
     {
-        Assertions.AssertThat(_holder.HeldCount).IsEqual(0);
-        Assertions.AssertBool(_holder.HasCards).IsFalse();
+        var cards = new RigidBody3D[count];
+        for (int i = 0; i < count; i++)
+        {
+            cards[i] = CreateTestCard($"Card{i + 1}");
+        }
+        return cards;
     }
 
-    [TestCase]
-    public void TestAddCard()
+    private void ConnectToCardHolderEvents()
     {
-        _holder.AddCard(_testCard);
-
-        Assertions.AssertThat(_holder.HeldCount).IsEqual(1);
-        Assertions.AssertBool(_holder.HasCards).IsTrue();
-        Assertions.AssertThat(_holder.HeldCards).Contains(_testCard);
-        Assertions.AssertThat(_cardAddedCount).IsEqual(1);
-
-        // Card should be frozen and collision disabled
-        Assertions.AssertBool(_testCard.Freeze).IsTrue();
-        Assertions.AssertBool(_testCollision is { Disabled: true }).IsTrue();
-
-        // Card should be reparented to hand anchor
-        Assertions.AssertThat(_testCard.GetParent()).IsEqual(_handAnchor);
+        _systemUnderTest.CardAdded += OnCardAdded;
+        _systemUnderTest.CardRemoved += OnCardRemoved;
     }
 
-    [TestCase]
-    public void TestAddDuplicateCard()
+    private void ResetEventTracking()
     {
-        _holder.AddCard(_testCard);
-        _holder.AddCard(_testCard); // Try to add same card again
-
-        Assertions.AssertThat(_holder.HeldCount).IsEqual(1); // Should still be 1
-        Assertions.AssertThat(_cardAddedCount).IsEqual(1); // Signal only fired once
+        _cardAddedEventCount = 0;
+        _cardRemovedEventCount = 0;
+        _lastCardAdded = null;
+        _lastCardRemoved = null;
     }
 
-    [TestCase]
-    public void TestRemoveCard()
+    private void OnCardAdded(RigidBody3D card)
     {
-        _holder.AddCard(_testCard);
-        _holder.RemoveCard(_testCard);
-
-        Assertions.AssertThat(_holder.HeldCount).IsEqual(0);
-        Assertions.AssertBool(_holder.HasCards).IsFalse();
-        Assertions.AssertThat(_cardRemovedCount).IsEqual(1);
-
-        // Card should be reparented to spawner
-        Assertions.AssertThat(_testCard.GetParent()).IsEqual(_mockSpawner);
+        _cardAddedEventCount++;
+        _lastCardAdded = card;
     }
 
-    [TestCase]
-    public void TestRemoveCardNotInHolder()
+    private void OnCardRemoved(RigidBody3D card)
     {
-        var otherCard = CreateTestCard("OtherCard");
-
-        _holder.RemoveCard(otherCard); // Try to remove card that wasn't added
-
-        Assertions.AssertThat(_holder.HeldCount).IsEqual(0);
-        Assertions.AssertThat(_cardRemovedCount).IsEqual(0);
-
-        otherCard.QueueFree();
+        _cardRemovedEventCount++;
+        _lastCardRemoved = card;
     }
 
-    [TestCase]
-    public void TestRemoveTopCard()
-    {
-        var card1 = CreateTestCard("Card1");
-        var card2 = CreateTestCard("Card2");
-
-        _holder.AddCard(card1);
-        _holder.AddCard(card2);
-
-        Assertions.AssertThat(_holder.HeldCount).IsEqual(2);
-
-        _holder.RemoveTopCard();
-
-        Assertions.AssertThat(_holder.HeldCount).IsEqual(1);
-        Assertions.AssertThat(_holder.HeldCards).Contains(card1);
-        Assertions.AssertThat(_holder.HeldCards).NotContains(card2);
-
-        card1.QueueFree();
-        card2.QueueFree();
-    }
-
-    [TestCase]
-    public void TestRemoveTopCardFromEmptyHolder()
-    {
-        _holder.RemoveTopCard(); // Should not crash
-
-        Assertions.AssertThat(_holder.HeldCount).IsEqual(0);
-        Assertions.AssertThat(_cardRemovedCount).IsEqual(0);
-    }
-
-    [TestCase]
-    public void TestRemoveAllCards()
-    {
-        var card1 = CreateTestCard("Card1");
-        var card2 = CreateTestCard("Card2");
-        var card3 = CreateTestCard("Card3");
-
-        _holder.AddCard(card1);
-        _holder.AddCard(card2);
-        _holder.AddCard(card3);
-
-        Assertions.AssertThat(_holder.HeldCount).IsEqual(3);
-
-        _holder.RemoveAllCards();
-
-        Assertions.AssertThat(_holder.HeldCount).IsEqual(0);
-        Assertions.AssertBool(_holder.HasCards).IsFalse();
-        Assertions.AssertThat(_cardRemovedCount).IsEqual(3);
-
-        card1.QueueFree();
-        card2.QueueFree();
-        card3.QueueFree();
-    }
-
-    [TestCase]
-    public void TestPositionCards()
-    {
-        var card1 = CreateTestCard("Card1");
-        var card2 = CreateTestCard("Card2");
-
-        _holder.AddCard(card1);
-        _holder.AddCard(card2);
-
-        // Position cards
-        _holder.PositionCards();
-
-        // Cards should be positioned at different Z offsets
-        var pos1 = card1.Transform.Origin;
-        var pos2 = card2.Transform.Origin;
-
-        Assertions.AssertThat(pos1.Z).IsNotEqual(pos2.Z);
-
-        card1.QueueFree();
-        card2.QueueFree();
-    }
-
-    [TestCase]
-    public void TestPositionCardsForDrop()
-    {
-        _holder.AddCard(_testCard);
-
-        // Set hand anchor transform
-        _handAnchor.GlobalTransform = new Transform3D(Basis.Identity, new Vector3(0, 5, 0));
-
-        _holder.PositionCardsForDrop();
-
-        // Card should be positioned relative to camera forward direction
-        var cardPos = _testCard.GlobalTransform.Origin;
-        Assertions.AssertThat(cardPos.Y).IsEqual(5.0f); // Should match hand anchor Y
-    }
-
-    [TestCase]
-    public void TestCardOrderMaintained()
-    {
-        var card1 = CreateTestCard("Card1");
-        var card2 = CreateTestCard("Card2");
-        var card3 = CreateTestCard("Card3");
-
-        _holder.AddCard(card1);
-        _holder.AddCard(card2);
-        _holder.AddCard(card3);
-
-        // Cards should be in order of addition
-        Assertions.AssertThat(_holder.HeldCards[0]).IsEqual(card1);
-        Assertions.AssertThat(_holder.HeldCards[1]).IsEqual(card2);
-        Assertions.AssertThat(_holder.HeldCards[2]).IsEqual(card3);
-
-        card1.QueueFree();
-        card2.QueueFree();
-        card3.QueueFree();
-    }
-
-    [TestCase]
-    public void TestCollisionLayerSet()
-    {
-        _holder.AddCard(_testCard);
-
-        // After adding, the card's collision layer should be set
-        // Note: The collision layer is set during EnablePhysics which is called deferred
-        // In a real test, we'd need to wait for the deferred call or test it separately
-    }
+    #endregion
 }

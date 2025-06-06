@@ -5,6 +5,7 @@ using LayerData = CardCleaner.Scripts.Core.Data.LayerData;
 namespace CardCleaner.Tests.Core;
 
 [TestSuite]
+[RequireGodotRuntime]
 public class LayerDataTest
 {
     [TestCase]

@@ -7,6 +7,7 @@ using Godot.Collections;
 namespace CardCleaner.Tests.Features;
 
 [TestSuite]
+[RequireGodotRuntime]
 public class CardMaterialManagerTest
 {
     private CardMaterialManager _manager = null!;
@@ -151,18 +152,18 @@ public class CardMaterialManagerTest
         Assertions.AssertThat(result).IsNull();
         Assertions.AssertThat(meshInstance.MaterialOverride).IsNull();
     }
-
     [TestCase]
     public void TestApplyMaterial_SetsOverride()
     {
         var meshInstance = new MeshInstance3D();
         Assertions.AddNode(meshInstance);
-        
+    
         var result = _manager.ApplyMaterial(meshInstance);
-        
+    
         Assertions.AssertThat(result).IsNotNull();
         Assertions.AssertThat(meshInstance.MaterialOverride).IsEqual(result);
-        Assertions.AssertThat(result).IsNotEqual(_mockTemplate); // Should be a duplicate
+        // Test that it's actually a different instance from the template
+        Assertions.AssertThat(result).IsNotSame(_mockTemplate);
     }
 
     [TestCase]

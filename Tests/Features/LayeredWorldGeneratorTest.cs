@@ -9,6 +9,7 @@ using Godot.Collections;
 namespace CardCleaner.Tests.Features;
 
 [TestSuite]
+[RequireGodotRuntime]
 public class LayeredWorldGeneratorTest
 {
     private LayeredWorldGenerator _generator = null!;

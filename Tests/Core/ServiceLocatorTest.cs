@@ -11,6 +11,7 @@ namespace CardCleaner.Tests.Core;
 // Test service interfaces
 
 [TestSuite]
+[RequireGodotRuntime]
 public class ServiceLocatorTest
 {
     [BeforeTest]

@@ -11,6 +11,7 @@ using Array = System.Array;
 namespace CardCleaner.Tests.Features;
 
 [TestSuite]
+[RequireGodotRuntime]
 public class SemanticWfcGeneratorTest
 {
     private Array<SemanticTile> _testTileSet = null!;

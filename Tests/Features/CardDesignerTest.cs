@@ -6,6 +6,7 @@ using Godot;
 namespace CardCleaner.Tests.Features;
 
 [TestSuite]
+[RequireGodotRuntime]
 public class CardDesignerTest
 {
     private CardDesigner _designer = null!;

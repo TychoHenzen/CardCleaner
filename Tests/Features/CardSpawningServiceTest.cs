@@ -13,6 +13,8 @@ namespace CardCleaner.Tests.Features;
 // Mock implementations for testing
 
 [TestSuite]
+
+[RequireGodotRuntime]
 public class CardSpawningServiceTest
 {
     private CardSpawningService _service= null!;

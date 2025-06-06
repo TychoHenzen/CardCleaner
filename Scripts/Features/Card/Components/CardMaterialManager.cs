@@ -65,8 +65,10 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
 
     public ShaderMaterial? ApplyMaterial(MeshInstance3D target)
     {
-        if (CardMaterialTemplate.Duplicate() is not ShaderMaterial material) return null;
+        if (CardMaterialTemplate == null) return null;
     
+        if (CardMaterialTemplate.Duplicate() is not ShaderMaterial material) return null;
+
         foreach (var param in _shaderParameters) 
         {
             material.SetShaderParameter(param.Key, param.Value);
@@ -76,5 +78,6 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         _activeMaterial = material;
         return material;
     }
+
 
 }

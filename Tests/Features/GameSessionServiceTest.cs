@@ -7,6 +7,8 @@ using GdUnit4;
 namespace CardCleaner.Tests.Features;
 
 [TestSuite]
+
+[RequireGodotRuntime]
 public class GameSessionServiceTest
 {
     private GameSessionService _service = null!;

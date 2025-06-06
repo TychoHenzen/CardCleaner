@@ -5,6 +5,7 @@ using Godot.Collections;
 namespace CardCleaner.Tests.Features;
 
 [TestSuite]
+[RequireGodotRuntime]
 public class TilePlacementTest
 {
     [TestCase]

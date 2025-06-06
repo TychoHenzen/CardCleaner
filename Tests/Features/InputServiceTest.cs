@@ -5,6 +5,7 @@ using Godot;
 namespace CardCleaner.Tests.Features;
 
 [TestSuite]
+[RequireGodotRuntime]
 public class InputServiceTest
 {
     private InputService _service= null!;

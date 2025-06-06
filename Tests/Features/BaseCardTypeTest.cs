@@ -6,6 +6,7 @@ using CardSignature = CardCleaner.Scripts.Features.Card.Models.CardSignature;
 namespace CardCleaner.Tests.Features;
 
 [TestSuite]
+[RequireGodotRuntime]
 public class BaseCardTypeTest
 {
     private static BaseCardType CreateTestCardType()

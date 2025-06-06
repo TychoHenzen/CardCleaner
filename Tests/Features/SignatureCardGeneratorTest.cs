@@ -12,6 +12,7 @@ namespace CardCleaner.Tests.Features;
 // Mock implementations for testing
 
 [TestSuite]
+[RequireGodotRuntime]
 public class SignatureCardGeneratorTest
 {
     private SignatureCardGenerator _generator= null!;
