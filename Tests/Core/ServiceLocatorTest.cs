@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Tests.Mocking;
 using GdUnit4;
+using Godot;
 
 namespace CardCleaner.Tests.Core;
 
@@ -48,6 +50,7 @@ public class ServiceLocatorTest
     [TestCase]
     public void TestGetUnregisteredServiceThrows()
     {
+        Assertions.AssertInt(5).IsLess(8);
         Assertions.AssertThrown(() => ServiceLocator.Get<IAsyncTestService>())
             .IsInstanceOf<InvalidOperationException>()
             .HasMessage("Service IAsyncTestService not registered");
