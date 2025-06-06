@@ -22,7 +22,7 @@ public partial class GameSessionService : Node, IGameSessionService
                 return;
             _currentState = value;
             StateChanged?.Invoke(value);
-            ILog.Error($"Session state changed to: {value}");
+            ILog.Print($"Session state changed to: {value}");
         }
     }
 

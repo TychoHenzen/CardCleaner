@@ -11,18 +11,9 @@ namespace CardCleaner.Tests.Core;
 [TestSuite]
 public class ServiceLocatorTest
 {
-    private ServiceLocator _locator = null!;
-
     [BeforeTest]
     public void Setup()
     {
-        // Create root node for scene tree context
-    
-        _locator = new ServiceLocator();
-        _locator.Name = "Services";
-    
-        // Simulate the autoload setup
-        Assertions.AddNode(_locator);
     }
 
 
