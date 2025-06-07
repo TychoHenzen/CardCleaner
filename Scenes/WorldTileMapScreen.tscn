@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cdss6ca0j5q5f"]
+[gd_scene load_steps=17 format=3 uid="uid://cdss6ca0j5q5f"]
 
 [ext_resource type="Script" uid="uid://bo6ioy4iawnq6" path="res://Scripts/Features/Deckbuilder/Models/WorldTileMapScreen.cs" id="1_q7ehv"]
 [ext_resource type="Script" uid="uid://chb1eie0w5etp" path="res://Scripts/Features/Worldgen/SemanticTile.cs" id="2_2nnbp"]
@@ -8,7 +8,32 @@
 [ext_resource type="Script" uid="uid://dfivx0g2ib815" path="res://Scripts/Features/Card/Models/CardSignature.cs" id="6_1jn4e"]
 [ext_resource type="Resource" uid="uid://b124bh1y6w4cb" path="res://Assets/Terrain/SemanticTiles/Structure/GlowingStone.tres" id="6_71kd0"]
 [ext_resource type="Resource" uid="uid://2ubq2q582l4p" path="res://Assets/Terrain/SemanticTiles/Transitions/West Mountain East Grassland.tres" id="7_71kd0"]
-[ext_resource type="TileSet" uid="uid://cs7m5recytaxd" path="res://Assets/Terrain/TileSets/FantasyDreamland.tres" id="8_1jn4e"]
+[ext_resource type="TileSet" uid="uid://cs7m5recytaxd" path="res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres" id="8_1jn4e"]
+[ext_resource type="Script" uid="uid://d24selehqatn4" path="res://Scripts/Features/Worldgen/EnemySpawnData.cs" id="8_f13aa"]
+
+[sub_resource type="Resource" id="Resource_vol2h"]
+script = ExtResource("6_1jn4e")
+Solidum = 0.0
+Febris = 0.0
+Ordinem = 0.0
+Lumines = 0.0
+Varias = 0.0
+Inertiae = 0.0
+Subsidium = 0.0
+Spatium = 0.0
+
+[sub_resource type="Resource" id="Resource_bm3pi"]
+script = ExtResource("8_f13aa")
+EnemyName = ""
+BaseSignature = SubResource("Resource_vol2h")
+SpawnWeight = 1.0
+MinSignatureIntensity = 0.3
+MaxSignatureIntensity = 1.0
+PreferredTerrain = 1
+TerrainMatchBonus = 2.0
+SourceId = 0
+AtlasCoords = Vector2i(0, 0)
+metadata/_custom_type_script = "uid://d24selehqatn4"
 
 [sub_resource type="Resource" id="Resource_71kd0"]
 script = ExtResource("6_1jn4e")
@@ -29,7 +54,7 @@ Spatium = 0.0
 material = SubResource("StandardMaterial3D_n2gqn")
 size = Vector2(5.333, 3)
 
-[node name="WorldTileMapScreen" type="Node3D" node_paths=PackedStringArray("TerrainLayer", "StructureLayer", "DecorationLayer", "EffectLayer", "Viewport", "ScreenMesh")]
+[node name="WorldTileMapScreen" type="Node3D" node_paths=PackedStringArray("TerrainLayer", "StructureLayer", "DecorationLayer", "EffectLayer", "EnemyLayer", "Viewport", "ScreenMesh")]
 script = ExtResource("1_q7ehv")
 SemanticTiles = Array[ExtResource("2_2nnbp")]([ExtResource("3_c20vf"), ExtResource("2_dwpdh"), ExtResource("4_2nnbp"), ExtResource("6_71kd0"), ExtResource("7_71kd0")])
 TileSize = 16
@@ -37,6 +62,8 @@ TerrainLayer = NodePath("SubViewport/TerrainLayer")
 StructureLayer = NodePath("SubViewport/StructureLayer")
 DecorationLayer = NodePath("SubViewport/DecorationLayer")
 EffectLayer = NodePath("SubViewport/EffectLayer")
+EnemyLayer = NodePath("SubViewport/EnemyLayer")
+EnemySpawnData = Array[ExtResource("8_f13aa")]([SubResource("Resource_bm3pi")])
 Viewport = NodePath("SubViewport")
 ScreenMesh = NodePath("CSGMesh3D")
 PreviewSize = Vector2i(30, 10)
@@ -63,6 +90,9 @@ tile_set = ExtResource("8_1jn4e")
 tile_set = ExtResource("8_1jn4e")
 
 [node name="EffectLayer" type="TileMapLayer" parent="SubViewport"]
+tile_set = ExtResource("8_1jn4e")
+
+[node name="EnemyLayer" type="TileMapLayer" parent="SubViewport"]
 tile_set = ExtResource("8_1jn4e")
 
 [node name="PlayerAgent" type="Node2D" parent="SubViewport"]

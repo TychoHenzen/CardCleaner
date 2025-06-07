@@ -27,6 +27,9 @@ public partial class WorldTileMapScreen : Node3D
     [Export] public TileMapLayer? DecorationLayer { get; set; }
     [Export] public TileMapLayer? EffectLayer { get; set; }
     
+    [Export] public TileMapLayer? EnemyLayer { get; set; }
+    [Export] public Array<EnemySpawnData> EnemySpawnData { get; set; } = new();
+    
     [Export] public SubViewport? Viewport { get; set; }
     [Export] public MeshInstance3D? ScreenMesh { get; set; }
     private Camera2D? _camera2D;
@@ -72,7 +75,7 @@ public partial class WorldTileMapScreen : Node3D
     /// <summary>
     /// Initialize the world map from deckbuilder cards - generates actual gameplay map
     /// </summary>
-    public void Initialize(CardSignature mapSeed, CardSignature[] abilities)
+    public void Initialize(CardSignature[] mapSeed, CardSignature[] abilities)
     {
         if (SemanticTiles.Count == 0)
         {
@@ -80,12 +83,9 @@ public partial class WorldTileMapScreen : Node3D
             return;
         }
 
-        // Set up viewport if not already configured
-        if (Viewport == null)
-        {
-            ILog.Error("SubViewport not assigned to WorldTileMapScreen");
+        if (ILog.ExportCheck(Viewport, nameof(Viewport), this))
             return;
-        }
+        
         // Calculate map size based on card rarity
         var rarity = SignatureCardHelper.DetermineRarity(mapSeed);
         var calculatedMapSize = GetMapSizeForRarity(rarity);
@@ -96,37 +96,22 @@ public partial class WorldTileMapScreen : Node3D
         // Convert card signature to generation seed
         ulong generationSeed = GenerateSeedFromCard(mapSeed);
 
-        // Apply abilities to modify generation parameters if needed
-        ModifyGenerationFromAbilities(abilities);
-
-        // Use the existing exported TileMapLayer properties
-        if (TerrainLayer == null)
-        {
-            ILog.Error("TerrainLayer not assigned to WorldTileMapScreen");
+        if (ILog.ExportCheck(TerrainLayer, nameof(TerrainLayer), this) ||
+            ILog.ExportCheck(StructureLayer, nameof(StructureLayer), this) ||
+            ILog.ExportCheck(DecorationLayer, nameof(DecorationLayer), this) ||
+            ILog.ExportCheck(EffectLayer, nameof(EffectLayer), this) ||
+            ILog.ExportCheck(EnemyLayer, nameof(EnemyLayer), this))
             return;
-        }
-        if (StructureLayer == null)
-        {
-            ILog.Error("StructureLayer not assigned to WorldTileMapScreen");
-            return;
-        }
-        if (DecorationLayer == null)
-        {
-            ILog.Error("DecorationLayer not assigned to WorldTileMapScreen");
-            return;
-        }
-        if (EffectLayer == null)
-        {
-            ILog.Error("EffectLayer not assigned to WorldTileMapScreen");
-            return;
-        }
         
-
-
+        TerrainLayer!.Clear();
+        StructureLayer!.Clear();
+        DecorationLayer!.Clear();
+        EffectLayer!.Clear();
         // Generate using the existing layer system
         EnsureWorldGeneratorInitialized();
-        _worldGenerator.Generate(generationSeed, TerrainLayer, StructureLayer, 
-            DecorationLayer, EffectLayer, calculatedMapSize);
+        _worldGenerator!.Generate(generationSeed, TerrainLayer, StructureLayer, 
+            DecorationLayer, EffectLayer, EnemyLayer, calculatedMapSize, 
+            new CardBasedGradient(mapSeed), EnemySpawnData);
 
         // Configure camera to frame the tilemap
         ConfigureCamera();
@@ -196,20 +181,13 @@ private void ConfigureCamera()
     _camera2D.Zoom = new Vector2(zoom, zoom);
 }
 
-    private ulong GenerateSeedFromCard(CardSignature mapSeed)
+    private ulong GenerateSeedFromCard(CardSignature[] mapSeed)
     {
         // Use card name hash as base seed for reproducible generation
-        return (uint)mapSeed.GetHashCode();
-    }
-
-    private void ModifyGenerationFromAbilities(CardSignature[] abilities)
-    {
-        // TODO: Apply ability effects to modify tile weights, available tiles, etc.
-        // For now, just log the abilities being applied
-        foreach (var ability in abilities)
-        {
-            ILog.Print($"Applying ability: {ability}");
-        }
+        long running = 0;
+        foreach (var card in mapSeed)
+            running ^= card.GetHashCode();
+        return (ulong)running;
     }
 
     private void OnLayerVisibilityChanged(bool _)
@@ -247,7 +225,7 @@ private void ConfigureCamera()
         EnsureWorldGeneratorInitialized();
 
         // Convert CardSignature to seed
-        var seed = Seeded ? GenerateSeedFromCard(Signature) : Time.Singleton.GetTicksMsec();
+        var seed = Seeded ? GenerateSeedFromCard(new []{Signature}) : Time.Singleton.GetTicksMsec();
 
         // Generate logical tile grids using the actual generation algorithm
         var tileGrids = GenerateTileGrids(seed);
@@ -433,7 +411,7 @@ private void ConfigureCamera()
 
             return tileImage;
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             ILog.Error($"Failed to extract tile image: {e.Message}");
             return CreateFallbackTileImage($"Exception: {e.Message[..Math.Min(20, e.Message.Length)]}", Colors.Red);

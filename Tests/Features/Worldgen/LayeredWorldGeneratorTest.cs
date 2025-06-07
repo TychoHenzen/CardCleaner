@@ -18,6 +18,7 @@ public class LayeredWorldGeneratorTest
     private TileMapLayer _mockStructureLayer = null!;
     private TileMapLayer _mockDecorationLayer = null!;
     private TileMapLayer _mockEffectLayer = null!;
+    private TileMapLayer _mockEnemyLayer = null!;
 
     [BeforeTest]
     public void Setup()
@@ -30,6 +31,7 @@ public class LayeredWorldGeneratorTest
         _mockStructureLayer = CreateMockTileMapLayer();
         _mockDecorationLayer = CreateMockTileMapLayer();
         _mockEffectLayer = CreateMockTileMapLayer();
+        _mockEnemyLayer = CreateMockTileMapLayer();
     }
 
     private Array<SemanticTile> CreateTestTileSet()
@@ -94,7 +96,7 @@ public class LayeredWorldGeneratorTest
         const ulong seed = 42;
 
         _generator.Generate(seed, _mockTerrainLayer, _mockStructureLayer, 
-            _mockDecorationLayer, _mockEffectLayer, mapSize);
+            _mockDecorationLayer, _mockEffectLayer, null, mapSize);
 
         // Verify that terrain layer has tiles placed
         var usedRect = _mockTerrainLayer.GetUsedRect();
@@ -109,7 +111,7 @@ public class LayeredWorldGeneratorTest
         const ulong seed = 42;
 
         // Should not crash with null layers
-        _generator.Generate(seed, null, null, null, null, mapSize);
+        _generator.Generate(seed, null, null, null, null, null, mapSize);
 
         Assertions.AssertThat(_generator).IsNotNull();
     }
@@ -124,8 +126,8 @@ public class LayeredWorldGeneratorTest
         var layer1 = CreateMockTileMapLayer();
         var layer2 = CreateMockTileMapLayer();
 
-        _generator.Generate(seed, layer1, null, null, null, mapSize);
-        _generator.Generate(seed, layer2, null, null, null, mapSize);
+        _generator.Generate(seed, layer1, null, null, null, null, mapSize);
+        _generator.Generate(seed, layer2, null, null, null, null, mapSize);
 
         // Results should be identical
         var rect1 = layer1.GetUsedRect();
@@ -189,7 +191,7 @@ public class LayeredWorldGeneratorTest
         const ulong seed = 42;
 
         _generator.Generate(seed, _mockTerrainLayer, _mockStructureLayer, 
-            _mockDecorationLayer, _mockEffectLayer, mapSize);
+            _mockDecorationLayer, _mockEffectLayer, _mockEnemyLayer, mapSize);
 
         // Verify terrain layer has content (it should always be populated first)
         var terrainRect = _mockTerrainLayer.GetUsedRect();
@@ -217,7 +219,7 @@ public class LayeredWorldGeneratorTest
         var generator = new LayeredWorldGenerator(testTiles);
         var mapSize = new Vector2I(3, 3);
 
-        generator.Generate(42, _mockTerrainLayer, _mockStructureLayer, null, null, mapSize);
+        generator.Generate(42, _mockTerrainLayer, _mockStructureLayer, null, null, null, mapSize);
 
         // At minimum, terrain should be generated
         var terrainRect = _mockTerrainLayer.GetUsedRect();
@@ -232,7 +234,7 @@ public class LayeredWorldGeneratorTest
         var mapSize = new Vector2I(2, 2);
 
         // Should not crash with empty tile set
-        emptyGenerator.Generate(42, _mockTerrainLayer, null, null, null, mapSize);
+        emptyGenerator.Generate(42, _mockTerrainLayer, null, null, null, null, mapSize);
 
         Assertions.AssertThat(emptyGenerator).IsNotNull();
     }
@@ -244,7 +246,7 @@ public class LayeredWorldGeneratorTest
         const ulong seed = 999;
 
         _generator.Generate(seed, _mockTerrainLayer, _mockStructureLayer, 
-            _mockDecorationLayer, _mockEffectLayer, mapSize);
+            _mockDecorationLayer, _mockEffectLayer, _mockEnemyLayer, mapSize);
 
         var usedRect = _mockTerrainLayer.GetUsedRect();
         

@@ -44,4 +44,12 @@ public interface ILog
             GD.PushError(message);
         }
     }
+
+    public static bool ExportCheck(Node? export, string name, Node target)
+    {
+        if (export != null) 
+            return false;
+        Error($"{name} not assigned to {target.Name}");
+        return true;
+    }
 }

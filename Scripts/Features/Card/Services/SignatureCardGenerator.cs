@@ -26,7 +26,7 @@ public class SignatureCardGenerator : ICardGenerator
         ServiceLocator.Get<GemVisual[]>(gems => _gemVisuals = gems);
     }
 
-    public void GenerateCardRenderer(CardShaderRenderer renderer, CardSignature signature, Core.Data.CardTemplate template)
+    public void GenerateCardRenderer(CardShaderRenderer renderer, CardSignature signature, CardTemplate template)
     {
         if (_rarityVisuals == null || _baseTypes == null || _gemVisuals == null)
             return;   
@@ -35,7 +35,7 @@ public class SignatureCardGenerator : ICardGenerator
             Seed = (uint)SignatureCardHelper.ComputeSeed(signature)
         };
         // 1. Determine rarity
-        var rarity = SignatureCardHelper.DetermineRarity(signature);
+        var rarity = SignatureCardHelper.DetermineRarity(new []{signature});
 
         // 2. Apply per‐rarity visuals
         var visuals = _rarityVisuals.FirstOrDefault(rv => rv.Rarity == rarity);

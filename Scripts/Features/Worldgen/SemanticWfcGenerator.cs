@@ -10,8 +10,8 @@ namespace CardCleaner.Scripts.Features.Worldgen;
 public class SemanticWfcGenerator
 {
     private readonly Array<SemanticTile> _tileSet;
-    private readonly Vector2I _mapSize;
-    private readonly RandomNumberGenerator _rng;
+    protected readonly Vector2I MapSize;
+    protected readonly RandomNumberGenerator Rng;
     
     // The wave function - possible tiles at each position
     private List<SemanticTile>[][] _wave;
@@ -20,24 +20,24 @@ public class SemanticWfcGenerator
     public SemanticWfcGenerator(Array<SemanticTile> tileSet, Vector2I mapSize, ulong seed = 0)
     {
         _tileSet = tileSet;
-        _mapSize = mapSize;
-        _rng = new RandomNumberGenerator();
-        _rng.Seed = seed;
+        MapSize = mapSize;
+        Rng = new RandomNumberGenerator();
+        Rng.Seed = seed;
         
         InitializeWave();
     }
     
     private void InitializeWave()
     {
-        _wave = new List<SemanticTile>[_mapSize.Y][];
-        _collapsed = new bool[_mapSize.Y][];
+        _wave = new List<SemanticTile>[MapSize.Y][];
+        _collapsed = new bool[MapSize.Y][];
         
-        for (int y = 0; y < _mapSize.Y; y++)
+        for (int y = 0; y < MapSize.Y; y++)
         {
-            _wave[y] = new List<SemanticTile>[_mapSize.X];
-            _collapsed[y] = new bool[_mapSize.X];
+            _wave[y] = new List<SemanticTile>[MapSize.X];
+            _collapsed[y] = new bool[MapSize.X];
             
-            for (int x = 0; x < _mapSize.X; x++)
+            for (int x = 0; x < MapSize.X; x++)
             {
                 _wave[y][x] = new List<SemanticTile>(_tileSet);
                 _collapsed[y][x] = false;
@@ -48,7 +48,7 @@ public class SemanticWfcGenerator
     // Return SemanticTile[,] instead of int[,]
     public SemanticTile[,] Generate()
     {
-        var result = new SemanticTile[_mapSize.Y, _mapSize.X];
+        var result = new SemanticTile[MapSize.Y, MapSize.X];
         
         while (!IsFullyCollapsed())
         {
@@ -60,9 +60,9 @@ public class SemanticWfcGenerator
         }
         
         // Convert wave to SemanticTile array
-        for (int y = 0; y < _mapSize.Y; y++)
+        for (int y = 0; y < MapSize.Y; y++)
         {
-            for (int x = 0; x < _mapSize.X; x++)
+            for (int x = 0; x < MapSize.X; x++)
             {
                 if (_collapsed[y][x] && _wave[y][x].Count > 0)
                 {
@@ -81,9 +81,9 @@ public class SemanticWfcGenerator
     // Rest of the methods are the same as WaveCollapseGenerator but work with SemanticTile
     private bool IsFullyCollapsed()
     {
-        for (int y = 0; y < _mapSize.Y; y++)
+        for (int y = 0; y < MapSize.Y; y++)
         {
-            for (int x = 0; x < _mapSize.X; x++)
+            for (int x = 0; x < MapSize.X; x++)
             {
                 if (!_collapsed[y][x]) return false;
             }
@@ -96,9 +96,9 @@ public class SemanticWfcGenerator
         int minEntropy = int.MaxValue;
         var candidates = new List<Vector2I>();
         
-        for (int y = 0; y < _mapSize.Y; y++)
+        for (int y = 0; y < MapSize.Y; y++)
         {
-            for (int x = 0; x < _mapSize.X; x++)
+            for (int x = 0; x < MapSize.X; x++)
             {
                 if (_collapsed[y][x]) continue;
                 
@@ -120,7 +120,7 @@ public class SemanticWfcGenerator
         
         if (candidates.Count == 0) return new Vector2I(-1, -1);
         
-        var chosen = candidates[_rng.RandiRange(0, candidates.Count - 1)];
+        var chosen = candidates[Rng.RandiRange(0, candidates.Count - 1)];
         return chosen;
     }
     
@@ -128,16 +128,16 @@ public class SemanticWfcGenerator
     {
         if (_collapsed[position.Y][position.X] || _wave[position.Y][position.X].Count == 0) return;
         
-        var chosenTile = ChooseWeightedTile(_wave[position.Y][position.X]);
+        var chosenTile = ChooseWeightedTile(_wave[position.Y][position.X], position);
         _wave[position.Y][position.X].Clear();
         _wave[position.Y][position.X].Add(chosenTile);
         _collapsed[position.Y][position.X] = true;
     }
     
-    private SemanticTile ChooseWeightedTile(List<SemanticTile> tiles)
+    protected virtual SemanticTile ChooseWeightedTile(List<SemanticTile> tiles, Vector2I position)
     {
         var totalWeight = tiles.Sum(t => t.BaseWeight);
-        var randomValue = _rng.Randf() * totalWeight;
+        var randomValue = Rng.Randf() * totalWeight;
         
         float currentWeight = 0;
         foreach (var tile in tiles)
@@ -217,6 +217,6 @@ public class SemanticWfcGenerator
     
     private bool IsValidCoord(Vector2I coord)
     {
-        return coord.X >= 0 && coord.X < _mapSize.X && coord.Y >= 0 && coord.Y < _mapSize.Y;
+        return coord.X >= 0 && coord.X < MapSize.X && coord.Y >= 0 && coord.Y < MapSize.Y;
     }
 }

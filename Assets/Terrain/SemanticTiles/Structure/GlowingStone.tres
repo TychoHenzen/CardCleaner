@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="SemanticTile" load_steps=5 format=3 uid="uid://b124bh1y6w4cb"]
 
-[ext_resource type="TileSet" uid="uid://cs7m5recytaxd" path="res://Assets/Terrain/TileSets/FantasyDreamland.tres" id="1_g4uv6"]
+[ext_resource type="TileSet" uid="uid://cs7m5recytaxd" path="res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres" id="1_g4uv6"]
 [ext_resource type="Script" uid="uid://ge6gvuoe7v5o" path="res://Scripts/Features/Worldgen/TilePlacement.cs" id="2_qtypw"]
 [ext_resource type="Script" uid="uid://chb1eie0w5etp" path="res://Scripts/Features/Worldgen/SemanticTile.cs" id="3_1rq3p"]
 

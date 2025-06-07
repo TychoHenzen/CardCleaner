@@ -7,7 +7,7 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 
 public static class SignatureCardHelper
 {
-    public static int ComputeSeed(Models.CardSignature signature)
+    public static int ComputeSeed(CardSignature signature)
     {
         var seed = 17;
         foreach (var v in signature.Elements)
@@ -15,9 +15,9 @@ public static class SignatureCardHelper
         return seed;
     }
 
-    public static CardRarity DetermineRarity(Models.CardSignature signature)
+    public static CardRarity DetermineRarity(CardSignature[] signature)
     {
-        var totalPoints = signature.Elements.Sum(e =>
+        var totalPoints = signature.Sum(sig => sig.Elements.Sum(e =>
         {
             var v = Mathf.Abs(Math.Abs(e) - 0.5f);
             return v switch
@@ -28,8 +28,8 @@ public static class SignatureCardHelper
                 < 0.4f => 4,
                 _ => 8
             };
-        });
-        var maxPoints = signature.Elements.Length * 8;
+        }));
+        var maxPoints = signature.Length * 8 * 8;
         var rarityRatio = (float)totalPoints / maxPoints;
         var logScaled = (float)Math.Log10(1f + 9f * rarityRatio);
 
