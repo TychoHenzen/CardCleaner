@@ -1,40 +1,57 @@
-[gd_resource type="Resource" script_class="SemanticTile" load_steps=7 format=3 uid="uid://2ubq2q582l4p"]
+[gd_resource type="Resource" script_class="SemanticTile" load_steps=16 format=3 uid="uid://2ubq2q582l4p"]
 
 [ext_resource type="TileSet" uid="uid://cs7m5recytaxd" path="res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres" id="1_11y04"]
+[ext_resource type="Script" uid="uid://cajp6tmtird62" path="res://Scripts/Features/Worldgen/SocketDescriptor.cs" id="1_ly78q"]
 [ext_resource type="Script" uid="uid://ge6gvuoe7v5o" path="res://Scripts/Features/Worldgen/TilePlacement.cs" id="2_ly78q"]
 [ext_resource type="Script" uid="uid://chb1eie0w5etp" path="res://Scripts/Features/Worldgen/SemanticTile.cs" id="3_83qj5"]
 
-[sub_resource type="Resource" id="Resource_edntc"]
-script = ExtResource("2_ly78q")
-SourceId = 51
-AtlasCoords = Vector2i(8, 21)
-BlocksMovement = false
-BlocksTiles = false
-AnimationFrames = Array[Vector2i]([])
-AnimationSpeed = 1.0
-metadata/_custom_type_script = "uid://ge6gvuoe7v5o"
+[sub_resource type="Resource" id="Resource_83qj5"]
+script = ExtResource("1_ly78q")
+BiomeType = 1
+CompatibilityTags = Array[String]([])
+AcceptsAny = false
 
-[sub_resource type="Resource" id="Resource_4y6qc"]
-script = ExtResource("3_83qj5")
-TileName = ""
-Passability = 0
-TileSet = ExtResource("1_11y04")
-Size = Vector2i(1, 1)
-Tiles = [SubResource("Resource_edntc")]
-GlobalSpawnChance = 0.0
-Layer = 0
-BaseWeight = 1.0
-North = 1
-East = 1
-South = 1
-West = 1
-NorthEast = 1
-SouthEast = 1
-SouthWest = 1
-NorthWest = 1
-Down = 1
-Up = 2
-metadata/_custom_type_script = "uid://chb1eie0w5etp"
+[sub_resource type="Resource" id="Resource_g6f0v"]
+script = ExtResource("1_ly78q")
+BiomeType = 1
+CompatibilityTags = Array[String]([])
+AcceptsAny = false
+
+[sub_resource type="Resource" id="Resource_g810r"]
+script = ExtResource("1_ly78q")
+BiomeType = 1
+CompatibilityTags = Array[String]([])
+AcceptsAny = false
+
+[sub_resource type="Resource" id="Resource_b480j"]
+script = ExtResource("1_ly78q")
+BiomeType = 1
+CompatibilityTags = Array[String]([])
+AcceptsAny = false
+
+[sub_resource type="Resource" id="Resource_iftu5"]
+script = ExtResource("1_ly78q")
+BiomeType = 1
+CompatibilityTags = Array[String]([])
+AcceptsAny = false
+
+[sub_resource type="Resource" id="Resource_665p5"]
+script = ExtResource("1_ly78q")
+BiomeType = 1
+CompatibilityTags = Array[String]([])
+AcceptsAny = false
+
+[sub_resource type="Resource" id="Resource_ri253"]
+script = ExtResource("1_ly78q")
+BiomeType = 1
+CompatibilityTags = Array[String]([])
+AcceptsAny = false
+
+[sub_resource type="Resource" id="Resource_s84yp"]
+script = ExtResource("1_ly78q")
+BiomeType = 1
+CompatibilityTags = Array[String]([])
+AcceptsAny = false
 
 [sub_resource type="Resource" id="Resource_gktl0"]
 script = ExtResource("2_ly78q")
@@ -46,6 +63,18 @@ AnimationFrames = Array[Vector2i]([])
 AnimationSpeed = 1.0
 metadata/_custom_type_script = "uid://ge6gvuoe7v5o"
 
+[sub_resource type="Resource" id="Resource_3yr7n"]
+script = ExtResource("1_ly78q")
+BiomeType = 1
+CompatibilityTags = Array[String]([])
+AcceptsAny = false
+
+[sub_resource type="Resource" id="Resource_sy5bm"]
+script = ExtResource("1_ly78q")
+BiomeType = 1
+CompatibilityTags = Array[String]([])
+AcceptsAny = false
+
 [resource]
 script = ExtResource("3_83qj5")
 TileName = ""
@@ -56,15 +85,15 @@ Tiles = [SubResource("Resource_gktl0")]
 GlobalSpawnChance = 1.0
 Layer = 0
 BaseWeight = 1.0
-StackedTile = SubResource("Resource_4y6qc")
-North = 1
-East = 32
-South = 1
-West = 64
-NorthEast = 1
-SouthEast = 1
-SouthWest = 1
-NorthWest = 1
-Down = 32
-Up = 2
+North = SubResource("Resource_g810r")
+East = SubResource("Resource_g6f0v")
+South = SubResource("Resource_665p5")
+West = SubResource("Resource_sy5bm")
+NorthEast = SubResource("Resource_b480j")
+SouthEast = SubResource("Resource_ri253")
+SouthWest = SubResource("Resource_s84yp")
+NorthWest = SubResource("Resource_iftu5")
+Down = SubResource("Resource_83qj5")
+LayerConstraints = Dictionary[String, int]({})
+Up = SubResource("Resource_3yr7n")
 metadata/_custom_type_script = "uid://chb1eie0w5etp"

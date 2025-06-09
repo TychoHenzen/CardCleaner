@@ -15,7 +15,7 @@ public partial class EnemySpawnData : Resource
     [Export] public float MaxSignatureIntensity { get; set; } = 1.0f;
     
     // Terrain requirements
-    [Export] public SocketType PreferredTerrain { get; set; } = SocketType.Any;
+    [Export] public SocketDescriptor PreferredTerrain { get; set; } = new() { AcceptsAny = true };
     [Export] public float TerrainMatchBonus { get; set; } = 2.0f;
     
     // Visual representation on tilemap
@@ -28,8 +28,9 @@ public partial class EnemySpawnData : Resource
     public bool CanSpawnOnTile(SemanticTile tile, CardSignature blendedSignature)
     {
         // Check terrain compatibility
-        if (PreferredTerrain != SocketType.Any && !SemanticTile.SocketsCompatible(PreferredTerrain, tile.Up))
+        if (!PreferredTerrain.AcceptsAny && !PreferredTerrain.IsCompatibleWith(tile.Up))
             return false;
+
             
         // Check signature intensity
         var intensity = CalculateSignatureIntensity(blendedSignature);
@@ -44,7 +45,7 @@ public partial class EnemySpawnData : Resource
         var weight = SpawnWeight;
         
         // Bonus for terrain match
-        if (SemanticTile.SocketsCompatible(PreferredTerrain, tile.Up))
+        if (PreferredTerrain.IsCompatibleWith(tile.Up))
             weight *= TerrainMatchBonus;
             
         // Weight by signature similarity
