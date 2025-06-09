@@ -1,6 +1,8 @@
-﻿using CardCleaner.Scripts.Core.Enum;
+﻿using CardCleaner.Scripts.Core.Data;
+using CardCleaner.Scripts.Core.Enum;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
+using Godot.Collections;
 
 namespace CardCleaner.Scripts.Features.Worldgen;
 
@@ -14,8 +16,9 @@ public partial class EnemySpawnData : Resource
     [Export] public float MinSignatureIntensity { get; set; } = 0.3f;
     [Export] public float MaxSignatureIntensity { get; set; } = 1.0f;
     
-    // Terrain requirements
-    [Export] public SocketDescriptor PreferredTerrain { get; set; } = new() { AcceptsAny = true };
+    // Terrain requirements - now using CompatibilityTag arrays
+    [Export] public Array<CompatibilityTag> PreferredTerrain { get; set; } = new();
+    [Export] public bool AcceptsAnyTerrain { get; set; } = true;
     [Export] public float TerrainMatchBonus { get; set; } = 2.0f;
     
     // Visual representation on tilemap
@@ -28,10 +31,9 @@ public partial class EnemySpawnData : Resource
     public bool CanSpawnOnTile(SemanticTile tile, CardSignature blendedSignature)
     {
         // Check terrain compatibility
-        if (!PreferredTerrain.AcceptsAny && !PreferredTerrain.IsCompatibleWith(tile.Up))
+        if (!AcceptsAnyTerrain && !CompatibilityTag.IsArrayCompatibleWith(PreferredTerrain, tile.Up))
             return false;
 
-            
         // Check signature intensity
         var intensity = CalculateSignatureIntensity(blendedSignature);
         return intensity >= MinSignatureIntensity && intensity <= MaxSignatureIntensity;
@@ -45,7 +47,7 @@ public partial class EnemySpawnData : Resource
         var weight = SpawnWeight;
         
         // Bonus for terrain match
-        if (PreferredTerrain.IsCompatibleWith(tile.Up))
+        if (CompatibilityTag.IsArrayCompatibleWith(PreferredTerrain, tile.Up))
             weight *= TerrainMatchBonus;
             
         // Weight by signature similarity

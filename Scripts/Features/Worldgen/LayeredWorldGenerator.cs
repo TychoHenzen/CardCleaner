@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Enum;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -292,7 +293,7 @@ public partial class LayeredWorldGenerator
 
         foreach (var candidate in candidateTiles)
         {
-            if (baseTile.Up.IsCompatibleWith(candidate.Down))
+            if (CompatibilityTag.IsArrayCompatibleWith(baseTile.Up, candidate.Down))
             {
                 compatible.Add(candidate);
             }

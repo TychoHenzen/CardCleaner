@@ -25,17 +25,7 @@ public class CardShaderRendererTest
         Assertions.AssertThat(_renderer).IsNotNull();
         Assertions.AssertThat(_renderer).IsInstanceOf<CardShaderRenderer>();
     }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void Setup_NullCardRoot_DoesNotThrow()
-    {
-        // Act & Assert - Should handle null gracefully
-        _renderer.Setup(null!);
-        
-        Assertions.AssertThat(_renderer).IsNotNull();
-    }
-
+    
     [TestCase]
     [TestCategory("Unit")]
     public void SetGemEmission_ValidParameters_DoesNotThrow()

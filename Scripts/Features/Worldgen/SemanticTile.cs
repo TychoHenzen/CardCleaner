@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Linq;
+using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Enum;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
+using Godot.Collections;
+using Array = System.Array;
 
 namespace CardCleaner.Scripts.Features.Worldgen;
 
@@ -22,37 +26,27 @@ public partial class SemanticTile : Resource
     [Export] public TileLayer Layer { get; set; }
     [Export] public float BaseWeight { get; set; } = 1.0f;
     [Export] public CardSignature Signature { get; set; }
-    // WFC constraint sockets - now includes diagonals
-    [ExportSubgroup("North socket")]
     [Export]
-    public SocketDescriptor North { get; set; } = new();
-    [ExportSubgroup("East socket")]
-    [Export] public SocketDescriptor East { get; set; } = new();
-    [ExportSubgroup("South socket")]
-    [Export] public SocketDescriptor South { get; set; } = new();
-    [ExportSubgroup("West socket")]
-    [Export] public SocketDescriptor West { get; set; } = new();
-    [ExportSubgroup("North-East socket")]
-    [Export] public SocketDescriptor NorthEast { get; set; } = new();
-    [ExportSubgroup("South-East socket")]
-    [Export] public SocketDescriptor SouthEast { get; set; } = new();
-    [ExportSubgroup("South-West socket")]
-    [Export] public SocketDescriptor SouthWest { get; set; } = new();
-    [ExportSubgroup("North-West socket")]
-    [Export] public SocketDescriptor NorthWest { get; set; } = new();
-    [ExportSubgroup("Down socket")]
-    [Export] public SocketDescriptor Down { get; set; } = new();
+    public Array<CompatibilityTag> North { get; set; } = new();
+    [Export] public Array<CompatibilityTag>  East { get; set; } = new();
+    [Export] public Array<CompatibilityTag>  South { get; set; } = new();
+    [Export] public Array<CompatibilityTag>  West { get; set; } = new();
+    [Export] public Array<CompatibilityTag>  NorthEast { get; set; } = new();
+    [Export] public Array<CompatibilityTag>  SouthEast { get; set; } = new();
+    [Export] public Array<CompatibilityTag>  SouthWest { get; set; } = new();
+    [Export] public Array<CompatibilityTag>  NorthWest { get; set; } = new();
+    [Export] public Array<CompatibilityTag>  Down { get; set; } = new();
+    [Export] public Array<CompatibilityTag>  Up { get; set; } = new();
     /// <summary>
     /// Constraint modifications this tile applies to other layers when placed
     /// </summary>
-    [Export] public Godot.Collections.Dictionary<Direction, SocketType> LayerConstraints { get; set; } = new();
+    [Export] public Dictionary<Direction, SocketType> LayerConstraints { get; set; } = new();
     /// <summary>
     /// Check if this tile modifies constraints on other layers
     /// </summary>
     public bool HasLayerConstraints => LayerConstraints.Count > 0;
     
 
-    [ExportSubgroup("Up socket")] [Export] public SocketDescriptor Up { get; set; } = new();
     /// <summary>
     /// Get constraint modifications for a specific layer and direction
     /// </summary>
@@ -68,9 +62,9 @@ public partial class SemanticTile : Resource
     {
         LayerConstraints[direction] = constraint;
     }
-    public SocketDescriptor[] Sockets
+    public Array<CompatibilityTag>[] Sockets
     {
-        get { return new[] { North, East, South, West, NorthEast, SouthEast, SouthWest, NorthWest, Down, Up }; }
+        get { return new Array<CompatibilityTag>[] { North, East, South, West, NorthEast, SouthEast, SouthWest, NorthWest, Down, Up }; }
         set
         {
             North = value[0];
@@ -113,7 +107,7 @@ public partial class SemanticTile : Resource
         var oppositeDirection = GetOppositeDirection(direction);
         var theirSocket = other.Sockets[(int)oppositeDirection];
 
-        return ourSocket.IsCompatibleWith(theirSocket);
+        return ourSocket.Any(ours => theirSocket.Any(ours.IsCompatibleWith));
     }
 
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Enum;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
@@ -29,21 +30,38 @@ public class SemanticWfcGeneratorTest
         _testTileSet = new Array<SemanticTile> { _grassTile, _stoneTile, _waterTile };
     }
 
+    private static Array<CompatibilityTag> CreateSocketArray(string? biomeTag = null)
+    {
+        var array = new Array<CompatibilityTag>();
+        if (!string.IsNullOrEmpty(biomeTag))
+        {
+            array.Add(new CompatibilityTag { Tag = biomeTag });
+        }
+        return array;
+    }
+
     private static SemanticTile CreateTestTile(string name, SocketType north, SocketType east, SocketType south, SocketType west, float weight = 1.0f)
     {
         var tile = new SemanticTile
         {
             TileName = name,
-            North = new SocketDescriptor(){BiomeType = north, AcceptsAny = north == SocketType.None},
-            East = new SocketDescriptor(){BiomeType = east, AcceptsAny = north == SocketType.None},
-            South = new SocketDescriptor(){BiomeType = south, AcceptsAny = north == SocketType.None},
-            West = new SocketDescriptor(){BiomeType = west, AcceptsAny = north == SocketType.None},
+            North = CreateSocketArray(north == SocketType.None ? null : north.ToString()),
+            East = CreateSocketArray(east == SocketType.None ? null : east.ToString()),
+            South = CreateSocketArray(south == SocketType.None ? null : south.ToString()),
+            West = CreateSocketArray(west == SocketType.None ? null : west.ToString()),
+            NorthEast = CreateSocketArray(),
+            NorthWest = CreateSocketArray(),
+            SouthEast = CreateSocketArray(),
+            SouthWest = CreateSocketArray(),
+            Up = CreateSocketArray(),
+            Down = CreateSocketArray(),
             BaseWeight = weight,
             Passability = TilePassability.Passable,
             Layer = TileLayer.Terrain
         };
         return tile;
     }
+
 
     [TestCase]
     public void TestGeneratorInitialization()
@@ -71,7 +89,7 @@ public class SemanticWfcGeneratorTest
         {
             for (int x = 0; x < mapSize.X; x++)
             {
-                Assertions.AssertThat(result1[y, x]?.TileName).IsEqual(result2[y, x]?.TileName);
+                Assertions.AssertThat(result1[y, x]?.TileName).IsEqual(result2[y, x].TileName);
             }
         }
     }

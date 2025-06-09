@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Enum;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
@@ -44,20 +45,36 @@ public class LayeredWorldGeneratorTest
         return new Array<SemanticTile> { terrainTile, structureTile, decorationTile, effectTile };
     }
 
+    private static Array<CompatibilityTag> CreateSocketArray(string biomeTag = null)
+    {
+        var array = new Array<CompatibilityTag>();
+        if (!string.IsNullOrEmpty(biomeTag))
+        {
+            array.Add(new CompatibilityTag { Tag = biomeTag });
+        }
+        return array;
+    }
+
     private SemanticTile CreateTestTile(string name, TileLayer layer, SocketType socketType, bool any = false, float spawnChance = 1.0f)
     {
+        var biomeTag = any ? null : socketType.ToString();
+    
         var tile = new SemanticTile
         {
             TileName = name,
             Layer = layer,
             BaseWeight = 1.0f,
             GlobalSpawnChance = spawnChance,
-            Up = new SocketDescriptor{BiomeType = socketType, AcceptsAny = any},
-            Down = new SocketDescriptor{BiomeType = socketType, AcceptsAny = any},
-            North =new SocketDescriptor{BiomeType =  socketType, AcceptsAny = any},
-            East =new SocketDescriptor{BiomeType =  socketType, AcceptsAny = any},
-            South = new SocketDescriptor{BiomeType = socketType, AcceptsAny = any},
-            West = new SocketDescriptor{BiomeType = socketType, AcceptsAny = any}
+            Up = CreateSocketArray(biomeTag),
+            Down = CreateSocketArray(biomeTag),
+            North = CreateSocketArray(biomeTag),
+            East = CreateSocketArray(biomeTag),
+            South = CreateSocketArray(biomeTag),
+            West = CreateSocketArray(biomeTag),
+            NorthEast = CreateSocketArray(biomeTag),
+            NorthWest = CreateSocketArray(biomeTag),
+            SouthEast = CreateSocketArray(biomeTag),
+            SouthWest = CreateSocketArray(biomeTag)
         };
 
         // Initialize as single tile

@@ -28,4 +28,16 @@ public partial class CompatibilityTag : Resource
     
         return false;
     }
+    
+    /// <summary>
+    /// Check if any tag in the first array is compatible with any tag in the second array
+    /// </summary>
+    public static bool IsArrayCompatibleWith(Array<CompatibilityTag>? array1, Array<CompatibilityTag>? array2)
+    {
+        // Empty arrays mean "accepts anything" 
+        if (array1 == null || array1.Count == 0 || array2 == null || array2.Count == 0)
+            return true;
+
+        return array1.Any(tag1 => array2.Any(tag1.IsCompatibleWith));
+    }
 }
