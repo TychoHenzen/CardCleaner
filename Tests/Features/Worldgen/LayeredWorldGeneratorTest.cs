@@ -37,14 +37,14 @@ public class LayeredWorldGeneratorTest
     private Array<SemanticTile> CreateTestTileSet()
     {
         var terrainTile = CreateTestTile("Grass", TileLayer.Terrain, SocketType.Grasslands);
-        var structureTile = CreateTestTile("Tree", TileLayer.Structure, SocketType.Forest, 0.3f);
-        var decorationTile = CreateTestTile("Flower", TileLayer.Decoration, SocketType.Grasslands, 0.2f);
-        var effectTile = CreateTestTile("Particle", TileLayer.Effects, SocketType.Any, 0.1f);
+        var structureTile = CreateTestTile("Tree", TileLayer.Structure, SocketType.Forest, false,0.3f);
+        var decorationTile = CreateTestTile("Flower", TileLayer.Decoration, SocketType.Grasslands, false,0.2f);
+        var effectTile = CreateTestTile("Particle", TileLayer.Effects, SocketType.None, true, 0.1f);
 
         return new Array<SemanticTile> { terrainTile, structureTile, decorationTile, effectTile };
     }
 
-    private SemanticTile CreateTestTile(string name, TileLayer layer, SocketType socketType, float spawnChance = 1.0f)
+    private SemanticTile CreateTestTile(string name, TileLayer layer, SocketType socketType, bool any = false, float spawnChance = 1.0f)
     {
         var tile = new SemanticTile
         {
@@ -52,12 +52,12 @@ public class LayeredWorldGeneratorTest
             Layer = layer,
             BaseWeight = 1.0f,
             GlobalSpawnChance = spawnChance,
-            Up = socketType,
-            Down = socketType,
-            North = socketType,
-            East = socketType,
-            South = socketType,
-            West = socketType
+            Up = new SocketDescriptor{BiomeType = socketType, AcceptsAny = any},
+            Down = new SocketDescriptor{BiomeType = socketType, AcceptsAny = any},
+            North =new SocketDescriptor{BiomeType =  socketType, AcceptsAny = any},
+            East =new SocketDescriptor{BiomeType =  socketType, AcceptsAny = any},
+            South = new SocketDescriptor{BiomeType = socketType, AcceptsAny = any},
+            West = new SocketDescriptor{BiomeType = socketType, AcceptsAny = any}
         };
 
         // Initialize as single tile
@@ -206,8 +206,8 @@ public class LayeredWorldGeneratorTest
     public void TestSpawnChanceAffectsPlacement()
     {
         // Create tiles with different spawn chances
-        var alwaysSpawn = CreateTestTile("Always", TileLayer.Structure, SocketType.Any, 1.0f);
-        var neverSpawn = CreateTestTile("Never", TileLayer.Structure, SocketType.Any, 0.0f);
+        var alwaysSpawn = CreateTestTile("Always", TileLayer.Structure, SocketType.None,true, 1.0f);
+        var neverSpawn = CreateTestTile("Never", TileLayer.Structure, SocketType.None,true, 0.0f);
         
         var testTiles = new Array<SemanticTile> 
         { 

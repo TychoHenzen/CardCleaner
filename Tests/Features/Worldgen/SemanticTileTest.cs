@@ -13,18 +13,18 @@ public class SemanticTileTest
     {
         var grassTile = new SemanticTile
         {
-            North = SocketType.Grasslands,
-            East = SocketType.Grasslands,
-            South = SocketType.Grasslands,
-            West = SocketType.Grasslands
+            North = new SocketDescriptor(){BiomeType = SocketType.Grasslands},
+            East = new SocketDescriptor(){BiomeType = SocketType.Grasslands},
+            South = new SocketDescriptor(){BiomeType = SocketType.Grasslands},
+            West = new SocketDescriptor(){BiomeType = SocketType.Grasslands}
         };
         
         var stoneTile = new SemanticTile
         {
-            North = SocketType.Mountains,
-            East = SocketType.Mountains, 
-            South = SocketType.Mountains,
-            West = SocketType.Mountains
+            North = new SocketDescriptor(){BiomeType = SocketType.Mountains},
+            East = new SocketDescriptor(){BiomeType = SocketType.Mountains}, 
+            South = new SocketDescriptor(){BiomeType = SocketType.Mountains},
+            West = new SocketDescriptor(){BiomeType = SocketType.Mountains}
         };
 
         Assertions.AssertBool(grassTile.CanConnectTo(grassTile, Direction.North)).IsTrue();
@@ -36,18 +36,18 @@ public class SemanticTileTest
     {
         var anyTile = new SemanticTile
         {
-            North = SocketType.Any,
-            East = SocketType.Any,
-            South = SocketType.Any,
-            West = SocketType.Any
+            North = new SocketDescriptor(){AcceptsAny = true},
+            East = new SocketDescriptor(){AcceptsAny = true},
+            South = new SocketDescriptor(){AcceptsAny = true},
+            West = new SocketDescriptor(){AcceptsAny = true}
         };
         
         var grassTile = new SemanticTile
         {
-            North = SocketType.Grasslands,
-            East = SocketType.Grasslands,
-            South = SocketType.Grasslands,
-            West = SocketType.Grasslands
+            North = new SocketDescriptor(){BiomeType = SocketType.Grasslands},
+            East = new SocketDescriptor(){BiomeType = SocketType.Grasslands},
+            South = new SocketDescriptor(){BiomeType = SocketType.Grasslands},
+            West = new SocketDescriptor(){BiomeType = SocketType.Grasslands}
         };
 
         Assertions.AssertBool(anyTile.CanConnectTo(grassTile, Direction.North)).IsTrue();
@@ -59,10 +59,10 @@ public class SemanticTileTest
     {
         var tile = new SemanticTile
         {
-            North = SocketType.Grasslands,
-            East = SocketType.Grasslands,
-            South = SocketType.Grasslands,
-            West = SocketType.Grasslands
+            North = new SocketDescriptor(){BiomeType = SocketType.Grasslands},
+            East = new SocketDescriptor(){BiomeType = SocketType.Grasslands},
+            South = new SocketDescriptor(){BiomeType = SocketType.Grasslands},
+            West = new SocketDescriptor(){BiomeType = SocketType.Grasslands}
         };
 
         Assertions.AssertBool(tile.CanConnectTo(null, Direction.North)).IsFalse();

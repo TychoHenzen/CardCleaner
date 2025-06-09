@@ -290,22 +290,9 @@ public partial class LayeredWorldGenerator
     {
         var compatible = new List<SemanticTile>();
 
-        // Check if any socket on the base tile is "Selected"
-        if ((baseTile.Up & SocketType.Selected) != 0)
-        {
-            // If any socket has Selected flag, only the StackedTile is eligible
-            if (baseTile.StackedTile != null)
-            {
-                compatible.Add(baseTile.StackedTile);
-            }
-
-            return compatible;
-        }
-
-        // Normal compatibility checking for non-Selected sockets
         foreach (var candidate in candidateTiles)
         {
-            if (SemanticTile.SocketsCompatible(baseTile.Up, candidate.Down))
+            if (baseTile.Up.IsCompatibleWith(candidate.Down))
             {
                 compatible.Add(candidate);
             }

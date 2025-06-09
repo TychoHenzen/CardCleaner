@@ -34,10 +34,10 @@ public class SemanticWfcGeneratorTest
         var tile = new SemanticTile
         {
             TileName = name,
-            North = north,
-            East = east,
-            South = south,
-            West = west,
+            North = new SocketDescriptor(){BiomeType = north, AcceptsAny = north == SocketType.None},
+            East = new SocketDescriptor(){BiomeType = east, AcceptsAny = north == SocketType.None},
+            South = new SocketDescriptor(){BiomeType = south, AcceptsAny = north == SocketType.None},
+            West = new SocketDescriptor(){BiomeType = west, AcceptsAny = north == SocketType.None},
             BaseWeight = weight,
             Passability = TilePassability.Passable,
             Layer = TileLayer.Terrain
@@ -157,9 +157,9 @@ public class SemanticWfcGeneratorTest
     [TestCase]
     public void TestWeightedTileSelection()
     {
-        // Create tiles with very different weights
-        var heavyTile = CreateTestTile("Heavy", SocketType.Any, SocketType.Any, SocketType.Any, SocketType.Any, 100.0f);
-        var lightTile = CreateTestTile("Light", SocketType.Any, SocketType.Any, SocketType.Any, SocketType.Any, 0.1f);
+        // Create tiles with very different weights, SocketType.None makes the socket accept any
+        var heavyTile = CreateTestTile("Heavy", SocketType.None, SocketType.None, SocketType.None, SocketType.None, 100.0f);
+        var lightTile = CreateTestTile("Light", SocketType.None, SocketType.None, SocketType.None, SocketType.None, 0.1f);
         
         var weightedTileSet = new Array<SemanticTile> { heavyTile, lightTile };
         var mapSize = new Vector2I(20, 20);

@@ -21,30 +21,54 @@ public partial class SemanticTile : Resource
     [Export] public float GlobalSpawnChance { get; set; } = 0.0f;
     [Export] public TileLayer Layer { get; set; }
     [Export] public float BaseWeight { get; set; } = 1.0f;
-    [Export] public SemanticTile StackedTile { get; set; }
+    [Export] public CardSignature Signature { get; set; }
     // WFC constraint sockets - now includes diagonals
     [ExportSubgroup("North socket")]
-    [Export] public SocketType North { get; set; } = SocketType.Any;
+    [Export]
+    public SocketDescriptor North { get; set; } = new();
     [ExportSubgroup("East socket")]
-    [Export] public SocketType East { get; set; } = SocketType.Any;
+    [Export] public SocketDescriptor East { get; set; } = new();
     [ExportSubgroup("South socket")]
-    [Export] public SocketType South { get; set; } = SocketType.Any;
+    [Export] public SocketDescriptor South { get; set; } = new();
     [ExportSubgroup("West socket")]
-    [Export] public SocketType West { get; set; } = SocketType.Any;
+    [Export] public SocketDescriptor West { get; set; } = new();
     [ExportSubgroup("North-East socket")]
-    [Export] public SocketType NorthEast { get; set; } = SocketType.Any;
+    [Export] public SocketDescriptor NorthEast { get; set; } = new();
     [ExportSubgroup("South-East socket")]
-    [Export] public SocketType SouthEast { get; set; } = SocketType.Any;
+    [Export] public SocketDescriptor SouthEast { get; set; } = new();
     [ExportSubgroup("South-West socket")]
-    [Export] public SocketType SouthWest { get; set; } = SocketType.Any;
+    [Export] public SocketDescriptor SouthWest { get; set; } = new();
     [ExportSubgroup("North-West socket")]
-    [Export] public SocketType NorthWest { get; set; } = SocketType.Any;
+    [Export] public SocketDescriptor NorthWest { get; set; } = new();
     [ExportSubgroup("Down socket")]
-    [Export] public SocketType Down { get; set; } = SocketType.Any;
-    [ExportSubgroup("Up socket")]
-    [Export] public SocketType Up { get; set; } = SocketType.Any;
+    [Export] public SocketDescriptor Down { get; set; } = new();
+    /// <summary>
+    /// Constraint modifications this tile applies to other layers when placed
+    /// </summary>
+    [Export] public Godot.Collections.Dictionary<Direction, SocketType> LayerConstraints { get; set; } = new();
+    /// <summary>
+    /// Check if this tile modifies constraints on other layers
+    /// </summary>
+    public bool HasLayerConstraints => LayerConstraints.Count > 0;
+    
 
-    public SocketType[] Sockets
+    [ExportSubgroup("Up socket")] [Export] public SocketDescriptor Up { get; set; } = new();
+    /// <summary>
+    /// Get constraint modifications for a specific layer and direction
+    /// </summary>
+    public SocketType? GetLayerConstraint(Direction direction)
+    {
+        return LayerConstraints.TryGetValue(direction, out var constraint) ? constraint : null;
+    }
+
+    /// <summary>
+    /// Set a constraint modification for a specific layer and direction
+    /// </summary>
+    public void SetLayerConstraint(Direction direction, SocketType constraint)
+    {
+        LayerConstraints[direction] = constraint;
+    }
+    public SocketDescriptor[] Sockets
     {
         get { return new[] { North, East, South, West, NorthEast, SouthEast, SouthWest, NorthWest, Down, Up }; }
         set
@@ -61,7 +85,6 @@ public partial class SemanticTile : Resource
             Up = value[9];
         }
     }
-    [Export] public CardSignature Signature { get; set; }
 
     // Runtime properties for tileset integration
     public int AtlasId { get; set; } = -1;
@@ -90,17 +113,9 @@ public partial class SemanticTile : Resource
         var oppositeDirection = GetOppositeDirection(direction);
         var theirSocket = other.Sockets[(int)oppositeDirection];
 
-        return SocketsCompatible(ourSocket, theirSocket);
+        return ourSocket.IsCompatibleWith(theirSocket);
     }
 
-    public static bool SocketsCompatible(SocketType socket1, SocketType socket2)
-    {
-        // Handle Any socket - compatible with everything
-        if (socket1 == SocketType.Any || socket2 == SocketType.Any) return true;
-    
-        // Use bitwise AND to check for shared socket types
-        return (socket1 & socket2) != 0;
-    }
 
     private static Direction GetOppositeDirection(Direction dir)
     {
