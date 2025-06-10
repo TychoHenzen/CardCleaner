@@ -21,12 +21,12 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
         {
             Designer = cardRoot.GetNodeOrNull<CardDesigner>("Designer");
         }
-        CallDeferred(nameof(PerformDeferredBake), cardRoot);
+        CallDeferred(MethodName.PerformDeferredBake, cardRoot);
     }
 
-    private void PerformDeferredBake(Node cardRoot)
+    private void PerformDeferredBake(Node? cardRoot)
     {
-        if (_baked) return;
+        if (_baked || cardRoot == null) return;
         BakeToMesh(cardRoot);
         _baked = true;
     }

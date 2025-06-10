@@ -40,7 +40,7 @@ public partial class DeckSlot : Node3D
         if (_cards.Count < Capacity)
         {
             _processingEntry = true;
-            CallDeferred(nameof(LockCardDeferred), card);
+            CallDeferred(MethodName.LockCardDeferred, card);
         }
         else
         {

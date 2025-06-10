@@ -6,7 +6,7 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
-public partial class CardHolder : Node3D
+public partial class CardHolder : Node3D, ICardHolder
 {
     [Signal]
     public delegate void CardAddedEventHandler(RigidBody3D card);
@@ -60,7 +60,7 @@ public partial class CardHolder : Node3D
 
         // Reparent first, then enable physics with a delay to avoid conflicts
         card.Reparent(ServiceLocator.Get<ICardSpawner>().GetNode());
-        CallDeferred(nameof(EnablePhysicsDeferred), card);
+        CallDeferred(MethodName.EnablePhysicsDeferred, card);
 
         PositionCardsForDrop();
         EmitSignal(nameof(CardRemoved), card);

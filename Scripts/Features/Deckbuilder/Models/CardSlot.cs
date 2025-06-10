@@ -41,7 +41,7 @@ public partial class CardSlot : Node3D
         if (_card == null)
         {
             _processingEntry = true;
-            CallDeferred(nameof(LockCardDeferred), card);
+            CallDeferred(MethodName.LockCardDeferred, card);
         }
         else
         {

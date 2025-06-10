@@ -27,7 +27,7 @@ public partial class ServiceLocator : Node
         if(_instance != null)
             ILog.Error("!!!Duplicate service locator!!!");
         _instance = this;
-        CallDeferred(nameof(ResolveServices));
+        CallDeferred(MethodName.ResolveServices);
     }
     public static void ResetForTesting()
     {

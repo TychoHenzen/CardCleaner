@@ -63,22 +63,22 @@ public partial class CardDesigner : Node, ICardComponent
 
     public void Setup(Node cardRoot)
     {
-        _outerBox = cardRoot.GetNode<CsgBox3D>("OuterBox") ?? 
+        _outerBox = cardRoot.GetNodeOrNull<CsgBox3D>("OuterBox") ?? 
                     throw new InvalidOperationException("OuterBox node not found");
     
-        _combiner = _outerBox.GetNode<CsgCombiner3D>("Combiner") ?? 
+        _combiner = _outerBox.GetNodeOrNull<CsgCombiner3D>("Combiner") ?? 
                     throw new InvalidOperationException("Combiner node not found");
 
         _cornerCylinders = _combiner.GetChildren().OfType<CsgCylinder3D>().ToArray();
         _trimBoxes = _combiner.GetChildren().OfType<CsgBox3D>().ToArray();
 
-        _collisionShape = cardRoot.GetNode<CollisionShape3D>("CardCollision") ?? 
+        _collisionShape = cardRoot.GetNodeOrNull<CollisionShape3D>("CardCollision") ?? 
                           throw new InvalidOperationException("CardCollision node not found");
     
         _collisionBoxShape = _collisionShape.Shape as BoxShape3D ?? 
                              throw new InvalidOperationException("CardCollision shape is not BoxShape3D");
 
-        _outlineBox = cardRoot.GetNode<CsgBox3D>("OutlineBox");
+        _outlineBox = cardRoot.GetNodeOrNull<CsgBox3D>("OutlineBox");
         if (_outlineBox != null)
             _outlineBox.Visible = false;
 

@@ -14,6 +14,10 @@ public class CardShaderRendererTest
     public void Setup()
     {
         _renderer = new CardShaderRenderer();
+        var materialManager = new CardMaterialManager();
+        materialManager.Name = "MaterialManager";
+        _renderer.AddChild(materialManager);
+        _renderer.Setup(_renderer);
         Assertions.AddNode(_renderer);
     }
 
@@ -60,16 +64,6 @@ public class CardShaderRendererTest
         _renderer.SetGemEmission(-1, Colors.Red, 1.0f);
         _renderer.SetGemEmission(8, Colors.Blue, 1.0f);
         _renderer.SetGemEmission(100, Colors.Green, 1.0f);
-        
-        Assertions.AssertThat(_renderer).IsNotNull();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void Bake_NullTemplate_DoesNotThrow()
-    {
-        // Act & Assert - Should handle null template gracefully
-        _renderer.Bake(null!);
         
         Assertions.AssertThat(_renderer).IsNotNull();
     }

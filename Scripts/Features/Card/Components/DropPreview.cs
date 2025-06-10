@@ -1,8 +1,9 @@
-﻿using Godot;
+﻿using CardCleaner.Scripts.Core.Interfaces;
+using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
-public partial class DropPreview : Node3D
+public partial class DropPreview : Node3D, IDropPreview
 {
     private MeshInstance3D _previewInstance;
     private ImmediateMesh _previewMesh;

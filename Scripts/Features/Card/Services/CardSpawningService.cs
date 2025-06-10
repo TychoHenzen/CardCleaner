@@ -45,7 +45,7 @@ public partial class CardSpawningService : Node, ICardSpawningService
             controller.Signature = signature;
             
             // Emit signal so other systems can connect to this new card
-            CallDeferred(nameof(EmitCardSpawnedSignal), controller);
+            CallDeferred(MethodName.EmitCardSpawnedSignal, controller);
         }
 
         // Set up card renderer with deferred baking
@@ -53,7 +53,7 @@ public partial class CardSpawningService : Node, ICardSpawningService
         if (renderer != null)
         {
             // Use CallDeferred to ensure all components are ready
-            CallDeferred(nameof(BakeCardRenderer), renderer, signature);
+            CallDeferred(MethodName.BakeCardRenderer, renderer, signature);
         }
 
         return cardInstance;

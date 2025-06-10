@@ -55,7 +55,7 @@ public partial class GameSessionService : Node, IGameSessionService
         ILog.Print($"Started session with map seed and {_abilityCards.Count} ability cards");
         
         // Auto-advance to next phase
-        CallDeferred(nameof(AdvanceSession));
+        CallDeferred(MethodName.AdvanceSession);
     }
 
     public void AdvanceSession()
@@ -101,7 +101,7 @@ public partial class GameSessionService : Node, IGameSessionService
         CurrentState = SessionState.Exploring;
         
         // Auto-advance after brief delay
-        GetTree().CreateTimer(0.5f).Timeout += () => CallDeferred(nameof(AdvanceSession));
+        GetTree().CreateTimer(0.5f).Timeout += () => CallDeferred(MethodName.AdvanceSession);
     }
 
     private void ExploreMap()
@@ -114,7 +114,7 @@ public partial class GameSessionService : Node, IGameSessionService
         CurrentState = SessionState.InCombat;
         
         // Auto-advance after brief delay  
-        GetTree().CreateTimer(0.5f).Timeout += () => CallDeferred(nameof(AdvanceSession));
+        GetTree().CreateTimer(0.5f).Timeout += () => CallDeferred(MethodName.AdvanceSession);
     }
 
     private void ResolveCombat()
@@ -127,7 +127,7 @@ public partial class GameSessionService : Node, IGameSessionService
         CurrentState = SessionState.GeneratingLoot;
         
         // Auto-advance after brief delay
-        GetTree().CreateTimer(0.5f).Timeout += () => CallDeferred(nameof(AdvanceSession));
+        GetTree().CreateTimer(0.5f).Timeout += () => CallDeferred(MethodName.AdvanceSession);
     }
 
     private void GenerateLoot()

@@ -51,7 +51,7 @@ public partial class CardSpawner : Node3D, ICardSpawner
     {
         if (_spawningService is null)
         {
-            CallDeferred(nameof(SpawnSingleCard));
+            CallDeferred(MethodName.SpawnSingleCard);
             return;
         }
         // Calculate spawn transform with random offset
