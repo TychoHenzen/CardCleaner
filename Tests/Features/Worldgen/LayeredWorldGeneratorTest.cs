@@ -23,7 +23,7 @@ public class LayeredWorldGeneratorTest
     private TileMapLayer _mockEnemyLayer = null!;
     private CompatibilityTag Grass = new() { Tag = "Grasslands" };
     private CompatibilityTag Forest = new() { Tag = "Forest" };
-    private CompatibilityTag Any = new() { Tag = "Any", Any = true };
+    private CompatibilityTag Any = new() { Tag = "Any", Mode = CompatibilityTag.CompatibilityMode.Any };
 
     [BeforeTest]
     public void Setup()

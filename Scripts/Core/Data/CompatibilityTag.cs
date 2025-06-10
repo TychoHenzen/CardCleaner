@@ -8,33 +8,56 @@ namespace CardCleaner.Scripts.Core.Data;
 [GlobalClass]
 public partial class CompatibilityTag : Resource
 {
-    
+    public enum CompatibilityMode
+    {
+        None,   // Use explicit CompatibleWith lists only
+        Any,    // Compatible with everything
+        Self,   // Compatible only with identical tags
+        Not     // Compatible with tags that DON'T match this pattern
+    }
+
     [Export] public string Tag { get; set; } = "";
     [Export] public Array<CompatibilityTag> CompatibleWith { get; set; } = new();
-    [Export] public bool Any { get; set; }
-    [Export] public bool Self { get; set; } = true;
+    [Export] public CompatibilityMode Mode { get; set; } = CompatibilityMode.Self;
 
     public bool IsCompatibleWith(CompatibilityTag other)
     {
-        // Any test: if either tag is marked as Any we're always compatible
-        if (Any || other.Any) 
+        // Handle Any mode first - highest priority
+        if (Mode == CompatibilityMode.Any || other.Mode == CompatibilityMode.Any)
             return true;
-        // Self test: if the two tags are identical and we're set to be self-compatible
-        if (other == this) 
-            return Self;
-        // Fast path: check if other tag is explicitly listed in our compatible tags
+
+        // Handle Not mode - check if other tag matches our exclusion pattern
+        if (Mode == CompatibilityMode.Not)
+        {
+            bool otherMatchesOurPattern = other.Tag.Equals(Tag) || 
+                                         CompatibleWith.Contains(other) || 
+                                         other.CompatibleWith.Contains(this);
+            return !otherMatchesOurPattern;
+        }
+
+        // If other tag is Not mode, let it handle the logic
+        if (other.Mode == CompatibilityMode.Not)
+        {
+            return other.IsCompatibleWith(this);
+        }
+
+        // Handle Self mode - only compatible with identical tags
+        if (Mode == CompatibilityMode.Self && other == this)
+            return true;
+
+        // Handle None mode and explicit compatibility lists
         if (CompatibleWith.Contains(other))
             return true;
 
-        // Reciprocal check: check if we're listed in other's compatible tags  
         if (other.CompatibleWith.Contains(this))
             return true;
 
-        // Fallback: if both compatibility lists are null/empty, compare tag strings
+        // Fallback for None mode: if both have empty lists, compare tag strings
         bool ourListEmpty = CompatibleWith.Count == 0;
         bool theirListEmpty = other.CompatibleWith.Count == 0;
 
-        if (ourListEmpty && theirListEmpty)
+        if (Mode == CompatibilityMode.None && other.Mode == CompatibilityMode.None && 
+            ourListEmpty && theirListEmpty)
             return Tag.Equals(other.Tag);
 
         return false;

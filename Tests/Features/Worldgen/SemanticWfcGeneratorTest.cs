@@ -22,7 +22,7 @@ public class SemanticWfcGeneratorTest
     private static readonly CompatibilityTag Grasslands = new(){Tag = "Grasslands"};
     private static readonly CompatibilityTag Mountains = new(){Tag = "Mountains"};
     private static readonly CompatibilityTag Swamp = new(){Tag = "Swamp"};
-    private static readonly CompatibilityTag Any = new(){Tag = "Any", Any = true};
+    private static readonly CompatibilityTag Any = new(){Tag = "Any", Mode = CompatibilityTag.CompatibilityMode.Any};
 
     [BeforeTest]
     public void Setup()

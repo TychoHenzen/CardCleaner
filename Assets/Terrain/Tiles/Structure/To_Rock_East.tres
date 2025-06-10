@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="SemanticTile" load_steps=11 format=3 uid="uid://ckoktfxv27wx4"]
+
+[ext_resource type="Script" uid="uid://d2t3c4inr12or" path="res://Scripts/Core/Data/CompatibilityTag.cs" id="1_hvi17"]
+[ext_resource type="Script" uid="uid://f5ebq2hn0u4e" path="res://Scripts/Features/Worldgen/LayerConstraint.cs" id="2_g02wm"]
+[ext_resource type="Resource" uid="uid://dhusbyk7k015u" path="res://Assets/Terrain/Tags/Rocks.tres" id="3_6xle2"]
+[ext_resource type="Script" uid="uid://ge6gvuoe7v5o" path="res://Scripts/Features/Worldgen/TilePlacement.cs" id="4_chxld"]
+[ext_resource type="TileSet" uid="uid://2nr7osvy2wa7" path="res://Assets/Terrain/TileSets/ByLayer/Terrain.tres" id="5_0e3ca"]
+[ext_resource type="Script" uid="uid://chb1eie0w5etp" path="res://Scripts/Features/Worldgen/SemanticTile.cs" id="6_remos"]
+
+[sub_resource type="Resource" id="Resource_lttlc"]
+script = ExtResource("2_g02wm")
+targetLayer = 0
+AffectedSocket = 1
+operation = 0
+tag = ExtResource("3_6xle2")
+metadata/_custom_type_script = "uid://f5ebq2hn0u4e"
+
+[sub_resource type="Resource" id="Resource_hvi17"]
+script = ExtResource("2_g02wm")
+targetLayer = 0
+AffectedSocket = 4
+operation = 0
+tag = ExtResource("3_6xle2")
+metadata/_custom_type_script = "uid://f5ebq2hn0u4e"
+
+[sub_resource type="Resource" id="Resource_g02wm"]
+script = ExtResource("2_g02wm")
+targetLayer = 0
+AffectedSocket = 5
+operation = 0
+tag = ExtResource("3_6xle2")
+metadata/_custom_type_script = "uid://f5ebq2hn0u4e"
+
+[sub_resource type="Resource" id="Resource_bousd"]
+script = ExtResource("4_chxld")
+BlocksMovement = false
+BlocksTiles = false
+AnimationFrames = Array[Vector3i]([Vector3i(6, 0, 111)])
+AnimationSpeed = 1.0
+
+[resource]
+script = ExtResource("6_remos")
+TileName = ""
+Passability = 0
+TileSet = ExtResource("5_0e3ca")
+Size = Vector2i(1, 1)
+Tile = SubResource("Resource_bousd")
+GlobalSpawnChance = 0.0
+Layer = 2
+BaseWeight = 1.0
+LayerConstraints = Array[ExtResource("2_g02wm")]([SubResource("Resource_lttlc"), SubResource("Resource_hvi17"), SubResource("Resource_g02wm")])
+North = []
+East = []
+South = []
+West = []
+NorthEast = []
+SouthEast = []
+SouthWest = []
+NorthWest = []
+Down = Array[ExtResource("1_hvi17")]([])
+Up = Array[ExtResource("1_hvi17")]([])
+metadata/_custom_type_script = "uid://chb1eie0w5etp"
