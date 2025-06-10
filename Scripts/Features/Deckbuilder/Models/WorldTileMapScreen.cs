@@ -18,8 +18,10 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 [GlobalClass]
 public partial class WorldTileMapScreen : Node3D
 {
-    [Export] public Array<SemanticTile> SemanticTiles { get; set; } = new();
-    [Export] public int TileSize { get; set; } = 32;
+    [Export] public WorldData? Configuration { get; set; }
+    public Array<SemanticTile> SemanticTiles => Configuration?.SemanticTiles ?? new Array<SemanticTile>();
+    public int TileSize => Configuration?.TileSize ?? 32;
+    public Array<EnemySpawnData> EnemySpawnData => Configuration?.EnemySpawnData ?? new Array<EnemySpawnData>();
 
     // Runtime TileMapLayer nodes for actual gameplay
     [Export] public TileMapLayer? TerrainLayer { get; set; }
@@ -28,7 +30,6 @@ public partial class WorldTileMapScreen : Node3D
     [Export] public TileMapLayer? EffectLayer { get; set; }
     
     [Export] public TileMapLayer? EnemyLayer { get; set; }
-    [Export] public Array<EnemySpawnData> EnemySpawnData { get; set; } = new();
     
     [Export] public SubViewport? Viewport { get; set; }
     [Export] public MeshInstance3D? ScreenMesh { get; set; }
@@ -208,7 +209,7 @@ private void ConfigureCamera()
         int validTileCount = 0;
         foreach (var tile in SemanticTiles)
         {
-            if (tile.TileSet != null && tile.Tiles.Length > 0)
+            if (tile.TileSet != null && tile.Tile != null)
                 validTileCount++;
         }
     
@@ -382,16 +383,16 @@ private void ConfigureCamera()
     {
         try
         {
-            var source = tileSet.GetSource(tilePlacement.SourceId);
+            var source = tileSet.GetSource(tilePlacement.AnimationFrames[0].X);
             if (source is not TileSetAtlasSource atlasSource)
             {
-                return CreateFallbackTileImage($"Invalid source: {tilePlacement.SourceId}", Colors.Red);
+                return CreateFallbackTileImage($"Invalid source: {tilePlacement.AnimationFrames[0].X}", Colors.Red);
             }
 
             var texture = atlasSource.Texture;
             if (texture == null)
             {
-                return CreateFallbackTileImage($"No texture in source: {tilePlacement.SourceId}", Colors.Orange);
+                return CreateFallbackTileImage($"No texture in source: {tilePlacement.AnimationFrames[0].X}", Colors.Orange);
             }
 
             var sourceImage = texture.GetImage();
@@ -400,10 +401,10 @@ private void ConfigureCamera()
                 return CreateFallbackTileImage($"Failed to get image from texture", Colors.Yellow);
             }
 
-            var region = atlasSource.GetTileTextureRegion(tilePlacement.AtlasCoords);
+            var region = atlasSource.GetTileTextureRegion(tilePlacement.AnimationFrames[0].YZ());
             if (region.Size.X <= 0 || region.Size.Y <= 0)
             {
-                return CreateFallbackTileImage($"Invalid region: {tilePlacement.AtlasCoords}", Colors.Magenta);
+                return CreateFallbackTileImage($"Invalid region: {tilePlacement.AnimationFrames[0]}", Colors.Magenta);
             }
 
             var tileImage = sourceImage.GetRegion(region);

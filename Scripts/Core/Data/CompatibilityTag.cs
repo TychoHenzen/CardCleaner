@@ -4,40 +4,42 @@ using Godot.Collections;
 
 namespace CardCleaner.Scripts.Core.Data;
 
+[Tool]
+[GlobalClass]
 public partial class CompatibilityTag : Resource
 {
-    [Export] public string Tag { get; set; } = "";
-    [Export] public Array<CompatibilityTag>? CompatibleWith { get; set; }
     
+    [Export] public string Tag { get; set; } = "";
+    [Export] public Array<CompatibilityTag> CompatibleWith { get; set; } = new();
+    [Export] public bool Any { get; set; }
+    [Export] public bool Self { get; set; } = true;
+
     public bool IsCompatibleWith(CompatibilityTag other)
     {
+        // Any test: if either tag is marked as Any we're always compatible
+        if (Any || other.Any) 
+            return true;
+        // Self test: if the two tags are identical and we're set to be self-compatible
+        if (other == this) 
+            return Self;
         // Fast path: check if other tag is explicitly listed in our compatible tags
-        if (CompatibleWith?.Contains(other) == true)
-            return true;
-    
-        // Reciprocal check: check if we're listed in other's compatible tags  
-        if (other.CompatibleWith?.Contains(this) == true)
-            return true;
-    
-        // Fallback: if both compatibility lists are null/empty, compare tag strings
-        bool ourListEmpty = CompatibleWith == null || CompatibleWith.Count == 0;
-        bool theirListEmpty = other.CompatibleWith == null || other.CompatibleWith.Count == 0;
-    
-        if (ourListEmpty && theirListEmpty)
-            return Tag == other.Tag;
-    
-        return false;
-    }
-    
-    /// <summary>
-    /// Check if any tag in the first array is compatible with any tag in the second array
-    /// </summary>
-    public static bool IsArrayCompatibleWith(Array<CompatibilityTag>? array1, Array<CompatibilityTag>? array2)
-    {
-        // Empty arrays mean "accepts anything" 
-        if (array1 == null || array1.Count == 0 || array2 == null || array2.Count == 0)
+        if (CompatibleWith.Contains(other))
             return true;
 
-        return array1.Any(tag1 => array2.Any(tag1.IsCompatibleWith));
+        // Reciprocal check: check if we're listed in other's compatible tags  
+        if (other.CompatibleWith.Contains(this))
+            return true;
+
+        // Fallback: if both compatibility lists are null/empty, compare tag strings
+        bool ourListEmpty = CompatibleWith.Count == 0;
+        bool theirListEmpty = other.CompatibleWith.Count == 0;
+
+        if (ourListEmpty && theirListEmpty)
+            return Tag.Equals(other.Tag);
+
+        return false;
     }
+
+    public static bool IsArrayCompatibleWith(Array<CompatibilityTag> self, Array<CompatibilityTag> other) => 
+        self.Any(selfTag => other.Any(selfTag.IsCompatibleWith));
 }

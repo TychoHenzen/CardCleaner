@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="WorldData" load_steps=5 format=3 uid="uid://b46r3jmjkdla3"]
+
+[ext_resource type="Script" uid="uid://chb1eie0w5etp" path="res://Scripts/Features/Worldgen/SemanticTile.cs" id="1_4cgs3"]
+[ext_resource type="Script" uid="uid://d24selehqatn4" path="res://Scripts/Features/Worldgen/EnemySpawnData.cs" id="1_syeba"]
+[ext_resource type="Resource" uid="uid://r26w5bp0crtv" path="res://Assets/Terrain/Tiles/ForestFloor.tres" id="2_erdua"]
+[ext_resource type="Script" uid="uid://0kwcget0jt4s" path="res://Scripts/Features/Worldgen/WorldData.cs" id="5_nt6xv"]
+
+[resource]
+script = ExtResource("5_nt6xv")
+TerrainTiles = Array[ExtResource("1_4cgs3")]([ExtResource("2_erdua")])
+StructureTiles = Array[ExtResource("1_4cgs3")]([])
+DecorTiles = Array[ExtResource("1_4cgs3")]([])
+EffectTiles = Array[ExtResource("1_4cgs3")]([])
+EnemySpawnData = Array[ExtResource("1_syeba")]([])
+TileSize = 32
+metadata/_custom_type_script = "uid://0kwcget0jt4s"

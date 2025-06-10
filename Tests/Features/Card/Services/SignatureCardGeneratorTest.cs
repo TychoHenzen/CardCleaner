@@ -1,11 +1,15 @@
-﻿using CardCleaner.Scripts.Core.Data;
+﻿using System.Threading.Tasks;
+using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using GdUnit4;
 using Godot;
+using NSubstitute;
 
 namespace CardCleaner.Tests.Features;
 
@@ -246,4 +250,37 @@ public class SignatureCardGeneratorTest
         Assertions.AssertThat(_template.CardBase.Texture).IsNotNull();
         Assertions.AssertThat(_template.Art.Texture).IsNotNull();
     }
+    [TestCase]
+    public async Task TestGenerateCardRenderer_WithMockedRenderer()
+    {
+        var signature = new CardSignature(new[] { 0.7f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
+    
+        // Use NSubstitute for the renderer interface behavior we care about
+        var mockMaterialManager = Substitute.For<ICardMaterialComponent>();
+    
+        // Set up the material manager to track calls
+        mockMaterialManager.ApplyMaterial(Arg.Any<MeshInstance3D>()).Returns(new ShaderMaterial());
+    
+        // Test with real renderer but mock its dependencies
+        var realRenderer = new CardShaderRenderer();
+        var materialManager = new CardMaterialManager();
+        materialManager.Name = "MaterialManager";
+        realRenderer.AddChild(materialManager);
+        realRenderer.Setup(realRenderer);
+        realRenderer.NameLabel = new Label3D();
+        realRenderer.AddChild(realRenderer.NameLabel);
+        realRenderer.AttrLabel = new Label3D();
+        realRenderer.AddChild(realRenderer.AttrLabel);
+        
+        
+        Assertions.AddNode(realRenderer);
+    
+        _generator.GenerateCardRenderer(realRenderer, signature, _template);
+            
+    
+        // Verify the expected behavior without relying on custom mock implementations
+        Assertions.AssertThat(realRenderer.NameLabel.Text).IsEqual("Rare");
+        Assertions.AssertThat(realRenderer.AttrLabel.Text).IsEqual("Signature[0,70, -0,50, 0,00, 0,00, 0,00, 0,00, 0,00, 0,00]");
+    }
+
 }

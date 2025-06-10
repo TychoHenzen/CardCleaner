@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CompatibilityTag" load_steps=2 format=3 uid="uid://b6handrn6naxt"]
+
+[ext_resource type="Script" uid="uid://d2t3c4inr12or" path="res://Scripts/Core/Data/CompatibilityTag.cs" id="1_qiql7"]
+
+[resource]
+script = ExtResource("1_qiql7")
+Tag = "Forest"
+CompatibleWith = []
+Any = false
+Self = true
+metadata/_custom_type_script = "uid://d2t3c4inr12or"

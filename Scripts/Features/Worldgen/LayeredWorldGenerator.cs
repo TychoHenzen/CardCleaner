@@ -51,8 +51,8 @@ public partial class LayeredWorldGenerator
         }
     }
 
-    public void Generate(ulong seed, TileMapLayer? terrainLayer, TileMapLayer? structureLayer, 
-        TileMapLayer? decorationLayer, TileMapLayer? effectLayer, TileMapLayer? enemyLayer, 
+    public void Generate(ulong seed, TileMapLayer? terrainLayer, TileMapLayer? structureLayer,
+        TileMapLayer? decorationLayer, TileMapLayer? effectLayer, TileMapLayer? enemyLayer,
         Vector2I mapSize, BaselineGradient? gradient = null, Array<EnemySpawnData>? enemies = null)
     {
         _rng.Seed = seed;
@@ -88,13 +88,13 @@ public partial class LayeredWorldGenerator
             ILog.Warning("No terrain tiles available for generation");
             return new SemanticTile?[_mapSize.Y, _mapSize.X];
         }
-    
+
         var terrainTileArray = new Array<SemanticTile>();
         foreach (var tile in _terrainTiles)
         {
             terrainTileArray.Add(tile);
         }
-    
+
         // Use gradient-influenced generator if gradient provided
         if (_baselineGradient != null)
         {
@@ -344,7 +344,7 @@ public partial class LayeredWorldGenerator
 
                 if (tilePlacement != null)
                 {
-                    layer.SetCell(position, tilePlacement.SourceId, tilePlacement.AtlasCoords);
+                    layer.SetCell(position, tilePlacement.AnimationFrames[0].X, tilePlacement.AnimationFrames[0].YZ());
                 }
             }
         }

@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Tests.Mocking;
 using GdUnit4;
 using Godot;
+using NSubstitute;
 
 namespace CardCleaner.Tests.Features;
 
@@ -18,12 +19,13 @@ namespace CardCleaner.Tests.Features;
 public class CardSpawningServiceTest
 {
     private CardSpawningService _service= null!;
-    private MockCardGenerator _mockGenerator= null!;
+    private ICardGenerator _mockGenerator= null!;
     private RandomNumberGenerator _rng= null!;
     
     private Node3D _cardParent= null!;
     private PackedScene _mockCardScene= null!;
 
+    
     [BeforeTest]
     public void Setup()
     {
@@ -31,22 +33,25 @@ public class CardSpawningServiceTest
         _cardParent = new Node3D();
         Assertions.AddNode(_cardParent);
         
-        // Create mock services
-        _mockGenerator = new MockCardGenerator();
+        // Create dependencies using NSubstitute instead of custom mock
+        _mockGenerator = Substitute.For<ICardGenerator>();
         _rng = new RandomNumberGenerator();
         _rng.Seed = 42; // Deterministic for testing
         
-        // Set up service locator with mocks
-        ServiceLocator.Container.RegisterSingleton<ICardGenerator>(_mockGenerator);
+        // Register dependencies in ServiceLocator BEFORE creating the service
+        ServiceLocator.Container.RegisterSingleton(_mockGenerator);
         ServiceLocator.Container.RegisterSingleton(_rng);
         
-        // Create the service
+        // Create the service and add to scene tree
         _service = new CardSpawningService();
         Assertions.AddNode(_service);
         
-        // Create a mock card scene
+        // Set up the card scene
         _mockCardScene = GD.Load<PackedScene>("res://Scenes/CardShader.tscn");
         _service.CardScene = _mockCardScene;
+        
+        // Force _Ready() to be called and wait for dependency resolution
+        _service._Ready();
     }
 
 
@@ -85,30 +90,44 @@ public class CardSpawningServiceTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestSpawnRandomCardCreatesCard()
     {
+        // Arrange
         var spawnTransform = Transform3D.Identity;
         spawnTransform.Origin = new Vector3(1, 2, 3);
         
+        // Act
         var spawnedCard = _service.SpawnRandomCard(spawnTransform, _cardParent);
 
+        // Assert
+        Assertions.AssertThat(spawnedCard).IsNotNull();
         Assertions.AssertThat(spawnedCard.Name).IsEqual("Card");
         Assertions.AssertThat(spawnedCard.GetParent()).IsEqual(_cardParent);
         Assertions.AssertThat(spawnedCard.GlobalTransform.Origin).IsEqual(spawnTransform.Origin);
     }
 
+
+    
     [TestCase]
+    [TestCategory("Unit")]
     public void TestSpawnCardWithSpecificSignature()
     {
+        // Arrange
         var signature = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f });
         var spawnTransform = Transform3D.Identity;
         
+        // Act
         var spawnedCard = _service.SpawnCard(signature, spawnTransform, _cardParent);
+        
+        // Assert
+        Assertions.AssertThat(spawnedCard).IsNotNull();
+        Assertions.AssertThat(spawnedCard.Name).IsEqual("Card");
+        Assertions.AssertThat(spawnedCard.GetParent()).IsEqual(_cardParent);
         
         if (spawnedCard is CardController controller)
         {
             Assertions.AssertThat(controller.Signature).IsNotNull();
-            // Note: The signature gets set during spawning
         }
     }
 

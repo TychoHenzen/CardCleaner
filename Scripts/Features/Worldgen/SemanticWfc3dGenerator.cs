@@ -150,7 +150,7 @@ public class SemanticWfc3dGenerator
         _constraintManager.ApplyTileConstraints(position, chosenTile);
     }
 
-    private static Godot.Collections.Array<Core.Data.CompatibilityTag> 
+    private static Godot.Collections.Array<Core.Data.CompatibilityTag>
         GetSocketForDirection(SemanticTile tile, Direction direction)
     {
         return direction switch
@@ -318,31 +318,61 @@ public class SemanticWfc3dGenerator
         var toLayer = _layerOrder[toPos.Z];
 
         // Check if there are active constraints for this connection
-        if (toLayer == TileLayer.Terrain)
+        var activeConstraints = _constraintManager.GetConstraints(toPos, toLayer);
+
+        // Get the target socket direction (opposite of connection direction)
+        var targetSocketDirection = GetOppositeDirection(direction);
+        var toSocket = GetSocketForDirection(to, targetSocketDirection);
+
+        // Apply constraints to modify the target socket if any exist
+        var layerConstraints = activeConstraints as LayerConstraint[] ?? activeConstraints.ToArray();
+        if (layerConstraints.Length != 0)
         {
-            var activeConstraint = _constraintManager.GetConstraint(toPos, GetOppositeDirection(direction));
-            if (activeConstraint.HasValue)
-            {
-                // For constraint checking, we need a simple compatibility approach
-                // This is a simplified constraint check - could be enhanced based on specific needs
-                var toSocket = GetSocketForDirection(to, GetOppositeDirection(direction));
-                // If constraint exists, allow connection (constraint logic can be enhanced later)
-                return toSocket.Count > 0;
-            }
+            toSocket = ApplyConstraintsToSocket(toSocket, layerConstraints, targetSocketDirection);
         }
 
         // Original connection logic for same-layer connections
         if (fromPos.Z == toPos.Z)
         {
-            return from.CanConnectTo(to, direction);
+            var fromSocket = GetSocketForDirection(from, direction);
+            return fromSocket.Any(fromTag => toSocket.Any(fromTag.IsCompatibleWith));
         }
 
         // Vertical connections - use CompatibilityTag array compatibility
         if (direction == Direction.Up)
-            return Core.Data.CompatibilityTag.IsArrayCompatibleWith(from.Up, to.Down);
+            return Core.Data.CompatibilityTag.IsArrayCompatibleWith(from.Up, toSocket);
         if (direction == Direction.Down)
-            return Core.Data.CompatibilityTag.IsArrayCompatibleWith(from.Down, to.Up);
+            return Core.Data.CompatibilityTag.IsArrayCompatibleWith(from.Down, toSocket);
 
         return false;
+    }
+
+    private Godot.Collections.Array<Core.Data.CompatibilityTag> ApplyConstraintsToSocket(
+        Godot.Collections.Array<Core.Data.CompatibilityTag> originalSocket,
+        IEnumerable<LayerConstraint> constraints,
+        Direction socketDirection)
+    {
+        // Create a mutable copy of the original socket
+        var modifiedSocket = new Godot.Collections.Array<Core.Data.CompatibilityTag>(originalSocket);
+
+        // Apply each constraint that affects this socket direction
+        foreach (var constraint in constraints.Where(c => c.AffectedSocket == socketDirection))
+        {
+            switch (constraint.operation)
+            {
+                case LayerConstraint.Operation.Add:
+                    if (!modifiedSocket.Contains(constraint.tag))
+                    {
+                        modifiedSocket.Add(constraint.tag);
+                    }
+
+                    break;
+                case LayerConstraint.Operation.Remove:
+                    modifiedSocket.Remove(constraint.tag);
+                    break;
+            }
+        }
+
+        return modifiedSocket;
     }
 }

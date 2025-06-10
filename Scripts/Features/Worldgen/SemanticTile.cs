@@ -2,6 +2,7 @@
 using System.Linq;
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 using Godot.Collections;
@@ -19,15 +20,19 @@ public partial class SemanticTile : Resource
     // Pattern properties (every tile is now a pattern)
     [Export] public TileSet? TileSet { get; set; }
     [Export] public Vector2I Size { get; set; } = Vector2I.One;
-    [Export] public TilePlacement[] Tiles { get; set; } = Array.Empty<TilePlacement>();
+    [Export] public TilePlacement Tile { get; set; } = new();
     
     // Layered spawning system
     [Export] public float GlobalSpawnChance { get; set; } = 0.0f;
     [Export] public TileLayer Layer { get; set; }
     [Export] public float BaseWeight { get; set; } = 1.0f;
     [Export] public CardSignature Signature { get; set; }
-    [Export]
-    public Array<CompatibilityTag> North { get; set; } = new();
+    /// <summary>
+    /// Constraint modifications this tile applies to other layers when placed
+    /// </summary>
+    [Export] public Array<LayerConstraint> LayerConstraints { get; set; } = new();
+    [ExportSubgroup("Tags")]
+    [Export] public Array<CompatibilityTag> North { get; set; } = new();
     [Export] public Array<CompatibilityTag>  East { get; set; } = new();
     [Export] public Array<CompatibilityTag>  South { get; set; } = new();
     [Export] public Array<CompatibilityTag>  West { get; set; } = new();
@@ -38,33 +43,13 @@ public partial class SemanticTile : Resource
     [Export] public Array<CompatibilityTag>  Down { get; set; } = new();
     [Export] public Array<CompatibilityTag>  Up { get; set; } = new();
     /// <summary>
-    /// Constraint modifications this tile applies to other layers when placed
-    /// </summary>
-    [Export] public Dictionary<Direction, SocketType> LayerConstraints { get; set; } = new();
-    /// <summary>
     /// Check if this tile modifies constraints on other layers
     /// </summary>
     public bool HasLayerConstraints => LayerConstraints.Count > 0;
     
-
-    /// <summary>
-    /// Get constraint modifications for a specific layer and direction
-    /// </summary>
-    public SocketType? GetLayerConstraint(Direction direction)
-    {
-        return LayerConstraints.TryGetValue(direction, out var constraint) ? constraint : null;
-    }
-
-    /// <summary>
-    /// Set a constraint modification for a specific layer and direction
-    /// </summary>
-    public void SetLayerConstraint(Direction direction, SocketType constraint)
-    {
-        LayerConstraints[direction] = constraint;
-    }
     public Array<CompatibilityTag>[] Sockets
     {
-        get { return new Array<CompatibilityTag>[] { North, East, South, West, NorthEast, SouthEast, SouthWest, NorthWest, Down, Up }; }
+        get { return new[] { North, East, South, West, NorthEast, SouthEast, SouthWest, NorthWest, Down, Up }; }
         set
         {
             North = value[0];
@@ -86,10 +71,9 @@ public partial class SemanticTile : Resource
     public Vector2I[] AnimationFrames { get; set; } = Array.Empty<Vector2I>();
 
     // Pattern methods
-    public TilePlacement? GetTileAt(Vector2I localPos)
+    public TilePlacement GetTileAt(Vector2I localPos)
     {
-        int index = localPos.Y * Size.X + localPos.X;
-        return index >= 0 && index < Tiles.Length ? Tiles[index] : null;
+        return Tile.WithOffset(localPos);
     }
     
     public bool ShouldBlockAt(Vector2I localPos)
@@ -124,22 +108,6 @@ public partial class SemanticTile : Resource
             Direction.SouthWest => Direction.NorthEast,
             Direction.NorthWest => Direction.SouthEast,
             _ => throw new ArgumentException("Invalid direction")
-        };
-    }
-
-    // Helper method to initialize a 1x1 tile
-    public void InitializeAsSingleTile(int sourceId, Vector2I atlasCoords, bool blocksTiles = false, bool blocksMovement = false)
-    {
-        Size = Vector2I.One;
-        Tiles = new TilePlacement[]
-        {
-            new()
-            {
-                SourceId = sourceId,
-                AtlasCoords = atlasCoords,
-                BlocksTiles = blocksTiles,
-                BlocksMovement = blocksMovement
-            }
         };
     }
 }

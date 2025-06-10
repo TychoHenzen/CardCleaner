@@ -2,9 +2,12 @@
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Tests.Mocking;
 using GdUnit4;
 using Godot;
+using NSubstitute;
+using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
 namespace CardCleaner.Tests.Core;
 
@@ -175,21 +178,41 @@ public class ServiceLocatorTest
     }
 
     [TestCase]
-    public void TestServiceProviderGroupHandling()
+    public async Task TestServiceProviderGroupHandling()
     {
-        // Create a mock service provider
-        var mockProvider = new MockServiceProvider();
-        mockProvider.AddToGroup("service_providers");
-        Assertions.AddNode(mockProvider);
-        
-        // Simulate the service provider registration process
-        // Note: In real usage, this happens in _Ready() via CallDeferred
-        
-        Assertions.AssertThat(mockProvider.RegisterServicesCalled).IsFalse();
-        
-        // Clean up
-        mockProvider.QueueFree();
+        // Create a test service provider that implements both Node and IServiceProvider
+        var testProvider = new TestServiceProvider();
+        testProvider.AddToGroup("service_providers");
+        Assertions.AddNode(testProvider);
+    
+        // Actually trigger the service registration process
+        ServiceLocator.ResetForTesting();
+        var serviceLocator = new ServiceLocator();
+        Assertions.AddNode(serviceLocator);
+    
+        // Add the provider as a child so it's in the scene tree
+        serviceLocator.AddChild(testProvider);
+    
+        // Trigger the registration process (normally happens in _Ready via CallDeferred)
+        serviceLocator.CallDeferred(ServiceLocator.MethodName.ResolveServices);
+    
+        // Wait for deferred call to complete
+        await serviceLocator.ToSignal(serviceLocator.GetTree(), SceneTree.SignalName.ProcessFrame);
+    
+        // Verify the service was registered
+        Assertions.AssertThat(testProvider.RegisterServicesCalled).IsTrue();
+        Assertions.AssertBool(ServiceLocator.Has<IAsyncTestService>()).IsTrue();
+    }
+
+}
+// Keep a simple test-specific service provider
+public partial class TestServiceProvider : Node, IServiceProvider
+{
+    public bool RegisterServicesCalled { get; private set; }
+    
+    public void RegisterServices(IServiceContainer container)
+    {
+        RegisterServicesCalled = true;
+        container.RegisterSingleton<IAsyncTestService, AsyncTestServiceImpl>();
     }
 }
-
-// Mock service provider for testing

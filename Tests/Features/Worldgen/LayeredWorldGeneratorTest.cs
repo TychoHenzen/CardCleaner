@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net.Sockets;
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Enum;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -20,13 +21,16 @@ public class LayeredWorldGeneratorTest
     private TileMapLayer _mockDecorationLayer = null!;
     private TileMapLayer _mockEffectLayer = null!;
     private TileMapLayer _mockEnemyLayer = null!;
+    private CompatibilityTag Grass = new() { Tag = "Grasslands" };
+    private CompatibilityTag Forest = new() { Tag = "Forest" };
+    private CompatibilityTag Any = new() { Tag = "Any", Any = true };
 
     [BeforeTest]
     public void Setup()
     {
         _testTiles = CreateTestTileSet();
         _generator = new LayeredWorldGenerator(_testTiles);
-        
+
         // Create mock TileMapLayers
         _mockTerrainLayer = CreateMockTileMapLayer();
         _mockStructureLayer = CreateMockTileMapLayer();
@@ -37,48 +41,48 @@ public class LayeredWorldGeneratorTest
 
     private Array<SemanticTile> CreateTestTileSet()
     {
-        var terrainTile = CreateTestTile("Grass", TileLayer.Terrain, SocketType.Grasslands);
-        var structureTile = CreateTestTile("Tree", TileLayer.Structure, SocketType.Forest, false,0.3f);
-        var decorationTile = CreateTestTile("Flower", TileLayer.Decoration, SocketType.Grasslands, false,0.2f);
-        var effectTile = CreateTestTile("Particle", TileLayer.Effects, SocketType.None, true, 0.1f);
+        var terrainTile = CreateTestTile("Grass", TileLayer.Terrain, Grass);
+        var structureTile = CreateTestTile("Tree", TileLayer.Structure, Forest, 0.3f);
+        var decorationTile = CreateTestTile("Flower", TileLayer.Decoration, Grass, 0.2f);
+        var effectTile = CreateTestTile("Particle", TileLayer.Effects, Any, 0.1f);
 
         return new Array<SemanticTile> { terrainTile, structureTile, decorationTile, effectTile };
     }
 
-    private static Array<CompatibilityTag> CreateSocketArray(string biomeTag = null)
+    private static Array<CompatibilityTag> CreateSocketArray(CompatibilityTag? biomeTag = null)
     {
         var array = new Array<CompatibilityTag>();
-        if (!string.IsNullOrEmpty(biomeTag))
-        {
-            array.Add(new CompatibilityTag { Tag = biomeTag });
-        }
+        array.Add(biomeTag);
         return array;
     }
 
-    private SemanticTile CreateTestTile(string name, TileLayer layer, SocketType socketType, bool any = false, float spawnChance = 1.0f)
+    private SemanticTile CreateTestTile(string name, TileLayer layer, CompatibilityTag socketType,
+        float spawnChance = 1.0f)
     {
-        var biomeTag = any ? null : socketType.ToString();
-    
         var tile = new SemanticTile
         {
             TileName = name,
             Layer = layer,
             BaseWeight = 1.0f,
             GlobalSpawnChance = spawnChance,
-            Up = CreateSocketArray(biomeTag),
-            Down = CreateSocketArray(biomeTag),
-            North = CreateSocketArray(biomeTag),
-            East = CreateSocketArray(biomeTag),
-            South = CreateSocketArray(biomeTag),
-            West = CreateSocketArray(biomeTag),
-            NorthEast = CreateSocketArray(biomeTag),
-            NorthWest = CreateSocketArray(biomeTag),
-            SouthEast = CreateSocketArray(biomeTag),
-            SouthWest = CreateSocketArray(biomeTag)
+            Up = CreateSocketArray(socketType),
+            Down = CreateSocketArray(socketType),
+            North = CreateSocketArray(socketType),
+            East = CreateSocketArray(socketType),
+            South = CreateSocketArray(socketType),
+            West = CreateSocketArray(socketType),
+            NorthEast = CreateSocketArray(socketType),
+            NorthWest = CreateSocketArray(socketType),
+            SouthEast = CreateSocketArray(socketType),
+            SouthWest = CreateSocketArray(socketType),
+            Size = Vector2I.One,
+            Tile = new TilePlacement
+            {
+                AnimationFrames = new Array<Vector3I> { new(0, 0, 0) },
+                BlocksTiles = false,
+                BlocksMovement = false
+            }
         };
-
-        // Initialize as single tile
-        tile.InitializeAsSingleTile(0, new Vector2I(0, 0));
         return tile;
     }
 
@@ -86,7 +90,7 @@ public class LayeredWorldGeneratorTest
     {
         var layer = new TileMapLayer();
         Assertions.AddNode(layer);
-        
+
         // Create a minimal TileSet for the layer
         var tileSet = new TileSet();
         var atlasSource = new TileSetAtlasSource();
@@ -95,7 +99,7 @@ public class LayeredWorldGeneratorTest
         atlasSource.TextureRegionSize = new Vector2I(32, 32);
         tileSet.AddSource(atlasSource, 0);
         layer.TileSet = tileSet;
-        
+
         return layer;
     }
 
@@ -112,7 +116,7 @@ public class LayeredWorldGeneratorTest
         var mapSize = new Vector2I(5, 5);
         const ulong seed = 42;
 
-        _generator.Generate(seed, _mockTerrainLayer, _mockStructureLayer, 
+        _generator.Generate(seed, _mockTerrainLayer, _mockStructureLayer,
             _mockDecorationLayer, _mockEffectLayer, null, mapSize);
 
         // Verify that terrain layer has tiles placed
@@ -149,7 +153,7 @@ public class LayeredWorldGeneratorTest
         // Results should be identical
         var rect1 = layer1.GetUsedRect();
         var rect2 = layer2.GetUsedRect();
-        
+
         Assertions.AssertThat(rect1.Size).IsEqual(rect2.Size);
     }
 
@@ -162,7 +166,7 @@ public class LayeredWorldGeneratorTest
         // Create base layer with terrain tiles
         var baseLayer = new SemanticTile[3, 3];
         var grassTile = _testTiles.First(t => t.Layer == TileLayer.Terrain);
-        
+
         for (int y = 0; y < 3; y++)
         {
             for (int x = 0; x < 3; x++)
@@ -207,13 +211,13 @@ public class LayeredWorldGeneratorTest
         var mapSize = new Vector2I(5, 5);
         const ulong seed = 42;
 
-        _generator.Generate(seed, _mockTerrainLayer, _mockStructureLayer, 
+        _generator.Generate(seed, _mockTerrainLayer, _mockStructureLayer,
             _mockDecorationLayer, _mockEffectLayer, _mockEnemyLayer, mapSize);
 
         // Verify terrain layer has content (it should always be populated first)
         var terrainRect = _mockTerrainLayer.GetUsedRect();
         Assertions.AssertThat(terrainRect.Size.X).IsGreater(0);
-        
+
         // Structure layer may or may not have content depending on spawn chances
         // but the generation should complete without errors
         Assertions.AssertThat(_generator).IsNotNull();
@@ -223,16 +227,16 @@ public class LayeredWorldGeneratorTest
     public void TestSpawnChanceAffectsPlacement()
     {
         // Create tiles with different spawn chances
-        var alwaysSpawn = CreateTestTile("Always", TileLayer.Structure, SocketType.None,true, 1.0f);
-        var neverSpawn = CreateTestTile("Never", TileLayer.Structure, SocketType.None,true, 0.0f);
-        
-        var testTiles = new Array<SemanticTile> 
-        { 
+        var alwaysSpawn = CreateTestTile("Always", TileLayer.Structure, Any, 1.0f);
+        var neverSpawn = CreateTestTile("Never", TileLayer.Structure, Any, 0.0f);
+
+        var testTiles = new Array<SemanticTile>
+        {
             _testTiles[0], // terrain tile
-            alwaysSpawn, 
-            neverSpawn 
+            alwaysSpawn,
+            neverSpawn
         };
-        
+
         var generator = new LayeredWorldGenerator(testTiles);
         var mapSize = new Vector2I(3, 3);
 
@@ -262,11 +266,11 @@ public class LayeredWorldGeneratorTest
         var mapSize = new Vector2I(20, 20);
         const ulong seed = 999;
 
-        _generator.Generate(seed, _mockTerrainLayer, _mockStructureLayer, 
+        _generator.Generate(seed, _mockTerrainLayer, _mockStructureLayer,
             _mockDecorationLayer, _mockEffectLayer, _mockEnemyLayer, mapSize);
 
         var usedRect = _mockTerrainLayer.GetUsedRect();
-        
+
         // Should handle large maps without issues
         Assertions.AssertThat(usedRect.Size.X).IsLessEqual(mapSize.X);
         Assertions.AssertThat(usedRect.Size.Y).IsLessEqual(mapSize.Y);

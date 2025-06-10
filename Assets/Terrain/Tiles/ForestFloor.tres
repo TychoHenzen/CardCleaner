@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="SemanticTile" load_steps=7 format=3 uid="uid://r26w5bp0crtv"]
+
+[ext_resource type="Script" uid="uid://d2t3c4inr12or" path="res://Scripts/Core/Data/CompatibilityTag.cs" id="1_d8spd"]
+[ext_resource type="Script" uid="uid://f5ebq2hn0u4e" path="res://Scripts/Features/Worldgen/LayerConstraint.cs" id="2_npqeb"]
+[ext_resource type="Script" uid="uid://chb1eie0w5etp" path="res://Scripts/Features/Worldgen/SemanticTile.cs" id="3_bousd"]
+[ext_resource type="TileSet" uid="uid://2nr7osvy2wa7" path="res://Assets/Terrain/TileSets/ByLayer/Terrain.tres" id="3_npqeb"]
+[ext_resource type="Script" uid="uid://ge6gvuoe7v5o" path="res://Scripts/Features/Worldgen/TilePlacement.cs" id="4_bousd"]
+
+[sub_resource type="Resource" id="Resource_bousd"]
+script = ExtResource("4_bousd")
+BlocksMovement = false
+BlocksTiles = false
+AnimationFrames = Array[Vector3i]([Vector3i(4, 4, 4)])
+AnimationSpeed = 1.0
+
+[resource]
+script = ExtResource("3_bousd")
+TileName = ""
+Passability = 0
+TileSet = ExtResource("3_npqeb")
+Size = Vector2i(2, 2)
+Tile = SubResource("Resource_bousd")
+GlobalSpawnChance = 0.0
+Layer = 0
+BaseWeight = 1.0
+LayerConstraints = Array[ExtResource("2_npqeb")]([])
+North = Array[ExtResource("1_d8spd")]([])
+East = Array[ExtResource("1_d8spd")]([])
+South = Array[ExtResource("1_d8spd")]([])
+West = Array[ExtResource("1_d8spd")]([])
+NorthEast = Array[ExtResource("1_d8spd")]([])
+SouthEast = Array[ExtResource("1_d8spd")]([])
+SouthWest = Array[ExtResource("1_d8spd")]([])
+NorthWest = Array[ExtResource("1_d8spd")]([])
+Down = Array[ExtResource("1_d8spd")]([])
+Up = Array[ExtResource("1_d8spd")]([])
+metadata/_custom_type_script = "uid://chb1eie0w5etp"

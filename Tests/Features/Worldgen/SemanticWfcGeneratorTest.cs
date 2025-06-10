@@ -19,42 +19,45 @@ public class SemanticWfcGeneratorTest
     private SemanticTile _grassTile = null!;
     private SemanticTile _stoneTile = null!;
     private SemanticTile _waterTile = null!;
+    private static readonly CompatibilityTag Grasslands = new(){Tag = "Grasslands"};
+    private static readonly CompatibilityTag Mountains = new(){Tag = "Mountains"};
+    private static readonly CompatibilityTag Swamp = new(){Tag = "Swamp"};
+    private static readonly CompatibilityTag Any = new(){Tag = "Any", Any = true};
 
     [BeforeTest]
     public void Setup()
     {
-        _grassTile = CreateTestTile("Grass", SocketType.Grasslands, SocketType.Grasslands, SocketType.Grasslands, SocketType.Grasslands);
-        _stoneTile = CreateTestTile("Stone", SocketType.Mountains, SocketType.Mountains, SocketType.Mountains, SocketType.Mountains);
-        _waterTile = CreateTestTile("Water", SocketType.Swamp, SocketType.Swamp, SocketType.Swamp, SocketType.Swamp);
-        
+        _grassTile = CreateTestTile("Grass", Grasslands, Grasslands, Grasslands,
+            Grasslands);
+        _stoneTile = CreateTestTile("Stone", Mountains, Mountains, Mountains,
+            Mountains);
+        _waterTile = CreateTestTile("Water", Swamp, Swamp, Swamp, Swamp);
+
         _testTileSet = new Array<SemanticTile> { _grassTile, _stoneTile, _waterTile };
     }
 
-    private static Array<CompatibilityTag> CreateSocketArray(string? biomeTag = null)
+    private static Array<CompatibilityTag> CreateSocketArray(CompatibilityTag tag)
     {
-        var array = new Array<CompatibilityTag>();
-        if (!string.IsNullOrEmpty(biomeTag))
-        {
-            array.Add(new CompatibilityTag { Tag = biomeTag });
-        }
+        var array = new Array<CompatibilityTag> { tag };
         return array;
     }
 
-    private static SemanticTile CreateTestTile(string name, SocketType north, SocketType east, SocketType south, SocketType west, float weight = 1.0f)
+    private static SemanticTile CreateTestTile(string name, CompatibilityTag north, CompatibilityTag east,
+        CompatibilityTag south, CompatibilityTag west, float weight = 1.0f)
     {
         var tile = new SemanticTile
         {
             TileName = name,
-            North = CreateSocketArray(north == SocketType.None ? null : north.ToString()),
-            East = CreateSocketArray(east == SocketType.None ? null : east.ToString()),
-            South = CreateSocketArray(south == SocketType.None ? null : south.ToString()),
-            West = CreateSocketArray(west == SocketType.None ? null : west.ToString()),
-            NorthEast = CreateSocketArray(),
-            NorthWest = CreateSocketArray(),
-            SouthEast = CreateSocketArray(),
-            SouthWest = CreateSocketArray(),
-            Up = CreateSocketArray(),
-            Down = CreateSocketArray(),
+            North = CreateSocketArray(north),
+            East = CreateSocketArray(east),
+            South = CreateSocketArray(south),
+            West = CreateSocketArray(west),
+            NorthEast = CreateSocketArray(Any),
+            NorthWest = CreateSocketArray(Any),
+            SouthEast = CreateSocketArray(Any),
+            SouthWest = CreateSocketArray(Any),
+            Up = CreateSocketArray(Any),
+            Down = CreateSocketArray(Any),
             BaseWeight = weight,
             Passability = TilePassability.Passable,
             Layer = TileLayer.Terrain
@@ -68,7 +71,7 @@ public class SemanticWfcGeneratorTest
     {
         var mapSize = new Vector2I(10, 10);
         var generator = new SemanticWfcGenerator(_testTileSet, mapSize, 42);
-        
+
         Assertions.AssertThat(generator).IsNotNull();
     }
 
@@ -77,13 +80,13 @@ public class SemanticWfcGeneratorTest
     {
         var mapSize = new Vector2I(5, 5);
         const uint seed = 42;
-        
+
         var generator1 = new SemanticWfcGenerator(_testTileSet, mapSize, seed);
         var result1 = generator1.Generate();
-        
+
         var generator2 = new SemanticWfcGenerator(_testTileSet, mapSize, seed);
         var result2 = generator2.Generate();
-        
+
         // Results should be identical with same seed
         for (int y = 0; y < mapSize.Y; y++)
         {
@@ -98,13 +101,13 @@ public class SemanticWfcGeneratorTest
     public void TestDifferentSeedsProduceDifferentResults()
     {
         var mapSize = new Vector2I(5, 5);
-        
+
         var generator1 = new SemanticWfcGenerator(_testTileSet, mapSize, 42);
         var result1 = generator1.Generate();
-        
+
         var generator2 = new SemanticWfcGenerator(_testTileSet, mapSize, 123);
         var result2 = generator2.Generate();
-        
+
         // At least one tile should be different
         bool foundDifference = false;
         for (int y = 0; y < mapSize.Y && !foundDifference; y++)
@@ -117,7 +120,7 @@ public class SemanticWfcGeneratorTest
                 }
             }
         }
-        
+
         Assertions.AssertBool(foundDifference).IsTrue();
     }
 
@@ -126,9 +129,9 @@ public class SemanticWfcGeneratorTest
     {
         var mapSize = new Vector2I(1, 1);
         var generator = new SemanticWfcGenerator(_testTileSet, mapSize, 42);
-        
+
         var result = generator.Generate();
-        
+
         Assertions.AssertThat(result).IsNotNull();
         Assertions.AssertThat(result[0, 0]).IsNotNull();
         Assertions.AssertThat(_testTileSet.Contains(result[0, 0])).IsTrue();
@@ -140,9 +143,9 @@ public class SemanticWfcGeneratorTest
         var emptyTileSet = new Array<SemanticTile>();
         var mapSize = new Vector2I(3, 3);
         var generator = new SemanticWfcGenerator(emptyTileSet, mapSize, 42);
-        
+
         var result = generator.Generate();
-        
+
         // Should not crash, but all tiles will be null
         for (int y = 0; y < mapSize.Y; y++)
         {
@@ -159,9 +162,9 @@ public class SemanticWfcGeneratorTest
         var singleTileSet = new Array<SemanticTile> { _grassTile };
         var mapSize = new Vector2I(3, 3);
         var generator = new SemanticWfcGenerator(singleTileSet, mapSize, 42);
-        
+
         var result = generator.Generate();
-        
+
         // All tiles should be grass
         for (int y = 0; y < mapSize.Y; y++)
         {
@@ -175,20 +178,20 @@ public class SemanticWfcGeneratorTest
     [TestCase]
     public void TestWeightedTileSelection()
     {
-        // Create tiles with very different weights, SocketType.None makes the socket accept any
-        var heavyTile = CreateTestTile("Heavy", SocketType.None, SocketType.None, SocketType.None, SocketType.None, 100.0f);
-        var lightTile = CreateTestTile("Light", SocketType.None, SocketType.None, SocketType.None, SocketType.None, 0.1f);
-        
+        // Create tiles with very different weights, 
+        var heavyTile = CreateTestTile("Heavy", Any, Any, Any, Any, 100.0f);
+        var lightTile = CreateTestTile("Light", Any, Any, Any, Any, 0.1f);
+
         var weightedTileSet = new Array<SemanticTile> { heavyTile, lightTile };
         var mapSize = new Vector2I(20, 20);
         var generator = new SemanticWfcGenerator(weightedTileSet, mapSize, 42);
-        
+
         var result = generator.Generate();
-        
+
         // Count occurrences
         int heavyCount = 0;
         int lightCount = 0;
-        
+
         for (int y = 0; y < mapSize.Y; y++)
         {
             for (int x = 0; x < mapSize.X; x++)
@@ -197,7 +200,7 @@ public class SemanticWfcGeneratorTest
                 else if (result[y, x]?.TileName == "Light") lightCount++;
             }
         }
-        
+
         // Heavy tile should appear much more frequently than light tile
         Assertions.AssertThat(heavyCount).IsGreater(lightCount);
     }
