@@ -22,13 +22,12 @@ public class SemanticWfc3dGenerator
     // Precomputed tile sets by layer for performance
     private readonly Dictionary<TileLayer, SemanticTile[]> _tilesByLayer;
 
-    public SemanticWfc3dGenerator(SemanticTile[] tileSet, Vector3I mapSize, ulong seed = 0)
+    public SemanticWfc3dGenerator(SemanticTile[] tileSet, Vector3I mapSize, RandomNumberGenerator rng)
     {
+        _rng = rng;
         _tileSet = tileSet;
         _mapSize = mapSize;
         _layerOrder = new[] { TileLayer.Terrain, TileLayer.Decoration, TileLayer.Structure, TileLayer.Effects };
-        _rng = new RandomNumberGenerator();
-        _rng.Seed = seed;
 
         // Precompute tiles by layer
         _tilesByLayer = new Dictionary<TileLayer, SemanticTile[]>();

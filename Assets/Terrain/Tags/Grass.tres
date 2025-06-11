@@ -6,6 +6,5 @@
 script = ExtResource("1_f8w8h")
 Tag = "Grass"
 CompatibleWith = Array[ExtResource("1_f8w8h")]([])
-Any = false
-Self = true
+Mode = 2
 metadata/_custom_type_script = "uid://d2t3c4inr12or"

@@ -11,17 +11,20 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 public partial class DeckBuilderController : Node
 {
     [Export] public DeckSlot AbilityDeckSlot { get; set; }
-    [Export] public CardSlot MapCardSlot { get; set; }
+    [Export] public DeckSlot MapCardSlot { get; set; } 
     [Export] public InteractableButton ActivateButton { get; set; }
     [Export] public PackedScene BattleScreenScene { get; set; }
-    [Export] public WorldTileMapScreen WorldTileMapScreenScene { get; set; } // Changed from TileMapScreenScene
+    [Export] public WorldTileMapScreen WorldTileMapScreenScene { get; set; } 
     [Export] public Vector3 ScreenSpawnPosition { get; set; } = Vector3.Zero;
 
     public override void _Ready()
     {
+        // Ensure MapCardSlot has capacity of 1 for single-card usage
+        MapCardSlot.Capacity = 1;
+        
         // Listen for when cards are dropped into slots (for UI feedback only)
         AbilityDeckSlot.CardsChanged += OnSlotsUpdated;
-        MapCardSlot.CardChanged += OnSlotsUpdated;
+        MapCardSlot.CardsChanged += OnSlotsUpdated; // Changed from CardChanged to CardsChanged
         
         // Listen for button activation
         ActivateButton.ButtonPressed += OnButtonPressed;
@@ -43,7 +46,7 @@ public partial class DeckBuilderController : Node
     /// </summary>
     private void UpdateButtonState()
     {
-        bool canActivate = AbilityDeckSlot.HasCards && MapCardSlot.HasCard;
+        bool canActivate = AbilityDeckSlot.HasCards && MapCardSlot.HasCard; // Using HasCard for semantic clarity
         ActivateButton.SetEnabled(canActivate);
     }
 
@@ -62,7 +65,7 @@ public partial class DeckBuilderController : Node
         ILog.Print("Activation button pressed! Processing cards...");
 
         // Consume the seed card and ability deck
-        var mapSeed = MapCardSlot.ConsumeCardSignature();
+        var mapSeed = MapCardSlot.ConsumeCardSignature(); // Using convenience method
         var abilities = AbilityDeckSlot.ConsumeAllCardSignatures();
 
         // Instantiate and initialize the 3D map screen

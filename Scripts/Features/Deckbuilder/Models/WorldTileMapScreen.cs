@@ -28,9 +28,9 @@ public partial class WorldTileMapScreen : Node3D
     [Export] public TileMapLayer? StructureLayer { get; set; }
     [Export] public TileMapLayer? DecorationLayer { get; set; }
     [Export] public TileMapLayer? EffectLayer { get; set; }
-    
+
     [Export] public TileMapLayer? EnemyLayer { get; set; }
-    
+
     [Export] public SubViewport? Viewport { get; set; }
     [Export] public MeshInstance3D? ScreenMesh { get; set; }
     private Camera2D? _camera2D;
@@ -61,21 +61,11 @@ public partial class WorldTileMapScreen : Node3D
 
     [Export] public ImageTexture? PreviewDisplay { get; set; }
 
-    private LayeredWorldGenerator? _worldGenerator;
 
     public override void _Ready()
     {
-        EnsureWorldGeneratorInitialized();
     }
 
-    private void EnsureWorldGeneratorInitialized()
-    {
-        _worldGenerator ??= new LayeredWorldGenerator(SemanticTiles);
-    }
-
-    /// <summary>
-    /// Initialize the world map from deckbuilder cards - generates actual gameplay map
-    /// </summary>
     public void Initialize(CardSignature[] mapSeed, CardSignature[] abilities)
     {
         if (SemanticTiles.Count == 0)
@@ -84,103 +74,104 @@ public partial class WorldTileMapScreen : Node3D
             return;
         }
 
-        if (ILog.ExportCheck(Viewport, nameof(Viewport), this))
-            return;
-        
-        // Calculate map size based on card rarity
+        // Calculate map size and setup
         var rarity = SignatureCardHelper.DetermineRarity(mapSeed);
         var calculatedMapSize = GetMapSizeForRarity(rarity);
-
         SetupViewport(calculatedMapSize);
         SetupScreenMaterial();
 
-        // Convert card signature to generation seed
+        // Generate map using shared logic
         ulong generationSeed = GenerateSeedFromCard(mapSeed);
+        var allTilesArray = SemanticTiles.ToArray();
+        var generatedMap = GeneratedMap.Generate(allTilesArray, calculatedMapSize, generationSeed);
 
-        if (ILog.ExportCheck(TerrainLayer, nameof(TerrainLayer), this) ||
-            ILog.ExportCheck(StructureLayer, nameof(StructureLayer), this) ||
-            ILog.ExportCheck(DecorationLayer, nameof(DecorationLayer), this) ||
-            ILog.ExportCheck(EffectLayer, nameof(EffectLayer), this) ||
-            ILog.ExportCheck(EnemyLayer, nameof(EnemyLayer), this))
-            return;
-        
-        TerrainLayer!.Clear();
-        StructureLayer!.Clear();
-        DecorationLayer!.Clear();
-        EffectLayer!.Clear();
-        // Generate using the existing layer system
-        EnsureWorldGeneratorInitialized();
-        _worldGenerator!.Generate(generationSeed, TerrainLayer, StructureLayer, 
-            DecorationLayer, EffectLayer, EnemyLayer, calculatedMapSize, 
-            new CardBasedGradient(mapSeed), EnemySpawnData);
+        // Clear and render to TileMapLayers
+        ClearAllLayers();
+        generatedMap.RenderToTileMapLayers(TerrainLayer, StructureLayer, DecorationLayer, EffectLayer);
 
-        // Configure camera to frame the tilemap
+        // Handle enemy layer (existing logic)
+        if (EnemySpawnData.Count > 0)
+        {
+            var gradient = new CardBasedGradient(mapSeed);
+            var rng = new RandomNumberGenerator { Seed = generationSeed };
+            var enemyGrid = GenerateEnemyLayer(generatedMap.TerrainLayer, EnemySpawnData, gradient, calculatedMapSize, rng);
+            ApplyEnemyLayer(enemyGrid, EnemyLayer);
+        }
+
         ConfigureCamera();
-
         ILog.Print($"Initialized world map from seed card '{mapSeed}' with {abilities.Length} abilities");
     }
 
-private void SetupViewport(Vector2I mapSize)
-{
-    if (Viewport == null) return;
-
-    // Configure viewport for 2D-only rendering
-    Viewport.Size = mapSize*TileSize;
-    Viewport.RenderTargetUpdateMode = SubViewport.UpdateMode.WhenParentVisible;
-    Viewport.Disable3D = true;
-
-    // Get camera reference
-    _camera2D = Viewport.GetNode<Camera2D>("Camera2D");
-    if (_camera2D != null)
+    private void ClearAllLayers()
     {
-        _camera2D.Enabled = true;
+        TerrainLayer?.Clear();
+        StructureLayer?.Clear();
+        DecorationLayer?.Clear();
+        EffectLayer?.Clear();
     }
-}
 
-private void SetupScreenMaterial()
-{
-    if (Viewport == null || ScreenMesh?.MaterialOverride is not StandardMaterial3D material) 
-        return;
-        
-    // Use viewport texture as albedo
-    material.AlbedoTexture = Viewport.GetTexture();
-    material.ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded;
-    material.DisableReceiveShadows = true;
-    material.TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest;
-}
-
-private void ConfigureCamera()
-{
-    if (_camera2D == null) return;
-
-    if (TerrainLayer == null) return;
-
-    // Get the used rectangle and center camera
-    var usedRect = TerrainLayer.GetUsedRect();
-    if (usedRect.Size == Vector2I.Zero) return;
-
-    var centerTile = usedRect.GetCenter();
-    var worldCenter = TerrainLayer.MapToLocal(new Vector2I(centerTile.X, centerTile.Y));
-    if (TerrainLayer.TileSet.GetSource(0) is not TileSetAtlasSource atlasSource)
+    private void SetupViewport(Vector2I mapSize)
     {
-        ILog.Error("TileSet must use AtlasSource");
-        return;
+        if (Viewport == null) return;
+
+        // Configure viewport for 2D-only rendering
+        Viewport.Size = mapSize * TileSize;
+        Viewport.RenderTargetUpdateMode = SubViewport.UpdateMode.WhenParentVisible;
+        Viewport.Disable3D = true;
+
+        // Get camera reference
+        _camera2D = Viewport.GetNode<Camera2D>("Camera2D");
+        if (_camera2D != null)
+        {
+            _camera2D.Enabled = true;
+        }
     }
-    var tileSize = atlasSource.TextureRegionSize;
-    worldCenter -= new Vector2(tileSize.X / 2f, tileSize.Y / 2f);
-    
-    _camera2D.GlobalPosition = worldCenter;
-    
-    // Calculate zoom to fit the entire tilemap
-    var mapPixelSize = new Vector2(usedRect.Size.X * TileSize, usedRect.Size.Y * TileSize); // Assuming 32px tiles
-    var viewportSize = Viewport.Size;
-    
-    var zoomX = viewportSize.X / mapPixelSize.X;
-    var zoomY = viewportSize.Y / mapPixelSize.Y;
-    var zoom = Mathf.Min(zoomX, zoomY); // 0.9f for padding
-    
-    _camera2D.Zoom = new Vector2(zoom, zoom);
-}
+
+    private void SetupScreenMaterial()
+    {
+        if (Viewport == null || ScreenMesh?.MaterialOverride is not StandardMaterial3D material)
+            return;
+
+        // Use viewport texture as albedo
+        material.AlbedoTexture = Viewport.GetTexture();
+        material.ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded;
+        material.DisableReceiveShadows = true;
+        material.TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest;
+    }
+
+    private void ConfigureCamera()
+    {
+        if (_camera2D == null) return;
+
+        if (TerrainLayer == null) return;
+
+        // Get the used rectangle and center camera
+        var usedRect = TerrainLayer.GetUsedRect();
+        if (usedRect.Size == Vector2I.Zero) return;
+
+        var centerTile = usedRect.GetCenter();
+        var worldCenter = TerrainLayer.MapToLocal(new Vector2I(centerTile.X, centerTile.Y));
+        if (TerrainLayer.TileSet.GetSource(0) is not TileSetAtlasSource atlasSource)
+        {
+            ILog.Error("TileSet must use AtlasSource");
+            return;
+        }
+
+        var tileSize = atlasSource.TextureRegionSize;
+        worldCenter -= new Vector2(tileSize.X / 2f, tileSize.Y / 2f);
+
+        _camera2D.GlobalPosition = worldCenter;
+
+        // Calculate zoom to fit the entire tilemap
+        var mapPixelSize = new Vector2(usedRect.Size.X * TileSize, usedRect.Size.Y * TileSize); // Assuming 32px tiles
+        var viewportSize = Viewport.Size;
+
+        var zoomX = viewportSize.X / mapPixelSize.X;
+        var zoomY = viewportSize.Y / mapPixelSize.Y;
+        var zoom = Mathf.Min(zoomX, zoomY); // 0.9f for padding
+
+        _camera2D.Zoom = new Vector2(zoom, zoom);
+    }
 
     private ulong GenerateSeedFromCard(CardSignature[] mapSeed)
     {
@@ -195,69 +186,45 @@ private void ConfigureCamera()
     {
         GeneratePreviewInternal(); // Regenerate preview when layer visibility changes
     }
-
     private void GeneratePreviewInternal()
     {
         if (SemanticTiles.Count == 0)
         {
-            ILog.Error("No semantic tiles available for preview generation");
             PreviewDisplay = CreateEmptyPreviewWithMessage("No SemanticTiles configured");
             return;
         }
 
-        // Validate that tiles have proper TileSet references
-        int validTileCount = 0;
-        foreach (var tile in SemanticTiles)
-        {
-            if (tile.TileSet != null && tile.Tile != null)
-                validTileCount++;
-        }
-    
-        if (validTileCount == 0)
-        {
-            ILog.Error("No semantic tiles have valid TileSet references");
-            PreviewDisplay = CreateEmptyPreviewWithMessage($"SemanticTiles missing TileSet data ({SemanticTiles.Count} tiles found)");
-            return;
-        }
+        // Generate map using shared logic
+        var seed = Seeded ? GenerateSeedFromCard(new[] { Signature }) : Time.Singleton.GetTicksMsec();
+        var allTilesArray = SemanticTiles.ToArray();
+        var generatedMap = GeneratedMap.Generate(allTilesArray, PreviewSize, (ulong)seed);
 
-        ILog.Print($"Found {validTileCount}/{SemanticTiles.Count} valid semantic tiles");
-
-
-        EnsureWorldGeneratorInitialized();
-
-        // Convert CardSignature to seed
-        var seed = Seeded ? GenerateSeedFromCard(new []{Signature}) : Time.Singleton.GetTicksMsec();
-
-        // Generate logical tile grids using the actual generation algorithm
-        var tileGrids = GenerateTileGrids(seed);
-
-        // Composite the grids into a preview image
-        var previewImage = CompositeTileGridsToImage(tileGrids);
-
-        // Display the preview
+        // Render to preview image
+        var previewImage = generatedMap.RenderToImage(TileSize, ShowTerrain, ShowStructure, ShowDecoration, ShowEffects);
         PreviewDisplay = ImageTexture.CreateFromImage(previewImage);
 
         ILog.Print($"Generated preview with signature: {Signature} (seed: {seed})");
     }
-    
+
     private ImageTexture CreateEmptyPreviewWithMessage(string message)
     {
         var imageSize = new Vector2I(PreviewSize.X * TileSize, PreviewSize.Y * TileSize);
         var emptyImage = Image.CreateEmpty(imageSize.X, imageSize.Y, false, Image.Format.Rgba8);
         emptyImage.Fill(new Color(0.3f, 0.1f, 0.1f, 1.0f)); // Dark red background
-    
+
         // Add border
         for (int i = 0; i < imageSize.X; i++)
         {
             emptyImage.SetPixel(i, 0, Colors.White);
             emptyImage.SetPixel(i, imageSize.Y - 1, Colors.White);
         }
+
         for (int i = 0; i < imageSize.Y; i++)
         {
             emptyImage.SetPixel(0, i, Colors.White);
             emptyImage.SetPixel(imageSize.X - 1, i, Colors.White);
         }
-    
+
         ILog.Warning($"Preview generation failed: {message}");
         return ImageTexture.CreateFromImage(emptyImage);
     }
@@ -273,169 +240,40 @@ private void ConfigureCamera()
         var rng = new RandomNumberGenerator { Seed = seed };
         var grids = new System.Collections.Generic.Dictionary<TileLayer, SemanticTile?[,]>();
 
-        // Cache tiles by layer
-        var terrainTiles = SemanticTiles.Where(t => t.Layer == TileLayer.Terrain).ToList();
-        var structureTiles = SemanticTiles.Where(t => t.Layer == TileLayer.Structure).ToList();
-        var decorationTiles = SemanticTiles.Where(t => t.Layer == TileLayer.Decoration).ToList();
-        var effectTiles = SemanticTiles.Where(t => t.Layer == TileLayer.Effects).ToList();
+        // Use 3D generator for consistency with runtime generation
+        var allTilesArray = SemanticTiles.ToArray();
+        var mapSize3D =
+            new Vector3I(PreviewSize.X, PreviewSize.Y, 4); // 4 layers: Terrain, Structure, Decoration, Effects
 
-        // Generate terrain layer using WFC
-        SemanticTile?[,] terrainGrid = null;
-        if (terrainTiles.Count > 0)
-        {
-            var terrainArray = new Array<SemanticTile>();
-            foreach (var tile in terrainTiles) terrainArray.Add(tile);
+        var wfc3DGenerator = new SemanticWfc3dGenerator(allTilesArray, mapSize3D, rng);
+        var result3D = wfc3DGenerator.Generate();
 
-            var wfcGenerator = new SemanticWfcGenerator(terrainArray, PreviewSize, seed);
-            terrainGrid = wfcGenerator.Generate();
-            grids[TileLayer.Terrain] = terrainGrid;
-        }
-
-        // Generate subsequent layers on top of terrain
-        if (terrainGrid != null)
-        {
-            var structureGrid = _worldGenerator.GenerateLayerOnTop(terrainGrid, structureTiles, PreviewSize, rng);
-            grids[TileLayer.Structure] = structureGrid;
-
-            var decorationGrid = _worldGenerator.GenerateLayerOnTop(structureGrid, decorationTiles, PreviewSize, rng);
-            grids[TileLayer.Decoration] = decorationGrid;
-
-            var effectGrid = _worldGenerator.GenerateLayerOnTop(decorationGrid, effectTiles, PreviewSize, rng);
-            grids[TileLayer.Effects] = effectGrid;
-        }
+        // Extract 2D layers from 3D result
+        grids[TileLayer.Terrain] = Extract2DLayer(result3D, 0);
+        grids[TileLayer.Structure] = Extract2DLayer(result3D, 1);
+        grids[TileLayer.Decoration] = Extract2DLayer(result3D, 2);
+        grids[TileLayer.Effects] = Extract2DLayer(result3D, 3);
 
         return grids;
     }
 
-    private Image? CompositeTileGridsToImage(
-        System.Collections.Generic.Dictionary<TileLayer, SemanticTile?[,]> tileGrids)
+    private static SemanticTile?[,] Extract2DLayer(SemanticTile[,,] result3D, int layerIndex)
     {
-        var imageSize = new Vector2I(PreviewSize.X * TileSize, PreviewSize.Y * TileSize);
-        var compositeImage = Image.CreateEmpty(imageSize.X, imageSize.Y, false, Image.Format.Rgba8);
-        compositeImage.Fill(new Color(0.2f, 0.2f, 0.3f, 1.0f)); // Dark background
-
-        // Define layer rendering order
-        var layerOrder = new[] { TileLayer.Terrain, TileLayer.Structure, TileLayer.Decoration, TileLayer.Effects };
-        var layerVisibility = new System.Collections.Generic.Dictionary<TileLayer, bool>
-        {
-            [TileLayer.Terrain] = ShowTerrain,
-            [TileLayer.Structure] = ShowStructure,
-            [TileLayer.Decoration] = ShowDecoration,
-            [TileLayer.Effects] = ShowEffects
-        };
-
-        // Render each layer in order
-        foreach (var layer in layerOrder)
-        {
-            if (!layerVisibility[layer] || !tileGrids.ContainsKey(layer)) continue;
-
-            var grid = tileGrids[layer];
-            RenderLayerToImage(grid, compositeImage);
-        }
-
-        return compositeImage;
-    }
-
-    private void RenderLayerToImage(SemanticTile?[,] grid, Image targetImage)
-    {
-        var height = grid.GetLength(0);
-        var width = grid.GetLength(1);
-        var processedPositions = new bool[height, width];
+        var width = result3D.GetLength(2);
+        var height = result3D.GetLength(1);
+        var layer2D = new SemanticTile?[height, width];
 
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                if (processedPositions[y, x]) continue;
-
-                var pattern = grid[y, x];
-                if (pattern?.TileSet == null) continue;
-
-                // Render the entire pattern
-                for (int py = 0; py < pattern.Size.Y; py++)
-                {
-                    for (int px = 0; px < pattern.Size.X; px++)
-                    {
-                        var worldPos = new Vector2I(x + px, y + py);
-                        if (worldPos.X >= width || worldPos.Y >= height) continue;
-
-                        var tilePlacement = pattern.GetTileAt(new Vector2I(px, py));
-                        if (tilePlacement != null)
-                        {
-                            var tileImage = ExtractTileImage(pattern.TileSet, tilePlacement);
-                            if (tileImage != null)
-                            {
-                                var destPos = new Vector2I(worldPos.X * TileSize, worldPos.Y * TileSize);
-                                targetImage.BlitRect(tileImage,
-                                    new Rect2I(Vector2I.Zero, new Vector2I(TileSize, TileSize)),
-                                    destPos);
-                            }
-                        }
-
-                        processedPositions[worldPos.Y, worldPos.X] = true;
-                    }
-                }
+                layer2D[y, x] = result3D[layerIndex, y, x];
             }
         }
+
+        return layer2D;
     }
 
-    private Image? ExtractTileImage(TileSet tileSet, TilePlacement tilePlacement)
-    {
-        try
-        {
-            var source = tileSet.GetSource(tilePlacement.AnimationFrames[0].X);
-            if (source is not TileSetAtlasSource atlasSource)
-            {
-                return CreateFallbackTileImage($"Invalid source: {tilePlacement.AnimationFrames[0].X}", Colors.Red);
-            }
-
-            var texture = atlasSource.Texture;
-            if (texture == null)
-            {
-                return CreateFallbackTileImage($"No texture in source: {tilePlacement.AnimationFrames[0].X}", Colors.Orange);
-            }
-
-            var sourceImage = texture.GetImage();
-            if (sourceImage == null)
-            {
-                return CreateFallbackTileImage($"Failed to get image from texture", Colors.Yellow);
-            }
-
-            var region = atlasSource.GetTileTextureRegion(tilePlacement.AnimationFrames[0].YZ());
-            if (region.Size.X <= 0 || region.Size.Y <= 0)
-            {
-                return CreateFallbackTileImage($"Invalid region: {tilePlacement.AnimationFrames[0]}", Colors.Magenta);
-            }
-
-            var tileImage = sourceImage.GetRegion(region);
-            tileImage.Resize(TileSize, TileSize, Image.Interpolation.Nearest);
-
-            return tileImage;
-        }
-        catch (Exception e)
-        {
-            ILog.Error($"Failed to extract tile image: {e.Message}");
-            return CreateFallbackTileImage($"Exception: {e.Message[..Math.Min(20, e.Message.Length)]}", Colors.Red);
-        }
-    }
-
-    private Image CreateFallbackTileImage(string debugText, Color backgroundColor)
-    {
-        var fallbackImage = Image.CreateEmpty(TileSize, TileSize, false, Image.Format.Rgba8);
-        fallbackImage.Fill(backgroundColor);
-
-        // Add a simple border to make it visible
-        for (int i = 0; i < TileSize; i++)
-        {
-            fallbackImage.SetPixel(i, 0, Colors.White);
-            fallbackImage.SetPixel(i, TileSize - 1, Colors.White);
-            fallbackImage.SetPixel(0, i, Colors.White);
-            fallbackImage.SetPixel(TileSize - 1, i, Colors.White);
-        }
-
-        ILog.Warning($"Using fallback tile: {debugText}");
-        return fallbackImage;
-    }
     private static Vector2I GetMapSizeForRarity(CardRarity rarity)
     {
         var height = rarity switch
@@ -454,4 +292,128 @@ private void ConfigureCamera()
         return new Vector2I(width, height);
     }
 
+    private static void ApplyTilesToLayer(SemanticTile?[,] tileGrid, TileMapLayer? layer)
+    {
+        if (layer == null) return;
+
+        var height = tileGrid.GetLength(0);
+        var width = tileGrid.GetLength(1);
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                var pattern = tileGrid[y, x];
+                if (pattern == null) continue;
+
+                var position = new Vector2I(x, y);
+                var tilePlacement = pattern.GetTileAt(new Vector2I(0, 0));
+
+                if (tilePlacement != null)
+                {
+                    layer.SetCell(position, tilePlacement.AnimationFrames[0].X, tilePlacement.AnimationFrames[0].YZ());
+                }
+            }
+        }
+    }
+
+    private EnemySpawnData?[,] GenerateEnemyLayer(SemanticTile?[,] terrainGrid,
+        Array<EnemySpawnData> enemies, CardBasedGradient gradient, Vector2I mapSize, RandomNumberGenerator rng)
+    {
+        var enemyGrid = new EnemySpawnData?[mapSize.Y, mapSize.X];
+        var enemyList = enemies.ToList();
+
+        for (int y = 0; y < mapSize.Y; y++)
+        {
+            for (int x = 0; x < mapSize.X; x++)
+            {
+                var terrain = terrainGrid[y, x];
+                if (terrain == null) continue;
+
+                // Calculate blended signature
+                var position = new Vector2I(x, y);
+                var baselineSignature = gradient.GetSignatureAt(position, mapSize);
+                var terrainSignature = terrain.Signature ?? new CardSignature();
+                var randomOffset = GenerateRandomSignatureOffset(rng);
+
+                var blendedSignature = BlendSignatures(baselineSignature, terrainSignature, randomOffset);
+
+                // Find compatible enemies
+                var compatibleEnemies = enemyList.Where(e => e.CanSpawnOnTile(terrain, blendedSignature)).ToList();
+                if (compatibleEnemies.Count == 0) continue;
+
+                // Select enemy by weight
+                var selectedEnemy = SelectEnemyByWeight(compatibleEnemies, terrain, blendedSignature, rng);
+                if (selectedEnemy != null)
+                {
+                    enemyGrid[y, x] = selectedEnemy;
+                }
+            }
+        }
+
+        return enemyGrid;
+    }
+
+    private static CardSignature BlendSignatures(CardSignature baseline, CardSignature terrain, CardSignature random)
+    {
+        var result = new CardSignature();
+        for (int i = 0; i < 8; i++)
+        {
+            // Weighted blend: 40% baseline, 40% terrain, 20% random
+            var blended = baseline[i] * 0.4f + terrain[i] * 0.4f + random[i] * 0.2f;
+            result[i] = Mathf.Clamp(blended, -1f, 1f);
+        }
+
+        return result;
+    }
+
+    private static CardSignature GenerateRandomSignatureOffset(RandomNumberGenerator rng)
+    {
+        var result = new CardSignature();
+        for (int i = 0; i < 8; i++)
+        {
+            result[i] = rng.RandfRange(-0.3f, 0.3f); // Small random variation
+        }
+
+        return result;
+    }
+
+    private static EnemySpawnData? SelectEnemyByWeight(List<EnemySpawnData> enemies,
+        SemanticTile terrain, CardSignature signature, RandomNumberGenerator rng)
+    {
+        var totalWeight = enemies.Sum(e => e.CalculateSpawnWeight(terrain, signature));
+        if (totalWeight <= 0) return null;
+
+        var randomValue = rng.Randf() * totalWeight;
+        var currentWeight = 0f;
+
+        foreach (var enemy in enemies)
+        {
+            currentWeight += enemy.CalculateSpawnWeight(terrain, signature);
+            if (randomValue <= currentWeight)
+                return enemy;
+        }
+
+        return enemies.LastOrDefault();
+    }
+
+    private static void ApplyEnemyLayer(EnemySpawnData?[,] enemyGrid, TileMapLayer? layer)
+    {
+        if (layer == null) return;
+
+        var height = enemyGrid.GetLength(0);
+        var width = enemyGrid.GetLength(1);
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                var enemy = enemyGrid[y, x];
+                if (enemy == null) continue;
+
+                var position = new Vector2I(x, y);
+                layer.SetCell(position, enemy.SourceId, enemy.AtlasCoords);
+            }
+        }
+    }
 }

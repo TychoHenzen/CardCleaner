@@ -65,11 +65,6 @@ public partial class SemanticTile : Resource
         }
     }
 
-    // Runtime properties for tileset integration
-    public int AtlasId { get; set; } = -1;
-    public Vector2I AtlasCoords { get; set; }
-    public Vector2I[] AnimationFrames { get; set; } = Array.Empty<Vector2I>();
-
     // Pattern methods
     public TilePlacement GetTileAt(Vector2I localPos)
     {

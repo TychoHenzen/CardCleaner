@@ -34,5 +34,5 @@ SouthEast = Array[ExtResource("1_hlmm3")]([ExtResource("2_w8tis")])
 SouthWest = Array[ExtResource("1_hlmm3")]([ExtResource("2_w8tis")])
 NorthWest = Array[ExtResource("1_hlmm3")]([ExtResource("2_w8tis")])
 Down = Array[ExtResource("1_hlmm3")]([])
-Up = Array[ExtResource("1_hlmm3")]([])
+Up = Array[ExtResource("1_hlmm3")]([ExtResource("2_w8tis")])
 metadata/_custom_type_script = "uid://chb1eie0w5etp"

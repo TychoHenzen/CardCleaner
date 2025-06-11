@@ -59,26 +59,50 @@ public partial class LayeredWorldGenerator
         _mapSize = mapSize;
         _baselineGradient = gradient;
 
-        var terrainGrid = GenerateTerrainLayer();
+        // Use 3D generator for proper layer interdependencies
+        var allTilesArray = _allTiles.ToArray();
+        var mapSize3D = new Vector3I(mapSize.X, mapSize.Y, 4); // 4 layers
+    
+        var wfc3DGenerator = new SemanticWfc3dGenerator(allTilesArray, mapSize3D, _rng);
+        var result3D = wfc3DGenerator.Generate();
+    
+        // Extract and apply each layer
+        var terrainGrid = Extract2DLayer(result3D, 0);
         ApplyTilesToLayer(terrainGrid, terrainLayer);
-
-        var structureGrid = GenerateLayerOnTop(terrainGrid, _structureTiles, _mapSize, _rng);
+    
+        var structureGrid = Extract2DLayer(result3D, 1);
         ApplyTilesToLayer(structureGrid, structureLayer);
-
-        var decorationGrid = GenerateLayerOnTop(structureGrid, _decorationTiles, _mapSize, _rng);
+    
+        var decorationGrid = Extract2DLayer(result3D, 2);
         ApplyTilesToLayer(decorationGrid, decorationLayer);
-
-        var effectGrid = GenerateLayerOnTop(decorationGrid, _effectTiles, _mapSize, _rng);
+    
+        var effectGrid = Extract2DLayer(result3D, 3);
         ApplyTilesToLayer(effectGrid, effectLayer);
 
-        // Generate enemy layer
+        // Generate enemy layer based on terrain
         if (enemies?.Count > 0)
         {
             var enemyGrid = GenerateEnemyLayer(terrainGrid, enemies, gradient);
             ApplyEnemyLayer(enemyGrid, enemyLayer);
         }
 
-        ILog.Print($"Generated layered world with {_mapSize.X}x{_mapSize.Y} tiles");
+        ILog.Print($"Generated layered world with {mapSize.X}x{mapSize.Y} tiles using 3D WFC");
+    }
+    private SemanticTile?[,] Extract2DLayer(SemanticTile[,,] result3D, int layerIndex)
+    {
+        var width = result3D.GetLength(2);
+        var height = result3D.GetLength(1);
+        var layer2D = new SemanticTile?[height, width];
+    
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                layer2D[y, x] = result3D[layerIndex, y, x];
+            }
+        }
+    
+        return layer2D;
     }
 
     private SemanticTile?[,] GenerateTerrainLayer()

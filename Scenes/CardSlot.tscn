@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://5pktuq08ry2m"]
 
-[ext_resource type="Script" uid="uid://7khoo77iippi" path="res://Scripts/Features/Deckbuilder/Models/CardSlot.cs" id="1_r3qn0"]
+[ext_resource type="Script" uid="uid://c5gsvnqi64ss8" path="res://Scripts/Features/Deckbuilder/Models/DeckSlot.cs" id="1_r3qn0"]
 [ext_resource type="PackedScene" uid="uid://yk0lld10yvq3" path="res://Assets/Models/SingleCard.fbx" id="2_r3qn0"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_r3qn0"]

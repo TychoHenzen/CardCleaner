@@ -63,6 +63,10 @@ public partial class CompatibilityTag : Resource
         return false;
     }
 
-    public static bool IsArrayCompatibleWith(Array<CompatibilityTag> self, Array<CompatibilityTag> other) => 
-        self.Any(selfTag => other.Any(selfTag.IsCompatibleWith));
+    public static bool IsArrayCompatibleWith(Array<CompatibilityTag> self, Array<CompatibilityTag> other)
+    {
+        //if the list is empty, treat it as "any"
+        if(self.Count == 0 || other.Count == 0) return self == other;
+        return self.Any(selfTag => other.Any(selfTag.IsCompatibleWith));
+    }
 }

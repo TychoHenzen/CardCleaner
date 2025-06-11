@@ -22,6 +22,9 @@ public partial class DeckSlot : Node3D
     [Export] public int Capacity { get; set; } = 5;
 
     public bool HasCards => _cards.Count > 0;
+    
+    // Convenience property for single-card usage (when Capacity = 1)
+    public bool HasCard => HasCards;
 
     public override void _Ready()
     {
@@ -129,6 +132,13 @@ public partial class DeckSlot : Node3D
         _cards.Clear();
         EmitSignal(nameof(CardsChanged));
         return sigs;
+    }
+
+    // Convenience method for single-card usage (when Capacity = 1)
+    public Card.Models.CardSignature? ConsumeCardSignature()
+    {
+        var allSignatures = ConsumeAllCardSignatures();
+        return allSignatures.FirstOrDefault();
     }
 
     public void Clear()
