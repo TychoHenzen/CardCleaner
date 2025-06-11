@@ -1,14 +1,12 @@
 ﻿using System.Linq;
-using System.Net.Sockets;
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Enum;
-using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
 using GdUnit4;
 using Godot;
 using Godot.Collections;
 
-namespace CardCleaner.Tests.Features;
+namespace CardCleaner.Tests.Features.Worldgen;
 
 [TestSuite]
 [RequireGodotRuntime]
@@ -76,7 +74,7 @@ public class LayeredWorldGeneratorTest
             SouthEast = CreateSocketArray(socketType),
             SouthWest = CreateSocketArray(socketType),
             Size = Vector2I.One,
-            Tile = new TilePlacement
+            Tile = new Scripts.Features.Worldgen.TilePlacement
             {
                 AnimationFrames = new Array<Vector3I> { new(0, 0, 0) },
                 BlocksTiles = false,

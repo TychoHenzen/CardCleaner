@@ -4,7 +4,7 @@ using CardCleaner.Scripts.Features.Worldgen;
 using GdUnit4;
 using Godot.Collections;
 
-namespace CardCleaner.Tests.Features;
+namespace CardCleaner.Tests.Features.Worldgen;
 
 [TestSuite]
 [RequireGodotRuntime]

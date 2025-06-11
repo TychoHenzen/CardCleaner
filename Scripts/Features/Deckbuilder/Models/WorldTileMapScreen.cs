@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enum;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Worldgen;
@@ -18,7 +19,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 [GlobalClass]
 public partial class WorldTileMapScreen : Node3D
 {
-    [Export] public WorldData? Configuration { get; set; }
+    [Export] public Worldgen.WorldData? Configuration { get; set; }
     public Array<SemanticTile> SemanticTiles => Configuration?.SemanticTiles ?? new Array<SemanticTile>();
     public int TileSize => Configuration?.TileSize ?? 32;
     public Array<EnemySpawnData> EnemySpawnData => Configuration?.EnemySpawnData ?? new Array<EnemySpawnData>();

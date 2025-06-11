@@ -1,7 +1,8 @@
 ﻿using System.Linq;
-using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 using Godot.Collections;
+
+namespace CardCleaner.Scripts.Features.Worldgen;
 
 [Tool]
 [GlobalClass]

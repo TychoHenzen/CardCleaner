@@ -1,15 +1,11 @@
-﻿using System;
-using System.Linq;
-using CardCleaner.Scripts.Core.Data;
+﻿using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Enum;
-using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
 using GdUnit4;
 using Godot;
 using Godot.Collections;
-using Array = System.Array;
 
-namespace CardCleaner.Tests.Features;
+namespace CardCleaner.Tests.Features.Worldgen;
 
 [TestSuite]
 [RequireGodotRuntime]

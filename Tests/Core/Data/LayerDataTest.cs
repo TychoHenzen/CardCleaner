@@ -2,7 +2,7 @@
 using Godot;
 using LayerData = CardCleaner.Scripts.Core.Data.LayerData;
 
-namespace CardCleaner.Tests.Core;
+namespace CardCleaner.Tests.Core.Data;
 
 [TestSuite]
 [RequireGodotRuntime]

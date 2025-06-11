@@ -4,12 +4,11 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
-using CardCleaner.Tests.Mocking;
 using GdUnit4;
 using Godot;
 using NSubstitute;
 
-namespace CardCleaner.Tests.Features;
+namespace CardCleaner.Tests.Features.Card.Services;
 
 // Mock implementations for testing
 

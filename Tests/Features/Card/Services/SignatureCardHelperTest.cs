@@ -1,11 +1,11 @@
 ﻿// File: SignatureCardHelperTest.cs
 
-using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Core.Enum;
 using CardCleaner.Scripts.Features.Card.Services;
 using GdUnit4;
 using CardSignature = CardCleaner.Scripts.Features.Card.Models.CardSignature;
 
-namespace CardCleaner.Tests.Features;
+namespace CardCleaner.Tests.Features.Card.Services;
 
 [TestSuite]
 [RequireGodotRuntime]

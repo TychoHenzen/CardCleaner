@@ -1,4 +1,6 @@
-﻿public class WorldTileBuilder
+﻿namespace CardCleaner.Tests.TestUtilities.Builders;
+
+public class WorldTileBuilder
 {
     
 }

@@ -3,7 +3,7 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Tests.Mocking;
 using GdUnit4;
 
-namespace CardCleaner.Tests.Core;
+namespace CardCleaner.Tests.Core.DependencyInjection;
 
 // Test interfaces for DI testing
 

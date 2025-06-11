@@ -1,9 +1,9 @@
-﻿using CardCleaner.Scripts.Features.Card.Models;
+﻿using CardCleaner.Scripts.Core.Enum;
 using GdUnit4;
 using BaseCardType = CardCleaner.Scripts.Features.Card.Models.BaseCardType;
 using CardSignature = CardCleaner.Scripts.Features.Card.Models.CardSignature;
 
-namespace CardCleaner.Tests.Features;
+namespace CardCleaner.Tests.Features.Card.Models;
 
 [TestSuite]
 [RequireGodotRuntime]

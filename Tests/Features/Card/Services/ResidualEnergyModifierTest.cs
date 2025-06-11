@@ -4,7 +4,7 @@ using GdUnit4;
 using CardSignature = CardCleaner.Scripts.Features.Card.Models.CardSignature;
 using ResidualEnergyModifier = CardCleaner.Scripts.Features.Card.Services.ResidualEnergyModifier;
 
-namespace CardCleaner.Tests.Features;
+namespace CardCleaner.Tests.Features.Card.Services;
 
 [TestSuite]
 

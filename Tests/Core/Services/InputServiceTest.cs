@@ -2,7 +2,7 @@
 using GdUnit4;
 using Godot;
 
-namespace CardCleaner.Tests.Features;
+namespace CardCleaner.Tests.Core.Services;
 
 [TestSuite]
 [RequireGodotRuntime]

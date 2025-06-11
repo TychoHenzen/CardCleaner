@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CardCleaner.Scripts.Core.Enum;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 

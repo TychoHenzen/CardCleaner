@@ -2,9 +2,8 @@
 using CardCleaner.Scripts.Features.Card.Components;
 using GdUnit4;
 using Godot;
-using Godot.Collections;
 
-namespace CardCleaner.Tests.Features;
+namespace CardCleaner.Tests.Features.Card.Components;
 
 [TestSuite]
 [RequireGodotRuntime]

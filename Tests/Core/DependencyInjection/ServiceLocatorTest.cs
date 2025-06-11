@@ -2,14 +2,12 @@
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Tests.Mocking;
 using GdUnit4;
 using Godot;
-using NSubstitute;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
-namespace CardCleaner.Tests.Core;
+namespace CardCleaner.Tests.Core.DependencyInjection;
 
 // Test service interfaces
 

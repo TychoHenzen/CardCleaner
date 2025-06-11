@@ -5,7 +5,7 @@ using CardCleaner.Scripts.Features.Card.Controllers;
 using GdUnit4;
 using Godot;
 
-namespace CardCleaner.Tests.Features;
+namespace CardCleaner.Tests.Features.Card.Components;
 
 /// <summary>
 /// Tests for CardHolder component focusing on card management and positioning behavior.

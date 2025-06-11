@@ -6,12 +6,11 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
-using CardCleaner.Tests.TestUtilities.Helpers;
 using GdUnit4;
 using Godot;
 using NSubstitute;
 
-namespace CardCleaner.Tests.Features;
+namespace CardCleaner.Tests.Features.Card.Services;
 
 // Mock implementations for testing
 

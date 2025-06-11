@@ -4,7 +4,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using GdUnit4;
 
-namespace CardCleaner.Tests.Features;
+namespace CardCleaner.Tests.Features.Deckbuilder.Services;
 
 [TestSuite]
 

@@ -4,7 +4,7 @@ using Godot;
 using static GdUnit4.Assertions;
 using CardSignature = CardCleaner.Scripts.Features.Card.Models.CardSignature;
 
-namespace CardCleaner.Tests.Features;
+namespace CardCleaner.Tests.Features.Card.Models;
 
 [TestSuite]
 [RequireGodotRuntime]

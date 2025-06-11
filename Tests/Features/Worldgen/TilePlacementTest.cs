@@ -1,8 +1,9 @@
-﻿using GdUnit4;
+﻿using CardCleaner.Scripts.Core.Utilities;
+using GdUnit4;
 using Godot;
 using Godot.Collections;
 
-namespace CardCleaner.Tests.Features;
+namespace CardCleaner.Tests.Features.Worldgen;
 
 [TestSuite]
 [RequireGodotRuntime]
@@ -11,7 +12,7 @@ public class TilePlacementTest
     [TestCase]
     public void TestTilePlacementCreation()
     {
-        var placement = new TilePlacement
+        var placement = new Scripts.Features.Worldgen.TilePlacement
         {
             AnimationFrames = new Array<Vector3I> { new(1, 5, 3) },
             BlocksMovement = true,
@@ -27,7 +28,7 @@ public class TilePlacementTest
     [TestCase]
     public void TestAnimationFrames()
     {
-        var placement = new TilePlacement
+        var placement = new Scripts.Features.Worldgen.TilePlacement
         {
             AnimationFrames = new Array<Vector3I>
             {

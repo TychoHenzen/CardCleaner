@@ -1,24 +1,9 @@
 ﻿using System;
+using CardCleaner.Scripts.Core.Enum;
 using Godot;
 using Godot.Collections;
 
 namespace CardCleaner.Scripts.Features.Card.Models;
-
-public enum CardCategory
-{
-    Playstyle, // Affects autonomous agent behavior
-    Equipment, // Gear for the virtual character
-    Skill // Attacks and abilities
-}
-
-public enum CardRarity
-{
-    Common,
-    Uncommon,
-    Rare,
-    Epic,
-    Legendary
-}
 
 [Tool]
 [GlobalClass]
