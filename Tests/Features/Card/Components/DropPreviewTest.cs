@@ -1,4 +1,6 @@
-﻿using CardCleaner.Scripts.Features.Card.Components;
+﻿using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using GdUnit4;
 using Godot;
 
@@ -9,25 +11,27 @@ namespace CardCleaner.Tests.Features.Card.Components;
 public class DropPreviewTest
 {
     private DropPreview _dropPreview = null!;
+    private MeshInstance3D _previewInstance = null!;
 
     [BeforeTest]
-    public void Setup()
+    public async Task Setup()
     {
         _dropPreview = new DropPreview();
         Assertions.AddNode(_dropPreview);
-        
+
         // Trigger _Ready to initialize the preview components
-        _dropPreview._Ready();
+        await ISceneRunner.SyncPhysicsFrame;
+        _previewInstance = _dropPreview.GetNode<MeshInstance3D>("PreviewMesh");
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void DropPreview_InitialState_PreviewIsHidden()
     {
+        //Arrange
         // Assert - Preview should be hidden initially
-        var previewInstance = _dropPreview.GetNode<MeshInstance3D>("MeshInstance3D");
-        Assertions.AssertThat(previewInstance).IsNotNull();
-        Assertions.AssertBool(previewInstance.Visible).IsFalse();
+        Assertions.AssertThat(_previewInstance).IsNotNull();
+        Assertions.AssertBool(_previewInstance.Visible).IsFalse();
     }
 
     [TestCase]
@@ -38,8 +42,7 @@ public class DropPreviewTest
         _dropPreview.ShowPreview(true);
 
         // Assert
-        var previewInstance = _dropPreview.GetNode<MeshInstance3D>("MeshInstance3D");
-        Assertions.AssertBool(previewInstance.Visible).IsTrue();
+        Assertions.AssertBool(_previewInstance.Visible).IsTrue();
     }
 
     [TestCase]
@@ -53,8 +56,7 @@ public class DropPreviewTest
         _dropPreview.ShowPreview(false);
 
         // Assert
-        var previewInstance = _dropPreview.GetNode<MeshInstance3D>("MeshInstance3D");
-        Assertions.AssertBool(previewInstance.Visible).IsFalse();
+        Assertions.AssertBool(_previewInstance.Visible).IsFalse();
     }
 
     [TestCase]
@@ -70,9 +72,8 @@ public class DropPreviewTest
         _dropPreview.UpdatePreview(origin, direction);
 
         // Assert - Should complete without error and update the mesh
-        var previewInstance = _dropPreview.GetNode<MeshInstance3D>("MeshInstance3D");
-        Assertions.AssertThat(previewInstance.Mesh).IsNotNull();
-        Assertions.AssertThat(previewInstance.Mesh).IsInstanceOf<ImmediateMesh>();
+        Assertions.AssertThat(_previewInstance.Mesh).IsNotNull();
+        Assertions.AssertThat(_previewInstance.Mesh).IsInstanceOf<ImmediateMesh>();
     }
 
     [TestCase]
@@ -87,8 +88,7 @@ public class DropPreviewTest
         _dropPreview.UpdatePreview(origin, direction);
 
         // Assert - Should handle horizontal rays
-        var previewInstance = _dropPreview.GetNode<MeshInstance3D>("MeshInstance3D");
-        Assertions.AssertThat(previewInstance.Mesh).IsNotNull();
+        Assertions.AssertThat(_previewInstance.Mesh).IsNotNull();
     }
 
     [TestCase]
@@ -101,7 +101,7 @@ public class DropPreviewTest
 
         // Act & Assert - Should handle zero direction gracefully
         _dropPreview.UpdatePreview(origin, direction);
-        
+
         Assertions.AssertThat(_dropPreview).IsNotNull();
     }
 
@@ -115,7 +115,7 @@ public class DropPreviewTest
 
         // Act & Assert - Should handle extreme values
         _dropPreview.UpdatePreview(origin, direction);
-        
+
         Assertions.AssertThat(_dropPreview).IsNotNull();
     }
 
@@ -132,8 +132,7 @@ public class DropPreviewTest
         _dropPreview.UpdatePreview(new Vector3(-1, 0, 1), Vector3.Forward);
 
         // Assert - Should handle multiple updates without issues
-        var previewInstance = _dropPreview.GetNode<MeshInstance3D>("MeshInstance3D");
-        Assertions.AssertThat(previewInstance.Mesh).IsNotNull();
-        Assertions.AssertBool(previewInstance.Visible).IsTrue();
+        Assertions.AssertThat(_previewInstance.Mesh).IsNotNull();
+        Assertions.AssertBool(_previewInstance.Visible).IsTrue();
     }
 }

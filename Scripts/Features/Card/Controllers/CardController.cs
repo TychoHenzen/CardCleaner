@@ -28,7 +28,7 @@ public partial class CardController : RigidBody3D, IInteractable
     {
         if (CanInteract)
         {
-            EmitSignal(nameof(CardInteractionRequested), this);
+            EmitSignal(SignalName.CardInteractionRequested, this);
         }
     }
 
@@ -59,7 +59,7 @@ public partial class CardController : RigidBody3D, IInteractable
     
     public void EmitPickupSignal()
     {
-        EmitSignal(nameof(CardPickedUp), this);
+        EmitSignal(SignalName.CardPickedUp, this);
     }
 
     private void DiscoverComponents(Node node)

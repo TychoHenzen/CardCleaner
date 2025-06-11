@@ -1,4 +1,5 @@
-﻿using CardCleaner.Scripts.Core.DependencyInjection;
+﻿using System;
+using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Tests.Mocking;
@@ -55,13 +56,17 @@ public class CardDropperTest
         if (hasCards)
         {
             _mockCardHolder.HeldCount.Returns(3);
-            var mockCards = new RigidBody3D[] { new RigidBody3D(), new RigidBody3D(), new RigidBody3D() };
+            var mockCards = new RigidBody3D[] { new(), new(), new() };
+            foreach (var card in mockCards)
+            {
+                Assertions.AddNode(card);
+            }
             _mockCardHolder.HeldCards.Returns(mockCards);
         }
         else
         {
             _mockCardHolder.HeldCount.Returns(0);
-            _mockCardHolder.HeldCards.Returns(new RigidBody3D[0]);
+            _mockCardHolder.HeldCards.Returns(Array.Empty<RigidBody3D>());
         }
     }
     

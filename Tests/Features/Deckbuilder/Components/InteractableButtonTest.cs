@@ -59,6 +59,7 @@ public class InteractableButtonTest
     {
         // Arrange
         var defaultButton = new InteractableButton();
+        Assertions.AddNode(defaultButton);
 
         // Assert
         Assertions.AssertBool(defaultButton.Enabled).IsTrue();

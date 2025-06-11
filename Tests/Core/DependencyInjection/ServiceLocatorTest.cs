@@ -181,7 +181,6 @@ public class ServiceLocatorTest
         // Create a test service provider that implements both Node and IServiceProvider
         var testProvider = new TestServiceProvider();
         testProvider.AddToGroup("service_providers");
-        Assertions.AddNode(testProvider);
     
         // Actually trigger the service registration process
         ServiceLocator.ResetForTesting();

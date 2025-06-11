@@ -18,6 +18,7 @@ public class ConveyorBeltTest
             Speed = 5.0f,
             LateralOffsetRange = 1.0f
         };
+        Assertions.AddNode(_conveyorBelt);
     }
 
     [TestCase]
@@ -26,6 +27,7 @@ public class ConveyorBeltTest
     {
         // Arrange
         var defaultBelt = new ConveyorBelt();
+        Assertions.AddNode(defaultBelt);
 
         // Assert - Default speed should be reasonable
         Assertions.AssertFloat(defaultBelt.Speed).IsEqual(5.0f);

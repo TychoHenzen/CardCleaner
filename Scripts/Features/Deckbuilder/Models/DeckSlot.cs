@@ -62,7 +62,7 @@ public partial class DeckSlot : Node3D
         LockCard(card);
         _cards.Add(card);
         _processingEntry = false;
-        EmitSignal(nameof(CardsChanged));
+        EmitSignal(SignalName.CardsChanged);
     }
 
     private void LockCard(RigidBody3D card)
@@ -94,7 +94,7 @@ public partial class DeckSlot : Node3D
         // Reposition remaining cards
         RepositionCards();
         
-        EmitSignal(nameof(CardsChanged));
+        EmitSignal(SignalName.CardsChanged);
         
         ILog.Print($"DeckSlot released card due to pickup. {_cards.Count} cards remaining.");
     }
@@ -130,7 +130,7 @@ public partial class DeckSlot : Node3D
         }
 
         _cards.Clear();
-        EmitSignal(nameof(CardsChanged));
+        EmitSignal(SignalName.CardsChanged);
         return sigs;
     }
 
@@ -154,6 +154,6 @@ public partial class DeckSlot : Node3D
             c.QueueFree();
         }
         _cards.Clear();
-        EmitSignal(nameof(CardsChanged));
+        EmitSignal(SignalName.CardsChanged);
     }
 }

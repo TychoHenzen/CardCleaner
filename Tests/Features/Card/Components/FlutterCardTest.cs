@@ -21,6 +21,7 @@ public class FlutterCardTest
             FlutterPitch = 0.05f,
             FlutterTwist = 0.1f
         };
+        Assertions.AddNode(_flutterCard);
     }
 
     [TestCase]
@@ -29,6 +30,7 @@ public class FlutterCardTest
     {
         // Arrange
         var defaultFlutter = new FlutterCard();
+        Assertions.AddNode(defaultFlutter);
 
         // Assert - Default values should be sensible for card physics
         Assertions.AssertFloat(defaultFlutter.AirDensity).IsEqual(1.0f);

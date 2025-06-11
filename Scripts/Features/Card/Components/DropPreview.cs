@@ -16,7 +16,8 @@ public partial class DropPreview : Node3D, IDropPreview
         {
             Mesh = _previewMesh,
             Visible = false,
-            MaterialOverride = new StandardMaterial3D { DepthDrawMode = BaseMaterial3D.DepthDrawModeEnum.Always }
+            MaterialOverride = new StandardMaterial3D { DepthDrawMode = BaseMaterial3D.DepthDrawModeEnum.Always },
+            Name = "PreviewMesh"
         };
         AddChild(_previewInstance);
     }

@@ -49,7 +49,7 @@ public partial class CardHolder : Node3D, ICardHolder
         }
 
         PositionCards();
-        EmitSignal(nameof(CardAdded), card);
+        EmitSignal(SignalName.CardAdded, card);
     }
 
     public void RemoveCard(RigidBody3D card)
@@ -63,7 +63,7 @@ public partial class CardHolder : Node3D, ICardHolder
         CallDeferred(MethodName.EnablePhysicsDeferred, card);
 
         PositionCardsForDrop();
-        EmitSignal(nameof(CardRemoved), card);
+        EmitSignal(SignalName.CardRemoved, card);
     }
 
     private void EnablePhysicsDeferred(RigidBody3D card)

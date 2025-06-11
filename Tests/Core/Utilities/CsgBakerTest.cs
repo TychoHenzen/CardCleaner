@@ -37,7 +37,7 @@ public class CsgBakerTest
         var designer = new CardDesigner();
         designer.Name = "Designer";
         cardRoot.AddChild(designer);
-        _baker.AddChild(cardRoot);
+        cardRoot.Reparent(_baker);
 
         // Act
         _baker.Setup(cardRoot);

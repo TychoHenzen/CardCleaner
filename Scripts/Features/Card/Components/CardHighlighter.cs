@@ -32,6 +32,7 @@ public partial class CardHighlighter : Node3D
             ILog.Error("Camera not found");
             return;
         }
+
         CardHolder.SetReferences(camera);
         CardDropper.Initialize(CardHolder, Preview, camera);
 
@@ -57,27 +58,28 @@ public partial class CardHighlighter : Node3D
                 ConnectToCard(card);
             }
         }
-        
+
         // Listen for new cards being spawned by connecting to the spawning service
         ServiceLocator.Get<ICardSpawningService>(spawningService =>
         {
-            if (spawningService is not CardSpawningService concreteService) 
+            if (spawningService is not CardSpawningService concreteService)
                 return;
             concreteService.CardSpawned += OnCardSpawned;
         });
-        
+
         // Set up collision layers for cards to be detected by interaction system
         SetupCardCollisionLayers();
     }
-    
+
     private void ConnectToCard(CardController card)
     {
-        if (!card.IsConnected(nameof(CardController.CardInteractionRequested), Callable.From<CardController>(OnCardInteractionRequested)))
+        if (!card.IsConnected(CardController.SignalName.CardInteractionRequested,
+                Callable.From<CardController>(OnCardInteractionRequested)))
         {
             card.CardInteractionRequested += OnCardInteractionRequested;
         }
     }
-    
+
     private void OnCardSpawned(CardController card)
     {
         ConnectToCard(card);
@@ -86,7 +88,7 @@ public partial class CardHighlighter : Node3D
     public override void _ExitTree()
     {
         _inputService?.UnregisterAllActions(this);
-        
+
         // Disconnect from card signals
         var cards = GetTree().GetNodesInGroup("Cards");
         foreach (var node in cards)
@@ -101,7 +103,7 @@ public partial class CardHighlighter : Node3D
     public override void _PhysicsProcess(double delta)
     {
         // Update drop preview while preparing drop
-        if (CardDropper.IsPreparingDrop) 
+        if (CardDropper.IsPreparingDrop)
         {
             CardDropper.UpdateDropPreview();
         }

@@ -58,7 +58,7 @@ public partial class InteractableButton : StaticBody3D, IInteractable
         PlayPressAnimation();
         
         // Emit signal
-        EmitSignal(nameof(ButtonPressed));
+        EmitSignal(SignalName.ButtonPressed);
     }
 
     public void Highlight()
