@@ -62,6 +62,7 @@ public partial class WorldTileMapScreen : Node3D
 
     [Export] public ImageTexture? PreviewDisplay { get; set; }
 
+    private GradientInfluenceComponent _gradientInfluence;
 
     public override void _Ready()
     {
@@ -77,6 +78,7 @@ public partial class WorldTileMapScreen : Node3D
 
         // Calculate map size and setup
         var rarity = SignatureCardHelper.DetermineRarity(mapSeed);
+        _gradientInfluence = new GradientInfluenceComponent(new CardBasedGradient( mapSeed ));
         var calculatedMapSize = GetMapSizeForRarity(rarity);
         SetupViewport(calculatedMapSize);
         SetupScreenMaterial();
@@ -84,7 +86,7 @@ public partial class WorldTileMapScreen : Node3D
         // Generate map using shared logic
         ulong generationSeed = GenerateSeedFromCard(mapSeed);
         var allTilesArray = SemanticTiles.ToArray();
-        var generatedMap = GeneratedMap.Generate(allTilesArray, calculatedMapSize, generationSeed);
+        var generatedMap = GeneratedMap.Generate(allTilesArray, calculatedMapSize, generationSeed, _gradientInfluence);
 
         // Clear and render to TileMapLayers
         ClearAllLayers();
@@ -198,7 +200,9 @@ public partial class WorldTileMapScreen : Node3D
         // Generate map using shared logic
         var seed = Seeded ? GenerateSeedFromCard(new[] { Signature }) : Time.Singleton.GetTicksMsec();
         var allTilesArray = SemanticTiles.ToArray();
-        var generatedMap = GeneratedMap.Generate(allTilesArray, PreviewSize, (ulong)seed);
+        
+        _gradientInfluence = new GradientInfluenceComponent(new CardBasedGradient( new[] { Signature } ));
+        var generatedMap = GeneratedMap.Generate(allTilesArray, PreviewSize, seed, _gradientInfluence);
 
         // Render to preview image
         var previewImage = generatedMap.RenderToImage(TileSize, ShowTerrain, ShowStructure, ShowDecoration, ShowEffects);
@@ -236,45 +240,6 @@ public partial class WorldTileMapScreen : Node3D
         return (uint)signature.GetHashCode();
     }
 
-    private System.Collections.Generic.Dictionary<TileLayer, SemanticTile?[,]> GenerateTileGrids(ulong seed)
-    {
-        var rng = new RandomNumberGenerator { Seed = seed };
-        var grids = new System.Collections.Generic.Dictionary<TileLayer, SemanticTile?[,]>();
-
-        // Use 3D generator for consistency with runtime generation
-        var allTilesArray = SemanticTiles.ToArray();
-        var mapSize3D =
-            new Vector3I(PreviewSize.X, PreviewSize.Y, 4); // 4 layers: Terrain, Structure, Decoration, Effects
-
-        var wfc3DGenerator = new SemanticWfc3dGenerator(allTilesArray, mapSize3D, rng);
-        var result3D = wfc3DGenerator.Generate();
-
-        // Extract 2D layers from 3D result
-        grids[TileLayer.Terrain] = Extract2DLayer(result3D, 0);
-        grids[TileLayer.Structure] = Extract2DLayer(result3D, 1);
-        grids[TileLayer.Decoration] = Extract2DLayer(result3D, 2);
-        grids[TileLayer.Effects] = Extract2DLayer(result3D, 3);
-
-        return grids;
-    }
-
-    private static SemanticTile?[,] Extract2DLayer(SemanticTile[,,] result3D, int layerIndex)
-    {
-        var width = result3D.GetLength(2);
-        var height = result3D.GetLength(1);
-        var layer2D = new SemanticTile?[height, width];
-
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                layer2D[y, x] = result3D[layerIndex, y, x];
-            }
-        }
-
-        return layer2D;
-    }
-
     private static Vector2I GetMapSizeForRarity(CardRarity rarity)
     {
         var height = rarity switch
@@ -291,31 +256,6 @@ public partial class WorldTileMapScreen : Node3D
         var width = Mathf.RoundToInt(height * 16f / 9f);
 
         return new Vector2I(width, height);
-    }
-
-    private static void ApplyTilesToLayer(SemanticTile?[,] tileGrid, TileMapLayer? layer)
-    {
-        if (layer == null) return;
-
-        var height = tileGrid.GetLength(0);
-        var width = tileGrid.GetLength(1);
-
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                var pattern = tileGrid[y, x];
-                if (pattern == null) continue;
-
-                var position = new Vector2I(x, y);
-                var tilePlacement = pattern.GetTileAt(new Vector2I(0, 0));
-
-                if (tilePlacement != null)
-                {
-                    layer.SetCell(position, tilePlacement.AnimationFrames[0].X, tilePlacement.AnimationFrames[0].YZ());
-                }
-            }
-        }
     }
 
     private EnemySpawnData?[,] GenerateEnemyLayer(SemanticTile?[,] terrainGrid,

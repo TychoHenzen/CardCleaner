@@ -31,12 +31,12 @@ public readonly struct GeneratedMap
     /// <summary>
     /// Generate a complete map using SemanticWfc3dGenerator
     /// </summary>
-    public static GeneratedMap Generate(SemanticTile[] allTiles, Vector2I mapSize, ulong seed)
+    public static GeneratedMap Generate(SemanticTile[] allTiles, Vector2I mapSize, ulong seed, GradientInfluenceComponent gradientInfluence)
     {
         var rng = new RandomNumberGenerator { Seed = seed };
         var mapSize3D = new Vector3I(mapSize.X, mapSize.Y, 4); // 4 layers
 
-        var wfc3DGenerator = new SemanticWfc3dGenerator(allTiles, mapSize3D, rng);
+        var wfc3DGenerator = new SemanticWfc3dGenerator(allTiles, mapSize3D, rng,gradientInfluence);
         var result3D = wfc3DGenerator.Generate();
 
         // Extract all layers

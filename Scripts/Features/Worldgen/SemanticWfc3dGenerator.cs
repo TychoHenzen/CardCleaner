@@ -14,6 +14,8 @@ public class SemanticWfc3dGenerator
     private readonly TileLayer[] _layerOrder; // [Terrain, Decoration, Structure, Effects]
     private readonly RandomNumberGenerator _rng;
     private readonly ConstraintManager _constraintManager = new();
+    private readonly GradientInfluenceComponent _gradientInfluence;
+
 
     // 3D wave function: [layer][y][x]
     private List<SemanticTile>[][][] _wave;
@@ -22,11 +24,13 @@ public class SemanticWfc3dGenerator
     // Precomputed tile sets by layer for performance
     private readonly Dictionary<TileLayer, SemanticTile[]> _tilesByLayer;
 
-    public SemanticWfc3dGenerator(SemanticTile[] tileSet, Vector3I mapSize, RandomNumberGenerator rng)
+    public SemanticWfc3dGenerator(SemanticTile[] tileSet, Vector3I mapSize, RandomNumberGenerator rng, GradientInfluenceComponent? gradientInfluence = null)
     {
         _rng = rng;
         _tileSet = tileSet;
         _mapSize = mapSize;
+        _gradientInfluence = gradientInfluence ?? new GradientInfluenceComponent(new RadialGradient(), 0);
+
         _layerOrder = new[] { TileLayer.Terrain, TileLayer.Decoration, TileLayer.Structure, TileLayer.Effects };
 
         // Precompute tiles by layer
@@ -139,13 +143,12 @@ public class SemanticWfc3dGenerator
             _wave[position.Z][position.Y][position.X].Count == 0) return;
 
         var availableTiles = _wave[position.Z][position.Y][position.X];
-        var chosenTile = ChooseWeightedTile(availableTiles);
+        var chosenTile = ChooseWeightedTile(availableTiles, position); // Pass position for gradient
 
         _wave[position.Z][position.Y][position.X].Clear();
         _wave[position.Z][position.Y][position.X].Add(chosenTile);
         _collapsed[position.Z][position.Y][position.X] = true;
 
-        // Apply any constraint modifications from the placed tile
         _constraintManager.ApplyTileConstraints(position, chosenTile);
     }
 
@@ -188,23 +191,27 @@ public class SemanticWfc3dGenerator
     }
 
 
-    private SemanticTile ChooseWeightedTile(List<SemanticTile> tiles)
+    private SemanticTile ChooseWeightedTile(List<SemanticTile> tiles, Vector3I position)
     {
         if (tiles.Count == 0) return null;
         if (tiles.Count == 1) return tiles[0];
 
-        var totalWeight = tiles.Sum(t => t.BaseWeight);
+        // Use gradient influence if available, otherwise use base weights
+        var weights = _gradientInfluence?.AdjustTileWeights(tiles, position, _mapSize) 
+                      ?? tiles.Select(t => t.BaseWeight).ToList();
+
+        var totalWeight = weights.Sum();
         if (totalWeight <= 0) return tiles[0];
 
         var randomValue = _rng.Randf() * totalWeight;
         var currentWeight = 0f;
 
-        foreach (var tile in tiles)
+        for (int i = 0; i < tiles.Count; i++)
         {
-            currentWeight += tile.BaseWeight;
+            currentWeight += weights[i];
             if (randomValue <= currentWeight)
             {
-                return tile;
+                return tiles[i];
             }
         }
 
