@@ -19,10 +19,16 @@ public partial class CardBasedGradient : BaselineGradient
     private CardSignature[,] _sampleGrid;
     private Vector2I _gridSize;
     private bool _needsRegeneration = true;
+    private RandomNumberGenerator _rng;
 
-    public CardBasedGradient(CardSignature[] InputCards)
+    public CardBasedGradient()
+    {
+        
+    }
+    public CardBasedGradient(CardSignature[] InputCards, RandomNumberGenerator rng)
     {
         _inputCards = InputCards;
+        _rng = rng;
     }
 
     public override CardSignature GetSignatureAt(Vector2I position, Vector2I mapSize)
@@ -53,26 +59,23 @@ public partial class CardBasedGradient : BaselineGradient
         _gridSize = new Vector2I(GridResolution, GridResolution);
         _sampleGrid = new CardSignature[_gridSize.Y, _gridSize.X];
 
-        var rng = new RandomNumberGenerator();
-        rng.Seed = (uint)_inputCards.Sum(card => card.GetHashCode());
-
         switch (_inputCards.Length)
         {
             case 1:
-                GenerateSphereGradient(rng);
+                GenerateSphereGradient();
                 break;
             case 2:
-                GenerateCapsuleGradient(rng);
+                GenerateCapsuleGradient();
                 break;
             default:
-                GenerateBezierGradient(rng);
+                GenerateBezierGradient();
                 break;
         }
 
         ApplyMultiCardBonuses();
     }
 
-    private void GenerateSphereGradient(RandomNumberGenerator rng)
+    private void GenerateSphereGradient()
     {
         var center = _inputCards[0];
 
@@ -80,12 +83,12 @@ public partial class CardBasedGradient : BaselineGradient
         {
             for (int x = 0; x < _gridSize.X; x++)
             {
-                _sampleGrid[y, x] = SampleFromHypersphere(center, SamplingRadius, rng);
+                _sampleGrid[y, x] = SampleFromHypersphere(center, SamplingRadius);
             }
         }
     }
 
-    private void GenerateCapsuleGradient(RandomNumberGenerator rng)
+    private void GenerateCapsuleGradient()
     {
         var start = _inputCards[0];
         var end = _inputCards[1];
@@ -95,14 +98,14 @@ public partial class CardBasedGradient : BaselineGradient
             for (int x = 0; x < _gridSize.X; x++)
             {
                 // Sample along line segment with cylindrical distribution
-                var t = rng.Randf();
+                var t = _rng.Randf();
                 var linePoint = LerpSignatures(start, end, t);
-                _sampleGrid[y, x] = SampleFromHypersphere(linePoint, SamplingRadius * 0.8f, rng);
+                _sampleGrid[y, x] = SampleFromHypersphere(linePoint, SamplingRadius * 0.8f);
             }
         }
     }
 
-    private void GenerateBezierGradient(RandomNumberGenerator rng)
+    private void GenerateBezierGradient()
     {
         // Create closed Bezier curve through all input cards
         var controlPoints = _inputCards.ToArray();
@@ -112,14 +115,14 @@ public partial class CardBasedGradient : BaselineGradient
             for (int x = 0; x < _gridSize.X; x++)
             {
                 // Sample along Bezier curve
-                var t = rng.Randf();
+                var t = _rng.Randf();
                 var curvePoint = SampleBezierCurve(controlPoints, t);
-                _sampleGrid[y, x] = SampleFromHypersphere(curvePoint, SamplingRadius * 0.6f, rng);
+                _sampleGrid[y, x] = SampleFromHypersphere(curvePoint, SamplingRadius * 0.6f);
             }
         }
     }
 
-    private static CardSignature SampleFromHypersphere(CardSignature center, float radius, RandomNumberGenerator rng)
+    private CardSignature SampleFromHypersphere(CardSignature center, float radius)
     {
         var result = new CardSignature();
 
@@ -132,14 +135,14 @@ public partial class CardBasedGradient : BaselineGradient
 
             for (int i = 0; i < 8; i++)
             {
-                components[i] = rng.RandfRange(-1f, 1f);
+                components[i] = _rng.RandfRange(-1f, 1f);
                 lengthSquared += components[i] * components[i];
             }
 
             if (lengthSquared <= 1f && lengthSquared > 0f)
             {
                 // Inside unit sphere, scale to desired radius
-                var actualRadius = Mathf.Pow(rng.Randf(), 1f / 8f) * radius; // Uniform distribution in 8D
+                var actualRadius = Mathf.Pow(_rng.Randf(), 1f / 8f) * radius; // Uniform distribution in 8D
                 var scale = actualRadius / Mathf.Sqrt(lengthSquared);
 
                 for (int i = 0; i < 8; i++)

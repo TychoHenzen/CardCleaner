@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -19,7 +19,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 [GlobalClass]
 public partial class WorldTileMapScreen : Node3D
 {
-    [Export] public Worldgen.WorldData? Configuration { get; set; }
+    [Export] public WorldData? Configuration { get; set; }
     public Array<SemanticTile> SemanticTiles => Configuration?.SemanticTiles ?? new Array<SemanticTile>();
     public int TileSize => Configuration?.TileSize ?? 32;
     public Array<EnemySpawnData> EnemySpawnData => Configuration?.EnemySpawnData ?? new Array<EnemySpawnData>();
@@ -77,16 +77,18 @@ public partial class WorldTileMapScreen : Node3D
         }
 
         // Calculate map size and setup
+        ulong generationSeed = GenerateSeedFromCard(mapSeed);
+        var rng = new RandomNumberGenerator { Seed = generationSeed };
         var rarity = SignatureCardHelper.DetermineRarity(mapSeed);
-        _gradientInfluence = new GradientInfluenceComponent(new CardBasedGradient( mapSeed ));
+        var gradient = new CardBasedGradient(mapSeed, rng);
+        _gradientInfluence = new GradientInfluenceComponent(gradient);
         var calculatedMapSize = GetMapSizeForRarity(rarity);
         SetupViewport(calculatedMapSize);
         SetupScreenMaterial();
 
         // Generate map using shared logic
-        ulong generationSeed = GenerateSeedFromCard(mapSeed);
         var allTilesArray = SemanticTiles.ToArray();
-        var generatedMap = GeneratedMap.Generate(allTilesArray, calculatedMapSize, generationSeed, _gradientInfluence);
+        var generatedMap = GeneratedMap.Generate(allTilesArray, calculatedMapSize, rng, _gradientInfluence);
 
         // Clear and render to TileMapLayers
         ClearAllLayers();
@@ -95,8 +97,6 @@ public partial class WorldTileMapScreen : Node3D
         // Handle enemy layer (existing logic)
         if (EnemySpawnData.Count > 0)
         {
-            var gradient = new CardBasedGradient(mapSeed);
-            var rng = new RandomNumberGenerator { Seed = generationSeed };
             var enemyGrid = GenerateEnemyLayer(generatedMap.TerrainLayer, EnemySpawnData, gradient, calculatedMapSize, rng);
             ApplyEnemyLayer(enemyGrid, EnemyLayer);
         }
@@ -179,10 +179,10 @@ public partial class WorldTileMapScreen : Node3D
     private ulong GenerateSeedFromCard(CardSignature[] mapSeed)
     {
         // Use card name hash as base seed for reproducible generation
-        long running = 0;
+        ulong running = 0;
         foreach (var card in mapSeed)
-            running ^= card.GetHashCode();
-        return (ulong)running;
+            running ^= SignatureCardHelper.ComputeSeed(card);
+        return running;
     }
 
     private void OnLayerVisibilityChanged(bool _)
@@ -200,15 +200,18 @@ public partial class WorldTileMapScreen : Node3D
         // Generate map using shared logic
         var seed = Seeded ? GenerateSeedFromCard(new[] { Signature }) : Time.Singleton.GetTicksMsec();
         var allTilesArray = SemanticTiles.ToArray();
-        
-        _gradientInfluence = new GradientInfluenceComponent(new CardBasedGradient( new[] { Signature } ));
-        var generatedMap = GeneratedMap.Generate(allTilesArray, PreviewSize, seed, _gradientInfluence);
+
+        var rng = new RandomNumberGenerator { Seed = seed };
+        var gradientSignature = Seeded ? Signature : CardSignature.Random(rng);
+        var gradient = new CardBasedGradient(new[] { gradientSignature },rng);
+        _gradientInfluence = new GradientInfluenceComponent(gradient);
+        var generatedMap = GeneratedMap.Generate(allTilesArray, PreviewSize, rng, _gradientInfluence);
 
         // Render to preview image
         var previewImage = generatedMap.RenderToImage(TileSize, ShowTerrain, ShowStructure, ShowDecoration, ShowEffects);
         PreviewDisplay = ImageTexture.CreateFromImage(previewImage);
 
-        ILog.Print($"Generated preview with signature: {Signature} (seed: {seed})");
+        ILog.Print($"Generated preview with signature: {gradientSignature} (seed: {seed})");
     }
 
     private ImageTexture CreateEmptyPreviewWithMessage(string message)
@@ -233,12 +236,7 @@ public partial class WorldTileMapScreen : Node3D
         ILog.Warning($"Preview generation failed: {message}");
         return ImageTexture.CreateFromImage(emptyImage);
     }
-
-
-    private uint GenerateSeedFromCardSignature(CardSignature signature)
-    {
-        return (uint)signature.GetHashCode();
-    }
+    
 
     private static Vector2I GetMapSizeForRarity(CardRarity rarity)
     {

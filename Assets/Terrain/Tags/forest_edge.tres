@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CompatibilityTag" load_steps=2 format=3 uid="uid://c0e3lrni6cfkm"]
+
+[ext_resource type="Script" uid="uid://d2t3c4inr12or" path="res://Scripts/Core/Data/CompatibilityTag.cs" id="1_adxh5"]
+
+[resource]
+script = ExtResource("1_adxh5")
+Tag = "forest_edge"
+Description = "Forest terrain connectivity"
+CompatibleWith = Array[ExtResource("1_adxh5")]([])
+Mode = 2
+metadata/_custom_type_script = "uid://d2t3c4inr12or"

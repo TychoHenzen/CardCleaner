@@ -1,5 +1,5 @@
 ﻿using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 

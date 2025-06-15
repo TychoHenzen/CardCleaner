@@ -2,11 +2,11 @@
 
 [ext_resource type="Script" uid="uid://bo6ioy4iawnq6" path="res://Scripts/Features/Deckbuilder/Models/WorldTileMapScreen.cs" id="1_q7ehv"]
 [ext_resource type="Resource" uid="uid://b46r3jmjkdla3" path="res://Assets/Terrain/WorldData/Base.tres" id="2_de14p"]
-[ext_resource type="Script" uid="uid://dfivx0g2ib815" path="res://Scripts/Features/Card/Models/CardSignature.cs" id="6_1jn4e"]
+[ext_resource type="Script" uid="uid://dfivx0g2ib815" path="res://Scripts/Features/Card/Models/CardSignature.cs" id="3_de14p"]
 [ext_resource type="TileSet" uid="uid://cs7m5recytaxd" path="res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres" id="8_1jn4e"]
 
-[sub_resource type="Resource" id="Resource_71kd0"]
-script = ExtResource("6_1jn4e")
+[sub_resource type="Resource" id="Resource_dwpdh"]
+script = ExtResource("3_de14p")
 Solidum = 0.0
 Febris = 0.0
 Ordinem = 0.0
@@ -36,7 +36,7 @@ Viewport = NodePath("SubViewport")
 ScreenMesh = NodePath("CSGMesh3D")
 PreviewSize = Vector2i(30, 10)
 Seeded = false
-Signature = SubResource("Resource_71kd0")
+Signature = SubResource("Resource_dwpdh")
 
 [node name="CSGMesh3D" type="MeshInstance3D" parent="."]
 material_override = SubResource("StandardMaterial3D_7gktn")

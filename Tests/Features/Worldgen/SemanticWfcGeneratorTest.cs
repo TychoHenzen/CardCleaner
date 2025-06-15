@@ -1,5 +1,5 @@
 ﻿using CardCleaner.Scripts.Core.Data;
-using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Worldgen;
 using GdUnit4;
 using Godot;
@@ -14,10 +14,10 @@ public class SemanticWfc3dGeneratorTest
     private SemanticTile _grassTile = null!;
     private SemanticTile _stoneTile = null!;
     private SemanticTile _waterTile = null!;
-    private static readonly CompatibilityTag Grasslands = new(){Tag = "Grasslands"};
-    private static readonly CompatibilityTag Mountains = new(){Tag = "Mountains"};
-    private static readonly CompatibilityTag Swamp = new(){Tag = "Swamp"};
-    private static readonly CompatibilityTag Any = new(){Tag = "Any", Mode = CompatibilityTag.CompatibilityMode.Any};
+    private static readonly CompatibilityTag Grasslands = new() { Tag = "Grasslands" };
+    private static readonly CompatibilityTag Mountains = new() { Tag = "Mountains" };
+    private static readonly CompatibilityTag Swamp = new() { Tag = "Swamp" };
+    private static readonly CompatibilityTag Any = new() { Tag = "Any", Mode = CompatibilityTag.CompatibilityMode.Any };
 
     [BeforeTest]
     public void Setup()
@@ -43,16 +43,19 @@ public class SemanticWfc3dGeneratorTest
         var tile = new SemanticTile
         {
             TileName = name,
-            North = CreateSocketArray(north),
-            East = CreateSocketArray(east),
-            South = CreateSocketArray(south),
-            West = CreateSocketArray(west),
-            NorthEast = CreateSocketArray(Any),
-            NorthWest = CreateSocketArray(Any),
-            SouthEast = CreateSocketArray(Any),
-            SouthWest = CreateSocketArray(Any),
-            Up = CreateSocketArray(Any),
-            Down = CreateSocketArray(Any),
+            SocketData = new SocketData()
+            {
+                North = CreateSocketArray(north),
+                East = CreateSocketArray(east),
+                South = CreateSocketArray(south),
+                West = CreateSocketArray(west),
+                NorthEast = CreateSocketArray(Any),
+                NorthWest = CreateSocketArray(Any),
+                SouthEast = CreateSocketArray(Any),
+                SouthWest = CreateSocketArray(Any),
+                Up = CreateSocketArray(Any),
+                Down = CreateSocketArray(Any)
+            },
             BaseWeight = weight,
             Passability = TilePassability.Passable,
             Layer = layer
@@ -242,13 +245,13 @@ public class SemanticWfc3dGeneratorTest
         // Test that generator works with gradient influence component
         var mapSize = new Vector3I(5, 5, 1);
         var rng = CreateRng(42);
-        
+
         // Create a null gradient component (should work without gradient)
         var generator = new SemanticWfc3dGenerator(_testTileSet, mapSize, rng, null);
         var result = generator.Generate();
 
         Assertions.AssertThat(result).IsNotNull();
-        
+
         // Verify all positions have valid tiles
         for (int y = 0; y < mapSize.Y; y++)
         {

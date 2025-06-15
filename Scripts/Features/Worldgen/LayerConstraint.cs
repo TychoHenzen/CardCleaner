@@ -1,5 +1,6 @@
-﻿using CardCleaner.Scripts.Core.Data;
-using CardCleaner.Scripts.Core.Enum;
+﻿using System.Text.Json.Serialization;
+using CardCleaner.Scripts.Core.Data;
+using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen;
@@ -16,5 +17,6 @@ public partial class LayerConstraint : Resource
     [Export] public TileLayer targetLayer { get; set; }= TileLayer.Terrain;
     [Export] public Direction AffectedSocket { get; set; }
     [Export] public Operation operation { get; set; }= Operation.Add;
-    [Export] public CompatibilityTag tag { get; set; }
+    [JsonIgnore] public CompatibilityTag tag { get; set; }
+    [Export] public string tagName { get; set; }
 }

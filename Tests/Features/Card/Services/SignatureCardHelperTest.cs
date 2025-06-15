@@ -1,6 +1,6 @@
 ﻿// File: SignatureCardHelperTest.cs
 
-using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Services;
 using GdUnit4;
 using CardSignature = CardCleaner.Scripts.Features.Card.Models.CardSignature;
@@ -16,7 +16,7 @@ public class SignatureCardHelperTest
     {
         var signature = new CardSignature();
         var seed = SignatureCardHelper.ComputeSeed(signature);
-        Assertions.AssertThat(seed).IsEqual(-153111983);
+        Assertions.AssertThat(seed).IsEqual(1331286749777);
     }
 
     // Common (ratio < 0.4458)

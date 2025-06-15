@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 
@@ -24,12 +25,13 @@ public class SemanticWfc3dGenerator
     // Precomputed tile sets by layer for performance
     private readonly Dictionary<TileLayer, SemanticTile[]> _tilesByLayer;
 
-    public SemanticWfc3dGenerator(SemanticTile[] tileSet, Vector3I mapSize, RandomNumberGenerator rng, GradientInfluenceComponent? gradientInfluence = null)
+    public SemanticWfc3dGenerator(SemanticTile[] tileSet, Vector3I mapSize, RandomNumberGenerator rng,
+        GradientInfluenceComponent? gradientInfluence = null)
     {
         _rng = rng;
         _tileSet = tileSet;
         _mapSize = mapSize;
-        _gradientInfluence = gradientInfluence ?? new GradientInfluenceComponent(new RadialGradient(), 0);
+        _gradientInfluence = gradientInfluence ?? new GradientInfluenceComponent(new RadialGradient());
 
         _layerOrder = new[] { TileLayer.Terrain, TileLayer.Decoration, TileLayer.Structure, TileLayer.Effects };
 
@@ -39,6 +41,16 @@ public class SemanticWfc3dGenerator
         {
             _tilesByLayer[layer] = _tileSet.Where(t => t.Layer == layer).ToArray();
         }
+
+        foreach (var kvp in _tilesByLayer)
+        {
+            ILog.Print($"Layer {kvp.Key}: {kvp.Value.Length} tiles");
+            foreach (var tile in kvp.Value)
+            {
+                ILog.Print($"  - {tile.TileName}");
+            }
+        }
+
 
         InitializeWave3D();
     }
@@ -51,7 +63,6 @@ public class SemanticWfc3dGenerator
         for (int z = 0; z < _mapSize.Z; z++)
         {
             var layer = _layerOrder[z];
-            var layerTiles = _tilesByLayer[layer];
 
             _wave[z] = new List<SemanticTile>[_mapSize.Y][];
             _collapsed[z] = new bool[_mapSize.Y][];
@@ -63,9 +74,128 @@ public class SemanticWfc3dGenerator
 
                 for (int x = 0; x < _mapSize.X; x++)
                 {
-                    // Each position starts with all tiles valid for its layer
-                    _wave[z][y][x] = new List<SemanticTile>(layerTiles);
                     _collapsed[z][y][x] = false;
+
+                    if (layer == TileLayer.Terrain)
+                    {
+                        var layerTiles = _tilesByLayer[layer];
+                        _wave[z][y][x] = new List<SemanticTile>(layerTiles);
+
+                        // Debug: Check if any constraints immediately eliminate tiles
+                        if (x == 0 || y == 0 || x == _mapSize.X - 1 || y == _mapSize.Y - 1)
+                        {
+                            ILog.Print($"Boundary cell [{x},{y}]: {_wave[z][y][x].Count} tiles initially");
+                        }
+                    }
+
+                    else
+                    {
+                        // Upper layers: start with all tiles, but spawning will be controlled during collapse
+                        var layerTiles = _tilesByLayer[layer];
+                        _wave[z][y][x] = new List<SemanticTile>(layerTiles);
+                    }
+                }
+            }
+        }
+
+        ILog.Print("=== TESTING INITIAL PROPAGATION ===");
+        TestInitialConstraints();
+        TestSocketCompatibility();
+    }
+
+    private void TestSocketCompatibility()
+    {
+        ILog.Print("=== SOCKET COMPATIBILITY TEST ===");
+
+        var tiles = _tilesByLayer[TileLayer.Terrain];
+
+        foreach (var tileA in tiles)
+        {
+            foreach (var tileB in tiles)
+            {
+                // Test North-South connection
+                var canConnect = CanConnect3D(tileA, tileB, Direction.North, Vector3I.Zero, new Vector3I(0, -1, 0));
+                ILog.Print($"{tileA.TileName} → {tileB.TileName} (North): {canConnect}");
+
+                if (!canConnect)
+                {
+                    // Debug why it failed
+                    var fromSocket = GetSocketForDirection(tileA, Direction.North);
+                    var toSocket = GetSocketForDirection(tileB, Direction.South);
+
+                    ILog.Print($"  From socket: [{string.Join(", ", fromSocket.Select(t => t.Tag))}]");
+                    ILog.Print($"  To socket: [{string.Join(", ", toSocket.Select(t => t.Tag))}]");
+
+                    // Test individual tag compatibility
+                    foreach (var fromTag in fromSocket)
+                    {
+                        foreach (var toTag in toSocket)
+                        {
+                            var compatible = fromTag.IsCompatibleWith(toTag);
+                            ILog.Print($"    {fromTag.Tag} ↔ {toTag.Tag}: {compatible}");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void TestInitialConstraints()
+    {
+        for (int y = 0; y < _mapSize.Y; y++)
+        {
+            for (int x = 0; x < _mapSize.X; x++)
+            {
+                var position = new Vector3I(x, y, 0); // Terrain layer
+                var availableTiles = _wave[0][y][x].ToList();
+
+                foreach (var tile in availableTiles.ToList())
+                {
+                    bool canPlace = true;
+                    string failReason = "";
+
+                    // Check each direction for constraint violations
+                    foreach (var direction in new[]
+                                 { Direction.North, Direction.East, Direction.South, Direction.West })
+                    {
+                        var neighbor = GetNeighbor3D(position, direction);
+
+                        if (!IsValidCoord3D(neighbor))
+                        {
+                            // Boundary - what constraints exist here?
+                            continue;
+                        }
+
+                        var neighborTiles = _wave[neighbor.Z][neighbor.Y][neighbor.X];
+                        bool hasValidConnection = false;
+
+                        foreach (var neighborTile in neighborTiles)
+                        {
+                            if (CanConnect3D(tile, neighborTile, direction, position, neighbor))
+                            {
+                                hasValidConnection = true;
+                                break;
+                            }
+                        }
+
+                        if (!hasValidConnection)
+                        {
+                            canPlace = false;
+                            failReason = $"No valid connection in direction {direction}";
+                            break;
+                        }
+                    }
+
+                    if (!canPlace)
+                    {
+                        ILog.Print($"Tile {tile.TileName} eliminated from [{x},{y}]: {failReason}");
+                        _wave[0][y][x].Remove(tile);
+                    }
+                }
+
+                if (_wave[0][y][x].Count == 0)
+                {
+                    ILog.Print($"IMPOSSIBLE STATE at [{x},{y}] - no valid tiles remain!");
                 }
             }
         }
@@ -73,15 +203,36 @@ public class SemanticWfc3dGenerator
 
     public SemanticTile[,,] Generate()
     {
+        ILog.Print("=== WFC GENERATION START ===");
+
+        int iterations = 0;
         while (!IsFullyCollapsed())
         {
+            iterations++;
+            ILog.Print($"Iteration {iterations}");
+
             var position = FindLowestEntropyCell3D();
-            if (position.X == -1) break; // No valid moves
+            ILog.Print($"Lowest entropy position: {position}");
+
+            if (position.X == -1)
+            {
+                ILog.Print("ERROR: No valid moves found - impossible state!");
+                break;
+            }
+
+            ILog.Print($"Entropy at {position}: {_wave[position.Z][position.Y][position.X].Count}");
 
             CollapseCell3D(position);
             Propagate3D(position);
+
+            if (iterations > 100) // Safety break
+            {
+                ILog.Print("ERROR: Too many iterations!");
+                break;
+            }
         }
 
+        ILog.Print($"=== WFC GENERATION COMPLETE: {iterations} iterations ===");
         return WaveToTileArray();
     }
 
@@ -105,6 +256,10 @@ public class SemanticWfc3dGenerator
     {
         int minEntropy = int.MaxValue;
         var candidates = new List<Vector3I>();
+        int totalCells = 0;
+        int collapsedCells = 0;
+        int zeroCells = 0;
+        var entropyCounts = new Dictionary<int, int>();
 
         // Prioritize lower layers (terrain before structure)
         for (int z = 0; z < _mapSize.Z; z++)
@@ -113,10 +268,27 @@ public class SemanticWfc3dGenerator
             {
                 for (int x = 0; x < _mapSize.X; x++)
                 {
-                    if (_collapsed[z][y][x]) continue;
+                    totalCells++;
+
+                    if (_collapsed[z][y][x])
+                    {
+                        collapsedCells++;
+                        continue;
+                    }
 
                     int entropy = _wave[z][y][x].Count;
-                    if (entropy == 0) return new Vector3I(-1, -1, -1); // Impossible state
+
+                    // Track entropy distribution
+                    if (!entropyCounts.ContainsKey(entropy))
+                        entropyCounts[entropy] = 0;
+                    entropyCounts[entropy]++;
+
+                    if (entropy == 0)
+                    {
+                        zeroCells++;
+                        ILog.Print($"ZERO ENTROPY at [{x},{y},{z}]!");
+                        continue;
+                    }
 
                     if (entropy < minEntropy)
                     {
@@ -132,6 +304,15 @@ public class SemanticWfc3dGenerator
             }
         }
 
+        ILog.Print($"=== ENTROPY ANALYSIS ===");
+        ILog.Print($"Total cells: {totalCells}, Collapsed: {collapsedCells}, Zero entropy: {zeroCells}");
+        ILog.Print($"Min entropy: {minEntropy}, Candidates: {candidates.Count}");
+
+        foreach (var kvp in entropyCounts.OrderBy(x => x.Key))
+        {
+            ILog.Print($"  Entropy {kvp.Key}: {kvp.Value} cells");
+        }
+
         if (candidates.Count == 0) return new Vector3I(-1, -1, -1);
 
         return candidates[_rng.RandiRange(0, candidates.Count - 1)];
@@ -142,8 +323,27 @@ public class SemanticWfc3dGenerator
         if (_collapsed[position.Z][position.Y][position.X] ||
             _wave[position.Z][position.Y][position.X].Count == 0) return;
 
+        var currentLayer = _layerOrder[position.Z];
+
+        // For upper layers, check if anything should spawn based on layers below
+        if (currentLayer != TileLayer.Terrain)
+        {
+            bool shouldSpawn = ShouldSpawnBasedOnLayersBelow(position);
+
+            if (!shouldSpawn)
+            {
+                // Force empty cell
+                _wave[position.Z][position.Y][position.X].Clear();
+                _collapsed[position.Z][position.Y][position.X] = true;
+                return;
+            }
+        }
+
         var availableTiles = _wave[position.Z][position.Y][position.X];
-        var chosenTile = ChooseWeightedTile(availableTiles, position); // Pass position for gradient
+
+        if (availableTiles.Count == 0) return;
+
+        var chosenTile = ChooseWeightedTile(availableTiles, position);
 
         _wave[position.Z][position.Y][position.X].Clear();
         _wave[position.Z][position.Y][position.X].Add(chosenTile);
@@ -152,23 +352,69 @@ public class SemanticWfc3dGenerator
         _constraintManager.ApplyTileConstraints(position, chosenTile);
     }
 
-    private static Godot.Collections.Array<Core.Data.CompatibilityTag>
+    private static Godot.Collections.Array<CompatibilityTag>
         GetSocketForDirection(SemanticTile tile, Direction direction)
     {
         return direction switch
         {
-            Direction.North => tile.North,
-            Direction.East => tile.East,
-            Direction.South => tile.South,
-            Direction.West => tile.West,
-            Direction.NorthEast => tile.NorthEast,
-            Direction.NorthWest => tile.NorthWest,
-            Direction.SouthEast => tile.SouthEast,
-            Direction.SouthWest => tile.SouthWest,
-            Direction.Up => tile.Up,
-            Direction.Down => tile.Down,
-            _ => new Godot.Collections.Array<Core.Data.CompatibilityTag>()
+            Direction.North => tile.SocketData.North,
+            Direction.East => tile.SocketData.East,
+            Direction.South => tile.SocketData.South,
+            Direction.West => tile.SocketData.West,
+            Direction.NorthEast => tile.SocketData.NorthEast,
+            Direction.NorthWest => tile.SocketData.NorthWest,
+            Direction.SouthEast => tile.SocketData.SouthEast,
+            Direction.SouthWest => tile.SocketData.SouthWest,
+            Direction.Up => tile.SocketData.Up,
+            Direction.Down => tile.SocketData.Down,
+            _ => new Godot.Collections.Array<CompatibilityTag>()
         };
+    }
+
+    private bool ShouldSpawnBasedOnLayersBelow(Vector3I position)
+    {
+        // Check terrain layer (layer 0) for GlobalSpawnChance
+        if (_collapsed[0][position.Y][position.X] && _wave[0][position.Y][position.X].Count > 0)
+        {
+            var terrainTile = _wave[0][position.Y][position.X][0];
+            if (terrainTile != null)
+            {
+                // Roll against the terrain tile's GlobalSpawnChance
+                bool baseSpawnRoll = _rng.Randf() < terrainTile.GlobalSpawnChance;
+
+                // Also check for connectivity from neighbors (for border tiles)
+                bool shouldPropagateFromNeighbors = CheckConnectivityPropagation(position);
+
+                return baseSpawnRoll || shouldPropagateFromNeighbors;
+            }
+        }
+
+        // If terrain isn't collapsed yet, allow spawning for now (WFC will sort it out)
+        // This prevents deadlocks during generation
+        return true;
+    }
+
+    private bool CheckConnectivityPropagation(Vector3I position)
+    {
+        var directions = new[]
+        {
+            Direction.North, Direction.East, Direction.South, Direction.West
+        };
+
+        foreach (var direction in directions)
+        {
+            var neighbor = GetNeighbor3D(position, direction);
+            if (!IsValidCoord3D(neighbor)) continue;
+
+            // Only check already collapsed neighbors to avoid circular dependencies
+            if (!_collapsed[neighbor.Z][neighbor.Y][neighbor.X] ||
+                _wave[neighbor.Z][neighbor.Y][neighbor.X].Count <= 0) continue;
+            var neighborTile = _wave[neighbor.Z][neighbor.Y][neighbor.X][0];
+            if (neighborTile is { HasLayerConstraints: true })
+                return true;
+        }
+
+        return false;
     }
 
 
@@ -190,31 +436,38 @@ public class SemanticWfc3dGenerator
         };
     }
 
-
     private SemanticTile ChooseWeightedTile(List<SemanticTile> tiles, Vector3I position)
     {
         if (tiles.Count == 0) return null;
         if (tiles.Count == 1) return tiles[0];
 
-        // Use gradient influence if available, otherwise use base weights
-        var weights = _gradientInfluence?.AdjustTileWeights(tiles, position, _mapSize) 
-                      ?? tiles.Select(t => t.BaseWeight).ToList();
-
+        var weights = tiles.Select(t => t.BaseWeight).ToList();
         var totalWeight = weights.Sum();
+
         if (totalWeight <= 0) return tiles[0];
 
         var randomValue = _rng.Randf() * totalWeight;
-        var currentWeight = 0f;
 
+        // DEBUG: Log the selection process
+        ILog.Print($"=== TILE SELECTION DEBUG ===");
+        ILog.Print($"Position: {position}");
+        ILog.Print($"Total weight: {totalWeight}");
+        ILog.Print($"Random value: {randomValue}");
+
+        var currentWeight = 0f;
         for (int i = 0; i < tiles.Count; i++)
         {
             currentWeight += weights[i];
+            ILog.Print($"  Tile {i}: {tiles[i].TileName}, weight: {weights[i]}, cumulative: {currentWeight}");
+
             if (randomValue <= currentWeight)
             {
+                ILog.Print($"  >>> SELECTED: {tiles[i].TileName} <<<");
                 return tiles[i];
             }
         }
 
+        ILog.Print($"  >>> FALLBACK: {tiles[^1].TileName} <<<");
         return tiles[^1];
     }
 
@@ -346,20 +599,20 @@ public class SemanticWfc3dGenerator
 
         // Vertical connections - use CompatibilityTag array compatibility
         if (direction == Direction.Up)
-            return Core.Data.CompatibilityTag.IsArrayCompatibleWith(from.Up, toSocket);
+            return CompatibilityTag.IsArrayCompatibleWith(from.SocketData.Up, toSocket);
         if (direction == Direction.Down)
-            return Core.Data.CompatibilityTag.IsArrayCompatibleWith(from.Down, toSocket);
+            return CompatibilityTag.IsArrayCompatibleWith(from.SocketData.Down, toSocket);
 
         return false;
     }
 
-    private Godot.Collections.Array<Core.Data.CompatibilityTag> ApplyConstraintsToSocket(
-        Godot.Collections.Array<Core.Data.CompatibilityTag> originalSocket,
+    private Godot.Collections.Array<CompatibilityTag> ApplyConstraintsToSocket(
+        Godot.Collections.Array<CompatibilityTag> originalSocket,
         IEnumerable<LayerConstraint> constraints,
         Direction socketDirection)
     {
         // Create a mutable copy of the original socket
-        var modifiedSocket = new Godot.Collections.Array<Core.Data.CompatibilityTag>(originalSocket);
+        var modifiedSocket = new Godot.Collections.Array<CompatibilityTag>(originalSocket);
 
         // Apply each constraint that affects this socket direction
         foreach (var constraint in constraints.Where(c => c.AffectedSocket == socketDirection))

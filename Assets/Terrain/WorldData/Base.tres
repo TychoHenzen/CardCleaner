@@ -2,17 +2,17 @@
 
 [ext_resource type="Script" uid="uid://chb1eie0w5etp" path="res://Scripts/Features/Worldgen/SemanticTile.cs" id="1_4cgs3"]
 [ext_resource type="Script" uid="uid://d24selehqatn4" path="res://Scripts/Features/Worldgen/EnemySpawnData.cs" id="1_syeba"]
-[ext_resource type="Resource" uid="uid://r26w5bp0crtv" path="res://Assets/Terrain/Tiles/Terrain/Grass.tres" id="3_syeba"]
-[ext_resource type="Resource" uid="uid://do04kl6onow7v" path="res://Assets/Terrain/Tiles/Terrain/Rocks.tres" id="4_c0wna"]
-[ext_resource type="Resource" uid="uid://ckoktfxv27wx4" path="res://Assets/Terrain/Tiles/Structure/To_Rock_East.tres" id="5_c0wna"]
+[ext_resource type="Resource" uid="uid://bg1lxmimxaoe2" path="res://Assets/Terrain/Tiles/Terrain/Grass_Plain.tres" id="3_4cgs3"]
+[ext_resource type="Resource" uid="uid://b67ldj8bdtjs" path="res://Assets/Terrain/Tiles/Terrain/Forest_Dense.tres" id="4_syeba"]
+[ext_resource type="Resource" uid="uid://4uusq4rkw8bn" path="res://Assets/Terrain/Tiles/Terrain/grass_forest_transition.tres" id="5_c0wna"]
 [ext_resource type="Script" uid="uid://0kwcget0jt4s" path="res://Scripts/Features/Worldgen/WorldData.cs" id="5_nt6xv"]
 
 [resource]
 script = ExtResource("5_nt6xv")
-TerrainTiles = Array[ExtResource("1_4cgs3")]([ExtResource("3_syeba"), ExtResource("4_c0wna"), ExtResource("5_c0wna")])
+TerrainTiles = Array[ExtResource("1_4cgs3")]([ExtResource("3_4cgs3"), ExtResource("4_syeba"), ExtResource("5_c0wna")])
 StructureTiles = Array[ExtResource("1_4cgs3")]([])
 DecorTiles = Array[ExtResource("1_4cgs3")]([])
 EffectTiles = Array[ExtResource("1_4cgs3")]([])
 EnemySpawnData = Array[ExtResource("1_syeba")]([])
-TileSize = 32
+TileSize = 16
 metadata/_custom_type_script = "uid://0kwcget0jt4s"

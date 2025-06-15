@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Enumeration;
 
 namespace CardCleaner.Scripts.Core.Utilities;
 

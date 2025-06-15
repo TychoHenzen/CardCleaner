@@ -1,0 +1,55 @@
+[gd_resource type="Resource" script_class="SemanticTile" load_steps=10 format=3 uid="uid://4uusq4rkw8bn"]
+
+[ext_resource type="Script" uid="uid://bp5hl2y6y18qm" path="res://Scripts/Features/Worldgen/SocketData.cs" id="3_xwyk1"]
+[ext_resource type="Script" uid="uid://f5ebq2hn0u4e" path="res://Scripts/Features/Worldgen/LayerConstraint.cs" id="4_dj2pi"]
+[ext_resource type="Script" uid="uid://dfivx0g2ib815" path="res://Scripts/Features/Card/Models/CardSignature.cs" id="5_s4qo1"]
+[ext_resource type="Script" uid="uid://ge6gvuoe7v5o" path="res://Scripts/Features/Worldgen/TilePlacement.cs" id="6_au1fa"]
+[ext_resource type="TileSet" uid="uid://cs7m5recytaxd" path="res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres" id="7_axk1y"]
+[ext_resource type="Script" uid="uid://chb1eie0w5etp" path="res://Scripts/Features/Worldgen/SemanticTile.cs" id="9_3sktn"]
+
+[sub_resource type="Resource" id="Resource_ogl5x"]
+script = ExtResource("5_s4qo1")
+Solidum = 0.2
+Febris = 0.1
+Ordinem = 0.4
+Lumines = 0.3
+Varias = 0.0
+Inertiae = -0.2
+Subsidium = 0.5
+Spatium = 0.1
+metadata/_custom_type_script = "uid://dfivx0g2ib815"
+
+[sub_resource type="Resource" id="Resource_dqtto"]
+script = ExtResource("3_xwyk1")
+NorthName = Array[String]([])
+EastName = Array[String]([])
+SouthName = Array[String]([])
+WestName = Array[String]([])
+NorthEastName = Array[String]([])
+SouthEastName = Array[String]([])
+SouthWestName = Array[String]([])
+NorthWestName = Array[String]([])
+UpName = Array[String]([])
+DownName = Array[String]([])
+
+[sub_resource type="Resource" id="Resource_aqayw"]
+script = ExtResource("6_au1fa")
+BlocksMovement = false
+BlocksTiles = false
+AnimationFrames = Array[Vector3i]([Vector3i(49, 2, 2)])
+AnimationSpeed = 1.0
+
+[resource]
+script = ExtResource("9_3sktn")
+TileName = "grass_forest_transition"
+Passability = 0
+TileSet = ExtResource("7_axk1y")
+Size = Vector2i(1, 1)
+Tile = SubResource("Resource_aqayw")
+GlobalSpawnChance = 0.25
+Layer = 0
+BaseWeight = 1.0
+Signature = SubResource("Resource_ogl5x")
+LayerConstraints = Array[ExtResource("4_dj2pi")]([])
+SocketData = SubResource("Resource_dqtto")
+metadata/_custom_type_script = "uid://chb1eie0w5etp"

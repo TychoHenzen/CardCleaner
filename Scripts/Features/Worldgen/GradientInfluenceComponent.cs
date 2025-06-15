@@ -34,7 +34,7 @@ public class GradientInfluenceComponent
             {
                 // Calculate similarity bonus
                 var distance = tile.Signature.DistanceTo(gradientSignature);
-                var similarity = 1f - (distance / 4f); // Normalize 0-1
+                var similarity = 1f - distance / 5.65f; // Normalize 0-1
                 var signatureBonus = 1f + similarity * _influence;
                 baseWeight *= signatureBonus;
             }

@@ -1,5 +1,4 @@
 ﻿using System;
-using CardCleaner.Scripts.Core.Enum;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -31,9 +30,16 @@ public readonly struct GeneratedMap
     /// <summary>
     /// Generate a complete map using SemanticWfc3dGenerator
     /// </summary>
-    public static GeneratedMap Generate(SemanticTile[] allTiles, Vector2I mapSize, ulong seed, GradientInfluenceComponent gradientInfluence)
+    public static GeneratedMap Generate(SemanticTile[] allTiles, Vector2I mapSize, RandomNumberGenerator rng, GradientInfluenceComponent gradientInfluence)
     {
-        var rng = new RandomNumberGenerator { Seed = seed };
+        
+        ILog.Print($"Loaded tiles: {allTiles.Length} terrain tiles");
+        foreach(var tile in allTiles) 
+        {
+            ILog.Print($"  - {tile.TileName}, Layer: {tile.Layer}, BaseWeight: {tile.BaseWeight}");
+        }
+
+
         var mapSize3D = new Vector3I(mapSize.X, mapSize.Y, 4); // 4 layers
 
         var wfc3DGenerator = new SemanticWfc3dGenerator(allTiles, mapSize3D, rng,gradientInfluence);

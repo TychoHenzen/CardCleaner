@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
@@ -8,11 +8,11 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 
 public static class SignatureCardHelper
 {
-    public static int ComputeSeed(CardSignature signature)
+    public static ulong ComputeSeed(CardSignature signature)
     {
-        var seed = 17;
+        var seed = 17UL;
         foreach (var v in signature.Elements)
-            seed = seed * 23 + Mathf.RoundToInt(v * 1000);
+            seed = seed * 23UL + (ulong)Mathf.RoundToInt(v * 1000);
         return seed;
     }
 

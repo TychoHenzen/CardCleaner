@@ -1,5 +1,5 @@
 ﻿using System;
-using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 using Godot.Collections;
 

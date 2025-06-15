@@ -1,5 +1,5 @@
 ﻿using CardCleaner.Scripts.Core.Data;
-using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Worldgen;
 using GdUnit4;
 using Godot.Collections;
@@ -17,6 +17,7 @@ public class SemanticTileTest
         {
             array.Add(new CompatibilityTag { Tag = biomeTag });
         }
+
         return array;
     }
 
@@ -25,21 +26,27 @@ public class SemanticTileTest
     {
         var grassSocket = CreateSocketArray("Grasslands");
         var mountainSocket = CreateSocketArray("Mountains");
-        
+
         var grassTile = new SemanticTile
         {
-            North = grassSocket,
-            East = grassSocket,
-            South = grassSocket,
-            West = grassSocket
+            SocketData = new SocketData()
+            {
+                North = grassSocket,
+                East = grassSocket,
+                South = grassSocket,
+                West = grassSocket
+            }
         };
-        
+
         var stoneTile = new SemanticTile
         {
-            North = mountainSocket,
-            East = mountainSocket, 
-            South = mountainSocket,
-            West = mountainSocket
+            SocketData = new SocketData()
+            {
+                North = mountainSocket,
+                East = mountainSocket,
+                South = mountainSocket,
+                West = mountainSocket
+            }
         };
 
         Assertions.AssertBool(grassTile.CanConnectTo(grassTile, Direction.North)).IsTrue();
@@ -51,21 +58,27 @@ public class SemanticTileTest
     {
         var anySocket = CreateSocketArray(); // Empty array = accepts any
         var grassSocket = CreateSocketArray("Grasslands");
-        
+
         var anyTile = new SemanticTile
         {
-            North = anySocket,
-            East = anySocket,
-            South = anySocket,
-            West = anySocket
+            SocketData = new SocketData()
+            {
+                North = anySocket,
+                East = anySocket,
+                South = anySocket,
+                West = anySocket
+            }
         };
-        
+
         var grassTile = new SemanticTile
         {
-            North = grassSocket,
-            East = grassSocket,
-            South = grassSocket,
-            West = grassSocket
+            SocketData = new SocketData()
+            {
+                North = grassSocket,
+                East = grassSocket,
+                South = grassSocket,
+                West = grassSocket
+            }
         };
 
         // Note: This test may need adjustment based on how "accepts any" is implemented
@@ -78,13 +91,16 @@ public class SemanticTileTest
     public void TestNullTileConnection()
     {
         var grassSocket = CreateSocketArray("Grasslands");
-        
+
         var tile = new SemanticTile
         {
-            North = grassSocket,
-            East = grassSocket,
-            South = grassSocket,
-            West = grassSocket
+            SocketData = new SocketData()
+            {
+                North = grassSocket,
+                East = grassSocket,
+                South = grassSocket,
+                West = grassSocket
+            }
         };
 
         Assertions.AssertBool(tile.CanConnectTo(null, Direction.North)).IsFalse();

@@ -1,4 +1,4 @@
-﻿using CardCleaner.Scripts.Core.Enum;
+﻿using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Services;
 using GdUnit4;
 using CardSignature = CardCleaner.Scripts.Features.Card.Models.CardSignature;

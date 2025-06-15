@@ -1,6 +1,6 @@
 ﻿// Tests/Core/Data/GameSettingsTest.cs
 using CardCleaner.Scripts.Core.Data;
-using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Enumeration;
 using GdUnit4;
 
 namespace CardCleaner.Tests.Core.Data;

@@ -15,5 +15,5 @@ public partial class WorldData : Resource
     [Export] public Array<SemanticTile> DecorTiles { get; set; } = new();
     [Export] public Array<SemanticTile> EffectTiles { get; set; } = new();
     [Export] public Array<EnemySpawnData> EnemySpawnData { get; set; } = new();
-    [Export] public int TileSize { get; set; } = 32;
+    [Export] public int TileSize { get; set; } = 16;
 }

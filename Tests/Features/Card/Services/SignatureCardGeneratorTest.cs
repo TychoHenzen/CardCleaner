@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Enum;
+using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -250,7 +250,7 @@ public class SignatureCardGeneratorTest
         Assertions.AssertThat(_template.Art.Texture).IsNotNull();
     }
     [TestCase]
-    public async Task TestGenerateCardRenderer_WithMockedRenderer()
+    public void TestGenerateCardRenderer_WithMockedRenderer()
     {
         var signature = new CardSignature(new[] { 0.7f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
     

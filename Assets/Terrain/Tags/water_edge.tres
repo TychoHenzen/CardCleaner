@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CompatibilityTag" load_steps=2 format=3 uid="uid://chw3pjwyi8x34"]
+
+[ext_resource type="Script" uid="uid://d2t3c4inr12or" path="res://Scripts/Core/Data/CompatibilityTag.cs" id="1_pbpso"]
+
+[resource]
+script = ExtResource("1_pbpso")
+Tag = "water_edge"
+Description = "Water terrain connectivity"
+CompatibleWith = Array[ExtResource("1_pbpso")]([])
+Mode = 2
+metadata/_custom_type_script = "uid://d2t3c4inr12or"

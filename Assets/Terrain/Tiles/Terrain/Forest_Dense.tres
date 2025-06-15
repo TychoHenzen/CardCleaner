@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="SemanticTile" load_steps=8 format=3 uid="uid://b67ldj8bdtjs"]
+
+[ext_resource type="Script" uid="uid://f5ebq2hn0u4e" path="res://Scripts/Features/Worldgen/LayerConstraint.cs" id="4_4gmwd"]
+[ext_resource type="Script" uid="uid://dfivx0g2ib815" path="res://Scripts/Features/Card/Models/CardSignature.cs" id="5_hq0al"]
+[ext_resource type="Script" uid="uid://ge6gvuoe7v5o" path="res://Scripts/Features/Worldgen/TilePlacement.cs" id="5_s1ug3"]
+[ext_resource type="TileSet" uid="uid://cs7m5recytaxd" path="res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres" id="6_lsebg"]
+[ext_resource type="Script" uid="uid://chb1eie0w5etp" path="res://Scripts/Features/Worldgen/SemanticTile.cs" id="8_o6njd"]
+
+[sub_resource type="Resource" id="Resource_spowt"]
+script = ExtResource("5_hq0al")
+Solidum = 0.6
+Febris = -0.2
+Ordinem = -0.1
+Lumines = -0.4
+Varias = 0.2
+Inertiae = 0.3
+Subsidium = 0.2
+Spatium = -0.3
+metadata/_custom_type_script = "uid://dfivx0g2ib815"
+
+[sub_resource type="Resource" id="Resource_aqayw"]
+script = ExtResource("5_s1ug3")
+BlocksMovement = false
+BlocksTiles = false
+AnimationFrames = Array[Vector3i]([Vector3i(47, 7, 1)])
+AnimationSpeed = 1.0
+
+[resource]
+script = ExtResource("8_o6njd")
+TileName = "forest_dense"
+Passability = 2
+TileSet = ExtResource("6_lsebg")
+Size = Vector2i(1, 1)
+Tile = SubResource("Resource_aqayw")
+GlobalSpawnChance = 0.15
+Layer = 0
+BaseWeight = 2.0
+Signature = SubResource("Resource_spowt")
+LayerConstraints = Array[ExtResource("4_4gmwd")]([])
+metadata/_custom_type_script = "uid://chb1eie0w5etp"

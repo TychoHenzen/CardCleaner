@@ -1,4 +1,4 @@
-﻿namespace CardCleaner.Scripts.Core.Enum;
+﻿namespace CardCleaner.Scripts.Core.Enumeration;
 
 public enum CardRarity
 {

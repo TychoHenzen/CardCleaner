@@ -1,4 +1,4 @@
-﻿using CardCleaner.Scripts.Core.Enum;
+﻿using CardCleaner.Scripts.Core.Enumeration;
 using GdUnit4;
 using Godot;
 using static GdUnit4.Assertions;
