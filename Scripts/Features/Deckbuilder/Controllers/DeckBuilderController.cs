@@ -14,7 +14,7 @@ public partial class DeckBuilderController : Node
     [Export] public DeckSlot MapCardSlot { get; set; } 
     [Export] public InteractableButton ActivateButton { get; set; }
     [Export] public PackedScene BattleScreenScene { get; set; }
-    [Export] public WorldTileMapScreen WorldTileMapScreenScene { get; set; } 
+    [Export] public SimpleWorldMapScreen WorldTileMapScreenScene { get; set; } 
     [Export] public Vector3 ScreenSpawnPosition { get; set; } = Vector3.Zero;
 
     public override void _Ready()

@@ -12,6 +12,17 @@ public partial class GameSessionService : Node, IGameSessionService
     private CardSignature _mapSeed;
     private List<CardSignature> _abilityCards = new();
     private RandomNumberGenerator _rng = new();
+    
+    // Simple game systems
+    private SimpleMapGenerator _mapGenerator;
+    private SimpleMapData _currentMap;
+    private ExplorationAI _explorationAI;
+    private SimpleCombatSystem _combatSystem;
+    private Timer _gameTimer;
+    
+    // Game timing
+    private const float ExplorationStepDelay = 0.5f; // 500ms between exploration steps
+    private const float CombatTurnDelay = 1.0f; // 1s between combat turns
 
     public SessionState CurrentState 
     { 
@@ -32,6 +43,14 @@ public partial class GameSessionService : Node, IGameSessionService
     public override void _Ready()
     {
         _rng.Randomize();
+        _mapGenerator = new SimpleMapGenerator(_rng);
+        
+        // Create timer for game progression
+        _gameTimer = new Timer();
+        AddChild(_gameTimer);
+        _gameTimer.Timeout += OnTimerTimeout;
+        
+        ILog.Print("GameSessionService ready and initialized");
     }
 
     public void StartSession(CardSignature? mapSeed, List<CardSignature>? abilityCards)
@@ -54,7 +73,7 @@ public partial class GameSessionService : Node, IGameSessionService
         
         ILog.Print($"Started session with map seed and {_abilityCards.Count} ability cards");
         
-        // Auto-advance to next phase
+        // Start the game loop
         CallDeferred(MethodName.AdvanceSession);
     }
 
@@ -66,10 +85,10 @@ public partial class GameSessionService : Node, IGameSessionService
                 GenerateMap();
                 break;
             case SessionState.Exploring:
-                ExploreMap();
+                StartExploration();
                 break;
             case SessionState.InCombat:
-                ResolveCombat();
+                StartCombat();
                 break;
             case SessionState.GeneratingLoot:
                 GenerateLoot();
@@ -85,77 +104,218 @@ public partial class GameSessionService : Node, IGameSessionService
 
     public void ResetSession()
     {
+        _gameTimer.Stop();
         _mapSeed = null!;
         _abilityCards.Clear();
+        _currentMap = null;
+        _explorationAI = null;
+        _combatSystem = null;
         CurrentState = SessionState.WaitingForCards;
         ILog.Print("Session reset");
     }
 
     private void GenerateMap()
     {
-        ILog.Print($"Generating map from seed signature: {_mapSeed}");
+        ILog.Print($"Generating simple map from seed signature: {_mapSeed}");
         
-        // TODO: Implement actual map generation from card signatures
-        // For now, just simulate map generation
+        // Use signature to influence map size and difficulty
+        var mapSize = CalculateMapSize(_mapSeed);
+        var blockedPercentage = CalculateBlockedPercentage(_mapSeed);
+        
+        _currentMap = _mapGenerator.GenerateMap(mapSize, _mapSeed, blockedPercentage);
+        
+        ILog.Print($"Map generated: {mapSize.X}x{mapSize.Y}, {_currentMap.EnemyPositions.Count} enemies");
         
         CurrentState = SessionState.Exploring;
-        
-        // Auto-advance after brief delay
-        GetTree().CreateTimer(0.5f).Timeout += () => CallDeferred(MethodName.AdvanceSession);
+        CallDeferred(MethodName.AdvanceSession);
     }
 
-    private void ExploreMap()
+    private void StartExploration()
     {
-        ILog.Print("Autonomous agent exploring map...");
+        ILog.Print("Starting autonomous exploration...");
         
-        // TODO: Implement actual exploration logic
-        // For now, immediately find an enemy
+        _explorationAI = new ExplorationAI(_currentMap);
+        _explorationAI.EnemyEncountered += OnEnemyEncountered;
         
+        // Start exploration timer
+        _gameTimer.WaitTime = ExplorationStepDelay;
+        _gameTimer.Start();
+    }
+
+    private void OnTimerTimeout()
+    {
+        switch (CurrentState)
+        {
+            case SessionState.Exploring:
+                ProcessExplorationStep();
+                break;
+            case SessionState.InCombat:
+                ProcessCombatTurn();
+                break;
+        }
+    }
+
+    private void ProcessExplorationStep()
+    {
+        if (_explorationAI == null) return;
+        
+        bool shouldContinue = _explorationAI.StepExploration();
+        
+        if (!shouldContinue)
+        {
+            _gameTimer.Stop();
+            
+            if (_explorationAI.HasFoundEnemy)
+            {
+                CurrentState = SessionState.InCombat;
+                CallDeferred(MethodName.AdvanceSession);
+            }
+            else
+            {
+                ILog.Print("Exploration complete - no enemies found, ending session");
+                CurrentState = SessionState.GeneratingLoot;
+                CallDeferred(MethodName.AdvanceSession);
+            }
+        }
+    }
+
+    private void OnEnemyEncountered(Vector2I position)
+    {
+        ILog.Print($"Enemy encountered at {position}! Preparing for combat...");
+        _gameTimer.Stop();
         CurrentState = SessionState.InCombat;
-        
-        // Auto-advance after brief delay  
-        GetTree().CreateTimer(0.5f).Timeout += () => CallDeferred(MethodName.AdvanceSession);
+        CallDeferred(MethodName.AdvanceSession);
     }
 
-    private void ResolveCombat()
+    private void StartCombat()
     {
-        ILog.Print($"Resolving combat with {_abilityCards.Count} ability cards...");
+        ILog.Print($"Starting combat with {_abilityCards.Count} ability cards...");
         
-        // TODO: Implement actual combat resolution using ability cards
-        // For now, always win combat
+        _combatSystem = new SimpleCombatSystem(_abilityCards, _mapSeed, _rng);
+        _combatSystem.CombatEnded += OnCombatEnded;
         
-        CurrentState = SessionState.GeneratingLoot;
+        // Start combat timer
+        _gameTimer.WaitTime = CombatTurnDelay;
+        _gameTimer.Start();
+    }
+
+    private void ProcessCombatTurn()
+    {
+        if (_combatSystem == null) return;
         
-        // Auto-advance after brief delay
-        GetTree().CreateTimer(0.5f).Timeout += () => CallDeferred(MethodName.AdvanceSession);
+        bool shouldContinue = _combatSystem.ProcessTurn();
+        
+        if (!shouldContinue)
+        {
+            _gameTimer.Stop();
+        }
+    }
+
+    private void OnCombatEnded()
+    {
+        if (_combatSystem?.PlayerWon == true)
+        {
+            ILog.Print("Combat won! Generating loot...");
+            CurrentState = SessionState.GeneratingLoot;
+            CallDeferred(MethodName.AdvanceSession);
+        }
+        else
+        {
+            ILog.Print("Combat lost! Session ending...");
+            CleanupCurrentSession(); 
+            CurrentState = SessionState.SessionComplete;
+            CallDeferred(MethodName.ResetForNextSession); 
+            // No loot for losing
+        }
     }
 
     private void GenerateLoot()
     {
         ILog.Print("Generating loot from defeated enemy...");
         
-        // Generate ~10 card signatures as specified
         var lootSignatures = new List<CardSignature>();
         
-        // TODO: Generate based on enemy signature sphere around map seed
-        // For now, create signatures with some relation to the map seed
-        for (int i = 0; i < 10; i++)
+        // Generate 5-10 cards based on map seed and abilities used
+        var lootCount = _rng.RandiRange(5, 10);
+        
+        for (int i = 0; i < lootCount; i++)
         {
-            // Create signatures that are variations of the map seed
-            var lootSignature = new CardSignature();
-            for (int j = 0; j < 8; j++)
-            {
-                // Add some random variation around the map seed signature
-                var baseValue = _mapSeed[j];
-                var variation = _rng.RandfRange(-0.3f, 0.3f);
-                lootSignature[j] = Mathf.Clamp(baseValue + variation, -1f, 1f);
-            }
+            var lootSignature = GenerateLootSignature();
             lootSignatures.Add(lootSignature);
         }
+        CleanupCurrentSession();
         
         CurrentState = SessionState.SessionComplete;
         LootGenerated?.Invoke(lootSignatures);
         
-        ILog.Print($"Session complete! Generated {lootSignatures.Count} loot signatures");
+        ILog.Print($"Session complete! Generated {lootSignatures.Count} loot cards");
+        CallDeferred(MethodName.ResetForNextSession);
+    }
+    
+    private void CleanupCurrentSession()
+    {
+        // Stop any running timers
+        _gameTimer?.Stop();
+    
+        // Clean up GameSessionService's own data
+        _currentMap = null;
+        _combatSystem = null;
+        // Note: _explorationAI in GameSessionService is different from SimpleWorldMapScreen's
+        _explorationAI = null;
+    }
+
+    private void ResetForNextSession()
+    {
+        CurrentState = SessionState.WaitingForCards;
+        ILog.Print("Ready for next session");
+    }
+
+
+    private CardSignature GenerateLootSignature()
+    {
+        // Create signature that's a variation of the map seed plus random elements from abilities
+        var lootSignature = new CardSignature();
+        
+        for (int i = 0; i < 8; i++)
+        {
+            var baseValue = _mapSeed[i];
+            
+            // Add influence from random ability card
+            if (_abilityCards.Count > 0)
+            {
+                var randomAbility = _abilityCards[_rng.RandiRange(0, _abilityCards.Count - 1)];
+                baseValue += randomAbility[i] * 0.3f; // 30% influence from abilities
+            }
+            
+            // Add random variation
+            var variation = _rng.RandfRange(-0.2f, 0.2f);
+            lootSignature[i] = Mathf.Clamp(baseValue + variation, -1f, 1f);
+        }
+        
+        return lootSignature;
+    }
+
+    private Vector2I CalculateMapSize(CardSignature signature)
+    {
+        // Use signature to determine map size (larger for more complex signatures)
+        var complexity = 0f;
+        for (int i = 0; i < 8; i++)
+        {
+            complexity += Mathf.Abs(signature[i]);
+        }
+        complexity /= 8f;
+        
+        var baseSize = 8;
+        var sizeVariation = Mathf.RoundToInt(complexity * 8);
+        var size = baseSize + sizeVariation;
+        
+        return new Vector2I(size, size);
+    }
+
+    private float CalculateBlockedPercentage(CardSignature signature)
+    {
+        // Use specific elements to determine map density
+        var solidumValue = Mathf.Abs(signature[0]); // Solidum affects terrain density
+        return Mathf.Clamp(0.2f + solidumValue * 0.3f, 0.15f, 0.5f);
     }
 }
