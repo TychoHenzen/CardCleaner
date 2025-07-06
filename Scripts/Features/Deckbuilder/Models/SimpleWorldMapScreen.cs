@@ -1,0 +1,571 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using Godot;
+
+namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
+
+/// <summary>
+/// Enhanced world map screen with visual feedback for exploration and combat
+/// </summary>
+[Tool]
+[GlobalClass]
+public partial class SimpleWorldMapScreen : Node3D
+{
+    // Export properties for editor assignment
+    [Export] public TileMapLayer? MapLayer { get; set; }
+    [Export] public SubViewport? Viewport { get; set; }
+    [Export] public MeshInstance3D? ScreenMesh { get; set; }
+    [Export] public Label? StatusLabel { get; set; }
+    [Export] public Sprite2D? PlayerSprite { get; set; }
+    [Export] public Control? CombatUI { get; set; }
+    
+    // Combat UI elements
+    private ProgressBar? _playerHealthBar;
+    private ProgressBar? _enemyHealthBar;
+    private Label? _playerHealthLabel;
+    private Label? _enemyHealthLabel;
+    private Label? _actionLabel;
+    
+    private SimpleMapData? _mapData;
+    private List<Sprite2D> _enemySprites = new();
+    private IGameSessionService? _gameSession; // Use interface instead of concrete type
+    private ExplorationAI? _explorationAI;
+    private SimpleCombatSystem? _combatSystem;
+    private bool _isInitialized = false;
+    
+    // Visual constants
+    private const int TILE_SIZE = 32;
+    private const int BLOCKED_TILE_ID = 0;
+    private const int PASSABLE_TILE_ID = 1;
+    private const int PLAYER_TILE_ID = 2;
+    private const int ENEMY_TILE_ID = 3;
+    private const int VISITED_TILE_ID = 4;
+
+    public override void _Ready()
+    {
+        SetupCombatUIReferences();
+        
+        if (StatusLabel != null)
+        {
+            StatusLabel.Text = "Waiting for map data...";
+        }
+        
+        if (CombatUI != null)
+        {
+            CombatUI.Visible = false;
+        }
+    }
+
+    public override void _ExitTree()
+    {
+        // Clean up event subscriptions
+        if (_gameSession != null)
+        {
+            _gameSession.StateChanged -= OnSessionStateChanged;
+            _gameSession.LootGenerated -= OnLootGenerated;
+        }
+        
+        CleanupExplorationAI();
+    }
+
+    private void CleanupExplorationAI()
+    {
+        if (_explorationAI != null)
+        {
+            _explorationAI.PlayerMoved -= OnPlayerMoved;
+            _explorationAI.EnemyEncountered -= OnEnemyEncountered;
+            _explorationAI = null;
+        }
+    }
+
+    public void Initialize(CardSignature[] mapSeed, CardSignature[] abilities)
+    {
+        ILog.Print($"Initializing simple map screen with {mapSeed.Length} seed card(s) and {abilities.Length} abilities");
+        
+        // Use dependency injection to get the game session service
+        ServiceLocator.Get<IGameSessionService>(gameSession =>
+        {
+            ILog.Print("Got GameSessionService from ServiceLocator");
+            
+            // Store the interface reference
+            _gameSession = gameSession;
+            
+            // Connect to all the events we need
+            gameSession.StateChanged += OnSessionStateChanged;
+            gameSession.LootGenerated += OnLootGenerated;
+            
+            // Start the session - this will trigger the whole flow
+            gameSession.StartSession(mapSeed[0], abilities.ToList());
+        });
+        
+        _isInitialized = true;
+    }
+
+    private void SetupCombatUIReferences()
+    {
+        _playerHealthBar = CombatUI?.GetNode<ProgressBar>("PlayerHealthBar");
+        _enemyHealthBar = CombatUI?.GetNode<ProgressBar>("EnemyHealthBar");
+        _playerHealthLabel = CombatUI?.GetNode<Label>("PlayerHealthLabel");
+        _enemyHealthLabel = CombatUI?.GetNode<Label>("EnemyHealthLabel");
+        _actionLabel = CombatUI?.GetNode<Label>("ActionLabel");
+    }
+
+    private void OnSessionStateChanged(SessionState newState)
+    {
+        if (StatusLabel != null)
+        {
+            StatusLabel.Text = $"Status: {newState}";
+        }
+        
+        switch (newState)
+        {
+            case SessionState.GeneratingMap:
+                HandleMapGeneration();
+                break;
+                
+            case SessionState.Exploring:
+                HandleExplorationStart();
+                break;
+                
+            case SessionState.InCombat:
+                HandleCombatStart();
+                break;
+                
+            case SessionState.GeneratingLoot:
+                HandleLootGeneration();
+                break;
+                
+            case SessionState.SessionComplete:
+                HandleSessionComplete();
+                break;
+        }
+    }
+
+    private void HandleMapGeneration()
+    {
+        if (StatusLabel != null)
+        {
+            StatusLabel.Text = "Generating map...";
+        }
+        
+        // The map will be generated by the GameSessionService
+        // We'll get it through other means or generate a test map for visualization
+        CreateTestMapVisualization();
+    }
+
+    private void CreateTestMapVisualization()
+    {
+        // Generate a simple test map for visualization purposes
+        if (MapLayer != null)
+        {
+            var testMapSize = new Vector2I(12, 8);
+            var rng = new RandomNumberGenerator();
+            rng.Randomize();
+            
+            var mapGenerator = new SimpleMapGenerator(rng);
+            _mapData = mapGenerator.GenerateMap(testMapSize, new CardSignature(), 0.25f);
+            
+            RenderMap(_mapData);
+        }
+    }
+
+    private void HandleExplorationStart()
+    {
+        CleanupExplorationAI();
+        if (StatusLabel != null)
+        {
+            StatusLabel.Text = "Exploring map...";
+        }
+        
+        if (_mapData != null)
+        {
+            _explorationAI = new ExplorationAI(_mapData);
+            _explorationAI.PlayerMoved += OnPlayerMoved;
+            _explorationAI.EnemyEncountered += OnEnemyEncountered;
+            
+            // Start exploration visualization
+            StartExplorationVisualization();
+        }
+    }
+
+    private void StartExplorationVisualization()
+    {
+        if (PlayerSprite != null && _mapData != null)
+        {
+            PlayerSprite.Visible = true;
+            UpdatePlayerSpritePosition(_mapData.PlayerStart);
+        }
+        
+        // Create a timer to step through exploration
+        var timer = new Timer();
+        AddChild(timer);
+        timer.WaitTime = 0.3f; // Faster visualization
+        timer.Timeout += () => {
+            if (_explorationAI != null && !_explorationAI.HasFinishedExploration)
+            {
+                _explorationAI.StepExploration();
+            }
+            else
+            {
+                timer.QueueFree();
+            }
+        };
+        timer.Start();
+    }
+
+    private void OnPlayerMoved(Vector2I newPosition)
+    {
+        UpdatePlayerSpritePosition(newPosition);
+        MarkTileAsVisited(newPosition);
+    }
+
+    private void OnEnemyEncountered(Vector2I position)
+    {
+        ILog.Print($"Enemy encountered at {position}!");
+        if (StatusLabel != null)
+        {
+            StatusLabel.Text = "Enemy encountered!";
+        }
+    }
+
+    private void HandleCombatStart()
+    {
+        if (StatusLabel != null)
+        {
+            StatusLabel.Text = "Combat started!";
+        }
+        
+        if (CombatUI != null)
+        {
+            CombatUI.Visible = true;
+        }
+        
+        // Connect to combat system if available
+        if (_gameSession != null)
+        {
+            // In the real implementation, we'd get combat updates from the session service
+            StartCombatVisualization();
+        }
+    }
+
+    private void StartCombatVisualization()
+    {
+        // Create a timer to update combat visuals
+        var timer = new Timer();
+        AddChild(timer);
+        timer.WaitTime = 1.0f;
+        
+        // Simulate combat progress
+        var playerHealth = 50;
+        var enemyHealth = 30;
+        var playerMaxHealth = 50;
+        var enemyMaxHealth = 30;
+        
+        timer.Timeout += () => {
+            // Simulate combat damage
+            var rng = new RandomNumberGenerator();
+            rng.Randomize();
+            
+            if (rng.Randf() > 0.5f)
+            {
+                enemyHealth -= rng.RandiRange(8, 15);
+                UpdateActionText("Player attacks!");
+            }
+            else
+            {
+                playerHealth -= rng.RandiRange(5, 10);
+                UpdateActionText("Enemy attacks!");
+            }
+            
+            UpdateCombatUI(playerHealth, playerMaxHealth, enemyHealth, enemyMaxHealth);
+            
+            if (enemyHealth <= 0)
+            {
+                UpdateActionText("Victory!");
+                timer.QueueFree();
+                CallDeferred(MethodName.EndCombat, true);
+            }
+            else if (playerHealth <= 0)
+            {
+                UpdateActionText("Defeat!");
+                timer.QueueFree();
+                CallDeferred(MethodName.EndCombat, false);
+            }
+        };
+        timer.Start();
+    }
+
+    private void UpdateCombatUI(int playerHealth, int playerMaxHealth, int enemyHealth, int enemyMaxHealth)
+    {
+        if (_playerHealthBar != null)
+        {
+            _playerHealthBar.Value = (float)playerHealth / playerMaxHealth * 100f;
+        }
+        
+        if (_enemyHealthBar != null)
+        {
+            _enemyHealthBar.Value = (float)enemyHealth / enemyMaxHealth * 100f;
+        }
+        
+        if (_playerHealthLabel != null)
+        {
+            _playerHealthLabel.Text = $"Player: {Mathf.Max(0, playerHealth)}/{playerMaxHealth}";
+        }
+        
+        if (_enemyHealthLabel != null)
+        {
+            _enemyHealthLabel.Text = $"Enemy: {Mathf.Max(0, enemyHealth)}/{enemyMaxHealth}";
+        }
+    }
+
+    private void UpdateActionText(string action)
+    {
+        if (_actionLabel != null)
+        {
+            _actionLabel.Text = action;
+        }
+    }
+
+    private void EndCombat(bool playerWon)
+    {
+        if (CombatUI != null)
+        {
+            CombatUI.Visible = false;
+        }
+        
+        if (playerWon)
+        {
+            if (StatusLabel != null)
+            {
+                StatusLabel.Text = "Victory! Generating loot...";
+            }
+        }
+        else
+        {
+            if (StatusLabel != null)
+            {
+                StatusLabel.Text = "Defeat!";
+            }
+        }
+    }
+
+    private void HandleLootGeneration()
+    {
+        if (StatusLabel != null)
+        {
+            StatusLabel.Text = "Generating loot...";
+        }
+        
+        // Loot will be spawned when the LootGenerated event fires
+        // No need to manually trigger it here
+    }
+
+    private void OnLootGenerated(List<CardSignature> lootSignatures)
+    {
+        ILog.Print($"Loot generated: {lootSignatures.Count} cards");
+        SpawnLootCards(lootSignatures);
+    }
+
+    private void SpawnLootCards(List<CardSignature> lootSignatures)
+    {
+        // Use dependency injection to get the card spawning service
+        ServiceLocator.Get<ICardSpawningService>(spawningService =>
+        {
+            var cardSpawner = spawningService as CardCleaner.Scripts.Features.Card.Services.CardSpawningService;
+            if (cardSpawner != null)
+            {
+                // Spawn the loot cards in the world
+                for (int i = 0; i < lootSignatures.Count; i++)
+                {
+                    var spawnPos = new Vector3(i * 0.5f, 1.5f, 2f); // Safe altitude
+                    
+                    // Get the card spawner node
+                    ServiceLocator.Get<ICardSpawner>(spawner =>
+                    {
+                        var spawnTransform = Transform3D.Identity;
+                        spawnTransform.Origin = spawnPos;
+                        spawningService.SpawnCard(lootSignatures[i], spawnTransform, spawner.GetNode());
+                    });
+                }
+                
+                ILog.Print($"Spawned {lootSignatures.Count} loot cards!");
+            }
+        });
+    }
+
+    private void HandleSessionComplete()
+    {
+        if (StatusLabel != null)
+        {
+            StatusLabel.Text = "Session complete!";
+        }
+        
+        ILog.Print("Session complete - ready for next round!");
+    }
+
+    private void RenderMap(SimpleMapData mapData)
+    {
+        if (MapLayer == null) return;
+        
+        MapLayer.Clear();
+        EnsureSimpleTileSet();
+        
+        // Clear old enemy sprites
+        foreach (var sprite in _enemySprites)
+        {
+            sprite?.QueueFree();
+        }
+        _enemySprites.Clear();
+        
+        // Render the basic map
+        for (int y = 0; y < mapData.Size.Y; y++)
+        {
+            for (int x = 0; x < mapData.Size.X; x++)
+            {
+                var position = new Vector2I(x, y);
+                var isPassable = mapData.Grid[y, x];
+                
+                var tileId = isPassable ? PASSABLE_TILE_ID : BLOCKED_TILE_ID;
+                MapLayer.SetCell(position, 0, new Vector2I(tileId, 0));
+            }
+        }
+        
+        // Create enemy sprites
+        CreateEnemySprites(mapData.EnemyPositions);
+        
+        // Center camera on map
+        CenterCameraOnMap(mapData.Size);
+        
+        ILog.Print($"Rendered map: {mapData.Size.X}x{mapData.Size.Y} with {mapData.EnemyPositions.Count} enemies");
+    }
+
+    private void CreateEnemySprites(List<Vector2I> enemyPositions)
+    {
+        foreach (var pos in enemyPositions)
+        {
+            var enemySprite = new Sprite2D();
+            enemySprite.Texture = CreateColorTexture(Colors.Red, 16);
+            enemySprite.Position = new Vector2(pos.X * TILE_SIZE + TILE_SIZE/2, pos.Y * TILE_SIZE + TILE_SIZE/2);
+            
+            if (Viewport != null)
+            {
+                Viewport.AddChild(enemySprite);
+            }
+            _enemySprites.Add(enemySprite);
+        }
+    }
+
+    private void UpdatePlayerSpritePosition(Vector2I gridPosition)
+    {
+        if (PlayerSprite != null)
+        {
+            PlayerSprite.Position = new Vector2(
+                gridPosition.X * TILE_SIZE + TILE_SIZE/2,
+                gridPosition.Y * TILE_SIZE + TILE_SIZE/2
+            );
+        }
+    }
+
+    private void MarkTileAsVisited(Vector2I position)
+    {
+        if (MapLayer != null && _mapData != null && _mapData.IsPassable(position))
+        {
+            // Only mark as visited if it's not an enemy position
+            bool isEnemyPosition = _mapData.EnemyPositions.Contains(position);
+            if (!isEnemyPosition)
+            {
+                MapLayer.SetCell(position, 0, new Vector2I(VISITED_TILE_ID, 0));
+            }
+        }
+    }
+
+    private void CenterCameraOnMap(Vector2I mapSize)
+    {
+        var camera = Viewport?.GetNode<Camera2D>("Camera2D");
+        if (camera != null)
+        {
+            var centerPos = new Vector2(
+                mapSize.X * TILE_SIZE / 2f,
+                mapSize.Y * TILE_SIZE / 2f
+            );
+            camera.Position = centerPos;
+        }
+    }
+
+    private void EnsureSimpleTileSet()
+    {
+        if (MapLayer?.TileSet != null) return;
+        
+        var tileSet = new TileSet();
+        var atlasSource = new TileSetAtlasSource();
+        
+        var texture = CreateSimpleTexture();
+        atlasSource.Texture = texture;
+        atlasSource.TextureRegionSize = new Vector2I(TILE_SIZE, TILE_SIZE);
+        
+        // Add tiles
+        for (int i = 0; i < 5; i++)
+        {
+            atlasSource.CreateTile(new Vector2I(i, 0));
+        }
+        
+        tileSet.AddSource(atlasSource, 0);
+        
+        if (MapLayer != null)
+        {
+            MapLayer.TileSet = tileSet;
+        }
+    }
+
+    private ImageTexture CreateSimpleTexture()
+    {
+        var image = Image.CreateEmpty(160, 32, false, Image.Format.Rgba8);
+        
+        // Black tile (blocked)
+        image.FillRect(new Rect2I(0, 0, 32, 32), Colors.Black);
+        
+        // White tile (passable)
+        image.FillRect(new Rect2I(32, 0, 32, 32), Colors.White);
+        
+        // Blue tile (player) - not used on tilemap, just for reference
+        image.FillRect(new Rect2I(64, 0, 32, 32), Colors.Blue);
+        
+        // Red tile (enemy) - not used on tilemap, just for reference
+        image.FillRect(new Rect2I(96, 0, 32, 32), Colors.Red);
+        
+        // Gray tile (visited)
+        image.FillRect(new Rect2I(128, 0, 32, 32), Colors.Gray);
+        
+        return ImageTexture.CreateFromImage(image);
+    }
+
+    private ImageTexture CreateColorTexture(Color color, int size)
+    {
+        var image = Image.CreateEmpty(size, size, false, Image.Format.Rgba8);
+        image.Fill(color);
+        return ImageTexture.CreateFromImage(image);
+    }
+
+    private void SetupScreenMaterial()
+    {
+        if (Viewport == null || ScreenMesh?.MaterialOverride is not StandardMaterial3D material)
+            return;
+
+        material.AlbedoTexture = Viewport.GetTexture();
+        material.ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded;
+        material.DisableReceiveShadows = true;
+        material.TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest;
+    }
+
+    public override void _Process(double delta)
+    {
+        if (_isInitialized)
+        {
+            SetupScreenMaterial();
+        }
+    }
+}

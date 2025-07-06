@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="SemanticTile" load_steps=8 format=3 uid="uid://bg1lxmimxaoe2"]
+[gd_resource type="Resource" script_class="SemanticTile" load_steps=10 format=3 uid="uid://bg1lxmimxaoe2"]
 
 [ext_resource type="Script" uid="uid://f5ebq2hn0u4e" path="res://Scripts/Features/Worldgen/LayerConstraint.cs" id="2_4pi0p"]
 [ext_resource type="Script" uid="uid://ge6gvuoe7v5o" path="res://Scripts/Features/Worldgen/TilePlacement.cs" id="3_1bcmo"]
+[ext_resource type="Script" uid="uid://bp5hl2y6y18qm" path="res://Scripts/Features/Worldgen/SocketData.cs" id="3_xybqx"]
 [ext_resource type="TileSet" uid="uid://cs7m5recytaxd" path="res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres" id="4_4pi0p"]
 [ext_resource type="Script" uid="uid://chb1eie0w5etp" path="res://Scripts/Features/Worldgen/SemanticTile.cs" id="4_xybqx"]
 [ext_resource type="Script" uid="uid://dfivx0g2ib815" path="res://Scripts/Features/Card/Models/CardSignature.cs" id="5_g21av"]
@@ -17,6 +18,19 @@ Inertiae = -0.2
 Subsidium = 0.5
 Spatium = 0.1
 metadata/_custom_type_script = "uid://dfivx0g2ib815"
+
+[sub_resource type="Resource" id="Resource_g21av"]
+script = ExtResource("3_xybqx")
+NorthName = Array[String]([])
+EastName = Array[String]([])
+SouthName = Array[String]([])
+WestName = Array[String]([])
+NorthEastName = Array[String]([])
+SouthEastName = Array[String]([])
+SouthWestName = Array[String]([])
+NorthWestName = Array[String]([])
+UpName = Array[String]([])
+DownName = Array[String]([])
 
 [sub_resource type="Resource" id="Resource_aqayw"]
 script = ExtResource("3_1bcmo")
@@ -37,4 +51,5 @@ Layer = 0
 BaseWeight = 3.0
 Signature = SubResource("Resource_ogl5x")
 LayerConstraints = Array[ExtResource("2_4pi0p")]([])
+SocketData = SubResource("Resource_g21av")
 metadata/_custom_type_script = "uid://chb1eie0w5etp"

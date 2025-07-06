@@ -1,5 +1,6 @@
-[gd_resource type="Resource" script_class="SemanticTile" load_steps=8 format=3 uid="uid://b67ldj8bdtjs"]
+[gd_resource type="Resource" script_class="SemanticTile" load_steps=10 format=3 uid="uid://b67ldj8bdtjs"]
 
+[ext_resource type="Script" uid="uid://bp5hl2y6y18qm" path="res://Scripts/Features/Worldgen/SocketData.cs" id="3_dhcrh"]
 [ext_resource type="Script" uid="uid://f5ebq2hn0u4e" path="res://Scripts/Features/Worldgen/LayerConstraint.cs" id="4_4gmwd"]
 [ext_resource type="Script" uid="uid://dfivx0g2ib815" path="res://Scripts/Features/Card/Models/CardSignature.cs" id="5_hq0al"]
 [ext_resource type="Script" uid="uid://ge6gvuoe7v5o" path="res://Scripts/Features/Worldgen/TilePlacement.cs" id="5_s1ug3"]
@@ -17,6 +18,19 @@ Inertiae = 0.3
 Subsidium = 0.2
 Spatium = -0.3
 metadata/_custom_type_script = "uid://dfivx0g2ib815"
+
+[sub_resource type="Resource" id="Resource_hn0k2"]
+script = ExtResource("3_dhcrh")
+NorthName = Array[String]([])
+EastName = Array[String]([])
+SouthName = Array[String]([])
+WestName = Array[String]([])
+NorthEastName = Array[String]([])
+SouthEastName = Array[String]([])
+SouthWestName = Array[String]([])
+NorthWestName = Array[String]([])
+UpName = Array[String]([])
+DownName = Array[String]([])
 
 [sub_resource type="Resource" id="Resource_aqayw"]
 script = ExtResource("5_s1ug3")
@@ -37,4 +51,5 @@ Layer = 0
 BaseWeight = 2.0
 Signature = SubResource("Resource_spowt")
 LayerConstraints = Array[ExtResource("4_4gmwd")]([])
+SocketData = SubResource("Resource_hn0k2")
 metadata/_custom_type_script = "uid://chb1eie0w5etp"

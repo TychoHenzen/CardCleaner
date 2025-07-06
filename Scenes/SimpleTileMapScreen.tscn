@@ -1,0 +1,81 @@
+[gd_scene load_steps=7 format=3 uid="uid://b80slr4xbnys8"]
+
+[ext_resource type="Script" uid="uid://bjg0x01ksf3wp" path="res://Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs" id="1_w558t"]
+[ext_resource type="Texture2D" uid="uid://c22xilhi7cap1" path="res://Graphics/tile_0001.png" id="3_xv0u5"]
+[ext_resource type="TileSet" uid="uid://cs7m5recytaxd" path="res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres" id="4_olmej"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7gktn"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n2gqn"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_q7ehv"]
+material = SubResource("StandardMaterial3D_n2gqn")
+size = Vector2(5.333, 3)
+
+[node name="SimpleTileMapScreen" type="Node3D" node_paths=PackedStringArray("MapLayer", "Viewport", "ScreenMesh", "StatusLabel", "PlayerSprite", "CombatUI")]
+script = ExtResource("1_w558t")
+MapLayer = NodePath("SubViewport/MapLayer")
+Viewport = NodePath("SubViewport")
+ScreenMesh = NodePath("CSGMesh3D")
+StatusLabel = NodePath("SubViewport/UI/StatusLabel")
+PlayerSprite = NodePath("SubViewport/PlayerAgent")
+CombatUI = NodePath("SubViewport/UI/CombatUI")
+
+[node name="CSGMesh3D" type="MeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_7gktn")
+mesh = SubResource("QuadMesh_q7ehv")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+size = Vector2i(2048, 2048)
+render_target_update_mode = 4
+
+[node name="MapLayer" type="TileMapLayer" parent="SubViewport"]
+tile_set = ExtResource("4_olmej")
+
+[node name="PlayerAgent" type="Sprite2D" parent="SubViewport"]
+texture = ExtResource("3_xv0u5")
+
+[node name="Camera2D" type="Camera2D" parent="SubViewport"]
+
+[node name="EnemyContainer" type="Node2D" parent="SubViewport"]
+
+[node name="UI" type="Control" parent="SubViewport"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="StatusLabel" type="Label" parent="SubViewport/UI"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="CombatUI" type="Control" parent="SubViewport/UI"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PlayerHealthBar" type="ProgressBar" parent="SubViewport/UI/CombatUI"]
+layout_mode = 0
+offset_right = 4.0
+offset_bottom = 27.0
+
+[node name="EnemyHealthBar" type="ProgressBar" parent="SubViewport/UI/CombatUI"]
+layout_mode = 0
+offset_right = 4.0
+offset_bottom = 27.0
+
+[node name="PlayerHealthLabel" type="Label" parent="SubViewport/UI/CombatUI"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="EnemyHealthLabel" type="Label" parent="SubViewport/UI/CombatUI"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="ActionLabel" type="Label" parent="SubViewport/UI/CombatUI"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
