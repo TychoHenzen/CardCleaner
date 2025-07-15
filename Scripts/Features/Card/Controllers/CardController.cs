@@ -9,10 +9,10 @@ public partial class CardController : RigidBody3D, IInteractable
 {
     [Signal]
     public delegate void CardPickedUpEventHandler(CardController card);
-    
-    [Signal] 
+
+    [Signal]
     public delegate void CardInteractionRequestedEventHandler(CardController card);
-    
+
     private readonly List<ICardComponent> _components = new();
     private readonly List<IPhysicsComponent> _physicsComponents = new();
     public Models.CardSignature Signature;
@@ -21,42 +21,34 @@ public partial class CardController : RigidBody3D, IInteractable
     public bool CanInteract => !IsHeld;
     public Node3D InteractionBody => this;
     public float InteractionRange => 50f;
-    
+
     private bool IsHeld => GetParent() is Camera3D; // Check if reparented to camera
 
     public void Interact()
     {
-        if (CanInteract)
-        {
-            EmitSignal(SignalName.CardInteractionRequested, this);
-        }
+        if (CanInteract) EmitSignal(SignalName.CardInteractionRequested, this);
     }
 
     public void Highlight()
     {
         var outline = GetNodeOrNull<CsgBox3D>("OutlineBox");
-        if (outline != null) 
-        {
-            outline.Visible = true;
-        }
+        if (outline != null) outline.Visible = true;
     }
 
     public void ClearHighlight()
     {
         var outline = GetNodeOrNull<CsgBox3D>("OutlineBox");
-        if (outline != null) 
-        {
-            outline.Visible = false;
-        }
+        if (outline != null) outline.Visible = false;
     }
 
     public override void _Ready()
     {
+        AddToGroup("persistable");
         DiscoverComponents(this);
         AddToGroup("Cards");
         CollisionLayer = 2;
     }
-    
+
     public void EmitPickupSignal()
     {
         EmitSignal(SignalName.CardPickedUp, this);

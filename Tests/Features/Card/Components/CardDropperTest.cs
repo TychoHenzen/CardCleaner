@@ -18,7 +18,7 @@ public class CardDropperTest
     private IDropPreview _mockDropPreview = null!;
     private Camera3D _mockCamera = null!;
     private IInputService _mockInputService = null!;
-    
+
     // Event tracking
     private int _dropStartedEventCount;
     private int _dropCancelledEventCount;
@@ -32,12 +32,12 @@ public class CardDropperTest
         _mockDropPreview = Substitute.For<IDropPreview>();
         _mockCamera = CreateMockCamera();
         _mockInputService = Substitute.For<IInputService>();
-        
+
         // Register mock input service
         ServiceLocator.Container.RegisterSingleton(_mockInputService);
-        
+
         Assertions.AddNode(_dropper);
-        
+
         // Reset event counters
         ResetEventTracking();
         ConnectToDropperEvents();
@@ -50,6 +50,7 @@ public class CardDropperTest
     }
 
     #region helpers
+
     private void SetupMockCardHolderWithCards(bool hasCards)
     {
         _mockCardHolder.HasCards.Returns(hasCards);
@@ -57,10 +58,7 @@ public class CardDropperTest
         {
             _mockCardHolder.HeldCount.Returns(3);
             var mockCards = new RigidBody3D[] { new(), new(), new() };
-            foreach (var card in mockCards)
-            {
-                Assertions.AddNode(card);
-            }
+            foreach (var card in mockCards) Assertions.AddNode(card);
             _mockCardHolder.HeldCards.Returns(mockCards);
         }
         else
@@ -69,7 +67,7 @@ public class CardDropperTest
             _mockCardHolder.HeldCards.Returns(Array.Empty<RigidBody3D>());
         }
     }
-    
+
 
     private Camera3D CreateMockCamera()
     {
@@ -107,6 +105,7 @@ public class CardDropperTest
     {
         _dropCompletedEventCount++;
     }
+
     #endregion
 
     [TestCase]
@@ -254,6 +253,7 @@ public class CardDropperTest
         // Assert - Should complete without error
         Assertions.AssertThat(_dropper).IsNotNull();
     }
+
     [TestCase]
     [TestCategory("Unit")]
     public void DropSingleCard_WithCards_CallsCardHolderRemoveTopCard()

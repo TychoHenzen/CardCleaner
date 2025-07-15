@@ -68,7 +68,7 @@ public class ConveyorBeltTest
     {
         // Act & Assert - Should not throw when called without proper setup
         _conveyorBelt._PhysicsProcess(0.016);
-        
+
         Assertions.AssertThat(_conveyorBelt).IsNotNull();
     }
 }

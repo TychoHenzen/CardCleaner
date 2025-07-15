@@ -43,7 +43,7 @@ public class SemanticWfc3dGeneratorTest
         var tile = new SemanticTile
         {
             TileName = name,
-            SocketData = new SocketData()
+            SocketData = new SocketData
             {
                 North = CreateSocketArray(north),
                 East = CreateSocketArray(east),
@@ -93,13 +93,9 @@ public class SemanticWfc3dGeneratorTest
         var result2 = generator2.Generate();
 
         // Results should be identical with same seed (check terrain layer only)
-        for (int y = 0; y < mapSize.Y; y++)
-        {
-            for (int x = 0; x < mapSize.X; x++)
-            {
-                Assertions.AssertThat(result1[0, y, x]?.TileName).IsEqual(result2[0, y, x]?.TileName);
-            }
-        }
+        for (var y = 0; y < mapSize.Y; y++)
+        for (var x = 0; x < mapSize.X; x++)
+            Assertions.AssertThat(result1[0, y, x]?.TileName).IsEqual(result2[0, y, x]?.TileName);
     }
 
     [TestCase]
@@ -114,17 +110,11 @@ public class SemanticWfc3dGeneratorTest
         var result2 = generator2.Generate();
 
         // At least one tile should be different
-        bool foundDifference = false;
-        for (int y = 0; y < mapSize.Y && !foundDifference; y++)
-        {
-            for (int x = 0; x < mapSize.X && !foundDifference; x++)
-            {
-                if (result1[0, y, x]?.TileName != result2[0, y, x]?.TileName)
-                {
-                    foundDifference = true;
-                }
-            }
-        }
+        var foundDifference = false;
+        for (var y = 0; y < mapSize.Y && !foundDifference; y++)
+        for (var x = 0; x < mapSize.X && !foundDifference; x++)
+            if (result1[0, y, x]?.TileName != result2[0, y, x]?.TileName)
+                foundDifference = true;
 
         Assertions.AssertBool(foundDifference).IsTrue();
     }
@@ -152,13 +142,9 @@ public class SemanticWfc3dGeneratorTest
         var result = generator.Generate();
 
         // Should not crash, but all tiles will be null
-        for (int y = 0; y < mapSize.Y; y++)
-        {
-            for (int x = 0; x < mapSize.X; x++)
-            {
-                Assertions.AssertThat(result[0, y, x]).IsNull();
-            }
-        }
+        for (var y = 0; y < mapSize.Y; y++)
+        for (var x = 0; x < mapSize.X; x++)
+            Assertions.AssertThat(result[0, y, x]).IsNull();
     }
 
     [TestCase]
@@ -171,13 +157,9 @@ public class SemanticWfc3dGeneratorTest
         var result = generator.Generate();
 
         // All tiles should be grass
-        for (int y = 0; y < mapSize.Y; y++)
-        {
-            for (int x = 0; x < mapSize.X; x++)
-            {
-                Assertions.AssertThat(result[0, y, x]?.TileName).IsEqual("Grass");
-            }
-        }
+        for (var y = 0; y < mapSize.Y; y++)
+        for (var x = 0; x < mapSize.X; x++)
+            Assertions.AssertThat(result[0, y, x]?.TileName).IsEqual("Grass");
     }
 
     [TestCase]
@@ -194,17 +176,13 @@ public class SemanticWfc3dGeneratorTest
         var result = generator.Generate();
 
         // Count occurrences
-        int heavyCount = 0;
-        int lightCount = 0;
+        var heavyCount = 0;
+        var lightCount = 0;
 
-        for (int y = 0; y < mapSize.Y; y++)
-        {
-            for (int x = 0; x < mapSize.X; x++)
-            {
-                if (result[0, y, x]?.TileName == "Heavy") heavyCount++;
-                else if (result[0, y, x]?.TileName == "Light") lightCount++;
-            }
-        }
+        for (var y = 0; y < mapSize.Y; y++)
+        for (var x = 0; x < mapSize.X; x++)
+            if (result[0, y, x]?.TileName == "Heavy") heavyCount++;
+            else if (result[0, y, x]?.TileName == "Light") lightCount++;
 
         // Heavy tile should appear much more frequently than light tile
         Assertions.AssertThat(heavyCount).IsGreater(lightCount);
@@ -225,17 +203,15 @@ public class SemanticWfc3dGeneratorTest
         var result = generator.Generate();
 
         // Verify each layer contains appropriate tiles
-        for (int y = 0; y < mapSize.Y; y++)
+        for (var y = 0; y < mapSize.Y; y++)
+        for (var x = 0; x < mapSize.X; x++)
         {
-            for (int x = 0; x < mapSize.X; x++)
-            {
-                // Layer 0 (Terrain) should have terrain tiles
-                Assertions.AssertThat(result[0, y, x]?.TileName).IsEqual("TerrainTile");
-                // Layer 1 (Decoration) should have decoration tiles
-                Assertions.AssertThat(result[1, y, x]?.TileName).IsEqual("DecorationTile");
-                // Layer 2 (Structure) should have structure tiles
-                Assertions.AssertThat(result[2, y, x]?.TileName).IsEqual("StructureTile");
-            }
+            // Layer 0 (Terrain) should have terrain tiles
+            Assertions.AssertThat(result[0, y, x]?.TileName).IsEqual("TerrainTile");
+            // Layer 1 (Decoration) should have decoration tiles
+            Assertions.AssertThat(result[1, y, x]?.TileName).IsEqual("DecorationTile");
+            // Layer 2 (Structure) should have structure tiles
+            Assertions.AssertThat(result[2, y, x]?.TileName).IsEqual("StructureTile");
         }
     }
 
@@ -253,12 +229,8 @@ public class SemanticWfc3dGeneratorTest
         Assertions.AssertThat(result).IsNotNull();
 
         // Verify all positions have valid tiles
-        for (int y = 0; y < mapSize.Y; y++)
-        {
-            for (int x = 0; x < mapSize.X; x++)
-            {
-                Assertions.AssertThat(result[0, y, x]).IsNotNull();
-            }
-        }
+        for (var y = 0; y < mapSize.Y; y++)
+        for (var x = 0; x < mapSize.X; x++)
+            Assertions.AssertThat(result[0, y, x]).IsNotNull();
     }
 }

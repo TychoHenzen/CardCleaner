@@ -65,7 +65,7 @@ public class FlutterCardTest
     {
         // Act & Assert - Should handle null gracefully
         _flutterCard.Setup(null!);
-        
+
         Assertions.AssertThat(_flutterCard).IsNotNull();
     }
 
@@ -75,7 +75,7 @@ public class FlutterCardTest
     {
         // Act & Assert - Should not throw when called
         _flutterCard.PhysicsProcess(0.016); // Simulate one frame
-        
+
         Assertions.AssertThat(_flutterCard).IsNotNull();
     }
 

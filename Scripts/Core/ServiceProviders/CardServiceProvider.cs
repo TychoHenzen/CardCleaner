@@ -14,7 +14,6 @@ public partial class CardServiceProvider : Node, IServiceProvider
     [Export] public required RarityVisual[] RarityVisuals { get; set; }
     [Export] public required BaseCardType[] BaseCardTypes { get; set; }
     [Export] public required GemVisual[] GemVisuals { get; set; }
-    [Export] public required CardSpawningService SpawningService { get; set; }
     [Export] public required CardSpawner CardRoot { get; set; }
 
     public void RegisterServices(IServiceContainer container)
@@ -24,13 +23,8 @@ public partial class CardServiceProvider : Node, IServiceProvider
         container.RegisterSingleton(RarityVisuals);
         container.RegisterSingleton(BaseCardTypes);
         container.RegisterSingleton(GemVisuals);
-
-        ILog.Print("Registered card generation services");
         container.RegisterSingleton<ICardGenerator,SignatureCardGenerator>();
         container.RegisterSingleton<ICardSpawner>(CardRoot);
-
-        container.RegisterSingleton<ICardSpawningService>(SpawningService);
-        ILog.Print("Registered SpawningService");
     }
 
     public override void _Ready()

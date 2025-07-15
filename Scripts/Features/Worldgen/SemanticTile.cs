@@ -37,8 +37,7 @@ public partial class SemanticTile : Resource
     [Export]
     public Array<LayerConstraint> LayerConstraints { get; set; } = new();
 
-    [JsonPropertyName("sockets")]
-    [Export] public SocketData SocketData { get; set; } = new();
+    [JsonPropertyName("sockets")] [Export] public SocketData SocketData { get; set; } = new();
 
     /// <summary>
     /// Check if this tile modifies constraints on other layers

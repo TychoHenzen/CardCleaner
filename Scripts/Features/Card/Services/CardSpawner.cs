@@ -8,6 +8,8 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 /// <summary>
 ///     Spawns Card instances one per frame at runtime when pressing 1, 2, or 3.
 /// </summary>
+/// 
+[Service(ServiceLifetime.Singleton, typeof(ICardSpawner))]
 public partial class CardSpawner : Node3D, ICardSpawner
 {
     private ICardSpawningService? _spawningService;
@@ -54,6 +56,7 @@ public partial class CardSpawner : Node3D, ICardSpawner
             CallDeferred(MethodName.SpawnSingleCard);
             return;
         }
+
         // Calculate spawn transform with random offset
         var offset = _spawningService.GetRandomOffset(OffsetRange);
         var spawnTransform = GlobalTransform;
@@ -62,7 +65,7 @@ public partial class CardSpawner : Node3D, ICardSpawner
         // Use the spawning service to handle all the complex spawning logic
         _spawningService.SpawnRandomCard(spawnTransform, this);
     }
-    
+
     /// <summary>
     /// Public method to spawn a card with a specific signature (useful for other systems)
     /// </summary>
@@ -70,10 +73,7 @@ public partial class CardSpawner : Node3D, ICardSpawner
     /// <param name="position">Optional world position, defaults to spawn parent position</param>
     public Node3D? SpawnSpecificCard(CardSignature signature, Vector3? position = null)
     {
-        if (_spawningService == null)
-        {
-            return null;
-        }
+        if (_spawningService == null) return null;
 
         var spawnTransform = GlobalTransform;
         if (position.HasValue)

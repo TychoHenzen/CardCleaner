@@ -77,7 +77,7 @@ public partial class WorldTileMapScreen : Node3D
         }
 
         // Calculate map size and setup
-        ulong generationSeed = GenerateSeedFromCard(mapSeed);
+        var generationSeed = GenerateSeedFromCard(mapSeed);
         var rng = new RandomNumberGenerator { Seed = generationSeed };
         var rarity = SignatureCardHelper.DetermineRarity(mapSeed);
         var gradient = new CardBasedGradient(mapSeed, rng);
@@ -97,7 +97,8 @@ public partial class WorldTileMapScreen : Node3D
         // Handle enemy layer (existing logic)
         if (EnemySpawnData.Count > 0)
         {
-            var enemyGrid = GenerateEnemyLayer(generatedMap.TerrainLayer, EnemySpawnData, gradient, calculatedMapSize, rng);
+            var enemyGrid = GenerateEnemyLayer(generatedMap.TerrainLayer, EnemySpawnData, gradient, calculatedMapSize,
+                rng);
             ApplyEnemyLayer(enemyGrid, EnemyLayer);
         }
 
@@ -124,10 +125,7 @@ public partial class WorldTileMapScreen : Node3D
 
         // Get camera reference
         _camera2D = Viewport.GetNode<Camera2D>("Camera2D");
-        if (_camera2D != null)
-        {
-            _camera2D.Enabled = true;
-        }
+        if (_camera2D != null) _camera2D.Enabled = true;
     }
 
     private void SetupScreenMaterial()
@@ -189,6 +187,7 @@ public partial class WorldTileMapScreen : Node3D
     {
         GeneratePreviewInternal(); // Regenerate preview when layer visibility changes
     }
+
     private void GeneratePreviewInternal()
     {
         if (SemanticTiles.Count == 0)
@@ -203,12 +202,13 @@ public partial class WorldTileMapScreen : Node3D
 
         var rng = new RandomNumberGenerator { Seed = seed };
         var gradientSignature = Seeded ? Signature : CardSignature.Random(rng);
-        var gradient = new CardBasedGradient(new[] { gradientSignature },rng);
+        var gradient = new CardBasedGradient(new[] { gradientSignature }, rng);
         _gradientInfluence = new GradientInfluenceComponent(gradient);
         var generatedMap = GeneratedMap.Generate(allTilesArray, PreviewSize, rng, _gradientInfluence);
 
         // Render to preview image
-        var previewImage = generatedMap.RenderToImage(TileSize, ShowTerrain, ShowStructure, ShowDecoration, ShowEffects);
+        var previewImage =
+            generatedMap.RenderToImage(TileSize, ShowTerrain, ShowStructure, ShowDecoration, ShowEffects);
         PreviewDisplay = ImageTexture.CreateFromImage(previewImage);
 
         ILog.Print($"Generated preview with signature: {gradientSignature} (seed: {seed})");
@@ -221,13 +221,13 @@ public partial class WorldTileMapScreen : Node3D
         emptyImage.Fill(new Color(0.3f, 0.1f, 0.1f, 1.0f)); // Dark red background
 
         // Add border
-        for (int i = 0; i < imageSize.X; i++)
+        for (var i = 0; i < imageSize.X; i++)
         {
             emptyImage.SetPixel(i, 0, Colors.White);
             emptyImage.SetPixel(i, imageSize.Y - 1, Colors.White);
         }
 
-        for (int i = 0; i < imageSize.Y; i++)
+        for (var i = 0; i < imageSize.Y; i++)
         {
             emptyImage.SetPixel(0, i, Colors.White);
             emptyImage.SetPixel(imageSize.X - 1, i, Colors.White);
@@ -236,7 +236,7 @@ public partial class WorldTileMapScreen : Node3D
         ILog.Warning($"Preview generation failed: {message}");
         return ImageTexture.CreateFromImage(emptyImage);
     }
-    
+
 
     private static Vector2I GetMapSizeForRarity(CardRarity rarity)
     {
@@ -262,32 +262,27 @@ public partial class WorldTileMapScreen : Node3D
         var enemyGrid = new EnemySpawnData?[mapSize.Y, mapSize.X];
         var enemyList = enemies.ToList();
 
-        for (int y = 0; y < mapSize.Y; y++)
+        for (var y = 0; y < mapSize.Y; y++)
+        for (var x = 0; x < mapSize.X; x++)
         {
-            for (int x = 0; x < mapSize.X; x++)
-            {
-                var terrain = terrainGrid[y, x];
-                if (terrain == null) continue;
+            var terrain = terrainGrid[y, x];
+            if (terrain == null) continue;
 
-                // Calculate blended signature
-                var position = new Vector2I(x, y);
-                var baselineSignature = gradient.GetSignatureAt(position, mapSize);
-                var terrainSignature = terrain.Signature ?? new CardSignature();
-                var randomOffset = GenerateRandomSignatureOffset(rng);
+            // Calculate blended signature
+            var position = new Vector2I(x, y);
+            var baselineSignature = gradient.GetSignatureAt(position, mapSize);
+            var terrainSignature = terrain.Signature ?? new CardSignature();
+            var randomOffset = GenerateRandomSignatureOffset(rng);
 
-                var blendedSignature = BlendSignatures(baselineSignature, terrainSignature, randomOffset);
+            var blendedSignature = BlendSignatures(baselineSignature, terrainSignature, randomOffset);
 
-                // Find compatible enemies
-                var compatibleEnemies = enemyList.Where(e => e.CanSpawnOnTile(terrain, blendedSignature)).ToList();
-                if (compatibleEnemies.Count == 0) continue;
+            // Find compatible enemies
+            var compatibleEnemies = enemyList.Where(e => e.CanSpawnOnTile(terrain, blendedSignature)).ToList();
+            if (compatibleEnemies.Count == 0) continue;
 
-                // Select enemy by weight
-                var selectedEnemy = SelectEnemyByWeight(compatibleEnemies, terrain, blendedSignature, rng);
-                if (selectedEnemy != null)
-                {
-                    enemyGrid[y, x] = selectedEnemy;
-                }
-            }
+            // Select enemy by weight
+            var selectedEnemy = SelectEnemyByWeight(compatibleEnemies, terrain, blendedSignature, rng);
+            if (selectedEnemy != null) enemyGrid[y, x] = selectedEnemy;
         }
 
         return enemyGrid;
@@ -296,7 +291,7 @@ public partial class WorldTileMapScreen : Node3D
     private static CardSignature BlendSignatures(CardSignature baseline, CardSignature terrain, CardSignature random)
     {
         var result = new CardSignature();
-        for (int i = 0; i < 8; i++)
+        for (var i = 0; i < 8; i++)
         {
             // Weighted blend: 40% baseline, 40% terrain, 20% random
             var blended = baseline[i] * 0.4f + terrain[i] * 0.4f + random[i] * 0.2f;
@@ -309,10 +304,7 @@ public partial class WorldTileMapScreen : Node3D
     private static CardSignature GenerateRandomSignatureOffset(RandomNumberGenerator rng)
     {
         var result = new CardSignature();
-        for (int i = 0; i < 8; i++)
-        {
-            result[i] = rng.RandfRange(-0.3f, 0.3f); // Small random variation
-        }
+        for (var i = 0; i < 8; i++) result[i] = rng.RandfRange(-0.3f, 0.3f); // Small random variation
 
         return result;
     }
@@ -343,16 +335,14 @@ public partial class WorldTileMapScreen : Node3D
         var height = enemyGrid.GetLength(0);
         var width = enemyGrid.GetLength(1);
 
-        for (int y = 0; y < height; y++)
+        for (var y = 0; y < height; y++)
+        for (var x = 0; x < width; x++)
         {
-            for (int x = 0; x < width; x++)
-            {
-                var enemy = enemyGrid[y, x];
-                if (enemy == null) continue;
+            var enemy = enemyGrid[y, x];
+            if (enemy == null) continue;
 
-                var position = new Vector2I(x, y);
-                layer.SetCell(position, enemy.SourceId, enemy.AtlasCoords);
-            }
+            var position = new Vector2I(x, y);
+            layer.SetCell(position, enemy.SourceId, enemy.AtlasCoords);
         }
     }
 }

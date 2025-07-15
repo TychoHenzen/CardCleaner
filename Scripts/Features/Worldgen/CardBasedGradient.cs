@@ -23,8 +23,8 @@ public partial class CardBasedGradient : BaselineGradient
 
     public CardBasedGradient()
     {
-        
     }
+
     public CardBasedGradient(CardSignature[] InputCards, RandomNumberGenerator rng)
     {
         _inputCards = InputCards;
@@ -79,13 +79,9 @@ public partial class CardBasedGradient : BaselineGradient
     {
         var center = _inputCards[0];
 
-        for (int y = 0; y < _gridSize.Y; y++)
-        {
-            for (int x = 0; x < _gridSize.X; x++)
-            {
-                _sampleGrid[y, x] = SampleFromHypersphere(center, SamplingRadius);
-            }
-        }
+        for (var y = 0; y < _gridSize.Y; y++)
+        for (var x = 0; x < _gridSize.X; x++)
+            _sampleGrid[y, x] = SampleFromHypersphere(center, SamplingRadius);
     }
 
     private void GenerateCapsuleGradient()
@@ -93,15 +89,13 @@ public partial class CardBasedGradient : BaselineGradient
         var start = _inputCards[0];
         var end = _inputCards[1];
 
-        for (int y = 0; y < _gridSize.Y; y++)
+        for (var y = 0; y < _gridSize.Y; y++)
+        for (var x = 0; x < _gridSize.X; x++)
         {
-            for (int x = 0; x < _gridSize.X; x++)
-            {
-                // Sample along line segment with cylindrical distribution
-                var t = _rng.Randf();
-                var linePoint = LerpSignatures(start, end, t);
-                _sampleGrid[y, x] = SampleFromHypersphere(linePoint, SamplingRadius * 0.8f);
-            }
+            // Sample along line segment with cylindrical distribution
+            var t = _rng.Randf();
+            var linePoint = LerpSignatures(start, end, t);
+            _sampleGrid[y, x] = SampleFromHypersphere(linePoint, SamplingRadius * 0.8f);
         }
     }
 
@@ -110,15 +104,13 @@ public partial class CardBasedGradient : BaselineGradient
         // Create closed Bezier curve through all input cards
         var controlPoints = _inputCards.ToArray();
 
-        for (int y = 0; y < _gridSize.Y; y++)
+        for (var y = 0; y < _gridSize.Y; y++)
+        for (var x = 0; x < _gridSize.X; x++)
         {
-            for (int x = 0; x < _gridSize.X; x++)
-            {
-                // Sample along Bezier curve
-                var t = _rng.Randf();
-                var curvePoint = SampleBezierCurve(controlPoints, t);
-                _sampleGrid[y, x] = SampleFromHypersphere(curvePoint, SamplingRadius * 0.6f);
-            }
+            // Sample along Bezier curve
+            var t = _rng.Randf();
+            var curvePoint = SampleBezierCurve(controlPoints, t);
+            _sampleGrid[y, x] = SampleFromHypersphere(curvePoint, SamplingRadius * 0.6f);
         }
     }
 
@@ -133,7 +125,7 @@ public partial class CardBasedGradient : BaselineGradient
             var components = new float[8];
             var lengthSquared = 0f;
 
-            for (int i = 0; i < 8; i++)
+            for (var i = 0; i < 8; i++)
             {
                 components[i] = _rng.RandfRange(-1f, 1f);
                 lengthSquared += components[i] * components[i];
@@ -145,10 +137,7 @@ public partial class CardBasedGradient : BaselineGradient
                 var actualRadius = Mathf.Pow(_rng.Randf(), 1f / 8f) * radius; // Uniform distribution in 8D
                 var scale = actualRadius / Mathf.Sqrt(lengthSquared);
 
-                for (int i = 0; i < 8; i++)
-                {
-                    result[i] = Mathf.Clamp(center[i] + components[i] * scale, -1f, 1f);
-                }
+                for (var i = 0; i < 8; i++) result[i] = Mathf.Clamp(center[i] + components[i] * scale, -1f, 1f);
 
                 break;
             }
@@ -171,13 +160,9 @@ public partial class CardBasedGradient : BaselineGradient
         // De Casteljau's algorithm for Bezier curve evaluation
         var tempPoints = points.ToArray();
 
-        for (int level = tempPoints.Length - 1; level > 0; level--)
-        {
-            for (int i = 0; i < level; i++)
-            {
-                tempPoints[i] = LerpSignatures(tempPoints[i], tempPoints[i + 1], t);
-            }
-        }
+        for (var level = tempPoints.Length - 1; level > 0; level--)
+        for (var i = 0; i < level; i++)
+            tempPoints[i] = LerpSignatures(tempPoints[i], tempPoints[i + 1], t);
 
         return tempPoints[0];
     }
@@ -189,31 +174,26 @@ public partial class CardBasedGradient : BaselineGradient
         var bonusMultiplier = 1f + (_inputCards.Length - 1) * MultiCardIntensityBonus;
         var variationFactor = 1f + (_inputCards.Length - 1) * MultiCardVariationBonus;
 
-        for (int y = 0; y < _gridSize.Y; y++)
+        for (var y = 0; y < _gridSize.Y; y++)
+        for (var x = 0; x < _gridSize.X; x++)
         {
-            for (int x = 0; x < _gridSize.X; x++)
+            var signature = _sampleGrid[y, x];
+
+            // Apply intensity bonus
+            for (var i = 0; i < 8; i++) signature[i] = Mathf.Clamp(signature[i] * bonusMultiplier, -1f, 1f);
+
+            // Add variation bonus (increases local differences)
+            if (x > 0 && y > 0)
             {
-                var signature = _sampleGrid[y, x];
-
-                // Apply intensity bonus
-                for (int i = 0; i < 8; i++)
+                var neighbor = _sampleGrid[y - 1, x - 1];
+                for (var i = 0; i < 8; i++)
                 {
-                    signature[i] = Mathf.Clamp(signature[i] * bonusMultiplier, -1f, 1f);
+                    var diff = signature[i] - neighbor[i];
+                    signature[i] = Mathf.Clamp(signature[i] + diff * variationFactor * 0.1f, -1f, 1f);
                 }
-
-                // Add variation bonus (increases local differences)
-                if (x > 0 && y > 0)
-                {
-                    var neighbor = _sampleGrid[y - 1, x - 1];
-                    for (int i = 0; i < 8; i++)
-                    {
-                        var diff = signature[i] - neighbor[i];
-                        signature[i] = Mathf.Clamp(signature[i] + diff * variationFactor * 0.1f, -1f, 1f);
-                    }
-                }
-
-                _sampleGrid[y, x] = signature;
             }
+
+            _sampleGrid[y, x] = signature;
         }
     }
 
@@ -240,7 +220,7 @@ public partial class CardBasedGradient : BaselineGradient
     private static CardSignature LerpSignatures(CardSignature a, CardSignature b, float t)
     {
         var result = new CardSignature();
-        for (int i = 0; i < 8; i++)
+        for (var i = 0; i < 8; i++)
             result[i] = Mathf.Lerp(a[i], b[i], t);
         return result;
     }

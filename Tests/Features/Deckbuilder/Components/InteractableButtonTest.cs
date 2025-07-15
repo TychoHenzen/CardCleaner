@@ -27,7 +27,7 @@ public class InteractableButtonTest
         // Create mock meshes
         _mockButtonMesh = new MeshInstance3D { Name = "ButtonMesh" };
         _mockHighlightMesh = new MeshInstance3D { Name = "HighlightMesh" };
-        
+
         _button.ButtonMesh = _mockButtonMesh;
         _button.HighlightMesh = _mockHighlightMesh;
 
@@ -245,7 +245,7 @@ public class InteractableButtonTest
 
         // Act & Assert
         _button.Interact();
-        
+
         Assertions.AssertThat(_buttonPressedEventCount).IsEqual(1);
     }
 
@@ -259,7 +259,7 @@ public class InteractableButtonTest
         // Act & Assert
         _button.Highlight();
         _button.ClearHighlight();
-        
+
         Assertions.AssertThat(_button).IsNotNull();
     }
 

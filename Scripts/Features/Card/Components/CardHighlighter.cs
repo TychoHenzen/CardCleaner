@@ -52,12 +52,8 @@ public partial class CardHighlighter : Node3D
         // Connect to all existing cards
         var cards = GetTree().GetNodesInGroup("Cards");
         foreach (var node in cards)
-        {
             if (node is CardController card)
-            {
                 ConnectToCard(card);
-            }
-        }
 
         // Listen for new cards being spawned by connecting to the spawning service
         ServiceLocator.Get<ICardSpawningService>(spawningService =>
@@ -75,9 +71,7 @@ public partial class CardHighlighter : Node3D
     {
         if (!card.IsConnected(CardController.SignalName.CardInteractionRequested,
                 Callable.From<CardController>(OnCardInteractionRequested)))
-        {
             card.CardInteractionRequested += OnCardInteractionRequested;
-        }
     }
 
     private void OnCardSpawned(CardController card)
@@ -92,30 +86,20 @@ public partial class CardHighlighter : Node3D
         // Disconnect from card signals
         var cards = GetTree().GetNodesInGroup("Cards");
         foreach (var node in cards)
-        {
             if (node is CardController card)
-            {
                 card.CardInteractionRequested -= OnCardInteractionRequested;
-            }
-        }
     }
 
     public override void _PhysicsProcess(double delta)
     {
         // Update drop preview while preparing drop
-        if (CardDropper.IsPreparingDrop)
-        {
-            CardDropper.UpdateDropPreview();
-        }
+        if (CardDropper.IsPreparingDrop) CardDropper.UpdateDropPreview();
     }
 
     private void OnCardInteractionRequested(CardController card)
     {
         // Handle card pickup through the generic interaction system
-        if (!CardDropper.IsPreparingDrop)
-        {
-            CardHolder.AddCard(card);
-        }
+        if (!CardDropper.IsPreparingDrop) CardHolder.AddCard(card);
     }
 
     private void OnRightPress(bool pressed)

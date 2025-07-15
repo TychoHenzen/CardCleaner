@@ -1,4 +1,5 @@
 ﻿// Tests/Core/Data/GameSettingsTest.cs
+
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Enumeration;
 using GdUnit4;
@@ -55,7 +56,7 @@ public class GameSettingsTest
     {
         // Assert - Min should be less than max
         Assertions.AssertThat(_settings.MinPitch).IsLess(_settings.MaxPitch);
-        
+
         // Should be reasonable camera bounds
         Assertions.AssertThat(_settings.MinPitch).IsBetween(-90f, 0f);
         Assertions.AssertThat(_settings.MaxPitch).IsBetween(0f, 90f);

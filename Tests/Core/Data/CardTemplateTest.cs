@@ -1,4 +1,5 @@
 ﻿// Tests/Core/Data/CardTemplateTest.cs
+
 using CardCleaner.Scripts.Core.Data;
 using GdUnit4;
 using Godot;
@@ -48,10 +49,10 @@ public class CardTemplateTest
         // Assert - Verify default rendering flags
         Assertions.AssertBool(_template.CardBase.RenderOnFront).IsTrue();
         Assertions.AssertBool(_template.CardBase.RenderOnBack).IsTrue();
-        
+
         Assertions.AssertBool(_template.Art.RenderOnFront).IsTrue();
         Assertions.AssertBool(_template.Art.RenderOnBack).IsFalse();
-        
+
         Assertions.AssertBool(_template.Symbol.RenderOnFront).IsFalse();
         Assertions.AssertBool(_template.Symbol.RenderOnBack).IsTrue();
     }
@@ -62,7 +63,7 @@ public class CardTemplateTest
     {
         // Act & Assert - All regions should be within 0-1 range
         var allLayers = _template.GatherAllLayers();
-        
+
         foreach (var layer in allLayers)
         {
             var region = layer.Region;
@@ -88,11 +89,9 @@ public class CardTemplateTest
     public void GemSocketsAndGems_HaveMatchingRegions()
     {
         // Assert - Corresponding sockets and gems should have same regions
-        for (int i = 0; i < _template.GemSockets.Length; i++)
-        {
+        for (var i = 0; i < _template.GemSockets.Length; i++)
             Assertions.AssertThat(_template.GemSockets[i].Region)
                 .IsEqual(_template.Gems[i].Region);
-        }
     }
 
     [TestCase]
@@ -101,7 +100,7 @@ public class CardTemplateTest
     {
         // Assert - All energy layers should occupy same space
         var containerRegion = _template.EnergyContainer.Region;
-        
+
         Assertions.AssertThat(_template.EnergyFill1.Region).IsEqual(containerRegion);
         Assertions.AssertThat(_template.EnergyFill2.Region).IsEqual(containerRegion);
     }

@@ -13,10 +13,7 @@ public class SemanticTileTest
     private static Array<CompatibilityTag> CreateSocketArray(string biomeTag = null)
     {
         var array = new Array<CompatibilityTag>();
-        if (!string.IsNullOrEmpty(biomeTag))
-        {
-            array.Add(new CompatibilityTag { Tag = biomeTag });
-        }
+        if (!string.IsNullOrEmpty(biomeTag)) array.Add(new CompatibilityTag { Tag = biomeTag });
 
         return array;
     }
@@ -29,7 +26,7 @@ public class SemanticTileTest
 
         var grassTile = new SemanticTile
         {
-            SocketData = new SocketData()
+            SocketData = new SocketData
             {
                 North = grassSocket,
                 East = grassSocket,
@@ -40,7 +37,7 @@ public class SemanticTileTest
 
         var stoneTile = new SemanticTile
         {
-            SocketData = new SocketData()
+            SocketData = new SocketData
             {
                 North = mountainSocket,
                 East = mountainSocket,
@@ -61,7 +58,7 @@ public class SemanticTileTest
 
         var anyTile = new SemanticTile
         {
-            SocketData = new SocketData()
+            SocketData = new SocketData
             {
                 North = anySocket,
                 East = anySocket,
@@ -72,7 +69,7 @@ public class SemanticTileTest
 
         var grassTile = new SemanticTile
         {
-            SocketData = new SocketData()
+            SocketData = new SocketData
             {
                 North = grassSocket,
                 East = grassSocket,
@@ -94,7 +91,7 @@ public class SemanticTileTest
 
         var tile = new SemanticTile
         {
-            SocketData = new SocketData()
+            SocketData = new SocketData
             {
                 North = grassSocket,
                 East = grassSocket,

@@ -18,19 +18,18 @@ namespace CardCleaner.Tests.Features.Card.Services;
 [RequireGodotRuntime]
 public class SignatureCardGeneratorTest
 {
-    private SignatureCardGenerator _generator= null!;
-    private RarityVisual[] _rarityVisuals= null!;
-    private BaseCardType[] _baseTypes= null!;
-    private GemVisual[] _gemVisuals= null!;
+    private SignatureCardGenerator _generator = null!;
+    private RarityVisual[] _rarityVisuals = null!;
+    private BaseCardType[] _baseTypes = null!;
+    private GemVisual[] _gemVisuals = null!;
 
-    private Mocking.MockCardShaderRenderer _renderer= null!;
-    private Node3D _cardRoot= null!;
-    private CardTemplate _template= null!;
+    private Mocking.MockCardShaderRenderer _renderer = null!;
+    private Node3D _cardRoot = null!;
+    private CardTemplate _template = null!;
 
     [BeforeTest]
     public void Setup()
     {
-
         // Create test data
         _rarityVisuals = CreateTestRarityVisuals();
         _baseTypes = CreateTestBaseTypes();
@@ -90,7 +89,7 @@ public class SignatureCardGeneratorTest
     {
         var gemVisuals = new GemVisual[8];
 
-        for (int i = 0; i < 8; i++)
+        for (var i = 0; i < 8; i++)
         {
             var gem = new GemVisual();
             gem.Element = (Element)i;
@@ -249,17 +248,18 @@ public class SignatureCardGeneratorTest
         Assertions.AssertThat(_template.CardBase.Texture).IsNotNull();
         Assertions.AssertThat(_template.Art.Texture).IsNotNull();
     }
+
     [TestCase]
     public void TestGenerateCardRenderer_WithMockedRenderer()
     {
         var signature = new CardSignature(new[] { 0.7f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
-    
+
         // Use NSubstitute for the renderer interface behavior we care about
         var mockMaterialManager = Substitute.For<ICardMaterialComponent>();
-    
+
         // Set up the material manager to track calls
         mockMaterialManager.ApplyMaterial(Arg.Any<MeshInstance3D>()).Returns(new ShaderMaterial());
-    
+
         // Test with real renderer but mock its dependencies
         var realRenderer = new CardShaderRenderer();
         var materialManager = new CardMaterialManager();
@@ -270,16 +270,16 @@ public class SignatureCardGeneratorTest
         realRenderer.AddChild(realRenderer.NameLabel);
         realRenderer.AttrLabel = new Label3D();
         realRenderer.AddChild(realRenderer.AttrLabel);
-        
-        
+
+
         Assertions.AddNode(realRenderer);
-    
+
         _generator.GenerateCardRenderer(realRenderer, signature, _template);
-            
-    
+
+
         // Verify the expected behavior without relying on custom mock implementations
         Assertions.AssertThat(realRenderer.NameLabel.Text).IsEqual("Rare");
-        Assertions.AssertThat(realRenderer.AttrLabel.Text).IsEqual("Signature[0,70, -0,50, 0,00, 0,00, 0,00, 0,00, 0,00, 0,00]");
+        Assertions.AssertThat(realRenderer.AttrLabel.Text)
+            .IsEqual("Signature[0,70, -0,50, 0,00, 0,00, 0,00, 0,00, 0,00, 0,00]");
     }
-
 }

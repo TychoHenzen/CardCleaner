@@ -10,7 +10,7 @@ namespace CardCleaner.Tests.Core.DependencyInjection;
 [TestSuite]
 public class ServiceContainerTest
 {
-    private ServiceContainer _container= null!;
+    private ServiceContainer _container = null!;
 
     [BeforeTest]
     public void Setup()
@@ -25,7 +25,7 @@ public class ServiceContainerTest
         _container.RegisterSingleton<ITestService>(instance);
 
         var resolved = _container.Resolve<ITestService>();
-        
+
         Assertions.AssertThat(resolved).IsEqual(instance);
         Assertions.AssertThat(resolved.GetValue()).IsEqual("test_value");
     }
@@ -37,7 +37,7 @@ public class ServiceContainerTest
 
         var resolved1 = _container.Resolve<ITestService>();
         var resolved2 = _container.Resolve<ITestService>();
-        
+
         Assertions.AssertThat(resolved1).IsEqual(resolved2); // Same instance
         Assertions.AssertThat(resolved1.GetValue()).IsEqual("test_value");
     }
@@ -49,7 +49,7 @@ public class ServiceContainerTest
 
         var resolved1 = _container.Resolve<ITestService>();
         var resolved2 = _container.Resolve<ITestService>();
-        
+
         Assertions.AssertThat(resolved1).IsNotEqual(resolved2); // Different instances
         Assertions.AssertThat(resolved1.GetValue()).IsEqual("test_value");
         Assertions.AssertThat(resolved2.GetValue()).IsEqual("test_value");
@@ -59,7 +59,7 @@ public class ServiceContainerTest
     public void TestRegisterFactory()
     {
         var callCount = 0;
-        _container.RegisterFactory<ITestService>(() => 
+        _container.RegisterFactory<ITestService>(() =>
         {
             callCount++;
             return new TestServiceImpl();
@@ -67,7 +67,7 @@ public class ServiceContainerTest
 
         var resolved1 = _container.Resolve<ITestService>();
         var resolved2 = _container.Resolve<ITestService>();
-        
+
         Assertions.AssertThat(callCount).IsEqual(2); // Factory called twice
         Assertions.AssertThat(resolved1).IsNotEqual(resolved2); // Different instances
     }
@@ -76,9 +76,9 @@ public class ServiceContainerTest
     public void TestIsRegistered()
     {
         Assertions.AssertBool(_container.IsRegistered<ITestService>()).IsFalse();
-        
+
         _container.RegisterSingleton<ITestService, TestServiceImpl>();
-        
+
         Assertions.AssertBool(_container.IsRegistered<ITestService>()).IsTrue();
         Assertions.AssertBool(_container.IsRegistered(typeof(ITestService))).IsTrue();
     }
@@ -100,7 +100,7 @@ public class ServiceContainerTest
         _container.RegisterSingleton<ITestService>(singletonInstance);
 
         var resolved = _container.Resolve<ITestService>();
-        
+
         Assertions.AssertThat(resolved).IsEqual(singletonInstance);
     }
 
@@ -109,12 +109,12 @@ public class ServiceContainerTest
     {
         var singletonInstance = new TestServiceImpl();
         _container.RegisterSingleton<ITestService>(singletonInstance);
-        
+
         var factoryInstance = new TestServiceImpl();
         _container.RegisterFactory<ITestService>(() => factoryInstance);
 
         var resolved = _container.Resolve<ITestService>();
-        
+
         Assertions.AssertThat(resolved).IsEqual(factoryInstance);
     }
 }

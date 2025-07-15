@@ -90,6 +90,7 @@ public class CsgBakerTest
         // Assert
         Assertions.AssertThat(_baker.Designer).IsEqual(designer);
     }
+
     private static Node3D CreateMockCardRoot()
     {
         var cardRoot = new Node3D();

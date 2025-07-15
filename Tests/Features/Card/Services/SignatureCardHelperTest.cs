@@ -56,7 +56,7 @@ public class SignatureCardHelperTest
     public void TestDetermineRarity_Param(float[] elements, CardRarity expectedRarity)
     {
         var signature = new CardSignature(elements);
-        var rarity = SignatureCardHelper.DetermineRarity(new []{signature});
+        var rarity = SignatureCardHelper.DetermineRarity(new[] { signature });
         Assertions.AssertThat(rarity).IsEqual(expectedRarity);
     }
 }

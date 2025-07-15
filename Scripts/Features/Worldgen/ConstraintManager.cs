@@ -11,21 +11,21 @@ namespace CardCleaner.Scripts.Features.Worldgen;
 public class ConstraintManager
 {
     private readonly List<(Vector3I position, LayerConstraint constraint)> _activeConstraints = new();
-    
+
     /// <summary>
     /// Apply constraint modifications from a placed tile
     /// </summary>
     public void ApplyTileConstraints(Vector3I position, SemanticTile tile)
     {
         if (!tile.HasLayerConstraints) return;
-        
+
         foreach (var constraint in tile.LayerConstraints)
         {
             var targetPosition = GetPositionInDirection(position, constraint.AffectedSocket);
             _activeConstraints.Add((targetPosition, constraint));
         }
     }
-    
+
     /// <summary>
     /// Get active constraints for a position and layer
     /// </summary>
@@ -35,7 +35,7 @@ public class ConstraintManager
             .Where(c => c.position == position && c.constraint.targetLayer == layer)
             .Select(c => c.constraint);
     }
-    
+
     /// <summary>
     /// Clear all constraints
     /// </summary>
@@ -43,7 +43,7 @@ public class ConstraintManager
     {
         _activeConstraints.Clear();
     }
-    
+
     private static Vector3I GetPositionInDirection(Vector3I position, Direction direction)
     {
         return direction switch

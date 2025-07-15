@@ -14,7 +14,7 @@ public partial class PlayerController : CharacterBody3D
     private float _pitchDeg;
     private IGameSettings? _settings;
     private SpotLight3D? _spotlight;
-    
+
     public override void _Ready()
     {
         _head = GetNode<Node3D>("Head");
@@ -41,7 +41,7 @@ public partial class PlayerController : CharacterBody3D
     {
         if (_inputService == null) return;
         // Register light cycling control
-        _inputService.RegisterAction(this , "cycle_light", Key.F, CycleLightMode);
+        _inputService.RegisterAction(this, "cycle_light", Key.F, CycleLightMode);
         _inputService.RegisterAction(this, "increase_light_intensity", Key.Plus, () => AdjustLightIntensity(0.2f));
         _inputService.RegisterAction(this, "decrease_light_intensity", Key.Minus, () => AdjustLightIntensity(-0.2f));
         _inputService.RegisterAction(this, "increase_light_intensity_alt", Key.Equal, () => AdjustLightIntensity(0.2f));
@@ -64,9 +64,9 @@ public partial class PlayerController : CharacterBody3D
 
     private void ConfigureSpotlight()
     {
-        if (_spotlight == null) 
+        if (_spotlight == null)
             return;
-        
+
         _spotlight.SpotAngle = 60.0f; // Wide cone
         _spotlight.SpotRange = 8.0f; // Good range for cards
         ApplyLightMode();

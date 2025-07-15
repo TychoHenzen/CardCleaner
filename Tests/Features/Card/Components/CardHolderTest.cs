@@ -17,7 +17,7 @@ public class CardHolderTest
     private CardHolder _systemUnderTest = null!;
     private Node3D _handAnchor = null!;
     private Mocking.MockCardSpawner _mockSpawner = null!;
-    
+
     // Test state tracking
     private int _cardAddedEventCount;
     private int _cardRemovedEventCount;
@@ -40,7 +40,7 @@ public class CardHolderTest
 
         _handAnchor = CreateHandAnchor();
         _systemUnderTest = CreateCardHolder();
-        
+
         // Reset event tracking
         ResetEventTracking();
         ConnectToCardHolderEvents();
@@ -59,9 +59,9 @@ public class CardHolderTest
     public void CardHolder_InitialState_HasNoCards()
     {
         // Arrange - System is already set up in BeforeTest
-        
+
         // Act - No action needed for initial state test
-        
+
         // Assert - Verify initial empty state
         Assertions.AssertInt(_systemUnderTest.HeldCount).IsEqual(0);
         Assertions.AssertBool(_systemUnderTest.HasCards).IsFalse();
@@ -224,7 +224,7 @@ public class CardHolderTest
 
         // Act & Assert - Should not throw
         _systemUnderTest.RemoveTopCard();
-        
+
         Assertions.AssertInt(_systemUnderTest.HeldCount).IsEqual(0);
         Assertions.AssertInt(_cardRemovedEventCount).IsEqual(0);
     }
@@ -239,10 +239,7 @@ public class CardHolderTest
     {
         // Arrange
         var cards = CreateMultipleTestCards(3);
-        foreach (var card in cards)
-        {
-            _systemUnderTest.AddCard(card);
-        }
+        foreach (var card in cards) _systemUnderTest.AddCard(card);
         ResetEventTracking();
 
         // Act
@@ -262,7 +259,7 @@ public class CardHolderTest
 
         // Act & Assert - Should not throw
         _systemUnderTest.RemoveAllCards();
-        
+
         Assertions.AssertInt(_cardRemovedEventCount).IsEqual(0);
     }
 
@@ -319,17 +316,11 @@ public class CardHolderTest
         var cards = CreateMultipleTestCards(3);
 
         // Act
-        foreach (var card in cards)
-        {
-            _systemUnderTest.AddCard(card);
-        }
+        foreach (var card in cards) _systemUnderTest.AddCard(card);
 
         // Assert
         var heldCards = _systemUnderTest.HeldCards;
-        for (int i = 0; i < cards.Length; i++)
-        {
-            Assertions.AssertThat(heldCards[i]).IsEqual(cards[i]);
-        }
+        for (var i = 0; i < cards.Length; i++) Assertions.AssertThat(heldCards[i]).IsEqual(cards[i]);
     }
 
     #endregion
@@ -387,10 +378,7 @@ public class CardHolderTest
     private RigidBody3D[] CreateMultipleTestCards(int count)
     {
         var cards = new RigidBody3D[count];
-        for (int i = 0; i < count; i++)
-        {
-            cards[i] = CreateTestCard($"Card{i + 1}");
-        }
+        for (var i = 0; i < count; i++) cards[i] = CreateTestCard($"Card{i + 1}");
         return cards;
     }
 

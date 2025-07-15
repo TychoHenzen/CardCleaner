@@ -16,7 +16,7 @@ public partial class InteractableButton : StaticBody3D, IInteractable
 
     private Vector3 _originalPosition;
     private Tween? _pressTween;
-    
+
     [Export] public bool Enabled { get; set; } = true;
     [Export] public float InteractionRange { get; set; } = 5.0f;
     [Export] public float PressDepth { get; set; } = 0.02f;
@@ -37,26 +37,24 @@ public partial class InteractableButton : StaticBody3D, IInteractable
             _originalPosition = ButtonMesh.Position;
             ButtonMesh.Visible = false;
         }
-        
+
         // Hide highlight initially
         if (HighlightMesh != null) HighlightMesh.Visible = false;
-        
+
         // Ensure we have a collision shape
         if (GetChildren().OfType<CollisionShape3D>().FirstOrDefault() == null)
-        {
             ILog.Error($"{Name} needs a CollisionShape3D child for interaction detection");
-        }
     }
 
     public void Interact()
     {
         if (!CanInteract) return;
-        
+
         ILog.Print($"Button '{Name}' pressed!");
-        
+
         // Play press animation
         PlayPressAnimation();
-        
+
         // Emit signal
         EmitSignal(SignalName.ButtonPressed);
     }
@@ -64,33 +62,27 @@ public partial class InteractableButton : StaticBody3D, IInteractable
     public void Highlight()
     {
         if (!CanInteract) return; // Only highlight if we can interact
-        
-        if (HighlightMesh != null)
-        {
-            HighlightMesh.Visible = true;
-        }
+
+        if (HighlightMesh != null) HighlightMesh.Visible = true;
     }
 
     public void ClearHighlight()
     {
-        if (HighlightMesh != null)
-        {
-            HighlightMesh.Visible = false;
-        }
+        if (HighlightMesh != null) HighlightMesh.Visible = false;
     }
 
     private void PlayPressAnimation()
     {
         if (ButtonMesh == null) return;
-        
+
         // Kill existing tween
         _pressTween?.Kill();
         _pressTween = CreateTween();
-        
+
         // Press down
         var pressedPosition = _originalPosition + Vector3.Down * PressDepth;
         _pressTween.TweenProperty(ButtonMesh, "position", pressedPosition, PressAnimationSpeed);
-        
+
         // Return to original position
         _pressTween.TweenProperty(ButtonMesh, "position", _originalPosition, PressAnimationSpeed);
     }
@@ -101,12 +93,9 @@ public partial class InteractableButton : StaticBody3D, IInteractable
     public void SetEnabled(bool enabled)
     {
         Enabled = enabled;
-        if(ButtonMesh != null)
+        if (ButtonMesh != null)
             ButtonMesh.Visible = enabled;
         // Clear highlight if disabling
-        if (!enabled)
-        {
-            ClearHighlight();
-        }
+        if (!enabled) ClearHighlight();
     }
 }

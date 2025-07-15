@@ -8,7 +8,7 @@ public enum SessionState
 {
     WaitingForCards,
     GeneratingMap,
-    Exploring, 
+    Exploring,
     InCombat,
     GeneratingLoot,
     SessionComplete
@@ -19,7 +19,7 @@ public interface IGameSessionService
     SessionState CurrentState { get; }
     event Action<SessionState> StateChanged;
     event Action<List<CardSignature>> LootGenerated;
-    
+
     void StartSession(CardSignature mapSeed, List<CardSignature> abilityCards);
     void AdvanceSession();
     void ResetSession();

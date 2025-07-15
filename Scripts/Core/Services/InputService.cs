@@ -60,7 +60,7 @@ public partial class InputService : Node, IInputService
         ILog.Print($"Registered action '{actionName}' -> {button}");
     }
 
-    public void UnregisterAction(object owner,string actionName)
+    public void UnregisterAction(object owner, string actionName)
     {
         _registeredActions.RemoveAll(a => a.Name == actionName && a.Owner.Equals(owner));
         _actionStates.Remove(actionName);
@@ -79,9 +79,9 @@ public partial class InputService : Node, IInputService
     public void RemapAction(string actionName, Key newKey)
     {
         var action = _registeredActions.FirstOrDefault(a => a.Name == actionName);
-        if (action == null) 
+        if (action == null)
             return;
-        
+
         action.Key = newKey;
         action.MouseButton = null; // Clear mouse button if it was set
         ILog.Print($"Remapped '{actionName}' to {newKey}");
@@ -90,9 +90,9 @@ public partial class InputService : Node, IInputService
     public void RemapAction(string actionName, MouseButton newButton)
     {
         var action = _registeredActions.FirstOrDefault(a => a.Name == actionName);
-        if (action == null) 
+        if (action == null)
             return;
-        
+
         action.MouseButton = newButton;
         action.Key = null; // Clear key if it was set
         ILog.Print($"Remapped '{actionName}' to {newButton}");
@@ -203,6 +203,7 @@ public partial class InputService : Node, IInputService
         else if (!pressed && wasPressed)
             _actionJustReleased[actionName] = true;
     }
+
     private void RegisterDefaultActions()
     {
         // These are common actions that many components might need

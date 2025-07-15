@@ -4,18 +4,26 @@ public interface ITestService
 {
     string GetValue();
 }
+
 public class TestServiceImpl : ITestService
 {
-    public string GetValue() => "test_value";
+    public string GetValue()
+    {
+        return "test_value";
+    }
 }
+
 public class TestServiceWithDependency : ITestService
 {
     private readonly ITestService _dependency;
-    
+
     public TestServiceWithDependency(ITestService dependency)
     {
         _dependency = dependency;
     }
-    
-    public string GetValue() => $"wrapped_{_dependency.GetValue()}";
+
+    public string GetValue()
+    {
+        return $"wrapped_{_dependency.GetValue()}";
+    }
 }

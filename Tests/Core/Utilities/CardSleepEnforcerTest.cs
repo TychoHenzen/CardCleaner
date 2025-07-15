@@ -55,7 +55,7 @@ public class CardSleepEnforcerTest
     {
         // Act & Assert - Should handle null gracefully
         _enforcer.Setup(null!);
-        
+
         Assertions.AssertThat(_enforcer).IsNotNull();
     }
 
@@ -65,7 +65,7 @@ public class CardSleepEnforcerTest
     {
         // Act & Assert - Should not throw when called without setup
         _enforcer.PhysicsProcess(0.016); // Simulate one frame
-        
+
         Assertions.AssertThat(_enforcer).IsNotNull();
     }
 }

@@ -11,6 +11,5 @@ public enum Direction
     SouthWest = 6,
     NorthWest = 7,
     Up = 8,
-    Down = 9,
-    
+    Down = 9
 }

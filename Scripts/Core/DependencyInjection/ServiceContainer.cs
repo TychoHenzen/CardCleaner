@@ -14,6 +14,15 @@ public class ServiceContainer : IServiceContainer
     {
         _singletons[typeof(T)] = instance;
     }
+    public void RegisterSingleton(Type serviceType, object instance)
+    {
+        _singletons[serviceType] = instance;
+    }
+
+    public void RegisterTransient(Type serviceType, Type implementationType)
+    {
+        _transients[serviceType] = implementationType;
+    }
 
     public void RegisterSingleton<TInterface, TImplementation>()
         where TImplementation : class, TInterface, new()
@@ -48,12 +57,11 @@ public class ServiceContainer : IServiceContainer
 
         if (!_transients.TryGetValue(type, out var implementationType))
             throw new InvalidOperationException($"Service {type.Name} not registered");
-        
+
         var returned = Activator.CreateInstance(implementationType);
-        if(returned == null)
+        if (returned == null)
             throw new InvalidOperationException($"Failed to create service {type.Name}");
         return returned;
-
     }
 
     public bool IsRegistered<T>() where T : class

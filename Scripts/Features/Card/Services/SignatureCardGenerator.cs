@@ -13,6 +13,8 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 ///     Generates card visuals deterministically from a CardSignature.
 ///     Picks base, border, corners, and banner textures based on signature-derived rarity.
 /// </summary>
+/// 
+[Service(ServiceLifetime.Singleton, typeof(ICardGenerator))]
 public class SignatureCardGenerator : ICardGenerator
 {
     private BaseCardType[]? _baseTypes;
@@ -29,13 +31,13 @@ public class SignatureCardGenerator : ICardGenerator
     public void GenerateCardRenderer(CardShaderRenderer renderer, CardSignature signature, CardTemplate template)
     {
         if (_rarityVisuals == null || _baseTypes == null || _gemVisuals == null)
-            return;   
+            return;
         var rng = new RandomNumberGenerator
         {
             Seed = (uint)SignatureCardHelper.ComputeSeed(signature)
         };
         // 1. Determine rarity
-        var rarity = SignatureCardHelper.DetermineRarity(new []{signature});
+        var rarity = SignatureCardHelper.DetermineRarity(new[] { signature });
 
         // 2. Apply per‐rarity visuals
         var visuals = _rarityVisuals.FirstOrDefault(rv => rv.Rarity == rarity);
@@ -73,10 +75,7 @@ public class SignatureCardGenerator : ICardGenerator
             var isPos = rawValue >= 0;
 
             var gemVis = _gemVisuals.FirstOrDefault(gv => gv.Element == element);
-            if (gemVis != null)
-            {
-                SetGemVisuals(renderer, template, gemVis, isPos, i, intensity);
-            }
+            if (gemVis != null) SetGemVisuals(renderer, template, gemVis, isPos, i, intensity);
         }
 
         renderer.NameLabel.Text = rarity.ToString();

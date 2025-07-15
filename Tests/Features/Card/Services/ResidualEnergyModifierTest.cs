@@ -7,7 +7,6 @@ using ResidualEnergyModifier = CardCleaner.Scripts.Features.Card.Services.Residu
 namespace CardCleaner.Tests.Features.Card.Services;
 
 [TestSuite]
-
 [RequireGodotRuntime]
 public class ResidualEnergyModifierTest
 {

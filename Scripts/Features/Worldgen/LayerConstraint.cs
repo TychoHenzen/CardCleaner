@@ -14,9 +14,10 @@ public partial class LayerConstraint : Resource
         Add,
         Remove
     }
-    [Export] public TileLayer targetLayer { get; set; }= TileLayer.Terrain;
+
+    [Export] public TileLayer targetLayer { get; set; } = TileLayer.Terrain;
     [Export] public Direction AffectedSocket { get; set; }
-    [Export] public Operation operation { get; set; }= Operation.Add;
+    [Export] public Operation operation { get; set; } = Operation.Add;
     [JsonIgnore] public CompatibilityTag tag { get; set; }
     [Export] public string tagName { get; set; }
 }

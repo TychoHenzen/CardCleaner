@@ -1,17 +1,17 @@
+namespace gdUnit4.addons.gdUnit4.src.dotnet;
+
+#if GDUNIT4NET_API_V5
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using GdUnit4;
 using GdUnit4.Api;
+
 using Godot;
 using Godot.Collections;
-
-namespace CardCleaner.addons.gdUnit4.src.dotnet;
-
-#if GDUNIT4NET_API_V5
-
 
 // GdUnit4 GDScript - C# API wrapper
 // ReSharper disable once CheckNamespace

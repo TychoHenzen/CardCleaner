@@ -43,10 +43,7 @@ public partial class CardHolder : Node3D, ICardHolder
         _heldCards.Add(card);
 
         // Emit pickup signal AFTER successful reparenting
-        if (card is CardController cardController)
-        {
-            cardController.EmitPickupSignal();
-        }
+        if (card is CardController cardController) cardController.EmitPickupSignal();
 
         PositionCards();
         EmitSignal(SignalName.CardAdded, card);
@@ -68,10 +65,7 @@ public partial class CardHolder : Node3D, ICardHolder
 
     private void EnablePhysicsDeferred(RigidBody3D card)
     {
-        if (IsInstanceValid(card))
-        {
-            EnablePhysics(card);
-        }
+        if (IsInstanceValid(card)) EnablePhysics(card);
     }
 
     public void RemoveTopCard()

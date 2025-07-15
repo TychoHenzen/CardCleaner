@@ -24,18 +24,15 @@ public class CardServiceProviderTest
             RarityVisuals = null!,
             BaseCardTypes = null!,
             GemVisuals = null!,
-            SpawningService = null!,
-            CardRoot = null!
+            CardRoot = null!,
         };
         _container = new ServiceContainer();
-        
+
         // Set up required exports with minimal test data
         _provider.RarityVisuals = CreateTestRarityVisuals();
         _provider.BaseCardTypes = CreateTestBaseCardTypes();
         _provider.GemVisuals = CreateTestGemVisuals();
-        _provider.SpawningService = CreateTestSpawningService();
-        _provider.CardRoot = CreateTestCardSpawner();
-        
+
         Assertions.AddNode(_provider);
     }
 
@@ -66,21 +63,6 @@ public class CardServiceProviderTest
         Assertions.AssertBool(_provider.IsInGroup("service_providers")).IsTrue();
     }
 
-    [TestCase]
-    [TestCategory("Unit")]
-    public void RegisterServices_WithNullSpawningService_SkipsRegistration()
-    {
-        // Arrange
-        _provider.SpawningService = null!;
-
-        // Act
-        _provider.RegisterServices(_container);
-
-        // Assert - Other services should still be registered
-        Assertions.AssertBool(_container.IsRegistered<RarityVisual[]>()).IsTrue();
-        Assertions.AssertBool(_container.IsRegistered<BaseCardType[]>()).IsTrue();
-    }
-
     private static RarityVisual[] CreateTestRarityVisuals()
     {
         var rarity = new RarityVisual
@@ -106,19 +88,5 @@ public class CardServiceProviderTest
             Element = Element.Solidum
         };
         return new[] { gem };
-    }
-
-    private CardSpawningService CreateTestSpawningService()
-    {
-        var service = new CardSpawningService();
-        Assertions.AddNode(service);
-        return service;
-    }
-
-    private CardSpawner CreateTestCardSpawner()
-    {
-        var spawner = new CardSpawner();
-        Assertions.AddNode(spawner);
-        return spawner;
     }
 }

@@ -49,8 +49,10 @@ offset_bottom = 40.0
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
+text = "Waiting for map data..."
 
 [node name="CombatUI" type="Control" parent="SubViewport/UI"]
+visible = false
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0

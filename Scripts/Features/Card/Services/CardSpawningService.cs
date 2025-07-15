@@ -12,13 +12,14 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 /// <summary>
 /// Handles spawning of card instances with proper generation and setup.
 /// </summary>
+[Service(ServiceLifetime.Singleton, typeof(ICardSpawningService))]
 public partial class CardSpawningService : Node, ICardSpawningService
 {
     /// <summary>
     /// Emitted when a new card is spawned, allowing other systems to connect to it
     /// </summary>
     public event Action<CardController> CardSpawned;
-    
+
     [Export] public PackedScene? CardScene;
     private ICardGenerator _generator;
     private RandomNumberGenerator _rng;
@@ -28,7 +29,7 @@ public partial class CardSpawningService : Node, ICardSpawningService
         ServiceLocator.Get<RandomNumberGenerator>(rng => _rng = rng);
         ServiceLocator.Get<ICardGenerator>(gen => _generator = gen);
     }
-    
+
     public Node3D SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent)
     {
         if (CardScene?.Instantiate() is not Node3D cardInstance)
@@ -43,7 +44,7 @@ public partial class CardSpawningService : Node, ICardSpawningService
         if (cardInstance is CardController controller)
         {
             controller.Signature = signature;
-            
+
             // Emit signal so other systems can connect to this new card
             CallDeferred(MethodName.EmitCardSpawnedSignal, controller);
         }
@@ -51,10 +52,8 @@ public partial class CardSpawningService : Node, ICardSpawningService
         // Set up card renderer with deferred baking
         var renderer = cardInstance.GetNodeOrNull<CardShaderRenderer>("CardRenderer");
         if (renderer != null)
-        {
             // Use CallDeferred to ensure all components are ready
             CallDeferred(MethodName.BakeCardRenderer, renderer, signature);
-        }
 
         return cardInstance;
     }
@@ -80,7 +79,7 @@ public partial class CardSpawningService : Node, ICardSpawningService
         _generator.GenerateCardRenderer(renderer, signature, template);
         renderer.Bake(template);
     }
-    
+
     private void EmitCardSpawnedSignal(CardController card)
     {
         CardSpawned?.Invoke(card);

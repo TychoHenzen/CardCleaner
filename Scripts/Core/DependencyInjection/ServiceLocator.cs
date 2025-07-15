@@ -24,11 +24,17 @@ public partial class ServiceLocator : Node
     public override void _Ready()
     {
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        if(_instance != null)
+        if (_instance != null)
             ILog.Error("!!!Duplicate service locator!!!");
         _instance = this;
         CallDeferred(MethodName.ResolveServices);
     }
+    public static void ReinitializeServices()
+    {
+        ResetForTesting();
+        _instance.ResolveServices();
+    }
+
     public static void ResetForTesting()
     {
         _instance._container = new ServiceContainer();
@@ -51,7 +57,7 @@ public partial class ServiceLocator : Node
         _container.RegisterSingleton(new RandomNumberGenerator());
 
         _container.RegisterSingleton<ILog, LoggingService>();
-        
+
         var inputService = new InputService();
         AddChild(inputService);
         _container.RegisterSingleton<IInputService>(inputService);
@@ -69,9 +75,9 @@ public partial class ServiceLocator : Node
     {
         foreach (var keyValuePair in _instance._pendingCallbacks.ToList())
         {
-            if (!_instance._container.IsRegistered(keyValuePair.Key)) 
+            if (!_instance._container.IsRegistered(keyValuePair.Key))
                 continue;
-            
+
             var service = _instance._container.Resolve(keyValuePair.Key);
             foreach (var callback in keyValuePair.Value)
             {

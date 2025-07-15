@@ -51,10 +51,10 @@ public class GemVisualTest
         Assertions.AssertThat(_gemVisual.SocketTexture).IsNotNull();
         Assertions.AssertThat(_gemVisual.PositiveGemTexture).IsNotNull();
         Assertions.AssertThat(_gemVisual.NegativeGemTexture).IsNotNull();
-        
+
         Assertions.AssertThat(_gemVisual.PositiveEmissionColor.R).IsEqual(1.0f);
         Assertions.AssertThat(_gemVisual.NegativeEmissionColor.B).IsEqual(1.0f);
-        
+
         Assertions.AssertFloat(_gemVisual.PositiveEmissionStrength).IsEqual(1.5f);
         Assertions.AssertFloat(_gemVisual.NegativeEmissionStrength).IsEqual(1.2f);
     }
@@ -97,7 +97,7 @@ public class GemVisualTest
         Assertions.AssertFloat(posColor.G).IsEqual(0.7f);
         Assertions.AssertFloat(posColor.B).IsEqual(0.9f);
         Assertions.AssertFloat(posColor.A).IsEqual(0.8f);
-        
+
         Assertions.AssertThat(_gemVisual.NegativeEmissionColor).IsEqual(Colors.Transparent);
     }
 

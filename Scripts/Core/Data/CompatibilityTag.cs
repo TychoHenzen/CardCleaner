@@ -9,22 +9,22 @@ public partial class CompatibilityTag : Resource
 {
     public enum CompatibilityMode
     {
-        None,   // Use explicit CompatibleWith lists only
-        Any,    // Compatible with everything
-        Self,   // Compatible with identical tags AND listed tags
-        Not     // Compatible with tags that DON'T match this pattern
+        None, // Use explicit CompatibleWith lists only
+        Any, // Compatible with everything
+        Self, // Compatible with identical tags AND listed tags
+        Not // Compatible with tags that DON'T match this pattern
     }
 
     [System.Composition.Export] public string Tag { get; set; } = "";
-    
+
     // Runtime object references - not serialized
     [Newtonsoft.Json.JsonIgnore]
-    [System.Composition.Export] public Array<CompatibilityTag> CompatibleWith { get; set; } = new();
-    
+    [System.Composition.Export]
+    public Array<CompatibilityTag> CompatibleWith { get; set; } = new();
+
     // String names for JSON serialization
-    [JsonPropertyName("compatibleWith")]
-    public Array<string> CompatibleWithNames { get; set; } = new();
-    
+    [JsonPropertyName("compatibleWith")] public Array<string> CompatibleWithNames { get; set; } = new();
+
     [System.Composition.Export] public CompatibilityMode Mode { get; set; } = CompatibilityMode.Self;
 
     public bool IsCompatibleWith(CompatibilityTag other)
@@ -38,7 +38,7 @@ public partial class CompatibilityTag : Resource
             if (Tag == other.Tag) return true;
             if (CompatibleWith.Contains(other)) return true;
         }
-        
+
         if (other.Mode == CompatibilityMode.Self)
         {
             if (other.Tag == Tag) return true;
@@ -52,12 +52,13 @@ public partial class CompatibilityTag : Resource
 
         if (Mode == CompatibilityMode.Not)
         {
-            bool otherMatchesPattern = other.Tag == Tag || CompatibleWith.Contains(other);
+            var otherMatchesPattern = other.Tag == Tag || CompatibleWith.Contains(other);
             return !otherMatchesPattern;
         }
+
         if (other.Mode == CompatibilityMode.Not)
         {
-            bool thisMatchesPattern = Tag == other.Tag || other.CompatibleWith.Contains(this);
+            var thisMatchesPattern = Tag == other.Tag || other.CompatibleWith.Contains(this);
             return !thisMatchesPattern;
         }
 
@@ -66,7 +67,7 @@ public partial class CompatibilityTag : Resource
 
     public static bool IsArrayCompatibleWith(Array<CompatibilityTag> self, Array<CompatibilityTag> other)
     {
-        if(self.Count == 0 || other.Count == 0) return self.Count == other.Count;
+        if (self.Count == 0 || other.Count == 0) return self.Count == other.Count;
         return self.Any(selfTag => other.Any(selfTag.IsCompatibleWith));
     }
 }

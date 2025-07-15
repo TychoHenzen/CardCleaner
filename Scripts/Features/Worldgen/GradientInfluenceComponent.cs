@@ -17,19 +17,19 @@ public class GradientInfluenceComponent
 
     public List<float> AdjustTileWeights(List<SemanticTile> tiles, Vector3I position, Vector3I mapSize)
     {
-        if (_gradient == null) 
+        if (_gradient == null)
             return tiles.Select(t => t.BaseWeight).ToList();
 
         // Map 3D position to 2D gradient coordinates (use X,Y, ignore Z)
         var gradientPosition = new Vector2I(position.X, position.Y);
         var gradientMapSize = new Vector2I(mapSize.X, mapSize.Y);
         var gradientSignature = _gradient.GetSignatureAt(gradientPosition, gradientMapSize);
-        
+
         var adjustedWeights = new List<float>();
         foreach (var tile in tiles)
         {
             var baseWeight = tile.BaseWeight;
-            
+
             if (tile.Signature != null)
             {
                 // Calculate similarity bonus
@@ -38,7 +38,7 @@ public class GradientInfluenceComponent
                 var signatureBonus = 1f + similarity * _influence;
                 baseWeight *= signatureBonus;
             }
-            
+
             adjustedWeights.Add(baseWeight);
         }
 

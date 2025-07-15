@@ -32,16 +32,16 @@ public partial class CardShaderRenderer : Node, ICardComponent
     public void Bake(CardTemplate template)
     {
         if (_baked) return;
-        CallDeferred(MethodName.DeferredBake, template); 
+        CallDeferred(MethodName.DeferredBake, template);
         _baked = true;
     }
 
-    private void DeferredBake(CardTemplate template) 
+    private void DeferredBake(CardTemplate template)
     {
         var box = GetParent().GetNodeOrNull<MeshInstance3D>("OuterBox_Baked");
         if (box == null)
         {
-            CallDeferred(MethodName.DeferredBake, template); 
+            CallDeferred(MethodName.DeferredBake, template);
             return;
         }
 

@@ -4,5 +4,6 @@ namespace CardCleaner.Scripts.Core.Interfaces;
 
 public interface ICardGenerator
 {
-    void GenerateCardRenderer(CardShaderRenderer renderer, Features.Card.Models.CardSignature signature, Data.CardTemplate template);
+    void GenerateCardRenderer(CardShaderRenderer renderer, Features.Card.Models.CardSignature signature,
+        Data.CardTemplate template);
 }

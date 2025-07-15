@@ -102,7 +102,8 @@ public class RarityVisualTest
     private static Texture2D CreateMockTexture()
     {
         var image = Image.CreateEmpty(64, 64, false, Image.Format.Rgb8);
-        image.Fill(new Color(System.Random.Shared.NextSingle(), System.Random.Shared.NextSingle(), System.Random.Shared.NextSingle()));
+        image.Fill(new Color(System.Random.Shared.NextSingle(), System.Random.Shared.NextSingle(),
+            System.Random.Shared.NextSingle()));
         return ImageTexture.CreateFromImage(image);
     }
 }

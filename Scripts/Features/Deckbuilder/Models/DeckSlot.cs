@@ -22,7 +22,7 @@ public partial class DeckSlot : Node3D
     [Export] public int Capacity { get; set; } = 5;
 
     public bool HasCards => _cards.Count > 0;
-    
+
     // Convenience property for single-card usage (when Capacity = 1)
     public bool HasCard => HasCards;
 
@@ -34,7 +34,7 @@ public partial class DeckSlot : Node3D
     private void OnBodyEntered(Node3D body)
     {
         if (_processingEntry) return;
-        
+
         if (body is not RigidBody3D card
             || _cards.Contains(card)
             || !card.Name.ToString().StartsWith("Card"))
@@ -58,7 +58,7 @@ public partial class DeckSlot : Node3D
             _processingEntry = false;
             return;
         }
-        
+
         LockCard(card);
         _cards.Add(card);
         _processingEntry = false;
@@ -75,10 +75,7 @@ public partial class DeckSlot : Node3D
         card.GlobalRotation = GlobalRotation;
 
         // Listen for pickup signal
-        if (card is CardController cardController)
-        {
-            cardController.CardPickedUp += OnCardPickedUp;
-        }
+        if (card is CardController cardController) cardController.CardPickedUp += OnCardPickedUp;
     }
 
     private void OnCardPickedUp(CardController cardController)
@@ -90,18 +87,18 @@ public partial class DeckSlot : Node3D
 
         // Remove from our collection - the card has already been reparented
         _cards.Remove(cardController);
-        
+
         // Reposition remaining cards
         RepositionCards();
-        
+
         EmitSignal(SignalName.CardsChanged);
-        
+
         ILog.Print($"DeckSlot released card due to pickup. {_cards.Count} cards remaining.");
     }
 
     private void RepositionCards()
     {
-        for (int i = 0; i < _cards.Count; i++)
+        for (var i = 0; i < _cards.Count; i++)
         {
             var card = _cards[i];
             card.GlobalPosition = GlobalPosition + PositionOffset + StackOffset * i;
@@ -120,11 +117,8 @@ public partial class DeckSlot : Node3D
         foreach (var c in _cards.ToList()) // ToList to avoid modification during iteration
         {
             // Disconnect from pickup signal before destroying
-            if (c is CardController cardController)
-            {
-                cardController.CardPickedUp -= OnCardPickedUp;
-            }
-            
+            if (c is CardController cardController) cardController.CardPickedUp -= OnCardPickedUp;
+
             sigs.Add(c.GetNode<CardController>(".").Signature);
             c.QueueFree();
         }
@@ -146,13 +140,11 @@ public partial class DeckSlot : Node3D
         foreach (var c in _cards.ToList()) // ToList to avoid modification during iteration
         {
             // Disconnect from pickup signal before destroying
-            if (c is CardController cardController)
-            {
-                cardController.CardPickedUp -= OnCardPickedUp;
-            }
-            
+            if (c is CardController cardController) cardController.CardPickedUp -= OnCardPickedUp;
+
             c.QueueFree();
         }
+
         _cards.Clear();
         EmitSignal(SignalName.CardsChanged);
     }

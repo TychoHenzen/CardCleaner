@@ -34,7 +34,7 @@ public class ServiceLocatorTest
         ServiceLocator.Container.RegisterSingleton<IAsyncTestService>(testService);
 
         var retrieved = ServiceLocator.Get<IAsyncTestService>();
-        
+
         Assertions.AssertThat(retrieved).IsEqual(testService);
         Assertions.AssertThat(retrieved.GetData()).IsEqual("async_test_data");
     }
@@ -43,9 +43,9 @@ public class ServiceLocatorTest
     public void TestHasService()
     {
         Assertions.AssertBool(ServiceLocator.Has<IAsyncTestService>()).IsFalse();
-        
+
         ServiceLocator.Container.RegisterSingleton<IAsyncTestService, AsyncTestServiceImpl>();
-        
+
         Assertions.AssertBool(ServiceLocator.Has<IAsyncTestService>()).IsTrue();
     }
 
@@ -63,22 +63,22 @@ public class ServiceLocatorTest
     {
         IAsyncTestService? callbackService = null;
         var callbackExecuted = false;
-        
+
         // Register callback before service is available
-        ServiceLocator.Get<IAsyncTestService>(service => 
+        ServiceLocator.Get<IAsyncTestService>(service =>
         {
             callbackService = service;
             callbackExecuted = true;
         });
-        
+
         Assertions.AssertBool(callbackExecuted).IsFalse();
-        
+
         // Register the service
         ServiceLocator.Container.RegisterSingleton<IAsyncTestService, AsyncTestServiceImpl>();
-        
+
         // Execute pending callbacks
         ServiceLocator.ExecutePendingCallbacks();
-        
+
         Assertions.AssertBool(callbackExecuted).IsTrue();
         Assertions.AssertThat(callbackService).IsNotNull();
         Assertions.AssertThat(callbackService?.GetData()).IsEqual("async_test_data");
@@ -89,17 +89,17 @@ public class ServiceLocatorTest
     {
         var testService = new AsyncTestServiceImpl();
         ServiceLocator.Container.RegisterSingleton<IAsyncTestService>(testService);
-        
+
         IAsyncTestService? callbackService = null;
         var callbackExecuted = false;
-        
+
         // Callback should execute immediately since service is already registered
-        ServiceLocator.Get<IAsyncTestService>(service => 
+        ServiceLocator.Get<IAsyncTestService>(service =>
         {
             callbackService = service;
             callbackExecuted = true;
         });
-        
+
         Assertions.AssertBool(callbackExecuted).IsTrue();
         Assertions.AssertThat(callbackService).IsEqual(testService);
     }
@@ -111,25 +111,25 @@ public class ServiceLocatorTest
         var callback2Executed = false;
         IAsyncTestService? service1 = null;
         IAsyncTestService? service2 = null;
-        
+
         // Register multiple callbacks
-        ServiceLocator.Get<IAsyncTestService>(service => 
+        ServiceLocator.Get<IAsyncTestService>(service =>
         {
             service1 = service;
             callback1Executed = true;
         });
-        
-        ServiceLocator.Get<IAsyncTestService>(service => 
+
+        ServiceLocator.Get<IAsyncTestService>(service =>
         {
             service2 = service;
             callback2Executed = true;
         });
-        
+
         // Register service
         var testService = new AsyncTestServiceImpl();
         ServiceLocator.Container.RegisterSingleton<IAsyncTestService>(testService);
         ServiceLocator.ExecutePendingCallbacks();
-        
+
         // Both callbacks should execute
         Assertions.AssertBool(callback1Executed).IsTrue();
         Assertions.AssertBool(callback2Executed).IsTrue();
@@ -141,15 +141,12 @@ public class ServiceLocatorTest
     public void TestCallbackNotExecutedIfServiceNotRegistered()
     {
         var callbackExecuted = false;
-        
-        ServiceLocator.Get<IAsyncTestService>(_ => 
-        {
-            callbackExecuted = true;
-        });
-        
+
+        ServiceLocator.Get<IAsyncTestService>(_ => { callbackExecuted = true; });
+
         // Execute callbacks without registering service
         ServiceLocator.ExecutePendingCallbacks();
-        
+
         Assertions.AssertBool(callbackExecuted).IsFalse();
     }
 
@@ -157,7 +154,7 @@ public class ServiceLocatorTest
     public void TestContainerAccessibility()
     {
         var container = ServiceLocator.Container;
-        
+
         Assertions.AssertThat(container).IsNotNull();
         Assertions.AssertThat(container).IsInstanceOf<IServiceContainer>();
     }
@@ -168,9 +165,9 @@ public class ServiceLocatorTest
         // Test that we can register services directly via the container
         var testService = new AsyncTestServiceImpl();
         ServiceLocator.Container.RegisterSingleton<IAsyncTestService>(testService);
-        
+
         Assertions.AssertBool(ServiceLocator.Container.IsRegistered<IAsyncTestService>()).IsTrue();
-        
+
         var retrieved = ServiceLocator.Container.Resolve<IAsyncTestService>();
         Assertions.AssertThat(retrieved).IsEqual(testService);
     }
@@ -181,32 +178,32 @@ public class ServiceLocatorTest
         // Create a test service provider that implements both Node and IServiceProvider
         var testProvider = new TestServiceProvider();
         testProvider.AddToGroup("service_providers");
-    
+
         // Actually trigger the service registration process
         ServiceLocator.ResetForTesting();
         var serviceLocator = new ServiceLocator();
         Assertions.AddNode(serviceLocator);
-    
+
         // Add the provider as a child so it's in the scene tree
         serviceLocator.AddChild(testProvider);
-    
+
         // Trigger the registration process (normally happens in _Ready via CallDeferred)
         serviceLocator.CallDeferred(ServiceLocator.MethodName.ResolveServices);
-    
+
         // Wait for deferred call to complete
         await serviceLocator.ToSignal(serviceLocator.GetTree(), SceneTree.SignalName.ProcessFrame);
-    
+
         // Verify the service was registered
         Assertions.AssertThat(testProvider.RegisterServicesCalled).IsTrue();
         Assertions.AssertBool(ServiceLocator.Has<IAsyncTestService>()).IsTrue();
     }
-
 }
+
 // Keep a simple test-specific service provider
 public partial class TestServiceProvider : Node, IServiceProvider
 {
     public bool RegisterServicesCalled { get; private set; }
-    
+
     public void RegisterServices(IServiceContainer container)
     {
         RegisterServicesCalled = true;

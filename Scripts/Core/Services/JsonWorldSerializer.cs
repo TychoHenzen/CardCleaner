@@ -12,7 +12,7 @@ namespace CardCleaner.Scripts.Core.Services;
 
 public static class JsonWorldSerializer
 {
-    private static readonly JsonSerializerOptions SerializerOptions = new()
+    public static readonly JsonSerializerOptions SerializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = true,
@@ -33,27 +33,25 @@ public static class JsonWorldSerializer
             // Parse the JSON structure
             using var doc = JsonDocument.Parse(jsonText);
             var root = doc.RootElement;
-            
+
             if (!root.TryGetProperty("worldData", out var worldDataElement))
                 throw new InvalidOperationException("JSON must have a 'worldData' root property");
 
             // First, load and register all compatibility tags
             var registry = CompatibilityTagRegistry.Instance;
             registry.Clear();
-            
+
             if (worldDataElement.TryGetProperty("compatibilityTags", out var tagsElement))
             {
                 var tags = JsonSerializer.Deserialize<List<CompatibilityTag>>(
                     tagsElement.GetRawText(), SerializerOptions);
-                
+
                 if (tags != null)
                 {
                     foreach (var tag in tags)
-                    {
                         // The JSON property "name" maps to "Tag" property
                         registry.RegisterTag(tag);
-                    }
-                    
+
                     // Resolve all string references to object references
                     registry.ResolveReferences();
                 }
@@ -62,7 +60,7 @@ public static class JsonWorldSerializer
             // Now deserialize the full world data
             var worldData = JsonSerializer.Deserialize<WorldData>(
                 worldDataElement.GetRawText(), SerializerOptions);
-            
+
             if (worldData == null)
                 throw new InvalidOperationException("Failed to deserialize world data");
 
@@ -79,7 +77,7 @@ public static class JsonWorldSerializer
             throw new InvalidOperationException($"Failed to load world data from JSON: {ex.Message}", ex);
         }
     }
-    
+
 
     private static void ResolveTileReferences(WorldData worldData, CompatibilityTagRegistry registry)
     {
@@ -99,19 +97,13 @@ public static class JsonWorldSerializer
 
             // Resolve layer constraint tags
             foreach (var constraint in tile.LayerConstraints)
-            {
                 if (!string.IsNullOrEmpty(constraint.tagName))
-                {
                     constraint.tag = registry.GetTag(constraint.tagName);
-                }
-            }
         }
 
         // Resolve enemy spawn data terrain preferences
         foreach (var enemyData in worldData.EnemySpawnData)
-        {
             enemyData.PreferredTerrain = ResolveTagArray(enemyData.PreferredTerrainNames, registry);
-        }
     }
 
     private static Array<CompatibilityTag> ResolveTagArray(Array<string> tagNames, CompatibilityTagRegistry registry)
@@ -121,16 +113,14 @@ public static class JsonWorldSerializer
         {
             var tag = registry.GetTag(name);
             if (tag != null)
-            {
                 tags.Add(tag);
-            }
             else
-            {
                 ILog.Warning($"Could not resolve tag '{name}'");
-            }
         }
+
         return tags;
     }
+
     public static string SaveToJson(WorldData worldData)
     {
         try
@@ -159,19 +149,11 @@ public static class JsonWorldSerializer
     private static void LoadResources(WorldData worldData)
     {
         foreach (var tile in worldData.SemanticTiles)
-        {
             if (!string.IsNullOrEmpty(tile.TileSetPath))
-            {
                 tile.TileSet = GD.Load<TileSet>(tile.TileSetPath);
-            }
-        }
 
         foreach (var enemyData in worldData.EnemySpawnData)
-        {
             if (!string.IsNullOrEmpty(enemyData.EnemyScenePath))
-            {
                 enemyData.EnemyScene = GD.Load<PackedScene>(enemyData.EnemyScenePath);
-            }
-        }
     }
 }

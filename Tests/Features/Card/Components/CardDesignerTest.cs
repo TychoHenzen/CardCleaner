@@ -33,11 +33,11 @@ public class CardDesignerTest
     public void TestDimensionClamping()
     {
         var originalWidth = _designer.Width;
-        
+
         // Setting same value should not trigger update
         _designer.Width = originalWidth;
         Assertions.AssertFloat(_designer.Width).IsEqual(originalWidth);
-        
+
         // Setting different value should update
         _designer.Width = 1.0f;
         Assertions.AssertFloat(_designer.Width).IsEqual(1.0f);
@@ -47,15 +47,15 @@ public class CardDesignerTest
     public void TestPropertyBounds()
     {
         // Test property range hints are respected
-        _designer.Width = 0.1f;  // Minimum
+        _designer.Width = 0.1f; // Minimum
         Assertions.AssertFloat(_designer.Width).IsEqual(0.1f);
-        
-        _designer.Width = 3.0f;  // Maximum  
+
+        _designer.Width = 3.0f; // Maximum  
         Assertions.AssertFloat(_designer.Width).IsEqual(3.0f);
-        
+
         _designer.Height = 0.1f;
         Assertions.AssertFloat(_designer.Height).IsEqual(0.1f);
-        
+
         _designer.Height = 3.0f;
         Assertions.AssertFloat(_designer.Height).IsEqual(3.0f);
     }
@@ -76,7 +76,7 @@ public class CardDesignerTest
     {
         _designer.BevelSize = 0.05f;
         _designer.BevelSides = 8;
-        
+
         Assertions.AssertFloat(_designer.BevelSize).IsEqual(0.05f);
         Assertions.AssertThat(_designer.BevelSides).IsEqual(8);
     }
@@ -92,41 +92,41 @@ public class CardDesignerTest
     {
         var root = new Node3D();
         root.Name = "CardRoot";
-        
+
         // Create minimal required node structure for testing
         var outerBox = new CsgBox3D();
         outerBox.Name = "OuterBox";
         root.AddChild(outerBox);
-        
+
         var combiner = new CsgCombiner3D();
         combiner.Name = "Combiner";
         outerBox.AddChild(combiner);
-        
+
         // Add corner cylinders
-        for (int i = 1; i <= 4; i++)
+        for (var i = 1; i <= 4; i++)
         {
             var cylinder = new CsgCylinder3D();
             cylinder.Name = $"Corner{i}";
             combiner.AddChild(cylinder);
         }
-        
+
         // Add trim boxes
-        for (int i = 1; i <= 2; i++)
+        for (var i = 1; i <= 2; i++)
         {
             var trimBox = new CsgBox3D();
             trimBox.Name = $"TrimBox{i}";
             combiner.AddChild(trimBox);
         }
-        
+
         var collision = new CollisionShape3D();
         collision.Name = "CardCollision";
         collision.Shape = new BoxShape3D();
         root.AddChild(collision);
-        
+
         var outlineBox = new CsgBox3D();
         outlineBox.Name = "OutlineBox";
         root.AddChild(outlineBox);
-        
+
         return root;
     }
 }

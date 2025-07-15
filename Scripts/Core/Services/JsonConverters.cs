@@ -59,12 +59,12 @@ public class Vector3IJsonConverter : JsonConverter<Vector3I>
     }
 }
 
-public class GodotArrayJsonConverter<[MustBeVariant]T> : JsonConverter<Array<T>>
+public class GodotArrayJsonConverter<[MustBeVariant] T> : JsonConverter<Array<T>>
 {
     public override Array<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var array = new Array<T>();
-        
+
         if (reader.TokenType != JsonTokenType.StartArray)
             return array;
 
@@ -81,16 +81,15 @@ public class GodotArrayJsonConverter<[MustBeVariant]T> : JsonConverter<Array<T>>
     public override void Write(Utf8JsonWriter writer, Array<T> value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();
-        foreach (var item in value)
-        {
-            JsonSerializer.Serialize(writer, item, options);
-        }
+        foreach (var item in value) JsonSerializer.Serialize(writer, item, options);
         writer.WriteEndArray();
     }
 }
+
 public class CompatibilityTagArrayJsonConverter : JsonConverter<Array<CompatibilityTag>>
 {
-    public override Array<CompatibilityTag>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override Array<CompatibilityTag>? Read(ref Utf8JsonReader reader, Type typeToConvert,
+        JsonSerializerOptions options)
     {
         // During reading, this will be handled by the string array property
         // This converter is here to prevent serialization of the object array

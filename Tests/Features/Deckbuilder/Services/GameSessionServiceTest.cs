@@ -7,7 +7,6 @@ using GdUnit4;
 namespace CardCleaner.Tests.Features.Deckbuilder.Services;
 
 [TestSuite]
-
 [RequireGodotRuntime]
 public class GameSessionServiceTest
 {
@@ -15,17 +14,17 @@ public class GameSessionServiceTest
     private SessionState _lastStateChange;
     private List<CardSignature> _lastLootGenerated = new();
     private int _stateChangeCount;
+
     [BeforeTest]
     public void Setup()
     {
-        
         // Create root node for scene tree context
 
         _service = new GameSessionService();
         Assertions.AddNode(_service);
         _lastStateChange = SessionState.WaitingForCards;
         _stateChangeCount = 0;
-        
+
         _service.StateChanged += OnStateChanged;
         _service.LootGenerated += OnLootGenerated;
     }
@@ -53,8 +52,8 @@ public class GameSessionServiceTest
         var mapSeed = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
         var abilityCards = new List<CardSignature>
         {
-            new CardSignature(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }),
-            new CardSignature(new[] { 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
+            new(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }),
+            new(new[] { 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
         };
 
         _service.StartSession(mapSeed, abilityCards);
@@ -97,7 +96,7 @@ public class GameSessionServiceTest
     {
         // First start a valid session
         var mapSeed = new CardSignature();
-        var abilityCards = new List<CardSignature> { new CardSignature() };
+        var abilityCards = new List<CardSignature> { new() };
         _service.StartSession(mapSeed, abilityCards);
 
         // Reset counters
@@ -115,7 +114,7 @@ public class GameSessionServiceTest
     {
         // Start a session first
         var mapSeed = new CardSignature();
-        var abilityCards = new List<CardSignature> { new CardSignature() };
+        var abilityCards = new List<CardSignature> { new() };
         _service.StartSession(mapSeed, abilityCards);
 
         // Reset the session
@@ -139,8 +138,8 @@ public class GameSessionServiceTest
     public void TestStateTransitionOrder()
     {
         var mapSeed = new CardSignature();
-        var abilityCards = new List<CardSignature> { new CardSignature() };
-        
+        var abilityCards = new List<CardSignature> { new() };
+
         // Start session (should go to GeneratingMap)
         _service.StartSession(mapSeed, abilityCards);
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.GeneratingMap);
@@ -167,8 +166,8 @@ public class GameSessionServiceTest
     public void TestLootGeneration()
     {
         var mapSeed = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f });
-        var abilityCards = new List<CardSignature> { new CardSignature() };
-        
+        var abilityCards = new List<CardSignature> { new() };
+
         // Start and advance through to loot generation
         _service.StartSession(mapSeed, abilityCards);
         _service.AdvanceSession(); // -> Exploring
@@ -184,12 +183,9 @@ public class GameSessionServiceTest
         foreach (var lootSignature in _lastLootGenerated)
         {
             Assertions.AssertThat(lootSignature).IsNotNull();
-            
+
             // Each signature should have 8 elements with values between -1 and 1
-            for (int i = 0; i < 8; i++)
-            {
-                Assertions.AssertThat(lootSignature[i]).IsBetween(-1.0f, 1.0f);
-            }
+            for (var i = 0; i < 8; i++) Assertions.AssertThat(lootSignature[i]).IsBetween(-1.0f, 1.0f);
         }
     }
 
@@ -198,16 +194,16 @@ public class GameSessionServiceTest
     {
         var mapSeed = new CardSignature(new[] { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
         var abilityCards = new List<CardSignature> { new() };
-        
+
         // Generate loot twice to ensure variation
         _service.StartSession(mapSeed, abilityCards);
         _service.AdvanceSession(); // -> Exploring  
         _service.AdvanceSession(); // -> InCombat
         _service.AdvanceSession(); // -> GeneratingLoot
         _service.AdvanceSession(); // -> SessionComplete
-        
+
         var firstLoot = new List<CardSignature>(_lastLootGenerated);
-        
+
         // Reset and generate again
         _service.ResetSession();
         _service.StartSession(mapSeed, abilityCards);
@@ -215,22 +211,23 @@ public class GameSessionServiceTest
         _service.AdvanceSession(); // -> InCombat  
         _service.AdvanceSession(); // -> GeneratingLoot
         _service.AdvanceSession(); // -> SessionComplete
-        
+
         var secondLoot = _lastLootGenerated;
-        
+
         // Should have different loot (due to randomness)
-        bool foundDifference = false;
-        for (int i = 0; i < firstLoot.Count && i < secondLoot.Count; i++)
+        var foundDifference = false;
+        for (var i = 0; i < firstLoot.Count && i < secondLoot.Count; i++)
         {
-            for (int j = 0; j < 8; j++)
+            for (var j = 0; j < 8; j++)
             {
                 if (Math.Abs(firstLoot[i][j] - secondLoot[i][j]) <= 0.001f) continue;
                 foundDifference = true;
                 break;
             }
+
             if (foundDifference) break;
         }
-        
+
         Assertions.AssertBool(foundDifference).IsTrue();
     }
 
@@ -239,19 +236,19 @@ public class GameSessionServiceTest
     {
         var mapSeed = new CardSignature();
         var abilityCards = new List<CardSignature> { new() };
-        
+
         // Get to session complete
         _service.StartSession(mapSeed, abilityCards);
         _service.AdvanceSession(); // -> Exploring
         _service.AdvanceSession(); // -> InCombat
         _service.AdvanceSession(); // -> GeneratingLoot
         _service.AdvanceSession(); // -> SessionComplete
-        
-        int stateChangesBeforeExtra = _stateChangeCount;
-        
+
+        var stateChangesBeforeExtra = _stateChangeCount;
+
         // Try to advance further
         _service.AdvanceSession();
-        
+
         // Should remain in SessionComplete
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.SessionComplete);
         Assertions.AssertThat(_stateChangeCount).IsEqual(stateChangesBeforeExtra); // No new state changes

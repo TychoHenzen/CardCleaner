@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Core.Services;
 
+
+[Service]
 public class LoggingService : ILog
 {
     public void LogMessage(string message)

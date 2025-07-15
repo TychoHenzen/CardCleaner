@@ -1,35 +1,37 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
+[Service(ServiceLifetime.Singleton, typeof(IGameSessionService))]
 public partial class GameSessionService : Node, IGameSessionService
 {
     private SessionState _currentState = SessionState.WaitingForCards;
     private CardSignature _mapSeed;
     private List<CardSignature> _abilityCards = new();
     private RandomNumberGenerator _rng = new();
-    
+
     // Simple game systems
     private SimpleMapGenerator _mapGenerator;
     private SimpleMapData _currentMap;
     private ExplorationAI _explorationAI;
     private SimpleCombatSystem _combatSystem;
     private Timer _gameTimer;
-    
+
     // Game timing
     private const float ExplorationStepDelay = 0.5f; // 500ms between exploration steps
     private const float CombatTurnDelay = 1.0f; // 1s between combat turns
 
-    public SessionState CurrentState 
-    { 
+    public SessionState CurrentState
+    {
         get => _currentState;
         private set
         {
-            if (_currentState == value) 
+            if (_currentState == value)
                 return;
             _currentState = value;
             StateChanged?.Invoke(value);
@@ -44,12 +46,12 @@ public partial class GameSessionService : Node, IGameSessionService
     {
         _rng.Randomize();
         _mapGenerator = new SimpleMapGenerator(_rng);
-        
+
         // Create timer for game progression
         _gameTimer = new Timer();
         AddChild(_gameTimer);
         _gameTimer.Timeout += OnTimerTimeout;
-        
+
         ILog.Print("GameSessionService ready and initialized");
     }
 
@@ -70,9 +72,9 @@ public partial class GameSessionService : Node, IGameSessionService
         _mapSeed = mapSeed;
         _abilityCards = new List<CardSignature>(abilityCards);
         CurrentState = SessionState.GeneratingMap;
-        
+
         ILog.Print($"Started session with map seed and {_abilityCards.Count} ability cards");
-        
+
         // Start the game loop
         CallDeferred(MethodName.AdvanceSession);
     }
@@ -117,15 +119,15 @@ public partial class GameSessionService : Node, IGameSessionService
     private void GenerateMap()
     {
         ILog.Print($"Generating simple map from seed signature: {_mapSeed}");
-        
+
         // Use signature to influence map size and difficulty
         var mapSize = CalculateMapSize(_mapSeed);
         var blockedPercentage = CalculateBlockedPercentage(_mapSeed);
-        
+
         _currentMap = _mapGenerator.GenerateMap(mapSize, _mapSeed, blockedPercentage);
-        
+
         ILog.Print($"Map generated: {mapSize.X}x{mapSize.Y}, {_currentMap.EnemyPositions.Count} enemies");
-        
+
         CurrentState = SessionState.Exploring;
         CallDeferred(MethodName.AdvanceSession);
     }
@@ -133,10 +135,10 @@ public partial class GameSessionService : Node, IGameSessionService
     private void StartExploration()
     {
         ILog.Print("Starting autonomous exploration...");
-        
+
         _explorationAI = new ExplorationAI(_currentMap);
         _explorationAI.EnemyEncountered += OnEnemyEncountered;
-        
+
         // Start exploration timer
         _gameTimer.WaitTime = ExplorationStepDelay;
         _gameTimer.Start();
@@ -158,13 +160,13 @@ public partial class GameSessionService : Node, IGameSessionService
     private void ProcessExplorationStep()
     {
         if (_explorationAI == null) return;
-        
-        bool shouldContinue = _explorationAI.StepExploration();
-        
+
+        var shouldContinue = _explorationAI.StepExploration();
+
         if (!shouldContinue)
         {
             _gameTimer.Stop();
-            
+
             if (_explorationAI.HasFoundEnemy)
             {
                 CurrentState = SessionState.InCombat;
@@ -190,10 +192,10 @@ public partial class GameSessionService : Node, IGameSessionService
     private void StartCombat()
     {
         ILog.Print($"Starting combat with {_abilityCards.Count} ability cards...");
-        
+
         _combatSystem = new SimpleCombatSystem(_abilityCards, _mapSeed, _rng);
         _combatSystem.CombatEnded += OnCombatEnded;
-        
+
         // Start combat timer
         _gameTimer.WaitTime = CombatTurnDelay;
         _gameTimer.Start();
@@ -202,13 +204,10 @@ public partial class GameSessionService : Node, IGameSessionService
     private void ProcessCombatTurn()
     {
         if (_combatSystem == null) return;
-        
-        bool shouldContinue = _combatSystem.ProcessTurn();
-        
-        if (!shouldContinue)
-        {
-            _gameTimer.Stop();
-        }
+
+        var shouldContinue = _combatSystem.ProcessTurn();
+
+        if (!shouldContinue) _gameTimer.Stop();
     }
 
     private void OnCombatEnded()
@@ -222,9 +221,9 @@ public partial class GameSessionService : Node, IGameSessionService
         else
         {
             ILog.Print("Combat lost! Session ending...");
-            CleanupCurrentSession(); 
+            CleanupCurrentSession();
             CurrentState = SessionState.SessionComplete;
-            CallDeferred(MethodName.ResetForNextSession); 
+            CallDeferred(MethodName.ResetForNextSession);
             // No loot for losing
         }
     }
@@ -232,31 +231,32 @@ public partial class GameSessionService : Node, IGameSessionService
     private void GenerateLoot()
     {
         ILog.Print("Generating loot from defeated enemy...");
-        
+
         var lootSignatures = new List<CardSignature>();
-        
+
         // Generate 5-10 cards based on map seed and abilities used
         var lootCount = _rng.RandiRange(5, 10);
-        
-        for (int i = 0; i < lootCount; i++)
+
+        for (var i = 0; i < lootCount; i++)
         {
             var lootSignature = GenerateLootSignature();
             lootSignatures.Add(lootSignature);
         }
+
         CleanupCurrentSession();
-        
+
         CurrentState = SessionState.SessionComplete;
         LootGenerated?.Invoke(lootSignatures);
-        
+
         ILog.Print($"Session complete! Generated {lootSignatures.Count} loot cards");
         CallDeferred(MethodName.ResetForNextSession);
     }
-    
+
     private void CleanupCurrentSession()
     {
         // Stop any running timers
         _gameTimer?.Stop();
-    
+
         // Clean up GameSessionService's own data
         _currentMap = null;
         _combatSystem = null;
@@ -275,23 +275,23 @@ public partial class GameSessionService : Node, IGameSessionService
     {
         // Create signature that's a variation of the map seed plus random elements from abilities
         var lootSignature = new CardSignature();
-        
-        for (int i = 0; i < 8; i++)
+
+        for (var i = 0; i < 8; i++)
         {
             var baseValue = _mapSeed[i];
-            
+
             // Add influence from random ability card
             if (_abilityCards.Count > 0)
             {
                 var randomAbility = _abilityCards[_rng.RandiRange(0, _abilityCards.Count - 1)];
                 baseValue += randomAbility[i] * 0.3f; // 30% influence from abilities
             }
-            
+
             // Add random variation
             var variation = _rng.RandfRange(-0.2f, 0.2f);
             lootSignature[i] = Mathf.Clamp(baseValue + variation, -1f, 1f);
         }
-        
+
         return lootSignature;
     }
 
@@ -299,16 +299,13 @@ public partial class GameSessionService : Node, IGameSessionService
     {
         // Use signature to determine map size (larger for more complex signatures)
         var complexity = 0f;
-        for (int i = 0; i < 8; i++)
-        {
-            complexity += Mathf.Abs(signature[i]);
-        }
+        for (var i = 0; i < 8; i++) complexity += Mathf.Abs(signature[i]);
         complexity /= 8f;
-        
+
         var baseSize = 8;
         var sizeVariation = Mathf.RoundToInt(complexity * 8);
         var size = baseSize + sizeVariation;
-        
+
         return new Vector2I(size, size);
     }
 

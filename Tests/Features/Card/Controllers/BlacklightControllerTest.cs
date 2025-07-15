@@ -21,14 +21,14 @@ public class BlacklightControllerTest
         {
             BlacklightRange = 5.0f
         };
-        
+
         _cardRoot = new Node3D();
         Assertions.AddNode(_cardRoot);
         _cardRoot.AddChild(_controller);
 
         // Set up player with spotlight
         SetupPlayerWithSpotlight();
-        
+
         _controller.Setup(_cardRoot);
         await ISceneRunner.SyncPhysicsFrame;
     }
@@ -37,21 +37,21 @@ public class BlacklightControllerTest
     {
         _playerNode = new Node3D { Name = "TestPlayer" };
         _playerNode.AddToGroup("player");
-        
+
         var head = new Node3D { Name = "Head" };
         var camera = new Camera3D { Name = "Camera3D" };
-        _spotlight = new SpotLight3D 
-        { 
+        _spotlight = new SpotLight3D
+        {
             Name = "SpotLight3D",
             SpotAngle = 45.0f,
             LightEnergy = 1.0f,
             Visible = true
         };
-        
+
         _playerNode.AddChild(head);
         head.AddChild(camera);
         camera.AddChild(_spotlight);
-        
+
         Assertions.AddNode(_playerNode);
     }
 
@@ -122,6 +122,7 @@ public class BlacklightControllerTest
         // Assert
         Assertions.AssertFloat(exposure).IsEqual(0.0f);
     }
+
     [TestCase]
     [TestCategory("Unit")]
     public void CalculateExposure_CardWithinRangeAndAngle_ReturnsPositiveExposure()
@@ -130,7 +131,7 @@ public class BlacklightControllerTest
         _spotlight.GlobalPosition = Vector3.Zero;
         _spotlight.GlobalTransform = new Transform3D(Basis.Identity, Vector3.Zero);
         _spotlight.LookAt(Vector3.Forward, Vector3.Up);
-    
+
         var cardPosition = new Vector3(0, 0, -2); // In front of spotlight (negative Z)
 
         // Act
@@ -150,7 +151,7 @@ public class BlacklightControllerTest
         _spotlight.GlobalTransform = new Transform3D(Basis.Identity, Vector3.Zero);
         _spotlight.LookAt(Vector3.Forward, Vector3.Up);
         _spotlight.SpotAngle = 30.0f; // Narrow angle
-        
+
         var cardPosition = new Vector3(5, 0, 1); // To the side, outside angle
 
         // Act
@@ -180,7 +181,7 @@ public class BlacklightControllerTest
     {
         // Act & Assert
         _controller.UpdateBlacklightEffect(null);
-        
+
         Assertions.AssertThat(_controller).IsNotNull();
     }
 
@@ -194,7 +195,7 @@ public class BlacklightControllerTest
 
         // Act & Assert
         newController.Setup(null!);
-        
+
         Assertions.AssertThat(newController).IsNotNull();
     }
 
@@ -204,7 +205,7 @@ public class BlacklightControllerTest
     {
         // Act & Assert
         _controller.PhysicsProcess(0.016);
-        
+
         Assertions.AssertThat(_controller).IsNotNull();
     }
 
@@ -217,7 +218,7 @@ public class BlacklightControllerTest
 
         // Act & Assert - Should not crash when called
         _controller.IntegrateForces(null!);
-        
+
         Assertions.AssertThat(_controller).IsNotNull();
     }
 
@@ -229,9 +230,9 @@ public class BlacklightControllerTest
         _spotlight.GlobalPosition = Vector3.Zero;
         _spotlight.GlobalTransform = new Transform3D(Basis.Identity, Vector3.Zero);
         _spotlight.LookAt(Vector3.Forward, Vector3.Up);
-    
-        var nearCard = new Vector3(0, 0, -1);   // Close (negative Z)
-        var farCard = new Vector3(0, 0, -4);    // Far but within range (negative Z)
+
+        var nearCard = new Vector3(0, 0, -1); // Close (negative Z)
+        var farCard = new Vector3(0, 0, -4); // Far but within range (negative Z)
 
         // Act
         var nearExposure = _controller.CalculateExposure(nearCard);

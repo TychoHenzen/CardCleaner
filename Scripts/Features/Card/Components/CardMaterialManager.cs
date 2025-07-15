@@ -22,7 +22,8 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         foreach (var layer in layers)
         {
             texturesArr.Add(layer.Texture);
-            regionsArr.Add(new Vector4(layer.Region.Position.X, layer.Region.Position.Y, layer.Region.Size.X, layer.Region.Size.Y));
+            regionsArr.Add(new Vector4(layer.Region.Position.X, layer.Region.Position.Y, layer.Region.Size.X,
+                layer.Region.Size.Y));
             frontFlagsArr.Add(layer.RenderOnFront);
             backFlagsArr.Add(layer.RenderOnBack);
         }
@@ -31,7 +32,9 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         _shaderParameters["regions"] = regionsArr;
         _shaderParameters["frontFlags"] = frontFlagsArr;
         _shaderParameters["backFlags"] = backFlagsArr;
-    }public void SetGemEmission(int index, Color color, float strength)
+    }
+
+    public void SetGemEmission(int index, Color color, float strength)
     {
         // Ensure arrays exist with proper size
         if (!_shaderParameters.ContainsKey("gem_emission_colors"))
@@ -53,12 +56,12 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         var existingColors = _shaderParameters["gem_emission_colors"].As<Array<Vector3>>();
         var existingStrengths = _shaderParameters["gem_emission_strengths"].As<Array<float>>();
 
-        if (index is < 0 or >= 8) 
+        if (index is < 0 or >= 8)
         {
             ILog.Error($"Invalid gem index: {index}");
             return;
         }
-    
+
         existingColors[index] = new Vector3(color.R, color.G, color.B);
         existingStrengths[index] = strength;
     }
@@ -66,18 +69,13 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
     public ShaderMaterial? ApplyMaterial(MeshInstance3D target)
     {
         if (CardMaterialTemplate == null) return null;
-    
+
         if (CardMaterialTemplate.Duplicate() is not ShaderMaterial material) return null;
 
-        foreach (var param in _shaderParameters) 
-        {
-            material.SetShaderParameter(param.Key, param.Value);
-        }
+        foreach (var param in _shaderParameters) material.SetShaderParameter(param.Key, param.Value);
 
         target.MaterialOverride = material;
         _activeMaterial = material;
         return material;
     }
-
-
 }

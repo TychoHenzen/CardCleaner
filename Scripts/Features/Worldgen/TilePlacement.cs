@@ -22,9 +22,9 @@ public partial class TilePlacement : Resource
             BlocksMovement = BlocksMovement,
             BlocksTiles = BlocksTiles,
             AnimationFrames =
-                new Array<Vector3I>(AnimationFrames.Select(i => new Vector3I(i.X , i.Y + offset.X, i.Z+ offset.Y))
+                new Array<Vector3I>(AnimationFrames.Select(i => new Vector3I(i.X, i.Y + offset.X, i.Z + offset.Y))
                     .ToArray()),
-            AnimationSpeed = AnimationSpeed,
+            AnimationSpeed = AnimationSpeed
         };
     }
 }

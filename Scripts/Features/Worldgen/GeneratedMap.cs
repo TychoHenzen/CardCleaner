@@ -30,19 +30,17 @@ public readonly struct GeneratedMap
     /// <summary>
     /// Generate a complete map using SemanticWfc3dGenerator
     /// </summary>
-    public static GeneratedMap Generate(SemanticTile[] allTiles, Vector2I mapSize, RandomNumberGenerator rng, GradientInfluenceComponent gradientInfluence)
+    public static GeneratedMap Generate(SemanticTile[] allTiles, Vector2I mapSize, RandomNumberGenerator rng,
+        GradientInfluenceComponent gradientInfluence)
     {
-        
         ILog.Print($"Loaded tiles: {allTiles.Length} terrain tiles");
-        foreach(var tile in allTiles) 
-        {
+        foreach (var tile in allTiles)
             ILog.Print($"  - {tile.TileName}, Layer: {tile.Layer}, BaseWeight: {tile.BaseWeight}");
-        }
 
 
         var mapSize3D = new Vector3I(mapSize.X, mapSize.Y, 4); // 4 layers
 
-        var wfc3DGenerator = new SemanticWfc3dGenerator(allTiles, mapSize3D, rng,gradientInfluence);
+        var wfc3DGenerator = new SemanticWfc3dGenerator(allTiles, mapSize3D, rng, gradientInfluence);
         var result3D = wfc3DGenerator.Generate();
 
         // Extract all layers
@@ -60,13 +58,9 @@ public readonly struct GeneratedMap
         var height = result3D.GetLength(1);
         var layer2D = new SemanticTile?[height, width];
 
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                layer2D[y, x] = result3D[layerIndex, y, x];
-            }
-        }
+        for (var y = 0; y < height; y++)
+        for (var x = 0; x < width; x++)
+            layer2D[y, x] = result3D[layerIndex, y, x];
 
         return layer2D;
     }
@@ -108,21 +102,17 @@ public readonly struct GeneratedMap
         var height = tileGrid.GetLength(0);
         var width = tileGrid.GetLength(1);
 
-        for (int y = 0; y < height; y++)
+        for (var y = 0; y < height; y++)
+        for (var x = 0; x < width; x++)
         {
-            for (int x = 0; x < width; x++)
-            {
-                var pattern = tileGrid[y, x];
-                if (pattern == null) continue;
+            var pattern = tileGrid[y, x];
+            if (pattern == null) continue;
 
-                var position = new Vector2I(x, y);
-                var tilePlacement = pattern.GetTileAt(new Vector2I(0, 0));
+            var position = new Vector2I(x, y);
+            var tilePlacement = pattern.GetTileAt(new Vector2I(0, 0));
 
-                if (tilePlacement != null)
-                {
-                    layer.SetCell(position, tilePlacement.AnimationFrames[0].X, tilePlacement.AnimationFrames[0].YZ());
-                }
-            }
+            if (tilePlacement != null)
+                layer.SetCell(position, tilePlacement.AnimationFrames[0].X, tilePlacement.AnimationFrames[0].YZ());
         }
     }
 
@@ -132,38 +122,34 @@ public readonly struct GeneratedMap
         var width = grid.GetLength(1);
         var processedPositions = new bool[height, width];
 
-        for (int y = 0; y < height; y++)
+        for (var y = 0; y < height; y++)
+        for (var x = 0; x < width; x++)
         {
-            for (int x = 0; x < width; x++)
+            if (processedPositions[y, x]) continue;
+
+            var pattern = grid[y, x];
+            if (pattern?.TileSet == null) continue;
+
+            // Render the entire pattern (existing logic from WorldTileMapScreen)
+            for (var py = 0; py < pattern.Size.Y; py++)
+            for (var px = 0; px < pattern.Size.X; px++)
             {
-                if (processedPositions[y, x]) continue;
+                var worldPos = new Vector2I(x + px, y + py);
+                if (worldPos.X >= width || worldPos.Y >= height) continue;
 
-                var pattern = grid[y, x];
-                if (pattern?.TileSet == null) continue;
-
-                // Render the entire pattern (existing logic from WorldTileMapScreen)
-                for (int py = 0; py < pattern.Size.Y; py++)
+                var tilePlacement = pattern.GetTileAt(new Vector2I(px, py));
+                if (tilePlacement != null)
                 {
-                    for (int px = 0; px < pattern.Size.X; px++)
+                    var tileImage = ExtractTileImage(pattern.TileSet, tilePlacement, tileSize);
+                    if (tileImage != null)
                     {
-                        var worldPos = new Vector2I(x + px, y + py);
-                        if (worldPos.X >= width || worldPos.Y >= height) continue;
-
-                        var tilePlacement = pattern.GetTileAt(new Vector2I(px, py));
-                        if (tilePlacement != null)
-                        {
-                            var tileImage = ExtractTileImage(pattern.TileSet, tilePlacement, tileSize);
-                            if (tileImage != null)
-                            {
-                                var destPos = new Vector2I(worldPos.X * tileSize, worldPos.Y * tileSize);
-                                targetImage.BlitRect(tileImage,
-                                    new Rect2I(Vector2I.Zero, new Vector2I(tileSize, tileSize)), destPos);
-                            }
-                        }
-
-                        processedPositions[worldPos.Y, worldPos.X] = true;
+                        var destPos = new Vector2I(worldPos.X * tileSize, worldPos.Y * tileSize);
+                        targetImage.BlitRect(tileImage,
+                            new Rect2I(Vector2I.Zero, new Vector2I(tileSize, tileSize)), destPos);
                     }
                 }
+
+                processedPositions[worldPos.Y, worldPos.X] = true;
             }
         }
     }
@@ -174,29 +160,22 @@ public readonly struct GeneratedMap
         {
             var source = tileSet.GetSource(tilePlacement.AnimationFrames[0].X);
             if (source is not TileSetAtlasSource atlasSource)
-            {
-                return CreateFallbackTileImage($"Invalid source: {tilePlacement.AnimationFrames[0].X}", Colors.Red,tileSize);
-            }
+                return CreateFallbackTileImage($"Invalid source: {tilePlacement.AnimationFrames[0].X}", Colors.Red,
+                    tileSize);
 
             var texture = atlasSource.Texture;
             if (texture == null)
-            {
                 return CreateFallbackTileImage($"No texture in source: {tilePlacement.AnimationFrames[0].X}",
                     Colors.Orange, tileSize);
-            }
 
             var sourceImage = texture.GetImage();
             if (sourceImage == null)
-            {
                 return CreateFallbackTileImage($"Failed to get image from texture", Colors.Yellow, tileSize);
-            }
 
             var region = atlasSource.GetTileTextureRegion(tilePlacement.AnimationFrames[0].YZ());
             if (region.Size.X <= 0 || region.Size.Y <= 0)
-            {
                 return CreateFallbackTileImage($"Invalid region: {tilePlacement.AnimationFrames[0]}", Colors.Magenta,
                     tileSize);
-            }
 
             var tileImage = sourceImage.GetRegion(region);
             tileImage.Resize(tileSize, tileSize, Image.Interpolation.Nearest);
@@ -217,7 +196,7 @@ public readonly struct GeneratedMap
         fallbackImage.Fill(backgroundColor);
 
         // Add a simple border to make it visible
-        for (int i = 0; i < tileSize; i++)
+        for (var i = 0; i < tileSize; i++)
         {
             fallbackImage.SetPixel(i, 0, Colors.White);
             fallbackImage.SetPixel(i, tileSize - 1, Colors.White);

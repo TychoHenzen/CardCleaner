@@ -17,10 +17,7 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
     public void Setup(Node cardRoot)
     {
         if (_baked || !BakeOnSetup) return;
-        if (Designer == null)
-        {
-            Designer = cardRoot.GetNodeOrNull<CardDesigner>("Designer");
-        }
+        if (Designer == null) Designer = cardRoot.GetNodeOrNull<CardDesigner>("Designer");
         CallDeferred(MethodName.PerformDeferredBake, cardRoot);
     }
 
@@ -83,10 +80,7 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
     {
         var uvs = new Vector2[vertices.Length];
 
-        for (var i = 0; i < vertices.Length; i++)
-        {
-            uvs[i] = CalculateVertexUv(vertices[i], normals?[i], width, height);
-        }
+        for (var i = 0; i < vertices.Length; i++) uvs[i] = CalculateVertexUv(vertices[i], normals?[i], width, height);
 
         return uvs;
     }
@@ -104,7 +98,10 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
         return new Vector2(u, v);
     }
 
-    private static bool HasValidNormals(Vector3 normal) => normal != Vector3.Zero;
+    private static bool HasValidNormals(Vector3 normal)
+    {
+        return normal != Vector3.Zero;
+    }
 
     private static float CalculateUBasedOnNormal(float uBase, Vector3 normal)
     {

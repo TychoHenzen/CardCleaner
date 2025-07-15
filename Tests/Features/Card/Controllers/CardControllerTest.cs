@@ -219,7 +219,7 @@ public class CardControllerTest
         // Act & Assert
         cardWithoutOutline.Highlight();
         cardWithoutOutline.ClearHighlight();
-        
+
         Assertions.AssertThat(cardWithoutOutline).IsNotNull();
     }
 
@@ -234,7 +234,7 @@ public class CardControllerTest
         // Assert - Components should be discovered and set up
         var mockPhysics = _cardController.GetNode<MockPhysicsComponent>("MockPhysics");
         var mockCard = _cardController.GetNode<MockCardComponent>("MockCard");
-        
+
         Assertions.AssertBool(mockPhysics.SetupCalled).IsTrue();
         Assertions.AssertBool(mockCard.SetupCalled).IsTrue();
         Assertions.AssertThat(mockPhysics.CardRoot).IsEqual(_cardController);

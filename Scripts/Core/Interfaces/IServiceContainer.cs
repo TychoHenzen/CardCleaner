@@ -5,10 +5,11 @@ namespace CardCleaner.Scripts.Core.Interfaces;
 public interface IServiceContainer
 {
     void RegisterSingleton<T>(T instance) where T : class;
-
+    void RegisterSingleton(Type serviceType, object instance);
     void RegisterSingleton<TInterface, TImplementation>()
         where TImplementation : class, TInterface, new();
 
+    void RegisterTransient(Type serviceType, Type implementationType);
     void RegisterTransient<TInterface, TImplementation>()
         where TImplementation : class, TInterface, new();
 

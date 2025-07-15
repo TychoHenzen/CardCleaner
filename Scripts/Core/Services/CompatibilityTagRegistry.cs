@@ -22,7 +22,7 @@ public class CompatibilityTagRegistry
     {
         var tag1 = GetTag(tag1Name);
         var tag2 = GetTag(tag2Name);
-        
+
         return tag1 != null && tag2 != null && tag1.IsCompatibleWith(tag2);
     }
 
@@ -41,13 +41,9 @@ public class CompatibilityTagRegistry
             {
                 var referencedTag = GetTag(refName);
                 if (referencedTag != null)
-                {
                     tag.CompatibleWith.Add(referencedTag);
-                }
                 else
-                {
                     ILog.Warning($"Tag '{tag.Tag}' references unknown tag '{refName}'");
-                }
             }
         }
     }

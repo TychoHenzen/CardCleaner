@@ -1,4 +1,5 @@
 ﻿// Tests/Core/Data/InputActionTest.cs
+
 using System;
 using CardCleaner.Scripts.Core.Data;
 using GdUnit4;
@@ -16,8 +17,8 @@ public class InputActionTest
     {
         // Arrange
         var owner = new object();
-        bool callbackExecuted = false;
-        
+        var callbackExecuted = false;
+
         // Act
         var action = new InputAction
         {
@@ -32,7 +33,7 @@ public class InputActionTest
         Assertions.AssertThat(action.Owner).IsEqual(owner);
         Assertions.AssertThat(action.Key).IsEqual(Key.Space);
         Assertions.AssertThat(action.MouseButton).IsNull();
-        
+
         // Test callback execution
         action.Callback?.Invoke();
         Assertions.AssertBool(callbackExecuted).IsTrue();
@@ -44,15 +45,15 @@ public class InputActionTest
     {
         // Arrange
         var owner = new object();
-        bool lastPressState = false;
-        int callCount = 0;
+        var lastPressState = false;
+        var callCount = 0;
 
         var action = new InputAction
         {
             Name = "mouse_action",
             Owner = owner,
             MouseButton = MouseButton.Left,
-            MouseCallback = (pressed) => 
+            MouseCallback = (pressed) =>
             {
                 lastPressState = pressed;
                 callCount++;

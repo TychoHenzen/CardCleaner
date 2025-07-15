@@ -29,7 +29,7 @@ public class CardShaderRendererTest
         Assertions.AssertThat(_renderer).IsNotNull();
         Assertions.AssertThat(_renderer).IsInstanceOf<CardShaderRenderer>();
     }
-    
+
     [TestCase]
     [TestCategory("Unit")]
     public void SetGemEmission_ValidParameters_DoesNotThrow()
@@ -41,7 +41,7 @@ public class CardShaderRendererTest
 
         // Act & Assert - Should not throw
         _renderer.SetGemEmission(validIndex, validColor, validStrength);
-        
+
         Assertions.AssertThat(_renderer).IsNotNull();
     }
 
@@ -52,7 +52,7 @@ public class CardShaderRendererTest
         // Act & Assert - Should handle boundary indices gracefully
         _renderer.SetGemEmission(0, Colors.Red, 1.0f);
         _renderer.SetGemEmission(7, Colors.Blue, 1.0f);
-        
+
         Assertions.AssertThat(_renderer).IsNotNull();
     }
 
@@ -64,7 +64,7 @@ public class CardShaderRendererTest
         _renderer.SetGemEmission(-1, Colors.Red, 1.0f);
         _renderer.SetGemEmission(8, Colors.Blue, 1.0f);
         _renderer.SetGemEmission(100, Colors.Green, 1.0f);
-        
+
         Assertions.AssertThat(_renderer).IsNotNull();
     }
 }
