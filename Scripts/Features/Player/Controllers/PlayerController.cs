@@ -2,10 +2,11 @@
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
+using Saveable;
 
 namespace CardCleaner.Scripts.Features.Player.Controllers;
 
-public partial class PlayerController : CharacterBody3D
+public partial class PlayerController : CharacterBody3D,ISaveable
 {
     private readonly Color BlacklightColor = new(0.4f, 0.2f, 1.0f); // UV purple
     private readonly Color FlashlightColor = new(1.0f, 0.95f, 0.8f); // Warm white
@@ -185,4 +186,43 @@ public partial class PlayerController : CharacterBody3D
         Velocity = vel;
         MoveAndSlide();
     }
+
+    public StringName UniqueID => "player";
+    public void Save(NodeSave save)
+    {
+        save.SetOrAddProperty("position", GlobalPosition);
+        save.SetOrAddProperty("rotation", GlobalRotation);
+        save.SetOrAddProperty("pitchDeg", _pitchDeg);
+        
+        if (_settings != null)
+        {
+            save.SetOrAddProperty("lightMode", (int)_settings.CurrentLightMode);
+            save.SetOrAddProperty("lightIntensity", _settings.LightIntensity);
+        }
+    }
+
+    public void Load(NodeSave save)
+    {
+        if (save.TryGetProperty<Vector3>("position", out var pos))
+            GlobalPosition = pos;
+        
+        if (save.TryGetProperty<Vector3>("rotation", out var rot))
+            GlobalRotation = rot;
+        
+        if (save.TryGetProperty<float>("pitchDeg", out var pitch))
+            _pitchDeg = pitch;
+        
+        if (_settings != null)
+        {
+            if (save.TryGetProperty<int>("lightMode", out var mode))
+                _settings.CurrentLightMode = (LightMode)mode;
+            
+            if (save.TryGetProperty<float>("lightIntensity", out var intensity))
+                _settings.LightIntensity = intensity;
+        }
+        
+        // Reapply settings after load
+        CallDeferred(MethodName.ApplyLightMode);
+    }
+
 }

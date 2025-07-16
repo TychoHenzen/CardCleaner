@@ -17,7 +17,7 @@ public partial class AutoServiceProvider : Node, IServiceProvider
     public void RegisterServices(IServiceContainer container)
     {
         var discoveredServices = 0;
-        ScanNodeForServices(this, container, ref discoveredServices);
+        ScanNodeForServices(GetTree().CurrentScene, container, ref discoveredServices);
         
         if (EnableDebugLogging)
             ILog.Print($"AutoServiceProvider discovered {discoveredServices} services");

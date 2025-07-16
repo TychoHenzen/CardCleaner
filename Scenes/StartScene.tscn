@@ -27,10 +27,10 @@
 [ext_resource type="Resource" uid="uid://cgt57r6nssi2m" path="res://Assets/CardGems/Subsidium.tres" id="15_dta7m"]
 [ext_resource type="Resource" uid="uid://bo8ktcdqa516m" path="res://Assets/CardGems/Spatium.tres" id="16_r0o6j"]
 [ext_resource type="Script" uid="uid://cngswvwuwm4cg" path="res://Scripts/Features/Card/Services/CardSpawningService.cs" id="28_1ia11"]
+[ext_resource type="Script" uid="uid://droelpip16h4t" path="res://Scripts/Core/Services/GameSaveService.cs" id="28_k3dcv"]
 [ext_resource type="Script" uid="uid://bwc5dxw38wqj" path="res://Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs" id="28_up2yq"]
 [ext_resource type="Script" uid="uid://cegl6bvhw8hui" path="res://Scripts/Features/Deckbuilder/Services/GameSessionService.cs" id="29_k3dcv"]
 [ext_resource type="PackedScene" uid="uid://cdbi77q8mi6sd" path="res://Scenes/button.tscn" id="30_up2yq"]
-[ext_resource type="Script" uid="uid://cck78p7ab5era" path="res://Scripts/Core/Services/RealtimePersistenceService.cs" id="32_ihrxd"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t5ln1"]
 size = Vector3(40, 0.25415, 40)
@@ -153,14 +153,18 @@ texture = ExtResource("6_28ir6")
 [node name="Services" type="Node" parent="."]
 script = ExtResource("10_vmjlw")
 
-[node name="CardServiceProvider" type="Node" parent="Services"]
+[node name="CardServiceProvider" type="Node" parent="Services" node_paths=PackedStringArray("CardRoot")]
 script = ExtResource("11_r0o6j")
 RarityVisuals = Array[Object]([ExtResource("4_vkee2"), ExtResource("5_otk7d"), ExtResource("6_ypprn"), ExtResource("7_ioitf"), ExtResource("8_3rand")])
 BaseCardTypes = Array[Object]([ExtResource("9_3xlss")])
 GemVisuals = Array[Object]([ExtResource("9_h03qd"), ExtResource("10_3xlss"), ExtResource("11_o6inp"), ExtResource("12_f1k1t"), ExtResource("13_6aa2p"), ExtResource("14_sstrp"), ExtResource("15_dta7m"), ExtResource("16_r0o6j")])
+CardRoot = NodePath("../../World/Cards")
 
 [node name="GameSettings" type="Node" parent="Services"]
 script = ExtResource("10_1ia11")
+
+[node name="GameSaveService" type="Node" parent="Services"]
+script = ExtResource("28_k3dcv")
 
 [node name="SpawningService" type="Node" parent="Services"]
 script = ExtResource("28_1ia11")
@@ -168,10 +172,6 @@ CardScene = ExtResource("3_4bcsh")
 
 [node name="GameSessionService" type="Node" parent="Services"]
 script = ExtResource("29_k3dcv")
-
-[node name="RealtimePersistenceService" type="Node" parent="Services" node_paths=PackedStringArray("WorldNode")]
-script = ExtResource("32_ihrxd")
-WorldNode = NodePath("../../World")
 
 [editable path="World/Button"]
 [editable path="World/CardSlot"]

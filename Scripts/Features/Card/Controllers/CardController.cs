@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
+using Saveable;
 
 namespace CardCleaner.Scripts.Features.Card.Controllers;
 
 [Tool]
-public partial class CardController : RigidBody3D, IInteractable
+public partial class CardController : RigidBody3D, IInteractable, ISaveable
 {
     [Signal]
     public delegate void CardPickedUpEventHandler(CardController card);
@@ -22,7 +23,32 @@ public partial class CardController : RigidBody3D, IInteractable
     public Node3D InteractionBody => this;
     public float InteractionRange => 50f;
 
+    // ISaveable implementation
+    public StringName UniqueID => $"card_{GetInstanceId()}";
+
     private bool IsHeld => GetParent() is Camera3D; // Check if reparented to camera
+
+    public void Save(NodeSave save)
+    {
+        save.SetOrAddProperty("signature", Signature);
+        save.SetOrAddProperty("position", GlobalPosition);
+        save.SetOrAddProperty("rotation", GlobalRotation);
+        save.SetOrAddProperty("isHeld", IsHeld);
+    }
+
+    public void Load(NodeSave save)
+    {
+        if (save.TryGetProperty("signature", out Models.CardSignature? signature))
+            Signature = signature;
+        
+        if (save.TryGetProperty<Vector3>("position", out var pos))
+            GlobalPosition = pos;
+        
+        if (save.TryGetProperty<Vector3>("rotation", out var rot))
+            GlobalRotation = rot;
+        
+        // Note: IsHeld state will be restored by parent relationship during scene rebuild
+    }
 
     public void Interact()
     {
@@ -43,7 +69,6 @@ public partial class CardController : RigidBody3D, IInteractable
 
     public override void _Ready()
     {
-        AddToGroup("persistable");
         DiscoverComponents(this);
         AddToGroup("Cards");
         CollisionLayer = 2;

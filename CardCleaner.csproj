@@ -8,6 +8,7 @@
     </PropertyGroup>
     <ItemGroup>
         <Folder Include="addons\"/>
+        <Folder Include="Scripts\Core\Persistence\" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="gdUnit4.analyzers" Version="1.0.0-rc7">

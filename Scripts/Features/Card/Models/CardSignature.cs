@@ -3,6 +3,7 @@ using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Utilities;
 using Godot;
+using Newtonsoft.Json;
 
 namespace CardCleaner.Scripts.Features.Card.Models;
 
@@ -94,7 +95,19 @@ public partial class CardSignature : Resource
         set => _elements[index] = Mathf.Clamp(value, -1f, 1f);
     }
 
-    public float[] Elements => (float[])_elements.Clone();
+    [JsonProperty("elements")]
+    public float[] Elements 
+    { 
+        get => (float[])_elements.Clone();
+        set 
+        {
+            if (value?.Length == 8)
+            {
+                for (var i = 0; i < 8; i++)
+                    _elements[i] = Mathf.Clamp(value[i], -1f, 1f);
+            }
+        }
+    }
 
     public static CardSignature Random(RandomNumberGenerator rng)
     {
@@ -140,7 +153,8 @@ public partial class CardSignature : Resource
         return GetIntensity(element) >= threshold;
     }
 
-    public override string ToString()
+    // Simple debug representation instead of custom ToString
+    public string ToDebugString()
     {
         return $"Signature[{string.Join(", ", _elements.Select(e => e.ToString("F2")))}]";
     }
