@@ -3,6 +3,7 @@ using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using Godot;
 
@@ -52,6 +53,21 @@ public partial class SimpleWorldMapScreen : Node3D
         if (StatusLabel != null) StatusLabel.Text = "Waiting for map data...";
 
         if (CombatUI != null) CombatUI.Visible = false;
+        
+        // Use dependency injection to get the game session service
+        ServiceLocator.Get<IGameSessionService>(gameSession =>
+        {
+            ILog.Print("Got GameSessionService from ServiceLocator");
+
+            // Store the interface reference
+            _gameSession = gameSession;
+
+            // Connect to all the events we need
+            gameSession.StateChanged += OnSessionStateChanged;
+            gameSession.LootGenerated += OnLootGenerated;
+
+            // Start the session - this will trigger the whole flow
+        });
     }
 
     public override void _ExitTree()
@@ -80,23 +96,9 @@ public partial class SimpleWorldMapScreen : Node3D
     {
         ILog.Print(
             $"Initializing simple map screen with {mapSeed.Length} seed card(s) and {abilities.Length} abilities");
+        ILog.Print($"🐛 CardSignature Elements: [{string.Join(", ", mapSeed[0].Elements.Select(e => e.ToString("F3")))}]");
 
-        // Use dependency injection to get the game session service
-        ServiceLocator.Get<IGameSessionService>(gameSession =>
-        {
-            ILog.Print("Got GameSessionService from ServiceLocator");
-
-            // Store the interface reference
-            _gameSession = gameSession;
-
-            // Connect to all the events we need
-            gameSession.StateChanged += OnSessionStateChanged;
-            gameSession.LootGenerated += OnLootGenerated;
-
-            // Start the session - this will trigger the whole flow
-            gameSession.StartSession(mapSeed[0], abilities.ToList());
-        });
-
+        _gameSession?.StartSession(mapSeed[0], abilities.ToList());
         _isInitialized = true;
     }
 
@@ -322,25 +324,20 @@ public partial class SimpleWorldMapScreen : Node3D
         // Use dependency injection to get the card spawning service
         ServiceLocator.Get<ICardSpawningService>(spawningService =>
         {
-            var cardSpawner = spawningService as CardCleaner.Scripts.Features.Card.Services.CardSpawningService;
-            if (cardSpawner != null)
+            for (var i = 0; i < lootSignatures.Count; i++)
             {
-                // Spawn the loot cards in the world
-                for (var i = 0; i < lootSignatures.Count; i++)
+                var spawnPos = new Vector3(i * 0.5f, 1.5f, 2f); // Safe altitude
+
+                // Get the card spawner node
+                ServiceLocator.Get<ICardSpawner>(spawner =>
                 {
-                    var spawnPos = new Vector3(i * 0.5f, 1.5f, 2f); // Safe altitude
-
-                    // Get the card spawner node
-                    ServiceLocator.Get<ICardSpawner>(spawner =>
-                    {
-                        var spawnTransform = Transform3D.Identity;
-                        spawnTransform.Origin = spawnPos;
-                        spawningService.SpawnCard(lootSignatures[i], spawnTransform, spawner.GetNode());
-                    });
-                }
-
-                ILog.Print($"Spawned {lootSignatures.Count} loot cards!");
+                    var spawnTransform = Transform3D.Identity;
+                    spawnTransform.Origin = spawnPos;
+                    spawningService.SpawnCard(lootSignatures[i], spawnTransform, spawner.GetNode());
+                });
             }
+
+            ILog.Print($"Spawned {lootSignatures.Count} loot cards!");
         });
     }
 

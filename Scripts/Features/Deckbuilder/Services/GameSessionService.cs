@@ -278,18 +278,8 @@ public partial class GameSessionService : Node, IGameSessionService
 
         for (var i = 0; i < 8; i++)
         {
-            var baseValue = _mapSeed[i];
-
-            // Add influence from random ability card
-            if (_abilityCards.Count > 0)
-            {
-                var randomAbility = _abilityCards[_rng.RandiRange(0, _abilityCards.Count - 1)];
-                baseValue += randomAbility[i] * 0.3f; // 30% influence from abilities
-            }
-
-            // Add random variation
-            var variation = _rng.RandfRange(-0.2f, 0.2f);
-            lootSignature[i] = Mathf.Clamp(baseValue + variation, -1f, 1f);
+            var variation = _rng.Randfn(_mapSeed[i], 0.1f);
+            lootSignature[i] = Mathf.Clamp(variation, -1f, 1f);
         }
 
         return lootSignature;
