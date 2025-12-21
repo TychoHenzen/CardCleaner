@@ -79,7 +79,7 @@ public class SignatureCardGenerator : ICardGenerator
         }
 
         renderer.NameLabel.Text = rarity.ToString();
-        renderer.AttrLabel.Text = signature.ToString();
+        renderer.AttrLabel.Text = signature.ToDebugString();
     }
 
     private static void SetGemVisuals(CardShaderRenderer renderer, CardTemplate template, GemVisual gemVis, bool isPos,

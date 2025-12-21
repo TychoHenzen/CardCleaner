@@ -109,6 +109,9 @@ public class SimpleCombatSystem
 
     public SimpleCombatSystem(List<CardSignature> playerAbilities, CardSignature enemySeed, RandomNumberGenerator rng)
     {
+        ArgumentNullException.ThrowIfNull(rng);
+        ArgumentNullException.ThrowIfNull(enemySeed);
+
         _rng = rng;
 
         // Create player
@@ -133,7 +136,8 @@ public class SimpleCombatSystem
         };
 
         // Convert player abilities to combat actions
-        _playerActions = playerAbilities.Select(CombatAction.FromCardSignature).ToList();
+        _playerActions = (playerAbilities ?? new List<CardSignature>())
+            .Select(CombatAction.FromCardSignature).ToList();
 
         ILog.Print($"=== COMBAT STARTED ===");
         ILog.Print($"Player: {_player.Health} HP");

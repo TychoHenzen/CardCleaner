@@ -280,6 +280,6 @@ public class SignatureCardGeneratorTest
         // Verify the expected behavior without relying on custom mock implementations
         Assertions.AssertThat(realRenderer.NameLabel.Text).IsEqual("Rare");
         Assertions.AssertThat(realRenderer.AttrLabel.Text)
-            .IsEqual("Signature[0,70, -0,50, 0,00, 0,00, 0,00, 0,00, 0,00, 0,00]");
+            .IsEqual("Signature[0.70, -0.50, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]");
     }
 }

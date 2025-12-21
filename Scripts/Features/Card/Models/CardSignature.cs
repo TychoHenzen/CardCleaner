@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Utilities;
@@ -153,9 +154,8 @@ public partial class CardSignature : Resource
         return GetIntensity(element) >= threshold;
     }
 
-    // Simple debug representation instead of custom ToString
     public string ToDebugString()
     {
-        return $"Signature[{string.Join(", ", _elements.Select(e => e.ToString("F2")))}]";
+        return $"Signature[{string.Join(", ", _elements.Select(e => e.ToString("F2", CultureInfo.InvariantCulture)))}]";
     }
 }

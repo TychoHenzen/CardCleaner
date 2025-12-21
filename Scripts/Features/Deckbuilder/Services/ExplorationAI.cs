@@ -27,6 +27,10 @@ public class ExplorationAI
 
     public ExplorationAI(SimpleMapData mapData)
     {
+        ArgumentNullException.ThrowIfNull(mapData);
+        ArgumentNullException.ThrowIfNull(mapData.PassableTiles);
+        ArgumentNullException.ThrowIfNull(mapData.EnemyPositions);
+
         _mapData = mapData;
         CurrentPosition = mapData.PlayerStart;
         _visitedTiles.Add(CurrentPosition);

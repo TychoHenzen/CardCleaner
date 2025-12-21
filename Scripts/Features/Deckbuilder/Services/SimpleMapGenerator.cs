@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -15,6 +16,7 @@ public class SimpleMapGenerator
 
     public SimpleMapGenerator(RandomNumberGenerator rng)
     {
+        ArgumentNullException.ThrowIfNull(rng);
         _rng = rng;
     }
 
