@@ -124,7 +124,6 @@ public partial class GameSaveService : Node, ISaveable
         
         foreach (var cardDataObj in _pendingCardData)
         {
-            ILog.Print($"Processing card data object of type: {cardDataObj?.GetType().Name ?? "null"}");
             
             // Handle both Dictionary<string, object> and JObject (from Newtonsoft.Json)
             Dictionary<string, object>? cardData = null;
@@ -154,28 +153,20 @@ public partial class GameSaveService : Node, ISaveable
                 continue;
             }
             
-            ILog.Print($"Card data keys: {string.Join(", ", cardData.Keys)}");
             
             try
             {
                 // Extract card data - handle signature as float array
-                ILog.Print("Extracting signature...");
                 var signatureElements = GetFloatArrayFromData(cardData["signature_elements"]);
                 var signature = new CardSignature(signatureElements);
                 
-                ILog.Print("Extracting position...");
                 var position = GetVector3FromData(cardData["position"]);
                 
-                ILog.Print("Extracting rotation...");
                 var rotation = GetVector3FromData(cardData["rotation"]);
                 
-                ILog.Print("Extracting isHeld...");
                 var isHeld = Convert.ToBoolean(cardData["isHeld"]);
                 
-                ILog.Print("Extracting parentPath...");
                 var parentPath = cardData["parentPath"]?.ToString() ?? "";
-                
-                ILog.Print($"Recreating card at position {position}");
                 
                 // Determine spawn parent
                 Node3D spawnParent = worldNode;
@@ -189,7 +180,6 @@ public partial class GameSaveService : Node, ISaveable
                 // Create spawn transform
                 var spawnTransform = new Transform3D(Basis.FromEuler(rotation), position);
                 
-                ILog.Print("Spawning card...");
                 // Spawn the card
                 var cardInstance = _cardSpawningService.SpawnCard(signature, spawnTransform, spawnParent);
                 
@@ -205,7 +195,6 @@ public partial class GameSaveService : Node, ISaveable
                 }
                 
                 recreatedCount++;
-                ILog.Print($"Successfully recreated card #{recreatedCount}");
             }
             catch (System.Exception ex)
             {

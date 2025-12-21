@@ -54,6 +54,9 @@ public partial class SimpleWorldMapScreen : Node3D
 
         if (CombatUI != null) CombatUI.Visible = false;
         
+        CallDeferred(nameof(SetupScreenMesh));
+        CallDeferred(nameof(SetupScreenMaterial));
+        
         // Use dependency injection to get the game session service
         ServiceLocator.Get<IGameSessionService>(gameSession =>
         {
@@ -373,9 +376,6 @@ public partial class SimpleWorldMapScreen : Node3D
         // Create enemy sprites
         CreateEnemySprites(mapData.EnemyPositions);
 
-        // Center camera on map
-        CenterCameraOnMap(mapData.Size);
-
         ILog.Print($"Rendered map: {mapData.Size.X}x{mapData.Size.Y} with {mapData.EnemyPositions.Count} enemies");
     }
 
@@ -408,19 +408,6 @@ public partial class SimpleWorldMapScreen : Node3D
             // Only mark as visited if it's not an enemy position
             var isEnemyPosition = _mapData.EnemyPositions.Contains(position);
             if (!isEnemyPosition) MapLayer.SetCell(position, 0, new Vector2I(VISITED_TILE_ID, 0));
-        }
-    }
-
-    private void CenterCameraOnMap(Vector2I mapSize)
-    {
-        var camera = Viewport?.GetNode<Camera2D>("Camera2D");
-        if (camera != null)
-        {
-            var centerPos = new Vector2(
-                mapSize.X * TILE_SIZE / 2f,
-                mapSize.Y * TILE_SIZE / 2f
-            );
-            camera.Position = centerPos;
         }
     }
 
@@ -472,19 +459,82 @@ public partial class SimpleWorldMapScreen : Node3D
         return ImageTexture.CreateFromImage(image);
     }
 
+    private void SetupScreenMesh()
+    {
+        if (ScreenMesh == null) return;
+    
+        // Create a custom mesh with explicit UV coordinates
+        var arrayMesh = new ArrayMesh();
+        var arrays = new Godot.Collections.Array();
+        arrays.Resize((int)Mesh.ArrayType.Max);
+    
+        // Define the quad vertices (matching the desired screen size)
+        var vertices = new Vector3[]
+        {
+            new(-2.6665f, -1.5f, 0), // Bottom-left
+            new(2.6665f, -1.5f, 0),  // Bottom-right  
+            new(2.6665f, 1.5f, 0),   // Top-right
+            new(-2.6665f, 1.5f, 0)   // Top-left
+        };
+    
+        // Critical: UV coordinates that properly map the texture
+        var uvs = new Vector2[]
+        {
+            new(0, 1), // Bottom-left maps to (0,1) - bottom of texture
+            new(1, 1), // Bottom-right maps to (1,1) - bottom-right of texture
+            new(1, 0), // Top-right maps to (1,0) - top-right of texture  
+            new(0, 0)  // Top-left maps to (0,0) - top-left of texture
+        };
+    
+        // Triangle indices for two triangles making a quad
+        var indices = new int[]
+        {
+            0, 1, 2,  // First triangle
+            0, 2, 3   // Second triangle
+        };
+    
+        // Normals pointing toward camera
+        var normals = new Vector3[]
+        {
+            Vector3.Forward, Vector3.Forward, Vector3.Forward, Vector3.Forward
+        };
+    
+        // Assign arrays
+        arrays[(int)Mesh.ArrayType.Vertex] = vertices;
+        arrays[(int)Mesh.ArrayType.TexUV] = uvs;
+        arrays[(int)Mesh.ArrayType.Normal] = normals;
+        arrays[(int)Mesh.ArrayType.Index] = indices;
+    
+        // Create the mesh surface
+        arrayMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays);
+    
+        // Assign the custom mesh
+        ScreenMesh.Mesh = arrayMesh;
+    
+        ILog.Print("Custom screen mesh with proper UVs created");
+    }
     private void SetupScreenMaterial()
     {
-        if (Viewport == null || ScreenMesh?.MaterialOverride is not StandardMaterial3D material)
+        if (Viewport == null || ScreenMesh == null)
             return;
 
+        // Create a completely new material to avoid any conflicts
+        var material = new StandardMaterial3D();
+    
+        // Set up the material properties for proper viewport display
         material.AlbedoTexture = Viewport.GetTexture();
         material.ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded;
         material.DisableReceiveShadows = true;
         material.TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest;
-    }
-
-    public override void _Process(double delta)
-    {
-        if (_isInitialized) SetupScreenMaterial();
+        material.CullMode = BaseMaterial3D.CullModeEnum.Disabled; // Show both sides
+    
+        // Critical: Ensure proper UV mapping
+        material.Uv1Scale = Vector3.One;
+        material.Uv1Offset = -Vector3.One;
+    
+        // Force the material as an override
+        ScreenMesh.MaterialOverride = material;
+    
+        ILog.Print("Screen material setup complete");
     }
 }
