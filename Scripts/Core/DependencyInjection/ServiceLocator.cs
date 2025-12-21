@@ -61,6 +61,8 @@ public partial class ServiceLocator : Node
         var inputService = new InputService();
         AddChild(inputService);
         _container.RegisterSingleton<IInputService>(inputService);
+
+        _container.RegisterSingleton<ICompatibilityTagRegistry, CompatibilityTagRegistry>();
     }
 
     private void RegisterFromProviders()

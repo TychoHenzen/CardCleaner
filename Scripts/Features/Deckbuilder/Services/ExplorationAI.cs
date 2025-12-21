@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
+
+// Using built-in PriorityQueue from System.Collections.Generic (.NET 6+)
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
@@ -171,32 +173,5 @@ public class ExplorationAI
         yield return new Vector2I(pos.X - 1, pos.Y);
         yield return new Vector2I(pos.X, pos.Y + 1);
         yield return new Vector2I(pos.X, pos.Y - 1);
-    }
-}
-
-/// <summary>
-/// Simple priority queue implementation for pathfinding
-/// </summary>
-public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TPriority>
-{
-    private readonly List<(TElement Element, TPriority Priority)> _elements = new();
-
-    public int Count => _elements.Count;
-
-    public void Enqueue(TElement element, TPriority priority)
-    {
-        _elements.Add((element, priority));
-    }
-
-    public TElement Dequeue()
-    {
-        var bestIndex = 0;
-        for (var i = 1; i < _elements.Count; i++)
-            if (_elements[i].Priority.CompareTo(_elements[bestIndex].Priority) < 0)
-                bestIndex = i;
-
-        var best = _elements[bestIndex];
-        _elements.RemoveAt(bestIndex);
-        return best.Element;
     }
 }

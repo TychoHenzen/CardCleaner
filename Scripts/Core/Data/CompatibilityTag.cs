@@ -1,7 +1,9 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Text.Json.Serialization;
 using Godot;
 using Godot.Collections;
+
+namespace CardCleaner.Scripts.Core.Data;
 
 [Tool]
 [GlobalClass]
@@ -15,17 +17,16 @@ public partial class CompatibilityTag : Resource
         Not // Compatible with tags that DON'T match this pattern
     }
 
-    [System.Composition.Export] public string Tag { get; set; } = "";
+    [Export] public string Tag { get; set; } = "";
 
     // Runtime object references - not serialized
     [Newtonsoft.Json.JsonIgnore]
-    [System.Composition.Export]
     public Array<CompatibilityTag> CompatibleWith { get; set; } = new();
 
     // String names for JSON serialization
     [JsonPropertyName("compatibleWith")] public Array<string> CompatibleWithNames { get; set; } = new();
 
-    [System.Composition.Export] public CompatibilityMode Mode { get; set; } = CompatibilityMode.Self;
+    [Export] public CompatibilityMode Mode { get; set; } = CompatibilityMode.Self;
 
     public bool IsCompatibleWith(CompatibilityTag other)
     {

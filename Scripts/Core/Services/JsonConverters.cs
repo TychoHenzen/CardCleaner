@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using CardCleaner.Scripts.Core.Data;
 using Godot;
 using Godot.Collections;
 

@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Interfaces;
 
-public class CompatibilityTagRegistry
-{
-    private static CompatibilityTagRegistry? _instance;
-    public static CompatibilityTagRegistry Instance => _instance ??= new CompatibilityTagRegistry();
+namespace CardCleaner.Scripts.Core.Services;
 
+public class CompatibilityTagRegistry : ICompatibilityTagRegistry
+{
     private readonly Dictionary<string, CompatibilityTag> _tags = new();
 
     public void RegisterTag(CompatibilityTag tag)

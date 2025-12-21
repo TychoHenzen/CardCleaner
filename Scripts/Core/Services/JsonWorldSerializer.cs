@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using CardCleaner.Scripts.Core.Data;
+using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen;
 using Godot;
@@ -38,7 +40,7 @@ public static class JsonWorldSerializer
                 throw new InvalidOperationException("JSON must have a 'worldData' root property");
 
             // First, load and register all compatibility tags
-            var registry = CompatibilityTagRegistry.Instance;
+            var registry = ServiceLocator.Get<ICompatibilityTagRegistry>();
             registry.Clear();
 
             if (worldDataElement.TryGetProperty("compatibilityTags", out var tagsElement))
@@ -79,7 +81,7 @@ public static class JsonWorldSerializer
     }
 
 
-    private static void ResolveTileReferences(WorldData worldData, CompatibilityTagRegistry registry)
+    private static void ResolveTileReferences(WorldData worldData, ICompatibilityTagRegistry registry)
     {
         foreach (var tile in worldData.SemanticTiles)
         {
@@ -106,7 +108,7 @@ public static class JsonWorldSerializer
             enemyData.PreferredTerrain = ResolveTagArray(enemyData.PreferredTerrainNames, registry);
     }
 
-    private static Array<CompatibilityTag> ResolveTagArray(Array<string> tagNames, CompatibilityTagRegistry registry)
+    private static Array<CompatibilityTag> ResolveTagArray(Array<string> tagNames, ICompatibilityTagRegistry registry)
     {
         var tags = new Array<CompatibilityTag>();
         foreach (var name in tagNames)
