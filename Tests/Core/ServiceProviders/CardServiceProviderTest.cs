@@ -49,7 +49,7 @@ public class CardServiceProviderTest
         Assertions.AssertBool(_container.IsRegistered<GemVisual[]>()).IsTrue();
         Assertions.AssertBool(_container.IsRegistered<ICardGenerator>()).IsTrue();
         Assertions.AssertBool(_container.IsRegistered<ICardSpawner>()).IsTrue();
-        Assertions.AssertBool(_container.IsRegistered<ICardSpawningService>()).IsTrue();
+        // Note: ICardSpawningService is registered by CardSpawningService itself, not CardServiceProvider
     }
 
     [TestCase]

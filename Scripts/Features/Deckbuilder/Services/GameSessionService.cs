@@ -40,6 +40,7 @@ public partial class GameSessionService : Node, IGameSessionService
     }
 
     public event Action<SessionState>? StateChanged;
+    public event Action<SimpleMapData>? MapGenerated;
     public event Action<List<CardSignature>>? LootGenerated;
 
     public override void _Ready()
@@ -127,6 +128,9 @@ public partial class GameSessionService : Node, IGameSessionService
         _currentMap = _mapGenerator.GenerateMap(mapSize, _mapSeed, blockedPercentage);
 
         ILog.Print($"Map generated: {mapSize.X}x{mapSize.Y}, {_currentMap.EnemyPositions.Count} enemies");
+
+        // Notify listeners about the generated map
+        MapGenerated?.Invoke(_currentMap);
 
         CurrentState = SessionState.Exploring;
         CallDeferred(MethodName.AdvanceSession);

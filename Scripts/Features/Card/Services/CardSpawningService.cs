@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using System;
+using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
 namespace CardCleaner.Scripts.Features.Card.Services;
 
@@ -13,7 +14,7 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 /// Handles spawning of card instances with proper generation and setup.
 /// </summary>
 [Service(ServiceLifetime.Singleton, typeof(ICardSpawningService))]
-public partial class CardSpawningService : Node, ICardSpawningService
+public partial class CardSpawningService : Node, ICardSpawningService, IServiceProvider
 {
     /// <summary>
     /// Emitted when a new card is spawned, allowing other systems to connect to it
@@ -26,8 +27,14 @@ public partial class CardSpawningService : Node, ICardSpawningService
 
     public override void _Ready()
     {
+        AddToGroup("service_providers");
         ServiceLocator.Get<RandomNumberGenerator>(rng => _rng = rng);
         ServiceLocator.Get<ICardGenerator>(gen => _generator = gen);
+    }
+
+    public void RegisterServices(IServiceContainer container)
+    {
+        container.RegisterSingleton<ICardSpawningService>(this);
     }
 
     public Node3D SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent)

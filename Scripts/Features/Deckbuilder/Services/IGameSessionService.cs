@@ -18,6 +18,7 @@ public interface IGameSessionService
 {
     SessionState CurrentState { get; }
     event Action<SessionState> StateChanged;
+    event Action<SimpleMapData> MapGenerated;
     event Action<List<CardSignature>> LootGenerated;
 
     void StartSession(CardSignature mapSeed, List<CardSignature> abilityCards);
