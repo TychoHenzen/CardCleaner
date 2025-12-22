@@ -58,6 +58,9 @@ anchor_mode = 0
 
 [node name="UI" parent="SubViewport" instance=ExtResource("4_c04c6")]
 
+[node name="ColorRect" parent="SubViewport/UI" index="0"]
+visible = false
+
 [node name="CombatUI" parent="SubViewport/UI" index="2"]
 visible = false
 

@@ -45,11 +45,12 @@ public partial class SimpleWorldMapScreen : Node3D
 
     // Visual constants
     private const int TILE_SIZE = 32;
-    private const int BLOCKED_TILE_ID = 0;
-    private const int PASSABLE_TILE_ID = 1;
-    private const int PLAYER_TILE_ID = 2;
-    private const int ENEMY_TILE_ID = 3;
-    private const int VISITED_TILE_ID = 4;
+    private const int TILESET_SOURCE_ID = 4;
+
+    // Atlas coordinates for FantasyDreamland tileset (source 4)
+    private static readonly Vector2I BLOCKED_TILE_ATLAS = new(2, 0);
+    private static readonly Vector2I PASSABLE_TILE_ATLAS = new(4, 0);
+    private static readonly Vector2I VISITED_TILE_ATLAS = new(6, 0);
 
     public override void _Ready()
     {
@@ -368,24 +369,27 @@ public partial class SimpleWorldMapScreen : Node3D
 
     private void RenderMap(SimpleMapData mapData)
     {
-        if (MapLayer == null) return;
+        if (MapLayer == null)
+        {
+            ILog.Error("RenderMap: MapLayer is null!");
+            return;
+        }
 
         MapLayer.Clear();
-        EnsureSimpleTileSet();
 
         // Clear old enemy sprites
         foreach (var sprite in _enemySprites) sprite?.QueueFree();
         _enemySprites.Clear();
 
-        // Render the basic map
+        // Render the map using FantasyDreamland tileset (source 4)
         for (var y = 0; y < mapData.Size.Y; y++)
         for (var x = 0; x < mapData.Size.X; x++)
         {
             var position = new Vector2I(x, y);
             var isPassable = mapData.Grid[y, x];
 
-            var tileId = isPassable ? PASSABLE_TILE_ID : BLOCKED_TILE_ID;
-            MapLayer.SetCell(position, 0, new Vector2I(tileId, 0));
+            var atlasCoords = isPassable ? PASSABLE_TILE_ATLAS : BLOCKED_TILE_ATLAS;
+            MapLayer.SetCell(position, TILESET_SOURCE_ID, atlasCoords);
         }
 
         // Create enemy sprites
@@ -422,49 +426,8 @@ public partial class SimpleWorldMapScreen : Node3D
         {
             // Only mark as visited if it's not an enemy position
             var isEnemyPosition = _mapData.EnemyPositions.Contains(position);
-            if (!isEnemyPosition) MapLayer.SetCell(position, 0, new Vector2I(VISITED_TILE_ID, 0));
+            if (!isEnemyPosition) MapLayer.SetCell(position, TILESET_SOURCE_ID, VISITED_TILE_ATLAS);
         }
-    }
-
-    private void EnsureSimpleTileSet()
-    {
-        if (MapLayer?.TileSet != null) return;
-
-        var tileSet = new TileSet();
-        var atlasSource = new TileSetAtlasSource();
-
-        var texture = CreateSimpleTexture();
-        atlasSource.Texture = texture;
-        atlasSource.TextureRegionSize = new Vector2I(TILE_SIZE, TILE_SIZE);
-
-        // Add tiles
-        for (var i = 0; i < 5; i++) atlasSource.CreateTile(new Vector2I(i, 0));
-
-        tileSet.AddSource(atlasSource, 0);
-
-        if (MapLayer != null) MapLayer.TileSet = tileSet;
-    }
-
-    private ImageTexture CreateSimpleTexture()
-    {
-        var image = Image.CreateEmpty(160, 32, false, Image.Format.Rgba8);
-
-        // Black tile (blocked)
-        image.FillRect(new Rect2I(0, 0, 32, 32), Colors.Black);
-
-        // White tile (passable)
-        image.FillRect(new Rect2I(32, 0, 32, 32), Colors.White);
-
-        // Blue tile (player) - not used on tilemap, just for reference
-        image.FillRect(new Rect2I(64, 0, 32, 32), Colors.Blue);
-
-        // Red tile (enemy) - not used on tilemap, just for reference
-        image.FillRect(new Rect2I(96, 0, 32, 32), Colors.Red);
-
-        // Gray tile (visited)
-        image.FillRect(new Rect2I(128, 0, 32, 32), Colors.Gray);
-
-        return ImageTexture.CreateFromImage(image);
     }
 
     private ImageTexture CreateColorTexture(Color color, int size)
