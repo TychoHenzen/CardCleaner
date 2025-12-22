@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -22,6 +23,10 @@ public partial class GameSessionService : Node, IGameSessionService
     private SimpleCombatSystem _combatSystem;
     private Timer _gameTimer;
 
+    // Player and enemy tracking
+    private Vector2I? _playerPosition;
+    private Vector2I? _currentEnemyPosition;
+
     // Game timing
     private const float ExplorationStepDelay = 0.5f; // 500ms between exploration steps
     private const float CombatTurnDelay = 1.0f; // 1s between combat turns
@@ -42,6 +47,8 @@ public partial class GameSessionService : Node, IGameSessionService
     public event Action<SessionState>? StateChanged;
     public event Action<SimpleMapData>? MapGenerated;
     public event Action<List<CardSignature>>? LootGenerated;
+    public event Action<Vector2I>? PlayerMoved;
+    public event Action<Vector2I>? EnemyDefeated;
 
     public override void _Ready()
     {
@@ -113,6 +120,8 @@ public partial class GameSessionService : Node, IGameSessionService
         _currentMap = null;
         _explorationAI = null;
         _combatSystem = null;
+        _playerPosition = null;
+        _currentEnemyPosition = null;
         CurrentState = SessionState.WaitingForCards;
         ILog.Print("Session reset");
     }
@@ -138,10 +147,12 @@ public partial class GameSessionService : Node, IGameSessionService
 
     private void StartExploration()
     {
-        ILog.Print("Starting autonomous exploration...");
+        ILog.Print($"Starting exploration... ({_currentMap.EnemyPositions.Count} enemies on map)");
 
-        _explorationAI = new ExplorationAI(_currentMap);
+        // Continue from current player position if resuming, otherwise start fresh
+        _explorationAI = new ExplorationAI(_currentMap, _playerPosition);
         _explorationAI.EnemyEncountered += OnEnemyEncountered;
+        _explorationAI.PlayerMoved += pos => PlayerMoved?.Invoke(pos);
 
         // Start exploration timer
         _gameTimer.WaitTime = ExplorationStepDelay;
@@ -188,6 +199,7 @@ public partial class GameSessionService : Node, IGameSessionService
     private void OnEnemyEncountered(Vector2I position)
     {
         ILog.Print($"Enemy encountered at {position}! Preparing for combat...");
+        _currentEnemyPosition = position;
         _gameTimer.Stop();
         CurrentState = SessionState.InCombat;
         CallDeferred(MethodName.AdvanceSession);
@@ -218,9 +230,33 @@ public partial class GameSessionService : Node, IGameSessionService
     {
         if (_combatSystem?.PlayerWon == true)
         {
-            ILog.Print("Combat won! Generating loot...");
-            CurrentState = SessionState.GeneratingLoot;
-            CallDeferred(MethodName.AdvanceSession);
+            // Remove the defeated enemy from the map
+            if (_currentEnemyPosition.HasValue)
+            {
+                var defeatedPosition = _currentEnemyPosition.Value;
+                // Player is now at the enemy's position
+                _playerPosition = defeatedPosition;
+                _currentMap.EnemyPositions.Remove(defeatedPosition);
+                ILog.Print($"Enemy at {defeatedPosition} destroyed! ({_currentMap.EnemyPositions.Count} enemies remaining)");
+
+                // Notify UI to remove enemy sprite
+                EnemyDefeated?.Invoke(defeatedPosition);
+                _currentEnemyPosition = null;
+            }
+
+            // Check if more enemies remain on the map
+            if (_currentMap.EnemyPositions.Count > 0)
+            {
+                ILog.Print($"Resuming exploration from {_playerPosition} to find remaining enemies...");
+                CurrentState = SessionState.Exploring;
+                CallDeferred(MethodName.AdvanceSession);
+            }
+            else
+            {
+                ILog.Print("All enemies destroyed! Generating loot...");
+                CurrentState = SessionState.GeneratingLoot;
+                CallDeferred(MethodName.AdvanceSession);
+            }
         }
         else
         {
@@ -228,7 +264,6 @@ public partial class GameSessionService : Node, IGameSessionService
             CleanupCurrentSession();
             CurrentState = SessionState.SessionComplete;
             CallDeferred(MethodName.ResetForNextSession);
-            // No loot for losing
         }
     }
 
@@ -264,8 +299,9 @@ public partial class GameSessionService : Node, IGameSessionService
         // Clean up GameSessionService's own data
         _currentMap = null;
         _combatSystem = null;
-        // Note: _explorationAI in GameSessionService is different from SimpleWorldMapScreen's
         _explorationAI = null;
+        _playerPosition = null;
+        _currentEnemyPosition = null;
     }
 
     private void ResetForNextSession()
@@ -296,8 +332,8 @@ public partial class GameSessionService : Node, IGameSessionService
         for (var i = 0; i < 8; i++) complexity += Mathf.Abs(signature[i]);
         complexity /= 8f;
 
-        var baseSize = 8;
-        var sizeVariation = Mathf.RoundToInt(complexity * 8);
+        var baseSize = 20;
+        var sizeVariation = Mathf.RoundToInt(complexity * 12);
         var size = baseSize + sizeVariation;
 
         return new Vector2I(size, size);

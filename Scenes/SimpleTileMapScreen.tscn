@@ -52,7 +52,6 @@ tile_set = ExtResource("4_olmej")
 texture = ExtResource("3_xv0u5")
 
 [node name="Camera2D" type="Camera2D" parent="SubViewport"]
-anchor_mode = 0
 
 [node name="EnemyContainer" type="Node2D" parent="SubViewport"]
 

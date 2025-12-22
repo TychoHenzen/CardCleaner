@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
+using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
@@ -20,6 +21,8 @@ public interface IGameSessionService
     event Action<SessionState> StateChanged;
     event Action<SimpleMapData> MapGenerated;
     event Action<List<CardSignature>> LootGenerated;
+    event Action<Vector2I> PlayerMoved;
+    event Action<Vector2I> EnemyDefeated;
 
     void StartSession(CardSignature mapSeed, List<CardSignature> abilityCards);
     void AdvanceSession();

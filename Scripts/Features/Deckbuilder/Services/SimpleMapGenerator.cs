@@ -54,8 +54,8 @@ public class SimpleMapGenerator
         var shuffledTiles = passableTiles.OrderBy(t => _rng.Randf()).ToList();
         var playerStart = shuffledTiles[0];
 
-        // Place 1-3 enemies randomly
-        var enemyCount = _rng.RandiRange(1, Mathf.Min(3, shuffledTiles.Count - 1));
+        // Place 2-3 enemies randomly
+        var enemyCount = _rng.RandiRange(2, Mathf.Min(3, shuffledTiles.Count - 1));
         var enemyPositions = shuffledTiles.Skip(1).Take(enemyCount).ToList();
 
         ILog.Print(

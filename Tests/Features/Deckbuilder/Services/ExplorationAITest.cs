@@ -308,6 +308,147 @@ public class ExplorationAITest
         ).IsTrue();
     }
 
+    [TestCase]
+    public void TestExplorationDoesNotFindRemovedEnemies()
+    {
+        var mapData = new SimpleMapData
+        {
+            Grid = new bool[5, 5],
+            Size = new Vector2I(5, 5),
+            PlayerStart = new Vector2I(0, 0)
+        };
+
+        for (var y = 0; y < 5; y++)
+        for (var x = 0; x < 5; x++)
+        {
+            mapData.Grid[y, x] = true;
+            mapData.PassableTiles.Add(new Vector2I(x, y));
+        }
+
+        // Add two enemies, then remove one (simulating defeat)
+        var enemy1 = new Vector2I(2, 2);
+        var enemy2 = new Vector2I(4, 4);
+        mapData.EnemyPositions.Add(enemy1);
+        mapData.EnemyPositions.Add(enemy2);
+
+        // Remove first enemy (as if defeated)
+        mapData.EnemyPositions.Remove(enemy1);
+
+        var ai = new ExplorationAI(mapData);
+
+        var stepCount = 0;
+        while (!ai.HasFoundEnemy && stepCount < 100)
+        {
+            ai.StepExploration();
+            stepCount++;
+        }
+
+        // Should only find the remaining enemy
+        AssertBool(ai.HasFoundEnemy).IsTrue();
+        AssertThat(ai.EnemyPosition).IsEqual(enemy2);
+    }
+
+    [TestCase]
+    public void TestExplorationWithNoEnemies()
+    {
+        var mapData = new SimpleMapData
+        {
+            Grid = new bool[3, 3],
+            Size = new Vector2I(3, 3),
+            PlayerStart = new Vector2I(0, 0)
+        };
+
+        for (var y = 0; y < 3; y++)
+        for (var x = 0; x < 3; x++)
+        {
+            mapData.Grid[y, x] = true;
+            mapData.PassableTiles.Add(new Vector2I(x, y));
+        }
+
+        // No enemies on map
+        var ai = new ExplorationAI(mapData);
+
+        var stepCount = 0;
+        while (!ai.HasFinishedExploration && stepCount < 100)
+        {
+            ai.StepExploration();
+            stepCount++;
+        }
+
+        // Should finish exploration without finding any enemies
+        AssertBool(ai.HasFinishedExploration).IsTrue();
+        AssertBool(ai.HasFoundEnemy).IsFalse();
+    }
+
+    [TestCase]
+    public void TestExplorationFindsEnemiesOneByOneAsTheyAreRemoved()
+    {
+        var mapData = new SimpleMapData
+        {
+            Grid = new bool[5, 5],
+            Size = new Vector2I(5, 5),
+            PlayerStart = new Vector2I(0, 0)
+        };
+
+        for (var y = 0; y < 5; y++)
+        for (var x = 0; x < 5; x++)
+        {
+            mapData.Grid[y, x] = true;
+            mapData.PassableTiles.Add(new Vector2I(x, y));
+        }
+
+        // Add three enemies at different positions
+        var enemy1 = new Vector2I(1, 1);
+        var enemy2 = new Vector2I(2, 2);
+        var enemy3 = new Vector2I(3, 3);
+        mapData.EnemyPositions.Add(enemy1);
+        mapData.EnemyPositions.Add(enemy2);
+        mapData.EnemyPositions.Add(enemy3);
+
+        var enemiesEncountered = new List<Vector2I>();
+
+        // First exploration - find first enemy
+        var ai1 = new ExplorationAI(mapData);
+        var stepCount = 0;
+        while (!ai1.HasFoundEnemy && stepCount < 100)
+        {
+            ai1.StepExploration();
+            stepCount++;
+        }
+        AssertBool(ai1.HasFoundEnemy).IsTrue();
+        enemiesEncountered.Add(ai1.EnemyPosition);
+        // Remove defeated enemy from map
+        mapData.EnemyPositions.Remove(ai1.EnemyPosition);
+
+        // Second exploration - should find different enemy
+        var ai2 = new ExplorationAI(mapData);
+        stepCount = 0;
+        while (!ai2.HasFoundEnemy && stepCount < 100)
+        {
+            ai2.StepExploration();
+            stepCount++;
+        }
+        AssertBool(ai2.HasFoundEnemy).IsTrue();
+        AssertBool(!enemiesEncountered.Contains(ai2.EnemyPosition)).IsTrue();
+        enemiesEncountered.Add(ai2.EnemyPosition);
+        mapData.EnemyPositions.Remove(ai2.EnemyPosition);
+
+        // Third exploration - should find last enemy
+        var ai3 = new ExplorationAI(mapData);
+        stepCount = 0;
+        while (!ai3.HasFoundEnemy && stepCount < 100)
+        {
+            ai3.StepExploration();
+            stepCount++;
+        }
+        AssertBool(ai3.HasFoundEnemy).IsTrue();
+        AssertBool(!enemiesEncountered.Contains(ai3.EnemyPosition)).IsTrue();
+        enemiesEncountered.Add(ai3.EnemyPosition);
+
+        // All three unique enemies should have been found
+        AssertThat(enemiesEncountered.Count).IsEqual(3);
+    }
+
     private static SimpleMapData CreateSimpleMap(int width, int height, Vector2I playerStart)
     {
         var mapData = new SimpleMapData

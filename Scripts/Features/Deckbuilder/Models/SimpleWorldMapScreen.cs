@@ -33,9 +33,7 @@ public partial class SimpleWorldMapScreen : Node3D
 
     private SimpleMapData? _mapData;
     private List<Sprite2D> _enemySprites = new();
-    private IGameSessionService? _gameSession; // Use interface instead of concrete type
-    private ExplorationAI? _explorationAI;
-    private SimpleCombatSystem? _combatSystem;
+    private IGameSessionService? _gameSession;
     private bool _isInitialized = false;
     private bool _serviceReady = false;
 
@@ -43,9 +41,10 @@ public partial class SimpleWorldMapScreen : Node3D
     private CardSignature[]? _pendingMapSeed;
     private CardSignature[]? _pendingAbilities;
 
-    // Visual constants
-    private const int TILE_SIZE = 32;
+    // Visual constants - FantasyDreamland tileset uses 16x16 tiles
+    private const int TILE_SIZE = 16;
     private const int TILESET_SOURCE_ID = 4;
+    private Camera2D? _camera2D;
 
     // Atlas coordinates for FantasyDreamland tileset (source 4)
     private static readonly Vector2I BLOCKED_TILE_ATLAS = new(2, 0);
@@ -76,6 +75,8 @@ public partial class SimpleWorldMapScreen : Node3D
             gameSession.StateChanged += OnSessionStateChanged;
             gameSession.MapGenerated += OnMapGenerated;
             gameSession.LootGenerated += OnLootGenerated;
+            gameSession.PlayerMoved += OnServicePlayerMoved;
+            gameSession.EnemyDefeated += OnServiceEnemyDefeated;
 
             // If Initialize() was called before service was ready, start now
             if (_pendingMapSeed != null && _pendingAbilities != null)
@@ -96,18 +97,8 @@ public partial class SimpleWorldMapScreen : Node3D
             _gameSession.StateChanged -= OnSessionStateChanged;
             _gameSession.MapGenerated -= OnMapGenerated;
             _gameSession.LootGenerated -= OnLootGenerated;
-        }
-
-        CleanupExplorationAI();
-    }
-
-    private void CleanupExplorationAI()
-    {
-        if (_explorationAI != null)
-        {
-            _explorationAI.PlayerMoved -= OnPlayerMoved;
-            _explorationAI.EnemyEncountered -= OnEnemyEncountered;
-            _explorationAI = null;
+            _gameSession.PlayerMoved -= OnServicePlayerMoved;
+            _gameSession.EnemyDefeated -= OnServiceEnemyDefeated;
         }
     }
 
@@ -185,52 +176,42 @@ public partial class SimpleWorldMapScreen : Node3D
 
     private void HandleExplorationStart()
     {
-        CleanupExplorationAI();
         if (StatusLabel != null) StatusLabel.Text = "Exploring map...";
 
-        if (_mapData != null)
-        {
-            _explorationAI = new ExplorationAI(_mapData);
-            _explorationAI.PlayerMoved += OnPlayerMoved;
-            _explorationAI.EnemyEncountered += OnEnemyEncountered;
-
-            // Start exploration visualization
-            StartExplorationVisualization();
-        }
-    }
-
-    private void StartExplorationVisualization()
-    {
-        if (PlayerSprite != null && _mapData != null)
+        // Just show the player sprite - GameSessionService handles the exploration logic
+        // and sends us PlayerMoved events
+        if (PlayerSprite != null)
         {
             PlayerSprite.Visible = true;
-            UpdatePlayerSpritePosition(_mapData.PlayerStart);
         }
-
-        // Create a timer to step through exploration
-        var timer = new Timer();
-        AddChild(timer);
-        timer.WaitTime = 0.3f; // Faster visualization
-        timer.Timeout += () =>
-        {
-            if (_explorationAI != null && !_explorationAI.HasFinishedExploration)
-                _explorationAI.StepExploration();
-            else
-                timer.QueueFree();
-        };
-        timer.Start();
     }
 
-    private void OnPlayerMoved(Vector2I newPosition)
+    private void OnServicePlayerMoved(Vector2I newPosition)
     {
         UpdatePlayerSpritePosition(newPosition);
         MarkTileAsVisited(newPosition);
     }
 
-    private void OnEnemyEncountered(Vector2I position)
+    private void OnServiceEnemyDefeated(Vector2I position)
     {
-        ILog.Print($"Enemy encountered at {position}!");
-        if (StatusLabel != null) StatusLabel.Text = "Enemy encountered!";
+        ILog.Print($"Enemy defeated at {position} - removing sprite");
+
+        // Find and remove the enemy sprite at this position
+        var spriteToRemove = _enemySprites.FirstOrDefault(sprite =>
+        {
+            var spriteGridPos = new Vector2I(
+                Mathf.RoundToInt((sprite.Position.X - TILE_SIZE / 2) / TILE_SIZE),
+                Mathf.RoundToInt((sprite.Position.Y - TILE_SIZE / 2) / TILE_SIZE)
+            );
+            return spriteGridPos == position;
+        });
+
+        if (spriteToRemove != null)
+        {
+            _enemySprites.Remove(spriteToRemove);
+            spriteToRemove.QueueFree();
+            ILog.Print($"Removed enemy sprite at {position}");
+        }
     }
 
     private void HandleCombatStart()
@@ -381,6 +362,9 @@ public partial class SimpleWorldMapScreen : Node3D
         foreach (var sprite in _enemySprites) sprite?.QueueFree();
         _enemySprites.Clear();
 
+        // Resize viewport to fit the map
+        SetupViewport(mapData.Size);
+
         // Render the map using FantasyDreamland tileset (source 4)
         for (var y = 0; y < mapData.Size.Y; y++)
         for (var x = 0; x < mapData.Size.X; x++)
@@ -395,7 +379,50 @@ public partial class SimpleWorldMapScreen : Node3D
         // Create enemy sprites
         CreateEnemySprites(mapData.EnemyPositions);
 
+        // Configure camera after map is rendered (deferred to ensure GetUsedRect works)
+        CallDeferred(nameof(ConfigureCamera));
+
         ILog.Print($"Rendered map: {mapData.Size.X}x{mapData.Size.Y} with {mapData.EnemyPositions.Count} enemies");
+    }
+
+    private void SetupViewport(Vector2I mapSize)
+    {
+        if (Viewport == null) return;
+
+        // Size viewport to match map dimensions
+        Viewport.Size = new Vector2I(mapSize.X * TILE_SIZE, mapSize.Y * TILE_SIZE);
+        Viewport.RenderTargetUpdateMode = SubViewport.UpdateMode.WhenParentVisible;
+
+        // Get camera reference
+        _camera2D = Viewport.GetNodeOrNull<Camera2D>("Camera2D");
+        if (_camera2D != null) _camera2D.Enabled = true;
+    }
+
+    private void ConfigureCamera()
+    {
+        if (_camera2D == null || MapLayer == null || Viewport == null) return;
+
+        var usedRect = MapLayer.GetUsedRect();
+        if (usedRect.Size == Vector2I.Zero) return;
+
+        // Calculate the center of the map area in pixel coordinates
+        var mapCenter = new Vector2(
+            (usedRect.Position.X * TILE_SIZE) + (usedRect.Size.X * TILE_SIZE / 2f),
+            (usedRect.Position.Y * TILE_SIZE) + (usedRect.Size.Y * TILE_SIZE / 2f)
+        );
+        _camera2D.GlobalPosition = mapCenter;
+
+        // Calculate zoom to fit map in viewport
+        var mapPixelSize = new Vector2(usedRect.Size.X * TILE_SIZE, usedRect.Size.Y * TILE_SIZE);
+        var viewportSize = Viewport.Size;
+
+        var zoomX = viewportSize.X / mapPixelSize.X;
+        var zoomY = viewportSize.Y / mapPixelSize.Y;
+        var zoom = Mathf.Min(zoomX, zoomY);
+
+        _camera2D.Zoom = new Vector2(zoom, zoom);
+
+        ILog.Print($"Camera configured: center={mapCenter}, zoom={zoom}");
     }
 
     private void CreateEnemySprites(List<Vector2I> enemyPositions)

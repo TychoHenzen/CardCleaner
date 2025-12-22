@@ -25,14 +25,14 @@ public class ExplorationAI
     public event Action<Vector2I> PlayerMoved;
     public event Action<Vector2I> EnemyEncountered;
 
-    public ExplorationAI(SimpleMapData mapData)
+    public ExplorationAI(SimpleMapData mapData, Vector2I? startPosition = null)
     {
         ArgumentNullException.ThrowIfNull(mapData);
         ArgumentNullException.ThrowIfNull(mapData.PassableTiles);
         ArgumentNullException.ThrowIfNull(mapData.EnemyPositions);
 
         _mapData = mapData;
-        CurrentPosition = mapData.PlayerStart;
+        CurrentPosition = startPosition ?? mapData.PlayerStart;
         _visitedTiles.Add(CurrentPosition);
 
         ILog.Print($"Exploration AI initialized at {CurrentPosition}");
