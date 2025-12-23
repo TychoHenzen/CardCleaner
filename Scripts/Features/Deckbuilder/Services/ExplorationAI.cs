@@ -37,6 +37,7 @@ public class ExplorationAI
     public event Action<Vector2I>? PlayerMoved;
     public event Action<Vector2I>? EnemyEncountered;
     public event Action<Vector2I>? EnemySpotted;
+    public event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
 
     public ExplorationAI(SimpleMapData mapData, Vector2I? startPosition = null, IVisibilityChecker? visibilityChecker = null, int visionRange = 5)
     {
@@ -58,6 +59,7 @@ public class ExplorationAI
         try
         {
             _frontierBehavior.UpdateVision(CurrentPosition);
+            VisitedTilesUpdated?.Invoke(_frontierBehavior.VisitedTiles);
         }
         catch (Exception ex)
         {
@@ -191,8 +193,9 @@ public class ExplorationAI
         // Update vision from new position
         _frontierBehavior.UpdateVision(CurrentPosition);
 
-        ILog.Print($"Player moved to {CurrentPosition} (seen {_frontierBehavior.SeenTiles.Count} tiles)");
+        ILog.Print($"Player moved to {CurrentPosition} (seen {_frontierBehavior.SeenTiles.Count} tiles, visited {_frontierBehavior.VisitedTiles.Count})");
         PlayerMoved?.Invoke(CurrentPosition);
+        VisitedTilesUpdated?.Invoke(_frontierBehavior.VisitedTiles);
     }
 
     /// <summary>

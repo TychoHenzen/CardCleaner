@@ -23,6 +23,7 @@ public interface IGameSessionService
     event Action<List<CardSignature>> LootGenerated;
     event Action<Vector2I> PlayerMoved;
     event Action<Vector2I> EnemyDefeated;
+    event Action<IReadOnlySet<Vector2I>> VisitedTilesUpdated;
 
     void StartSession(CardSignature mapSeed, List<CardSignature> abilityCards);
     void AdvanceSession();

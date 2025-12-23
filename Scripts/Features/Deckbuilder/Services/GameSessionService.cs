@@ -49,6 +49,7 @@ public partial class GameSessionService : Node, IGameSessionService
     public event Action<List<CardSignature>>? LootGenerated;
     public event Action<Vector2I>? PlayerMoved;
     public event Action<Vector2I>? EnemyDefeated;
+    public event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
 
     public override void _Ready()
     {
@@ -153,6 +154,7 @@ public partial class GameSessionService : Node, IGameSessionService
         _explorationAI = new ExplorationAI(_currentMap, _playerPosition);
         _explorationAI.EnemyEncountered += OnEnemyEncountered;
         _explorationAI.PlayerMoved += pos => PlayerMoved?.Invoke(pos);
+        _explorationAI.VisitedTilesUpdated += tiles => VisitedTilesUpdated?.Invoke(tiles);
 
         // Start exploration timer
         _gameTimer.WaitTime = ExplorationStepDelay;

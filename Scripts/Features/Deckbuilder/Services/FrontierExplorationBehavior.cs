@@ -37,7 +37,9 @@ public class FrontierExplorationBehavior
     {
         try
         {
-            _visitedTiles.Add(currentPosition);
+            // Only add passable tiles to visited set
+            if (_mapData.IsPassable(currentPosition))
+                _visitedTiles.Add(currentPosition);
             _seenTiles.Add(currentPosition);
 
             // First pass: update seen tiles

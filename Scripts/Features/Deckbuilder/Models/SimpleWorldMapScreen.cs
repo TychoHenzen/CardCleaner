@@ -37,21 +37,16 @@ public partial class SimpleWorldMapScreen : Node3D
     private IGameSessionService? _gameSession;
     private bool _isInitialized = false;
     private bool _serviceReady = false;
+    private readonly HashSet<Vector2I> _renderedVisitedTiles = new();
 
     // Pending initialization data (stored if Initialize called before service ready)
     private CardSignature[]? _pendingMapSeed;
     private CardSignature[]? _pendingAbilities;
 
-    // Visual constants - FantasyDreamland tileset uses 16x16 tiles
+    // Visual constants
     private const int TILE_SIZE = 16;
-    private const int TILESET_SOURCE_ID = 4;
     private Camera2D? _camera2D;
     private ITileRegistry? _tileRegistry;
-
-    // Fallback atlas coordinates for FantasyDreamland tileset (source 4)
-    private static readonly Vector2I FALLBACK_BLOCKED_ATLAS = new(2, 0);
-    private static readonly Vector2I FALLBACK_PASSABLE_ATLAS = new(4, 0);
-    private static readonly Vector2I VISITED_TILE_ATLAS = new(6, 0);
 
     public override void _Ready()
     {
@@ -82,6 +77,7 @@ public partial class SimpleWorldMapScreen : Node3D
             gameSession.LootGenerated += OnLootGenerated;
             gameSession.PlayerMoved += OnServicePlayerMoved;
             gameSession.EnemyDefeated += OnServiceEnemyDefeated;
+            gameSession.VisitedTilesUpdated += OnVisitedTilesUpdated;
 
             // If Initialize() was called before service was ready, start now
             if (_pendingMapSeed != null && _pendingAbilities != null)
@@ -104,6 +100,7 @@ public partial class SimpleWorldMapScreen : Node3D
             _gameSession.LootGenerated -= OnLootGenerated;
             _gameSession.PlayerMoved -= OnServicePlayerMoved;
             _gameSession.EnemyDefeated -= OnServiceEnemyDefeated;
+            _gameSession.VisitedTilesUpdated -= OnVisitedTilesUpdated;
         }
     }
 
@@ -176,6 +173,7 @@ public partial class SimpleWorldMapScreen : Node3D
     {
         ILog.Print($"Received map from GameSessionService: {mapData.Size.X}x{mapData.Size.Y}");
         _mapData = mapData;
+        _renderedVisitedTiles.Clear();
         RenderMap(_mapData);
     }
 
@@ -194,7 +192,27 @@ public partial class SimpleWorldMapScreen : Node3D
     private void OnServicePlayerMoved(Vector2I newPosition)
     {
         UpdatePlayerSpritePosition(newPosition);
-        MarkTileAsVisited(newPosition);
+    }
+
+    private void OnVisitedTilesUpdated(IReadOnlySet<Vector2I> visitedTiles)
+    {
+        if (MapLayer == null || _mapData == null) return;
+
+        // Get the visited tile render info once
+        var (visitedSourceId, visitedAtlasCoords) = GetTileRenderInfo("floor_visited");
+
+        foreach (var position in visitedTiles)
+        {
+            // Skip if already rendered as visited
+            if (_renderedVisitedTiles.Contains(position)) continue;
+
+            // Only mark passable, non-enemy tiles
+            if (_mapData.IsPassable(position) && !_mapData.EnemyPositions.Contains(position))
+            {
+                MapLayer.SetCell(position, visitedSourceId, visitedAtlasCoords);
+                _renderedVisitedTiles.Add(position);
+            }
+        }
     }
 
     private void OnServiceEnemyDefeated(Vector2I position)
@@ -370,14 +388,17 @@ public partial class SimpleWorldMapScreen : Node3D
         // Resize viewport to fit the map
         SetupViewport(mapData.Size);
 
-        // Render the map using tile registry for atlas coordinates
+        // Log tile info for debugging
+        LogTileRenderingSample();
+
+        // Render the map using tile registry for atlas coordinates and source IDs
         for (var y = 0; y < mapData.Size.Y; y++)
         for (var x = 0; x < mapData.Size.X; x++)
         {
             var position = new Vector2I(x, y);
             var tileId = mapData.GetTileId(position);
-            var atlasCoords = GetAtlasCoordsForTile(tileId);
-            MapLayer.SetCell(position, TILESET_SOURCE_ID, atlasCoords);
+            var (sourceId, atlasCoords) = GetTileRenderInfo(tileId);
+            MapLayer.SetCell(position, sourceId, atlasCoords);
         }
 
         // Create enemy sprites
@@ -389,16 +410,60 @@ public partial class SimpleWorldMapScreen : Node3D
         ILog.Print($"Rendered map: {mapData.Size.X}x{mapData.Size.Y} with {mapData.EnemyPositions.Count} enemies");
     }
 
-    private Vector2I GetAtlasCoordsForTile(string tileId)
+    /// <summary>
+    /// Get the source ID and atlas coordinates for rendering a tile.
+    /// Returns (sourceId, atlasCoords) from TileRegistry.
+    /// </summary>
+    private (int sourceId, Vector2I atlasCoords) GetTileRenderInfo(string tileId)
     {
         if (_tileRegistry == null)
         {
-            // Fallback when registry not available
-            return tileId == SimpleMapGenerator.WallTileId ? FALLBACK_BLOCKED_ATLAS : FALLBACK_PASSABLE_ATLAS;
+            ILog.Print($"[TILE DEBUG] Registry is NULL for tileId='{tileId}', using fallback");
+            var fallbackCoords = tileId == SimpleMapGenerator.WallTileId
+                ? new Vector2I(2, 0)
+                : new Vector2I(4, 0);
+            return (4, fallbackCoords); // Use source 4 as fallback
         }
 
         var tile = _tileRegistry.GetTile(tileId);
-        return tile?.AtlasCoords ?? FALLBACK_PASSABLE_ATLAS;
+        if (tile == null)
+        {
+            ILog.Print($"[TILE DEBUG] Tile not found in registry: '{tileId}', using fallback");
+            return (4, new Vector2I(4, 0)); // Default fallback with source 4
+        }
+
+        return (tile.SourceId, tile.AtlasCoords);
+    }
+
+    private bool _hasLoggedTileInfo = false;
+    private void LogTileRenderingSample()
+    {
+        if (_hasLoggedTileInfo || _mapData == null) return;
+        _hasLoggedTileInfo = true;
+
+        ILog.Print($"[TILE DEBUG] === Tile Rendering Debug ===");
+        ILog.Print($"[TILE DEBUG] TileRegistry available: {_tileRegistry != null}");
+        ILog.Print($"[TILE DEBUG] MapLayer available: {MapLayer != null}");
+
+        if (_tileRegistry != null)
+        {
+            foreach (var tile in _tileRegistry.GetAllTiles())
+            {
+                ILog.Print($"[TILE DEBUG] Registered: id='{tile.Id}' sourceId={tile.SourceId} atlas={tile.AtlasCoords} passable={tile.IsPassable}");
+            }
+        }
+
+        // Log sample of actual map tiles
+        var sampleCount = 0;
+        for (var y = 0; y < _mapData.Size.Y && sampleCount < 10; y++)
+        for (var x = 0; x < _mapData.Size.X && sampleCount < 10; x++)
+        {
+            var pos = new Vector2I(x, y);
+            var tileId = _mapData.GetTileId(pos);
+            var (sourceId, atlasCoords) = GetTileRenderInfo(tileId);
+            ILog.Print($"[TILE DEBUG] Map[{x},{y}] = '{tileId}' -> sourceId={sourceId} atlas={atlasCoords}");
+            sampleCount++;
+        }
     }
 
     private void SetupViewport(Vector2I mapSize)
@@ -461,16 +526,6 @@ public partial class SimpleWorldMapScreen : Node3D
                 gridPosition.X * TILE_SIZE + TILE_SIZE / 2,
                 gridPosition.Y * TILE_SIZE + TILE_SIZE / 2
             );
-    }
-
-    private void MarkTileAsVisited(Vector2I position)
-    {
-        if (MapLayer != null && _mapData != null && _mapData.IsPassable(position))
-        {
-            // Only mark as visited if it's not an enemy position
-            var isEnemyPosition = _mapData.EnemyPositions.Contains(position);
-            if (!isEnemyPosition) MapLayer.SetCell(position, TILESET_SOURCE_ID, VISITED_TILE_ATLAS);
-        }
     }
 
     private ImageTexture CreateColorTexture(Color color, int size)
