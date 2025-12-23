@@ -32,28 +32,28 @@ public class TileRegistry : ITileRegistry
             id: "floor",
             name: "Floor",
             passability: TilePassability.Passable,
-            atlasCoords: new Vector2I(4, 0),
+            atlasCoords: new Vector2I(14, 0),
             sourceId: DefaultSourceId));
 
         RegisterTile(new TileDefinition(
             id: "floor_visited",
             name: "Visited Floor",
             passability: TilePassability.Passable,
-            atlasCoords: new Vector2I(6, 0),
-            sourceId: DefaultSourceId));
+            atlasCoords: new Vector2I(11, 6),
+            sourceId: 49));
 
         RegisterTile(new TileDefinition(
             id: "grass",
             name: "Grass",
             passability: TilePassability.Passable,
-            atlasCoords: new Vector2I(0, 0),
+            atlasCoords: new Vector2I(4, 0),
             sourceId: DefaultSourceId));
 
         RegisterTile(new TileDefinition(
             id: "dirt",
             name: "Dirt",
             passability: TilePassability.Passable,
-            atlasCoords: new Vector2I(1, 0),
+            atlasCoords: new Vector2I(6, 0),
             sourceId: DefaultSourceId));
 
         // Blocked tiles (walls, obstacles)
@@ -61,7 +61,7 @@ public class TileRegistry : ITileRegistry
             id: "wall",
             name: "Wall",
             passability: TilePassability.Solid,
-            atlasCoords: new Vector2I(2, 0),
+            atlasCoords: new Vector2I(22, 5),
             sourceId: DefaultSourceId,
             layer: TileLayer.Structure,
             elevation: 1f,
@@ -71,7 +71,7 @@ public class TileRegistry : ITileRegistry
             id: "stone",
             name: "Stone",
             passability: TilePassability.Solid,
-            atlasCoords: new Vector2I(3, 0),
+            atlasCoords: new Vector2I(22, 7),
             sourceId: DefaultSourceId,
             layer: TileLayer.Structure,
             elevation: 0.5f,
@@ -82,8 +82,8 @@ public class TileRegistry : ITileRegistry
             id: "water",
             name: "Water",
             passability: TilePassability.Solid,
-            atlasCoords: new Vector2I(5, 0),
-            sourceId: DefaultSourceId,
+            atlasCoords: new Vector2I(7, 27),
+            sourceId: 17,
             layer: TileLayer.Terrain,
             elevation: -0.5f,
             isTransparent: true));
@@ -93,7 +93,7 @@ public class TileRegistry : ITileRegistry
             id: "glass",
             name: "Glass Wall",
             passability: TilePassability.Solid,
-            atlasCoords: new Vector2I(7, 0),
+            atlasCoords: new Vector2I(29, 16),
             sourceId: DefaultSourceId,
             layer: TileLayer.Structure,
             elevation: 1f,

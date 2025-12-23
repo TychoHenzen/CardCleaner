@@ -19,6 +19,7 @@ public partial class SimpleWorldMapScreen : Node3D
 {
     // Export properties for editor assignment
     [Export] public TileMapLayer? MapLayer { get; set; }
+    [Export] public TileMapLayer? OverlayLayer { get; set; }
     [Export] public SubViewport? Viewport { get; set; }
     [Export] public MeshInstance3D? ScreenMesh { get; set; }
     [Export] public Label? StatusLabel { get; set; }
@@ -196,7 +197,7 @@ public partial class SimpleWorldMapScreen : Node3D
 
     private void OnVisitedTilesUpdated(IReadOnlySet<Vector2I> visitedTiles)
     {
-        if (MapLayer == null || _mapData == null) return;
+        if (OverlayLayer == null || _mapData == null) return;
 
         // Get the visited tile render info once
         var (visitedSourceId, visitedAtlasCoords) = GetTileRenderInfo("floor_visited");
@@ -209,7 +210,7 @@ public partial class SimpleWorldMapScreen : Node3D
             // Only mark passable, non-enemy tiles
             if (_mapData.IsPassable(position) && !_mapData.EnemyPositions.Contains(position))
             {
-                MapLayer.SetCell(position, visitedSourceId, visitedAtlasCoords);
+                OverlayLayer.SetCell(position, visitedSourceId, visitedAtlasCoords);
                 _renderedVisitedTiles.Add(position);
             }
         }
@@ -380,6 +381,7 @@ public partial class SimpleWorldMapScreen : Node3D
         }
 
         MapLayer.Clear();
+        OverlayLayer?.Clear();
 
         // Clear old enemy sprites
         foreach (var sprite in _enemySprites) sprite?.QueueFree();

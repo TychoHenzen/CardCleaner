@@ -29,9 +29,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("8KcqwAAAwL8AAAAA8KcqQAAAwL8AAAAA8KcqQAAAwD8AAAAA8KcqwAAAwD8AAAAA//////9/AID//////38AgP//////fwCA//////9/AIA=")
 }]
 
-[node name="SimpleTileMapScreen" type="Node3D" node_paths=PackedStringArray("MapLayer", "Viewport", "ScreenMesh", "StatusLabel", "PlayerSprite", "CombatUI")]
+[node name="SimpleTileMapScreen" type="Node3D" node_paths=PackedStringArray("MapLayer", "OverlayLayer", "Viewport", "ScreenMesh", "StatusLabel", "PlayerSprite", "CombatUI")]
 script = ExtResource("1_w558t")
 MapLayer = NodePath("SubViewport/MapLayer")
+OverlayLayer = NodePath("SubViewport/OverlayLayer")
 Viewport = NodePath("SubViewport")
 ScreenMesh = NodePath("CSGMesh3D")
 StatusLabel = NodePath("SubViewport/UI/StatusLabel")
@@ -46,6 +47,9 @@ mesh = SubResource("ArrayMesh_sb8ww")
 size = Vector2i(1024, 1024)
 
 [node name="MapLayer" type="TileMapLayer" parent="SubViewport"]
+tile_set = ExtResource("4_olmej")
+
+[node name="OverlayLayer" type="TileMapLayer" parent="SubViewport"]
 tile_set = ExtResource("4_olmej")
 
 [node name="PlayerAgent" type="Sprite2D" parent="SubViewport"]
