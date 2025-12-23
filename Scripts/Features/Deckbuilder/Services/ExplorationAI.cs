@@ -1,39 +1,68 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using Godot;
-
-// Using built-in PriorityQueue from System.Collections.Generic (.NET 6+)
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
+public enum ExplorationMode
+{
+    FrontierExploration,
+    PathToEnemy
+}
+
 /// <summary>
-/// Simple AI that explores a map autonomously
+/// AI that explores a map using frontier-based exploration,
+/// switching to enemy targeting when enemies become visible.
 /// </summary>
 public class ExplorationAI
 {
     private readonly SimpleMapData _mapData;
     private readonly HashSet<Vector2I> _visitedTiles = new();
     private readonly List<Vector2I> _pathToTarget = new();
+    private readonly FrontierExplorationBehavior _frontierBehavior;
+    private readonly IVisibilityChecker _visibilityChecker;
 
     public Vector2I CurrentPosition { get; private set; }
     public bool HasFoundEnemy { get; private set; }
-    public Vector2I EnemyPosition { get; private set; }
-    public bool HasFinishedExploration => _visitedTiles.Count >= _mapData.PassableTiles.Count || HasFoundEnemy;
+    public Vector2I? VisibleEnemyPosition { get; private set; }
+    public ExplorationMode CurrentMode { get; private set; } = ExplorationMode.FrontierExploration;
 
-    public event Action<Vector2I> PlayerMoved;
-    public event Action<Vector2I> EnemyEncountered;
+    public bool HasFinishedExploration => _frontierBehavior.IsFullyExplored() || HasFoundEnemy;
+    public IReadOnlySet<Vector2I> SeenTiles => _frontierBehavior.SeenTiles;
 
-    public ExplorationAI(SimpleMapData mapData, Vector2I? startPosition = null)
+    public event Action<Vector2I>? PlayerMoved;
+    public event Action<Vector2I>? EnemyEncountered;
+    public event Action<Vector2I>? EnemySpotted;
+
+    public ExplorationAI(SimpleMapData mapData, Vector2I? startPosition = null, IVisibilityChecker? visibilityChecker = null, int visionRange = 5)
     {
         ArgumentNullException.ThrowIfNull(mapData);
         ArgumentNullException.ThrowIfNull(mapData.PassableTiles);
         ArgumentNullException.ThrowIfNull(mapData.EnemyPositions);
 
         _mapData = mapData;
+        _visibilityChecker = visibilityChecker ?? (ServiceLocator.Has<IVisibilityChecker>()
+            ? ServiceLocator.Get<IVisibilityChecker>()
+            : new SimpleVisibilityChecker());
+
+        _frontierBehavior = new FrontierExplorationBehavior(mapData, _visibilityChecker, visionRange);
+
         CurrentPosition = startPosition ?? mapData.PlayerStart;
         _visitedTiles.Add(CurrentPosition);
+
+        // Initial vision update
+        try
+        {
+            _frontierBehavior.UpdateVision(CurrentPosition);
+        }
+        catch (Exception ex)
+        {
+            ILog.Error($"Exception during initial vision update: {ex.Message}\n{ex.StackTrace}");
+        }
 
         ILog.Print($"Exploration AI initialized at {CurrentPosition}");
     }
@@ -43,46 +72,109 @@ public class ExplorationAI
     /// </summary>
     public bool StepExploration()
     {
-        if (HasFinishedExploration) return false;
-
-        // Check if we've encountered an enemy
-        if (_mapData.EnemyPositions.Contains(CurrentPosition))
+        try
         {
-            HasFoundEnemy = true;
-            EnemyPosition = CurrentPosition;
-            ILog.Print($"Enemy encountered at {CurrentPosition}!");
-            EnemyEncountered?.Invoke(CurrentPosition);
+            if (HasFinishedExploration) return false;
+
+            // Check if we've physically reached an enemy position
+            if (_mapData.EnemyPositions.Contains(CurrentPosition))
+            {
+                HasFoundEnemy = true;
+                VisibleEnemyPosition = CurrentPosition;
+                ILog.Print($"Enemy encountered at {CurrentPosition}!");
+                EnemyEncountered?.Invoke(CurrentPosition);
+                return false;
+            }
+
+            // Check for visible enemies and update mode
+            CheckForVisibleEnemies();
+
+            // If we have a path, follow it
+            if (_pathToTarget.Count > 0)
+            {
+                var nextPosition = _pathToTarget[0];
+                _pathToTarget.RemoveAt(0);
+                MoveToPosition(nextPosition);
+                return true;
+            }
+
+            // Find next target based on current mode
+            Vector2I? target = CurrentMode switch
+            {
+                ExplorationMode.PathToEnemy => VisibleEnemyPosition,
+                ExplorationMode.FrontierExploration => _frontierBehavior.FindNearestFrontierTile(CurrentPosition),
+                _ => null
+            };
+
+            if (target == null)
+            {
+                ILog.Print("No more targets to explore - exploration complete");
+                return false;
+            }
+
+            // Calculate path to target
+            _pathToTarget.Clear();
+            var path = FindPath(CurrentPosition, target.Value);
+            if (path.Count > 1)
+            {
+                // Take the first step now (don't use recursion to avoid stack issues)
+                _pathToTarget.AddRange(path.Skip(1)); // Skip current position
+                var nextPosition = _pathToTarget[0];
+                _pathToTarget.RemoveAt(0);
+                MoveToPosition(nextPosition);
+                return true;
+            }
+
+            ILog.Print($"No path to target {target.Value} found from {CurrentPosition} - exploration stuck");
             return false;
         }
-
-        // If we have a path, follow it
-        if (_pathToTarget.Count > 0)
+        catch (Exception ex)
         {
-            var nextPosition = _pathToTarget[0];
-            _pathToTarget.RemoveAt(0);
-            MoveToPosition(nextPosition);
-            return true;
-        }
-
-        // Find next target to explore
-        var target = FindNextExplorationTarget();
-        if (target == null)
-        {
-            ILog.Print("No more tiles to explore - exploration complete");
+            ILog.Error($"Exception in StepExploration: {ex.Message}\n{ex.StackTrace}");
             return false;
         }
+    }
 
-        // Calculate path to target
-        _pathToTarget.Clear();
-        var path = FindPath(CurrentPosition, target.Value);
-        if (path.Count > 1)
+    private void CheckForVisibleEnemies()
+    {
+        Vector2I? closestVisibleEnemy = null;
+        var closestDistance = float.MaxValue;
+
+        foreach (var enemyPos in _mapData.EnemyPositions)
         {
-            _pathToTarget.AddRange(path.Skip(1)); // Skip current position
-            return StepExploration(); // Take first step immediately
+            if (_visibilityChecker.CanSee(CurrentPosition, enemyPos, _mapData))
+            {
+                var distance = CurrentPosition.DistanceTo(enemyPos);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestVisibleEnemy = enemyPos;
+                }
+            }
         }
 
-        ILog.Print("No path to target found - exploration stuck");
-        return false;
+        if (closestVisibleEnemy != null)
+        {
+            if (CurrentMode != ExplorationMode.PathToEnemy)
+            {
+                ILog.Print($"Enemy spotted at {closestVisibleEnemy}! Switching to pursuit mode.");
+                EnemySpotted?.Invoke(closestVisibleEnemy.Value);
+            }
+            CurrentMode = ExplorationMode.PathToEnemy;
+            VisibleEnemyPosition = closestVisibleEnemy;
+            _pathToTarget.Clear(); // Recalculate path to enemy
+        }
+        else
+        {
+            // No enemies visible - return to exploration
+            if (CurrentMode == ExplorationMode.PathToEnemy)
+            {
+                ILog.Print("Enemy no longer visible. Returning to exploration.");
+                _pathToTarget.Clear();
+            }
+            CurrentMode = ExplorationMode.FrontierExploration;
+            VisibleEnemyPosition = null;
+        }
     }
 
     private void MoveToPosition(Vector2I newPosition)
@@ -96,21 +188,11 @@ public class ExplorationAI
         CurrentPosition = newPosition;
         _visitedTiles.Add(CurrentPosition);
 
-        ILog.Print($"Player moved to {CurrentPosition} (visited {_visitedTiles.Count}/{_mapData.PassableTiles.Count})");
+        // Update vision from new position
+        _frontierBehavior.UpdateVision(CurrentPosition);
+
+        ILog.Print($"Player moved to {CurrentPosition} (seen {_frontierBehavior.SeenTiles.Count} tiles)");
         PlayerMoved?.Invoke(CurrentPosition);
-    }
-
-    private Vector2I? FindNextExplorationTarget()
-    {
-        // Prioritize enemy positions if we haven't found one yet
-        var unvisitedEnemies = _mapData.EnemyPositions.Where(e => !_visitedTiles.Contains(e)).ToList();
-        if (unvisitedEnemies.Count > 0) return unvisitedEnemies.OrderBy(e => CurrentPosition.DistanceTo(e)).First();
-
-        // Otherwise, find nearest unvisited passable tile
-        var unvisitedTiles = _mapData.PassableTiles.Where(t => !_visitedTiles.Contains(t)).ToList();
-        if (unvisitedTiles.Count == 0) return null;
-
-        return unvisitedTiles.OrderBy(t => CurrentPosition.DistanceTo(t)).First();
     }
 
     /// <summary>

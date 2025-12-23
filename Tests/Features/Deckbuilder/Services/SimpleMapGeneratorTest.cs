@@ -31,7 +31,7 @@ public class SimpleMapGeneratorTest
         var mapData = _generator.GenerateMap(size, seed);
 
         AssertThat(mapData).IsNotNull();
-        AssertThat(mapData.Grid).IsNotNull();
+        AssertThat(mapData.TileIds).IsNotNull();
         AssertThat(mapData.Size).IsEqual(size);
         AssertThat(mapData.PassableTiles).IsNotNull();
         AssertThat(mapData.PassableTiles.Count).IsGreater(0);
@@ -224,7 +224,7 @@ public class SimpleMapGeneratorTest
     }
 
     [TestCase]
-    public void TestGenerateMapPassableTilesMatchGrid()
+    public void TestGenerateMapPassableTilesMatchTileIds()
     {
         var size = new Vector2I(8, 8);
         var seed = new CardSignature();
@@ -238,14 +238,30 @@ public class SimpleMapGeneratorTest
     }
 
     [TestCase]
-    public void TestGenerateMapGridDimensionsMatchSize()
+    public void TestGenerateMapTileIdsDimensionsMatchSize()
     {
         var size = new Vector2I(12, 8);
         var seed = new CardSignature();
 
         var mapData = _generator.GenerateMap(size, seed);
 
-        AssertThat(mapData.Grid.GetLength(0)).IsEqual(size.Y);
-        AssertThat(mapData.Grid.GetLength(1)).IsEqual(size.X);
+        AssertThat(mapData.TileIds.GetLength(0)).IsEqual(size.Y);
+        AssertThat(mapData.TileIds.GetLength(1)).IsEqual(size.X);
+    }
+
+    [TestCase]
+    public void TestGenerateMapUsesCorrectTileIds()
+    {
+        var size = new Vector2I(5, 5);
+        var seed = new CardSignature();
+
+        var mapData = _generator.GenerateMap(size, seed);
+
+        for (var y = 0; y < size.Y; y++)
+        for (var x = 0; x < size.X; x++)
+        {
+            var tileId = mapData.TileIds[y, x];
+            AssertBool(tileId == SimpleMapGenerator.FloorTileId || tileId == SimpleMapGenerator.WallTileId).IsTrue();
+        }
     }
 }

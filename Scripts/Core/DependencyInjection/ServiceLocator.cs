@@ -63,6 +63,8 @@ public partial class ServiceLocator : Node
         _container.RegisterSingleton<IInputService>(inputService);
 
         _container.RegisterSingleton<ICompatibilityTagRegistry, CompatibilityTagRegistry>();
+        _container.RegisterSingleton<ITileRegistry, TileRegistry>();
+        _container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
     }
 
     private void RegisterFromProviders()

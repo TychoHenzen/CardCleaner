@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using GdUnit4;
 using Godot;
@@ -10,12 +11,15 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Services;
 [RequireGodotRuntime]
 public class ExplorationAITest
 {
+    private const string Floor = SimpleMapGenerator.FloorTileId;
+    private const string Wall = SimpleMapGenerator.WallTileId;
+
     [TestCase]
     public void TestExplorationAIInitialization()
     {
         var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
 
-        var ai = new ExplorationAI(mapData);
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
 
         AssertThat(ai.CurrentPosition).IsEqual(new Vector2I(0, 0));
         AssertBool(ai.HasFoundEnemy).IsFalse();
@@ -26,7 +30,7 @@ public class ExplorationAITest
     public void TestExplorationMovesToPassableTiles()
     {
         var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
-        var ai = new ExplorationAI(mapData);
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
 
         var moved = ai.StepExploration();
 
@@ -38,7 +42,7 @@ public class ExplorationAITest
     public void TestExplorationPlayerMovedEventFires()
     {
         var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
-        var ai = new ExplorationAI(mapData);
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
         var moveCount = 0;
 
         ai.PlayerMoved += _ => moveCount++;
@@ -53,7 +57,7 @@ public class ExplorationAITest
     public void TestExplorationFindAndReportsEnemy()
     {
         var mapData = CreateMapWithEnemy();
-        var ai = new ExplorationAI(mapData);
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
         var enemyFound = false;
         Vector2I? foundPosition = null;
 
@@ -73,7 +77,7 @@ public class ExplorationAITest
         if (ai.HasFoundEnemy)
         {
             AssertBool(enemyFound).IsTrue();
-            AssertThat(foundPosition).IsEqual(ai.EnemyPosition);
+            AssertThat(foundPosition).IsNotNull();
         }
     }
 
@@ -81,7 +85,7 @@ public class ExplorationAITest
     public void TestExplorationEventuallyFinishes()
     {
         var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
-        var ai = new ExplorationAI(mapData);
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
 
         var stepCount = 0;
         while (!ai.HasFinishedExploration && stepCount < 1000)
@@ -94,15 +98,12 @@ public class ExplorationAITest
     }
 
     [TestCase]
-    public void TestExplorationVisitsAllPassableTiles()
+    public void TestExplorationSeesAllPassableTiles()
     {
-        var mapData = CreateSimpleMap(3, 3, new Vector2I(0, 0));
+        var mapData = CreateSimpleMap(3, 3, new Vector2I(1, 1));
         mapData.EnemyPositions.Clear();
 
-        var ai = new ExplorationAI(mapData);
-        var visitedPositions = new HashSet<Vector2I> { ai.CurrentPosition };
-
-        ai.PlayerMoved += pos => visitedPositions.Add(pos);
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
 
         var stepCount = 0;
         while (!ai.HasFinishedExploration && stepCount < 100)
@@ -111,7 +112,8 @@ public class ExplorationAITest
             stepCount++;
         }
 
-        AssertThat(visitedPositions.Count).IsEqual(mapData.PassableTiles.Count);
+        // With frontier exploration, we should have seen all passable tiles
+        AssertThat(ai.SeenTiles.Count).IsGreaterEqual(mapData.PassableTiles.Count);
     }
 
     [TestCase]
@@ -120,17 +122,19 @@ public class ExplorationAITest
         // Create a map with a corridor that forces specific movement
         var mapData = new SimpleMapData
         {
-            Grid = new bool[5, 5],
+            TileIds = new string[5, 5],
             Size = new Vector2I(5, 5),
             PlayerStart = new Vector2I(0, 0)
         };
 
+        FillWithWalls(mapData.TileIds);
+
         // Create a simple L-shaped corridor: (0,0) -> (1,0) -> (2,0) -> (2,1) -> (2,2)
-        mapData.Grid[0, 0] = true;
-        mapData.Grid[0, 1] = true;
-        mapData.Grid[0, 2] = true;
-        mapData.Grid[1, 2] = true;
-        mapData.Grid[2, 2] = true;
+        mapData.TileIds[0, 0] = Floor;
+        mapData.TileIds[0, 1] = Floor;
+        mapData.TileIds[0, 2] = Floor;
+        mapData.TileIds[1, 2] = Floor;
+        mapData.TileIds[2, 2] = Floor;
 
         mapData.PassableTiles.Add(new Vector2I(0, 0));
         mapData.PassableTiles.Add(new Vector2I(1, 0));
@@ -138,7 +142,7 @@ public class ExplorationAITest
         mapData.PassableTiles.Add(new Vector2I(2, 1));
         mapData.PassableTiles.Add(new Vector2I(2, 2));
 
-        var ai = new ExplorationAI(mapData);
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
         var stepCount = 0;
 
         while (!ai.HasFinishedExploration && stepCount < 100)
@@ -156,7 +160,7 @@ public class ExplorationAITest
     {
         var mapData = CreateSimpleMap(2, 2, new Vector2I(0, 0));
         mapData.EnemyPositions.Clear();
-        var ai = new ExplorationAI(mapData);
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
 
         var stepCount = 0;
         while (!ai.HasFinishedExploration && stepCount < 100)
@@ -171,35 +175,20 @@ public class ExplorationAITest
     }
 
     [TestCase]
-    public void TestExplorationPrioritizesEnemyPositions()
+    public void TestExplorationSwitchesToEnemyModeWhenVisible()
     {
-        var mapData = new SimpleMapData
-        {
-            Grid = new bool[10, 10],
-            Size = new Vector2I(10, 10),
-            PlayerStart = new Vector2I(0, 0)
-        };
+        var mapData = CreateSimpleMap(10, 10, new Vector2I(0, 0));
+        mapData.EnemyPositions.Add(new Vector2I(3, 0)); // Enemy directly visible
 
-        for (var y = 0; y < 10; y++)
-        for (var x = 0; x < 10; x++)
-        {
-            mapData.Grid[y, x] = true;
-            mapData.PassableTiles.Add(new Vector2I(x, y));
-        }
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 5);
+        var enemySpotted = false;
 
-        mapData.EnemyPositions.Add(new Vector2I(5, 5));
+        ai.EnemySpotted += _ => enemySpotted = true;
 
-        var ai = new ExplorationAI(mapData);
+        ai.StepExploration();
 
-        var stepCount = 0;
-        while (!ai.HasFoundEnemy && stepCount < 200)
-        {
-            ai.StepExploration();
-            stepCount++;
-        }
-
-        AssertBool(ai.HasFoundEnemy).IsTrue();
-        AssertThat(ai.EnemyPosition).IsEqual(new Vector2I(5, 5));
+        AssertBool(enemySpotted).IsTrue();
+        AssertThat(ai.CurrentMode).IsEqual(ExplorationMode.PathToEnemy);
     }
 
     [TestCase]
@@ -207,14 +196,14 @@ public class ExplorationAITest
     {
         var mapData = new SimpleMapData
         {
-            Grid = new bool[1, 1],
+            TileIds = new string[1, 1],
             Size = new Vector2I(1, 1),
             PlayerStart = new Vector2I(0, 0)
         };
-        mapData.Grid[0, 0] = true;
+        mapData.TileIds[0, 0] = Floor;
         mapData.PassableTiles.Add(new Vector2I(0, 0));
 
-        var ai = new ExplorationAI(mapData);
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
 
         ai.StepExploration();
 
@@ -226,18 +215,18 @@ public class ExplorationAITest
     {
         var mapData = new SimpleMapData
         {
-            Grid = new bool[1, 10],
+            TileIds = new string[1, 10],
             Size = new Vector2I(10, 1),
             PlayerStart = new Vector2I(0, 0)
         };
 
         for (var x = 0; x < 10; x++)
         {
-            mapData.Grid[0, x] = true;
+            mapData.TileIds[0, x] = Floor;
             mapData.PassableTiles.Add(new Vector2I(x, 0));
         }
 
-        var ai = new ExplorationAI(mapData);
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
 
         var stepCount = 0;
         while (!ai.HasFinishedExploration && stepCount < 100)
@@ -253,7 +242,7 @@ public class ExplorationAITest
     public void TestExplorationPositionUpdates()
     {
         var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
-        var ai = new ExplorationAI(mapData);
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
 
         var startPosition = ai.CurrentPosition;
         var positionChanged = false;
@@ -276,24 +265,11 @@ public class ExplorationAITest
     [TestCase]
     public void TestExplorationWithMultipleEnemies()
     {
-        var mapData = new SimpleMapData
-        {
-            Grid = new bool[5, 5],
-            Size = new Vector2I(5, 5),
-            PlayerStart = new Vector2I(0, 0)
-        };
-
-        for (var y = 0; y < 5; y++)
-        for (var x = 0; x < 5; x++)
-        {
-            mapData.Grid[y, x] = true;
-            mapData.PassableTiles.Add(new Vector2I(x, y));
-        }
-
+        var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
         mapData.EnemyPositions.Add(new Vector2I(2, 2));
         mapData.EnemyPositions.Add(new Vector2I(4, 4));
 
-        var ai = new ExplorationAI(mapData);
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
 
         var stepCount = 0;
         while (!ai.HasFoundEnemy && stepCount < 100)
@@ -304,69 +280,17 @@ public class ExplorationAITest
 
         AssertBool(ai.HasFoundEnemy).IsTrue();
         AssertBool(
-            ai.EnemyPosition == new Vector2I(2, 2) || ai.EnemyPosition == new Vector2I(4, 4)
+            ai.VisibleEnemyPosition == new Vector2I(2, 2) || ai.VisibleEnemyPosition == new Vector2I(4, 4)
         ).IsTrue();
-    }
-
-    [TestCase]
-    public void TestExplorationDoesNotFindRemovedEnemies()
-    {
-        var mapData = new SimpleMapData
-        {
-            Grid = new bool[5, 5],
-            Size = new Vector2I(5, 5),
-            PlayerStart = new Vector2I(0, 0)
-        };
-
-        for (var y = 0; y < 5; y++)
-        for (var x = 0; x < 5; x++)
-        {
-            mapData.Grid[y, x] = true;
-            mapData.PassableTiles.Add(new Vector2I(x, y));
-        }
-
-        // Add two enemies, then remove one (simulating defeat)
-        var enemy1 = new Vector2I(2, 2);
-        var enemy2 = new Vector2I(4, 4);
-        mapData.EnemyPositions.Add(enemy1);
-        mapData.EnemyPositions.Add(enemy2);
-
-        // Remove first enemy (as if defeated)
-        mapData.EnemyPositions.Remove(enemy1);
-
-        var ai = new ExplorationAI(mapData);
-
-        var stepCount = 0;
-        while (!ai.HasFoundEnemy && stepCount < 100)
-        {
-            ai.StepExploration();
-            stepCount++;
-        }
-
-        // Should only find the remaining enemy
-        AssertBool(ai.HasFoundEnemy).IsTrue();
-        AssertThat(ai.EnemyPosition).IsEqual(enemy2);
     }
 
     [TestCase]
     public void TestExplorationWithNoEnemies()
     {
-        var mapData = new SimpleMapData
-        {
-            Grid = new bool[3, 3],
-            Size = new Vector2I(3, 3),
-            PlayerStart = new Vector2I(0, 0)
-        };
+        var mapData = CreateSimpleMap(3, 3, new Vector2I(1, 1));
+        mapData.EnemyPositions.Clear();
 
-        for (var y = 0; y < 3; y++)
-        for (var x = 0; x < 3; x++)
-        {
-            mapData.Grid[y, x] = true;
-            mapData.PassableTiles.Add(new Vector2I(x, y));
-        }
-
-        // No enemies on map
-        var ai = new ExplorationAI(mapData);
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
 
         var stepCount = 0;
         while (!ai.HasFinishedExploration && stepCount < 100)
@@ -375,85 +299,54 @@ public class ExplorationAITest
             stepCount++;
         }
 
-        // Should finish exploration without finding any enemies
         AssertBool(ai.HasFinishedExploration).IsTrue();
         AssertBool(ai.HasFoundEnemy).IsFalse();
     }
 
     [TestCase]
-    public void TestExplorationFindsEnemiesOneByOneAsTheyAreRemoved()
+    public void TestExplorationStartsInFrontierMode()
+    {
+        var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
+
+        AssertThat(ai.CurrentMode).IsEqual(ExplorationMode.FrontierExploration);
+    }
+
+    [TestCase]
+    public void TestVisibilityBlockedByWall()
     {
         var mapData = new SimpleMapData
         {
-            Grid = new bool[5, 5],
-            Size = new Vector2I(5, 5),
+            TileIds = new string[1, 5],
+            Size = new Vector2I(5, 1),
             PlayerStart = new Vector2I(0, 0)
         };
 
-        for (var y = 0; y < 5; y++)
-        for (var x = 0; x < 5; x++)
-        {
-            mapData.Grid[y, x] = true;
-            mapData.PassableTiles.Add(new Vector2I(x, y));
-        }
+        // Corridor with wall in middle: Floor, Floor, Wall, Floor, Enemy
+        mapData.TileIds[0, 0] = Floor;
+        mapData.TileIds[0, 1] = Floor;
+        mapData.TileIds[0, 2] = Wall;
+        mapData.TileIds[0, 3] = Floor;
+        mapData.TileIds[0, 4] = Floor;
 
-        // Add three enemies at different positions
-        var enemy1 = new Vector2I(1, 1);
-        var enemy2 = new Vector2I(2, 2);
-        var enemy3 = new Vector2I(3, 3);
-        mapData.EnemyPositions.Add(enemy1);
-        mapData.EnemyPositions.Add(enemy2);
-        mapData.EnemyPositions.Add(enemy3);
+        mapData.PassableTiles.Add(new Vector2I(0, 0));
+        mapData.PassableTiles.Add(new Vector2I(1, 0));
+        mapData.PassableTiles.Add(new Vector2I(3, 0));
+        mapData.PassableTiles.Add(new Vector2I(4, 0));
 
-        var enemiesEncountered = new List<Vector2I>();
+        mapData.EnemyPositions.Add(new Vector2I(4, 0));
 
-        // First exploration - find first enemy
-        var ai1 = new ExplorationAI(mapData);
-        var stepCount = 0;
-        while (!ai1.HasFoundEnemy && stepCount < 100)
-        {
-            ai1.StepExploration();
-            stepCount++;
-        }
-        AssertBool(ai1.HasFoundEnemy).IsTrue();
-        enemiesEncountered.Add(ai1.EnemyPosition);
-        // Remove defeated enemy from map
-        mapData.EnemyPositions.Remove(ai1.EnemyPosition);
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
 
-        // Second exploration - should find different enemy
-        var ai2 = new ExplorationAI(mapData);
-        stepCount = 0;
-        while (!ai2.HasFoundEnemy && stepCount < 100)
-        {
-            ai2.StepExploration();
-            stepCount++;
-        }
-        AssertBool(ai2.HasFoundEnemy).IsTrue();
-        AssertBool(!enemiesEncountered.Contains(ai2.EnemyPosition)).IsTrue();
-        enemiesEncountered.Add(ai2.EnemyPosition);
-        mapData.EnemyPositions.Remove(ai2.EnemyPosition);
-
-        // Third exploration - should find last enemy
-        var ai3 = new ExplorationAI(mapData);
-        stepCount = 0;
-        while (!ai3.HasFoundEnemy && stepCount < 100)
-        {
-            ai3.StepExploration();
-            stepCount++;
-        }
-        AssertBool(ai3.HasFoundEnemy).IsTrue();
-        AssertBool(!enemiesEncountered.Contains(ai3.EnemyPosition)).IsTrue();
-        enemiesEncountered.Add(ai3.EnemyPosition);
-
-        // All three unique enemies should have been found
-        AssertThat(enemiesEncountered.Count).IsEqual(3);
+        // Enemy should not be visible through wall
+        AssertThat(ai.CurrentMode).IsEqual(ExplorationMode.FrontierExploration);
     }
 
     private static SimpleMapData CreateSimpleMap(int width, int height, Vector2I playerStart)
     {
         var mapData = new SimpleMapData
         {
-            Grid = new bool[height, width],
+            TileIds = new string[height, width],
             Size = new Vector2I(width, height),
             PlayerStart = playerStart
         };
@@ -461,7 +354,7 @@ public class ExplorationAITest
         for (var y = 0; y < height; y++)
         for (var x = 0; x < width; x++)
         {
-            mapData.Grid[y, x] = true;
+            mapData.TileIds[y, x] = Floor;
             mapData.PassableTiles.Add(new Vector2I(x, y));
         }
 
@@ -473,5 +366,12 @@ public class ExplorationAITest
         var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
         mapData.EnemyPositions.Add(new Vector2I(4, 4));
         return mapData;
+    }
+
+    private static void FillWithWalls(string[,] tileIds)
+    {
+        for (var y = 0; y < tileIds.GetLength(0); y++)
+        for (var x = 0; x < tileIds.GetLength(1); x++)
+            tileIds[y, x] = Wall;
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -8,11 +8,14 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
 /// <summary>
-/// Creates a simple connected map of passable/blocked tiles
+/// Creates a simple connected map of passable/blocked tiles using tile IDs
 /// </summary>
 public class SimpleMapGenerator
 {
     private readonly RandomNumberGenerator _rng;
+
+    public const string FloorTileId = "floor";
+    public const string WallTileId = "wall";
 
     public SimpleMapGenerator(RandomNumberGenerator rng)
     {
@@ -24,8 +27,7 @@ public class SimpleMapGenerator
     {
         ILog.Print($"Generating simple map {size.X}x{size.Y} with {blockedPercentage:P0} blocked tiles");
 
-        // Create initial random grid
-        var grid = new bool[size.Y, size.X];
+        var tileIds = new string[size.Y, size.X];
         var passableTiles = new List<Vector2I>();
 
         // First pass: randomly place blocked tiles
@@ -33,7 +35,7 @@ public class SimpleMapGenerator
         for (var x = 0; x < size.X; x++)
         {
             var isBlocked = _rng.Randf() < blockedPercentage;
-            grid[y, x] = !isBlocked; // true = passable, false = blocked
+            tileIds[y, x] = isBlocked ? WallTileId : FloorTileId;
 
             if (!isBlocked) passableTiles.Add(new Vector2I(x, y));
         }
@@ -41,17 +43,16 @@ public class SimpleMapGenerator
         // Ensure we have at least some passable tiles
         if (passableTiles.Count == 0)
         {
-            // Force center tile to be passable
             var center = new Vector2I(size.X / 2, size.Y / 2);
-            grid[center.Y, center.X] = true;
+            tileIds[center.Y, center.X] = FloorTileId;
             passableTiles.Add(center);
         }
 
         // Ensure all passable tiles are connected
-        EnsureConnectivity(grid, size, passableTiles);
+        EnsureConnectivity(tileIds, size, passableTiles);
 
         // Choose random positions for player and enemies
-        var shuffledTiles = passableTiles.OrderBy(t => _rng.Randf()).ToList();
+        var shuffledTiles = passableTiles.OrderBy(_ => _rng.Randf()).ToList();
         var playerStart = shuffledTiles[0];
 
         // Place 2-3 enemies randomly
@@ -63,7 +64,7 @@ public class SimpleMapGenerator
 
         return new SimpleMapData
         {
-            Grid = grid,
+            TileIds = tileIds,
             Size = size,
             PlayerStart = playerStart,
             EnemyPositions = enemyPositions,
@@ -71,11 +72,10 @@ public class SimpleMapGenerator
         };
     }
 
-    private void EnsureConnectivity(bool[,] grid, Vector2I size, List<Vector2I> passableTiles)
+    private void EnsureConnectivity(string[,] tileIds, Vector2I size, List<Vector2I> passableTiles)
     {
         if (passableTiles.Count <= 1) return;
 
-        // Find all connected components using flood fill
         var visited = new bool[size.Y, size.X];
         var components = new List<List<Vector2I>>();
 
@@ -84,17 +84,15 @@ public class SimpleMapGenerator
             if (visited[tile.Y, tile.X]) continue;
 
             var component = new List<Vector2I>();
-            FloodFill(grid, visited, size, tile, component);
+            FloodFill(tileIds, visited, size, tile, component);
             if (component.Count > 0) components.Add(component);
         }
 
-        // If we have multiple components, connect them
         while (components.Count > 1)
         {
             var component1 = components[0];
             var component2 = components[1];
 
-            // Find closest pair of tiles between components
             var closest1 = component1[0];
             var closest2 = component2[0];
             var minDistance = float.MaxValue;
@@ -111,25 +109,22 @@ public class SimpleMapGenerator
                 }
             }
 
-            // Create corridor between closest tiles
-            CreateCorridor(grid, size, closest1, closest2);
+            CreateCorridor(tileIds, size, closest1, closest2);
 
-            // Merge components
             component1.AddRange(component2);
             components.RemoveAt(1);
 
-            // Update passable tiles list
             passableTiles.Clear();
             for (var y = 0; y < size.Y; y++)
             for (var x = 0; x < size.X; x++)
-                if (grid[y, x])
+                if (IsPassableTile(tileIds[y, x]))
                     passableTiles.Add(new Vector2I(x, y));
         }
 
         ILog.Print($"Connectivity ensured: {components.Count} connected component(s)");
     }
 
-    private void FloodFill(bool[,] grid, bool[,] visited, Vector2I size, Vector2I start, List<Vector2I> component)
+    private void FloodFill(string[,] tileIds, bool[,] visited, Vector2I size, Vector2I start, List<Vector2I> component)
     {
         var stack = new Stack<Vector2I>();
         stack.Push(start);
@@ -141,13 +136,12 @@ public class SimpleMapGenerator
             if (current.X < 0 || current.X >= size.X ||
                 current.Y < 0 || current.Y >= size.Y ||
                 visited[current.Y, current.X] ||
-                !grid[current.Y, current.X])
+                !IsPassableTile(tileIds[current.Y, current.X]))
                 continue;
 
             visited[current.Y, current.X] = true;
             component.Add(current);
 
-            // Check 4-directional neighbors
             stack.Push(new Vector2I(current.X + 1, current.Y));
             stack.Push(new Vector2I(current.X - 1, current.Y));
             stack.Push(new Vector2I(current.X, current.Y + 1));
@@ -155,28 +149,30 @@ public class SimpleMapGenerator
         }
     }
 
-    private void CreateCorridor(bool[,] grid, Vector2I size, Vector2I from, Vector2I to)
+    private void CreateCorridor(string[,] tileIds, Vector2I size, Vector2I from, Vector2I to)
     {
-        // Simple L-shaped corridor
         var current = from;
 
-        // Move horizontally first
         while (current.X != to.X)
         {
             current.X += current.X < to.X ? 1 : -1;
-            if (IsValidPosition(current, size)) grid[current.Y, current.X] = true;
+            if (IsValidPosition(current, size)) tileIds[current.Y, current.X] = FloorTileId;
         }
 
-        // Then move vertically
         while (current.Y != to.Y)
         {
             current.Y += current.Y < to.Y ? 1 : -1;
-            if (IsValidPosition(current, size)) grid[current.Y, current.X] = true;
+            if (IsValidPosition(current, size)) tileIds[current.Y, current.X] = FloorTileId;
         }
     }
 
     private static bool IsValidPosition(Vector2I pos, Vector2I size)
     {
         return pos.X >= 0 && pos.X < size.X && pos.Y >= 0 && pos.Y < size.Y;
+    }
+
+    private static bool IsPassableTile(string tileId)
+    {
+        return tileId != WallTileId;
     }
 }

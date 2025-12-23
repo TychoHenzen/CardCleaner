@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
@@ -45,10 +46,11 @@ public partial class SimpleWorldMapScreen : Node3D
     private const int TILE_SIZE = 16;
     private const int TILESET_SOURCE_ID = 4;
     private Camera2D? _camera2D;
+    private ITileRegistry? _tileRegistry;
 
-    // Atlas coordinates for FantasyDreamland tileset (source 4)
-    private static readonly Vector2I BLOCKED_TILE_ATLAS = new(2, 0);
-    private static readonly Vector2I PASSABLE_TILE_ATLAS = new(4, 0);
+    // Fallback atlas coordinates for FantasyDreamland tileset (source 4)
+    private static readonly Vector2I FALLBACK_BLOCKED_ATLAS = new(2, 0);
+    private static readonly Vector2I FALLBACK_PASSABLE_ATLAS = new(4, 0);
     private static readonly Vector2I VISITED_TILE_ATLAS = new(6, 0);
 
     public override void _Ready()
@@ -58,10 +60,13 @@ public partial class SimpleWorldMapScreen : Node3D
         if (StatusLabel != null) StatusLabel.Text = "Waiting for map data...";
 
         if (CombatUI != null) CombatUI.Visible = false;
-        
+
         CallDeferred(nameof(SetupScreenMesh));
         CallDeferred(nameof(SetupScreenMaterial));
-        
+
+        // Get tile registry for rendering
+        ServiceLocator.Get<ITileRegistry>(registry => _tileRegistry = registry);
+
         // Use dependency injection to get the game session service
         ServiceLocator.Get<IGameSessionService>(gameSession =>
         {
@@ -365,14 +370,13 @@ public partial class SimpleWorldMapScreen : Node3D
         // Resize viewport to fit the map
         SetupViewport(mapData.Size);
 
-        // Render the map using FantasyDreamland tileset (source 4)
+        // Render the map using tile registry for atlas coordinates
         for (var y = 0; y < mapData.Size.Y; y++)
         for (var x = 0; x < mapData.Size.X; x++)
         {
             var position = new Vector2I(x, y);
-            var isPassable = mapData.Grid[y, x];
-
-            var atlasCoords = isPassable ? PASSABLE_TILE_ATLAS : BLOCKED_TILE_ATLAS;
+            var tileId = mapData.GetTileId(position);
+            var atlasCoords = GetAtlasCoordsForTile(tileId);
             MapLayer.SetCell(position, TILESET_SOURCE_ID, atlasCoords);
         }
 
@@ -383,6 +387,18 @@ public partial class SimpleWorldMapScreen : Node3D
         CallDeferred(nameof(ConfigureCamera));
 
         ILog.Print($"Rendered map: {mapData.Size.X}x{mapData.Size.Y} with {mapData.EnemyPositions.Count} enemies");
+    }
+
+    private Vector2I GetAtlasCoordsForTile(string tileId)
+    {
+        if (_tileRegistry == null)
+        {
+            // Fallback when registry not available
+            return tileId == SimpleMapGenerator.WallTileId ? FALLBACK_BLOCKED_ATLAS : FALLBACK_PASSABLE_ATLAS;
+        }
+
+        var tile = _tileRegistry.GetTile(tileId);
+        return tile?.AtlasCoords ?? FALLBACK_PASSABLE_ATLAS;
     }
 
     private void SetupViewport(Vector2I mapSize)
