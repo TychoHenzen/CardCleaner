@@ -14,7 +14,7 @@ public class NodePathConverter : JsonConverter<NodePath>
         reader.Read(); // Read start object
 
         reader.Read(); // Read property's name
-        string? path = reader.Value as string;
+        string path = reader.Value as string ?? string.Empty;
         reader.Read(); // Read property's value
 
         reader.Read(); // Read end object

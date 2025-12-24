@@ -1,6 +1,8 @@
 #if TOOLS
 using Godot;
 
+namespace Saveable;
+
 [Tool]
 public partial class SaveablePlugin : EditorPlugin
 {

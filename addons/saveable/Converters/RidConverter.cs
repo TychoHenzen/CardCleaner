@@ -22,8 +22,8 @@ public class RidConverter : JsonConverter<Rid>
 
         reader.Read(); // Read end object
 
-        GodotObject obj = GodotObject.InstanceFromId(id);
-        return new Rid(obj);
+        GodotObject? obj = GodotObject.InstanceFromId(id);
+        return obj != null ? new Rid(obj) : default;
     }
 
     public override void WriteJson(JsonWriter writer, Rid value, JsonSerializer serializer)

@@ -52,7 +52,7 @@ public readonly struct GeneratedMap
         return new GeneratedMap(terrainGrid, structureGrid, decorationGrid, effectGrid, mapSize);
     }
 
-    private static SemanticTile?[,] Extract2DLayer(SemanticTile[,,] result3D, int layerIndex)
+    private static SemanticTile?[,] Extract2DLayer(SemanticTile?[,,] result3D, int layerIndex)
     {
         var width = result3D.GetLength(2);
         var height = result3D.GetLength(1);

@@ -23,8 +23,8 @@ public interface ICardSpawningService
     /// </summary>
     /// <param name="spawnTransform">World transform for the spawned card</param>
     /// <param name="parent">Parent node to add the card to</param>
-    /// <returns>The spawned card instance</returns>
-    Node3D SpawnRandomCard(Transform3D spawnTransform, Node3D parent);
+    /// <returns>The spawned card instance, or null if spawning failed</returns>
+    Node3D? SpawnRandomCard(Transform3D spawnTransform, Node3D parent);
 
     /// <summary>
     /// Gets a random offset within the specified range.

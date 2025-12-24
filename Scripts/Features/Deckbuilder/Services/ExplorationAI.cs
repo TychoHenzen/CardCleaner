@@ -260,7 +260,7 @@ public class ExplorationAI
 
                 var tentativeGScore = gScore[current] + 1; // All moves cost 1
 
-                if (!gScore.ContainsKey(neighbor) || tentativeGScore < gScore[neighbor])
+                if (!gScore.TryGetValue(neighbor, out var existingGScore) || tentativeGScore < existingGScore)
                 {
                     cameFrom[neighbor] = current;
                     gScore[neighbor] = tentativeGScore;

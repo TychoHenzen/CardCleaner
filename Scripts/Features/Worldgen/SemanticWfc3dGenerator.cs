@@ -16,7 +16,10 @@ public class SemanticWfc3dGenerator
     private readonly TileLayer[] _layerOrder; // [Terrain, Decoration, Structure, Effects]
     private readonly RandomNumberGenerator _rng;
     private readonly ConstraintManager _constraintManager = new();
+    // TODO: Integrate gradient influence into tile selection
+#pragma warning disable IDE0052 // Remove unread private members
     private readonly GradientInfluenceComponent _gradientInfluence;
+#pragma warning restore IDE0052
 
 
     // 3D wave function: [layer][y][x]
@@ -181,7 +184,7 @@ public class SemanticWfc3dGenerator
         }
     }
 
-    public SemanticTile[,,] Generate()
+    public SemanticTile?[,,] Generate()
     {
         ILog.Print("=== WFC GENERATION START ===");
 
@@ -312,6 +315,7 @@ public class SemanticWfc3dGenerator
         if (availableTiles.Count == 0) return;
 
         var chosenTile = ChooseWeightedTile(availableTiles, position);
+        if (chosenTile == null) return;
 
         _wave[position.Z][position.Y][position.X].Clear();
         _wave[position.Z][position.Y][position.X].Add(chosenTile);
@@ -404,7 +408,7 @@ public class SemanticWfc3dGenerator
         };
     }
 
-    private SemanticTile ChooseWeightedTile(List<SemanticTile> tiles, Vector3I position)
+    private SemanticTile? ChooseWeightedTile(List<SemanticTile> tiles, Vector3I position)
     {
         if (tiles.Count == 0) return null;
         if (tiles.Count == 1) return tiles[0];
@@ -439,9 +443,9 @@ public class SemanticWfc3dGenerator
         return tiles[^1];
     }
 
-    private SemanticTile[,,] WaveToTileArray()
+    private SemanticTile?[,,] WaveToTileArray()
     {
-        var result = new SemanticTile[_mapSize.Z, _mapSize.Y, _mapSize.X];
+        var result = new SemanticTile?[_mapSize.Z, _mapSize.Y, _mapSize.X];
 
         for (var z = 0; z < _mapSize.Z; z++)
         for (var y = 0; y < _mapSize.Y; y++)

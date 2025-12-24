@@ -21,7 +21,8 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
 
         foreach (var layer in layers)
         {
-            texturesArr.Add(layer.Texture);
+            if (layer.Texture != null)
+                texturesArr.Add(layer.Texture);
             regionsArr.Add(new Vector4(layer.Region.Position.X, layer.Region.Position.Y, layer.Region.Size.X,
                 layer.Region.Size.Y));
             frontFlagsArr.Add(layer.RenderOnFront);

@@ -8,6 +8,7 @@
         <AnalysisLevel>8.0-recommended</AnalysisLevel>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <NoWarn>$(NoWarn);EnableGenerateDocumentationFile</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <Folder Include="addons\"/>

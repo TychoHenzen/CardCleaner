@@ -81,7 +81,7 @@ public partial class CardBasedGradient : BaselineGradient
 
         for (var y = 0; y < _gridSize.Y; y++)
         for (var x = 0; x < _gridSize.X; x++)
-            _sampleGrid[y, x] = SampleFromHypersphere(center, SamplingRadius);
+            _sampleGrid![y, x] = SampleFromHypersphere(center, SamplingRadius);
     }
 
     private void GenerateCapsuleGradient()
@@ -95,7 +95,7 @@ public partial class CardBasedGradient : BaselineGradient
             // Sample along line segment with cylindrical distribution
             var t = _rng.Randf();
             var linePoint = LerpSignatures(start, end, t);
-            _sampleGrid[y, x] = SampleFromHypersphere(linePoint, SamplingRadius * 0.8f);
+            _sampleGrid![y, x] = SampleFromHypersphere(linePoint, SamplingRadius * 0.8f);
         }
     }
 
@@ -110,7 +110,7 @@ public partial class CardBasedGradient : BaselineGradient
             // Sample along Bezier curve
             var t = _rng.Randf();
             var curvePoint = SampleBezierCurve(controlPoints, t);
-            _sampleGrid[y, x] = SampleFromHypersphere(curvePoint, SamplingRadius * 0.6f);
+            _sampleGrid![y, x] = SampleFromHypersphere(curvePoint, SamplingRadius * 0.6f);
         }
     }
 
@@ -177,7 +177,7 @@ public partial class CardBasedGradient : BaselineGradient
         for (var y = 0; y < _gridSize.Y; y++)
         for (var x = 0; x < _gridSize.X; x++)
         {
-            var signature = _sampleGrid[y, x];
+            var signature = _sampleGrid![y, x];
 
             // Apply intensity bonus
             for (var i = 0; i < 8; i++) signature[i] = Mathf.Clamp(signature[i] * bonusMultiplier, -1f, 1f);
@@ -207,7 +207,7 @@ public partial class CardBasedGradient : BaselineGradient
         var fx = x - x0;
         var fy = y - y0;
 
-        var sample00 = _sampleGrid[y0, x0];
+        var sample00 = _sampleGrid![y0, x0];
         var sample10 = _sampleGrid[y0, x1];
         var sample01 = _sampleGrid[y1, x0];
         var sample11 = _sampleGrid[y1, x1];

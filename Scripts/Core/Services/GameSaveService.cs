@@ -122,8 +122,13 @@ public partial class GameSaveService : Node, ISaveable
         ILog.Print($"Processing {_pendingCardData.Count} card entries");
         
         var recreatedCount = 0;
-        var worldNode = GetTree().CurrentScene as Node3D; // Fix the cast
-        
+        var worldNode = GetTree().CurrentScene as Node3D;
+        if (worldNode == null)
+        {
+            ILog.Error("CurrentScene is not a Node3D, cannot recreate cards");
+            return;
+        }
+
         foreach (var cardDataObj in _pendingCardData)
         {
             
@@ -223,10 +228,10 @@ public partial class GameSaveService : Node, ISaveable
     {
         if (arrayData is float[] arr)
             return arr;
-        
+
         // Handle JSON array
         var json = SaveExtension.SerializeObject(arrayData);
-        return SaveExtension.DeserializeObject<float[]>(json);
+        return SaveExtension.DeserializeObject<float[]>(json) ?? [];
     }
     
     private void ReparentToCamera(CardController card, Camera3D camera)

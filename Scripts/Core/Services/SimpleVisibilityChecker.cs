@@ -7,15 +7,15 @@ namespace CardCleaner.Scripts.Core.Services;
 
 public class SimpleVisibilityChecker : IVisibilityChecker
 {
-    public bool CanSee(Vector2I from, Vector2I to, SimpleMapData mapData)
+    public bool CanSee(Vector2I from, Vector2I target, SimpleMapData mapData)
     {
-        if (from == to) return true;
+        if (from == target) return true;
 
         // Bresenham's line algorithm
         var x0 = from.X;
         var y0 = from.Y;
-        var x1 = to.X;
-        var y1 = to.Y;
+        var x1 = target.X;
+        var y1 = target.Y;
 
         var dx = Math.Abs(x1 - x0);
         var dy = Math.Abs(y1 - y0);

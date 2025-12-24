@@ -165,7 +165,7 @@ public partial class WorldTileMapScreen : Node3D
 
         // Calculate zoom to fit the entire tilemap
         var mapPixelSize = new Vector2(usedRect.Size.X * TileSize, usedRect.Size.Y * TileSize); // Assuming 32px tiles
-        var viewportSize = Viewport.Size;
+        var viewportSize = Viewport?.Size ?? new Vector2I(1920, 1080);
 
         var zoomX = viewportSize.X / mapPixelSize.X;
         var zoomY = viewportSize.Y / mapPixelSize.Y;

@@ -149,9 +149,10 @@ public partial class GameSessionService : Node, IGameSessionService
 
     private void StartExploration()
     {
-        ILog.Print($"Starting exploration... ({_currentMap.EnemyPositions.Count} enemies on map)");
+        ILog.Print($"Starting exploration... ({_currentMap?.EnemyPositions.Count ?? 0} enemies on map)");
 
         // Continue from current player position if resuming, otherwise start fresh
+        if (_currentMap == null) return;
         _explorationAI = new ExplorationAI(_currentMap, _playerPosition);
         _explorationAI.EnemyEncountered += OnEnemyEncountered;
         _explorationAI.PlayerMoved += pos => PlayerMoved?.Invoke(pos);
@@ -240,8 +241,8 @@ public partial class GameSessionService : Node, IGameSessionService
                 var defeatedPosition = _currentEnemyPosition.Value;
                 // Player is now at the enemy's position
                 _playerPosition = defeatedPosition;
-                _currentMap.EnemyPositions.Remove(defeatedPosition);
-                ILog.Print($"Enemy at {defeatedPosition} destroyed! ({_currentMap.EnemyPositions.Count} enemies remaining)");
+                _currentMap?.EnemyPositions.Remove(defeatedPosition);
+                ILog.Print($"Enemy at {defeatedPosition} destroyed! ({_currentMap?.EnemyPositions.Count ?? 0} enemies remaining)");
 
                 // Notify UI to remove enemy sprite
                 EnemyDefeated?.Invoke(defeatedPosition);
@@ -249,7 +250,7 @@ public partial class GameSessionService : Node, IGameSessionService
             }
 
             // Check if more enemies remain on the map
-            if (_currentMap.EnemyPositions.Count > 0)
+            if (_currentMap?.EnemyPositions.Count > 0)
             {
                 ILog.Print($"Resuming exploration from {_playerPosition} to find remaining enemies...");
                 CurrentState = SessionState.Exploring;

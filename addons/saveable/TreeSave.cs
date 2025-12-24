@@ -86,10 +86,7 @@ public class TreeSave
     /// <param name="value">The <see cref="NodeSave"/> to set or add</param>
     public void SetOrAddCollection(string key, NodeSave value)
     {
-        if (Collections.ContainsKey(key))
-            Collections[key] = value;
-        else
-            Collections.Add(key, value);
+        Collections[key] = value;
     }
 
     /// <summary>

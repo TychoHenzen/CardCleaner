@@ -100,7 +100,11 @@ public static class JsonWorldSerializer
             // Resolve layer constraint tags
             foreach (var constraint in tile.LayerConstraints)
                 if (!string.IsNullOrEmpty(constraint.tagName))
-                    constraint.tag = registry.GetTag(constraint.tagName);
+                {
+                    var tag = registry.GetTag(constraint.tagName);
+                    if (tag != null)
+                        constraint.tag = tag;
+                }
         }
 
         // Resolve enemy spawn data terrain preferences

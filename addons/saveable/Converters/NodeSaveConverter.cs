@@ -51,7 +51,7 @@ public class NodeSaveConverter : JsonConverter<NodeSave>
     {
         writer.WriteStartObject();
 
-        foreach (KeyValuePair<string, object> properties in value!.Properties)
+        foreach (KeyValuePair<string, object?> properties in value!.Properties)
         {
             writer.WritePropertyName(properties.Key);
             serializer.Serialize(writer, properties.Value);
