@@ -342,6 +342,91 @@ public class ExplorationAITest
         AssertThat(ai.CurrentMode).IsEqual(ExplorationMode.FrontierExploration);
     }
 
+    [TestCase]
+    public void TestTargetNeverBecomesVisitedTileOscillation()
+    {
+        // Test that the agent doesn't oscillate between tiles when targets become visited.
+        // This happens when a frontier tile becomes "trivially visible" before the agent reaches it.
+        // The fix: when the current target becomes visited, recalculate instead of continuing.
+
+        var mapData = CreateSimpleMap(10, 10, new Vector2I(0, 0));
+        mapData.EnemyPositions.Clear(); // No enemies, pure exploration
+
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 3);
+
+        // Track position history to detect oscillation
+        var positionHistory = new List<Vector2I>();
+        var maxSteps = 200;
+        var stepCount = 0;
+
+        while (!ai.HasFinishedExploration && stepCount < maxSteps)
+        {
+            positionHistory.Add(ai.CurrentPosition);
+            ai.StepExploration();
+            stepCount++;
+
+            // Check for oscillation: same position appearing 3+ times in last 10 moves
+            if (positionHistory.Count >= 10)
+            {
+                var last10 = positionHistory.GetRange(positionHistory.Count - 10, 10);
+                var currentPos = ai.CurrentPosition;
+                var occurrences = 0;
+                foreach (var pos in last10)
+                {
+                    if (pos == currentPos) occurrences++;
+                }
+
+                // Fail if we're oscillating (same tile visited 3+ times in 10 moves)
+                AssertThat(occurrences).IsLess(3);
+            }
+        }
+
+        // Should complete exploration
+        AssertBool(ai.HasFinishedExploration).IsTrue();
+    }
+
+    [TestCase]
+    public void TestCurrentTargetExposedForDebug()
+    {
+        // Verify that CurrentTarget and CurrentPath are exposed for debug visualization
+        var mapData = CreateSimpleMap(10, 10, new Vector2I(0, 0));
+        mapData.EnemyPositions.Clear();
+
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 2);
+
+        // Initially no target
+        AssertThat(ai.CurrentTarget).IsNull();
+        AssertThat(ai.CurrentPath).IsNotNull();
+        AssertThat(ai.CurrentPath.Count).IsEqual(0);
+
+        // After first step, should have target and/or path
+        ai.StepExploration();
+
+        // Path properties should be accessible (may or may not have values depending on state)
+        AssertThat(ai.CurrentPath).IsNotNull();
+    }
+
+    [TestCase]
+    public void TestPathUpdatedEventFires()
+    {
+        var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        mapData.EnemyPositions.Clear();
+
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 2);
+        var pathUpdatedCount = 0;
+
+        ai.PathUpdated += () => pathUpdatedCount++;
+
+        // Step exploration several times
+        for (var i = 0; i < 10 && !ai.HasFinishedExploration; i++)
+        {
+            ai.StepExploration();
+        }
+
+        // PathUpdated should have fired at least once
+        AssertThat(pathUpdatedCount).IsGreater(0);
+    }
+
     private static SimpleMapData CreateSimpleMap(int width, int height, Vector2I playerStart)
     {
         var mapData = new SimpleMapData

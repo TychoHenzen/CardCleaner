@@ -25,6 +25,7 @@ public class ExplorationAI
     private readonly List<Vector2I> _pathToTarget = new();
     private readonly FrontierExplorationBehavior _frontierBehavior;
     private readonly IVisibilityChecker _visibilityChecker;
+    private Vector2I? _currentTargetTile;
 
     public Vector2I CurrentPosition { get; private set; }
     public bool HasFoundEnemy { get; private set; }
@@ -34,10 +35,21 @@ public class ExplorationAI
     public bool HasFinishedExploration => _frontierBehavior.IsFullyExplored() || HasFoundEnemy;
     public IReadOnlySet<Vector2I> SeenTiles => _frontierBehavior.SeenTiles;
 
+    /// <summary>
+    /// The current path being followed (for debug visualization).
+    /// </summary>
+    public IReadOnlyList<Vector2I> CurrentPath => _pathToTarget;
+
+    /// <summary>
+    /// The current target tile the agent is trying to reach (for debug visualization).
+    /// </summary>
+    public Vector2I? CurrentTarget => _currentTargetTile;
+
     public event Action<Vector2I>? PlayerMoved;
     public event Action<Vector2I>? EnemyEncountered;
     public event Action<Vector2I>? EnemySpotted;
     public event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
+    public event Action? PathUpdated;
 
     public ExplorationAI(SimpleMapData mapData, Vector2I? startPosition = null, IVisibilityChecker? visibilityChecker = null, int visionRange = 5)
     {
@@ -91,13 +103,27 @@ public class ExplorationAI
             // Check for visible enemies and update mode
             CheckForVisibleEnemies();
 
-            // If we have a path, follow it
+            // If we have a path, follow it - but first check if target is still valid
             if (_pathToTarget.Count > 0)
             {
-                var nextPosition = _pathToTarget[0];
-                _pathToTarget.RemoveAt(0);
-                MoveToPosition(nextPosition);
-                return true;
+                // If target became visited (e.g., marked trivially visible), recalculate
+                if (_currentTargetTile.HasValue &&
+                    CurrentMode == ExplorationMode.FrontierExploration &&
+                    _frontierBehavior.VisitedTiles.Contains(_currentTargetTile.Value))
+                {
+                    ILog.Print($"Target {_currentTargetTile.Value} became visited - recalculating path");
+                    _pathToTarget.Clear();
+                    _currentTargetTile = null;
+                    PathUpdated?.Invoke();
+                    // Fall through to find new target
+                }
+                else
+                {
+                    var nextPosition = _pathToTarget[0];
+                    _pathToTarget.RemoveAt(0);
+                    MoveToPosition(nextPosition);
+                    return true;
+                }
             }
 
             // Find next target based on current mode
@@ -110,23 +136,29 @@ public class ExplorationAI
 
             if (target == null)
             {
+                _currentTargetTile = null;
+                PathUpdated?.Invoke();
                 ILog.Print("No more targets to explore - exploration complete");
                 return false;
             }
 
             // Calculate path to target
             _pathToTarget.Clear();
+            _currentTargetTile = target.Value;
             var path = FindPath(CurrentPosition, target.Value);
             if (path.Count > 1)
             {
                 // Take the first step now (don't use recursion to avoid stack issues)
                 _pathToTarget.AddRange(path.Skip(1)); // Skip current position
+                PathUpdated?.Invoke();
                 var nextPosition = _pathToTarget[0];
                 _pathToTarget.RemoveAt(0);
                 MoveToPosition(nextPosition);
                 return true;
             }
 
+            _currentTargetTile = null;
+            PathUpdated?.Invoke();
             ILog.Print($"No path to target {target.Value} found from {CurrentPosition} - exploration stuck");
             return false;
         }
@@ -164,7 +196,9 @@ public class ExplorationAI
             }
             CurrentMode = ExplorationMode.PathToEnemy;
             VisibleEnemyPosition = closestVisibleEnemy;
-            _pathToTarget.Clear(); // Recalculate path to enemy
+            _pathToTarget.Clear();
+            _currentTargetTile = null;
+            PathUpdated?.Invoke();
         }
         else
         {
@@ -173,6 +207,8 @@ public class ExplorationAI
             {
                 ILog.Print("Enemy no longer visible. Returning to exploration.");
                 _pathToTarget.Clear();
+                _currentTargetTile = null;
+                PathUpdated?.Invoke();
             }
             CurrentMode = ExplorationMode.FrontierExploration;
             VisibleEnemyPosition = null;

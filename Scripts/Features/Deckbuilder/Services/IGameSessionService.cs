@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
+// ReSharper disable once CheckNamespace
+
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
 public enum SessionState
@@ -24,6 +26,7 @@ public interface IGameSessionService
     event Action<Vector2I> PlayerMoved;
     event Action<Vector2I> EnemyDefeated;
     event Action<IReadOnlySet<Vector2I>> VisitedTilesUpdated;
+    event Action<IReadOnlyList<Vector2I>, Vector2I?> PathUpdated;
 
     void StartSession(CardSignature mapSeed, List<CardSignature> abilityCards);
     void AdvanceSession();

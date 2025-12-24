@@ -42,6 +42,21 @@ public class TileRegistry : ITileRegistry
             atlasCoords: new Vector2I(11, 6),
             sourceId: 49));
 
+        // Debug overlay tiles for path visualization
+        RegisterTile(new TileDefinition(
+            id: "debug_path",
+            name: "Debug Path",
+            passability: TilePassability.Passable,
+            atlasCoords: new Vector2I(12, 6),
+            sourceId: 49));
+
+        RegisterTile(new TileDefinition(
+            id: "debug_target",
+            name: "Debug Target",
+            passability: TilePassability.Passable,
+            atlasCoords: new Vector2I(13, 6),
+            sourceId: 49));
+
         RegisterTile(new TileDefinition(
             id: "grass",
             name: "Grass",

@@ -39,6 +39,7 @@ public partial class SimpleWorldMapScreen : Node3D
     private bool _isInitialized = false;
     private bool _serviceReady = false;
     private readonly HashSet<Vector2I> _renderedVisitedTiles = new();
+    private readonly HashSet<Vector2I> _renderedDebugTiles = new();
 
     // Pending initialization data (stored if Initialize called before service ready)
     private CardSignature[]? _pendingMapSeed;
@@ -79,6 +80,7 @@ public partial class SimpleWorldMapScreen : Node3D
             gameSession.PlayerMoved += OnServicePlayerMoved;
             gameSession.EnemyDefeated += OnServiceEnemyDefeated;
             gameSession.VisitedTilesUpdated += OnVisitedTilesUpdated;
+            gameSession.PathUpdated += OnPathUpdated;
 
             // If Initialize() was called before service was ready, start now
             if (_pendingMapSeed != null && _pendingAbilities != null)
@@ -102,6 +104,7 @@ public partial class SimpleWorldMapScreen : Node3D
             _gameSession.PlayerMoved -= OnServicePlayerMoved;
             _gameSession.EnemyDefeated -= OnServiceEnemyDefeated;
             _gameSession.VisitedTilesUpdated -= OnVisitedTilesUpdated;
+            _gameSession.PathUpdated -= OnPathUpdated;
         }
     }
 
@@ -175,6 +178,7 @@ public partial class SimpleWorldMapScreen : Node3D
         ILog.Print($"Received map from GameSessionService: {mapData.Size.X}x{mapData.Size.Y}");
         _mapData = mapData;
         _renderedVisitedTiles.Clear();
+        _renderedDebugTiles.Clear();
         RenderMap(_mapData);
     }
 
@@ -213,6 +217,44 @@ public partial class SimpleWorldMapScreen : Node3D
                 OverlayLayer.SetCell(position, visitedSourceId, visitedAtlasCoords);
                 _renderedVisitedTiles.Add(position);
             }
+        }
+    }
+
+    private void OnPathUpdated(IReadOnlyList<Vector2I> path, Vector2I? target)
+    {
+        if (OverlayLayer == null) return;
+
+        // Clear previous debug overlay tiles (restore to visited or empty)
+        var (visitedSourceId, visitedAtlasCoords) = GetTileRenderInfo("floor_visited");
+        foreach (var pos in _renderedDebugTiles)
+        {
+            if (_renderedVisitedTiles.Contains(pos))
+            {
+                // Restore visited tile
+                OverlayLayer.SetCell(pos, visitedSourceId, visitedAtlasCoords);
+            }
+            else
+            {
+                // Clear the cell
+                OverlayLayer.EraseCell(pos);
+            }
+        }
+        _renderedDebugTiles.Clear();
+
+        // Render new path tiles
+        var (pathSourceId, pathAtlasCoords) = GetTileRenderInfo("debug_path");
+        foreach (var pos in path)
+        {
+            OverlayLayer.SetCell(pos, pathSourceId, pathAtlasCoords);
+            _renderedDebugTiles.Add(pos);
+        }
+
+        // Render target tile (overwrites path tile if on same position)
+        if (target.HasValue)
+        {
+            var (targetSourceId, targetAtlasCoords) = GetTileRenderInfo("debug_target");
+            OverlayLayer.SetCell(target.Value, targetSourceId, targetAtlasCoords);
+            _renderedDebugTiles.Add(target.Value);
         }
     }
 
