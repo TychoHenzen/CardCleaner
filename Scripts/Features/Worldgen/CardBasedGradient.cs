@@ -10,24 +10,24 @@ namespace CardCleaner.Scripts.Features.Worldgen;
 [GlobalClass]
 public partial class CardBasedGradient : BaselineGradient
 {
-    private CardSignature[] _inputCards;
+    private CardSignature[] _inputCards = [];
     private float SamplingRadius => 0.1f * _inputCards.Length;
     private const int GridResolution = 16;
     private const float MultiCardIntensityBonus = 0.3f;
     private const float MultiCardVariationBonus = 0.2f;
 
-    private CardSignature[,] _sampleGrid;
+    private CardSignature[,]? _sampleGrid;
     private Vector2I _gridSize;
     private bool _needsRegeneration = true;
-    private RandomNumberGenerator _rng;
+    private RandomNumberGenerator _rng = new();
 
     public CardBasedGradient()
     {
     }
 
-    public CardBasedGradient(CardSignature[] InputCards, RandomNumberGenerator rng)
+    public CardBasedGradient(CardSignature[] inputCards, RandomNumberGenerator rng)
     {
-        _inputCards = InputCards;
+        _inputCards = inputCards;
         _rng = rng;
     }
 

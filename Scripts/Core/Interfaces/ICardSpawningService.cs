@@ -15,8 +15,8 @@ public interface ICardSpawningService
     /// <param name="signature">The card signature to generate</param>
     /// <param name="spawnTransform">World transform for the spawned card</param>
     /// <param name="parent">Parent node to add the card to</param>
-    /// <returns>The spawned card instance</returns>
-    Node3D SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent);
+    /// <returns>The spawned card instance, or null if spawning failed</returns>
+    Node3D? SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent);
 
     /// <summary>
     /// Spawns a card with a random signature.

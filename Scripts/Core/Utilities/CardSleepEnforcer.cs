@@ -10,13 +10,13 @@ namespace CardCleaner.Scripts.Core.Utilities;
 [Tool]
 public partial class CardSleepEnforcer : Node, IPhysicsComponent
 {
-    private RigidBody3D _body;
+    private RigidBody3D _body = null!;
     [Export] public float AngularSleepThreshold = 0.05f;
     [Export] public float LinearSleepThreshold = 0.05f;
 
     public void Setup(Node cardRoot)
     {
-        _body = cardRoot as RigidBody3D;
+        _body = (cardRoot as RigidBody3D)!;
     }
 
     public void IntegrateForces(PhysicsDirectBodyState3D state)

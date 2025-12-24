@@ -14,7 +14,7 @@ public class SimpleCombatSystem
 {
     public class Combatant
     {
-        public string Name { get; set; }
+        public required string Name { get; set; }
         public int Health { get; set; }
         public int MaxHealth { get; set; }
         public int AttackPower { get; set; }
@@ -37,10 +37,10 @@ public class SimpleCombatSystem
 
     public class CombatAction
     {
-        public string Name { get; set; }
+        public required string Name { get; set; }
         public int Damage { get; set; }
         public int Healing { get; set; }
-        public string Description { get; set; }
+        public required string Description { get; set; }
 
         public static CombatAction FromCardSignature(CardSignature signature)
         {
@@ -104,8 +104,8 @@ public class SimpleCombatSystem
     public bool CombatComplete => !_player.IsAlive || !_enemy.IsAlive;
     public bool PlayerWon => !_enemy.IsAlive && _player.IsAlive;
 
-    public event Action<string> CombatLogUpdated;
-    public event Action CombatEnded;
+    public event Action<string>? CombatLogUpdated;
+    public event Action? CombatEnded;
 
     public SimpleCombatSystem(List<CardSignature> playerAbilities, CardSignature enemySeed, RandomNumberGenerator rng)
     {

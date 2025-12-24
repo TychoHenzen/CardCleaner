@@ -15,9 +15,9 @@ public partial class CardDropper : Node3D
     [Signal]
     public delegate void DropStartedEventHandler();
 
-    private Camera3D _camera;
-    private ICardHolder _cardHolder;
-    private IDropPreview _dropPreview;
+    private Camera3D _camera = null!;
+    private ICardHolder _cardHolder = null!;
+    private IDropPreview _dropPreview = null!;
     private IInputService? _inputService;
 
     public bool IsPreparingDrop { get; private set; }

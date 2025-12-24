@@ -28,7 +28,7 @@ public partial class EnemySpawnData : Resource
 
     // Runtime spawn data
     [JsonIgnore] public PackedScene? EnemyScene { get; set; }
-    [Export] public string EnemyScenePath { get; set; }
+    [Export] public string EnemyScenePath { get; set; } = "";
 
     public bool CanSpawnOnTile(SemanticTile tile, CardSignature blendedSignature)
     {

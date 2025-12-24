@@ -36,8 +36,8 @@ public partial class SimpleWorldMapScreen : Node3D
     private SimpleMapData? _mapData;
     private List<Sprite2D> _enemySprites = new();
     private IGameSessionService? _gameSession;
-    private bool _isInitialized = false;
-    private bool _serviceReady = false;
+    private bool _isInitialized;
+    private bool _serviceReady;
     private readonly HashSet<Vector2I> _renderedVisitedTiles = new();
     private readonly HashSet<Vector2I> _renderedDebugTiles = new();
 
@@ -479,7 +479,7 @@ public partial class SimpleWorldMapScreen : Node3D
         return (tile.SourceId, tile.AtlasCoords);
     }
 
-    private bool _hasLoggedTileInfo = false;
+    private bool _hasLoggedTileInfo;
     private void LogTileRenderingSample()
     {
         if (_hasLoggedTileInfo || _mapData == null) return;

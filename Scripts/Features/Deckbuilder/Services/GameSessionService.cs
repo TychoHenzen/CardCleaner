@@ -12,16 +12,16 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 public partial class GameSessionService : Node, IGameSessionService
 {
     private SessionState _currentState = SessionState.WaitingForCards;
-    private CardSignature _mapSeed;
+    private CardSignature _mapSeed = null!;
     private List<CardSignature> _abilityCards = new();
     private RandomNumberGenerator _rng = new();
 
     // Simple game systems
-    private SimpleMapGenerator _mapGenerator;
-    private SimpleMapData _currentMap;
-    private ExplorationAI _explorationAI;
-    private SimpleCombatSystem _combatSystem;
-    private Timer _gameTimer;
+    private SimpleMapGenerator _mapGenerator = null!;
+    private SimpleMapData? _currentMap;
+    private ExplorationAI? _explorationAI;
+    private SimpleCombatSystem? _combatSystem;
+    private Timer _gameTimer = null!;
 
     // Player and enemy tracking
     private Vector2I? _playerPosition;
@@ -119,9 +119,9 @@ public partial class GameSessionService : Node, IGameSessionService
         _gameTimer.Stop();
         _mapSeed = null!;
         _abilityCards.Clear();
-        _currentMap = null;
-        _explorationAI = null;
-        _combatSystem = null;
+        _currentMap = null!;
+        _explorationAI = null!;
+        _combatSystem = null!;
         _playerPosition = null;
         _currentEnemyPosition = null;
         CurrentState = SessionState.WaitingForCards;
@@ -301,9 +301,9 @@ public partial class GameSessionService : Node, IGameSessionService
         _gameTimer?.Stop();
 
         // Clean up GameSessionService's own data
-        _currentMap = null;
-        _combatSystem = null;
-        _explorationAI = null;
+        _currentMap = null!;
+        _combatSystem = null!;
+        _explorationAI = null!;
         _playerPosition = null;
         _currentEnemyPosition = null;
     }

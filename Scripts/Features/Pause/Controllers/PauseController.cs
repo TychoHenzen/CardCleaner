@@ -4,9 +4,9 @@ namespace CardCleaner.Scripts.Features.Pause.Controllers;
 
 public partial class PauseController : Node
 {
-    private Control _pauseMenuRoot;
-    [Export] public CanvasLayer PauseMenuLayer;
-    [Export] public CanvasLayer UILayer;
+    private Control _pauseMenuRoot = null!;
+    [Export] public CanvasLayer PauseMenuLayer = null!;
+    [Export] public CanvasLayer UILayer = null!;
 
     public override void _Ready()
     {

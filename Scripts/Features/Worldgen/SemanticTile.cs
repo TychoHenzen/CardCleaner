@@ -29,7 +29,7 @@ public partial class SemanticTile : Resource
     [Export] public float GlobalSpawnChance { get; set; } = 0.0f;
     [Export] public TileLayer Layer { get; set; }
     [Export] public float BaseWeight { get; set; } = 1.0f;
-    [Export] public CardSignature Signature { get; set; }
+    [Export] public CardSignature Signature { get; set; } = new();
 
     /// <summary>
     /// Constraint modifications this tile applies to other layers when placed

@@ -18,6 +18,6 @@ public partial class LayerConstraint : Resource
     [Export] public TileLayer targetLayer { get; set; } = TileLayer.Terrain;
     [Export] public Direction AffectedSocket { get; set; }
     [Export] public Operation operation { get; set; } = Operation.Add;
-    [JsonIgnore] public CompatibilityTag tag { get; set; }
-    [Export] public string tagName { get; set; }
+    [JsonIgnore] public CompatibilityTag tag { get; set; } = null!;
+    [Export] public string tagName { get; set; } = "";
 }

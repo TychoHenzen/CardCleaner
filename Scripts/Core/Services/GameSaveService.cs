@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
@@ -8,6 +8,8 @@ using Saveable;
 using System.Collections.Generic;
 using System.Linq;
 using Saveable.Extensions;
+
+namespace CardCleaner.Scripts.Core.Services;
 
 [Service]
 public partial class GameSaveService : Node, ISaveable

@@ -16,7 +16,7 @@ public partial class CardHolder : Node3D, ICardHolder
 
     public RigidBody3D[] HeldCards => _heldCards.ToArray();
     private readonly List<RigidBody3D> _heldCards = new();
-    private Node3D _handParent;
+    private Node3D _handParent = null!;
     [Export] public uint CardCollisionLayer = 2;
 
     [Export] public float HoldDistance = 2f;

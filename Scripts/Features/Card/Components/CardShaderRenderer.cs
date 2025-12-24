@@ -10,7 +10,7 @@ public partial class CardShaderRenderer : Node, ICardComponent
 {
     private bool _baked;
 
-    private Node _cardRoot;
+    private Node _cardRoot = null!;
 
     private Vector3[] _gemEmissionColors = new Vector3[8];
     private float[] _gemEmissionStrengths = new float[8];
@@ -18,8 +18,8 @@ public partial class CardShaderRenderer : Node, ICardComponent
     private ICardMaterialComponent? _materialManager;
 
     // --- Text fields (front only) ---
-    [Export] public Label3D NameLabel { get; set; }
-    [Export] public Label3D AttrLabel { get; set; }
+    [Export] public Label3D NameLabel { get; set; } = null!;
+    [Export] public Label3D AttrLabel { get; set; } = null!;
 
 
     public void Setup(Node cardRoot)
@@ -39,7 +39,7 @@ public partial class CardShaderRenderer : Node, ICardComponent
     private void DeferredBake(CardTemplate template)
     {
         var box = GetParent().GetNodeOrNull<MeshInstance3D>("OuterBox_Baked");
-        if (box == null)
+        if (box == null || _materialManager == null)
         {
             CallDeferred(MethodName.DeferredBake, template);
             return;

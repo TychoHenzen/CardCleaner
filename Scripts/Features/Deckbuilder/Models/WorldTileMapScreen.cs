@@ -45,7 +45,7 @@ public partial class WorldTileMapScreen : Node3D
     [Export] public bool ShowDecoration { get; set; } = true;
     [Export] public bool ShowEffects { get; set; } = true;
     [Export] public CardSignature Signature { get; set; } = new();
-    private bool _generatePreview = false;
+    private bool _generatePreview;
 
     [Export]
     public bool GeneratePreview
@@ -62,7 +62,7 @@ public partial class WorldTileMapScreen : Node3D
 
     [Export] public ImageTexture? PreviewDisplay { get; set; }
 
-    private GradientInfluenceComponent _gradientInfluence;
+    private GradientInfluenceComponent _gradientInfluence = null!;
 
     public override void _Ready()
     {

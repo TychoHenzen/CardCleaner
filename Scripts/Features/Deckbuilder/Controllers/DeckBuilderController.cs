@@ -10,11 +10,11 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 /// </summary>
 public partial class DeckBuilderController : Node
 {
-    [Export] public DeckSlot AbilityDeckSlot { get; set; }
-    [Export] public DeckSlot MapCardSlot { get; set; }
-    [Export] public InteractableButton ActivateButton { get; set; }
-    [Export] public PackedScene BattleScreenScene { get; set; }
-    [Export] public SimpleWorldMapScreen WorldTileMapScreenScene { get; set; }
+    [Export] public DeckSlot AbilityDeckSlot { get; set; } = null!;
+    [Export] public DeckSlot MapCardSlot { get; set; } = null!;
+    [Export] public InteractableButton ActivateButton { get; set; } = null!;
+    [Export] public PackedScene BattleScreenScene { get; set; } = null!;
+    [Export] public SimpleWorldMapScreen WorldTileMapScreenScene { get; set; } = null!;
     [Export] public Vector3 ScreenSpawnPosition { get; set; } = Vector3.Zero;
 
     public override void _Ready()

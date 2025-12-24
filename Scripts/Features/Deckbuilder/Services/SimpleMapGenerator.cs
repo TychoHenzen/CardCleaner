@@ -21,11 +21,6 @@ public class SimpleMapGenerator
     public const string StoneTileId = "stone";
     public const string WaterTileId = "water";
 
-    // Passable terrain types for varied generation
-    private static readonly string[] PassableTerrainTypes = { FloorTileId, GrassTileId, DirtTileId };
-    // Blocked terrain types (excluding water which is special)
-    private static readonly string[] BlockedTerrainTypes = { WallTileId, StoneTileId };
-
     public SimpleMapGenerator(RandomNumberGenerator rng)
     {
         ArgumentNullException.ThrowIfNull(rng);

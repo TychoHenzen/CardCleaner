@@ -9,8 +9,8 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
 {
     private readonly Dictionary<string, Variant> _shaderParameters = new();
 
-    private ShaderMaterial _activeMaterial;
-    [Export] public ShaderMaterial CardMaterialTemplate { get; set; }
+    private ShaderMaterial _activeMaterial = null!;
+    [Export] public ShaderMaterial CardMaterialTemplate { get; set; } = null!;
 
     public void SetLayerTextures(Core.Data.LayerData[] layers)
     {
@@ -37,7 +37,7 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
     public void SetGemEmission(int index, Color color, float strength)
     {
         // Ensure arrays exist with proper size
-        if (!_shaderParameters.ContainsKey("gem_emission_colors"))
+        if (!_shaderParameters.TryGetValue("gem_emission_colors", out var existingColorsVar))
         {
             var colors = new Array<Vector3>();
             var strengths = new Array<float>();
@@ -51,9 +51,10 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
 
             _shaderParameters["gem_emission_colors"] = colors;
             _shaderParameters["gem_emission_strengths"] = strengths;
+            existingColorsVar = colors;
         }
 
-        var existingColors = _shaderParameters["gem_emission_colors"].As<Array<Vector3>>();
+        var existingColors = existingColorsVar.As<Array<Vector3>>();
         var existingStrengths = _shaderParameters["gem_emission_strengths"].As<Array<float>>();
 
         if (index is < 0 or >= 8)

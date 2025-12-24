@@ -5,9 +5,9 @@ namespace CardCleaner.Scripts.Features.Card.Components;
 
 public partial class DropPreview : Node3D, IDropPreview
 {
-    private MeshInstance3D _previewInstance;
-    private ImmediateMesh _previewMesh;
-    private float RayLength = 100f;
+    private MeshInstance3D _previewInstance = null!;
+    private ImmediateMesh _previewMesh = null!;
+    private const float RayLength = 100f;
 
     public override void _Ready()
     {

@@ -13,9 +13,9 @@ public partial class DeckSlot : Node3D
     public delegate void CardsChangedEventHandler();
 
     private readonly List<RigidBody3D> _cards = new();
-    private bool _processingEntry = false;
+    private bool _processingEntry;
 
-    [Export] public Area3D Area;
+    [Export] public Area3D Area = null!;
     [Export] public float EjectForce = 2f;
     [Export] public Vector3 StackOffset = new(0, 0.02f, 0);
     [Export] public Vector3 PositionOffset = Vector3.Zero;

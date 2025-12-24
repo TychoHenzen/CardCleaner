@@ -43,7 +43,7 @@ public partial class NoiseGradient : BaselineGradient
     [Export] public float NoiseStrength { get; set; } = 0.3f;
     [Export] public int NoiseSeed { get; set; } = 42;
 
-    private FastNoiseLite _noise;
+    private FastNoiseLite? _noise;
 
     public override CardSignature GetSignatureAt(Vector2I position, Vector2I mapSize)
     {

@@ -16,7 +16,7 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
 
     private readonly List<ICardComponent> _components = new();
     private readonly List<IPhysicsComponent> _physicsComponents = new();
-    public Models.CardSignature Signature;
+    public Models.CardSignature Signature = null!;
 
     // IInteractable implementation
     public bool CanInteract => !IsHeld;
@@ -38,7 +38,7 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
 
     public void Load(NodeSave save)
     {
-        if (save.TryGetProperty("signature", out Models.CardSignature? signature))
+        if (save.TryGetProperty("signature", out Models.CardSignature? signature) && signature != null)
             Signature = signature;
         
         if (save.TryGetProperty<Vector3>("position", out var pos))

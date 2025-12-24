@@ -19,11 +19,11 @@ public partial class CardSpawningService : Node, ICardSpawningService, IServiceP
     /// <summary>
     /// Emitted when a new card is spawned, allowing other systems to connect to it
     /// </summary>
-    public event Action<CardController> CardSpawned;
+    public event Action<CardController>? CardSpawned;
 
     [Export] public PackedScene? CardScene;
-    private ICardGenerator _generator;
-    private RandomNumberGenerator _rng;
+    private ICardGenerator _generator = null!;
+    private RandomNumberGenerator _rng = null!;
 
     public override void _Ready()
     {
@@ -37,7 +37,7 @@ public partial class CardSpawningService : Node, ICardSpawningService, IServiceP
         container.RegisterSingleton<ICardSpawningService>(this);
     }
 
-    public Node3D SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent)
+    public Node3D? SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent)
     {
         if (CardScene?.Instantiate() is not Node3D cardInstance)
             return null;

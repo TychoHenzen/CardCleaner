@@ -9,7 +9,7 @@ public partial class FlutterCard : Node, IPhysicsComponent
     private float _flipPhase;
 
     // RNG and phase offsets for two flutter modes
-    private RandomNumberGenerator _rng;
+    private RandomNumberGenerator _rng = null!;
     private float _twistPhase;
 
     [Export] public float AirDensity = 1.0f;

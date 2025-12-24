@@ -20,8 +20,8 @@ public class SemanticWfc3dGenerator
 
 
     // 3D wave function: [layer][y][x]
-    private List<SemanticTile>[][][] _wave;
-    private bool[][][] _collapsed;
+    private List<SemanticTile>[][][] _wave = null!;
+    private bool[][][] _collapsed = null!;
 
     // Precomputed tile sets by layer for performance
     private readonly Dictionary<TileLayer, SemanticTile[]> _tilesByLayer;
