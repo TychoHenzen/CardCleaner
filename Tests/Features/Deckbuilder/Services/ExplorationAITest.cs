@@ -269,7 +269,9 @@ public class ExplorationAITest
         mapData.EnemyPositions.Add(new Vector2I(2, 2));
         mapData.EnemyPositions.Add(new Vector2I(4, 4));
 
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
+        // Use small vision range to force AI to physically move and encounter enemies
+        // With large vision on small maps, tiles become "trivially visible" without movement
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 2);
 
         var stepCount = 0;
         while (!ai.HasFoundEnemy && stepCount < 100)

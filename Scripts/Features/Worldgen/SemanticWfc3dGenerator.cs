@@ -16,10 +16,7 @@ public class SemanticWfc3dGenerator
     private readonly TileLayer[] _layerOrder; // [Terrain, Decoration, Structure, Effects]
     private readonly RandomNumberGenerator _rng;
     private readonly ConstraintManager _constraintManager = new();
-    // TODO: Integrate gradient influence into tile selection
-#pragma warning disable IDE0052 // Remove unread private members
     private readonly GradientInfluenceComponent _gradientInfluence;
-#pragma warning restore IDE0052
 
 
     // 3D wave function: [layer][y][x]
@@ -413,7 +410,7 @@ public class SemanticWfc3dGenerator
         if (tiles.Count == 0) return null;
         if (tiles.Count == 1) return tiles[0];
 
-        var weights = tiles.Select(t => t.BaseWeight).ToList();
+        var weights = _gradientInfluence.AdjustTileWeights(tiles, position, _mapSize);
         var totalWeight = weights.Sum();
 
         if (totalWeight <= 0) return tiles[0];

@@ -257,11 +257,21 @@ public class SimpleMapGeneratorTest
 
         var mapData = _generator.GenerateMap(size, seed);
 
+        var validTileIds = new HashSet<string>
+        {
+            SimpleMapGenerator.FloorTileId,
+            SimpleMapGenerator.WallTileId,
+            SimpleMapGenerator.GrassTileId,
+            SimpleMapGenerator.DirtTileId,
+            SimpleMapGenerator.StoneTileId,
+            SimpleMapGenerator.WaterTileId
+        };
+
         for (var y = 0; y < size.Y; y++)
         for (var x = 0; x < size.X; x++)
         {
             var tileId = mapData.TileIds[y, x];
-            AssertBool(tileId == SimpleMapGenerator.FloorTileId || tileId == SimpleMapGenerator.WallTileId).IsTrue();
+            AssertBool(validTileIds.Contains(tileId)).IsTrue();
         }
     }
 }
