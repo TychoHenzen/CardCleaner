@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Text.Json.Serialization;
-using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Enumeration;
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 using Godot.Collections;
-using Array = System.Array;
 
 namespace CardCleaner.Scripts.Features.Worldgen;
 
@@ -36,6 +33,7 @@ public partial class SemanticTile : Resource
     /// </summary>
     [Export]
     public Array<LayerConstraint> LayerConstraints { get; set; } = new();
+
 
     [JsonPropertyName("sockets")] [Export] public SocketData SocketData { get; set; } = new();
 
