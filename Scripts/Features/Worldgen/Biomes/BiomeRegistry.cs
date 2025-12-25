@@ -45,10 +45,9 @@ public class BiomeRegistry
 
     public void RegisterDefaultBiomes()
     {
-        // Plains: open grasslands with scattered rocks
+        // Plains: open grasslands - pure grass for visual distinction
         var plainsPassable = new TilePool();
-        plainsPassable.Add("grass", 0.85f);
-        plainsPassable.Add("dirt", 0.15f);
+        plainsPassable.Add("grass");
         var plainsBlocked = new TilePool();
         plainsBlocked.Add("stone", 0.7f);
         plainsBlocked.Add("wall", 0.3f);
@@ -60,10 +59,9 @@ public class BiomeRegistry
             plainsBlocked,
             0.20f));
 
-        // Forest: dense tree coverage on grass/dirt floor
+        // Forest: dense forest floor - pure dirt for visual distinction
         var forestPassable = new TilePool();
-        forestPassable.Add("grass", 0.70f);
-        forestPassable.Add("dirt", 0.30f);
+        forestPassable.Add("dirt");
         var forestBlocked = new TilePool();
         forestBlocked.Add("wall", 0.85f);
         forestBlocked.Add("stone", 0.15f);
@@ -75,10 +73,10 @@ public class BiomeRegistry
             forestBlocked,
             0.40f));
 
-        // Desert: sandy terrain with rocky outcrops
+        // Desert: sandy terrain - mix of dirt and floor
         var desertPassable = new TilePool();
-        desertPassable.Add("dirt", 0.90f);
-        desertPassable.Add("floor", 0.10f);
+        desertPassable.Add("dirt", 0.60f);
+        desertPassable.Add("floor", 0.40f);
         var desertBlocked = new TilePool();
         desertBlocked.Add("stone", 0.90f);
         desertBlocked.Add("wall", 0.10f);
@@ -90,10 +88,9 @@ public class BiomeRegistry
             desertBlocked,
             0.15f));
 
-        // Tundra: icy/snowy terrain (floor as snow substitute) with frozen obstacles
+        // Tundra: icy/snowy terrain - pure floor for visual distinction
         var tundraPassable = new TilePool();
-        tundraPassable.Add("floor", 0.85f);
-        tundraPassable.Add("dirt", 0.15f);
+        tundraPassable.Add("floor");
         var tundraBlocked = new TilePool();
         tundraBlocked.Add("water", 0.50f);
         tundraBlocked.Add("stone", 0.35f);

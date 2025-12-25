@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
@@ -34,6 +35,7 @@ public class SimpleMapGenerator
         ILog.Print($"Generating biome-based map {size.X}x{size.Y}");
 
         var tileIds = new string[size.Y, size.X];
+        var biomeMap = new BiomeType[size.Y, size.X];
         var passableTiles = new List<Vector2I>();
 
         // First pass: place tiles based on biome at each position
@@ -42,6 +44,7 @@ public class SimpleMapGenerator
         {
             var position = new Vector2I(x, y);
             var biome = _biomeProvider.GetBiomeAt(position);
+            biomeMap[y, x] = biome.Type;
             var isBlocked = _rng.Randf() < biome.BlockedPercentage;
 
             if (isBlocked)
@@ -80,6 +83,7 @@ public class SimpleMapGenerator
         return new SimpleMapData
         {
             TileIds = tileIds,
+            BiomeMap = biomeMap,
             Size = size,
             PlayerStart = playerStart,
             EnemyPositions = enemyPositions,

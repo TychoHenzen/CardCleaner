@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
+using Godot.Collections;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 
@@ -17,38 +17,59 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 [GlobalClass]
 public partial class SimpleWorldMapScreen : Node3D
 {
+    // Visual constants
+    private const int TILE_SIZE = 16;
+
+    // Biome colors for overlay visualization (semi-transparent)
+    private static readonly System.Collections.Generic.Dictionary<BiomeType, Color> BiomeColors = new()
+    {
+        { BiomeType.Plains, new Color(0.3f, 0.8f, 0.3f, 0.4f) }, // Green
+        { BiomeType.Forest, new Color(0.1f, 0.5f, 0.1f, 0.4f) }, // Dark Green
+        { BiomeType.Desert, new Color(0.9f, 0.8f, 0.4f, 0.4f) }, // Sandy Yellow
+        { BiomeType.Tundra, new Color(0.7f, 0.9f, 1.0f, 0.4f) }, // Ice Blue
+        { BiomeType.Mountains, new Color(0.5f, 0.5f, 0.5f, 0.4f) }, // Grey
+        { BiomeType.Swamp, new Color(0.3f, 0.4f, 0.2f, 0.4f) } // Murky Green
+    };
+
+    private readonly List<Sprite2D> _biomeOverlaySprites = new();
+
+    // Cache for biome overlay textures
+    private readonly System.Collections.Generic.Dictionary<BiomeType, ImageTexture> _biomeTextures = new();
+    private readonly HashSet<Vector2I> _renderedDebugTiles = new();
+    private readonly HashSet<Vector2I> _renderedVisitedTiles = new();
+    private Label? _actionLabel;
+    private Camera2D? _camera2D;
+    private ProgressBar? _enemyHealthBar;
+    private Label? _enemyHealthLabel;
+    private readonly List<Sprite2D> _enemySprites = new();
+    private IGameSessionService? _gameSession;
+
+    private bool _hasLoggedTileInfo;
+    private bool _isInitialized;
+
+    private SimpleMapData? _mapData;
+    private CardSignature[]? _pendingAbilities;
+
+    // Pending initialization data (stored if Initialize called before service ready)
+    private CardSignature[]? _pendingMapSeed;
+
+    // Combat UI elements
+    private ProgressBar? _playerHealthBar;
+    private Label? _playerHealthLabel;
+    private bool _serviceReady;
+
+    private ITileRegistry? _tileRegistry;
+
     // Export properties for editor assignment
     [Export] public TileMapLayer? MapLayer { get; set; }
     [Export] public TileMapLayer? OverlayLayer { get; set; }
+    [Export] public TileMapLayer? BiomeOverlayLayer { get; set; }
     [Export] public SubViewport? Viewport { get; set; }
     [Export] public MeshInstance3D? ScreenMesh { get; set; }
     [Export] public Label? StatusLabel { get; set; }
     [Export] public Sprite2D? PlayerSprite { get; set; }
     [Export] public Control? CombatUI { get; set; }
-
-    // Combat UI elements
-    private ProgressBar? _playerHealthBar;
-    private ProgressBar? _enemyHealthBar;
-    private Label? _playerHealthLabel;
-    private Label? _enemyHealthLabel;
-    private Label? _actionLabel;
-
-    private SimpleMapData? _mapData;
-    private List<Sprite2D> _enemySprites = new();
-    private IGameSessionService? _gameSession;
-    private bool _isInitialized;
-    private bool _serviceReady;
-    private readonly HashSet<Vector2I> _renderedVisitedTiles = new();
-    private readonly HashSet<Vector2I> _renderedDebugTiles = new();
-
-    // Pending initialization data (stored if Initialize called before service ready)
-    private CardSignature[]? _pendingMapSeed;
-    private CardSignature[]? _pendingAbilities;
-
-    // Visual constants
-    private const int TILE_SIZE = 16;
-    private Camera2D? _camera2D;
-    private ITileRegistry? _tileRegistry;
+    [Export] public bool ShowBiomeOverlay { get; set; } = true;
 
     public override void _Ready()
     {
@@ -112,7 +133,8 @@ public partial class SimpleWorldMapScreen : Node3D
     {
         ILog.Print(
             $"Initializing simple map screen with {mapSeed.Length} seed card(s) and {abilities.Length} abilities");
-        ILog.Print($"🐛 CardSignature Elements: [{string.Join(", ", mapSeed[0].Elements.Select(e => e.ToString("F3")))}]");
+        ILog.Print(
+            $"🐛 CardSignature Elements: [{string.Join(", ", mapSeed[0].Elements.Select(e => e.ToString("F3")))}]");
 
         if (_serviceReady && _gameSession != null)
         {
@@ -239,6 +261,7 @@ public partial class SimpleWorldMapScreen : Node3D
                 OverlayLayer.EraseCell(pos);
             }
         }
+
         _renderedDebugTiles.Clear();
 
         // Render new path tiles
@@ -445,6 +468,9 @@ public partial class SimpleWorldMapScreen : Node3D
             MapLayer.SetCell(position, sourceId, atlasCoords);
         }
 
+        // Render biome overlay if enabled
+        if (ShowBiomeOverlay) RenderBiomeOverlay(mapData);
+
         // Create enemy sprites
         CreateEnemySprites(mapData.EnemyPositions);
 
@@ -452,6 +478,65 @@ public partial class SimpleWorldMapScreen : Node3D
         CallDeferred(nameof(ConfigureCamera));
 
         ILog.Print($"Rendered map: {mapData.Size.X}x{mapData.Size.Y} with {mapData.EnemyPositions.Count} enemies");
+    }
+
+    private void RenderBiomeOverlay(SimpleMapData mapData)
+    {
+        // Clear previous biome overlay sprites
+        foreach (var sprite in _biomeOverlaySprites)
+            sprite?.QueueFree();
+        _biomeOverlaySprites.Clear();
+
+        if (mapData.BiomeMap == null)
+        {
+            ILog.Print("[BIOME OVERLAY] No biome data available");
+            return;
+        }
+
+        // Count biomes for logging
+        var biomeCounts = new System.Collections.Generic.Dictionary<BiomeType, int>();
+
+        // Create textures for each biome type if not cached
+        foreach (var (biomeType, color) in BiomeColors)
+            if (!_biomeTextures.ContainsKey(biomeType))
+                _biomeTextures[biomeType] = CreateColorTexture(color, TILE_SIZE);
+
+        // Create sprites for each tile position showing biome color
+        for (var y = 0; y < mapData.Size.Y; y++)
+        for (var x = 0; x < mapData.Size.X; x++)
+        {
+            var biomeType = mapData.GetBiomeAt(new Vector2I(x, y));
+
+            // Track counts
+            biomeCounts.TryGetValue(biomeType, out var count);
+            biomeCounts[biomeType] = count + 1;
+
+            // Get or create texture for this biome
+            if (!_biomeTextures.TryGetValue(biomeType, out var texture))
+            {
+                texture = CreateColorTexture(new Color(1, 0, 1, 0.5f), TILE_SIZE); // Magenta fallback
+                _biomeTextures[biomeType] = texture;
+            }
+
+            var sprite = new Sprite2D
+            {
+                Texture = texture,
+                Position = new Vector2(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2),
+                ZIndex = 10 // Above tiles but below player/enemies
+            };
+
+            Viewport?.AddChild(sprite);
+            _biomeOverlaySprites.Add(sprite);
+        }
+
+        // Log biome distribution
+        ILog.Print("[BIOME OVERLAY] Biome distribution from map data:");
+        var totalTiles = mapData.Size.X * mapData.Size.Y;
+        foreach (var (biomeType, count) in biomeCounts)
+        {
+            var percentage = (float)count / totalTiles * 100;
+            ILog.Print($"  {biomeType}: {count} tiles ({percentage:F1}%)");
+        }
     }
 
     /// <summary>
@@ -479,7 +564,6 @@ public partial class SimpleWorldMapScreen : Node3D
         return (tile.SourceId, tile.AtlasCoords);
     }
 
-    private bool _hasLoggedTileInfo;
     private void LogTileRenderingSample()
     {
         if (_hasLoggedTileInfo || _mapData == null) return;
@@ -493,7 +577,8 @@ public partial class SimpleWorldMapScreen : Node3D
         {
             foreach (var tile in _tileRegistry.GetAllTiles())
             {
-                ILog.Print($"[TILE DEBUG] Registered: id='{tile.Id}' sourceId={tile.SourceId} atlas={tile.AtlasCoords} passable={tile.IsPassable}");
+                ILog.Print(
+                    $"[TILE DEBUG] Registered: id='{tile.Id}' sourceId={tile.SourceId} atlas={tile.AtlasCoords} passable={tile.IsPassable}");
             }
         }
 
@@ -582,57 +667,55 @@ public partial class SimpleWorldMapScreen : Node3D
     private void SetupScreenMesh()
     {
         if (ScreenMesh == null) return;
-    
+
         // Create a custom mesh with explicit UV coordinates
         var arrayMesh = new ArrayMesh();
-        var arrays = new Godot.Collections.Array();
+        var arrays = new Array();
         arrays.Resize((int)Mesh.ArrayType.Max);
-    
+
         // Define the quad vertices (matching the desired screen size)
         var vertices = new Vector3[]
         {
             new(-2.6665f, -1.5f, 0), // Bottom-left
-            new(2.6665f, -1.5f, 0),  // Bottom-right  
-            new(2.6665f, 1.5f, 0),   // Top-right
-            new(-2.6665f, 1.5f, 0)   // Top-left
+            new(2.6665f, -1.5f, 0), // Bottom-right  
+            new(2.6665f, 1.5f, 0), // Top-right
+            new(-2.6665f, 1.5f, 0) // Top-left
         };
-    
+
         // Critical: UV coordinates that properly map the texture
         var uvs = new Vector2[]
         {
             new(0, 1), // Bottom-left maps to (0,1) - bottom of texture
             new(1, 1), // Bottom-right maps to (1,1) - bottom-right of texture
             new(1, 0), // Top-right maps to (1,0) - top-right of texture  
-            new(0, 0)  // Top-left maps to (0,0) - top-left of texture
+            new(0, 0) // Top-left maps to (0,0) - top-left of texture
         };
-    
+
         // Triangle indices for two triangles making a quad
         var indices = new int[]
         {
-            0, 1, 2,  // First triangle
-            0, 2, 3   // Second triangle
+            0, 1, 2, // First triangle
+            0, 2, 3 // Second triangle
         };
-    
+
         // Normals pointing toward camera
-        var normals = new Vector3[]
-        {
-            Vector3.Forward, Vector3.Forward, Vector3.Forward, Vector3.Forward
-        };
-    
+        var normals = new[] { Vector3.Forward, Vector3.Forward, Vector3.Forward, Vector3.Forward };
+
         // Assign arrays
         arrays[(int)Mesh.ArrayType.Vertex] = vertices;
         arrays[(int)Mesh.ArrayType.TexUV] = uvs;
         arrays[(int)Mesh.ArrayType.Normal] = normals;
         arrays[(int)Mesh.ArrayType.Index] = indices;
-    
+
         // Create the mesh surface
         arrayMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays);
-    
+
         // Assign the custom mesh
         ScreenMesh.Mesh = arrayMesh;
-    
+
         ILog.Print("Custom screen mesh with proper UVs created");
     }
+
     private void SetupScreenMaterial()
     {
         if (Viewport == null || ScreenMesh == null)
@@ -640,21 +723,21 @@ public partial class SimpleWorldMapScreen : Node3D
 
         // Create a completely new material to avoid any conflicts
         var material = new StandardMaterial3D();
-    
+
         // Set up the material properties for proper viewport display
         material.AlbedoTexture = Viewport.GetTexture();
         material.ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded;
         material.DisableReceiveShadows = true;
         material.TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest;
         material.CullMode = BaseMaterial3D.CullModeEnum.Disabled; // Show both sides
-    
+
         // Critical: Ensure proper UV mapping
         material.Uv1Scale = Vector3.One;
         material.Uv1Offset = -Vector3.One;
-    
+
         // Force the material as an override
         ScreenMesh.MaterialOverride = material;
-    
+
         ILog.Print("Screen material setup complete");
     }
 }

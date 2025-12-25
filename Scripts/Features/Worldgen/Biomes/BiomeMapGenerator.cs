@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
@@ -7,6 +8,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 
 public class BiomeMapGenerator : IBiomeProvider
 {
+    private readonly Dictionary<BiomeType, int> _biomeStats = new();
     private readonly BiomeDefinition _fallbackBiome;
     private readonly BaselineGradient _gradient;
     private readonly Vector2I _mapSize;
@@ -24,13 +26,37 @@ public class BiomeMapGenerator : IBiomeProvider
         _fallbackBiome = CreateFallbackBiome();
     }
 
+    /// <summary>
+    ///     Returns biome selection statistics for the last generated map.
+    ///     Key = BiomeType, Value = number of tiles assigned to that biome.
+    /// </summary>
+    public IReadOnlyDictionary<BiomeType, int> BiomeStats => _biomeStats;
+
     public BiomeDefinition GetBiomeAt(Vector2I position)
     {
         var signature = GetSignatureAt(position);
-        return _registry.FindClosestBySignature(signature) ?? _fallbackBiome;
+        var biome = _registry.FindClosestBySignature(signature) ?? _fallbackBiome;
+
+        // Track biome statistics
+        _biomeStats.TryGetValue(biome.Type, out var count);
+        _biomeStats[biome.Type] = count + 1;
+
+        return biome;
     }
 
     public CardSignature GetSignatureAt(Vector2I position) => _gradient.GetSignatureAt(position, _mapSize);
+
+    public void LogBiomeStats()
+    {
+        GD.Print("[BiomeMapGenerator] Biome distribution:");
+        foreach (var (biomeType, count) in _biomeStats)
+        {
+            var percentage = (float)count / (_mapSize.X * _mapSize.Y) * 100;
+            GD.Print($"  {biomeType}: {count} tiles ({percentage:F1}%)");
+        }
+    }
+
+    public void ResetStats() => _biomeStats.Clear();
 
     private static BiomeDefinition CreateFallbackBiome()
     {

@@ -13,7 +13,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 public partial class GameSessionService : Node, IGameSessionService
 {
     // Game timing
-    private const float ExplorationStepDelay = 0.5f; // 500ms between exploration steps
+    private const float ExplorationStepDelay = 0.1f; // 500ms between exploration steps
     private const float CombatTurnDelay = 1.0f; // 1s between combat turns
     private List<CardSignature> _abilityCards = new();
     private BiomeRegistry _biomeRegistry = null!;
@@ -147,6 +147,9 @@ public partial class GameSessionService : Node, IGameSessionService
         // Create map generator with biome provider
         var mapGenerator = new SimpleMapGenerator(_rng, biomeProvider);
         _currentMap = mapGenerator.GenerateMap(mapSize);
+
+        // Log biome distribution for debugging
+        biomeProvider.LogBiomeStats();
 
         ILog.Print($"Map generated: {mapSize.X}x{mapSize.Y}, {_currentMap.EnemyPositions.Count} enemies");
 

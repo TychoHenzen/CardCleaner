@@ -47,7 +47,6 @@ public class TileRegistry : ITileRegistry
             name: "Floor",
             passability: TilePassability.Passable,
             atlasCoords: new Vector2I(14, 0),
-            DefaultSourceId,
             allowedBiomes: [BiomeType.Desert, BiomeType.Tundra]));
 
         RegisterTile(new TileDefinition(
@@ -77,7 +76,6 @@ public class TileRegistry : ITileRegistry
             name: "Grass",
             passability: TilePassability.Passable,
             atlasCoords: new Vector2I(4, 0),
-            DefaultSourceId,
             allowedBiomes: [BiomeType.Plains, BiomeType.Forest]));
 
         RegisterTile(new TileDefinition(

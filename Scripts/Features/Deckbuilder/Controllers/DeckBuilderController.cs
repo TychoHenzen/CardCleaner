@@ -20,7 +20,7 @@ public partial class DeckBuilderController : Node
     public override void _Ready()
     {
         // Ensure MapCardSlot has capacity of 1 for single-card usage
-        MapCardSlot.Capacity = 1;
+        MapCardSlot.Capacity = 5;
 
         // Listen for when cards are dropped into slots (for UI feedback only)
         AbilityDeckSlot.CardsChanged += OnSlotsUpdated;

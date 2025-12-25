@@ -29,10 +29,11 @@ _surfaces = [{
 "vertex_data": PackedByteArray("8KcqwAAAwL8AAAAA8KcqQAAAwL8AAAAA8KcqQAAAwD8AAAAA8KcqwAAAwD8AAAAA//////9/AID//////38AgP//////fwCA//////9/AIA=")
 }]
 
-[node name="SimpleTileMapScreen" type="Node3D" node_paths=PackedStringArray("MapLayer", "OverlayLayer", "Viewport", "ScreenMesh", "StatusLabel", "PlayerSprite", "CombatUI")]
+[node name="SimpleTileMapScreen" type="Node3D" node_paths=PackedStringArray("MapLayer", "OverlayLayer", "BiomeOverlayLayer", "Viewport", "ScreenMesh", "StatusLabel", "PlayerSprite", "CombatUI")]
 script = ExtResource("1_w558t")
 MapLayer = NodePath("SubViewport/MapLayer")
 OverlayLayer = NodePath("SubViewport/OverlayLayer")
+BiomeOverlayLayer = NodePath("SubViewport/BiomeOverlay")
 Viewport = NodePath("SubViewport")
 ScreenMesh = NodePath("CSGMesh3D")
 StatusLabel = NodePath("SubViewport/UI/StatusLabel")
@@ -50,6 +51,10 @@ size = Vector2i(1024, 1024)
 tile_set = ExtResource("4_olmej")
 
 [node name="OverlayLayer" type="TileMapLayer" parent="SubViewport"]
+tile_set = ExtResource("4_olmej")
+
+[node name="BiomeOverlay" type="TileMapLayer" parent="SubViewport"]
+visible = false
 tile_set = ExtResource("4_olmej")
 
 [node name="PlayerAgent" type="Sprite2D" parent="SubViewport"]
