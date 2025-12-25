@@ -69,26 +69,32 @@ Signatures influence card generation, combat calculations, map generation parame
 
 ### World Generation
 
-Procedural world generation uses Wave Function Collapse with 3D layering and signature-based tile weighting:
+> **Architecture Document**: See `docs/WORLDGEN_ARCHITECTURE.md` for the complete worldgen redesign plan, including implementation phases, data definition guides, and technical reference.
 
-**SemanticWfc3dGenerator** (`Scripts/Features/Worldgen/SemanticWfc3dGenerator.cs`):
-- 3D WFC implementation generating worlds across 4 vertical layers
-- Layers processed sequentially: Terrain → Decoration → Structure → Effects
-- Supports constraint propagation between layers via `LayerConstraints`
-- Integrates `GradientInfluenceComponent` to adjust tile weights by position
+**Current State**: Two parallel systems exist during transition:
 
-**SemanticTile** (`Scripts/Features/Worldgen/SemanticTile.cs`):
-- Tile resources with `TileLayer` assignment, `BaseWeight`, and `CardSignature`
-- **Socket System**: 10-directional sockets (N/E/S/W/NE/SE/SW/NW/Up/Down) define tile compatibility
-- Tiles connect when adjacent sockets match via `CanConnectTo()` method
-- `LayerConstraints` allow tiles to modify available options on other layers when placed
+1. **SimpleMapGenerator** (`Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs`) - Active
+   - Lightweight random placement with connectivity guarantees
+   - Signature-influenced tile selection (Febris→terrain, Ordinem→structure)
+   - Being extended with biome system (Phase 1 of redesign)
 
-**Gradient Systems** (`Scripts/Features/Worldgen/Gradients/`):
-- **RadialGradient**: Interpolates between center and edge signatures using falloff curves
-- **NoiseGradient**: Applies FastNoiseLite-based variation to base signature
-- **CardBasedGradient**: Creates gradients from input cards (sphere for 1 card, capsule for 2, Bezier curve for 3+)
+2. **SemanticWfc3dGenerator** (`Scripts/Features/Worldgen/SemanticWfc3dGenerator.cs`) - Legacy
+   - Full 3D WFC with 4 vertical layers and 10-directional sockets
+   - Complex constraint propagation system
+   - To be deprecated after new system is validated
 
-**GradientInfluenceComponent**: Calculates position-specific signatures from gradients and adjusts tile weights based on signature similarity, creating signature-influenced terrain patterns.
+**Gradient Systems** (Keep - these are solid):
+- `CardBasedGradient`: Creates gradients from input cards (sphere/capsule/Bezier)
+- `RadialGradient`: Center-to-edge signature blending
+- `NoiseGradient`: FastNoiseLite-based variation
+- `GradientInfluenceComponent`: Adjusts tile weights by signature similarity
+
+**Target Architecture** (see docs for details):
+- Stage 1: Biome Placement (card gradient → biome grid)
+- Stage 2: Terrain Generation (per-biome tile selection)
+- Stage 3: Transitions (auto-tiling at biome edges)
+- Stage 4: Structures (stamps + procedural generators)
+- Stage 5: Entities (player, enemies, items)
 
 ### Game Session Flow
 

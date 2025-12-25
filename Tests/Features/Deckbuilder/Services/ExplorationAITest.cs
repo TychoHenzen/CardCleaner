@@ -122,9 +122,7 @@ public class ExplorationAITest
         // Create a map with a corridor that forces specific movement
         var mapData = new SimpleMapData
         {
-            TileIds = new string[5, 5],
-            Size = new Vector2I(5, 5),
-            PlayerStart = new Vector2I(0, 0)
+            TileIds = new string[5, 5], Size = new Vector2I(5, 5), PlayerStart = new Vector2I(0, 0)
         };
 
         FillWithWalls(mapData.TileIds);
@@ -196,9 +194,7 @@ public class ExplorationAITest
     {
         var mapData = new SimpleMapData
         {
-            TileIds = new string[1, 1],
-            Size = new Vector2I(1, 1),
-            PlayerStart = new Vector2I(0, 0)
+            TileIds = new string[1, 1], Size = new Vector2I(1, 1), PlayerStart = new Vector2I(0, 0)
         };
         mapData.TileIds[0, 0] = Floor;
         mapData.PassableTiles.Add(new Vector2I(0, 0));
@@ -215,9 +211,7 @@ public class ExplorationAITest
     {
         var mapData = new SimpleMapData
         {
-            TileIds = new string[1, 10],
-            Size = new Vector2I(10, 1),
-            PlayerStart = new Vector2I(0, 0)
+            TileIds = new string[1, 10], Size = new Vector2I(10, 1), PlayerStart = new Vector2I(0, 0)
         };
 
         for (var x = 0; x < 10; x++)
@@ -319,9 +313,7 @@ public class ExplorationAITest
     {
         var mapData = new SimpleMapData
         {
-            TileIds = new string[1, 5],
-            Size = new Vector2I(5, 1),
-            PlayerStart = new Vector2I(0, 0)
+            TileIds = new string[1, 5], Size = new Vector2I(5, 1), PlayerStart = new Vector2I(0, 0)
         };
 
         // Corridor with wall in middle: Floor, Floor, Wall, Floor, Enemy
@@ -343,6 +335,7 @@ public class ExplorationAITest
         // Enemy should not be visible through wall
         AssertThat(ai.CurrentMode).IsEqual(ExplorationMode.FrontierExploration);
     }
+
 
     [TestCase]
     public void TestTargetNeverBecomesVisitedTileOscillation()
@@ -433,9 +426,7 @@ public class ExplorationAITest
     {
         var mapData = new SimpleMapData
         {
-            TileIds = new string[height, width],
-            Size = new Vector2I(width, height),
-            PlayerStart = playerStart
+            TileIds = new string[height, width], Size = new Vector2I(width, height), PlayerStart = playerStart
         };
 
         for (var y = 0; y < height; y++)
