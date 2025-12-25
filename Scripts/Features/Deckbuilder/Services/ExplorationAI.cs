@@ -26,6 +26,7 @@ public class ExplorationAI
     private readonly FrontierExplorationBehavior _frontierBehavior;
     private readonly IVisibilityChecker _visibilityChecker;
     private Vector2I? _currentTargetTile;
+    private Vector2I? _lastKnownEnemyPosition;
 
     public Vector2I CurrentPosition { get; private set; }
     public bool HasFoundEnemy { get; private set; }
@@ -129,7 +130,7 @@ public class ExplorationAI
             // Find next target based on current mode
             Vector2I? target = CurrentMode switch
             {
-                ExplorationMode.PathToEnemy => VisibleEnemyPosition,
+                ExplorationMode.PathToEnemy => VisibleEnemyPosition ?? _lastKnownEnemyPosition,
                 ExplorationMode.FrontierExploration => _frontierBehavior.FindNearestFrontierTile(CurrentPosition),
                 _ => null
             };
@@ -189,6 +190,7 @@ public class ExplorationAI
 
         if (closestVisibleEnemy != null)
         {
+            // Enemy is visible - update last known position and pursue
             if (CurrentMode != ExplorationMode.PathToEnemy)
             {
                 ILog.Print($"Enemy spotted at {closestVisibleEnemy}! Switching to pursuit mode.");
@@ -196,16 +198,40 @@ public class ExplorationAI
             }
             CurrentMode = ExplorationMode.PathToEnemy;
             VisibleEnemyPosition = closestVisibleEnemy;
+            _lastKnownEnemyPosition = closestVisibleEnemy;
             _pathToTarget.Clear();
             _currentTargetTile = null;
             PathUpdated?.Invoke();
         }
+        else if (_lastKnownEnemyPosition != null)
+        {
+            // Enemy not visible but we have a last known position - continue toward it
+            // Only clear and return to exploration if we've reached the last known position
+            if (CurrentPosition == _lastKnownEnemyPosition.Value)
+            {
+                // We've reached the last known position but no enemy here - it must have moved or we were wrong
+                ILog.Print($"Reached last known enemy position {_lastKnownEnemyPosition} but no enemy found. Returning to exploration.");
+                _lastKnownEnemyPosition = null;
+                VisibleEnemyPosition = null;
+                CurrentMode = ExplorationMode.FrontierExploration;
+                _pathToTarget.Clear();
+                _currentTargetTile = null;
+                PathUpdated?.Invoke();
+            }
+            else
+            {
+                // Still moving toward last known position - stay in pursuit mode
+                ILog.Print($"Enemy not visible, continuing toward last known position {_lastKnownEnemyPosition}.");
+                VisibleEnemyPosition = null; // Clear visible but keep pursuing
+                // Don't clear path - let it continue
+            }
+        }
         else
         {
-            // No enemies visible - return to exploration
+            // No enemies visible and no last known position - stay in exploration mode
             if (CurrentMode == ExplorationMode.PathToEnemy)
             {
-                ILog.Print("Enemy no longer visible. Returning to exploration.");
+                ILog.Print("Enemy no longer visible and no last known position. Returning to exploration.");
                 _pathToTarget.Clear();
                 _currentTargetTile = null;
                 PathUpdated?.Invoke();

@@ -349,8 +349,8 @@ public partial class GameSessionService : Node, IGameSessionService
         for (var i = 0; i < 8; i++) complexity += Mathf.Abs(signature[i]);
         complexity /= 8f;
 
-        var baseSize = 20;
-        var sizeVariation = Mathf.RoundToInt(complexity * 12);
+        var baseSize = 50;
+        var sizeVariation = Mathf.RoundToInt(complexity * 25);
         var size = baseSize + sizeVariation;
 
         return new Vector2I(size, size);

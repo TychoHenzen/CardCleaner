@@ -172,13 +172,21 @@ public class SimpleMapGenerator
         while (current.X != to.X)
         {
             current.X += current.X < to.X ? 1 : -1;
-            if (IsValidPosition(current, size)) tileIds[current.Y, current.X] = FloorTileId;
+            if (IsValidPosition(current, size))
+            {
+                var biome = _biomeProvider.GetBiomeAt(current);
+                tileIds[current.Y, current.X] = biome.SelectPassableTile(_rng) ?? FloorTileId;
+            }
         }
 
         while (current.Y != to.Y)
         {
             current.Y += current.Y < to.Y ? 1 : -1;
-            if (IsValidPosition(current, size)) tileIds[current.Y, current.X] = FloorTileId;
+            if (IsValidPosition(current, size))
+            {
+                var biome = _biomeProvider.GetBiomeAt(current);
+                tileIds[current.Y, current.X] = biome.SelectPassableTile(_rng) ?? FloorTileId;
+            }
         }
     }
 

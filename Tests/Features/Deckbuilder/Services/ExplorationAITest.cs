@@ -422,6 +422,48 @@ public class ExplorationAITest
         AssertThat(pathUpdatedCount).IsGreater(0);
     }
 
+    [TestCase]
+    public void TestNoOscillationWhenLosingEnemyLineOfSight()
+    {
+        // Test that when the AI loses line-of-sight to an enemy, it continues toward
+        // the last known position instead of oscillating between modes.
+        //
+        // Use small vision range (2) to force actual walking and prevent trivial visibility
+        // from marking tiles as "visited" without movement.
+
+        var mapData = CreateSimpleMap(8, 8, new Vector2I(0, 0));
+        mapData.EnemyPositions.Add(new Vector2I(7, 7)); // Enemy at far corner
+
+        // Small vision range forces actual movement to find enemy
+        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 2);
+
+        // Track mode changes to detect oscillation
+        var modeChangeCount = 0;
+        var lastMode = ai.CurrentMode;
+
+        var maxSteps = 200;
+        var stepCount = 0;
+
+        while (!ai.HasFinishedExploration && stepCount < maxSteps)
+        {
+            ai.StepExploration();
+            stepCount++;
+
+            if (ai.CurrentMode != lastMode)
+            {
+                modeChangeCount++;
+                lastMode = ai.CurrentMode;
+            }
+
+            // Check for rapid oscillation: more than 4 mode changes indicates a problem
+            // Normal: Frontier -> PathToEnemy (when close enough to see) -> stays until found
+            AssertThat(modeChangeCount).IsLessEqual(4);
+        }
+
+        // Should have found the enemy (moved to enemy position)
+        AssertBool(ai.HasFoundEnemy).IsTrue();
+    }
+
     private static SimpleMapData CreateSimpleMap(int width, int height, Vector2I playerStart)
     {
         var mapData = new SimpleMapData

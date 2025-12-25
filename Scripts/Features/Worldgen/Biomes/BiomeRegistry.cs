@@ -45,68 +45,65 @@ public class BiomeRegistry
 
     public void RegisterDefaultBiomes()
     {
-        // Plains: neutral signature, balanced terrain
+        // Plains: open grasslands with scattered rocks
         var plainsPassable = new TilePool();
-        plainsPassable.Add("grass", 0.5f);
-        plainsPassable.Add("floor", 0.3f);
-        plainsPassable.Add("dirt", 0.2f);
+        plainsPassable.Add("grass", 0.85f);
+        plainsPassable.Add("dirt", 0.15f);
         var plainsBlocked = new TilePool();
-        plainsBlocked.Add("stone", 0.6f);
-        plainsBlocked.Add("wall", 0.4f);
+        plainsBlocked.Add("stone", 0.7f);
+        plainsBlocked.Add("wall", 0.3f);
 
         Register(new BiomeDefinition(
             BiomeType.Plains,
             new CardSignature(PlainsSignature),
             plainsPassable,
             plainsBlocked,
-            0.25f));
+            0.20f));
 
-        // Forest: cool (Febris-), slightly chaotic, helpful
+        // Forest: dense tree coverage on grass/dirt floor
         var forestPassable = new TilePool();
-        forestPassable.Add("grass", 0.6f);
-        forestPassable.Add("dirt", 0.3f);
-        forestPassable.Add("floor", 0.1f);
+        forestPassable.Add("grass", 0.70f);
+        forestPassable.Add("dirt", 0.30f);
         var forestBlocked = new TilePool();
-        forestBlocked.Add("wall", 0.7f);
-        forestBlocked.Add("stone", 0.3f);
+        forestBlocked.Add("wall", 0.85f);
+        forestBlocked.Add("stone", 0.15f);
 
         Register(new BiomeDefinition(
             BiomeType.Forest,
             new CardSignature(ForestSignature),
             forestPassable,
             forestBlocked,
-            0.35f));
+            0.40f));
 
-        // Desert: hot (Febris+), solid, ordered
+        // Desert: sandy terrain with rocky outcrops
         var desertPassable = new TilePool();
-        desertPassable.Add("dirt", 0.7f);
-        desertPassable.Add("floor", 0.2f);
-        desertPassable.Add("grass", 0.1f);
+        desertPassable.Add("dirt", 0.90f);
+        desertPassable.Add("floor", 0.10f);
         var desertBlocked = new TilePool();
-        desertBlocked.Add("stone", 0.8f);
-        desertBlocked.Add("wall", 0.2f);
+        desertBlocked.Add("stone", 0.90f);
+        desertBlocked.Add("wall", 0.10f);
 
         Register(new BiomeDefinition(
             BiomeType.Desert,
             new CardSignature(DesertSignature),
             desertPassable,
             desertBlocked,
-            0.20f));
+            0.15f));
 
-        // Tundra: very cold (Febris--), ordered, light
+        // Tundra: icy/snowy terrain (floor as snow substitute) with frozen obstacles
         var tundraPassable = new TilePool();
-        tundraPassable.Add("floor", 0.5f);
-        tundraPassable.Add("dirt", 0.3f);
-        tundraPassable.Add("grass", 0.2f);
+        tundraPassable.Add("floor", 0.85f);
+        tundraPassable.Add("dirt", 0.15f);
         var tundraBlocked = new TilePool();
-        tundraBlocked.Add("stone", 0.5f);
-        tundraBlocked.Add("wall", 0.3f);
-        tundraBlocked.Add("water", 0.2f);
+        tundraBlocked.Add("water", 0.50f);
+        tundraBlocked.Add("stone", 0.35f);
+        tundraBlocked.Add("wall", 0.15f);
 
         Register(new BiomeDefinition(
             BiomeType.Tundra,
             new CardSignature(TundraSignature),
             tundraPassable,
-            tundraBlocked));
+            tundraBlocked,
+            0.25f));
     }
 }
