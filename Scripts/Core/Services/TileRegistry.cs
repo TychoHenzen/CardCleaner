@@ -8,15 +8,29 @@ namespace CardCleaner.Scripts.Core.Services;
 
 public class TileRegistry : ITileRegistry
 {
-    private readonly Dictionary<string, TileDefinition> _tiles = new();
-
     // Default tileset source ID - change this to match your TileSet in Godot
     public const int DefaultSourceId = 4;
+    private readonly Dictionary<string, TileDefinition> _tiles = new();
 
     public TileRegistry()
     {
         RegisterDefaultTiles();
     }
+
+    public void RegisterTile(TileDefinition tile) => _tiles[tile.Id] = tile;
+
+    public TileDefinition? GetTile(string id) => _tiles.GetValueOrDefault(id);
+
+    public IEnumerable<TileDefinition> GetAllTiles() => _tiles.Values;
+
+    public IEnumerable<TileDefinition> GetTilesByBiome(BiomeType biome)
+    {
+        foreach (var tile in _tiles.Values)
+            if (tile.IsAllowedInBiome(biome))
+                yield return tile;
+    }
+
+    public void Clear() => _tiles.Clear();
 
     private void RegisterDefaultTiles()
     {
@@ -33,7 +47,8 @@ public class TileRegistry : ITileRegistry
             name: "Floor",
             passability: TilePassability.Passable,
             atlasCoords: new Vector2I(14, 0),
-            sourceId: DefaultSourceId));
+            DefaultSourceId,
+            allowedBiomes: [BiomeType.Desert, BiomeType.Tundra]));
 
         RegisterTile(new TileDefinition(
             id: "floor_visited",
@@ -62,7 +77,8 @@ public class TileRegistry : ITileRegistry
             name: "Grass",
             passability: TilePassability.Passable,
             atlasCoords: new Vector2I(4, 0),
-            sourceId: DefaultSourceId));
+            DefaultSourceId,
+            allowedBiomes: [BiomeType.Plains, BiomeType.Forest]));
 
         RegisterTile(new TileDefinition(
             id: "dirt",
@@ -101,7 +117,8 @@ public class TileRegistry : ITileRegistry
             sourceId: 17,
             layer: TileLayer.Terrain,
             elevation: -0.5f,
-            isTransparent: true));
+            true,
+            [BiomeType.Tundra]));
 
         // Glass (not passable but transparent)
         RegisterTile(new TileDefinition(
@@ -113,25 +130,5 @@ public class TileRegistry : ITileRegistry
             layer: TileLayer.Structure,
             elevation: 1f,
             isTransparent: true));
-    }
-
-    public void RegisterTile(TileDefinition tile)
-    {
-        _tiles[tile.Id] = tile;
-    }
-
-    public TileDefinition? GetTile(string id)
-    {
-        return _tiles.GetValueOrDefault(id);
-    }
-
-    public IEnumerable<TileDefinition> GetAllTiles()
-    {
-        return _tiles.Values;
-    }
-
-    public void Clear()
-    {
-        _tiles.Clear();
     }
 }
