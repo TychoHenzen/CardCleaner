@@ -6,15 +6,68 @@ using Saveable;
 
 namespace CardCleaner.Scripts.Features.Player.Controllers;
 
-public partial class PlayerController : CharacterBody3D,ISaveable
+public partial class PlayerController : CharacterBody3D, ISaveable
 {
+    private const float SafePositionRecordInterval = 1.0f; // Record safe position every 1 second
+    private const float OutOfBoundsYThreshold = -50f; // Player falls below this Y and triggers reset
+    private const float StuckDetectionWindow = 5.0f; // Time window to detect stuck state
+    private const float StuckMovementThreshold = 0.5f; // Minimum cumulative movement expected in window
+
     private readonly Color BlacklightColor = new(0.4f, 0.2f, 1.0f); // UV purple
     private readonly Color FlashlightColor = new(1.0f, 0.95f, 0.8f); // Warm white
+    private float _cumulativeMovement;
     private Node3D? _head;
     private IInputService? _inputService;
+
+    // Stuck detection tracking
+    private Vector3 _lastPositionForStuck;
     private float _pitchDeg;
+    private IPlayerResetService? _playerResetService;
+    private ISafePositionTracker? _safePositionTracker;
     private IGameSettings? _settings;
     private SpotLight3D? _spotlight;
+    private float _stuckTimer;
+    private float _timeSinceLastSafeRecord;
+    private float _timeWithMovementInput;
+
+    public StringName UniqueID => "player";
+
+    public void Save(NodeSave save)
+    {
+        save.SetOrAddProperty("position", GlobalPosition);
+        save.SetOrAddProperty("rotation", GlobalRotation);
+        save.SetOrAddProperty("pitchDeg", _pitchDeg);
+
+        if (_settings != null)
+        {
+            save.SetOrAddProperty("lightMode", (int)_settings.CurrentLightMode);
+            save.SetOrAddProperty("lightIntensity", _settings.LightIntensity);
+        }
+    }
+
+    public void Load(NodeSave save)
+    {
+        if (save.TryGetProperty<Vector3>("position", out var pos))
+            GlobalPosition = pos;
+
+        if (save.TryGetProperty<Vector3>("rotation", out var rot))
+            GlobalRotation = rot;
+
+        if (save.TryGetProperty<float>("pitchDeg", out var pitch))
+            _pitchDeg = pitch;
+
+        if (_settings != null)
+        {
+            if (save.TryGetProperty<int>("lightMode", out var mode))
+                _settings.CurrentLightMode = (LightMode)mode;
+
+            if (save.TryGetProperty<float>("lightIntensity", out var intensity))
+                _settings.LightIntensity = intensity;
+        }
+
+        // Reapply settings after load
+        CallDeferred(MethodName.ApplyLightMode);
+    }
 
     public override void _Ready()
     {
@@ -32,6 +85,17 @@ public partial class PlayerController : CharacterBody3D,ISaveable
             _inputService = input;
             RegisterInputActions();
         });
+
+        ServiceLocator.Get<ISafePositionTracker>(tracker =>
+        {
+            _safePositionTracker = tracker;
+            // Record initial spawn position
+            _safePositionTracker.SetSpawnPosition(GlobalPosition);
+            _safePositionTracker.RecordSafePosition(GlobalPosition);
+        });
+
+        ServiceLocator.Get<IPlayerResetService>(resetService => _playerResetService = resetService);
+
         // Add to group for easy finding
         AddToGroup("player");
 
@@ -46,6 +110,9 @@ public partial class PlayerController : CharacterBody3D,ISaveable
         _inputService.RegisterAction(this, "increase_light_intensity", Key.Plus, () => AdjustLightIntensity(0.2f));
         _inputService.RegisterAction(this, "decrease_light_intensity", Key.Minus, () => AdjustLightIntensity(-0.2f));
         _inputService.RegisterAction(this, "increase_light_intensity_alt", Key.Equal, () => AdjustLightIntensity(0.2f));
+
+        // Register safety reset action (R key)
+        _inputService.RegisterAction(this, "player_reset", Key.R, OnResetRequested);
 
         // Subscribe to mouse movement
         _inputService.MouseMoved += OnMouseMoved;
@@ -185,44 +252,100 @@ public partial class PlayerController : CharacterBody3D,ISaveable
 
         Velocity = vel;
         MoveAndSlide();
+
+        // Record safe position periodically when on floor
+        RecordSafePositionIfOnGround((float)delta);
+
+        // Check for out-of-bounds and auto-reset
+        CheckOutOfBounds();
+
+        // Check for stuck state (only when player is trying to move)
+        CheckStuck((float)delta, input.LengthSquared() > 0.01f);
     }
 
-    public StringName UniqueID => "player";
-    public void Save(NodeSave save)
+    private void RecordSafePositionIfOnGround(float delta)
     {
-        save.SetOrAddProperty("position", GlobalPosition);
-        save.SetOrAddProperty("rotation", GlobalRotation);
-        save.SetOrAddProperty("pitchDeg", _pitchDeg);
-        
-        if (_settings != null)
+        if (_safePositionTracker == null || !IsOnFloor())
+            return;
+
+        _timeSinceLastSafeRecord += delta;
+        if (_timeSinceLastSafeRecord >= SafePositionRecordInterval)
         {
-            save.SetOrAddProperty("lightMode", (int)_settings.CurrentLightMode);
-            save.SetOrAddProperty("lightIntensity", _settings.LightIntensity);
+            _safePositionTracker.RecordSafePosition(GlobalPosition);
+            _timeSinceLastSafeRecord = 0f;
         }
     }
 
-    public void Load(NodeSave save)
+    private void CheckOutOfBounds()
     {
-        if (save.TryGetProperty<Vector3>("position", out var pos))
-            GlobalPosition = pos;
-        
-        if (save.TryGetProperty<Vector3>("rotation", out var rot))
-            GlobalRotation = rot;
-        
-        if (save.TryGetProperty<float>("pitchDeg", out var pitch))
-            _pitchDeg = pitch;
-        
-        if (_settings != null)
-        {
-            if (save.TryGetProperty<int>("lightMode", out var mode))
-                _settings.CurrentLightMode = (LightMode)mode;
-            
-            if (save.TryGetProperty<float>("lightIntensity", out var intensity))
-                _settings.LightIntensity = intensity;
-        }
-        
-        // Reapply settings after load
-        CallDeferred(MethodName.ApplyLightMode);
+        if (GlobalPosition.Y >= OutOfBoundsYThreshold)
+            return;
+
+        if (_playerResetService == null || _playerResetService.IsOnCooldown)
+            return;
+
+        ILog.Warning($"Player fell out of bounds (Y={GlobalPosition.Y:F1}), triggering safety reset");
+        _playerResetService.ResetPlayerToSafety();
     }
 
+    private void CheckStuck(float delta, bool hasMovementInput)
+    {
+        // Track movement delta
+        var positionDelta = GlobalPosition.DistanceTo(_lastPositionForStuck);
+        _cumulativeMovement += positionDelta;
+        _lastPositionForStuck = GlobalPosition;
+
+        // Only count time when player is actively trying to move
+        if (hasMovementInput)
+            _timeWithMovementInput += delta;
+
+        _stuckTimer += delta;
+
+        // Check if detection window has elapsed
+        if (_stuckTimer < StuckDetectionWindow)
+            return;
+
+        // Only trigger stuck if player was trying to move for most of the window
+        // and didn't actually move much
+        var wasActivelyTryingToMove = _timeWithMovementInput > StuckDetectionWindow * 0.8f;
+        var isStuck = wasActivelyTryingToMove && _cumulativeMovement < StuckMovementThreshold;
+
+        // Reset tracking for next window
+        _stuckTimer = 0f;
+        _cumulativeMovement = 0f;
+        _timeWithMovementInput = 0f;
+
+        if (!isStuck)
+            return;
+
+        if (_playerResetService == null || _playerResetService.IsOnCooldown)
+            return;
+
+        ILog.Warning("Player appears stuck (minimal movement despite input), triggering safety reset");
+        _playerResetService.ResetPlayerToSafety();
+    }
+
+    private void OnResetRequested()
+    {
+        if (_playerResetService == null)
+        {
+            ILog.Warning("Player reset service not available");
+            return;
+        }
+
+        ILog.Print("Manual reset requested by player (R key)");
+        _playerResetService.ResetPlayerToSafety();
+    }
+
+    /// <summary>
+    ///     Teleports the player to the specified position and resets movement state.
+    ///     Used for safety resets when player gets stuck or falls out of bounds.
+    /// </summary>
+    /// <param name="position">The world position to teleport to</param>
+    public void ResetToPosition(Vector3 position)
+    {
+        GlobalPosition = position;
+        Velocity = Vector3.Zero;
+        ILog.Print($"Player reset to position: {position}");
+    }
 }

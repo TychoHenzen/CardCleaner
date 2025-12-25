@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Worldgen;
+using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -11,25 +12,24 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 [Service(ServiceLifetime.Singleton, typeof(IGameSessionService))]
 public partial class GameSessionService : Node, IGameSessionService
 {
-    private SessionState _currentState = SessionState.WaitingForCards;
-    private CardSignature _mapSeed = null!;
-    private List<CardSignature> _abilityCards = new();
-    private RandomNumberGenerator _rng = new();
-
-    // Simple game systems
-    private SimpleMapGenerator _mapGenerator = null!;
-    private SimpleMapData? _currentMap;
-    private ExplorationAI? _explorationAI;
-    private SimpleCombatSystem? _combatSystem;
-    private Timer _gameTimer = null!;
-
-    // Player and enemy tracking
-    private Vector2I? _playerPosition;
-    private Vector2I? _currentEnemyPosition;
-
     // Game timing
     private const float ExplorationStepDelay = 0.5f; // 500ms between exploration steps
     private const float CombatTurnDelay = 1.0f; // 1s between combat turns
+    private List<CardSignature> _abilityCards = new();
+    private BiomeRegistry _biomeRegistry = null!;
+    private SimpleCombatSystem? _combatSystem;
+    private Vector2I? _currentEnemyPosition;
+
+    // Simple game systems
+    private SimpleMapData? _currentMap;
+    private SessionState _currentState = SessionState.WaitingForCards;
+    private ExplorationAI? _explorationAI;
+    private Timer _gameTimer = null!;
+    private CardSignature _mapSeed = null!;
+
+    // Player and enemy tracking
+    private Vector2I? _playerPosition;
+    private RandomNumberGenerator _rng = new();
 
     public SessionState CurrentState
     {
@@ -51,19 +51,6 @@ public partial class GameSessionService : Node, IGameSessionService
     public event Action<Vector2I>? EnemyDefeated;
     public event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
     public event Action<IReadOnlyList<Vector2I>, Vector2I?>? PathUpdated;
-
-    public override void _Ready()
-    {
-        _rng.Randomize();
-        _mapGenerator = new SimpleMapGenerator(_rng);
-
-        // Create timer for game progression
-        _gameTimer = new Timer();
-        AddChild(_gameTimer);
-        _gameTimer.Timeout += OnTimerTimeout;
-
-        ILog.Print("GameSessionService ready and initialized");
-    }
 
     public void StartSession(CardSignature? mapSeed, List<CardSignature>? abilityCards)
     {
@@ -128,15 +115,38 @@ public partial class GameSessionService : Node, IGameSessionService
         ILog.Print("Session reset");
     }
 
+    public override void _Ready()
+    {
+        _rng.Randomize();
+
+        // Initialize biome system
+        _biomeRegistry = new BiomeRegistry();
+        _biomeRegistry.RegisterDefaultBiomes();
+
+        // Create timer for game progression
+        _gameTimer = new Timer();
+        AddChild(_gameTimer);
+        _gameTimer.Timeout += OnTimerTimeout;
+
+        ILog.Print("GameSessionService ready and initialized");
+    }
+
     private void GenerateMap()
     {
-        ILog.Print($"Generating simple map from seed signature: {_mapSeed}");
+        ILog.Print($"Generating biome-based map from seed signature: {_mapSeed.ToDebugString()}");
 
-        // Use signature to influence map size and difficulty
+        // Use signature to influence map size
         var mapSize = CalculateMapSize(_mapSeed);
-        var blockedPercentage = CalculateBlockedPercentage(_mapSeed);
 
-        _currentMap = _mapGenerator.GenerateMap(mapSize, _mapSeed, blockedPercentage);
+        // Create gradient from map seed for biome placement
+        var gradient = new CardBasedGradient(new[] { _mapSeed }, _rng);
+
+        // Create biome provider that maps gradient signatures to biomes
+        var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, mapSize);
+
+        // Create map generator with biome provider
+        var mapGenerator = new SimpleMapGenerator(_rng, biomeProvider);
+        _currentMap = mapGenerator.GenerateMap(mapSize);
 
         ILog.Print($"Map generated: {mapSize.X}x{mapSize.Y}, {_currentMap.EnemyPositions.Count} enemies");
 
@@ -157,7 +167,8 @@ public partial class GameSessionService : Node, IGameSessionService
         _explorationAI.EnemyEncountered += OnEnemyEncountered;
         _explorationAI.PlayerMoved += pos => PlayerMoved?.Invoke(pos);
         _explorationAI.VisitedTilesUpdated += tiles => VisitedTilesUpdated?.Invoke(tiles);
-        _explorationAI.PathUpdated += () => PathUpdated?.Invoke(_explorationAI.CurrentPath, _explorationAI.CurrentTarget);
+        _explorationAI.PathUpdated +=
+            () => PathUpdated?.Invoke(_explorationAI.CurrentPath, _explorationAI.CurrentTarget);
 
         // Start exploration timer
         _gameTimer.WaitTime = ExplorationStepDelay;
@@ -242,7 +253,8 @@ public partial class GameSessionService : Node, IGameSessionService
                 // Player is now at the enemy's position
                 _playerPosition = defeatedPosition;
                 _currentMap?.EnemyPositions.Remove(defeatedPosition);
-                ILog.Print($"Enemy at {defeatedPosition} destroyed! ({_currentMap?.EnemyPositions.Count ?? 0} enemies remaining)");
+                ILog.Print(
+                    $"Enemy at {defeatedPosition} destroyed! ({_currentMap?.EnemyPositions.Count ?? 0} enemies remaining)");
 
                 // Notify UI to remove enemy sprite
                 EnemyDefeated?.Invoke(defeatedPosition);
@@ -342,12 +354,5 @@ public partial class GameSessionService : Node, IGameSessionService
         var size = baseSize + sizeVariation;
 
         return new Vector2I(size, size);
-    }
-
-    private float CalculateBlockedPercentage(CardSignature signature)
-    {
-        // Use specific elements to determine map density
-        var solidumValue = Mathf.Abs(signature[0]); // Solidum affects terrain density
-        return Mathf.Clamp(0.2f + solidumValue * 0.3f, 0.15f, 0.5f);
     }
 }

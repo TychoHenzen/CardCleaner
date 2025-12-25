@@ -15,8 +15,8 @@ namespace CardCleaner.Scripts.Core.DependencyInjection;
 public partial class ServiceLocator : Node
 {
     private static ServiceLocator _instance = null!;
-    private IServiceContainer _container = new ServiceContainer();
     private readonly Dictionary<Type, List<Action<object>>> _pendingCallbacks = new();
+    private IServiceContainer _container = new ServiceContainer();
 
 
     public static IServiceContainer Container => _instance._container;
@@ -29,6 +29,7 @@ public partial class ServiceLocator : Node
         _instance = this;
         CallDeferred(MethodName.ResolveServices);
     }
+
     public static void ReinitializeServices()
     {
         ResetForTesting();
@@ -65,6 +66,11 @@ public partial class ServiceLocator : Node
         _container.RegisterSingleton<ICompatibilityTagRegistry, CompatibilityTagRegistry>();
         _container.RegisterSingleton<ITileRegistry, TileRegistry>();
         _container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
+        _container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();
+
+        var playerResetService = new PlayerResetService();
+        AddChild(playerResetService);
+        _container.RegisterSingleton<IPlayerResetService>(playerResetService);
     }
 
     private void RegisterFromProviders()
