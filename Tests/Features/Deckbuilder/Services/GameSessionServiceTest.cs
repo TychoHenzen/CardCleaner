@@ -50,14 +50,17 @@ public class GameSessionServiceTest
     [TestCase]
     public void TestStartSessionWithValidInputs()
     {
-        var mapSeed = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
+        var mapSeeds = new List<CardSignature>
+        {
+            new(new[] { 0.5f, -0.3f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
+        };
         var abilityCards = new List<CardSignature>
         {
             new(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }),
             new(new[] { 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
         };
 
-        _service.StartSession(mapSeed, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards);
 
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.GeneratingMap);
         Assertions.AssertThat(_stateChangeCount).IsEqual(1);
@@ -65,7 +68,7 @@ public class GameSessionServiceTest
     }
 
     [TestCase]
-    public void TestStartSessionWithNullMapSeed()
+    public void TestStartSessionWithNullMapSeeds()
     {
         var abilityCards = new List<CardSignature>
         {
@@ -79,12 +82,30 @@ public class GameSessionServiceTest
     }
 
     [TestCase]
+    public void TestStartSessionWithEmptyMapSeeds()
+    {
+        var emptyMapSeeds = new List<CardSignature>();
+        var abilityCards = new List<CardSignature>
+        {
+            new(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
+        };
+
+        _service.StartSession(emptyMapSeeds, abilityCards);
+
+        Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.WaitingForCards);
+        Assertions.AssertThat(_stateChangeCount).IsEqual(0);
+    }
+
+    [TestCase]
     public void TestStartSessionWithEmptyAbilityCards()
     {
-        var mapSeed = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
+        var mapSeeds = new List<CardSignature>
+        {
+            new(new[] { 0.5f, -0.3f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
+        };
         var emptyAbilityCards = new List<CardSignature>();
 
-        _service.StartSession(mapSeed, emptyAbilityCards);
+        _service.StartSession(mapSeeds, emptyAbilityCards);
 
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.WaitingForCards);
         Assertions.AssertThat(_stateChangeCount).IsEqual(0);
@@ -93,13 +114,13 @@ public class GameSessionServiceTest
     [TestCase]
     public void TestStartSessionWhenNotWaiting()
     {
-        var mapSeed = new CardSignature();
+        var mapSeeds = new List<CardSignature> { new() };
         var abilityCards = new List<CardSignature> { new() };
-        _service.StartSession(mapSeed, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards);
 
         _stateChangeCount = 0;
 
-        _service.StartSession(mapSeed, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards);
 
         Assertions.AssertThat(_stateChangeCount).IsEqual(0);
     }
@@ -107,9 +128,9 @@ public class GameSessionServiceTest
     [TestCase]
     public void TestResetSession()
     {
-        var mapSeed = new CardSignature();
+        var mapSeeds = new List<CardSignature> { new() };
         var abilityCards = new List<CardSignature> { new() };
-        _service.StartSession(mapSeed, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards);
 
         _service.ResetSession();
 
@@ -128,10 +149,10 @@ public class GameSessionServiceTest
     [TestCase]
     public async Task TestStateTransitionToExploring()
     {
-        var mapSeed = new CardSignature();
+        var mapSeeds = new List<CardSignature> { new() };
         var abilityCards = new List<CardSignature> { new() };
 
-        _service.StartSession(mapSeed, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards);
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.GeneratingMap);
 
         // Wait for deferred call to process
@@ -144,10 +165,13 @@ public class GameSessionServiceTest
     [TestCase]
     public async Task TestFullSessionFlowProgresses()
     {
-        var mapSeed = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f });
+        var mapSeeds = new List<CardSignature>
+        {
+            new(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f })
+        };
         var abilityCards = new List<CardSignature> { new() };
 
-        _service.StartSession(mapSeed, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards);
 
         // Wait for session to progress beyond initial state
         var frameCount = 0;
@@ -172,10 +196,13 @@ public class GameSessionServiceTest
     [TestCase]
     public async Task TestLootGeneration()
     {
-        var mapSeed = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f });
+        var mapSeeds = new List<CardSignature>
+        {
+            new(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f })
+        };
         var abilityCards = new List<CardSignature> { new() };
 
-        _service.StartSession(mapSeed, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards);
 
         // Wait for loot to be generated (limited wait - full session is slow)
         var frameCount = 0;
@@ -214,11 +241,14 @@ public class GameSessionServiceTest
     {
         // This is an integration test that requires full sessions to complete
         // We test that if loot is generated, it varies between sessions
-        var mapSeed = new CardSignature(new[] { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
+        var mapSeeds = new List<CardSignature>
+        {
+            new(new[] { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
+        };
         var abilityCards = new List<CardSignature> { new() };
 
         // First session - limited wait time
-        _service.StartSession(mapSeed, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards);
 
         var frameCount = 0;
         var maxFrames = 300;
@@ -245,7 +275,7 @@ public class GameSessionServiceTest
             {
                 // Second session
                 _lastLootGenerated.Clear();
-                _service.StartSession(mapSeed, abilityCards);
+                _service.StartSession(mapSeeds, abilityCards);
 
                 frameCount = 0;
                 while (_lastLootGenerated.Count == 0 && frameCount < maxFrames)
@@ -286,13 +316,16 @@ public class GameSessionServiceTest
     [TestCase]
     public async Task TestMapGeneratedEvent()
     {
-        var mapSeed = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f });
+        var mapSeeds = new List<CardSignature>
+        {
+            new(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f })
+        };
         var abilityCards = new List<CardSignature> { new() };
         SimpleMapData? generatedMap = null;
 
         _service.MapGenerated += map => generatedMap = map;
 
-        _service.StartSession(mapSeed, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards);
 
         // Wait for map generation
         var timeout = 5.0f;
@@ -310,13 +343,13 @@ public class GameSessionServiceTest
     [TestCase]
     public async Task TestStateChangedEventFires()
     {
-        var mapSeed = new CardSignature();
+        var mapSeeds = new List<CardSignature> { new() };
         var abilityCards = new List<CardSignature> { new() };
         var stateHistory = new List<SessionState>();
 
         _service.StateChanged += state => stateHistory.Add(state);
 
-        _service.StartSession(mapSeed, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards);
 
         // Wait a bit for state transitions
         for (var i = 0; i < 10; i++)
@@ -326,5 +359,65 @@ public class GameSessionServiceTest
         Assertions.AssertThat(stateHistory.Count).IsGreaterEqual(2);
         Assertions.AssertThat(stateHistory[0]).IsEqual(SessionState.GeneratingMap);
         Assertions.AssertThat(stateHistory[1]).IsEqual(SessionState.Exploring);
+    }
+
+    [TestCase]
+    public async Task TestMultipleMapSeedsGenerateMap()
+    {
+        // Test that multiple map seeds are accepted and map generation proceeds
+        // CardBasedGradient uses capsule (2 cards) or Bezier (3+ cards) patterns
+        var mapSeeds = new List<CardSignature>
+        {
+            new(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f }),
+            new(new[] { -0.5f, 0.3f, -0.8f, 0.1f, -0.2f, 0.7f, -0.9f, 0.4f })
+        };
+        var abilityCards = new List<CardSignature> { new() };
+        SimpleMapData? generatedMap = null;
+
+        _service.MapGenerated += map => generatedMap = map;
+
+        _service.StartSession(mapSeeds, abilityCards);
+
+        // Wait for map generation
+        var timeout = 5.0f;
+        var elapsed = 0.0f;
+        while (generatedMap == null && elapsed < timeout)
+        {
+            await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
+            elapsed += 0.016f;
+        }
+
+        Assertions.AssertThat(generatedMap).IsNotNull();
+        Assertions.AssertThat(generatedMap!.PassableTiles.Count).IsGreater(0);
+    }
+
+    [TestCase]
+    public async Task TestThreeMapSeedsGenerateMap()
+    {
+        // Test three map seeds (triggers Bezier gradient pattern)
+        var mapSeeds = new List<CardSignature>
+        {
+            new(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }),
+            new(new[] { 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }),
+            new(new[] { 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
+        };
+        var abilityCards = new List<CardSignature> { new() };
+        SimpleMapData? generatedMap = null;
+
+        _service.MapGenerated += map => generatedMap = map;
+
+        _service.StartSession(mapSeeds, abilityCards);
+
+        // Wait for map generation
+        var timeout = 5.0f;
+        var elapsed = 0.0f;
+        while (generatedMap == null && elapsed < timeout)
+        {
+            await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
+            elapsed += 0.016f;
+        }
+
+        Assertions.AssertThat(generatedMap).IsNotNull();
+        Assertions.AssertThat(generatedMap!.PassableTiles.Count).IsGreater(0);
     }
 }

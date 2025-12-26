@@ -9,7 +9,7 @@
       "passability": "passable",
       "atlasCoords": {
         "x": 12,
-        "y": 6
+        "y": 4
       },
       "sourceId": 49,
       "layer": "terrain",
@@ -21,10 +21,10 @@
       "name": "Debug Target",
       "passability": "passable",
       "atlasCoords": {
-        "x": 7,
-        "y": 18
+        "x": 4,
+        "y": 6
       },
-      "sourceId": 73,
+      "sourceId": 34,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true

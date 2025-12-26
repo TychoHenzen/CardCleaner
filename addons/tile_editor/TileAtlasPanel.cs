@@ -12,8 +12,9 @@ namespace CardCleaner.Addons.TileEditor;
 [Tool]
 public partial class TileAtlasPanel : Control
 {
-    private const int TileDisplaySize = 48;
-    private const int TilesPerRow = 10;
+    private const int TileDisplaySize = 96; // 16px tiles at 3x scale
+    private const int TileDisplayPadding = 4;
+    private const int TilesPerRow = 8;
 
     private readonly TileEditorService _service;
     private ScrollContainer? _scrollContainer;
@@ -139,7 +140,7 @@ public partial class TileAtlasPanel : Control
 
         foreach (var tile in tiles)
         {
-            var button = new TileButton(tile, TileDisplaySize, _service);
+            var button = new TileButton(tile, TileDisplaySize, TileDisplayPadding, _service);
             button.Pressed += () => SelectTile(tile.Id);
             _tileGrid.AddChild(button);
             _tileButtons[tile.Id] = button;
@@ -238,138 +239,87 @@ public partial class TileAtlasPanel : Control
 }
 
 /// <summary>
-/// Button representing a single tile in the grid
+/// Button representing a single tile in the grid - uses direct drawing for proper scaling
 /// </summary>
 [Tool]
 public partial class TileButton : Button
 {
     private readonly int _size;
+    private readonly int _padding;
     private readonly TileEditorService _service;
-    private ColorRect? _selectionBorder;
-    private Label? _nameLabel;
-    private TextureRect? _tilePreview;
+    private readonly EditableTile _tile;
+    private readonly Texture2D? _texture;
+    private readonly Rect2I _region;
+    private readonly Color _bgColor;
+    private bool _isSelected;
 
-    public TileButton(EditableTile tile, int size, TileEditorService service)
+    public TileButton(EditableTile tile, int size, int padding, TileEditorService service)
     {
         _size = size;
+        _padding = padding;
         _service = service;
+        _tile = tile;
 
-        CustomMinimumSize = new Vector2(size, size + 20);
+        var totalSize = size + padding * 2;
+        CustomMinimumSize = new Vector2(totalSize, totalSize + 16);
         TooltipText = $"{tile.Name}\n{tile.Id}\n{tile.Passability}\nSource: {tile.SourceId}, Atlas: ({tile.AtlasX},{tile.AtlasY})";
         Flat = true;
+        TextureFilter = TextureFilterEnum.Nearest;
 
-        var vbox = new VBoxContainer();
-        AddChild(vbox);
+        _texture = service.GetTileTexture(tile);
+        _region = service.GetTileTextureRegion(tile);
 
-        // Tile preview container
-        var previewContainer = new Control
-        {
-            CustomMinimumSize = new Vector2(size, size)
-        };
-        vbox.AddChild(previewContainer);
-
-        // Background color based on passability
-        var bgColor = tile.Passability.ToLowerInvariant() switch
+        _bgColor = tile.Passability.ToLowerInvariant() switch
         {
             "solid" => new Color(0.6f, 0.3f, 0.3f, 0.5f),
             "partially_passable" => new Color(0.6f, 0.6f, 0.3f, 0.5f),
             _ => new Color(0.3f, 0.6f, 0.3f, 0.5f)
         };
+    }
 
-        var bg = new ColorRect
-        {
-            Color = bgColor,
-            Size = new Vector2(size, size)
-        };
-        previewContainer.AddChild(bg);
+    public override void _Draw()
+    {
+        var totalSize = _size + _padding * 2;
+
+        // Background
+        DrawRect(new Rect2(0, 0, totalSize, totalSize), _bgColor);
 
         // Selection border
-        _selectionBorder = new ColorRect
+        if (_isSelected)
         {
-            Color = new Color(1, 0.8f, 0, 1),
-            Size = new Vector2(size, size),
-            Visible = false
-        };
-        previewContainer.AddChild(_selectionBorder);
+            DrawRect(new Rect2(0, 0, totalSize, totalSize), new Color(1, 0.8f, 0, 1), false, 2);
+        }
 
-        var innerBg = new ColorRect
+        // Tile texture at 3x scale
+        if (_texture != null)
         {
-            Color = bgColor,
-            Position = new Vector2(2, 2),
-            Size = new Vector2(size - 4, size - 4)
-        };
-        previewContainer.AddChild(innerBg);
-
-        // Tile texture preview
-        var texture = service.GetTileTexture(tile);
-        if (texture != null)
-        {
-            var region = service.GetTileTextureRegion(tile);
-
-            // Create an AtlasTexture to show just this tile
-            var atlasTexture = new AtlasTexture
-            {
-                Atlas = texture,
-                Region = new Rect2(region.Position.X, region.Position.Y, region.Size.X, region.Size.Y)
-            };
-
-            _tilePreview = new TextureRect
-            {
-                Texture = atlasTexture,
-                Position = new Vector2(4, 4),
-                Size = new Vector2(size - 8, size - 8),
-                ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-                StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered
-            };
-            previewContainer.AddChild(_tilePreview);
+            var srcRect = new Rect2(_region.Position.X, _region.Position.Y, _region.Size.X, _region.Size.Y);
+            var destRect = new Rect2(_padding, _padding, _size, _size);
+            DrawTextureRectRegion(_texture, destRect, srcRect);
         }
         else
         {
-            // Fallback: show atlas coordinate label when no texture available
-            var coordLabel = new Label
-            {
-                Text = $"({tile.AtlasX},{tile.AtlasY})",
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Position = new Vector2(0, size / 2 - 10),
-                Size = new Vector2(size, 20)
-            };
-            coordLabel.AddThemeFontSizeOverride("font_size", 10);
-            previewContainer.AddChild(coordLabel);
+            // Fallback text
+            DrawString(ThemeDB.FallbackFont, new Vector2(_padding, totalSize / 2),
+                $"({_tile.AtlasX},{_tile.AtlasY})", HorizontalAlignment.Center, _size);
         }
 
-        // Tile name
-        _nameLabel = new Label
-        {
-            Text = tile.Name.Length > 10 ? tile.Name[..10] + "..." : tile.Name,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            CustomMinimumSize = new Vector2(size, 20)
-        };
-        _nameLabel.AddThemeFontSizeOverride("font_size", 9);
-        vbox.AddChild(_nameLabel);
+        // Tile name at bottom
+        var displayName = _tile.Name.Length > 8 ? _tile.Name[..8] + ".." : _tile.Name;
+        DrawString(ThemeDB.FallbackFont, new Vector2(0, totalSize + 12),
+            displayName, HorizontalAlignment.Center, totalSize, 10);
     }
 
     public void UpdateTile(EditableTile tile)
     {
         TooltipText = $"{tile.Name}\n{tile.Id}\n{tile.Passability}\nSource: {tile.SourceId}, Atlas: ({tile.AtlasX},{tile.AtlasY})";
-        if (_nameLabel != null)
-        {
-            _nameLabel.Text = tile.Name.Length > 10 ? tile.Name[..10] + "..." : tile.Name;
-        }
-
-        // Update texture region if atlas coords changed
-        if (_tilePreview?.Texture is AtlasTexture atlasTexture)
-        {
-            var region = _service.GetTileTextureRegion(tile);
-            atlasTexture.Region = new Rect2(region.Position.X, region.Position.Y, region.Size.X, region.Size.Y);
-        }
+        QueueRedraw();
     }
 
     public void SetSelected(bool selected)
     {
-        if (_selectionBorder != null)
-        {
-            _selectionBorder.Visible = selected;
-        }
+        _isSelected = selected;
+        QueueRedraw();
     }
 }
 #endif

@@ -26,7 +26,7 @@ public partial class GameSessionService : Node, IGameSessionService
     private SessionState _currentState = SessionState.WaitingForCards;
     private ExplorationAI? _explorationAI;
     private Timer _gameTimer = null!;
-    private CardSignature _mapSeed = null!;
+    private List<CardSignature> _mapSeeds = new();
 
     // Player and enemy tracking
     private Vector2I? _playerPosition;
@@ -54,7 +54,7 @@ public partial class GameSessionService : Node, IGameSessionService
     public event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>>? VisibilityUpdated;
     public event Action<IReadOnlyList<Vector2I>, Vector2I?>? PathUpdated;
 
-    public void StartSession(CardSignature? mapSeed, List<CardSignature>? abilityCards)
+    public void StartSession(List<CardSignature>? mapSeeds, List<CardSignature>? abilityCards)
     {
         if (CurrentState != SessionState.WaitingForCards)
         {
@@ -62,17 +62,17 @@ public partial class GameSessionService : Node, IGameSessionService
             return;
         }
 
-        if (mapSeed == null || abilityCards == null || abilityCards.Count == 0)
+        if (mapSeeds == null || mapSeeds.Count == 0 || abilityCards == null || abilityCards.Count == 0)
         {
             ILog.Error("Cannot start session with null or empty inputs");
             return;
         }
 
-        _mapSeed = mapSeed;
+        _mapSeeds = new List<CardSignature>(mapSeeds);
         _abilityCards = new List<CardSignature>(abilityCards);
         CurrentState = SessionState.GeneratingMap;
 
-        ILog.Print($"Started session with map seed and {_abilityCards.Count} ability cards");
+        ILog.Print($"Started session with {_mapSeeds.Count} map seed(s) and {_abilityCards.Count} ability cards");
 
         // Start the game loop
         CallDeferred(MethodName.AdvanceSession);
@@ -106,7 +106,7 @@ public partial class GameSessionService : Node, IGameSessionService
     public void ResetSession()
     {
         _gameTimer.Stop();
-        _mapSeed = null!;
+        _mapSeeds.Clear();
         _abilityCards.Clear();
         _currentMap = null!;
         _explorationAI = null!;
@@ -138,16 +138,16 @@ public partial class GameSessionService : Node, IGameSessionService
 
     private void GenerateMap()
     {
-        ILog.Print($"Generating biome-based map from seed signature: {_mapSeed.ToDebugString()}");
+        ILog.Print($"Generating biome-based map from {_mapSeeds.Count} seed signature(s)");
 
         // Ensure tile registry is available (fallback if async callback hasn't run yet)
         _tileRegistry ??= new Core.Services.TileRegistry();
 
-        // Use signature to influence map size
-        var mapSize = CalculateMapSize(_mapSeed);
+        // Use first signature to influence map size (could blend in future)
+        var mapSize = CalculateMapSize(_mapSeeds[0]);
 
-        // Create gradient from map seed for biome placement
-        var gradient = new CardBasedGradient(new[] { _mapSeed }, _rng);
+        // Create gradient from all map seeds for biome placement
+        var gradient = new CardBasedGradient(_mapSeeds.ToArray(), _rng);
 
         // Create biome provider that maps gradient signatures to biomes
         var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, mapSize);
@@ -237,7 +237,7 @@ public partial class GameSessionService : Node, IGameSessionService
     {
         ILog.Print($"Starting combat with {_abilityCards.Count} ability cards...");
 
-        _combatSystem = new SimpleCombatSystem(_abilityCards, _mapSeed, _rng);
+        _combatSystem = new SimpleCombatSystem(_abilityCards, _mapSeeds[0], _rng);
         _combatSystem.CombatEnded += OnCombatEnded;
 
         // Start combat timer
@@ -344,10 +344,11 @@ public partial class GameSessionService : Node, IGameSessionService
     {
         // Create signature that's a variation of the map seed plus random elements from abilities
         var lootSignature = new CardSignature();
+        var baseSeed = _mapSeeds[0];
 
         for (var i = 0; i < 8; i++)
         {
-            var variation = _rng.Randfn(_mapSeed[i], 0.1f);
+            var variation = _rng.Randfn(baseSeed[i], 0.1f);
             lootSignature[i] = Mathf.Clamp(variation, -1f, 1f);
         }
 

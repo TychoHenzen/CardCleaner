@@ -110,7 +110,7 @@ public partial class SimpleWorldMapScreen : Node3D
             if (_pendingMapSeed is { Length: > 0 } && _pendingAbilities != null)
             {
                 ILog.Print("Processing pending initialization...");
-                gameSession.StartSession(_pendingMapSeed[0], _pendingAbilities.ToList());
+                gameSession.StartSession(_pendingMapSeed.ToList(), _pendingAbilities.ToList());
                 _pendingMapSeed = null;
                 _pendingAbilities = null;
             }
@@ -148,7 +148,7 @@ public partial class SimpleWorldMapScreen : Node3D
         if (_serviceReady && _gameSession != null)
         {
             // Service is ready, start immediately
-            _gameSession.StartSession(mapSeed[0], abilities.ToList());
+            _gameSession.StartSession(mapSeed.ToList(), abilities.ToList());
         }
         else
         {
@@ -282,7 +282,7 @@ public partial class SimpleWorldMapScreen : Node3D
             {
                 Texture = _fogTexture,
                 Position = new Vector2(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2),
-                ZIndex = 100, // Above all other overlays
+                ZIndex = 50, // Below UI (which uses CanvasLayer)
                 Modulate = new Color(1, 1, 1, 0.9f) // 90% opacity - map barely visible through fog
             };
 
@@ -428,8 +428,15 @@ public partial class SimpleWorldMapScreen : Node3D
     {
         if (StatusLabel != null) StatusLabel.Text = "Generating loot...";
 
-        // Loot will be spawned when the LootGenerated event fires
-        // No need to manually trigger it here
+        RevealEntireMap();
+    }
+
+    private void RevealEntireMap()
+    {
+        foreach (var sprite in _fogSprites.Values)
+            sprite.Modulate = new Color(1, 1, 1, 0);
+
+        ILog.Print("[FOG] Revealed entire map");
     }
 
     private void OnLootGenerated(List<CardSignature> lootSignatures)

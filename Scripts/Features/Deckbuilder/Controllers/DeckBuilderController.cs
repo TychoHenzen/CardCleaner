@@ -19,7 +19,7 @@ public partial class DeckBuilderController : Node
 
     public override void _Ready()
     {
-        // Ensure MapCardSlot has capacity of 1 for single-card usage
+        // MapCardSlot accepts up to 5 cards for multi-card map generation
         MapCardSlot.Capacity = 5;
 
         // Listen for when cards are dropped into slots (for UI feedback only)
@@ -64,13 +64,13 @@ public partial class DeckBuilderController : Node
 
         ILog.Print("Activation button pressed! Processing cards...");
 
-        // Consume the seed card and ability deck
-        var mapSeed = MapCardSlot.ConsumeCardSignature(); // Using convenience method
+        // Consume the seed cards and ability deck
+        var mapSeeds = MapCardSlot.ConsumeAllCardSignatures();
         var abilities = AbilityDeckSlot.ConsumeAllCardSignatures();
 
         // Instantiate and initialize the 3D map screen
-        if (mapSeed != null)
-            WorldTileMapScreenScene.Initialize(new[] { mapSeed }, abilities.ToArray());
+        if (mapSeeds.Count > 0)
+            WorldTileMapScreenScene.Initialize(mapSeeds.ToArray(), abilities.ToArray());
 
         // Clear slots and disable button
         AbilityDeckSlot.Clear();

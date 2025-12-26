@@ -36,9 +36,9 @@ OverlayLayer = NodePath("SubViewport/OverlayLayer")
 BiomeOverlayLayer = NodePath("SubViewport/BiomeOverlay")
 Viewport = NodePath("SubViewport")
 ScreenMesh = NodePath("CSGMesh3D")
-StatusLabel = NodePath("SubViewport/UI/StatusLabel")
+StatusLabel = NodePath("SubViewport/UILayer/UI/StatusLabel")
 PlayerSprite = NodePath("SubViewport/PlayerAgent")
-CombatUI = NodePath("SubViewport/UI/CombatUI")
+CombatUI = NodePath("SubViewport/UILayer/UI/CombatUI")
 
 [node name="CSGMesh3D" type="MeshInstance3D" parent="."]
 material_override = SubResource("StandardMaterial3D_10on8")
@@ -64,12 +64,15 @@ texture = ExtResource("3_xv0u5")
 
 [node name="EnemyContainer" type="Node2D" parent="SubViewport"]
 
-[node name="UI" parent="SubViewport" instance=ExtResource("4_c04c6")]
+[node name="UILayer" type="CanvasLayer" parent="SubViewport"]
+layer = 100
 
-[node name="ColorRect" parent="SubViewport/UI" index="0"]
+[node name="UI" parent="SubViewport/UILayer" instance=ExtResource("4_c04c6")]
+
+[node name="ColorRect" parent="SubViewport/UILayer/UI" index="0"]
 visible = false
 
-[node name="CombatUI" parent="SubViewport/UI" index="2"]
+[node name="CombatUI" parent="SubViewport/UILayer/UI" index="2"]
 visible = false
 
-[editable path="SubViewport/UI"]
+[editable path="SubViewport/UILayer/UI"]

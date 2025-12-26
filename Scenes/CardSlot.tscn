@@ -4,12 +4,12 @@
 [ext_resource type="PackedScene" uid="uid://yk0lld10yvq3" path="res://Assets/Models/SingleCard.fbx" id="2_r3qn0"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_r3qn0"]
-size = Vector3(0.328613, 0.0229492, 0.551392)
+size = Vector3(0.328613, 0.250977, 0.551392)
 
 [node name="CardSlot" type="Node3D" node_paths=PackedStringArray("Area")]
 script = ExtResource("1_r3qn0")
 Area = NodePath("Area3D")
-PositionOffset = Vector3(0, 0.01, 0.2)
+PositionOffset = Vector3(0, 0.16, 0.2)
 
 [node name="SingleCardHolder" parent="." instance=ExtResource("2_r3qn0")]
 
@@ -18,5 +18,5 @@ collision_layer = 3
 collision_mask = 3
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0334473, 0.221375)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.252441, 0.221375)
 shape = SubResource("BoxShape3D_r3qn0")

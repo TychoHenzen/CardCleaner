@@ -91,6 +91,10 @@ surface_material_override/0 = null
 
 [node name="CardSlot" parent="World" instance=ExtResource("4_dta7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.152501, 5)
+PositionOffset = Vector3(0, 0.01, 0.2)
+
+[node name="CollisionShape3D" parent="World/CardSlot/Area3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0334473, 0.221375)
 
 [node name="DeckbuilderController" type="Node" parent="World" node_paths=PackedStringArray("AbilityDeckSlot", "MapCardSlot", "ActivateButton", "WorldTileMapScreenScene")]
 script = ExtResource("28_up2yq")
