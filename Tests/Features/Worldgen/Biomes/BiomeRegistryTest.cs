@@ -108,15 +108,17 @@ public class BiomeRegistryTest
     }
 
     [TestCase]
-    public void TestRegisterDefaultBiomesCreates4Biomes()
+    public void TestRegisterDefaultBiomesCreatesAllBiomes()
     {
         _registry.RegisterDefaultBiomes();
 
-        AssertThat(_registry.Count).IsEqual(4);
+        AssertThat(_registry.Count).IsEqual(6);
         AssertThat(_registry.GetBiome(BiomeType.Plains)).IsNotNull();
         AssertThat(_registry.GetBiome(BiomeType.Forest)).IsNotNull();
         AssertThat(_registry.GetBiome(BiomeType.Desert)).IsNotNull();
         AssertThat(_registry.GetBiome(BiomeType.Tundra)).IsNotNull();
+        AssertThat(_registry.GetBiome(BiomeType.Swamp)).IsNotNull();
+        AssertThat(_registry.GetBiome(BiomeType.Mountains)).IsNotNull();
     }
 
     [TestCase]

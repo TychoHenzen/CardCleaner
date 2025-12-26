@@ -20,14 +20,17 @@ public class SimpleMapGenerator
     public const string StoneTileId = "stone";
     public const string WaterTileId = "water";
     private readonly IBiomeProvider _biomeProvider;
+    private readonly ITileRegistry _tileRegistry;
     private readonly RandomNumberGenerator _rng;
 
-    public SimpleMapGenerator(RandomNumberGenerator rng, IBiomeProvider biomeProvider)
+    public SimpleMapGenerator(RandomNumberGenerator rng, IBiomeProvider biomeProvider, ITileRegistry tileRegistry)
     {
         ArgumentNullException.ThrowIfNull(rng);
         ArgumentNullException.ThrowIfNull(biomeProvider);
+        ArgumentNullException.ThrowIfNull(tileRegistry);
         _rng = rng;
         _biomeProvider = biomeProvider;
+        _tileRegistry = tileRegistry;
     }
 
     public SimpleMapData GenerateMap(Vector2I size)
@@ -143,7 +146,7 @@ public class SimpleMapGenerator
         ILog.Print($"Connectivity ensured: {components.Count} connected component(s)");
     }
 
-    private static void FloodFill(string[,] tileIds, bool[,] visited, Vector2I size, Vector2I start,
+    private void FloodFill(string[,] tileIds, bool[,] visited, Vector2I size, Vector2I start,
         List<Vector2I> component)
     {
         var stack = new Stack<Vector2I>();
@@ -199,5 +202,9 @@ public class SimpleMapGenerator
         return pos.X >= 0 && pos.X < size.X && pos.Y >= 0 && pos.Y < size.Y;
     }
 
-    private static bool IsPassableTile(string tileId) => tileId is "floor" or "grass" or "dirt";
+    private bool IsPassableTile(string tileId)
+    {
+        var tile = _tileRegistry.GetTile(tileId);
+        return tile?.IsPassable ?? false;
+    }
 }

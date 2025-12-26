@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen;
@@ -15,6 +17,7 @@ public class SimpleMapGeneratorTest
 {
     private SimpleMapGenerator _generator = null!;
     private BiomeRegistry _registry = null!;
+    private ITileRegistry _tileRegistry = null!;
     private RandomNumberGenerator _rng = null!;
 
     [BeforeTest]
@@ -24,10 +27,11 @@ public class SimpleMapGeneratorTest
         _rng.Seed = 12345;
         _registry = new BiomeRegistry();
         _registry.RegisterDefaultBiomes();
+        _tileRegistry = new TileRegistry();
 
         var gradient = new CardBasedGradient(new[] { new CardSignature() }, _rng);
         var biomeProvider = new BiomeMapGenerator(_registry, gradient, new Vector2I(10, 10));
-        _generator = new SimpleMapGenerator(_rng, biomeProvider);
+        _generator = new SimpleMapGenerator(_rng, biomeProvider, _tileRegistry);
     }
 
     private SimpleMapGenerator CreateGenerator(Vector2I mapSize, CardSignature? signature = null)
@@ -35,7 +39,7 @@ public class SimpleMapGeneratorTest
         var seed = signature ?? new CardSignature();
         var gradient = new CardBasedGradient(new[] { seed }, _rng);
         var biomeProvider = new BiomeMapGenerator(_registry, gradient, mapSize);
-        return new SimpleMapGenerator(_rng, biomeProvider);
+        return new SimpleMapGenerator(_rng, biomeProvider, _tileRegistry);
     }
 
     [TestCase]
@@ -235,21 +239,16 @@ public class SimpleMapGeneratorTest
 
         var mapData = generator.GenerateMap(size);
 
-        var validTileIds = new HashSet<string>
-        {
-            "floor",
-            "grass",
-            "dirt",
-            "wall",
-            "stone",
-            "water"
-        };
-
+        // Verify all tiles are from registered biome tiles
         for (var y = 0; y < size.Y; y++)
         for (var x = 0; x < size.X; x++)
         {
             var tileId = mapData.TileIds[y, x];
-            AssertBool(validTileIds.Contains(tileId)).IsTrue();
+            // Tile ID should not be null/empty
+            AssertBool(!string.IsNullOrEmpty(tileId)).IsTrue();
+            // Tile should be registered in the tile registry
+            var tile = _tileRegistry.GetTile(tileId);
+            AssertThat(tile).IsNotNull();
         }
     }
 
@@ -258,22 +257,37 @@ public class SimpleMapGeneratorTest
     {
         var size = new Vector2I(20, 20);
 
+        // Hot signature should produce desert tiles
         _rng.Seed = 42;
         var hotGradient = new ConstantBiomeGradient(new CardSignature(new[] { 0.3f, 0.8f, 0.3f, 0f, 0f, 0f, 0f, 0f }));
         var hotProvider = new BiomeMapGenerator(_registry, hotGradient, size);
-        var hotGenerator = new SimpleMapGenerator(_rng, hotProvider);
+        var hotGenerator = new SimpleMapGenerator(_rng, hotProvider, _tileRegistry);
         var hotMap = hotGenerator.GenerateMap(size);
 
+        // Cold signature should produce tundra tiles
         _rng.Seed = 42;
         var coldGradient = new ConstantBiomeGradient(new CardSignature(new[] { 0f, -0.8f, 0.4f, 0f, 0f, 0f, 0f, 0f }));
         var coldProvider = new BiomeMapGenerator(_registry, coldGradient, size);
-        var coldGenerator = new SimpleMapGenerator(_rng, coldProvider);
+        var coldGenerator = new SimpleMapGenerator(_rng, coldProvider, _tileRegistry);
         var coldMap = coldGenerator.GenerateMap(size);
 
-        var hotDirtCount = CountTile(hotMap, "dirt");
-        var coldDirtCount = CountTile(coldMap, "dirt");
+        // Desert should have desert tiles, tundra should have tundra tiles
+        var hotDesertTiles = CountTilesWithPrefix(hotMap, "desert_");
+        var coldTundraTiles = CountTilesWithPrefix(coldMap, "tundra_");
 
-        AssertBool(hotDirtCount != coldDirtCount).IsTrue();
+        // Hot biome should produce desert tiles, cold biome should produce tundra tiles
+        AssertThat(hotDesertTiles).IsGreater(0);
+        AssertThat(coldTundraTiles).IsGreater(0);
+    }
+
+    private static int CountTilesWithPrefix(SimpleMapData map, string prefix)
+    {
+        var count = 0;
+        for (var y = 0; y < map.Size.Y; y++)
+        for (var x = 0; x < map.Size.X; x++)
+            if (map.TileIds[y, x].StartsWith(prefix))
+                count++;
+        return count;
     }
 
     private static int CountTile(SimpleMapData map, string tileId)

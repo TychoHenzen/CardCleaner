@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tile Registry",
+  "description": "Data-driven tile definitions for CardCleaner",
+  "type": "object",
+  "required": ["version", "tiles"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version"
+    },
+    "tiles": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/tile" }
+    }
+  },
+  "definitions": {
+    "tile": {
+      "type": "object",
+      "required": ["id", "name", "passability", "atlasCoords"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "Unique tile identifier (snake_case)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable display name"
+        },
+        "passability": {
+          "type": "string",
+          "enum": ["passable", "solid", "partially_passable"],
+          "description": "Whether units can move through this tile"
+        },
+        "atlasCoords": {
+          "$ref": "#/definitions/vector2i",
+          "description": "Position in tileset atlas"
+        },
+        "sourceId": {
+          "type": "integer",
+          "default": 4,
+          "description": "TileSet source ID in Godot"
+        },
+        "layer": {
+          "type": "string",
+          "enum": ["terrain", "decoration", "structure", "effects"],
+          "default": "terrain",
+          "description": "Rendering layer"
+        },
+        "elevation": {
+          "type": "number",
+          "default": 0,
+          "description": "Height for visibility/combat calculations"
+        },
+        "isTransparent": {
+          "type": "boolean",
+          "description": "Whether units can see through this tile. Defaults based on passability."
+        },
+        "biomes": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["plains", "forest", "desert", "tundra", "swamp", "mountains"]
+              }
+            }
+          ],
+          "description": "Biomes where this tile can spawn. Null means universal."
+        }
+      }
+    },
+    "vector2i": {
+      "type": "object",
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "type": "integer" },
+        "y": { "type": "integer" }
+      }
+    }
+  }
+}

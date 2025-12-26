@@ -17,6 +17,7 @@ public partial class GameSessionService : Node, IGameSessionService
     private const float CombatTurnDelay = 1.0f; // 1s between combat turns
     private List<CardSignature> _abilityCards = new();
     private BiomeRegistry _biomeRegistry = null!;
+    private ITileRegistry _tileRegistry = null!;
     private SimpleCombatSystem? _combatSystem;
     private Vector2I? _currentEnemyPosition;
 
@@ -119,7 +120,8 @@ public partial class GameSessionService : Node, IGameSessionService
     {
         _rng.Randomize();
 
-        // Initialize biome system
+        // Initialize tile and biome systems
+        _tileRegistry = ServiceLocator.Get<ITileRegistry>() ?? new Core.Services.TileRegistry();
         _biomeRegistry = new BiomeRegistry();
         _biomeRegistry.RegisterDefaultBiomes();
 
@@ -145,7 +147,7 @@ public partial class GameSessionService : Node, IGameSessionService
         var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, mapSize);
 
         // Create map generator with biome provider
-        var mapGenerator = new SimpleMapGenerator(_rng, biomeProvider);
+        var mapGenerator = new SimpleMapGenerator(_rng, biomeProvider, _tileRegistry);
         _currentMap = mapGenerator.GenerateMap(mapSize);
 
         // Log biome distribution for debugging

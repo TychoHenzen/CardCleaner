@@ -1,4 +1,6 @@
 using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen;
@@ -20,6 +22,7 @@ namespace CardCleaner.Tests.Features.Worldgen.Properties;
 public partial class DeterminismProperties : PropertyTestBase
 {
     private BiomeRegistry _registry = null!;
+    private ITileRegistry _tileRegistry = null!;
 
     [BeforeTest]
     public new void SetupPropertyTest()
@@ -28,6 +31,7 @@ public partial class DeterminismProperties : PropertyTestBase
         CardSignatureArbitrary.Register();
         _registry = new BiomeRegistry();
         _registry.RegisterDefaultBiomes();
+        _tileRegistry = new TileRegistry();
     }
 
     /// <summary>
@@ -194,7 +198,7 @@ public partial class DeterminismProperties : PropertyTestBase
         var rng = new RandomNumberGenerator { Seed = seed };
         var gradient = new ConstantGradient(new CardSignature());
         var biomeProvider = new BiomeMapGenerator(_registry, gradient, size);
-        var generator = new SimpleMapGenerator(rng, biomeProvider);
+        var generator = new SimpleMapGenerator(rng, biomeProvider, _tileRegistry);
         return generator.GenerateMap(size);
     }
 
