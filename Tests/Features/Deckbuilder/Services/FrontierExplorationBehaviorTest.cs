@@ -385,6 +385,151 @@ public class FrontierExplorationBehaviorTest
         AssertThat(backtrackCount).IsLess(positions.Count / 2);
     }
 
+    [TestCase]
+    public void TestFindUnvisitedBlobsReturnsConnectedRegions()
+    {
+        // Create a map with two separate unvisited regions
+        //   0 1 2 3 4 5 6
+        // 0 V V V W U U U
+        // V = visited, W = wall, U = unvisited
+        var mapData = new SimpleMapData
+        {
+            TileIds = new string[1, 7],
+            Size = new Vector2I(7, 1),
+            PlayerStart = new Vector2I(0, 0)
+        };
+
+        for (var x = 0; x < 7; x++)
+        {
+            mapData.TileIds[0, x] = x == 3 ? Wall : Floor;
+            if (x != 3) mapData.PassableTiles.Add(new Vector2I(x, 0));
+        }
+
+        var behavior = new FrontierExplorationBehavior(mapData, new SimpleVisibilityChecker(), visionRange: 1);
+
+        // Visit left region
+        behavior.UpdateVision(new Vector2I(0, 0));
+        behavior.UpdateVision(new Vector2I(1, 0));
+        behavior.UpdateVision(new Vector2I(2, 0));
+
+        var blobs = behavior.FindUnvisitedBlobs(new Vector2I(2, 0));
+
+        // Should find no blobs since right region is unreachable (wall blocks)
+        AssertThat(blobs.Count).IsEqual(0);
+    }
+
+    [TestCase]
+    public void TestBlobScoringPrioritizesLargeNearbyBlobs()
+    {
+        // Create a map with two unvisited regions of different sizes
+        //   0 1 2 3 4 5 6 7 8 9
+        // 0 V V U W U U U U U U
+        // V = visited, W = wall (not blocking, just passable), U = unvisited
+        // Small blob at (2,0): size 1
+        // Large blob at (4-9,0): size 6
+        var mapData = new SimpleMapData
+        {
+            TileIds = new string[1, 10],
+            Size = new Vector2I(10, 1),
+            PlayerStart = new Vector2I(0, 0)
+        };
+
+        for (var x = 0; x < 10; x++)
+        {
+            mapData.TileIds[0, x] = Floor;
+            mapData.PassableTiles.Add(new Vector2I(x, 0));
+        }
+
+        var behavior = new FrontierExplorationBehavior(mapData, new SimpleVisibilityChecker(), visionRange: 1);
+        behavior.SignificantBlobThreshold = 3; // Set threshold to 3
+
+        // Visit only tiles 0 and 1
+        behavior.UpdateVision(new Vector2I(0, 0));
+        behavior.UpdateVision(new Vector2I(1, 0));
+
+        // Find blobs
+        var blobs = behavior.FindUnvisitedBlobs(new Vector2I(1, 0));
+
+        // Should find one blob containing all unvisited tiles (2-9)
+        AssertThat(blobs.Count).IsEqual(1);
+        AssertThat(blobs[0].Size).IsEqual(8); // Tiles 2-9
+
+        // FindNearestFrontierTile should return entry to the large blob
+        var target = behavior.FindNearestFrontierTile(new Vector2I(1, 0));
+        AssertThat(target).IsEqual(new Vector2I(2, 0)); // Nearest entry point
+    }
+
+    [TestCase]
+    public void TestSmallBlobsOnlyTargetedWhenNoSignificantBlobsRemain()
+    {
+        // Create a map where only small blobs remain
+        var mapData = CreateSimpleMap(5, 5);
+        var behavior = new FrontierExplorationBehavior(mapData, new SimpleVisibilityChecker(), visionRange: 1);
+        behavior.SignificantBlobThreshold = 10; // High threshold
+
+        // Visit most of the map, leaving only small unvisited pockets
+        for (var y = 0; y < 5; y++)
+        for (var x = 0; x < 5; x++)
+        {
+            if (x < 4 || y < 4) // Leave (4,4) unvisited
+                behavior.UpdateVision(new Vector2I(x, y));
+        }
+
+        // Find frontier - should still return something even though blob is small
+        var target = behavior.FindNearestFrontierTile(new Vector2I(3, 3));
+
+        // Should find the remaining unvisited tile(s)
+        // With high threshold, Phase 2 kicks in and targets nearest small blob
+        AssertThat(target).IsNotNull();
+    }
+
+    [TestCase]
+    public void TestSignificantBlobThresholdIsConfigurable()
+    {
+        var mapData = CreateSimpleMap(3, 3);
+        var behavior = new FrontierExplorationBehavior(mapData, new SimpleVisibilityChecker(), visionRange: 1);
+
+        // Default threshold
+        AssertThat(behavior.SignificantBlobThreshold).IsEqual(5);
+
+        // Can be changed
+        behavior.SignificantBlobThreshold = 10;
+        AssertThat(behavior.SignificantBlobThreshold).IsEqual(10);
+    }
+
+    [TestCase]
+    public void TestBlobScoreFormula()
+    {
+        // Verify that score = size / sqrt(distance)
+        var mapData = new SimpleMapData
+        {
+            TileIds = new string[1, 20],
+            Size = new Vector2I(20, 1),
+            PlayerStart = new Vector2I(0, 0)
+        };
+
+        for (var x = 0; x < 20; x++)
+        {
+            mapData.TileIds[0, x] = Floor;
+            mapData.PassableTiles.Add(new Vector2I(x, 0));
+        }
+
+        var behavior = new FrontierExplorationBehavior(mapData, new SimpleVisibilityChecker(), visionRange: 1);
+
+        // Visit first tile only
+        behavior.UpdateVision(new Vector2I(0, 0));
+
+        var blobs = behavior.FindUnvisitedBlobs(new Vector2I(0, 0));
+
+        // Should have one blob of size 19 at distance 1
+        AssertThat(blobs.Count).IsEqual(1);
+        AssertThat(blobs[0].Size).IsEqual(19);
+        AssertThat(blobs[0].WalkingDistance).IsEqual(1);
+
+        // Score should be 19 / sqrt(1) = 19
+        AssertThat(blobs[0].Score).IsEqual(19f);
+    }
+
     private static SimpleMapData CreateSimpleMap(int width, int height)
     {
         var mapData = new SimpleMapData

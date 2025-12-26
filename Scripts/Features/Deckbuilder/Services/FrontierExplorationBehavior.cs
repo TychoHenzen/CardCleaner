@@ -7,6 +7,17 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
 /// <summary>
+/// Represents a connected region of unvisited tiles.
+/// </summary>
+public readonly struct UnvisitedBlob
+{
+    public Vector2I EntryPoint { get; init; }
+    public int Size { get; init; }
+    public int WalkingDistance { get; init; }
+    public float Score { get; init; }
+}
+
+/// <summary>
 /// Exploration behavior that finds and paths to the nearest unexplored tile
 /// on the frontier of the visited area.
 /// </summary>
@@ -18,6 +29,12 @@ public class FrontierExplorationBehavior
     private readonly HashSet<Vector2I> _visitedTiles = new();
     private readonly HashSet<Vector2I> _currentlyVisibleTiles = new();
     private readonly int _visionRange;
+
+    /// <summary>
+    /// Minimum blob size to be considered "significant" for prioritization.
+    /// Smaller blobs are only targeted when no significant blobs remain.
+    /// </summary>
+    public int SignificantBlobThreshold { get; set; } = 5;
 
     public IReadOnlySet<Vector2I> SeenTiles => _seenTiles;
     public IReadOnlySet<Vector2I> VisitedTiles => _visitedTiles;
@@ -175,44 +192,31 @@ public class FrontierExplorationBehavior
     }
 
     /// <summary>
-    /// Find the nearest unvisited passable tile by actual walking distance using BFS.
-    /// This prevents picking tiles that are "close" as the crow flies but require backtracking.
-    /// Returns null if no frontier tiles exist.
+    /// Find the best unvisited tile to explore using blob-based prioritization.
+    /// Phase 1: Prioritize large blobs (size >= SignificantBlobThreshold) by score.
+    /// Phase 2: When no significant blobs remain, target any remaining tile by distance.
     /// </summary>
     public Vector2I? FindNearestFrontierTile(Vector2I currentPosition)
     {
-        // BFS to find the nearest unvisited passable tile
-        var visited = new HashSet<Vector2I> { currentPosition };
-        var queue = new Queue<Vector2I>();
-        queue.Enqueue(currentPosition);
+        var blobs = FindUnvisitedBlobs(currentPosition);
 
-        while (queue.Count > 0)
+        if (blobs.Count == 0)
+            return null;
+
+        // Phase 1: Look for significant blobs (size >= threshold)
+        var significantBlobs = blobs.Where(b => b.Size >= SignificantBlobThreshold).ToList();
+
+        if (significantBlobs.Count > 0)
         {
-            var current = queue.Dequeue();
-
-            foreach (var neighbor in GetNeighbors(current))
-            {
-                if (visited.Contains(neighbor))
-                    continue;
-
-                if (!IsInBounds(neighbor))
-                    continue;
-
-                if (!_mapData.IsPassable(neighbor))
-                    continue;
-
-                visited.Add(neighbor);
-
-                // If this tile hasn't been visited by the explorer, it's a frontier tile
-                if (!_visitedTiles.Contains(neighbor))
-                    return neighbor;
-
-                // Otherwise, continue searching from this tile
-                queue.Enqueue(neighbor);
-            }
+            // Pick the highest-scoring significant blob
+            var bestBlob = significantBlobs.OrderByDescending(b => b.Score).First();
+            return bestBlob.EntryPoint;
         }
 
-        return null; // No frontier tiles reachable
+        // Phase 2: No significant blobs - fall back to nearest tile
+        // This handles single-tile cleanup when major exploration is done
+        var nearestBlob = blobs.OrderBy(b => b.WalkingDistance).First();
+        return nearestBlob.EntryPoint;
     }
 
     /// <summary>
@@ -246,6 +250,103 @@ public class FrontierExplorationBehavior
     public bool IsFullyExplored()
     {
         return _mapData.PassableTiles.All(t => _visitedTiles.Contains(t));
+    }
+
+    /// <summary>
+    /// Find all connected blobs of unvisited tiles, with entry points and sizes.
+    /// Uses BFS from current position to find walking distance to each blob.
+    /// </summary>
+    public List<UnvisitedBlob> FindUnvisitedBlobs(Vector2I currentPosition)
+    {
+        var blobs = new List<UnvisitedBlob>();
+        var bfsVisited = new HashSet<Vector2I> { currentPosition };
+        var blobAssigned = new HashSet<Vector2I>();
+        var queue = new Queue<(Vector2I pos, int distance)>();
+        queue.Enqueue((currentPosition, 0));
+
+        // BFS to find all reachable frontier tiles with their walking distances
+        var frontierWithDistance = new List<(Vector2I tile, int distance)>();
+
+        while (queue.Count > 0)
+        {
+            var (current, distance) = queue.Dequeue();
+
+            foreach (var neighbor in GetNeighbors(current))
+            {
+                if (bfsVisited.Contains(neighbor))
+                    continue;
+
+                if (!IsInBounds(neighbor))
+                    continue;
+
+                if (!_mapData.IsPassable(neighbor))
+                    continue;
+
+                bfsVisited.Add(neighbor);
+
+                if (!_visitedTiles.Contains(neighbor))
+                {
+                    // Found an unvisited tile - record as potential blob entry
+                    frontierWithDistance.Add((neighbor, distance + 1));
+                }
+                else
+                {
+                    // Visited tile - continue BFS
+                    queue.Enqueue((neighbor, distance + 1));
+                }
+            }
+        }
+
+        // For each frontier tile, flood fill to find the connected blob size
+        foreach (var (entryPoint, walkingDistance) in frontierWithDistance)
+        {
+            if (blobAssigned.Contains(entryPoint))
+                continue;
+
+            // Flood fill to find all connected unvisited tiles
+            var blobSize = 0;
+            var floodQueue = new Queue<Vector2I>();
+            floodQueue.Enqueue(entryPoint);
+            blobAssigned.Add(entryPoint);
+
+            while (floodQueue.Count > 0)
+            {
+                var tile = floodQueue.Dequeue();
+                blobSize++;
+
+                foreach (var neighbor in GetNeighbors(tile))
+                {
+                    if (blobAssigned.Contains(neighbor))
+                        continue;
+
+                    if (!IsInBounds(neighbor))
+                        continue;
+
+                    if (!_mapData.IsPassable(neighbor))
+                        continue;
+
+                    if (_visitedTiles.Contains(neighbor))
+                        continue;
+
+                    blobAssigned.Add(neighbor);
+                    floodQueue.Enqueue(neighbor);
+                }
+            }
+
+            // Score: prioritize large blobs that are nearby
+            // Formula: size / sqrt(distance) gives good balance
+            var score = blobSize / MathF.Sqrt(MathF.Max(1, walkingDistance));
+
+            blobs.Add(new UnvisitedBlob
+            {
+                EntryPoint = entryPoint,
+                Size = blobSize,
+                WalkingDistance = walkingDistance,
+                Score = score
+            });
+        }
+
+        return blobs;
     }
 
     private IEnumerable<Vector2I> GetNeighbors(Vector2I pos)

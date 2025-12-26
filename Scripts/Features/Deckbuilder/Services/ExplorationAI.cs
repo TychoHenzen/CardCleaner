@@ -27,6 +27,7 @@ public class ExplorationAI
     private readonly IVisibilityChecker _visibilityChecker;
     private Vector2I? _currentTargetTile;
     private Vector2I? _lastKnownEnemyPosition;
+    private Vector2I? _pendingEnemyPosition;
 
     public Vector2I CurrentPosition { get; private set; }
     public bool HasFoundEnemy { get; private set; }
@@ -107,27 +108,22 @@ public class ExplorationAI
             // Check for visible enemies and update mode
             CheckForVisibleEnemies();
 
-            // If we have a path, follow it - but first check if target is still valid
+            // If we have a path, follow it to completion (commit to destination)
             if (_pathToTarget.Count > 0)
             {
-                // If target became visited (e.g., marked trivially visible), recalculate
-                if (_currentTargetTile.HasValue &&
-                    CurrentMode == ExplorationMode.FrontierExploration &&
-                    _frontierBehavior.VisitedTiles.Contains(_currentTargetTile.Value))
-                {
-                    ILog.Print($"Target {_currentTargetTile.Value} became visited - recalculating path");
-                    _pathToTarget.Clear();
-                    _currentTargetTile = null;
-                    PathUpdated?.Invoke();
-                    // Fall through to find new target
-                }
-                else
-                {
-                    var nextPosition = _pathToTarget[0];
-                    _pathToTarget.RemoveAt(0);
-                    MoveToPosition(nextPosition);
-                    return true;
-                }
+                var nextPosition = _pathToTarget[0];
+                _pathToTarget.RemoveAt(0);
+                MoveToPosition(nextPosition);
+                return true;
+            }
+
+            // Check for pending enemy now that we've reached our destination
+            if (_pendingEnemyPosition != null && CurrentMode == ExplorationMode.FrontierExploration)
+            {
+                ILog.Print($"Reached destination, now pursuing pending enemy at {_pendingEnemyPosition}.");
+                CurrentMode = ExplorationMode.PathToEnemy;
+                _lastKnownEnemyPosition = _pendingEnemyPosition;
+                _pendingEnemyPosition = null;
             }
 
             // Find next target based on current mode
@@ -180,7 +176,9 @@ public class ExplorationAI
 
         foreach (var enemyPos in _mapData.EnemyPositions)
         {
-            if (_visibilityChecker.CanSee(CurrentPosition, enemyPos, _mapData))
+            // Only consider enemies within our current fog of war visibility
+            // (respects both vision range AND line-of-sight)
+            if (_frontierBehavior.CurrentlyVisibleTiles.Contains(enemyPos))
             {
                 var distance = CurrentPosition.DistanceTo(enemyPos);
                 if (distance < closestDistance)
@@ -193,18 +191,44 @@ public class ExplorationAI
 
         if (closestVisibleEnemy != null)
         {
-            // Enemy is visible - update last known position and pursue
-            if (CurrentMode != ExplorationMode.PathToEnemy)
-            {
-                ILog.Print($"Enemy spotted at {closestVisibleEnemy}! Switching to pursuit mode.");
-                EnemySpotted?.Invoke(closestVisibleEnemy.Value);
-            }
-            CurrentMode = ExplorationMode.PathToEnemy;
+            // Enemy is visible - always track position for visibility purposes
             VisibleEnemyPosition = closestVisibleEnemy;
             _lastKnownEnemyPosition = closestVisibleEnemy;
-            _pathToTarget.Clear();
-            _currentTargetTile = null;
-            PathUpdated?.Invoke();
+
+            if (CurrentMode == ExplorationMode.FrontierExploration && _pathToTarget.Count > 0)
+            {
+                // We're exploring with an active path - defer enemy pursuit
+                if (_pendingEnemyPosition != closestVisibleEnemy)
+                {
+                    ILog.Print($"Enemy spotted at {closestVisibleEnemy}! Deferring pursuit until current destination reached.");
+                    _pendingEnemyPosition = closestVisibleEnemy;
+                    EnemySpotted?.Invoke(closestVisibleEnemy.Value);
+                }
+                // Don't switch mode or clear path - continue to current destination
+            }
+            else
+            {
+                // No active path or already pursuing - switch to pursuit immediately
+                if (CurrentMode != ExplorationMode.PathToEnemy)
+                {
+                    ILog.Print($"Enemy spotted at {closestVisibleEnemy}! Switching to pursuit mode.");
+                    EnemySpotted?.Invoke(closestVisibleEnemy.Value);
+                }
+                _pendingEnemyPosition = null; // Clear pending since we're pursuing now
+
+                // Only recalculate path if enemy moved or we don't have a path
+                var shouldRecalculatePath = _pathToTarget.Count == 0 ||
+                    _currentTargetTile != closestVisibleEnemy.Value;
+
+                CurrentMode = ExplorationMode.PathToEnemy;
+
+                if (shouldRecalculatePath)
+                {
+                    _pathToTarget.Clear();
+                    _currentTargetTile = null;
+                    PathUpdated?.Invoke();
+                }
+            }
         }
         else if (_lastKnownEnemyPosition != null)
         {

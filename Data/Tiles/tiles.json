@@ -47,10 +47,10 @@
       "name": "Wall",
       "passability": "solid",
       "atlasCoords": {
-        "x": 22,
+        "x": 7,
         "y": 5
       },
-      "sourceId": 4,
+      "sourceId": 17,
       "layer": "structure",
       "elevation": 1,
       "isTransparent": false
@@ -60,10 +60,10 @@
       "name": "Stone",
       "passability": "solid",
       "atlasCoords": {
-        "x": 22,
-        "y": 7
+        "x": 0,
+        "y": 6
       },
-      "sourceId": 4,
+      "sourceId": 10,
       "layer": "structure",
       "elevation": 0.5,
       "isTransparent": false
@@ -74,7 +74,7 @@
       "passability": "solid",
       "atlasCoords": {
         "x": 29,
-        "y": 16
+        "y": 28
       },
       "sourceId": 4,
       "layer": "structure",
@@ -86,10 +86,10 @@
       "name": "Plains Grass",
       "passability": "passable",
       "atlasCoords": {
-        "x": 4,
-        "y": 0
+        "x": 6,
+        "y": 2
       },
-      "sourceId": 4,
+      "sourceId": 49,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -102,10 +102,10 @@
       "name": "Tall Grass",
       "passability": "passable",
       "atlasCoords": {
-        "x": 5,
-        "y": 0
+        "x": 3,
+        "y": 3
       },
-      "sourceId": 4,
+      "sourceId": 49,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -118,10 +118,10 @@
       "name": "Wildflowers",
       "passability": "passable",
       "atlasCoords": {
-        "x": 4,
-        "y": 1
+        "x": 7,
+        "y": 3
       },
-      "sourceId": 4,
+      "sourceId": 10,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -134,10 +134,10 @@
       "name": "Fertile Soil",
       "passability": "passable",
       "atlasCoords": {
-        "x": 6,
-        "y": 1
+        "x": 7,
+        "y": 0
       },
-      "sourceId": 4,
+      "sourceId": 47,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -150,10 +150,10 @@
       "name": "Dirt Path",
       "passability": "passable",
       "atlasCoords": {
-        "x": 7,
-        "y": 0
+        "x": 0,
+        "y": 2
       },
-      "sourceId": 4,
+      "sourceId": 17,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -166,10 +166,10 @@
       "name": "Small Rock",
       "passability": "solid",
       "atlasCoords": {
-        "x": 20,
+        "x": 11,
         "y": 5
       },
-      "sourceId": 4,
+      "sourceId": 10,
       "layer": "structure",
       "elevation": 0.3,
       "isTransparent": false,
@@ -182,10 +182,10 @@
       "name": "Boulder",
       "passability": "solid",
       "atlasCoords": {
-        "x": 21,
-        "y": 5
+        "x": 4,
+        "y": 16
       },
-      "sourceId": 4,
+      "sourceId": 58,
       "layer": "structure",
       "elevation": 0.6,
       "isTransparent": false,
@@ -198,10 +198,10 @@
       "name": "Shrub",
       "passability": "solid",
       "atlasCoords": {
-        "x": 19,
-        "y": 5
+        "x": 12,
+        "y": 12
       },
-      "sourceId": 4,
+      "sourceId": 69,
       "layer": "decoration",
       "elevation": 0.4,
       "isTransparent": true,
@@ -214,10 +214,10 @@
       "name": "Forest Floor",
       "passability": "passable",
       "atlasCoords": {
-        "x": 6,
-        "y": 0
+        "x": 7,
+        "y": 1
       },
-      "sourceId": 4,
+      "sourceId": 47,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -230,10 +230,10 @@
       "name": "Mossy Ground",
       "passability": "passable",
       "atlasCoords": {
-        "x": 8,
+        "x": 5,
         "y": 0
       },
-      "sourceId": 4,
+      "sourceId": 55,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -246,11 +246,11 @@
       "name": "Fallen Leaves",
       "passability": "passable",
       "atlasCoords": {
-        "x": 9,
-        "y": 0
+        "x": 2,
+        "y": 1
       },
-      "sourceId": 4,
-      "layer": "terrain",
+      "sourceId": 10,
+      "layer": "decoration",
       "elevation": 0,
       "isTransparent": true,
       "biomes": [
@@ -262,10 +262,10 @@
       "name": "Forest Clearing",
       "passability": "passable",
       "atlasCoords": {
-        "x": 4,
-        "y": 0
+        "x": 2,
+        "y": 1
       },
-      "sourceId": 4,
+      "sourceId": 49,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -278,10 +278,10 @@
       "name": "Undergrowth",
       "passability": "passable",
       "atlasCoords": {
-        "x": 10,
+        "x": 14,
         "y": 0
       },
-      "sourceId": 4,
+      "sourceId": 10,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -294,10 +294,10 @@
       "name": "Tree",
       "passability": "solid",
       "atlasCoords": {
-        "x": 18,
-        "y": 5
+        "x": 27,
+        "y": 3
       },
-      "sourceId": 4,
+      "sourceId": 60,
       "layer": "structure",
       "elevation": 2,
       "isTransparent": false,
@@ -310,10 +310,10 @@
       "name": "Dense Trees",
       "passability": "solid",
       "atlasCoords": {
-        "x": 17,
-        "y": 5
+        "x": 25,
+        "y": 2
       },
-      "sourceId": 4,
+      "sourceId": 47,
       "layer": "structure",
       "elevation": 2.5,
       "isTransparent": false,
@@ -326,10 +326,10 @@
       "name": "Fallen Log",
       "passability": "solid",
       "atlasCoords": {
-        "x": 16,
-        "y": 5
+        "x": 5,
+        "y": 11
       },
-      "sourceId": 4,
+      "sourceId": 17,
       "layer": "structure",
       "elevation": 0.3,
       "isTransparent": false,
@@ -342,10 +342,10 @@
       "name": "Mushroom Patch",
       "passability": "solid",
       "atlasCoords": {
-        "x": 15,
-        "y": 5
+        "x": 2,
+        "y": 22
       },
-      "sourceId": 4,
+      "sourceId": 47,
       "layer": "decoration",
       "elevation": 0.2,
       "isTransparent": true,
@@ -358,10 +358,10 @@
       "name": "Tree Stump",
       "passability": "solid",
       "atlasCoords": {
-        "x": 14,
-        "y": 5
+        "x": 7,
+        "y": 12
       },
-      "sourceId": 4,
+      "sourceId": 60,
       "layer": "structure",
       "elevation": 0.4,
       "isTransparent": false,
@@ -374,10 +374,10 @@
       "name": "Sand",
       "passability": "passable",
       "atlasCoords": {
-        "x": 14,
+        "x": 8,
         "y": 0
       },
-      "sourceId": 4,
+      "sourceId": 39,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -422,10 +422,10 @@
       "name": "Gravel",
       "passability": "passable",
       "atlasCoords": {
-        "x": 44,
-        "y": 19
+        "x": 5,
+        "y": 3
       },
-      "sourceId": 35,
+      "sourceId": 49,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -438,10 +438,10 @@
       "name": "Rocky Ground",
       "passability": "passable",
       "atlasCoords": {
-        "x": 18,
-        "y": 0
+        "x": 7,
+        "y": 9
       },
-      "sourceId": 4,
+      "sourceId": 11,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -454,10 +454,10 @@
       "name": "Desert Rock",
       "passability": "solid",
       "atlasCoords": {
-        "x": 23,
-        "y": 5
+        "x": 6,
+        "y": 18
       },
-      "sourceId": 4,
+      "sourceId": 39,
       "layer": "structure",
       "elevation": 0.6,
       "isTransparent": false,
@@ -518,10 +518,10 @@
       "name": "Animal Skull",
       "passability": "solid",
       "atlasCoords": {
-        "x": 27,
-        "y": 5
+        "x": 17,
+        "y": 13
       },
-      "sourceId": 4,
+      "sourceId": 58,
       "layer": "decoration",
       "elevation": 0.2,
       "isTransparent": true,
@@ -534,10 +534,10 @@
       "name": "Snow",
       "passability": "passable",
       "atlasCoords": {
-        "x": 0,
-        "y": 0
+        "x": 4,
+        "y": 2
       },
-      "sourceId": 4,
+      "sourceId": 62,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -551,9 +551,9 @@
       "passability": "passable",
       "atlasCoords": {
         "x": 1,
-        "y": 0
+        "y": 2
       },
-      "sourceId": 4,
+      "sourceId": 62,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -566,10 +566,10 @@
       "name": "Frosted Ground",
       "passability": "passable",
       "atlasCoords": {
-        "x": 2,
-        "y": 0
+        "x": 0,
+        "y": 6
       },
-      "sourceId": 4,
+      "sourceId": 21,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -585,7 +585,7 @@
         "x": 3,
         "y": 0
       },
-      "sourceId": 4,
+      "sourceId": 62,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -598,10 +598,10 @@
       "name": "Ice Path",
       "passability": "passable",
       "atlasCoords": {
-        "x": 0,
-        "y": 1
+        "x": 10,
+        "y": 6
       },
-      "sourceId": 4,
+      "sourceId": 21,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -614,10 +614,10 @@
       "name": "Ice Block",
       "passability": "solid",
       "atlasCoords": {
-        "x": 28,
-        "y": 5
+        "x": 17,
+        "y": 4
       },
-      "sourceId": 4,
+      "sourceId": 21,
       "layer": "structure",
       "elevation": 0.8,
       "isTransparent": true,
@@ -630,10 +630,10 @@
       "name": "Frozen Rock",
       "passability": "solid",
       "atlasCoords": {
-        "x": 29,
-        "y": 5
+        "x": 2,
+        "y": 11
       },
-      "sourceId": 4,
+      "sourceId": 62,
       "layer": "structure",
       "elevation": 0.7,
       "isTransparent": false,
@@ -646,10 +646,10 @@
       "name": "Evergreen Tree",
       "passability": "solid",
       "atlasCoords": {
-        "x": 30,
-        "y": 5
+        "x": 9,
+        "y": 1
       },
-      "sourceId": 4,
+      "sourceId": 47,
       "layer": "structure",
       "elevation": 2,
       "isTransparent": false,
@@ -662,10 +662,10 @@
       "name": "Frozen Lake",
       "passability": "solid",
       "atlasCoords": {
-        "x": 7,
-        "y": 27
+        "x": 22,
+        "y": 33
       },
-      "sourceId": 17,
+      "sourceId": 62,
       "layer": "terrain",
       "elevation": -0.3,
       "isTransparent": true,
@@ -678,10 +678,10 @@
       "name": "Snowdrift",
       "passability": "solid",
       "atlasCoords": {
-        "x": 31,
-        "y": 5
+        "x": 1,
+        "y": 4
       },
-      "sourceId": 4,
+      "sourceId": 62,
       "layer": "decoration",
       "elevation": 0.5,
       "isTransparent": false,
@@ -694,10 +694,10 @@
       "name": "Mud",
       "passability": "passable",
       "atlasCoords": {
-        "x": 11,
-        "y": 0
+        "x": 8,
+        "y": 1
       },
-      "sourceId": 4,
+      "sourceId": 30,
       "layer": "terrain",
       "elevation": -0.1,
       "isTransparent": true,
@@ -710,10 +710,10 @@
       "name": "Shallow Water",
       "passability": "passable",
       "atlasCoords": {
-        "x": 12,
-        "y": 0
+        "x": 28,
+        "y": 27
       },
-      "sourceId": 4,
+      "sourceId": 71,
       "layer": "terrain",
       "elevation": -0.2,
       "isTransparent": true,
@@ -726,10 +726,10 @@
       "name": "Reed Bed",
       "passability": "passable",
       "atlasCoords": {
-        "x": 13,
-        "y": 0
+        "x": 8,
+        "y": 18
       },
-      "sourceId": 4,
+      "sourceId": 55,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -742,10 +742,10 @@
       "name": "Swamp Moss",
       "passability": "passable",
       "atlasCoords": {
-        "x": 11,
-        "y": 1
+        "x": 7,
+        "y": 19
       },
-      "sourceId": 4,
+      "sourceId": 47,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -758,10 +758,10 @@
       "name": "Peat",
       "passability": "passable",
       "atlasCoords": {
-        "x": 12,
+        "x": 0,
         "y": 1
       },
-      "sourceId": 4,
+      "sourceId": 27,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -774,10 +774,10 @@
       "name": "Murky Pool",
       "passability": "solid",
       "atlasCoords": {
-        "x": 8,
-        "y": 27
+        "x": 9,
+        "y": 10
       },
-      "sourceId": 17,
+      "sourceId": 57,
       "layer": "terrain",
       "elevation": -0.5,
       "isTransparent": true,
@@ -790,10 +790,10 @@
       "name": "Dead Tree",
       "passability": "solid",
       "atlasCoords": {
-        "x": 32,
-        "y": 5
+        "x": 20,
+        "y": 19
       },
-      "sourceId": 4,
+      "sourceId": 55,
       "layer": "structure",
       "elevation": 1.8,
       "isTransparent": false,
@@ -806,10 +806,10 @@
       "name": "Gnarled Roots",
       "passability": "solid",
       "atlasCoords": {
-        "x": 33,
-        "y": 5
+        "x": 6,
+        "y": 23
       },
-      "sourceId": 4,
+      "sourceId": 47,
       "layer": "structure",
       "elevation": 0.4,
       "isTransparent": false,
@@ -822,10 +822,10 @@
       "name": "Lily Pads",
       "passability": "solid",
       "atlasCoords": {
-        "x": 34,
-        "y": 5
+        "x": 12,
+        "y": 6
       },
-      "sourceId": 4,
+      "sourceId": 56,
       "layer": "decoration",
       "elevation": 0,
       "isTransparent": true,
@@ -838,10 +838,10 @@
       "name": "Fog Hollow",
       "passability": "solid",
       "atlasCoords": {
-        "x": 35,
-        "y": 5
+        "x": 5,
+        "y": 2
       },
-      "sourceId": 4,
+      "sourceId": 55,
       "layer": "effects",
       "elevation": 0,
       "isTransparent": true,
@@ -855,9 +855,9 @@
       "passability": "passable",
       "atlasCoords": {
         "x": 19,
-        "y": 0
+        "y": 10
       },
-      "sourceId": 4,
+      "sourceId": 58,
       "layer": "terrain",
       "elevation": 0.3,
       "isTransparent": true,
@@ -870,10 +870,10 @@
       "name": "Mountain Gravel",
       "passability": "passable",
       "atlasCoords": {
-        "x": 20,
-        "y": 0
+        "x": 5,
+        "y": 45
       },
-      "sourceId": 4,
+      "sourceId": 51,
       "layer": "terrain",
       "elevation": 0.1,
       "isTransparent": true,
@@ -886,10 +886,10 @@
       "name": "Slate",
       "passability": "passable",
       "atlasCoords": {
-        "x": 21,
-        "y": 0
+        "x": 12,
+        "y": 5
       },
-      "sourceId": 4,
+      "sourceId": 58,
       "layer": "terrain",
       "elevation": 0.2,
       "isTransparent": true,
@@ -902,10 +902,10 @@
       "name": "Scree",
       "passability": "passable",
       "atlasCoords": {
-        "x": 22,
-        "y": 0
+        "x": 24,
+        "y": 5
       },
-      "sourceId": 4,
+      "sourceId": 58,
       "layer": "terrain",
       "elevation": 0.1,
       "isTransparent": true,
@@ -918,10 +918,10 @@
       "name": "Alpine Grass",
       "passability": "passable",
       "atlasCoords": {
-        "x": 23,
-        "y": 0
+        "x": 2,
+        "y": 2
       },
-      "sourceId": 4,
+      "sourceId": 58,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -934,10 +934,10 @@
       "name": "Cliff Face",
       "passability": "solid",
       "atlasCoords": {
-        "x": 36,
-        "y": 5
+        "x": 11,
+        "y": 31
       },
-      "sourceId": 4,
+      "sourceId": 58,
       "layer": "structure",
       "elevation": 2,
       "isTransparent": false,
@@ -950,10 +950,10 @@
       "name": "Mountain Boulder",
       "passability": "solid",
       "atlasCoords": {
-        "x": 37,
-        "y": 5
+        "x": 19,
+        "y": 16
       },
-      "sourceId": 4,
+      "sourceId": 58,
       "layer": "structure",
       "elevation": 1,
       "isTransparent": false,
@@ -966,10 +966,10 @@
       "name": "Ore Deposit",
       "passability": "solid",
       "atlasCoords": {
-        "x": 38,
-        "y": 5
+        "x": 10,
+        "y": 0
       },
-      "sourceId": 4,
+      "sourceId": 33,
       "layer": "structure",
       "elevation": 0.5,
       "isTransparent": false,
@@ -982,10 +982,10 @@
       "name": "Alpine Shrub",
       "passability": "solid",
       "atlasCoords": {
-        "x": 39,
-        "y": 5
+        "x": 27,
+        "y": 7
       },
-      "sourceId": 4,
+      "sourceId": 47,
       "layer": "decoration",
       "elevation": 0.5,
       "isTransparent": true,
@@ -998,10 +998,10 @@
       "name": "Cave Entrance",
       "passability": "solid",
       "atlasCoords": {
-        "x": 40,
-        "y": 5
+        "x": 13,
+        "y": 11
       },
-      "sourceId": 4,
+      "sourceId": 55,
       "layer": "structure",
       "elevation": 1.5,
       "isTransparent": false,
