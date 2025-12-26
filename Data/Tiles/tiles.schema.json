@@ -3,11 +3,16 @@
   "title": "Tile Registry",
   "description": "Data-driven tile definitions for CardCleaner",
   "type": "object",
-  "required": ["version", "tiles"],
+  "required": ["version", "tileset", "tiles"],
   "properties": {
     "version": {
       "type": "string",
       "description": "Schema version"
+    },
+    "tileset": {
+      "type": "string",
+      "pattern": "^res://.*\\.tres$",
+      "description": "Path to the TileSet resource (e.g., res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres)"
     },
     "tiles": {
       "type": "array",

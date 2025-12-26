@@ -11,13 +11,22 @@ using Godot;
 namespace CardCleaner.Scripts.Core.Services;
 
 /// <summary>
+/// Result of loading tile registry data
+/// </summary>
+public record TileRegistryResult(string TilesetPath, List<TileDefinition> Tiles);
+
+/// <summary>
 /// Loads tile definitions from JSON data files
 /// </summary>
 public static class TileDataLoader
 {
     private const string DefaultTilesPath = "res://Data/Tiles/tiles.json";
+    private const string DefaultTilesetPath = "res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres";
 
-    public static List<TileDefinition> LoadTiles(string? path = null)
+    /// <summary>
+    /// Load tiles and tileset path from JSON
+    /// </summary>
+    public static TileRegistryResult LoadTileRegistry(string? path = null)
     {
         path ??= DefaultTilesPath;
 
@@ -25,7 +34,7 @@ public static class TileDataLoader
         if (!File.Exists(absolutePath))
         {
             ILog.Print($"[TileDataLoader] File not found: {absolutePath}");
-            return [];
+            return new TileRegistryResult(DefaultTilesetPath, []);
         }
 
         try
@@ -35,9 +44,10 @@ public static class TileDataLoader
             if (data?.Tiles == null)
             {
                 ILog.Print("[TileDataLoader] Invalid JSON structure");
-                return [];
+                return new TileRegistryResult(DefaultTilesetPath, []);
             }
 
+            var tilesetPath = data.Tileset ?? DefaultTilesetPath;
             var tiles = new List<TileDefinition>();
             foreach (var tileData in data.Tiles)
             {
@@ -46,14 +56,22 @@ public static class TileDataLoader
                     tiles.Add(tile);
             }
 
-            ILog.Print($"[TileDataLoader] Loaded {tiles.Count} tiles from {path}");
-            return tiles;
+            ILog.Print($"[TileDataLoader] Loaded {tiles.Count} tiles from {path} using tileset {tilesetPath}");
+            return new TileRegistryResult(tilesetPath, tiles);
         }
         catch (Exception ex)
         {
             ILog.Print($"[TileDataLoader] Error loading tiles: {ex.Message}");
-            return [];
+            return new TileRegistryResult(DefaultTilesetPath, []);
         }
+    }
+
+    /// <summary>
+    /// Load tiles only (backwards compatibility)
+    /// </summary>
+    public static List<TileDefinition> LoadTiles(string? path = null)
+    {
+        return LoadTileRegistry(path).Tiles;
     }
 
     private static TileDefinition? ConvertToTileDefinition(TileData data)
@@ -135,16 +153,19 @@ public static class TileDataLoader
     };
 
     // JSON data model classes
-    private class TileRegistryData
+    private sealed class TileRegistryData
     {
         [JsonPropertyName("version")]
         public string? Version { get; set; }
+
+        [JsonPropertyName("tileset")]
+        public string? Tileset { get; set; }
 
         [JsonPropertyName("tiles")]
         public List<TileData>? Tiles { get; set; }
     }
 
-    private class TileData
+    private sealed class TileData
     {
         [JsonPropertyName("id")]
         public string? Id { get; set; }
@@ -174,7 +195,7 @@ public static class TileDataLoader
         public List<string>? Biomes { get; set; }
     }
 
-    private class Vector2IData
+    private sealed class Vector2IData
     {
         [JsonPropertyName("x")]
         public int X { get; set; }

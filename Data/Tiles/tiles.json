@@ -1,6 +1,7 @@
 {
   "$schema": "./tiles.schema.json",
   "version": "1.0",
+  "tileset": "res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres",
   "tiles": [
     {
       "id": "floor_visited",

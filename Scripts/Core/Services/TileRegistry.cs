@@ -8,7 +8,11 @@ namespace CardCleaner.Scripts.Core.Services;
 public class TileRegistry : ITileRegistry
 {
     public const int DefaultSourceId = 4;
+    private const string DefaultTilesetPath = "res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres";
+
     private readonly Dictionary<string, TileDefinition> _tiles = new();
+
+    public string TilesetPath { get; private set; } = DefaultTilesetPath;
 
     public TileRegistry()
     {
@@ -35,11 +39,13 @@ public class TileRegistry : ITileRegistry
     /// </summary>
     public void LoadFromData(string? path = null)
     {
-        var tiles = TileDataLoader.LoadTiles(path);
-        foreach (var tile in tiles)
+        var result = TileDataLoader.LoadTileRegistry(path);
+        TilesetPath = result.TilesetPath;
+
+        foreach (var tile in result.Tiles)
             RegisterTile(tile);
 
-        ILog.Print($"[TileRegistry] Registered {_tiles.Count} tiles from data");
+        ILog.Print($"[TileRegistry] Registered {_tiles.Count} tiles from data using tileset {TilesetPath}");
     }
 
     /// <summary>
