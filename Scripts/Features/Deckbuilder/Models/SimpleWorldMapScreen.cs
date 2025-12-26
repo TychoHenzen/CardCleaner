@@ -37,6 +37,10 @@ public partial class SimpleWorldMapScreen : Node3D
     private readonly System.Collections.Generic.Dictionary<BiomeType, ImageTexture> _biomeTextures = new();
     private readonly HashSet<Vector2I> _renderedDebugTiles = new();
     private readonly HashSet<Vector2I> _renderedVisitedTiles = new();
+
+    // Fog of war system
+    private readonly System.Collections.Generic.Dictionary<Vector2I, Sprite2D> _fogSprites = new();
+    private ImageTexture? _fogTexture;
     private Label? _actionLabel;
     private Camera2D? _camera2D;
     private ProgressBar? _enemyHealthBar;
@@ -101,6 +105,7 @@ public partial class SimpleWorldMapScreen : Node3D
             gameSession.PlayerMoved += OnServicePlayerMoved;
             gameSession.EnemyDefeated += OnServiceEnemyDefeated;
             gameSession.VisitedTilesUpdated += OnVisitedTilesUpdated;
+            gameSession.VisibilityUpdated += OnVisibilityUpdated;
             gameSession.PathUpdated += OnPathUpdated;
 
             // If Initialize() was called before service was ready, start now
@@ -125,6 +130,7 @@ public partial class SimpleWorldMapScreen : Node3D
             _gameSession.PlayerMoved -= OnServicePlayerMoved;
             _gameSession.EnemyDefeated -= OnServiceEnemyDefeated;
             _gameSession.VisitedTilesUpdated -= OnVisitedTilesUpdated;
+            _gameSession.VisibilityUpdated -= OnVisibilityUpdated;
             _gameSession.PathUpdated -= OnPathUpdated;
         }
     }
@@ -208,6 +214,7 @@ public partial class SimpleWorldMapScreen : Node3D
         _renderedVisitedTiles.Clear();
         _renderedDebugTiles.Clear();
         RenderMap(_mapData);
+        InitializeFogOfWar(_mapData);
     }
 
     private void HandleExplorationStart()
@@ -219,6 +226,7 @@ public partial class SimpleWorldMapScreen : Node3D
         if (PlayerSprite != null)
         {
             PlayerSprite.Visible = true;
+            PlayerSprite.ZIndex = 200; // Above fog of war
         }
     }
 
@@ -284,6 +292,59 @@ public partial class SimpleWorldMapScreen : Node3D
             var (targetSourceId, targetAtlasCoords) = GetTileRenderInfo("debug_target");
             OverlayLayer.SetCell(target.Value, targetSourceId, targetAtlasCoords);
             _renderedDebugTiles.Add(target.Value);
+        }
+    }
+
+    private void OnVisibilityUpdated(IReadOnlySet<Vector2I> seenTiles, IReadOnlySet<Vector2I> currentlyVisibleTiles)
+    {
+        UpdateFogOfWar(seenTiles, currentlyVisibleTiles);
+    }
+
+    private void InitializeFogOfWar(SimpleMapData mapData)
+    {
+        // Clear existing fog sprites
+        foreach (var sprite in _fogSprites.Values)
+            sprite?.QueueFree();
+        _fogSprites.Clear();
+
+        // Create black fog texture if not already created
+        _fogTexture ??= CreateColorTexture(new Color(0, 0, 0, 1), TILE_SIZE);
+
+        // Create fog sprites for all tiles (initially fully opaque)
+        for (var y = 0; y < mapData.Size.Y; y++)
+        for (var x = 0; x < mapData.Size.X; x++)
+        {
+            var position = new Vector2I(x, y);
+            var sprite = new Sprite2D
+            {
+                Texture = _fogTexture,
+                Position = new Vector2(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2),
+                ZIndex = 100, // Above all other overlays
+                Modulate = new Color(1, 1, 1, 1) // Fully opaque black fog
+            };
+
+            Viewport?.AddChild(sprite);
+            _fogSprites[position] = sprite;
+        }
+
+        ILog.Print($"[FOG] Initialized fog of war with {_fogSprites.Count} fog sprites");
+    }
+
+    private void UpdateFogOfWar(IReadOnlySet<Vector2I> seenTiles, IReadOnlySet<Vector2I> currentlyVisibleTiles)
+    {
+        foreach (var (position, sprite) in _fogSprites)
+        {
+            if (currentlyVisibleTiles.Contains(position))
+            {
+                // Currently visible: fully transparent (no fog)
+                sprite.Modulate = new Color(1, 1, 1, 0);
+            }
+            else if (seenTiles.Contains(position))
+            {
+                // Previously seen but not currently visible: 50% fog
+                sprite.Modulate = new Color(1, 1, 1, 0.5f);
+            }
+            // else: Never seen - stays at full opacity (1.0)
         }
     }
 
@@ -648,6 +709,7 @@ public partial class SimpleWorldMapScreen : Node3D
             var enemySprite = new Sprite2D();
             enemySprite.Texture = CreateColorTexture(Colors.Red, 16);
             enemySprite.Position = new Vector2(pos.X * TILE_SIZE + TILE_SIZE / 2, pos.Y * TILE_SIZE + TILE_SIZE / 2);
+            enemySprite.ZIndex = 200; // Above fog of war
 
             if (Viewport != null) Viewport.AddChild(enemySprite);
             _enemySprites.Add(enemySprite);

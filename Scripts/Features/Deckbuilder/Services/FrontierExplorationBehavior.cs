@@ -16,10 +16,17 @@ public class FrontierExplorationBehavior
     private readonly IVisibilityChecker _visibilityChecker;
     private readonly HashSet<Vector2I> _seenTiles = new();
     private readonly HashSet<Vector2I> _visitedTiles = new();
+    private readonly HashSet<Vector2I> _currentlyVisibleTiles = new();
     private readonly int _visionRange;
 
     public IReadOnlySet<Vector2I> SeenTiles => _seenTiles;
     public IReadOnlySet<Vector2I> VisitedTiles => _visitedTiles;
+
+    /// <summary>
+    /// Tiles currently visible from the player's current position.
+    /// This set is recalculated each time UpdateVision is called.
+    /// </summary>
+    public IReadOnlySet<Vector2I> CurrentlyVisibleTiles => _currentlyVisibleTiles;
 
     public FrontierExplorationBehavior(SimpleMapData mapData, IVisibilityChecker visibilityChecker, int visionRange = 5)
     {
@@ -37,12 +44,16 @@ public class FrontierExplorationBehavior
     {
         try
         {
+            // Clear currently visible tiles - will be recalculated this frame
+            _currentlyVisibleTiles.Clear();
+
             // Only add passable tiles to visited set
             if (_mapData.IsPassable(currentPosition))
                 _visitedTiles.Add(currentPosition);
             _seenTiles.Add(currentPosition);
+            _currentlyVisibleTiles.Add(currentPosition);
 
-            // First pass: update seen tiles
+            // First pass: update seen and currently visible tiles
             for (var dy = -_visionRange; dy <= _visionRange; dy++)
             for (var dx = -_visionRange; dx <= _visionRange; dx++)
             {
@@ -52,17 +63,16 @@ public class FrontierExplorationBehavior
                 if (!IsInBounds(targetPos))
                     continue;
 
-                // Skip if already seen
-                if (_seenTiles.Contains(targetPos))
-                    continue;
-
                 // Check if within vision range (circular)
                 if (dx * dx + dy * dy > _visionRange * _visionRange)
                     continue;
 
                 // Check line of sight
                 if (_visibilityChecker.CanSee(currentPosition, targetPos, _mapData))
+                {
                     _seenTiles.Add(targetPos);
+                    _currentlyVisibleTiles.Add(targetPos);
+                }
             }
 
             // Second pass: mark trivially visible tiles as visited

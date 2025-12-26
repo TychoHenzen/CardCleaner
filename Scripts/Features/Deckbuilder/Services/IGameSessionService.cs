@@ -26,6 +26,7 @@ public interface IGameSessionService
     event Action<Vector2I> PlayerMoved;
     event Action<Vector2I> EnemyDefeated;
     event Action<IReadOnlySet<Vector2I>> VisitedTilesUpdated;
+    event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>> VisibilityUpdated;
     event Action<IReadOnlyList<Vector2I>, Vector2I?> PathUpdated;
 
     void StartSession(CardSignature mapSeed, List<CardSignature> abilityCards);

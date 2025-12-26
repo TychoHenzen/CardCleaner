@@ -51,6 +51,7 @@ public partial class GameSessionService : Node, IGameSessionService
     public event Action<Vector2I>? PlayerMoved;
     public event Action<Vector2I>? EnemyDefeated;
     public event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
+    public event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>>? VisibilityUpdated;
     public event Action<IReadOnlyList<Vector2I>, Vector2I?>? PathUpdated;
 
     public void StartSession(CardSignature? mapSeed, List<CardSignature>? abilityCards)
@@ -177,6 +178,7 @@ public partial class GameSessionService : Node, IGameSessionService
         _explorationAI.EnemyEncountered += OnEnemyEncountered;
         _explorationAI.PlayerMoved += pos => PlayerMoved?.Invoke(pos);
         _explorationAI.VisitedTilesUpdated += tiles => VisitedTilesUpdated?.Invoke(tiles);
+        _explorationAI.VisibilityUpdated += (seen, current) => VisibilityUpdated?.Invoke(seen, current);
         _explorationAI.PathUpdated +=
             () => PathUpdated?.Invoke(_explorationAI.CurrentPath, _explorationAI.CurrentTarget);
 

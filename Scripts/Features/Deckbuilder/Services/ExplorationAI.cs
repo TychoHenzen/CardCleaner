@@ -35,6 +35,7 @@ public class ExplorationAI
 
     public bool HasFinishedExploration => _frontierBehavior.IsFullyExplored() || HasFoundEnemy;
     public IReadOnlySet<Vector2I> SeenTiles => _frontierBehavior.SeenTiles;
+    public IReadOnlySet<Vector2I> CurrentlyVisibleTiles => _frontierBehavior.CurrentlyVisibleTiles;
 
     /// <summary>
     /// The current path being followed (for debug visualization).
@@ -50,6 +51,7 @@ public class ExplorationAI
     public event Action<Vector2I>? EnemyEncountered;
     public event Action<Vector2I>? EnemySpotted;
     public event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
+    public event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>>? VisibilityUpdated;
     public event Action? PathUpdated;
 
     public ExplorationAI(SimpleMapData mapData, Vector2I? startPosition = null, IVisibilityChecker? visibilityChecker = null, int visionRange = 5)
@@ -73,6 +75,7 @@ public class ExplorationAI
         {
             _frontierBehavior.UpdateVision(CurrentPosition);
             VisitedTilesUpdated?.Invoke(_frontierBehavior.VisitedTiles);
+            VisibilityUpdated?.Invoke(_frontierBehavior.SeenTiles, _frontierBehavior.CurrentlyVisibleTiles);
         }
         catch (Exception ex)
         {
@@ -258,6 +261,7 @@ public class ExplorationAI
         ILog.Print($"Player moved to {CurrentPosition} (seen {_frontierBehavior.SeenTiles.Count} tiles, visited {_frontierBehavior.VisitedTiles.Count})");
         PlayerMoved?.Invoke(CurrentPosition);
         VisitedTilesUpdated?.Invoke(_frontierBehavior.VisitedTiles);
+        VisibilityUpdated?.Invoke(_frontierBehavior.SeenTiles, _frontierBehavior.CurrentlyVisibleTiles);
     }
 
     /// <summary>

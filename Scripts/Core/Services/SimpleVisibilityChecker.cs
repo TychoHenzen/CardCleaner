@@ -11,7 +11,7 @@ public class SimpleVisibilityChecker : IVisibilityChecker
     {
         if (from == target) return true;
 
-        // Bresenham's line algorithm
+        // Bresenham's line algorithm with diagonal corner blocking
         var x0 = from.X;
         var y0 = from.Y;
         var x1 = target.X;
@@ -25,23 +25,38 @@ public class SimpleVisibilityChecker : IVisibilityChecker
 
         while (true)
         {
-            var currentPos = new Vector2I(x0, y0);
-
             // Check if we've reached the target
             if (x0 == x1 && y0 == y1)
                 return true;
+
+            var currentPos = new Vector2I(x0, y0);
 
             // Check if this tile blocks visibility (skip the starting tile)
             if (currentPos != from && !mapData.IsTransparent(currentPos))
                 return false;
 
             var e2 = 2 * err;
-            if (e2 > -dy)
+            var movingX = e2 > -dy;
+            var movingY = e2 < dx;
+
+            // Check for diagonal corner blocking:
+            // If moving diagonally and both adjacent tiles are opaque, block visibility
+            if (movingX && movingY)
+            {
+                var horizontalNeighbor = new Vector2I(x0 + sx, y0);
+                var verticalNeighbor = new Vector2I(x0, y0 + sy);
+
+                // If both tiles adjacent to the diagonal are opaque, we can't see through the corner
+                if (!mapData.IsTransparent(horizontalNeighbor) && !mapData.IsTransparent(verticalNeighbor))
+                    return false;
+            }
+
+            if (movingX)
             {
                 err -= dy;
                 x0 += sx;
             }
-            if (e2 < dx)
+            if (movingY)
             {
                 err += dx;
                 y0 += sy;

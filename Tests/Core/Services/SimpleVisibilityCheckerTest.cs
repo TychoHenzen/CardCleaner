@@ -152,6 +152,58 @@ public class SimpleVisibilityCheckerTest
         AssertThat(forward).IsEqual(backward);
     }
 
+    [TestCase]
+    public void TestCannotSeeThroughDiagonalCorner()
+    {
+        // Create a map where two walls meet at a corner:
+        //   0 1 2
+        // 0 . W .
+        // 1 W . .
+        // 2 . . .
+        // Visibility from (0,0) to (2,2) should be blocked by the corner at (1,0)-(0,1)
+        var mapData = CreateSimpleMap(3, 3);
+        mapData.TileIds[0, 1] = Wall; // Wall at (1, 0)
+        mapData.TileIds[1, 0] = Wall; // Wall at (0, 1)
+
+        // Cannot see through the diagonal corner
+        var result = _checker.CanSee(new Vector2I(0, 0), new Vector2I(2, 2), mapData);
+
+        AssertBool(result).IsFalse();
+    }
+
+    [TestCase]
+    public void TestCanSeeThroughPartialCorner()
+    {
+        // Create a map where only one wall exists at the corner:
+        //   0 1 2
+        // 0 . W .
+        // 1 . . .
+        // 2 . . .
+        // Visibility from (0,0) to (2,2) should NOT be blocked (only one wall)
+        var mapData = CreateSimpleMap(3, 3);
+        mapData.TileIds[0, 1] = Wall; // Wall at (1, 0)
+
+        // Can see through a partial corner (one wall is not enough to block)
+        var result = _checker.CanSee(new Vector2I(0, 0), new Vector2I(2, 2), mapData);
+
+        AssertBool(result).IsTrue();
+    }
+
+    [TestCase]
+    public void TestCornerBlockingSymmetry()
+    {
+        // Corner blocking should be symmetric
+        var mapData = CreateSimpleMap(3, 3);
+        mapData.TileIds[0, 1] = Wall; // Wall at (1, 0)
+        mapData.TileIds[1, 0] = Wall; // Wall at (0, 1)
+
+        var forward = _checker.CanSee(new Vector2I(0, 0), new Vector2I(2, 2), mapData);
+        var backward = _checker.CanSee(new Vector2I(2, 2), new Vector2I(0, 0), mapData);
+
+        AssertThat(forward).IsEqual(backward);
+        AssertBool(forward).IsFalse();
+    }
+
     private static SimpleMapData CreateSimpleMap(int width, int height)
     {
         var mapData = new SimpleMapData
