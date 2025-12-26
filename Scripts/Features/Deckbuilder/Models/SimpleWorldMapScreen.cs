@@ -36,7 +36,6 @@ public partial class SimpleWorldMapScreen : Node3D
     // Cache for biome overlay textures
     private readonly System.Collections.Generic.Dictionary<BiomeType, ImageTexture> _biomeTextures = new();
     private readonly HashSet<Vector2I> _renderedDebugTiles = new();
-    private readonly HashSet<Vector2I> _renderedVisitedTiles = new();
 
     // Fog of war system
     private readonly System.Collections.Generic.Dictionary<Vector2I, Sprite2D> _fogSprites = new();
@@ -104,7 +103,6 @@ public partial class SimpleWorldMapScreen : Node3D
             gameSession.LootGenerated += OnLootGenerated;
             gameSession.PlayerMoved += OnServicePlayerMoved;
             gameSession.EnemyDefeated += OnServiceEnemyDefeated;
-            gameSession.VisitedTilesUpdated += OnVisitedTilesUpdated;
             gameSession.VisibilityUpdated += OnVisibilityUpdated;
             gameSession.PathUpdated += OnPathUpdated;
 
@@ -129,7 +127,6 @@ public partial class SimpleWorldMapScreen : Node3D
             _gameSession.LootGenerated -= OnLootGenerated;
             _gameSession.PlayerMoved -= OnServicePlayerMoved;
             _gameSession.EnemyDefeated -= OnServiceEnemyDefeated;
-            _gameSession.VisitedTilesUpdated -= OnVisitedTilesUpdated;
             _gameSession.VisibilityUpdated -= OnVisibilityUpdated;
             _gameSession.PathUpdated -= OnPathUpdated;
         }
@@ -211,7 +208,6 @@ public partial class SimpleWorldMapScreen : Node3D
     {
         ILog.Print($"Received map from GameSessionService: {mapData.Size.X}x{mapData.Size.Y}");
         _mapData = mapData;
-        _renderedVisitedTiles.Clear();
         _renderedDebugTiles.Clear();
         RenderMap(_mapData);
         InitializeFogOfWar(_mapData);
@@ -235,46 +231,13 @@ public partial class SimpleWorldMapScreen : Node3D
         UpdatePlayerSpritePosition(newPosition);
     }
 
-    private void OnVisitedTilesUpdated(IReadOnlySet<Vector2I> visitedTiles)
-    {
-        if (OverlayLayer == null || _mapData == null) return;
-
-        // Get the visited tile render info once
-        var (visitedSourceId, visitedAtlasCoords) = GetTileRenderInfo("floor_visited");
-
-        foreach (var position in visitedTiles)
-        {
-            // Skip if already rendered as visited
-            if (_renderedVisitedTiles.Contains(position)) continue;
-
-            // Only mark passable, non-enemy tiles
-            if (_mapData.IsPassable(position) && !_mapData.EnemyPositions.Contains(position))
-            {
-                OverlayLayer.SetCell(position, visitedSourceId, visitedAtlasCoords);
-                _renderedVisitedTiles.Add(position);
-            }
-        }
-    }
-
     private void OnPathUpdated(IReadOnlyList<Vector2I> path, Vector2I? target)
     {
         if (OverlayLayer == null) return;
 
-        // Clear previous debug overlay tiles (restore to visited or empty)
-        var (visitedSourceId, visitedAtlasCoords) = GetTileRenderInfo("floor_visited");
+        // Clear previous debug overlay tiles
         foreach (var pos in _renderedDebugTiles)
-        {
-            if (_renderedVisitedTiles.Contains(pos))
-            {
-                // Restore visited tile
-                OverlayLayer.SetCell(pos, visitedSourceId, visitedAtlasCoords);
-            }
-            else
-            {
-                // Clear the cell
-                OverlayLayer.EraseCell(pos);
-            }
-        }
+            OverlayLayer.EraseCell(pos);
 
         _renderedDebugTiles.Clear();
 
@@ -310,7 +273,7 @@ public partial class SimpleWorldMapScreen : Node3D
         // Create black fog texture if not already created
         _fogTexture ??= CreateColorTexture(new Color(0, 0, 0, 1), TILE_SIZE);
 
-        // Create fog sprites for all tiles (initially fully opaque)
+        // Create fog sprites for all tiles (90% opacity so map is barely visible)
         for (var y = 0; y < mapData.Size.Y; y++)
         for (var x = 0; x < mapData.Size.X; x++)
         {
@@ -320,7 +283,7 @@ public partial class SimpleWorldMapScreen : Node3D
                 Texture = _fogTexture,
                 Position = new Vector2(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2),
                 ZIndex = 100, // Above all other overlays
-                Modulate = new Color(1, 1, 1, 1) // Fully opaque black fog
+                Modulate = new Color(1, 1, 1, 0.9f) // 90% opacity - map barely visible through fog
             };
 
             Viewport?.AddChild(sprite);
@@ -344,7 +307,7 @@ public partial class SimpleWorldMapScreen : Node3D
                 // Previously seen but not currently visible: 50% fog
                 sprite.Modulate = new Color(1, 1, 1, 0.5f);
             }
-            // else: Never seen - stays at full opacity (1.0)
+            // else: Never seen - stays at 90% opacity (set in InitializeFogOfWar)
         }
     }
 

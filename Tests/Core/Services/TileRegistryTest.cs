@@ -188,15 +188,12 @@ public class TileRegistryTest
     {
         var debugPath = _registry.GetTile("debug_path");
         var debugTarget = _registry.GetTile("debug_target");
-        var floorVisited = _registry.GetTile("floor_visited");
 
         AssertThat(debugPath).IsNotNull();
         AssertThat(debugTarget).IsNotNull();
-        AssertThat(floorVisited).IsNotNull();
 
         AssertThat(debugPath!.AllowedBiomes).IsNull();
         AssertThat(debugTarget!.AllowedBiomes).IsNull();
-        AssertThat(floorVisited!.AllowedBiomes).IsNull();
     }
 
     [TestCase]

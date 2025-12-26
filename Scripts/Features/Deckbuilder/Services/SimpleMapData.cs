@@ -38,7 +38,7 @@ public class SimpleMapData
         if (_tileRegistry == null)
         {
             // Fallback: if registry not available, assume "floor" and "grass" are passable
-            return tileId is "floor" or "grass" or "dirt" or "floor_visited";
+            return tileId is "floor" or "grass" or "dirt";
         }
 
         var tile = _tileRegistry.GetTile(tileId);
@@ -57,7 +57,7 @@ public class SimpleMapData
         if (_tileRegistry == null)
         {
             // Fallback: passable tiles are transparent
-            return tileId is "floor" or "grass" or "dirt" or "floor_visited" or "water" or "glass";
+            return tileId is "floor" or "grass" or "dirt" or "water" or "glass";
         }
 
         var tile = _tileRegistry.GetTile(tileId);

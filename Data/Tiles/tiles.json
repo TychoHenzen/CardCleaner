@@ -4,19 +4,6 @@
   "tileset": "res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres",
   "tiles": [
     {
-      "id": "floor_visited",
-      "name": "Visited Floor",
-      "passability": "passable",
-      "atlasCoords": {
-        "x": 11,
-        "y": 6
-      },
-      "sourceId": 49,
-      "layer": "terrain",
-      "elevation": 0,
-      "isTransparent": true
-    },
-    {
       "id": "debug_path",
       "name": "Debug Path",
       "passability": "passable",
@@ -403,10 +390,10 @@
       "name": "Sand Dune",
       "passability": "passable",
       "atlasCoords": {
-        "x": 15,
+        "x": 2,
         "y": 0
       },
-      "sourceId": 4,
+      "sourceId": 39,
       "layer": "terrain",
       "elevation": 0.2,
       "isTransparent": true,
@@ -419,10 +406,10 @@
       "name": "Cracked Earth",
       "passability": "passable",
       "atlasCoords": {
-        "x": 16,
-        "y": 0
+        "x": 13,
+        "y": 23
       },
-      "sourceId": 4,
+      "sourceId": 44,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -435,10 +422,10 @@
       "name": "Gravel",
       "passability": "passable",
       "atlasCoords": {
-        "x": 17,
-        "y": 0
+        "x": 44,
+        "y": 19
       },
-      "sourceId": 4,
+      "sourceId": 35,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -483,10 +470,10 @@
       "name": "Rocky Outcrop",
       "passability": "solid",
       "atlasCoords": {
-        "x": 24,
-        "y": 5
+        "x": 21,
+        "y": 14
       },
-      "sourceId": 4,
+      "sourceId": 39,
       "layer": "structure",
       "elevation": 1,
       "isTransparent": false,
