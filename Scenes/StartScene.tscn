@@ -99,6 +99,7 @@ MapCardSlot = NodePath("../CardSlot")
 ActivateButton = NodePath("../Button/StaticBody3D")
 BattleScreenScene = ExtResource("4_dta7m")
 WorldTileMapScreenScene = NodePath("../SimpleTileMapScreen")
+ScreenSpawnPosition = null
 
 [node name="Cards" type="Node3D" parent="World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
@@ -115,6 +116,13 @@ fov = 90.0
 
 [node name="SpotLight3D" parent="Player/Head/Camera3D" index="0"]
 spot_range = 46.3397
+
+[node name="InteractionSystem" parent="Player/Head/Camera3D" index="2"]
+RayLength = null
+InteractableCollisionMask = null
+
+[node name="CardHolder" parent="Player/CardInteraction" index="1"]
+CardCollisionLayer = null
 
 [node name="Ui" type="Node" parent="." node_paths=PackedStringArray("PauseMenuLayer", "UILayer")]
 script = ExtResource("5_u668n")
@@ -153,6 +161,7 @@ texture = ExtResource("6_28ir6")
 
 [node name="Services" type="Node" parent="."]
 script = ExtResource("10_vmjlw")
+EnableDebugLogging = null
 
 [node name="CardServiceProvider" type="Node" parent="Services" node_paths=PackedStringArray("CardRoot")]
 script = ExtResource("11_r0o6j")
@@ -163,9 +172,16 @@ CardRoot = NodePath("../../World/Cards")
 
 [node name="GameSettings" type="Node" parent="Services"]
 script = ExtResource("10_1ia11")
+MovementSpeed = null
+JumpVelocity = null
+MouseSensitivity = null
+MinPitch = null
+MaxPitch = null
 
 [node name="GameSaveService" type="Node" parent="Services"]
 script = ExtResource("28_k3dcv")
+AutoSaveInterval = null
+AutoLoadOnStart = null
 
 [node name="SpawningService" type="Node" parent="Services"]
 script = ExtResource("28_1ia11")

@@ -16,6 +16,10 @@ public partial class TilePropertiesPanel : ScrollContainer
     private string? _selectedTileId;
     private EditableTile? _currentTile;
 
+    // Atlas picker controls
+    private TilesetAtlasPicker? _atlasPicker;
+    private OptionButton? _sourceDropdown;
+
     // Form fields
     private LineEdit? _idField;
     private LineEdit? _nameField;
@@ -45,7 +49,8 @@ public partial class TilePropertiesPanel : ScrollContainer
 
         var vbox = new VBoxContainer
         {
-            SizeFlagsHorizontal = SizeFlags.ExpandFill
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            SizeFlagsVertical = SizeFlags.ExpandFill
         };
         AddChild(vbox);
 
@@ -90,6 +95,51 @@ public partial class TilePropertiesPanel : ScrollContainer
         passRow.AddChild(_passabilityField);
         vbox.AddChild(passRow);
 
+        vbox.AddChild(new HSeparator());
+
+        // Atlas selection section
+        var atlasHeader = new Label { Text = "Atlas Coordinates" };
+        atlasHeader.AddThemeFontSizeOverride("font_size", 14);
+        vbox.AddChild(atlasHeader);
+
+        // Source dropdown
+        var sourceRow = CreateRow("Source:");
+        _sourceDropdown = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        _sourceDropdown.ItemSelected += OnSourceDropdownChanged;
+        sourceRow.AddChild(_sourceDropdown);
+        vbox.AddChild(sourceRow);
+
+        // Atlas picker in scroll container
+        var pickerLabel = new Label
+        {
+            Text = "Click to select tile:",
+            Modulate = new Color(0.8f, 0.8f, 0.8f)
+        };
+        pickerLabel.AddThemeFontSizeOverride("font_size", 11);
+        vbox.AddChild(pickerLabel);
+
+        var pickerScroll = new ScrollContainer
+        {
+            CustomMinimumSize = new Vector2(0, 150),
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            SizeFlagsVertical = SizeFlags.ExpandFill,
+            HorizontalScrollMode = ScrollMode.Auto,
+            VerticalScrollMode = ScrollMode.Auto
+        };
+        _atlasPicker = new TilesetAtlasPicker();
+        _atlasPicker.TileSelected += OnPickerTileSelected;
+        pickerScroll.AddChild(_atlasPicker);
+        vbox.AddChild(pickerScroll);
+
+        // Manual coordinate entry
+        var coordsLabel = new Label
+        {
+            Text = "Or enter manually:",
+            Modulate = new Color(0.8f, 0.8f, 0.8f)
+        };
+        coordsLabel.AddThemeFontSizeOverride("font_size", 11);
+        vbox.AddChild(coordsLabel);
+
         // Atlas coordinates
         var atlasRow = CreateRow("Atlas Coords:");
         var atlasHBox = new HBoxContainer();
@@ -116,19 +166,11 @@ public partial class TilePropertiesPanel : ScrollContainer
         atlasRow.AddChild(atlasHBox);
         vbox.AddChild(atlasRow);
 
-        // Source ID
-        var sourceRow = CreateRow("Source ID:");
-        _sourceIdField = new SpinBox
-        {
-            MinValue = 0,
-            MaxValue = 100,
-            Step = 1,
-            Value = 4,
-            SizeFlagsHorizontal = SizeFlags.ExpandFill
-        };
-        _sourceIdField.ValueChanged += _ => OnFieldChanged("");
-        sourceRow.AddChild(_sourceIdField);
-        vbox.AddChild(sourceRow);
+        // Hidden source ID field for internal tracking
+        _sourceIdField = new SpinBox { Visible = false, Value = 4 };
+        AddChild(_sourceIdField);
+
+        vbox.AddChild(new HSeparator());
 
         // Layer dropdown
         var layerRow = CreateRow("Layer:");
@@ -203,6 +245,48 @@ public partial class TilePropertiesPanel : ScrollContainer
         SetFieldsEnabled(false);
     }
 
+    private void PopulateSourceDropdown()
+    {
+        _sourceDropdown!.Clear();
+        var sources = _service.GetAvailableAtlasSources();
+
+        foreach (var sourceInfo in sources)
+        {
+            _sourceDropdown.AddItem(sourceInfo.DisplayName, sourceInfo.SourceId);
+        }
+    }
+
+    private void OnSourceDropdownChanged(long index)
+    {
+        if (_isUpdating || _sourceDropdown == null) return;
+
+        var sourceId = _sourceDropdown.GetItemId((int)index);
+        _sourceIdField!.Value = sourceId;
+
+        // Reload picker with new source
+        var source = _service.GetAtlasSource(sourceId);
+        if (source != null && _atlasPicker != null)
+        {
+            var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
+            _atlasPicker.SetSource(source, tileSize, sourceId);
+        }
+
+        OnFieldChanged("");
+    }
+
+    private void OnPickerTileSelected(Vector2I atlasCoords, int sourceId)
+    {
+        if (_isUpdating || _currentTile == null) return;
+
+        _isUpdating = true;
+        _atlasXField!.Value = atlasCoords.X;
+        _atlasYField!.Value = atlasCoords.Y;
+        _sourceIdField!.Value = sourceId;
+        _isUpdating = false;
+
+        OnFieldChanged("");
+    }
+
     public void SelectTile(string tileId)
     {
         _selectedTileId = tileId;
@@ -214,6 +298,7 @@ public partial class TilePropertiesPanel : ScrollContainer
             return;
         }
 
+        PopulateSourceDropdown();
         SetFieldsEnabled(true);
         PopulateFields();
     }
@@ -234,6 +319,25 @@ public partial class TilePropertiesPanel : ScrollContainer
             "partially_passable" => 2,
             _ => 0
         };
+
+        // Sync source dropdown
+        for (int i = 0; i < _sourceDropdown!.ItemCount; i++)
+        {
+            if (_sourceDropdown.GetItemId(i) == _currentTile.SourceId)
+            {
+                _sourceDropdown.Selected = i;
+                break;
+            }
+        }
+
+        // Load atlas picker
+        var source = _service.GetAtlasSource(_currentTile.SourceId);
+        if (source != null && _atlasPicker != null)
+        {
+            var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
+            _atlasPicker.SetSource(source, tileSize, _currentTile.SourceId);
+            _atlasPicker.SelectedCoords = new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY);
+        }
 
         _atlasXField!.Value = _currentTile.AtlasX;
         _atlasYField!.Value = _currentTile.AtlasY;
@@ -278,6 +382,18 @@ public partial class TilePropertiesPanel : ScrollContainer
         _currentTile.AtlasY = (int)_atlasYField!.Value;
         _currentTile.SourceId = (int)_sourceIdField!.Value;
 
+        // Sync picker coordinates if changed via spinbox
+        if (_atlasPicker != null)
+        {
+            var newCoords = new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY);
+            if (_atlasPicker.SelectedCoords != newCoords)
+            {
+                _isUpdating = true;
+                _atlasPicker.SelectedCoords = newCoords;
+                _isUpdating = false;
+            }
+        }
+
         _currentTile.Layer = _layerField!.Selected switch
         {
             1 => "decoration",
@@ -315,9 +431,9 @@ public partial class TilePropertiesPanel : ScrollContainer
         _idField!.Editable = false; // Always read-only
         _nameField!.Editable = enabled;
         _passabilityField!.Disabled = !enabled;
+        _sourceDropdown!.Disabled = !enabled;
         _atlasXField!.Editable = enabled;
         _atlasYField!.Editable = enabled;
-        _sourceIdField!.Editable = enabled;
         _layerField!.Disabled = !enabled;
         _elevationField!.Editable = enabled;
         _transparentField!.Disabled = !enabled;

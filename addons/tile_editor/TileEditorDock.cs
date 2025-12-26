@@ -138,6 +138,21 @@ public partial class TileEditorDock : Control
         }
     }
 
+    public override void _UnhandledKeyInput(InputEvent @event)
+    {
+        if (@event is InputEventKey keyEvent && keyEvent.Pressed && !keyEvent.Echo)
+        {
+            if (keyEvent.Keycode == Key.S && keyEvent.CtrlPressed)
+            {
+                if (_isDirty)
+                {
+                    OnSavePressed();
+                    GetViewport().SetInputAsHandled();
+                }
+            }
+        }
+    }
+
     private void OnReloadPressed()
     {
         if (_isDirty)

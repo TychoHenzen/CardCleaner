@@ -120,10 +120,12 @@ public partial class GameSessionService : Node, IGameSessionService
     {
         _rng.Randomize();
 
-        // Initialize tile and biome systems
-        _tileRegistry = ServiceLocator.Get<ITileRegistry>() ?? new Core.Services.TileRegistry();
+        // Initialize biome registry immediately
         _biomeRegistry = new BiomeRegistry();
         _biomeRegistry.RegisterDefaultBiomes();
+
+        // Get tile registry via async callback (may not be registered yet during startup)
+        ServiceLocator.Get<ITileRegistry>(registry => _tileRegistry = registry);
 
         // Create timer for game progression
         _gameTimer = new Timer();
@@ -136,6 +138,9 @@ public partial class GameSessionService : Node, IGameSessionService
     private void GenerateMap()
     {
         ILog.Print($"Generating biome-based map from seed signature: {_mapSeed.ToDebugString()}");
+
+        // Ensure tile registry is available (fallback if async callback hasn't run yet)
+        _tileRegistry ??= new Core.Services.TileRegistry();
 
         // Use signature to influence map size
         var mapSize = CalculateMapSize(_mapSeed);

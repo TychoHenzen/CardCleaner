@@ -40,12 +40,19 @@ public partial class GameSaveService : Node, ISaveable
     
     private void SetupAutoSave()
     {
+        // Ensure AutoSaveInterval is valid (Godot Timer requires WaitTime > 0)
+        if (AutoSaveInterval <= 0)
+        {
+            AutoSaveInterval = 10.0f;
+            ILog.Print($"AutoSaveInterval was <= 0, reset to default: {AutoSaveInterval}s");
+        }
+
         _autoSaveTimer = new Timer();
         AddChild(_autoSaveTimer);
         _autoSaveTimer.WaitTime = AutoSaveInterval;
         _autoSaveTimer.Timeout += SaveGame;
         _autoSaveTimer.Start();
-        
+
         ILog.Print($"Auto-save enabled: every {AutoSaveInterval} seconds");
     }
     

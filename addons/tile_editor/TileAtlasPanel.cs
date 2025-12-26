@@ -244,6 +244,7 @@ public partial class TileAtlasPanel : Control
 public partial class TileButton : Button
 {
     private readonly int _size;
+    private readonly TileEditorService _service;
     private ColorRect? _selectionBorder;
     private Label? _nameLabel;
     private TextureRect? _tilePreview;
@@ -251,6 +252,7 @@ public partial class TileButton : Button
     public TileButton(EditableTile tile, int size, TileEditorService service)
     {
         _size = size;
+        _service = service;
 
         CustomMinimumSize = new Vector2(size, size + 20);
         TooltipText = $"{tile.Name}\n{tile.Id}\n{tile.Passability}\nSource: {tile.SourceId}, Atlas: ({tile.AtlasX},{tile.AtlasY})";
@@ -352,6 +354,13 @@ public partial class TileButton : Button
         if (_nameLabel != null)
         {
             _nameLabel.Text = tile.Name.Length > 10 ? tile.Name[..10] + "..." : tile.Name;
+        }
+
+        // Update texture region if atlas coords changed
+        if (_tilePreview?.Texture is AtlasTexture atlasTexture)
+        {
+            var region = _service.GetTileTextureRegion(tile);
+            atlasTexture.Region = new Rect2(region.Position.X, region.Position.Y, region.Size.X, region.Size.Y);
         }
     }
 

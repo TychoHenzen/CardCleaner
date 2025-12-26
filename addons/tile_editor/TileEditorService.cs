@@ -132,6 +132,44 @@ public partial class TileEditorService : RefCounted
         return new Rect2I(atlasCoords * tileSize, tileSize);
     }
 
+    /// <summary>
+    /// Get all available TileSetAtlasSource entries with descriptive info
+    /// </summary>
+    public List<AtlasSourceInfo> GetAvailableAtlasSources()
+    {
+        var sources = new List<AtlasSourceInfo>();
+        if (_tileSet == null) return sources;
+
+        var sourceCount = _tileSet.GetSourceCount();
+        for (int i = 0; i < sourceCount; i++)
+        {
+            var sourceId = _tileSet.GetSourceId(i);
+            var source = _tileSet.GetSource(sourceId) as TileSetAtlasSource;
+            if (source == null) continue;
+
+            var textureName = source.Texture?.ResourcePath ?? "Unknown";
+            if (textureName.Contains('/'))
+                textureName = textureName.GetFile();
+
+            sources.Add(new AtlasSourceInfo
+            {
+                SourceId = sourceId,
+                DisplayName = $"Source {sourceId}: {textureName}",
+                Source = source
+            });
+        }
+
+        return sources;
+    }
+
+    /// <summary>
+    /// Get a specific TileSetAtlasSource by ID
+    /// </summary>
+    public TileSetAtlasSource? GetAtlasSource(int sourceId)
+    {
+        return _tileSet?.GetSource(sourceId) as TileSetAtlasSource;
+    }
+
     public EditableTile? GetTile(string id) => _tiles.GetValueOrDefault(id);
 
     public void UpdateTile(EditableTile tile)
@@ -348,5 +386,15 @@ public class EditableTile
         IsTransparent = IsTransparent,
         Biomes = new List<string>(Biomes)
     };
+}
+
+/// <summary>
+/// Information about a TileSetAtlasSource for UI display
+/// </summary>
+public class AtlasSourceInfo
+{
+    public int SourceId { get; set; }
+    public string DisplayName { get; set; } = "";
+    public TileSetAtlasSource? Source { get; set; }
 }
 #endif

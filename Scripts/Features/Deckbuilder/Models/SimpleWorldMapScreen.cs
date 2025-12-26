@@ -104,7 +104,7 @@ public partial class SimpleWorldMapScreen : Node3D
             gameSession.PathUpdated += OnPathUpdated;
 
             // If Initialize() was called before service was ready, start now
-            if (_pendingMapSeed != null && _pendingAbilities != null)
+            if (_pendingMapSeed is { Length: > 0 } && _pendingAbilities != null)
             {
                 ILog.Print("Processing pending initialization...");
                 gameSession.StartSession(_pendingMapSeed[0], _pendingAbilities.ToList());
@@ -131,10 +131,16 @@ public partial class SimpleWorldMapScreen : Node3D
 
     public void Initialize(CardSignature[] mapSeed, CardSignature[] abilities)
     {
+        if (mapSeed.Length == 0)
+        {
+            ILog.Error("Initialize called with empty mapSeed array");
+            return;
+        }
+
         ILog.Print(
             $"Initializing simple map screen with {mapSeed.Length} seed card(s) and {abilities.Length} abilities");
         ILog.Print(
-            $"🐛 CardSignature Elements: [{string.Join(", ", mapSeed[0].Elements.Select(e => e.ToString("F3")))}]");
+            $"CardSignature Elements: [{string.Join(", ", mapSeed[0].Elements.Select(e => e.ToString("F3")))}]");
 
         if (_serviceReady && _gameSession != null)
         {
