@@ -29,9 +29,12 @@ _surfaces = [{
 "vertex_data": PackedByteArray("8KcqwAAAwL8AAAAA8KcqQAAAwL8AAAAA8KcqQAAAwD8AAAAA8KcqwAAAwD8AAAAA//////9/AID//////38AgP//////fwCA//////9/AIA=")
 }]
 
-[node name="SimpleTileMapScreen" type="Node3D" node_paths=PackedStringArray("MapLayer", "OverlayLayer", "BiomeOverlayLayer", "Viewport", "ScreenMesh", "StatusLabel", "PlayerSprite", "CombatUI")]
+[node name="SimpleTileMapScreen" type="Node3D" node_paths=PackedStringArray("TerrainLayer", "DecorationLayer", "StructureLayer", "EffectLayer", "OverlayLayer", "BiomeOverlayLayer", "Viewport", "ScreenMesh", "StatusLabel", "PlayerSprite", "CombatUI")]
 script = ExtResource("1_w558t")
-MapLayer = NodePath("SubViewport/MapLayer")
+TerrainLayer = NodePath("SubViewport/TerrainLayer")
+DecorationLayer = NodePath("SubViewport/DecorationLayer")
+StructureLayer = NodePath("SubViewport/StructureLayer")
+EffectLayer = NodePath("SubViewport/EffectLayer")
 OverlayLayer = NodePath("SubViewport/OverlayLayer")
 BiomeOverlayLayer = NodePath("SubViewport/BiomeOverlay")
 Viewport = NodePath("SubViewport")
@@ -47,7 +50,16 @@ mesh = SubResource("ArrayMesh_sb8ww")
 [node name="SubViewport" type="SubViewport" parent="."]
 size = Vector2i(1024, 1024)
 
-[node name="MapLayer" type="TileMapLayer" parent="SubViewport"]
+[node name="TerrainLayer" type="TileMapLayer" parent="SubViewport"]
+tile_set = ExtResource("4_olmej")
+
+[node name="DecorationLayer" type="TileMapLayer" parent="SubViewport"]
+tile_set = ExtResource("4_olmej")
+
+[node name="StructureLayer" type="TileMapLayer" parent="SubViewport"]
+tile_set = ExtResource("4_olmej")
+
+[node name="EffectLayer" type="TileMapLayer" parent="SubViewport"]
 tile_set = ExtResource("4_olmej")
 
 [node name="OverlayLayer" type="TileMapLayer" parent="SubViewport"]

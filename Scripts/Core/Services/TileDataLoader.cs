@@ -83,6 +83,7 @@ public static class TileDataLoader
         var layer = ParseLayer(data.Layer);
         var biomes = ParseBiomes(data.Biomes);
         var atlasCoords = new Vector2I(data.AtlasCoords?.X ?? 0, data.AtlasCoords?.Y ?? 0);
+        var size = data.Size != null ? new Vector2I(data.Size.X, data.Size.Y) : (Vector2I?)null;
 
         return new TileDefinition(
             id: data.Id,
@@ -93,7 +94,8 @@ public static class TileDataLoader
             layer: layer,
             elevation: data.Elevation ?? 0f,
             isTransparent: data.IsTransparent,
-            allowedBiomes: biomes);
+            allowedBiomes: biomes,
+            size: size);
     }
 
     private static TilePassability ParsePassability(string? value)
@@ -193,6 +195,9 @@ public static class TileDataLoader
 
         [JsonPropertyName("biomes")]
         public List<string>? Biomes { get; set; }
+
+        [JsonPropertyName("size")]
+        public Vector2IData? Size { get; set; }
     }
 
     private sealed class Vector2IData

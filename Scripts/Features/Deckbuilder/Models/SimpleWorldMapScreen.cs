@@ -63,8 +63,11 @@ public partial class SimpleWorldMapScreen : Node3D
 
     private ITileRegistry? _tileRegistry;
 
-    // Export properties for editor assignment
-    [Export] public TileMapLayer? MapLayer { get; set; }
+    // Export properties for editor assignment - multiple layers for proper rendering order
+    [Export] public TileMapLayer? TerrainLayer { get; set; }
+    [Export] public TileMapLayer? DecorationLayer { get; set; }
+    [Export] public TileMapLayer? StructureLayer { get; set; }
+    [Export] public TileMapLayer? EffectLayer { get; set; }
     [Export] public TileMapLayer? OverlayLayer { get; set; }
     [Export] public TileMapLayer? BiomeOverlayLayer { get; set; }
     [Export] public SubViewport? Viewport { get; set; }
@@ -476,13 +479,17 @@ public partial class SimpleWorldMapScreen : Node3D
 
     private void RenderMap(SimpleMapData mapData)
     {
-        if (MapLayer == null)
+        if (TerrainLayer == null)
         {
-            ILog.Error("RenderMap: MapLayer is null!");
+            ILog.Error("RenderMap: TerrainLayer is null!");
             return;
         }
 
-        MapLayer.Clear();
+        // Clear all layers
+        TerrainLayer.Clear();
+        DecorationLayer?.Clear();
+        StructureLayer?.Clear();
+        EffectLayer?.Clear();
         OverlayLayer?.Clear();
 
         // Clear old enemy sprites
@@ -495,14 +502,15 @@ public partial class SimpleWorldMapScreen : Node3D
         // Log tile info for debugging
         LogTileRenderingSample();
 
-        // Render the map using tile registry for atlas coordinates and source IDs
+        // Render the map with proper layering:
+        // 1. First pass: render terrain for ALL cells (ensures background exists everywhere)
+        // 2. Second pass: render structure/decoration tiles on top of terrain
         for (var y = 0; y < mapData.Size.Y; y++)
         for (var x = 0; x < mapData.Size.X; x++)
         {
             var position = new Vector2I(x, y);
             var tileId = mapData.GetTileId(position);
-            var (sourceId, atlasCoords) = GetTileRenderInfo(tileId);
-            MapLayer.SetCell(position, sourceId, atlasCoords);
+            RenderTileWithLayering(position, tileId, mapData);
         }
 
         // Render biome overlay if enabled
@@ -577,10 +585,105 @@ public partial class SimpleWorldMapScreen : Node3D
     }
 
     /// <summary>
-    /// Get the source ID and atlas coordinates for rendering a tile.
-    /// Returns (sourceId, atlasCoords) from TileRegistry.
+    /// Render a tile with proper layering - terrain first, then structure/decoration on top.
+    /// This ensures transparent tiles always have terrain visible underneath.
+    /// Handles multi-tile sprites by rendering each cell with correct atlas offsets.
     /// </summary>
-    private (int sourceId, Vector2I atlasCoords) GetTileRenderInfo(string tileId)
+    private void RenderTileWithLayering(Vector2I position, string tileId, SimpleMapData mapData)
+    {
+        var (sourceId, atlasCoords, layer, tileSize) = GetTileRenderInfoFull(tileId);
+
+        if (layer == TileLayer.Terrain)
+        {
+            // For terrain tiles, just render to terrain layer (terrain is always 1x1)
+            TerrainLayer?.SetCell(position, sourceId, atlasCoords);
+        }
+        else
+        {
+            // For non-terrain tiles (structure, decoration, effects):
+            // 1. First render terrain underneath all cells the tile will cover
+            var biomeType = mapData.GetBiomeAt(position);
+            var terrainTileId = GetDefaultTerrainTileForBiome(biomeType);
+            if (terrainTileId != null)
+            {
+                var (terrainSourceId, terrainAtlasCoords, _, _) = GetTileRenderInfoFull(terrainTileId);
+                // Render terrain for each cell the multi-tile covers
+                for (var dy = 0; dy < tileSize.Y; dy++)
+                for (var dx = 0; dx < tileSize.X; dx++)
+                {
+                    var cellPos = new Vector2I(position.X + dx, position.Y + dy);
+                    if (cellPos.X < mapData.Size.X && cellPos.Y < mapData.Size.Y)
+                    {
+                        TerrainLayer?.SetCell(cellPos, terrainSourceId, terrainAtlasCoords);
+                    }
+                }
+            }
+
+            // 2. Render each cell of the multi-tile with correct atlas offsets
+            var targetLayer = layer switch
+            {
+                TileLayer.Decoration => DecorationLayer,
+                TileLayer.Structure => StructureLayer,
+                TileLayer.Effects => EffectLayer,
+                _ => TerrainLayer
+            };
+
+            for (var dy = 0; dy < tileSize.Y; dy++)
+            for (var dx = 0; dx < tileSize.X; dx++)
+            {
+                var cellPos = new Vector2I(position.X + dx, position.Y + dy);
+                if (cellPos.X < mapData.Size.X && cellPos.Y < mapData.Size.Y)
+                {
+                    // Offset atlas coords for this cell of the multi-tile
+                    var cellAtlasCoords = new Vector2I(atlasCoords.X + dx, atlasCoords.Y + dy);
+                    targetLayer?.SetCell(cellPos, sourceId, cellAtlasCoords);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Get a default terrain tile ID for a biome type.
+    /// This is used when rendering structure/decoration tiles to ensure terrain is underneath.
+    /// </summary>
+    private static string? GetDefaultTerrainTileForBiome(BiomeType biomeType)
+    {
+        return biomeType switch
+        {
+            BiomeType.Plains => "plains_grass",
+            BiomeType.Forest => "forest_floor",
+            BiomeType.Desert => "desert_sand",
+            BiomeType.Tundra => "tundra_snow",
+            BiomeType.Swamp => "swamp_mud",
+            BiomeType.Mountains => "mountains_rock",
+            _ => "plains_grass"
+        };
+    }
+
+    /// <summary>
+    /// Render a tile to the appropriate TileMapLayer based on its layer property.
+    /// </summary>
+    private void RenderTileToLayer(Vector2I position, string tileId)
+    {
+        var (sourceId, atlasCoords, layer) = GetTileRenderInfoWithLayer(tileId);
+
+        var targetLayer = layer switch
+        {
+            TileLayer.Terrain => TerrainLayer,
+            TileLayer.Decoration => DecorationLayer,
+            TileLayer.Structure => StructureLayer,
+            TileLayer.Effects => EffectLayer,
+            _ => TerrainLayer
+        };
+
+        targetLayer?.SetCell(position, sourceId, atlasCoords);
+    }
+
+    /// <summary>
+    /// Get full render info for a tile including size for multi-tile support.
+    /// Returns (sourceId, atlasCoords, layer, size) from TileRegistry.
+    /// </summary>
+    private (int sourceId, Vector2I atlasCoords, TileLayer layer, Vector2I size) GetTileRenderInfoFull(string tileId)
     {
         if (_tileRegistry == null)
         {
@@ -588,17 +691,37 @@ public partial class SimpleWorldMapScreen : Node3D
             var fallbackCoords = tileId == SimpleMapGenerator.WallTileId
                 ? new Vector2I(2, 0)
                 : new Vector2I(4, 0);
-            return (4, fallbackCoords); // Use source 4 as fallback
+            return (4, fallbackCoords, TileLayer.Terrain, Vector2I.One);
         }
 
         var tile = _tileRegistry.GetTile(tileId);
         if (tile == null)
         {
             ILog.Print($"[TILE DEBUG] Tile not found in registry: '{tileId}', using fallback");
-            return (4, new Vector2I(4, 0)); // Default fallback with source 4
+            return (4, new Vector2I(4, 0), TileLayer.Terrain, Vector2I.One);
         }
 
-        return (tile.SourceId, tile.AtlasCoords);
+        return (tile.SourceId, tile.AtlasCoords, tile.Layer, tile.Size);
+    }
+
+    /// <summary>
+    /// Get the source ID, atlas coordinates, and layer for rendering a tile.
+    /// Returns (sourceId, atlasCoords, layer) from TileRegistry.
+    /// </summary>
+    private (int sourceId, Vector2I atlasCoords, TileLayer layer) GetTileRenderInfoWithLayer(string tileId)
+    {
+        var (sourceId, atlasCoords, layer, _) = GetTileRenderInfoFull(tileId);
+        return (sourceId, atlasCoords, layer);
+    }
+
+    /// <summary>
+    /// Get the source ID and atlas coordinates for rendering a tile.
+    /// Used for overlay rendering which doesn't need layer information.
+    /// </summary>
+    private (int sourceId, Vector2I atlasCoords) GetTileRenderInfo(string tileId)
+    {
+        var (sourceId, atlasCoords, _) = GetTileRenderInfoWithLayer(tileId);
+        return (sourceId, atlasCoords);
     }
 
     private void LogTileRenderingSample()
@@ -608,7 +731,7 @@ public partial class SimpleWorldMapScreen : Node3D
 
         ILog.Print($"[TILE DEBUG] === Tile Rendering Debug ===");
         ILog.Print($"[TILE DEBUG] TileRegistry available: {_tileRegistry != null}");
-        ILog.Print($"[TILE DEBUG] MapLayer available: {MapLayer != null}");
+        ILog.Print($"[TILE DEBUG] TerrainLayer available: {TerrainLayer != null}");
 
         if (_tileRegistry != null)
         {
@@ -647,9 +770,9 @@ public partial class SimpleWorldMapScreen : Node3D
 
     private void ConfigureCamera()
     {
-        if (_camera2D == null || MapLayer == null || Viewport == null) return;
+        if (_camera2D == null || TerrainLayer == null || Viewport == null) return;
 
-        var usedRect = MapLayer.GetUsedRect();
+        var usedRect = TerrainLayer.GetUsedRect();
         if (usedRect.Size == Vector2I.Zero) return;
 
         // Calculate the center of the map area in pixel coordinates

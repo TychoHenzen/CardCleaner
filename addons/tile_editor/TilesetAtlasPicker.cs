@@ -17,6 +17,7 @@ public partial class TilesetAtlasPicker : Control
     private Vector2I _tileSize = new(16, 16);
     private Vector2I _selectedCoords = new(-1, -1);
     private Vector2I _hoveredCoords = new(-1, -1);
+    private Vector2I _selectedSize = new(1, 1); // Size of the selected tile (for multi-tile support)
     private int _sourceId;
 
     private static readonly Color GridColor = new(0.3f, 0.3f, 0.3f, 0.8f);
@@ -36,6 +37,24 @@ public partial class TilesetAtlasPicker : Control
             if (_selectedCoords != value)
             {
                 _selectedCoords = value;
+                QueueRedraw();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Size of the tile being selected (for multi-tile support).
+    /// Default is (1, 1) for single-cell tiles.
+    /// </summary>
+    public Vector2I SelectedSize
+    {
+        get => _selectedSize;
+        set
+        {
+            var clamped = new Vector2I(Mathf.Max(1, value.X), Mathf.Max(1, value.Y));
+            if (_selectedSize != clamped)
+            {
+                _selectedSize = clamped;
                 QueueRedraw();
             }
         }
@@ -94,30 +113,55 @@ public partial class TilesetAtlasPicker : Control
         int cols = (int)(textureSize.X / _tileSize.X);
         int rows = (int)(textureSize.Y / _tileSize.Y);
 
-        // Draw hover highlight
+        // Draw hover highlight (uses SelectedSize for multi-tile preview)
         if (_hoveredCoords.X >= 0 && _hoveredCoords.Y >= 0 &&
             _hoveredCoords.X < cols && _hoveredCoords.Y < rows)
         {
             var hoverRect = new Rect2(
                 _hoveredCoords.X * scaledTile.X,
                 _hoveredCoords.Y * scaledTile.Y,
-                scaledTile.X,
-                scaledTile.Y
+                scaledTile.X * _selectedSize.X,
+                scaledTile.Y * _selectedSize.Y
             );
             DrawRect(hoverRect, HoverColor);
+
+            // Draw grid lines within multi-tile hover area
+            if (_selectedSize.X > 1 || _selectedSize.Y > 1)
+            {
+                for (int dx = 1; dx < _selectedSize.X; dx++)
+                {
+                    var xPos = (_hoveredCoords.X + dx) * scaledTile.X;
+                    DrawLine(
+                        new Vector2(xPos, _hoveredCoords.Y * scaledTile.Y),
+                        new Vector2(xPos, (_hoveredCoords.Y + _selectedSize.Y) * scaledTile.Y),
+                        HoverColor * 1.5f
+                    );
+                }
+                for (int dy = 1; dy < _selectedSize.Y; dy++)
+                {
+                    var yPos = (_hoveredCoords.Y + dy) * scaledTile.Y;
+                    DrawLine(
+                        new Vector2(_hoveredCoords.X * scaledTile.X, yPos),
+                        new Vector2((_hoveredCoords.X + _selectedSize.X) * scaledTile.X, yPos),
+                        HoverColor * 1.5f
+                    );
+                }
+            }
         }
 
-        // Draw selection highlight
+        // Draw selection highlight (uses SelectedSize for multi-tile)
         if (_selectedCoords.X >= 0 && _selectedCoords.Y >= 0 &&
             _selectedCoords.X < cols && _selectedCoords.Y < rows)
         {
             var selectRect = new Rect2(
                 _selectedCoords.X * scaledTile.X,
                 _selectedCoords.Y * scaledTile.Y,
-                scaledTile.X,
-                scaledTile.Y
+                scaledTile.X * _selectedSize.X,
+                scaledTile.Y * _selectedSize.Y
             );
-            // Draw selection as outline
+            // Draw selection as filled rectangle with transparency
+            DrawRect(selectRect, SelectionColor with { A = 0.3f });
+            // Draw selection outline
             DrawRect(selectRect, SelectionColor, false, 3.0f);
         }
 

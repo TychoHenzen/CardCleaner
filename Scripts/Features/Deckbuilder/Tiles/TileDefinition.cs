@@ -18,7 +18,8 @@ public class TileDefinition
         TileLayer layer = TileLayer.Terrain,
         float elevation = 0f,
         bool? isTransparent = null,
-        HashSet<BiomeType>? allowedBiomes = null)
+        HashSet<BiomeType>? allowedBiomes = null,
+        Vector2I? size = null)
     {
         Id = id;
         Name = name;
@@ -29,6 +30,7 @@ public class TileDefinition
         Elevation = elevation;
         IsTransparent = isTransparent ?? (passability == TilePassability.Passable);
         AllowedBiomes = allowedBiomes;
+        Size = size ?? Vector2I.One;
     }
 
     public string Id { get; }
@@ -40,6 +42,12 @@ public class TileDefinition
     public float Elevation { get; }
     public bool IsTransparent { get; }
     public HashSet<BiomeType>? AllowedBiomes { get; }
+
+    /// <summary>
+    /// Size of this tile in grid cells (width, height). Default is (1, 1).
+    /// Multi-cell tiles like trees may be 2x1, 2x2, etc.
+    /// </summary>
+    public Vector2I Size { get; }
 
     public bool IsPassable => Passability == TilePassability.Passable;
 

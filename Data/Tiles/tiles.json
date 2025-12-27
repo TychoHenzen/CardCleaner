@@ -122,7 +122,7 @@
         "y": 3
       },
       "sourceId": 10,
-      "layer": "terrain",
+      "layer": "decoration",
       "elevation": 0,
       "isTransparent": true,
       "biomes": [
@@ -282,7 +282,7 @@
         "y": 0
       },
       "sourceId": 10,
-      "layer": "terrain",
+      "layer": "decoration",
       "elevation": 0,
       "isTransparent": true,
       "biomes": [
@@ -294,16 +294,20 @@
       "name": "Tree",
       "passability": "solid",
       "atlasCoords": {
-        "x": 27,
-        "y": 3
+        "x": 8,
+        "y": 0
       },
-      "sourceId": 60,
+      "sourceId": 47,
       "layer": "structure",
       "elevation": 2,
       "isTransparent": false,
       "biomes": [
         "forest"
-      ]
+      ],
+      "size": {
+        "x": 1,
+        "y": 2
+      }
     },
     {
       "id": "forest_dense_trees",
@@ -518,7 +522,7 @@
       "name": "Animal Skull",
       "passability": "solid",
       "atlasCoords": {
-        "x": 17,
+        "x": 22,
         "y": 13
       },
       "sourceId": 58,
@@ -527,7 +531,11 @@
       "isTransparent": true,
       "biomes": [
         "desert"
-      ]
+      ],
+      "size": {
+        "x": 3,
+        "y": 2
+      }
     },
     {
       "id": "tundra_snow",
@@ -646,16 +654,21 @@
       "name": "Evergreen Tree",
       "passability": "solid",
       "atlasCoords": {
-        "x": 9,
-        "y": 1
+        "x": 8,
+        "y": 2
       },
       "sourceId": 47,
       "layer": "structure",
       "elevation": 2,
       "isTransparent": false,
       "biomes": [
+        "forest",
         "tundra"
-      ]
+      ],
+      "size": {
+        "x": 2,
+        "y": 2
+      }
     },
     {
       "id": "tundra_frozen_lake",
@@ -810,7 +823,7 @@
         "y": 23
       },
       "sourceId": 47,
-      "layer": "structure",
+      "layer": "decoration",
       "elevation": 0.4,
       "isTransparent": false,
       "biomes": [
@@ -998,8 +1011,8 @@
       "name": "Cave Entrance",
       "passability": "solid",
       "atlasCoords": {
-        "x": 13,
-        "y": 11
+        "x": 12,
+        "y": 10
       },
       "sourceId": 55,
       "layer": "structure",
@@ -1007,7 +1020,11 @@
       "isTransparent": false,
       "biomes": [
         "mountains"
-      ]
+      ],
+      "size": {
+        "x": 3,
+        "y": 2
+      }
     }
   ]
 }

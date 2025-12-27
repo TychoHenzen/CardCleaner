@@ -8,8 +8,8 @@ size = Vector3(0.328613, 0.250977, 0.557617)
 
 [node name="DeckSlot" type="Node3D" node_paths=PackedStringArray("Area")]
 script = ExtResource("1_qw16h")
-Area = NodePath("Area3D")
 PositionOffset = Vector3(0, 0.16, 0.2)
+Area = NodePath("Area3D")
 
 [node name="Mesh" parent="." instance=ExtResource("2_24yx1")]
 

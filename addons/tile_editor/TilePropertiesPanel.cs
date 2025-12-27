@@ -30,6 +30,8 @@ public partial class TilePropertiesPanel : ScrollContainer
     private OptionButton? _layerField;
     private SpinBox? _elevationField;
     private CheckBox? _transparentField;
+    private SpinBox? _sizeXField;
+    private SpinBox? _sizeYField;
     private VBoxContainer? _biomesContainer;
     private readonly Dictionary<string, CheckBox> _biomeCheckboxes = new();
     private Label? _validationLabel;
@@ -205,6 +207,48 @@ public partial class TilePropertiesPanel : ScrollContainer
 
         vbox.AddChild(new HSeparator());
 
+        // Size section (for multi-tile objects like trees)
+        var sizeHeader = new Label { Text = "Tile Size (cells)" };
+        sizeHeader.AddThemeFontSizeOverride("font_size", 14);
+        vbox.AddChild(sizeHeader);
+
+        var sizeRow = CreateRow("Size:");
+        var sizeHBox = new HBoxContainer();
+        sizeHBox.AddChild(new Label { Text = "W:" });
+        _sizeXField = new SpinBox
+        {
+            MinValue = 1,
+            MaxValue = 10,
+            Step = 1,
+            Value = 1,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _sizeXField.ValueChanged += _ => OnFieldChanged("");
+        sizeHBox.AddChild(_sizeXField);
+        sizeHBox.AddChild(new Label { Text = "H:" });
+        _sizeYField = new SpinBox
+        {
+            MinValue = 1,
+            MaxValue = 10,
+            Step = 1,
+            Value = 1,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _sizeYField.ValueChanged += _ => OnFieldChanged("");
+        sizeHBox.AddChild(_sizeYField);
+        sizeRow.AddChild(sizeHBox);
+        vbox.AddChild(sizeRow);
+
+        var sizeNote = new Label
+        {
+            Text = "(For multi-cell tiles like trees: 2x2, etc.)",
+            Modulate = new Color(0.7f, 0.7f, 0.7f)
+        };
+        sizeNote.AddThemeFontSizeOverride("font_size", 11);
+        vbox.AddChild(sizeNote);
+
+        vbox.AddChild(new HSeparator());
+
         // Biomes section
         vbox.AddChild(new Label { Text = "Allowed Biomes:" });
         _biomesContainer = new VBoxContainer();
@@ -337,6 +381,7 @@ public partial class TilePropertiesPanel : ScrollContainer
             var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
             _atlasPicker.SetSource(source, tileSize, _currentTile.SourceId);
             _atlasPicker.SelectedCoords = new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY);
+            _atlasPicker.SelectedSize = new Vector2I(_currentTile.SizeX, _currentTile.SizeY);
         }
 
         _atlasXField!.Value = _currentTile.AtlasX;
@@ -353,6 +398,8 @@ public partial class TilePropertiesPanel : ScrollContainer
 
         _elevationField!.Value = _currentTile.Elevation;
         _transparentField!.ButtonPressed = _currentTile.IsTransparent;
+        _sizeXField!.Value = _currentTile.SizeX;
+        _sizeYField!.Value = _currentTile.SizeY;
 
         // Update biome checkboxes
         foreach (var (biome, checkbox) in _biomeCheckboxes)
@@ -404,6 +451,18 @@ public partial class TilePropertiesPanel : ScrollContainer
 
         _currentTile.Elevation = (float)_elevationField!.Value;
         _currentTile.IsTransparent = _transparentField!.ButtonPressed;
+        _currentTile.SizeX = (int)_sizeXField!.Value;
+        _currentTile.SizeY = (int)_sizeYField!.Value;
+
+        // Sync picker size when size fields change
+        if (_atlasPicker != null)
+        {
+            var newSize = new Vector2I(_currentTile.SizeX, _currentTile.SizeY);
+            if (_atlasPicker.SelectedSize != newSize)
+            {
+                _atlasPicker.SelectedSize = newSize;
+            }
+        }
 
         // Update biomes
         _currentTile.Biomes.Clear();
@@ -437,6 +496,8 @@ public partial class TilePropertiesPanel : ScrollContainer
         _layerField!.Disabled = !enabled;
         _elevationField!.Editable = enabled;
         _transparentField!.Disabled = !enabled;
+        _sizeXField!.Editable = enabled;
+        _sizeYField!.Editable = enabled;
 
         foreach (var checkbox in _biomeCheckboxes.Values)
         {

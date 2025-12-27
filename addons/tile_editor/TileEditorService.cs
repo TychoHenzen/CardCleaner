@@ -89,7 +89,9 @@ public partial class TileEditorService : RefCounted
                     Layer = tileData.Layer ?? "terrain",
                     Elevation = tileData.Elevation ?? 0f,
                     IsTransparent = tileData.IsTransparent ?? true,
-                    Biomes = tileData.Biomes?.ToList() ?? new List<string>()
+                    Biomes = tileData.Biomes?.ToList() ?? new List<string>(),
+                    SizeX = tileData.Size?.X ?? 1,
+                    SizeY = tileData.Size?.Y ?? 1
                 };
 
                 _tiles[tile.Id] = tile;
@@ -117,7 +119,7 @@ public partial class TileEditorService : RefCounted
     }
 
     /// <summary>
-    /// Get the texture region for a tile
+    /// Get the texture region for a tile (supports multi-tile sizes)
     /// </summary>
     public Rect2I GetTileTextureRegion(EditableTile tile)
     {
@@ -129,7 +131,9 @@ public partial class TileEditorService : RefCounted
         var tileSize = _tileSet.TileSize;
         var atlasCoords = new Vector2I(tile.AtlasX, tile.AtlasY);
 
-        return new Rect2I(atlasCoords * tileSize, tileSize);
+        // Use the tile's size for multi-tile support
+        var regionSize = new Vector2I(tileSize.X * tile.SizeX, tileSize.Y * tile.SizeY);
+        return new Rect2I(atlasCoords * tileSize, regionSize);
     }
 
     /// <summary>
@@ -270,7 +274,8 @@ public partial class TileEditorService : RefCounted
                     Layer = t.Layer.ToLowerInvariant(),
                     Elevation = t.Elevation,
                     IsTransparent = t.IsTransparent,
-                    Biomes = t.Biomes.Count > 0 ? t.Biomes : null
+                    Biomes = t.Biomes.Count > 0 ? t.Biomes : null,
+                    Size = (t.SizeX != 1 || t.SizeY != 1) ? new Vector2IData { X = t.SizeX, Y = t.SizeY } : null
                 }).ToList()
             };
 
@@ -345,6 +350,9 @@ public partial class TileEditorService : RefCounted
 
         [JsonPropertyName("biomes")]
         public List<string>? Biomes { get; set; }
+
+        [JsonPropertyName("size")]
+        public Vector2IData? Size { get; set; }
     }
 
     private sealed class Vector2IData
@@ -372,6 +380,8 @@ public class EditableTile
     public float Elevation { get; set; }
     public bool IsTransparent { get; set; } = true;
     public List<string> Biomes { get; set; } = new();
+    public int SizeX { get; set; } = 1;
+    public int SizeY { get; set; } = 1;
 
     public EditableTile Clone() => new()
     {
@@ -384,7 +394,9 @@ public class EditableTile
         Layer = Layer,
         Elevation = Elevation,
         IsTransparent = IsTransparent,
-        Biomes = new List<string>(Biomes)
+        Biomes = new List<string>(Biomes),
+        SizeX = SizeX,
+        SizeY = SizeY
     };
 }
 

@@ -14,7 +14,6 @@ public readonly struct UnvisitedBlob
     public Vector2I EntryPoint { get; init; }
     public int Size { get; init; }
     public int WalkingDistance { get; init; }
-    public float Score { get; init; }
 }
 
 /// <summary>
@@ -208,8 +207,8 @@ public class FrontierExplorationBehavior
 
         if (significantBlobs.Count > 0)
         {
-            // Pick the highest-scoring significant blob
-            var bestBlob = significantBlobs.OrderByDescending(b => b.Score).First();
+            // Pick the closest significant blob, using size as tiebreaker
+            var bestBlob = significantBlobs.OrderBy(b => b.WalkingDistance).ThenByDescending(b => b.Size).First();
             return bestBlob.EntryPoint;
         }
 
@@ -333,16 +332,11 @@ public class FrontierExplorationBehavior
                 }
             }
 
-            // Score: prioritize large blobs that are nearby
-            // Formula: size / sqrt(distance) gives good balance
-            var score = blobSize / MathF.Sqrt(MathF.Max(1, walkingDistance));
-
             blobs.Add(new UnvisitedBlob
             {
                 EntryPoint = entryPoint,
                 Size = blobSize,
-                WalkingDistance = walkingDistance,
-                Score = score
+                WalkingDistance = walkingDistance
             });
         }
 

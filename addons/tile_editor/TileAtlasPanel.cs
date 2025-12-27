@@ -244,25 +244,34 @@ public partial class TileAtlasPanel : Control
 [Tool]
 public partial class TileButton : Button
 {
-    private readonly int _size;
+    private readonly int _baseSize;
     private readonly int _padding;
     private readonly TileEditorService _service;
     private readonly EditableTile _tile;
     private readonly Texture2D? _texture;
     private readonly Rect2I _region;
     private readonly Color _bgColor;
+    private readonly Vector2I _tileSize; // Tile dimensions (1x1, 2x2, 1x2, etc.)
     private bool _isSelected;
 
-    public TileButton(EditableTile tile, int size, int padding, TileEditorService service)
+    public TileButton(EditableTile tile, int baseSize, int padding, TileEditorService service)
     {
-        _size = size;
+        _baseSize = baseSize;
         _padding = padding;
         _service = service;
         _tile = tile;
+        _tileSize = new Vector2I(tile.SizeX, tile.SizeY);
 
-        var totalSize = size + padding * 2;
-        CustomMinimumSize = new Vector2(totalSize, totalSize + 16);
-        TooltipText = $"{tile.Name}\n{tile.Id}\n{tile.Passability}\nSource: {tile.SourceId}, Atlas: ({tile.AtlasX},{tile.AtlasY})";
+        // Scale button size based on tile dimensions
+        var widthSize = baseSize * tile.SizeX / Mathf.Max(tile.SizeX, tile.SizeY);
+        var heightSize = baseSize * tile.SizeY / Mathf.Max(tile.SizeX, tile.SizeY);
+        var totalWidth = widthSize + padding * 2;
+        var totalHeight = heightSize + padding * 2;
+
+        CustomMinimumSize = new Vector2(totalWidth, totalHeight + 16);
+
+        var sizeLabel = (tile.SizeX > 1 || tile.SizeY > 1) ? $" [{tile.SizeX}x{tile.SizeY}]" : "";
+        TooltipText = $"{tile.Name}{sizeLabel}\n{tile.Id}\n{tile.Passability}\nSource: {tile.SourceId}, Atlas: ({tile.AtlasX},{tile.AtlasY})";
         Flat = true;
         TextureFilter = TextureFilterEnum.Nearest;
 
@@ -279,35 +288,48 @@ public partial class TileButton : Button
 
     public override void _Draw()
     {
-        var totalSize = _size + _padding * 2;
+        // Calculate display size preserving aspect ratio
+        var maxDim = Mathf.Max(_tileSize.X, _tileSize.Y);
+        var displayWidth = _baseSize * _tileSize.X / maxDim;
+        var displayHeight = _baseSize * _tileSize.Y / maxDim;
+        var totalWidth = displayWidth + _padding * 2;
+        var totalHeight = displayHeight + _padding * 2;
 
         // Background
-        DrawRect(new Rect2(0, 0, totalSize, totalSize), _bgColor);
+        DrawRect(new Rect2(0, 0, totalWidth, totalHeight), _bgColor);
 
         // Selection border
         if (_isSelected)
         {
-            DrawRect(new Rect2(0, 0, totalSize, totalSize), new Color(1, 0.8f, 0, 1), false, 2);
+            DrawRect(new Rect2(0, 0, totalWidth, totalHeight), new Color(1, 0.8f, 0, 1), false, 2);
         }
 
-        // Tile texture at 3x scale
+        // Multi-tile indicator
+        if (_tileSize.X > 1 || _tileSize.Y > 1)
+        {
+            var sizeText = $"{_tileSize.X}x{_tileSize.Y}";
+            DrawString(ThemeDB.FallbackFont, new Vector2(totalWidth - 24, 12), sizeText,
+                HorizontalAlignment.Right, 24, 10, new Color(1, 1, 0, 0.9f));
+        }
+
+        // Tile texture scaled to fit
         if (_texture != null)
         {
             var srcRect = new Rect2(_region.Position.X, _region.Position.Y, _region.Size.X, _region.Size.Y);
-            var destRect = new Rect2(_padding, _padding, _size, _size);
+            var destRect = new Rect2(_padding, _padding, displayWidth, displayHeight);
             DrawTextureRectRegion(_texture, destRect, srcRect);
         }
         else
         {
             // Fallback text
-            DrawString(ThemeDB.FallbackFont, new Vector2(_padding, totalSize / 2),
-                $"({_tile.AtlasX},{_tile.AtlasY})", HorizontalAlignment.Center, _size);
+            DrawString(ThemeDB.FallbackFont, new Vector2(_padding, totalHeight / 2),
+                $"({_tile.AtlasX},{_tile.AtlasY})", HorizontalAlignment.Center, displayWidth);
         }
 
         // Tile name at bottom
-        var displayName = _tile.Name.Length > 8 ? _tile.Name[..8] + ".." : _tile.Name;
-        DrawString(ThemeDB.FallbackFont, new Vector2(0, totalSize + 12),
-            displayName, HorizontalAlignment.Center, totalSize, 10);
+        var displayName = _tile.Name.Length > 10 ? _tile.Name[..10] + ".." : _tile.Name;
+        DrawString(ThemeDB.FallbackFont, new Vector2(0, totalHeight + 12),
+            displayName, HorizontalAlignment.Center, totalWidth, 10);
     }
 
     public void UpdateTile(EditableTile tile)

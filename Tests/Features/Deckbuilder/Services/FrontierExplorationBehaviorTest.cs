@@ -419,14 +419,12 @@ public class FrontierExplorationBehaviorTest
     }
 
     [TestCase]
-    public void TestBlobScoringPrioritizesLargeNearbyBlobs()
+    public void TestBlobSelectionPrioritizesClosestSignificantBlob()
     {
-        // Create a map with two unvisited regions of different sizes
+        // Create a map where all unvisited tiles form one contiguous blob
         //   0 1 2 3 4 5 6 7 8 9
-        // 0 V V U W U U U U U U
-        // V = visited, W = wall (not blocking, just passable), U = unvisited
-        // Small blob at (2,0): size 1
-        // Large blob at (4-9,0): size 6
+        // 0 V V U U U U U U U U
+        // V = visited, U = unvisited (all connected)
         var mapData = new SimpleMapData
         {
             TileIds = new string[1, 10],
@@ -454,7 +452,7 @@ public class FrontierExplorationBehaviorTest
         AssertThat(blobs.Count).IsEqual(1);
         AssertThat(blobs[0].Size).IsEqual(8); // Tiles 2-9
 
-        // FindNearestFrontierTile should return entry to the large blob
+        // FindNearestFrontierTile should return the closest entry point
         var target = behavior.FindNearestFrontierTile(new Vector2I(1, 0));
         AssertThat(target).IsEqual(new Vector2I(2, 0)); // Nearest entry point
     }
@@ -498,36 +496,39 @@ public class FrontierExplorationBehaviorTest
     }
 
     [TestCase]
-    public void TestBlobScoreFormula()
+    public void TestBlobDistancePrioritization()
     {
-        // Verify that score = size / sqrt(distance)
+        // Verify that closer blobs are preferred over larger distant blobs
+        // Create a map with two separate regions at different distances
+        //   0 1 2 3 4 5 6 7 8 9 10 11 12 13 14
+        // 0 V V U U U W U U U U  U  U  U  U  U
+        // V = visited, W = wall (blocking), U = unvisited
+        // Small blob at (2-4): size 3, distance 1
+        // Large blob at (6-14): size 9, distance 5 (must go around wall)
         var mapData = new SimpleMapData
         {
-            TileIds = new string[1, 20],
-            Size = new Vector2I(20, 1),
+            TileIds = new string[1, 15],
+            Size = new Vector2I(15, 1),
             PlayerStart = new Vector2I(0, 0)
         };
 
-        for (var x = 0; x < 20; x++)
+        for (var x = 0; x < 15; x++)
         {
-            mapData.TileIds[0, x] = Floor;
-            mapData.PassableTiles.Add(new Vector2I(x, 0));
+            mapData.TileIds[0, x] = x == 5 ? Wall : Floor;
+            if (x != 5) mapData.PassableTiles.Add(new Vector2I(x, 0));
         }
 
         var behavior = new FrontierExplorationBehavior(mapData, new SimpleVisibilityChecker(), visionRange: 1);
+        behavior.SignificantBlobThreshold = 3; // Both blobs are significant
 
-        // Visit first tile only
+        // Visit only tiles 0 and 1
         behavior.UpdateVision(new Vector2I(0, 0));
+        behavior.UpdateVision(new Vector2I(1, 0));
 
-        var blobs = behavior.FindUnvisitedBlobs(new Vector2I(0, 0));
-
-        // Should have one blob of size 19 at distance 1
-        AssertThat(blobs.Count).IsEqual(1);
-        AssertThat(blobs[0].Size).IsEqual(19);
-        AssertThat(blobs[0].WalkingDistance).IsEqual(1);
-
-        // Score should be 19 / sqrt(1) = 19
-        AssertThat(blobs[0].Score).IsEqual(19f);
+        // FindNearestFrontierTile should return entry to the CLOSER blob (at x=2)
+        // even though the blob at x=6+ is larger
+        var target = behavior.FindNearestFrontierTile(new Vector2I(1, 0));
+        AssertThat(target).IsEqual(new Vector2I(2, 0)); // Nearest entry point, not largest blob
     }
 
     private static SimpleMapData CreateSimpleMap(int width, int height)
