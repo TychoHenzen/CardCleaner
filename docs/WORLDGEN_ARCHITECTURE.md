@@ -155,49 +155,80 @@ Scripts/Features/Worldgen/Biomes/
 
 ---
 
-### Phase 2: Biome Transitions (Auto-tiling)
+### Phase 2: Auto-Tiling (IMPLEMENTED)
 
-**Goal**: Smooth visual transitions between biomes
+**Goal**: Smooth visual transitions for terrain tiles based on neighbors
 
-**Approach**: 4-bit neighbor bitmask
+**Status**: ✅ Implemented
+
+**Approach**: 4-bit neighbor bitmask with per-tile configuration
 
 ```
-For each tile at biome boundary:
+For each terrain tile:
   Check 4 neighbors (N=1, E=2, S=4, W=8)
-  Sum bits where neighbor is DIFFERENT biome
+  Sum bits where neighbor is SAME tile type
   → 16 possible edge combinations (0-15)
-  → Each biome provides 16 transition sprites
+  → Each configured tile provides up to 16 edge variants
 ```
 
-**New Files:**
+**Implementation Files:**
 
 ```
-Scripts/Features/Worldgen/Transitions/
-├── TransitionCalculator.cs     # Computes bitmask for each cell
-├── TransitionTileSet.cs        # Maps bitmask → tile for a biome pair
-└── TransitionRenderer.cs       # Handles overlay layer rendering
+Scripts/Features/Worldgen/AutoTiling/
+├── AutoTileConfig.cs         # Resource mapping base tile → 16 variants
+├── NeighborBitmask.cs        # Computes 4-bit NESW bitmask
+└── AutoTileResolver.cs       # Applies auto-tiling to entire map
+
+addons/tile_editor/
+└── AutoTileConfigPanel.cs    # Editor UI for configuring variants
+
+Scripts/Core/Services/
+└── TileDataLoader.cs         # Loads auto-tile configs from tiles.json
 ```
 
-**Rendering Strategy:**
+**Data Format (tiles.json):**
 
-Option A: Two-layer rendering
-```
-Layer 0: Base terrain tile (full tile, e.g., dirt)
-Layer 1: Transition overlay (transparent edges, e.g., grass border)
+```json
+{
+  "autoTileConfigs": [
+    {
+      "baseTileId": "grass",
+      "displayName": "Grass Auto-Tile",
+      "variants": [
+        null,           // 0: No neighbors - use base
+        "grass_n",      // 1: North neighbor
+        "grass_e",      // 2: East neighbor
+        "grass_ne",     // 3: North+East
+        "grass_s",      // 4: South neighbor
+        "grass_ns",     // 5: North+South (corridor)
+        "grass_es",     // 6: East+South
+        "grass_nes",    // 7: North+East+South
+        "grass_w",      // 8: West neighbor
+        "grass_nw",     // 9: North+West
+        "grass_ew",     // 10: East+West (corridor)
+        "grass_new",    // 11: North+East+West
+        "grass_sw",     // 12: South+West
+        "grass_nsw",    // 13: North+South+West
+        "grass_esw",    // 14: East+South+West
+        null            // 15: All neighbors - use base
+      ]
+    }
+  ]
+}
 ```
 
-Option B: Pre-composed tiles
-```
-Single layer with 16 variants per biome-pair
-(More tiles but simpler rendering)
-```
-
-**Recommendation**: Option A (two-layer) for flexibility
+**Usage:**
+1. Open Tile Editor dock in Godot
+2. Go to "Auto-Tiling" tab
+3. Create new config for a base terrain tile
+4. Assign variant tiles to each bitmask slot
+5. Save - auto-tiling automatically applies during map generation
 
 **Acceptance Criteria:**
-- [ ] Biome edges have smooth transitions
-- [ ] Grass-over-dirt style transparency works
-- [ ] No visual artifacts at corners
+- [x] Per-tile auto-tile configuration via editor UI
+- [x] 16-variant bitmask system (NESW neighbors)
+- [x] Automatic application during map generation
+- [x] Persistence to tiles.json
 
 ---
 
@@ -530,46 +561,49 @@ When the generator requests "grass", it randomly selects from these variants bas
 
 ---
 
-### Defining Transition Tiles
+### Defining Auto-Tile Configurations
 
-Transitions use a 4-bit bitmask system:
+Auto-tiling uses a 4-bit bitmask system based on SAME-type neighbors:
 
 ```
-Bit layout (neighbor is DIFFERENT biome):
+Bit layout (neighbor is SAME tile type):
   N = 1, E = 2, S = 4, W = 8
 
 Examples:
-  0  = No transitions (interior tile)
-  1  = North edge only
-  3  = North + East (corner)
-  15 = All sides different (island)
+  0  = No neighbors (isolated tile)
+  1  = North neighbor only
+  3  = North + East neighbors (inside corner)
+  15 = All neighbors (fully surrounded/interior)
 ```
 
-**TransitionTileSet Properties:**
+**Configuration via Tile Editor UI:**
 
-```gdscript
-FromBiome: Grass
-ToBiome: Dirt  # The biome we're transitioning TO
+1. Open Tile Editor dock → "Auto-Tiling" tab
+2. Click "+ New" to create a configuration
+3. Select a base terrain tile (e.g., "grass")
+4. For each of the 16 bitmask slots, click to assign a variant tile
+5. Leave slots empty to use the base tile for that configuration
 
-# Map bitmask → overlay tile
-Tiles:
-  0:  null  # No transition needed
-  1:  "grass_edge_n"
-  2:  "grass_edge_e"
-  3:  "grass_corner_ne"
-  4:  "grass_edge_s"
-  5:  "grass_edge_ns"  # Vertical strip
-  6:  "grass_corner_se"
-  7:  "grass_peninsula_e"
-  8:  "grass_edge_w"
-  9:  "grass_corner_nw"
-  10: "grass_edge_ew"  # Horizontal strip
-  11: "grass_peninsula_n"
-  12: "grass_corner_sw"
-  13: "grass_peninsula_w"
-  14: "grass_peninsula_s"
-  15: "grass_island"
-```
+**Bitmask Slot Reference:**
+
+| Bitmask | Neighbors | Typical Use |
+|---------|-----------|-------------|
+| 0 | None | Isolated single tile |
+| 1 | N | South edge |
+| 2 | E | West edge |
+| 3 | N+E | SW inside corner |
+| 4 | S | North edge |
+| 5 | N+S | Horizontal corridor |
+| 6 | E+S | NW inside corner |
+| 7 | N+E+S | West edge (peninsula) |
+| 8 | W | East edge |
+| 9 | N+W | SE inside corner |
+| 10 | E+W | Vertical corridor |
+| 11 | N+E+W | South edge (peninsula) |
+| 12 | S+W | NE inside corner |
+| 13 | N+S+W | East edge (peninsula) |
+| 14 | E+S+W | North edge (peninsula) |
+| 15 | All | Interior (fully surrounded) |
 
 ---
 
@@ -648,16 +682,18 @@ public int CalculateTransitionMask(Vector2I position, BiomeType myBiome, IBiomeP
 
 ```
 Scripts/Features/Worldgen/
-├── Biomes/
+├── Biomes/                         # Phase 1: IMPLEMENTED
 │   ├── BiomeDefinition.cs
 │   ├── BiomeRegistry.cs
 │   ├── BiomeMapGenerator.cs
 │   └── IBiomeProvider.cs
-├── Transitions/
-│   ├── TransitionCalculator.cs
-│   ├── TransitionTileSet.cs
-│   └── TransitionRenderer.cs
-├── Structures/
+├── AutoTiling/                     # Phase 2: IMPLEMENTED
+│   ├── AutoTileConfig.cs           # Resource: base tile → 16 variants
+│   ├── NeighborBitmask.cs          # Utility: compute 4-bit NESW bitmask
+│   └── AutoTileResolver.cs         # Service: apply auto-tiling to map
+├── BlobGeneration/                 # Terrain clustering
+│   └── TerrainBlobGenerator.cs
+├── Structures/                     # Phase 3: PLANNED
 │   ├── StructureStamp.cs
 │   ├── IProceduralStructure.cs
 │   ├── StructurePlacementRule.cs
@@ -666,10 +702,22 @@ Scripts/Features/Worldgen/
 │       ├── ForestGenerator.cs
 │       ├── BuildingGenerator.cs
 │       └── CaveEntranceGenerator.cs
-├── TileVariantPool.cs
+├── TileVariantPool.cs              # Phase 4: PLANNED
 ├── Gradients/
 │   └── (existing gradient files)
 └── (existing WFC files - to be deprecated)
+
+addons/tile_editor/                 # Editor UI
+├── AutoTileConfigPanel.cs          # Auto-tile configuration UI
+├── BlobSettingsPanel.cs            # Blob generation settings
+├── BiomePoolPanel.cs               # Biome tile assignments
+├── TilePropertiesPanel.cs          # Individual tile properties
+├── TileAtlasPanel.cs               # Tile browser
+├── TileEditorDock.cs               # Main dock container
+└── TileEditorService.cs            # Editor data management
+
+Data/Tiles/
+└── tiles.json                      # All tile data + auto-tile configs
 
 Resources/
 ├── Biomes/
@@ -722,6 +770,6 @@ The WFC system (`SemanticWfc3dGenerator`) will not be immediately removed. Inste
 
 ---
 
-*Document Version: 1.0*
-*Last Updated: 2025-12-25*
-*Status: Planning Phase - Pre-implementation*
+*Document Version: 1.1*
+*Last Updated: 2025-12-27*
+*Status: Phase 1 & 2 Implemented - Biomes and Auto-Tiling complete*

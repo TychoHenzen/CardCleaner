@@ -7,24 +7,17 @@ namespace CardCleaner.Addons.TileEditor;
 [Tool]
 public partial class TileEditorDock : Control
 {
-    private TabContainer? _tabContainer;
     private TileAtlasPanel? _atlasPanel;
-    private TilePropertiesPanel? _propertiesPanel;
+    private AutoTileConfigPanel? _autoTileConfigPanel;
     private BiomePoolPanel? _biomePoolPanel;
-    private TerrainGroupsPanel? _terrainGroupsPanel;
-    private TransitionRulesPanel? _transitionRulesPanel;
     private BlobSettingsPanel? _blobSettingsPanel;
-    private TilePickerPopup? _tilePickerPopup;
-    private TileEditorService? _service;
-    private Button? _saveButton;
-    private Label? _statusLabel;
-    private bool _isDirty;
     private bool _initialized;
-
-    // Tile picker context
-    private string? _pendingGroupId;
-    private int _pendingRuleIndex = -1;
-    private int _pendingBitmask = -1;
+    private bool _isDirty;
+    private TilePropertiesPanel? _propertiesPanel;
+    private Button? _saveButton;
+    private TileEditorService? _service;
+    private Label? _statusLabel;
+    private TabContainer? _tabContainer;
 
     public override void _Ready()
     {
@@ -35,13 +28,8 @@ public partial class TileEditorDock : Control
             _service = new TileEditorService();
             _service.TilesLoaded += OnTilesLoaded;
             _service.TileModified += OnTileModified;
-            _service.TerrainGroupModified += OnTerrainModified;
-            _service.TerrainGroupAdded += OnTerrainModified;
-            _service.TerrainGroupRemoved += OnTerrainModified;
-            _service.TransitionRuleModified += OnTransitionModified;
-            _service.TransitionRuleAdded += OnTransitionModified;
-            _service.TransitionRuleRemoved += OnTransitionModified;
             _service.BlobConfigModified += OnBlobConfigModified;
+            _service.AutoTileConfigModified += OnAutoTileConfigModified;
 
             SetupUI();
             _initialized = true;
@@ -96,8 +84,7 @@ public partial class TileEditorDock : Control
         // Tab container
         _tabContainer = new TabContainer
         {
-            SizeFlagsVertical = SizeFlags.ExpandFill,
-            SizeFlagsHorizontal = SizeFlags.ExpandFill
+            SizeFlagsVertical = SizeFlags.ExpandFill, SizeFlagsHorizontal = SizeFlags.ExpandFill
         };
         mainVBox.AddChild(_tabContainer);
 
@@ -117,51 +104,25 @@ public partial class TileEditorDock : Control
         _biomePoolPanel.Name = "Biomes";
         _tabContainer.AddChild(_biomePoolPanel);
 
-        // Terrain Groups tab
-        _terrainGroupsPanel = new TerrainGroupsPanel(_service!);
-        _terrainGroupsPanel.Name = "Terrain Groups";
-        _terrainGroupsPanel.TilePickerRequested += OnTerrainGroupTilePickerRequested;
-        _tabContainer.AddChild(_terrainGroupsPanel);
-
-        // Transition Rules tab
-        _transitionRulesPanel = new TransitionRulesPanel(_service!);
-        _transitionRulesPanel.Name = "Transitions";
-        _transitionRulesPanel.TilePickerRequested += OnTransitionRuleTilePickerRequested;
-        _tabContainer.AddChild(_transitionRulesPanel);
-
         // Blob Settings tab
         _blobSettingsPanel = new BlobSettingsPanel(_service!);
         _blobSettingsPanel.Name = "Blob Settings";
         _tabContainer.AddChild(_blobSettingsPanel);
 
-        // Tile picker popup (shared)
-        _tilePickerPopup = new TilePickerPopup(_service!);
-        _tilePickerPopup.TileSelected += OnTilePickerSelection;
-        AddChild(_tilePickerPopup);
+        // Auto-Tile Config tab
+        _autoTileConfigPanel = new AutoTileConfigPanel(_service!);
+        _autoTileConfigPanel.Name = "Auto-Tiling";
+        _tabContainer.AddChild(_autoTileConfigPanel);
     }
 
     private void OnTilesLoaded()
     {
-        _statusLabel!.Text = $"Loaded {_service!.TileCount} tiles, {_service.TerrainGroupCount} groups, {_service.TransitionRuleCount} rules";
+        _statusLabel!.Text = $"Loaded {_service!.TileCount} tiles";
         _isDirty = false;
         UpdateTitle();
     }
 
     private void OnTileModified(string tileId)
-    {
-        _isDirty = true;
-        _saveButton!.Disabled = false;
-        UpdateTitle();
-    }
-
-    private void OnTerrainModified(string groupId)
-    {
-        _isDirty = true;
-        _saveButton!.Disabled = false;
-        UpdateTitle();
-    }
-
-    private void OnTransitionModified(int ruleIndex)
     {
         _isDirty = true;
         _saveButton!.Disabled = false;
@@ -175,42 +136,11 @@ public partial class TileEditorDock : Control
         UpdateTitle();
     }
 
-    private void OnTerrainGroupTilePickerRequested(string groupId)
+    private void OnAutoTileConfigModified(string baseTileId)
     {
-        _pendingGroupId = groupId;
-        _pendingRuleIndex = -1;
-        _pendingBitmask = -1;
-        _tilePickerPopup?.ShowPicker();
-    }
-
-    private void OnTransitionRuleTilePickerRequested(int ruleIndex, int bitmask)
-    {
-        _pendingGroupId = null;
-        _pendingRuleIndex = ruleIndex;
-        _pendingBitmask = bitmask;
-        _tilePickerPopup?.ShowPicker();
-    }
-
-    private void OnTilePickerSelection(string? tileId)
-    {
-        if (_pendingGroupId != null)
-        {
-            // Adding tile to terrain group
-            if (!string.IsNullOrEmpty(tileId))
-            {
-                _terrainGroupsPanel?.AddTileToSelectedGroup(tileId);
-            }
-        }
-        else if (_pendingRuleIndex >= 0 && _pendingBitmask >= 0)
-        {
-            // Setting edge tile for transition rule
-            _transitionRulesPanel?.SetEdgeTile(_pendingRuleIndex, _pendingBitmask, tileId);
-        }
-
-        // Reset pending state
-        _pendingGroupId = null;
-        _pendingRuleIndex = -1;
-        _pendingBitmask = -1;
+        _isDirty = true;
+        _saveButton!.Disabled = false;
+        UpdateTitle();
     }
 
     private void OnTileSelected(string tileId)
@@ -254,10 +184,7 @@ public partial class TileEditorDock : Control
     {
         if (_isDirty)
         {
-            var dialog = new ConfirmationDialog
-            {
-                DialogText = "You have unsaved changes. Reload anyway?"
-            };
+            var dialog = new ConfirmationDialog { DialogText = "You have unsaved changes. Reload anyway?" };
             dialog.Confirmed += () =>
             {
                 _service!.LoadTiles();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.BlobGeneration;
 using Godot;
@@ -20,13 +21,14 @@ public class SimpleMapGenerator
     public const string DirtTileId = "dirt";
     public const string StoneTileId = "stone";
     public const string WaterTileId = "water";
+    private readonly AutoTileResolver? _autoTileResolver;
     private readonly IBiomeProvider _biomeProvider;
-    private readonly ITileRegistry _tileRegistry;
-    private readonly RandomNumberGenerator _rng;
     private readonly TerrainBlobGenerator? _blobGenerator;
+    private readonly RandomNumberGenerator _rng;
+    private readonly ITileRegistry _tileRegistry;
 
     public SimpleMapGenerator(RandomNumberGenerator rng, IBiomeProvider biomeProvider, ITileRegistry tileRegistry,
-        TerrainBlobGenerator? blobGenerator = null)
+        TerrainBlobGenerator? blobGenerator = null, AutoTileResolver? autoTileResolver = null)
     {
         ArgumentNullException.ThrowIfNull(rng);
         ArgumentNullException.ThrowIfNull(biomeProvider);
@@ -35,6 +37,7 @@ public class SimpleMapGenerator
         _biomeProvider = biomeProvider;
         _tileRegistry = tileRegistry;
         _blobGenerator = blobGenerator;
+        _autoTileResolver = autoTileResolver;
     }
 
     public SimpleMapData GenerateMap(Vector2I size)
@@ -64,7 +67,8 @@ public class SimpleMapGenerator
             if (isBlocked)
             {
                 // Try to place a blocked tile, retrying if multi-tile doesn't fit
-                var placed = TryPlaceBlockedTile(tileIds, position, size, biome, occupiedCells, multiTileSecondaryCells);
+                var placed = TryPlaceBlockedTile(tileIds, position, size, biome, occupiedCells,
+                    multiTileSecondaryCells);
                 if (!placed)
                 {
                     // Fallback: place as passable terrain if no blocked tile fits
@@ -112,6 +116,14 @@ public class SimpleMapGenerator
 
         // Ensure all passable tiles are connected
         EnsureConnectivity(finalTileIds, size, passableTiles);
+
+        // Apply auto-tiling post-processing (select edge variants based on neighbors)
+        if (_autoTileResolver != null && _autoTileResolver.ConfigCount > 0)
+        {
+            var replacements = _autoTileResolver.ApplyToMap(finalTileIds, size);
+            if (replacements > 0)
+                ILog.Print($"Auto-tiling applied: {replacements} tiles replaced with edge variants");
+        }
 
         // Choose random positions for player and enemies
         var shuffledTiles = passableTiles.OrderBy(_ => _rng.Randf()).ToList();
@@ -173,7 +185,8 @@ public class SimpleMapGenerator
         return false; // No suitable tile found after max attempts
     }
 
-    private static bool CanPlaceMultiTile(Vector2I position, Vector2I tileSize, Vector2I mapSize, HashSet<Vector2I> occupiedCells)
+    private static bool CanPlaceMultiTile(Vector2I position, Vector2I tileSize, Vector2I mapSize,
+        HashSet<Vector2I> occupiedCells)
     {
         // Check if tile fits within map bounds
         if (position.X + tileSize.X > mapSize.X || position.Y + tileSize.Y > mapSize.Y)

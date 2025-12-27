@@ -15,6 +15,7 @@ namespace CardCleaner.Scripts.Core.DependencyInjection;
 public partial class ServiceLocator : Node
 {
     private static ServiceLocator _instance = null!;
+
     // Static pending callbacks for when Get<T>(callback) is called before _instance exists
     private static readonly Dictionary<Type, List<Action<object>>> StaticPendingCallbacks = new();
     private readonly Dictionary<Type, List<Action<object>>> _pendingCallbacks = new();
@@ -38,8 +39,10 @@ public partial class ServiceLocator : Node
                 list = new List<Action<object>>();
                 _pendingCallbacks[kvp.Key] = list;
             }
+
             list.AddRange(kvp.Value);
         }
+
         StaticPendingCallbacks.Clear();
 
         CallDeferred(MethodName.ResolveServices);
@@ -80,7 +83,6 @@ public partial class ServiceLocator : Node
 
         _container.RegisterSingleton<ICompatibilityTagRegistry, CompatibilityTagRegistry>();
         _container.RegisterSingleton<ITileRegistry, TileRegistry>();
-        _container.RegisterSingleton<ITransitionRegistry, TransitionRegistry>();
         _container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
         _container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();
 
@@ -134,6 +136,7 @@ public partial class ServiceLocator : Node
                 staticList = new List<Action<object>>();
                 StaticPendingCallbacks[serviceType] = staticList;
             }
+
             staticList.Add(obj => callback((T)obj));
             return;
         }

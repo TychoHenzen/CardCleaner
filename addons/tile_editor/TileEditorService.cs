@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 
 namespace CardCleaner.Addons.TileEditor;
@@ -17,54 +16,63 @@ namespace CardCleaner.Addons.TileEditor;
 [Tool]
 public partial class TileEditorService : RefCounted
 {
+    [Signal]
+    public delegate void AutoTileConfigModifiedEventHandler(string baseTileId);
+
+    [Signal]
+    public delegate void BlobConfigModifiedEventHandler();
+
+    [Signal]
+    public delegate void TileAddedEventHandler(string tileId);
+
+    [Signal]
+    public delegate void TileModifiedEventHandler(string tileId);
+
+    [Signal]
+    public delegate void TileRemovedEventHandler(string tileId);
+
+    // Signals
+    [Signal]
+    public delegate void TilesLoadedEventHandler();
+
     private const string TilesPath = "res://Data/Tiles/tiles.json";
     private const string DefaultTilesetPath = "res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres";
     private static readonly Regex TileIdPattern = new(@"^[a-z][a-z0-9_]*$", RegexOptions.Compiled);
 
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true
+    };
+
+    private static readonly JsonSerializerOptions WriteOptions = new()
+    {
+        WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
+
+    private readonly Dictionary<string, EditableAutoTileConfig> _autoTileConfigs = new();
+
     private readonly Dictionary<string, EditableTile> _tiles = new();
-    private readonly Dictionary<string, EditableTerrainGroup> _terrainGroups = new();
-    private readonly List<EditableTransitionRule> _transitionRules = new();
     private EditableBlobConfig _blobConfig = new();
-    private string _version = "1.0";
     private TileSet? _tileSet;
+    private string _version = "1.0";
 
     public int TileCount => _tiles.Count;
     public IEnumerable<EditableTile> AllTiles => _tiles.Values;
     public string TilesetPath { get; private set; } = DefaultTilesetPath;
     public TileSet? TileSet => _tileSet;
 
-    // Terrain group accessors
-    public int TerrainGroupCount => _terrainGroups.Count;
-    public IEnumerable<EditableTerrainGroup> AllTerrainGroups => _terrainGroups.Values;
-    public EditableTerrainGroup? GetTerrainGroup(string id) => _terrainGroups.GetValueOrDefault(id);
-
-    // Transition rule accessors
-    public int TransitionRuleCount => _transitionRules.Count;
-    public IReadOnlyList<EditableTransitionRule> AllTransitionRules => _transitionRules;
-
     // Blob config accessor
     public EditableBlobConfig BlobConfig => _blobConfig;
 
-    // Signals
-    [Signal] public delegate void TilesLoadedEventHandler();
-    [Signal] public delegate void TileModifiedEventHandler(string tileId);
-    [Signal] public delegate void TileAddedEventHandler(string tileId);
-    [Signal] public delegate void TileRemovedEventHandler(string tileId);
-
-    // Terrain signals
-    [Signal] public delegate void TerrainGroupModifiedEventHandler(string groupId);
-    [Signal] public delegate void TerrainGroupAddedEventHandler(string groupId);
-    [Signal] public delegate void TerrainGroupRemovedEventHandler(string groupId);
-    [Signal] public delegate void TransitionRuleModifiedEventHandler(int ruleIndex);
-    [Signal] public delegate void TransitionRuleAddedEventHandler(int ruleIndex);
-    [Signal] public delegate void TransitionRuleRemovedEventHandler(int ruleIndex);
-    [Signal] public delegate void BlobConfigModifiedEventHandler();
+    // Auto-tile config accessors
+    public IEnumerable<EditableAutoTileConfig> AllAutoTileConfigs => _autoTileConfigs.Values;
 
     public void LoadTiles()
     {
         _tiles.Clear();
-        _terrainGroups.Clear();
-        _transitionRules.Clear();
+        _autoTileConfigs.Clear();
         _blobConfig = new EditableBlobConfig();
 
         var absolutePath = ProjectSettings.GlobalizePath(TilesPath);
@@ -125,51 +133,6 @@ public partial class TileEditorService : RefCounted
                 _tiles[tile.Id] = tile;
             }
 
-            // Load terrain groups
-            if (data.TerrainGroups != null)
-            {
-                foreach (var (groupId, groupData) in data.TerrainGroups)
-                {
-                    var group = new EditableTerrainGroup
-                    {
-                        Id = groupId,
-                        Name = groupData.Name ?? groupId,
-                        Priority = groupData.Priority,
-                        Members = groupData.Members?.ToList() ?? new List<string>()
-                    };
-                    _terrainGroups[groupId] = group;
-                }
-            }
-
-            // Load transition rules
-            if (data.TransitionRules != null)
-            {
-                foreach (var ruleData in data.TransitionRules)
-                {
-                    if (string.IsNullOrEmpty(ruleData.FromGroup) || string.IsNullOrEmpty(ruleData.ToGroup))
-                        continue;
-
-                    var rule = new EditableTransitionRule
-                    {
-                        FromGroupId = ruleData.FromGroup,
-                        ToGroupId = ruleData.ToGroup,
-                        EdgeTiles = new Dictionary<int, string?>()
-                    };
-
-                    // Parse edge tiles (keys are string bitmask values "0"-"15")
-                    if (ruleData.EdgeTiles != null)
-                    {
-                        foreach (var (key, tileId) in ruleData.EdgeTiles)
-                        {
-                            if (int.TryParse(key, out var bitmask) && bitmask >= 0 && bitmask <= 15)
-                                rule.EdgeTiles[bitmask] = tileId;
-                        }
-                    }
-
-                    _transitionRules.Add(rule);
-                }
-            }
-
             // Load blob generation config
             if (data.BlobGeneration != null)
             {
@@ -183,7 +146,25 @@ public partial class TileEditorService : RefCounted
                 };
             }
 
-            GD.Print($"[TileEditorService] Loaded {_tiles.Count} tiles, {_terrainGroups.Count} terrain groups, {_transitionRules.Count} transition rules");
+            // Load auto-tile configs
+            if (data.AutoTileConfigs != null)
+                foreach (var configData in data.AutoTileConfigs)
+                {
+                    if (string.IsNullOrEmpty(configData.BaseTileId)) continue;
+
+                    var config = new EditableAutoTileConfig
+                    {
+                        BaseTileId = configData.BaseTileId, DisplayName = configData.DisplayName ?? ""
+                    };
+
+                    if (configData.Variants != null)
+                        for (var i = 0; i < Math.Min(16, configData.Variants.Length); i++)
+                            config.Variants[i] = configData.Variants[i];
+
+                    _autoTileConfigs[config.BaseTileId] = config;
+                }
+
+            GD.Print($"[TileEditorService] Loaded {_tiles.Count} tiles, {_autoTileConfigs.Count} auto-tile configs");
             EmitSignal(SignalName.TilesLoaded);
         }
         catch (Exception ex)
@@ -243,9 +224,7 @@ public partial class TileEditorService : RefCounted
 
             sources.Add(new AtlasSourceInfo
             {
-                SourceId = sourceId,
-                DisplayName = $"Source {sourceId}: {textureName}",
-                Source = source
+                SourceId = sourceId, DisplayName = $"Source {sourceId}: {textureName}", Source = source
             });
         }
 
@@ -304,112 +283,34 @@ public partial class TileEditorService : RefCounted
             t.Biomes.Count == 0 || t.Biomes.Contains(biome, StringComparer.OrdinalIgnoreCase));
     }
 
-    // ===== Terrain Group Methods =====
-
-    public void UpdateTerrainGroup(EditableTerrainGroup group)
-    {
-        if (!_terrainGroups.ContainsKey(group.Id))
-        {
-            GD.PrintErr($"[TileEditorService] Terrain group not found: {group.Id}");
-            return;
-        }
-
-        _terrainGroups[group.Id] = group;
-        EmitSignal(SignalName.TerrainGroupModified, group.Id);
-    }
-
-    public bool AddTerrainGroup(EditableTerrainGroup group)
-    {
-        if (_terrainGroups.ContainsKey(group.Id))
-        {
-            GD.PrintErr($"[TileEditorService] Terrain group already exists: {group.Id}");
-            return false;
-        }
-
-        _terrainGroups[group.Id] = group;
-        EmitSignal(SignalName.TerrainGroupAdded, group.Id);
-        return true;
-    }
-
-    public bool RemoveTerrainGroup(string id)
-    {
-        if (!_terrainGroups.Remove(id))
-            return false;
-
-        EmitSignal(SignalName.TerrainGroupRemoved, id);
-        return true;
-    }
-
-    public bool AddTileToGroup(string groupId, string tileId)
-    {
-        if (!_terrainGroups.TryGetValue(groupId, out var group))
-            return false;
-
-        if (group.Members.Contains(tileId))
-            return false;
-
-        group.Members.Add(tileId);
-        EmitSignal(SignalName.TerrainGroupModified, groupId);
-        return true;
-    }
-
-    public bool RemoveTileFromGroup(string groupId, string tileId)
-    {
-        if (!_terrainGroups.TryGetValue(groupId, out var group))
-            return false;
-
-        if (!group.Members.Remove(tileId))
-            return false;
-
-        EmitSignal(SignalName.TerrainGroupModified, groupId);
-        return true;
-    }
-
-    // ===== Transition Rule Methods =====
-
-    public EditableTransitionRule? GetTransitionRule(int index)
-    {
-        if (index < 0 || index >= _transitionRules.Count)
-            return null;
-        return _transitionRules[index];
-    }
-
-    public void UpdateTransitionRule(int index, EditableTransitionRule rule)
-    {
-        if (index < 0 || index >= _transitionRules.Count)
-        {
-            GD.PrintErr($"[TileEditorService] Transition rule index out of range: {index}");
-            return;
-        }
-
-        _transitionRules[index] = rule;
-        EmitSignal(SignalName.TransitionRuleModified, index);
-    }
-
-    public int AddTransitionRule(EditableTransitionRule rule)
-    {
-        _transitionRules.Add(rule);
-        var index = _transitionRules.Count - 1;
-        EmitSignal(SignalName.TransitionRuleAdded, index);
-        return index;
-    }
-
-    public bool RemoveTransitionRule(int index)
-    {
-        if (index < 0 || index >= _transitionRules.Count)
-            return false;
-
-        _transitionRules.RemoveAt(index);
-        EmitSignal(SignalName.TransitionRuleRemoved, index);
-        return true;
-    }
-
     // ===== Blob Config Methods =====
 
     public void UpdateBlobConfig(EditableBlobConfig config)
     {
         _blobConfig = config;
         EmitSignal(SignalName.BlobConfigModified);
+    }
+
+    // ===== Auto-Tile Config Methods =====
+
+    public EditableAutoTileConfig? GetAutoTileConfig(string baseTileId) =>
+        _autoTileConfigs.GetValueOrDefault(baseTileId);
+
+    public void AddAutoTileConfig(EditableAutoTileConfig config)
+    {
+        _autoTileConfigs[config.BaseTileId] = config;
+        EmitSignal(SignalName.AutoTileConfigModified, config.BaseTileId);
+    }
+
+    public void UpdateAutoTileConfig(EditableAutoTileConfig config)
+    {
+        _autoTileConfigs[config.BaseTileId] = config;
+        EmitSignal(SignalName.AutoTileConfigModified, config.BaseTileId);
+    }
+
+    public void RemoveAutoTileConfig(string baseTileId)
+    {
+        if (_autoTileConfigs.Remove(baseTileId)) EmitSignal(SignalName.AutoTileConfigModified, baseTileId);
     }
 
     public (bool success, string message) ValidateTile(EditableTile tile)
@@ -451,14 +352,6 @@ public partial class TileEditorService : RefCounted
                 return (false, $"Tile '{tile.Id}': {msg}");
         }
 
-        // Validate terrain groups
-        foreach (var group in _terrainGroups.Values)
-        {
-            var (valid, msg) = ValidateTerrainGroup(group);
-            if (!valid)
-                return (false, $"Terrain group '{group.Id}': {msg}");
-        }
-
         try
         {
             var data = new TileRegistryData
@@ -480,27 +373,6 @@ public partial class TileEditorService : RefCounted
                     Size = (t.SizeX != 1 || t.SizeY != 1) ? new Vector2IData { X = t.SizeX, Y = t.SizeY } : null
                 }).ToList(),
 
-                // Terrain groups
-                TerrainGroups = _terrainGroups.ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => new TerrainGroupData
-                    {
-                        Name = kvp.Value.Name,
-                        Priority = kvp.Value.Priority,
-                        Members = kvp.Value.Members.Count > 0 ? kvp.Value.Members : null
-                    }
-                ),
-
-                // Transition rules
-                TransitionRules = _transitionRules.Select(r => new TransitionRuleData
-                {
-                    FromGroup = r.FromGroupId,
-                    ToGroup = r.ToGroupId,
-                    EdgeTiles = r.EdgeTiles.Count > 0
-                        ? r.EdgeTiles.ToDictionary(kvp => kvp.Key.ToString(), kvp => kvp.Value)
-                        : null
-                }).ToList(),
-
                 // Blob generation config
                 BlobGeneration = new BlobGenerationData
                 {
@@ -509,14 +381,24 @@ public partial class TileEditorService : RefCounted
                     ClusterStrength = _blobConfig.ClusterStrength,
                     MinBlobSize = _blobConfig.MinBlobSize,
                     MaxBlobSize = _blobConfig.MaxBlobSize
-                }
+                },
+
+                // Auto-tile configs
+                AutoTileConfigs = _autoTileConfigs.Count > 0
+                    ? _autoTileConfigs.Values.Select(c => new AutoTileConfigData
+                    {
+                        BaseTileId = c.BaseTileId,
+                        DisplayName = string.IsNullOrEmpty(c.DisplayName) ? null : c.DisplayName,
+                        Variants = c.Variants.Any(v => !string.IsNullOrEmpty(v)) ? c.Variants : null
+                    }).ToList()
+                    : null
             };
 
             var json = JsonSerializer.Serialize(data, WriteOptions);
             var absolutePath = ProjectSettings.GlobalizePath(TilesPath);
             File.WriteAllText(absolutePath, json);
 
-            GD.Print($"[TileEditorService] Saved {_tiles.Count} tiles, {_terrainGroups.Count} terrain groups, {_transitionRules.Count} transition rules to {TilesPath}");
+            GD.Print($"[TileEditorService] Saved {_tiles.Count} tiles to {TilesPath}");
             return (true, "Saved successfully");
         }
         catch (Exception ex)
@@ -526,143 +408,72 @@ public partial class TileEditorService : RefCounted
         }
     }
 
-    public (bool success, string message) ValidateTerrainGroup(EditableTerrainGroup group)
-    {
-        if (string.IsNullOrWhiteSpace(group.Id))
-            return (false, "ID is required");
-
-        if (!TileIdPattern.IsMatch(group.Id))
-            return (false, "ID must be snake_case starting with a letter");
-
-        if (string.IsNullOrWhiteSpace(group.Name))
-            return (false, "Name is required");
-
-        if (group.Priority < 0 || group.Priority > 1000)
-            return (false, "Priority must be between 0 and 1000");
-
-        return (true, "Valid");
-    }
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        ReadCommentHandling = JsonCommentHandling.Skip,
-        AllowTrailingCommas = true
-    };
-
-    private static readonly JsonSerializerOptions WriteOptions = new()
-    {
-        WriteIndented = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-    };
-
     // JSON data model classes
     private sealed class TileRegistryData
     {
-        [JsonPropertyName("$schema")]
-        public string? Schema { get; set; }
+        [JsonPropertyName("$schema")] public string? Schema { get; set; }
 
-        [JsonPropertyName("version")]
-        public string? Version { get; set; }
+        [JsonPropertyName("version")] public string? Version { get; set; }
 
-        [JsonPropertyName("tileset")]
-        public string? Tileset { get; set; }
+        [JsonPropertyName("tileset")] public string? Tileset { get; set; }
 
-        [JsonPropertyName("tiles")]
-        public List<TileData>? Tiles { get; set; }
+        [JsonPropertyName("tiles")] public List<TileData>? Tiles { get; set; }
 
-        [JsonPropertyName("terrainGroups")]
-        public Dictionary<string, TerrainGroupData>? TerrainGroups { get; set; }
+        [JsonPropertyName("blobGeneration")] public BlobGenerationData? BlobGeneration { get; set; }
 
-        [JsonPropertyName("transitionRules")]
-        public List<TransitionRuleData>? TransitionRules { get; set; }
-
-        [JsonPropertyName("blobGeneration")]
-        public BlobGenerationData? BlobGeneration { get; set; }
+        [JsonPropertyName("autoTileConfigs")] public List<AutoTileConfigData>? AutoTileConfigs { get; set; }
     }
 
-    private sealed class TerrainGroupData
+    private sealed class AutoTileConfigData
     {
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
+        [JsonPropertyName("baseTileId")] public string? BaseTileId { get; set; }
 
-        [JsonPropertyName("priority")]
-        public int Priority { get; set; }
+        [JsonPropertyName("displayName")] public string? DisplayName { get; set; }
 
-        [JsonPropertyName("members")]
-        public List<string>? Members { get; set; }
-    }
-
-    private sealed class TransitionRuleData
-    {
-        [JsonPropertyName("fromGroup")]
-        public string? FromGroup { get; set; }
-
-        [JsonPropertyName("toGroup")]
-        public string? ToGroup { get; set; }
-
-        [JsonPropertyName("edgeTiles")]
-        public Dictionary<string, string?>? EdgeTiles { get; set; }
+        [JsonPropertyName("variants")] public string?[]? Variants { get; set; }
     }
 
     private sealed class BlobGenerationData
     {
-        [JsonPropertyName("enabled")]
-        public bool Enabled { get; set; } = true;
+        [JsonPropertyName("enabled")] public bool Enabled { get; set; } = true;
 
-        [JsonPropertyName("noiseScale")]
-        public float NoiseScale { get; set; } = 0.15f;
+        [JsonPropertyName("noiseScale")] public float NoiseScale { get; set; } = 0.15f;
 
-        [JsonPropertyName("clusterStrength")]
-        public float ClusterStrength { get; set; } = 0.7f;
+        [JsonPropertyName("clusterStrength")] public float ClusterStrength { get; set; } = 0.7f;
 
-        [JsonPropertyName("minBlobSize")]
-        public int MinBlobSize { get; set; } = 3;
+        [JsonPropertyName("minBlobSize")] public int MinBlobSize { get; set; } = 3;
 
-        [JsonPropertyName("maxBlobSize")]
-        public int MaxBlobSize { get; set; } = 12;
+        [JsonPropertyName("maxBlobSize")] public int MaxBlobSize { get; set; } = 12;
     }
 
     private sealed class TileData
     {
-        [JsonPropertyName("id")]
-        public string? Id { get; set; }
+        [JsonPropertyName("id")] public string? Id { get; set; }
 
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
+        [JsonPropertyName("name")] public string? Name { get; set; }
 
-        [JsonPropertyName("passability")]
-        public string? Passability { get; set; }
+        [JsonPropertyName("passability")] public string? Passability { get; set; }
 
-        [JsonPropertyName("atlasCoords")]
-        public Vector2IData? AtlasCoords { get; set; }
+        [JsonPropertyName("atlasCoords")] public Vector2IData? AtlasCoords { get; set; }
 
-        [JsonPropertyName("sourceId")]
-        public int? SourceId { get; set; }
+        [JsonPropertyName("sourceId")] public int? SourceId { get; set; }
 
-        [JsonPropertyName("layer")]
-        public string? Layer { get; set; }
+        [JsonPropertyName("layer")] public string? Layer { get; set; }
 
-        [JsonPropertyName("elevation")]
-        public float? Elevation { get; set; }
+        [JsonPropertyName("elevation")] public float? Elevation { get; set; }
 
-        [JsonPropertyName("isTransparent")]
-        public bool? IsTransparent { get; set; }
+        [JsonPropertyName("isTransparent")] public bool? IsTransparent { get; set; }
 
-        [JsonPropertyName("biomes")]
-        public List<string>? Biomes { get; set; }
+        [JsonPropertyName("biomes")] public List<string>? Biomes { get; set; }
 
-        [JsonPropertyName("size")]
-        public Vector2IData? Size { get; set; }
+        [JsonPropertyName("size")] public Vector2IData? Size { get; set; }
     }
 
     private sealed class Vector2IData
     {
-        [JsonPropertyName("x")]
-        public int X { get; set; }
+        [JsonPropertyName("x")] public int X { get; set; }
 
-        [JsonPropertyName("y")]
-        public int Y { get; set; }
+        [JsonPropertyName("y")] public int Y { get; set; }
     }
 }
 
@@ -712,65 +523,6 @@ public class AtlasSourceInfo
 }
 
 /// <summary>
-/// Mutable terrain group data for editing
-/// </summary>
-public class EditableTerrainGroup
-{
-    public string Id { get; set; } = "";
-    public string Name { get; set; } = "";
-    public int Priority { get; set; } = 50;
-    public List<string> Members { get; set; } = new();
-
-    public EditableTerrainGroup Clone() => new()
-    {
-        Id = Id,
-        Name = Name,
-        Priority = Priority,
-        Members = new List<string>(Members)
-    };
-}
-
-/// <summary>
-/// Mutable transition rule data for editing.
-/// Maps 4-bit bitmask (0-15) to edge tile IDs.
-/// Bitmask bits: N=1, E=2, S=4, W=8
-/// </summary>
-public class EditableTransitionRule
-{
-    public string FromGroupId { get; set; } = "";
-    public string ToGroupId { get; set; } = "";
-
-    /// <summary>
-    /// Edge tiles keyed by 4-bit bitmask (0-15).
-    /// Key is the bitmask value, value is the tile ID to render.
-    /// </summary>
-    public Dictionary<int, string?> EdgeTiles { get; set; } = new();
-
-    /// <summary>
-    /// Get the tile ID for a specific bitmask value
-    /// </summary>
-    public string? GetEdgeTile(int bitmask) => EdgeTiles.GetValueOrDefault(bitmask);
-
-    /// <summary>
-    /// Set the tile ID for a specific bitmask value
-    /// </summary>
-    public void SetEdgeTile(int bitmask, string? tileId)
-    {
-        if (string.IsNullOrEmpty(tileId))
-            EdgeTiles.Remove(bitmask);
-        else
-            EdgeTiles[bitmask] = tileId;
-    }
-
-    public EditableTransitionRule Clone() => new()
-    {
-        FromGroupId = FromGroupId,
-        ToGroupId = ToGroupId,
-        EdgeTiles = new Dictionary<int, string?>(EdgeTiles)
-    };
-}
-
-/// <summary>
 /// Mutable blob generation configuration for editing
 /// </summary>
 public class EditableBlobConfig
@@ -789,5 +541,26 @@ public class EditableBlobConfig
         MinBlobSize = MinBlobSize,
         MaxBlobSize = MaxBlobSize
     };
+}
+
+/// <summary>
+///     Mutable auto-tile configuration for editing.
+///     Maps a base tile to 16 edge variants based on 4-bit NESW neighbor bitmask.
+/// </summary>
+public class EditableAutoTileConfig
+{
+    public string BaseTileId { get; set; } = "";
+    public string DisplayName { get; set; } = "";
+    public string?[] Variants { get; set; } = new string?[16];
+
+    public EditableAutoTileConfig Clone()
+    {
+        var clone = new EditableAutoTileConfig
+        {
+            BaseTileId = BaseTileId, DisplayName = DisplayName, Variants = new string?[16]
+        };
+        Array.Copy(Variants, clone.Variants, 16);
+        return clone;
+    }
 }
 #endif

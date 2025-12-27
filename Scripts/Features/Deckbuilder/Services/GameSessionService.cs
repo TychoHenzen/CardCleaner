@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.BlobGeneration;
 using Godot;
@@ -17,9 +19,9 @@ public partial class GameSessionService : Node, IGameSessionService
     private const float ExplorationStepDelay = 0.1f; // 500ms between exploration steps
     private const float CombatTurnDelay = 1.0f; // 1s between combat turns
     private List<CardSignature> _abilityCards = new();
+    private AutoTileResolver _autoTileResolver = new();
     private BiomeRegistry _biomeRegistry = null!;
-    private ITileRegistry _tileRegistry = null!;
-    private ITransitionRegistry? _transitionRegistry;
+    private BlobGenerationConfig _blobConfig = new();
     private SimpleCombatSystem? _combatSystem;
     private Vector2I? _currentEnemyPosition;
 
@@ -33,6 +35,7 @@ public partial class GameSessionService : Node, IGameSessionService
     // Player and enemy tracking
     private Vector2I? _playerPosition;
     private RandomNumberGenerator _rng = new();
+    private ITileRegistry _tileRegistry = null!;
 
     public SessionState CurrentState
     {
@@ -127,9 +130,12 @@ public partial class GameSessionService : Node, IGameSessionService
         _biomeRegistry = new BiomeRegistry();
         _biomeRegistry.RegisterDefaultBiomes();
 
+        // Load blob config and auto-tile resolver from tiles.json
+        _blobConfig = TileDataLoader.LoadBlobConfig();
+        _autoTileResolver = TileDataLoader.LoadAutoTileResolver();
+
         // Get services via async callback (may not be registered yet during startup)
         ServiceLocator.Get<ITileRegistry>(registry => _tileRegistry = registry);
-        ServiceLocator.Get<ITransitionRegistry>(registry => _transitionRegistry = registry);
 
         // Create timer for game progression
         _gameTimer = new Timer();
@@ -144,7 +150,7 @@ public partial class GameSessionService : Node, IGameSessionService
         ILog.Print($"Generating biome-based map from {_mapSeeds.Count} seed signature(s)");
 
         // Ensure tile registry is available (fallback if async callback hasn't run yet)
-        _tileRegistry ??= new Core.Services.TileRegistry();
+        _tileRegistry ??= new TileRegistry();
 
         // Use first signature to influence map size (could blend in future)
         var mapSize = CalculateMapSize(_mapSeeds[0]);
@@ -155,18 +161,15 @@ public partial class GameSessionService : Node, IGameSessionService
         // Create biome provider that maps gradient signatures to biomes
         var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, mapSize);
 
-        // Create blob generator for coherent terrain regions (if transition registry available)
+        // Create blob generator for coherent terrain regions
         TerrainBlobGenerator? blobGenerator = null;
-        if (_transitionRegistry?.BlobConfig.Enabled == true)
+        if (_blobConfig.Enabled)
         {
-            blobGenerator = new TerrainBlobGenerator(
-                _transitionRegistry.BlobConfig,
-                _transitionRegistry.GroupRegistry,
-                (int)_rng.Seed);
+            blobGenerator = new TerrainBlobGenerator(_blobConfig, (int)_rng.Seed);
         }
 
-        // Create map generator with biome provider and optional blob generator
-        var mapGenerator = new SimpleMapGenerator(_rng, biomeProvider, _tileRegistry, blobGenerator);
+        // Create map generator with biome provider, blob generator, and auto-tile resolver
+        var mapGenerator = new SimpleMapGenerator(_rng, biomeProvider, _tileRegistry, blobGenerator, _autoTileResolver);
         _currentMap = mapGenerator.GenerateMap(mapSize);
 
         // Log biome distribution for debugging

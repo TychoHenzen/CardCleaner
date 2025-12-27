@@ -64,7 +64,6 @@ public partial class SimpleWorldMapScreen : Node3D
     private bool _serviceReady;
 
     private ITileRegistry? _tileRegistry;
-    private ITransitionRegistry? _transitionRegistry;
 
     // Export properties for editor assignment - multiple layers for proper rendering order
     [Export] public TileMapLayer? TerrainLayer { get; set; }
@@ -111,7 +110,6 @@ public partial class SimpleWorldMapScreen : Node3D
 
         // Get tile registry for rendering
         ServiceLocator.Get<ITileRegistry>(registry => _tileRegistry = registry);
-        ServiceLocator.Get<ITransitionRegistry>(registry => _transitionRegistry = registry);
 
         // Use dependency injection to get the game session service
         ServiceLocator.Get<IGameSessionService>(gameSession =>
@@ -535,9 +533,6 @@ public partial class SimpleWorldMapScreen : Node3D
             RenderTileWithLayering(position, tileId, mapData);
         }
 
-        // Render transition overlays between different terrain types
-        RenderTransitionOverlays(mapData);
-
         // Render biome overlay if enabled
         if (ShowBiomeOverlay) RenderBiomeOverlay(mapData);
 
@@ -548,38 +543,6 @@ public partial class SimpleWorldMapScreen : Node3D
         CallDeferred(nameof(ConfigureCamera));
 
         ILog.Print($"Rendered map: {mapData.Size.X}x{mapData.Size.Y} with {mapData.EnemyPositions.Count} enemies");
-    }
-
-    /// <summary>
-    /// Render transition overlays between different terrain types
-    /// </summary>
-    private void RenderTransitionOverlays(SimpleMapData mapData)
-    {
-        if (_transitionRegistry == null || DecorationLayer == null)
-            return;
-
-        var transitionsRendered = 0;
-
-        for (var y = 0; y < mapData.Size.Y; y++)
-        for (var x = 0; x < mapData.Size.X; x++)
-        {
-            var position = new Vector2I(x, y);
-            var transitionTileId = _transitionRegistry.GetTransitionTileId(
-                position,
-                mapData.TileIds,
-                mapData.Size);
-
-            if (transitionTileId == null)
-                continue;
-
-            // Get rendering info for the transition tile
-            var (sourceId, atlasCoords) = GetTileRenderInfo(transitionTileId);
-            DecorationLayer.SetCell(position, sourceId, atlasCoords);
-            transitionsRendered++;
-        }
-
-        if (transitionsRendered > 0)
-            ILog.Print($"[Transitions] Rendered {transitionsRendered} transition tiles");
     }
 
     private void RenderBiomeOverlay(SimpleMapData mapData)

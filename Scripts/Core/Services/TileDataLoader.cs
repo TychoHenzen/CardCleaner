@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Scripts.Features.Worldgen.Transitions;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
 namespace CardCleaner.Scripts.Core.Services;
@@ -27,20 +27,19 @@ public record BlobGenerationConfig(
     int MaxBlobSize = 12);
 
 /// <summary>
-/// Result of loading transition data from tiles.json
-/// </summary>
-public record TransitionDataResult(
-    List<TerrainGroup> Groups,
-    List<TransitionRule> Rules,
-    BlobGenerationConfig BlobConfig);
-
-/// <summary>
 /// Loads tile definitions from JSON data files
 /// </summary>
 public static class TileDataLoader
 {
     private const string DefaultTilesPath = "res://Data/Tiles/tiles.json";
     private const string DefaultTilesetPath = "res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres";
+
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true
+    };
 
     /// <summary>
     /// Load tiles and tileset path from JSON
@@ -94,18 +93,17 @@ public static class TileDataLoader
     }
 
     /// <summary>
-    /// Load terrain groups, transition rules, and blob generation config from JSON
+    /// Load blob generation config from JSON
     /// </summary>
-    public static TransitionDataResult LoadTransitionData(string? path = null)
+    public static BlobGenerationConfig LoadBlobConfig(string? path = null)
     {
         path ??= DefaultTilesPath;
-        var defaultResult = new TransitionDataResult([], [], new BlobGenerationConfig());
 
         var absolutePath = ProjectSettings.GlobalizePath(path);
         if (!File.Exists(absolutePath))
         {
-            ILog.Print($"[TileDataLoader] File not found for transitions: {absolutePath}");
-            return defaultResult;
+            ILog.Print($"[TileDataLoader] File not found for blob config: {absolutePath}");
+            return new BlobGenerationConfig();
         }
 
         try
@@ -114,72 +112,17 @@ public static class TileDataLoader
             var data = JsonSerializer.Deserialize<TileRegistryData>(json, JsonOptions);
             if (data == null)
             {
-                ILog.Print("[TileDataLoader] Invalid JSON structure for transitions");
-                return defaultResult;
+                ILog.Print("[TileDataLoader] Invalid JSON structure for blob config");
+                return new BlobGenerationConfig();
             }
 
-            var groups = ParseTerrainGroups(data.TerrainGroups);
-            var rules = ParseTransitionRules(data.TransitionRules);
-            var blobConfig = ParseBlobGenerationConfig(data.BlobGeneration);
-
-            ILog.Print($"[TileDataLoader] Loaded {groups.Count} terrain groups, {rules.Count} transition rules");
-            return new TransitionDataResult(groups, rules, blobConfig);
+            return ParseBlobGenerationConfig(data.BlobGeneration);
         }
         catch (Exception ex)
         {
-            ILog.Print($"[TileDataLoader] Error loading transition data: {ex.Message}");
-            return defaultResult;
+            ILog.Print($"[TileDataLoader] Error loading blob config: {ex.Message}");
+            return new BlobGenerationConfig();
         }
-    }
-
-    private static List<TerrainGroup> ParseTerrainGroups(Dictionary<string, TerrainGroupData>? groupsData)
-    {
-        var groups = new List<TerrainGroup>();
-        if (groupsData == null)
-            return groups;
-
-        foreach (var (id, data) in groupsData)
-        {
-            if (data.Members == null || data.Members.Count == 0)
-                continue;
-
-            var group = new TerrainGroup(
-                id: id,
-                name: data.Name ?? id,
-                priority: data.Priority,
-                members: data.Members);
-            groups.Add(group);
-        }
-
-        return groups;
-    }
-
-    private static List<TransitionRule> ParseTransitionRules(List<TransitionRuleData>? rulesData)
-    {
-        var rules = new List<TransitionRule>();
-        if (rulesData == null)
-            return rules;
-
-        foreach (var data in rulesData)
-        {
-            if (string.IsNullOrEmpty(data.FromGroup) || string.IsNullOrEmpty(data.ToGroup))
-                continue;
-
-            var edgeTiles = new Dictionary<int, string?>();
-            if (data.EdgeTiles != null)
-            {
-                foreach (var (maskStr, tileId) in data.EdgeTiles)
-                {
-                    if (int.TryParse(maskStr, out var mask) && mask is >= 0 and <= 15)
-                        edgeTiles[mask] = tileId;
-                }
-            }
-
-            var rule = new TransitionRule(data.FromGroup, data.ToGroup, edgeTiles);
-            rules.Add(rule);
-        }
-
-        return rules;
     }
 
     private static BlobGenerationConfig ParseBlobGenerationConfig(BlobGenerationData? data)
@@ -193,6 +136,58 @@ public static class TileDataLoader
             ClusterStrength: data.ClusterStrength,
             MinBlobSize: data.MinBlobSize,
             MaxBlobSize: data.MaxBlobSize);
+    }
+
+    /// <summary>
+    ///     Load auto-tile configurations from JSON and create an AutoTileResolver
+    /// </summary>
+    public static AutoTileResolver LoadAutoTileResolver(string? path = null)
+    {
+        path ??= DefaultTilesPath;
+        var resolver = new AutoTileResolver();
+
+        var absolutePath = ProjectSettings.GlobalizePath(path);
+        if (!File.Exists(absolutePath))
+        {
+            ILog.Print($"[TileDataLoader] File not found for auto-tile configs: {absolutePath}");
+            return resolver;
+        }
+
+        try
+        {
+            var json = File.ReadAllText(absolutePath);
+            var data = JsonSerializer.Deserialize<TileRegistryData>(json, JsonOptions);
+            if (data?.AutoTileConfigs == null || data.AutoTileConfigs.Count == 0)
+            {
+                ILog.Print("[TileDataLoader] No auto-tile configs found");
+                return resolver;
+            }
+
+            foreach (var configData in data.AutoTileConfigs)
+            {
+                if (string.IsNullOrEmpty(configData.BaseTileId))
+                    continue;
+
+                var config = new AutoTileConfig
+                {
+                    BaseTileId = configData.BaseTileId, DisplayName = configData.DisplayName ?? ""
+                };
+
+                if (configData.Variants != null)
+                    for (var i = 0; i < Math.Min(16, configData.Variants.Length); i++)
+                        config.Variants[i] = configData.Variants[i];
+
+                resolver.Register(config);
+            }
+
+            ILog.Print($"[TileDataLoader] Loaded {resolver.ConfigCount} auto-tile configs");
+            return resolver;
+        }
+        catch (Exception ex)
+        {
+            ILog.Print($"[TileDataLoader] Error loading auto-tile configs: {ex.Message}");
+            return resolver;
+        }
     }
 
     private static TileDefinition? ConvertToTileDefinition(TileData data)
@@ -268,116 +263,69 @@ public static class TileDataLoader
         return result.Count > 0 ? result : null;
     }
 
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        ReadCommentHandling = JsonCommentHandling.Skip,
-        AllowTrailingCommas = true
-    };
-
     // JSON data model classes
     private sealed class TileRegistryData
     {
-        [JsonPropertyName("version")]
-        public string? Version { get; set; }
+        [JsonPropertyName("version")] public string? Version { get; set; }
 
-        [JsonPropertyName("tileset")]
-        public string? Tileset { get; set; }
+        [JsonPropertyName("tileset")] public string? Tileset { get; set; }
 
-        [JsonPropertyName("tiles")]
-        public List<TileData>? Tiles { get; set; }
+        [JsonPropertyName("tiles")] public List<TileData>? Tiles { get; set; }
 
-        [JsonPropertyName("terrainGroups")]
-        public Dictionary<string, TerrainGroupData>? TerrainGroups { get; set; }
+        [JsonPropertyName("blobGeneration")] public BlobGenerationData? BlobGeneration { get; set; }
 
-        [JsonPropertyName("transitionRules")]
-        public List<TransitionRuleData>? TransitionRules { get; set; }
-
-        [JsonPropertyName("blobGeneration")]
-        public BlobGenerationData? BlobGeneration { get; set; }
+        [JsonPropertyName("autoTileConfigs")] public List<AutoTileConfigData>? AutoTileConfigs { get; set; }
     }
 
-    private sealed class TerrainGroupData
+    private sealed class AutoTileConfigData
     {
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
+        [JsonPropertyName("baseTileId")] public string? BaseTileId { get; set; }
 
-        [JsonPropertyName("priority")]
-        public int Priority { get; set; } = 50;
+        [JsonPropertyName("displayName")] public string? DisplayName { get; set; }
 
-        [JsonPropertyName("members")]
-        public List<string>? Members { get; set; }
-    }
-
-    private sealed class TransitionRuleData
-    {
-        [JsonPropertyName("fromGroup")]
-        public string? FromGroup { get; set; }
-
-        [JsonPropertyName("toGroup")]
-        public string? ToGroup { get; set; }
-
-        [JsonPropertyName("edgeTiles")]
-        public Dictionary<string, string?>? EdgeTiles { get; set; }
+        [JsonPropertyName("variants")] public string?[]? Variants { get; set; }
     }
 
     private sealed class BlobGenerationData
     {
-        [JsonPropertyName("enabled")]
-        public bool Enabled { get; set; } = true;
+        [JsonPropertyName("enabled")] public bool Enabled { get; } = true;
 
-        [JsonPropertyName("noiseScale")]
-        public float NoiseScale { get; set; } = 0.15f;
+        [JsonPropertyName("noiseScale")] public float NoiseScale { get; } = 0.15f;
 
-        [JsonPropertyName("clusterStrength")]
-        public float ClusterStrength { get; set; } = 0.7f;
+        [JsonPropertyName("clusterStrength")] public float ClusterStrength { get; } = 0.7f;
 
-        [JsonPropertyName("minBlobSize")]
-        public int MinBlobSize { get; set; } = 3;
+        [JsonPropertyName("minBlobSize")] public int MinBlobSize { get; } = 3;
 
-        [JsonPropertyName("maxBlobSize")]
-        public int MaxBlobSize { get; set; } = 12;
+        [JsonPropertyName("maxBlobSize")] public int MaxBlobSize { get; } = 12;
     }
 
     private sealed class TileData
     {
-        [JsonPropertyName("id")]
-        public string? Id { get; set; }
+        [JsonPropertyName("id")] public string? Id { get; set; }
 
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
+        [JsonPropertyName("name")] public string? Name { get; set; }
 
-        [JsonPropertyName("passability")]
-        public string? Passability { get; set; }
+        [JsonPropertyName("passability")] public string? Passability { get; set; }
 
-        [JsonPropertyName("atlasCoords")]
-        public Vector2IData? AtlasCoords { get; set; }
+        [JsonPropertyName("atlasCoords")] public Vector2IData? AtlasCoords { get; set; }
 
-        [JsonPropertyName("sourceId")]
-        public int? SourceId { get; set; }
+        [JsonPropertyName("sourceId")] public int? SourceId { get; set; }
 
-        [JsonPropertyName("layer")]
-        public string? Layer { get; set; }
+        [JsonPropertyName("layer")] public string? Layer { get; set; }
 
-        [JsonPropertyName("elevation")]
-        public float? Elevation { get; set; }
+        [JsonPropertyName("elevation")] public float? Elevation { get; set; }
 
-        [JsonPropertyName("isTransparent")]
-        public bool? IsTransparent { get; set; }
+        [JsonPropertyName("isTransparent")] public bool? IsTransparent { get; set; }
 
-        [JsonPropertyName("biomes")]
-        public List<string>? Biomes { get; set; }
+        [JsonPropertyName("biomes")] public List<string>? Biomes { get; set; }
 
-        [JsonPropertyName("size")]
-        public Vector2IData? Size { get; set; }
+        [JsonPropertyName("size")] public Vector2IData? Size { get; set; }
     }
 
     private sealed class Vector2IData
     {
-        [JsonPropertyName("x")]
-        public int X { get; set; }
+        [JsonPropertyName("x")] public int X { get; set; }
 
-        [JsonPropertyName("y")]
-        public int Y { get; set; }
+        [JsonPropertyName("y")] public int Y { get; set; }
     }
 }

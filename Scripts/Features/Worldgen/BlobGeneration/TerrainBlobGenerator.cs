@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using CardCleaner.Scripts.Features.Worldgen.Transitions;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.BlobGeneration;
@@ -16,12 +15,10 @@ public class TerrainBlobGenerator
 {
     private readonly BlobGenerationConfig _config;
     private readonly FastNoiseLite _noise;
-    private readonly TerrainGroupRegistry _groupRegistry;
 
-    public TerrainBlobGenerator(BlobGenerationConfig config, TerrainGroupRegistry groupRegistry, int seed)
+    public TerrainBlobGenerator(BlobGenerationConfig config, int seed)
     {
         _config = config;
-        _groupRegistry = groupRegistry;
 
         _noise = new FastNoiseLite();
         _noise.Seed = seed;
@@ -44,8 +41,8 @@ public class TerrainBlobGenerator
         if (!_config.Enabled || pool.IsEmpty)
             return pool.SelectRandom(rng);
 
-        // Group tiles by their terrain group
-        var tilesByGroup = GroupTilesByTerrainGroup(pool);
+        // Group tiles by base ID (e.g., "grass_1", "grass_2" -> "grass")
+        var tilesByGroup = GroupTilesByBaseId(pool);
         if (tilesByGroup.Count == 0)
             return pool.SelectRandom(rng);
 
@@ -62,7 +59,8 @@ public class TerrainBlobGenerator
         var selectedGroup = SelectGroupByValue(tilesByGroup, finalValue);
 
         // Select a random tile from the chosen group
-        if (selectedGroup != null && tilesByGroup.TryGetValue(selectedGroup, out var tilesInGroup) && tilesInGroup.Count > 0)
+        if (selectedGroup != null && tilesByGroup.TryGetValue(selectedGroup, out var tilesInGroup) &&
+            tilesInGroup.Count > 0)
         {
             var index = rng.RandiRange(0, tilesInGroup.Count - 1);
             return tilesInGroup[index];
@@ -73,25 +71,44 @@ public class TerrainBlobGenerator
     }
 
     /// <summary>
-    /// Group tiles by their terrain group for clustering
+    /// Group tiles by their base ID (prefix before underscore or numeric suffix)
+    /// e.g., "grass_1", "grass_2" -> "grass"; "dirt_path" -> "dirt"
     /// </summary>
-    private Dictionary<string, List<string>> GroupTilesByTerrainGroup(TilePool pool)
+    private static Dictionary<string, List<string>> GroupTilesByBaseId(TilePool pool)
     {
         var result = new Dictionary<string, List<string>>();
 
         foreach (var entry in pool.Entries)
         {
             var tileId = entry.TileId;
-            var group = _groupRegistry.GetGroupForTile(tileId);
-            var groupId = group?.Id ?? "_ungrouped";
+            var baseId = GetBaseId(tileId);
 
-            if (!result.ContainsKey(groupId))
-                result[groupId] = [];
+            if (!result.ContainsKey(baseId))
+                result[baseId] = [];
 
-            result[groupId].Add(tileId);
+            result[baseId].Add(tileId);
         }
 
         return result;
+    }
+
+    /// <summary>
+    ///     Extract the base ID from a tile ID (e.g., "grass_1" -> "grass", "stone" -> "stone")
+    /// </summary>
+    private static string GetBaseId(string tileId)
+    {
+        // Find the last underscore followed by digits
+        var lastUnderscore = tileId.LastIndexOf('_');
+        if (lastUnderscore > 0 && lastUnderscore < tileId.Length - 1)
+        {
+            var suffix = tileId[(lastUnderscore + 1)..];
+            if (int.TryParse(suffix, out _))
+                // It's a numeric variant like "grass_1"
+                return tileId[..lastUnderscore];
+        }
+
+        // No numeric suffix, use the full ID
+        return tileId;
     }
 
     /// <summary>
