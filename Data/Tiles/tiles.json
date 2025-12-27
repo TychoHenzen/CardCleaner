@@ -662,7 +662,6 @@
       "elevation": 2,
       "isTransparent": false,
       "biomes": [
-        "forest",
         "tundra"
       ],
       "size": {

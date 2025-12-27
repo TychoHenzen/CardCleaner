@@ -34,7 +34,11 @@ public class ExplorationAI
     public Vector2I? VisibleEnemyPosition { get; private set; }
     public ExplorationMode CurrentMode { get; private set; } = ExplorationMode.FrontierExploration;
 
-    public bool HasFinishedExploration => _frontierBehavior.IsFullyExplored() || HasFoundEnemy;
+    public bool HasFinishedExploration =>
+        HasFoundEnemy ||
+        (_frontierBehavior.IsFullyExplored() &&
+         CurrentMode != ExplorationMode.PathToEnemy &&
+         _pendingEnemyPosition == null);
     public IReadOnlySet<Vector2I> SeenTiles => _frontierBehavior.SeenTiles;
     public IReadOnlySet<Vector2I> CurrentlyVisibleTiles => _frontierBehavior.CurrentlyVisibleTiles;
 
@@ -93,8 +97,6 @@ public class ExplorationAI
     {
         try
         {
-            if (HasFinishedExploration) return false;
-
             // Check if we've physically reached an enemy position
             if (_mapData.EnemyPositions.Contains(CurrentPosition))
             {
@@ -105,8 +107,11 @@ public class ExplorationAI
                 return false;
             }
 
-            // Check for visible enemies and update mode
+            // Check for visible enemies BEFORE checking if exploration is complete
+            // (enemies can be visible even if all tiles are trivially visited)
             CheckForVisibleEnemies();
+
+            if (HasFinishedExploration) return false;
 
             // If we have a path, follow it to completion (commit to destination)
             if (_pathToTarget.Count > 0)

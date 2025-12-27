@@ -12,6 +12,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 public class SimpleMapData
 {
     private ITileRegistry? _tileRegistry;
+    private HashSet<Vector2I>? _passableTilesSet;
     public string[,] TileIds { get; set; } = new string[0, 0];
     public BiomeType[,]? BiomeMap { get; set; }
     public Vector2I Size { get; set; }
@@ -31,8 +32,15 @@ public class SimpleMapData
         if (pos.X < 0 || pos.X >= Size.X || pos.Y < 0 || pos.Y >= Size.Y)
             return false;
 
-        var tileId = TileIds[pos.Y, pos.X];
+        // Use PassableTiles as primary source (set during map generation)
+        if (PassableTiles.Count > 0)
+        {
+            _passableTilesSet ??= new HashSet<Vector2I>(PassableTiles);
+            return _passableTilesSet.Contains(pos);
+        }
 
+        // Fallback to tile registry lookup
+        var tileId = TileIds[pos.Y, pos.X];
         _tileRegistry ??= ServiceLocator.Has<ITileRegistry>() ? ServiceLocator.Get<ITileRegistry>() : null;
 
         if (_tileRegistry == null)
@@ -52,11 +60,24 @@ public class SimpleMapData
 
         var tileId = TileIds[pos.Y, pos.X];
 
+        // Quick check for known opaque tiles (walls)
+        if (tileId == "wall")
+            return false;
+
+        // Use PassableTiles as primary source (set during map generation)
+        // Most passable tiles are also transparent (floor, grass, etc.)
+        if (PassableTiles.Count > 0)
+        {
+            _passableTilesSet ??= new HashSet<Vector2I>(PassableTiles);
+            if (_passableTilesSet.Contains(pos))
+                return true;
+        }
+
         _tileRegistry ??= ServiceLocator.Has<ITileRegistry>() ? ServiceLocator.Get<ITileRegistry>() : null;
 
         if (_tileRegistry == null)
         {
-            // Fallback: passable tiles are transparent
+            // Fallback: specific tile types are transparent
             return tileId is "floor" or "grass" or "dirt" or "water" or "glass";
         }
 

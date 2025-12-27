@@ -460,25 +460,63 @@ public class FrontierExplorationBehaviorTest
     [TestCase]
     public void TestSmallBlobsOnlyTargetedWhenNoSignificantBlobsRemain()
     {
-        // Create a map where only small blobs remain
-        var mapData = CreateSimpleMap(5, 5);
-        var behavior = new FrontierExplorationBehavior(mapData, new SimpleVisibilityChecker(), visionRange: 1);
-        behavior.SignificantBlobThreshold = 10; // High threshold
-
-        // Visit most of the map, leaving only small unvisited pockets
-        for (var y = 0; y < 5; y++)
-        for (var x = 0; x < 5; x++)
+        // Create an L-shaped corridor where the target tile is around the corner
+        // and can't be seen with visionRange=1
+        //   x=0  1  2  3  4  5
+        // y=0  F  F  F  F  F  W
+        // y=1  W  W  W  W  F  W
+        // y=2  W  W  W  W  F  W
+        // y=3  W  W  W  W  F  W
+        // y=4  W  W  W  W  F  W
+        // y=5  W  W  W  W  F  F <- (5,5) is the small blob
+        var mapData = new SimpleMapData
         {
-            if (x < 4 || y < 4) // Leave (4,4) unvisited
-                behavior.UpdateVision(new Vector2I(x, y));
+            TileIds = new string[6, 6],
+            Size = new Vector2I(6, 6),
+            PlayerStart = new Vector2I(0, 0)
+        };
+
+        FillWithWalls(mapData.TileIds);
+
+        // Top row: (0,0) to (4,0)
+        for (var x = 0; x <= 4; x++)
+        {
+            mapData.TileIds[0, x] = Floor;
+            mapData.PassableTiles.Add(new Vector2I(x, 0));
         }
 
-        // Find frontier - should still return something even though blob is small
-        var target = behavior.FindNearestFrontierTile(new Vector2I(3, 3));
+        // Right column: (4,1) to (4,5)
+        for (var y = 1; y <= 5; y++)
+        {
+            mapData.TileIds[y, 4] = Floor;
+            mapData.PassableTiles.Add(new Vector2I(4, y));
+        }
 
-        // Should find the remaining unvisited tile(s)
+        // Small blob at corner: (5,5)
+        mapData.TileIds[5, 5] = Floor;
+        mapData.PassableTiles.Add(new Vector2I(5, 5));
+
+        var behavior = new FrontierExplorationBehavior(mapData, new SimpleVisibilityChecker(), visionRange: 1);
+        behavior.SignificantBlobThreshold = 10; // High threshold - no blob is "significant"
+
+        // Visit the L-shaped corridor except the corner
+        // Top row
+        for (var x = 0; x <= 4; x++)
+            behavior.UpdateVision(new Vector2I(x, 0));
+        // Right column (down to 4,4 - don't visit 4,5)
+        for (var y = 1; y <= 4; y++)
+            behavior.UpdateVision(new Vector2I(4, y));
+
+        // At this point:
+        // - (4,5) is seen from (4,4) but NOT trivially visible because (5,5) is unseen
+        // - (5,5) is NOT seen because it's at diagonal distance from (4,4)
+
+        // Find frontier - should find (4,5) as entry to the small blob
+        var target = behavior.FindNearestFrontierTile(new Vector2I(4, 4));
+
         // With high threshold, Phase 2 kicks in and targets nearest small blob
         AssertThat(target).IsNotNull();
+        AssertThat(target).IsEqual(new Vector2I(4, 5));
     }
 
     [TestCase]

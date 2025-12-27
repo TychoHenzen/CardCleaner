@@ -151,8 +151,8 @@ public class FrontierExplorationBehavior
     }
 
     /// <summary>
-    /// Check if a tile is trivially visible - we can see it and all its neighbors,
-    /// and it's connected to the visited area.
+    /// Check if a tile is trivially visible - we can see it, all its passable neighbors
+    /// have also been seen, and it's connected to the visited area.
     /// </summary>
     private bool IsTriviallyVisible(Vector2I tile)
     {
@@ -171,6 +171,7 @@ public class FrontierExplorationBehavior
             return false;
 
         // All passable neighbors must be seen
+        // This ensures we have complete visibility of the area around the tile
         foreach (var neighbor in GetNeighbors(tile))
         {
             if (!IsInBounds(neighbor))
