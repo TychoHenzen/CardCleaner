@@ -80,6 +80,7 @@ public partial class ServiceLocator : Node
 
         _container.RegisterSingleton<ICompatibilityTagRegistry, CompatibilityTagRegistry>();
         _container.RegisterSingleton<ITileRegistry, TileRegistry>();
+        _container.RegisterSingleton<ITransitionRegistry, TransitionRegistry>();
         _container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
         _container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();
 

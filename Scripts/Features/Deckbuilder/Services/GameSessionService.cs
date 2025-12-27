@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.BlobGeneration;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -18,6 +19,7 @@ public partial class GameSessionService : Node, IGameSessionService
     private List<CardSignature> _abilityCards = new();
     private BiomeRegistry _biomeRegistry = null!;
     private ITileRegistry _tileRegistry = null!;
+    private ITransitionRegistry? _transitionRegistry;
     private SimpleCombatSystem? _combatSystem;
     private Vector2I? _currentEnemyPosition;
 
@@ -125,8 +127,9 @@ public partial class GameSessionService : Node, IGameSessionService
         _biomeRegistry = new BiomeRegistry();
         _biomeRegistry.RegisterDefaultBiomes();
 
-        // Get tile registry via async callback (may not be registered yet during startup)
+        // Get services via async callback (may not be registered yet during startup)
         ServiceLocator.Get<ITileRegistry>(registry => _tileRegistry = registry);
+        ServiceLocator.Get<ITransitionRegistry>(registry => _transitionRegistry = registry);
 
         // Create timer for game progression
         _gameTimer = new Timer();
@@ -152,8 +155,18 @@ public partial class GameSessionService : Node, IGameSessionService
         // Create biome provider that maps gradient signatures to biomes
         var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, mapSize);
 
-        // Create map generator with biome provider
-        var mapGenerator = new SimpleMapGenerator(_rng, biomeProvider, _tileRegistry);
+        // Create blob generator for coherent terrain regions (if transition registry available)
+        TerrainBlobGenerator? blobGenerator = null;
+        if (_transitionRegistry?.BlobConfig.Enabled == true)
+        {
+            blobGenerator = new TerrainBlobGenerator(
+                _transitionRegistry.BlobConfig,
+                _transitionRegistry.GroupRegistry,
+                (int)_rng.Seed);
+        }
+
+        // Create map generator with biome provider and optional blob generator
+        var mapGenerator = new SimpleMapGenerator(_rng, biomeProvider, _tileRegistry, blobGenerator);
         _currentMap = mapGenerator.GenerateMap(mapSize);
 
         // Log biome distribution for debugging

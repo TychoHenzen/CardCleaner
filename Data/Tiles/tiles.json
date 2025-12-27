@@ -1025,5 +1025,98 @@
         "y": 2
       }
     }
-  ]
+  ],
+
+  "terrainGroups": {
+    "grass": {
+      "name": "Grass Terrain",
+      "priority": 100,
+      "members": [
+        "plains_grass",
+        "plains_grass_tall",
+        "plains_wildflowers",
+        "forest_clearing",
+        "mountains_alpine_grass"
+      ]
+    },
+    "dirt": {
+      "name": "Dirt/Path Terrain",
+      "priority": 90,
+      "members": [
+        "dirt",
+        "plains_path",
+        "plains_fertile_soil",
+        "forest_floor",
+        "forest_leaves"
+      ]
+    },
+    "forest_ground": {
+      "name": "Forest Ground",
+      "priority": 85,
+      "members": [
+        "forest_moss",
+        "forest_undergrowth"
+      ]
+    },
+    "sand": {
+      "name": "Sandy Terrain",
+      "priority": 80,
+      "members": [
+        "desert_sand",
+        "desert_dune",
+        "desert_cracked",
+        "desert_gravel"
+      ]
+    },
+    "rock": {
+      "name": "Rocky Terrain",
+      "priority": 75,
+      "members": [
+        "desert_rocky",
+        "mountains_rock",
+        "mountains_gravel",
+        "mountains_slate",
+        "mountains_scree"
+      ]
+    },
+    "snow": {
+      "name": "Snowy Terrain",
+      "priority": 85,
+      "members": [
+        "tundra_snow",
+        "tundra_packed_snow",
+        "tundra_frost",
+        "tundra_permafrost",
+        "tundra_ice_path"
+      ]
+    },
+    "mud": {
+      "name": "Muddy/Swamp Terrain",
+      "priority": 70,
+      "members": [
+        "swamp_mud",
+        "swamp_moss",
+        "swamp_peat",
+        "swamp_reeds"
+      ]
+    },
+    "water": {
+      "name": "Water Features",
+      "priority": 60,
+      "members": [
+        "swamp_shallow_water"
+      ]
+    }
+  },
+
+  "transitionRules": [
+  ],
+
+  "blobGeneration": {
+    "enabled": true,
+    "noiseScale": 0.15,
+    "clusterStrength": 0.7,
+    "minBlobSize": 3,
+    "maxBlobSize": 12
+  }
 }

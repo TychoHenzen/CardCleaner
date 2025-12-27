@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.Transitions;
 using Godot;
 
 namespace CardCleaner.Scripts.Core.Services;
@@ -14,6 +15,24 @@ namespace CardCleaner.Scripts.Core.Services;
 /// Result of loading tile registry data
 /// </summary>
 public record TileRegistryResult(string TilesetPath, List<TileDefinition> Tiles);
+
+/// <summary>
+/// Configuration for blob-based terrain generation
+/// </summary>
+public record BlobGenerationConfig(
+    bool Enabled = true,
+    float NoiseScale = 0.15f,
+    float ClusterStrength = 0.7f,
+    int MinBlobSize = 3,
+    int MaxBlobSize = 12);
+
+/// <summary>
+/// Result of loading transition data from tiles.json
+/// </summary>
+public record TransitionDataResult(
+    List<TerrainGroup> Groups,
+    List<TransitionRule> Rules,
+    BlobGenerationConfig BlobConfig);
 
 /// <summary>
 /// Loads tile definitions from JSON data files
@@ -72,6 +91,108 @@ public static class TileDataLoader
     public static List<TileDefinition> LoadTiles(string? path = null)
     {
         return LoadTileRegistry(path).Tiles;
+    }
+
+    /// <summary>
+    /// Load terrain groups, transition rules, and blob generation config from JSON
+    /// </summary>
+    public static TransitionDataResult LoadTransitionData(string? path = null)
+    {
+        path ??= DefaultTilesPath;
+        var defaultResult = new TransitionDataResult([], [], new BlobGenerationConfig());
+
+        var absolutePath = ProjectSettings.GlobalizePath(path);
+        if (!File.Exists(absolutePath))
+        {
+            ILog.Print($"[TileDataLoader] File not found for transitions: {absolutePath}");
+            return defaultResult;
+        }
+
+        try
+        {
+            var json = File.ReadAllText(absolutePath);
+            var data = JsonSerializer.Deserialize<TileRegistryData>(json, JsonOptions);
+            if (data == null)
+            {
+                ILog.Print("[TileDataLoader] Invalid JSON structure for transitions");
+                return defaultResult;
+            }
+
+            var groups = ParseTerrainGroups(data.TerrainGroups);
+            var rules = ParseTransitionRules(data.TransitionRules);
+            var blobConfig = ParseBlobGenerationConfig(data.BlobGeneration);
+
+            ILog.Print($"[TileDataLoader] Loaded {groups.Count} terrain groups, {rules.Count} transition rules");
+            return new TransitionDataResult(groups, rules, blobConfig);
+        }
+        catch (Exception ex)
+        {
+            ILog.Print($"[TileDataLoader] Error loading transition data: {ex.Message}");
+            return defaultResult;
+        }
+    }
+
+    private static List<TerrainGroup> ParseTerrainGroups(Dictionary<string, TerrainGroupData>? groupsData)
+    {
+        var groups = new List<TerrainGroup>();
+        if (groupsData == null)
+            return groups;
+
+        foreach (var (id, data) in groupsData)
+        {
+            if (data.Members == null || data.Members.Count == 0)
+                continue;
+
+            var group = new TerrainGroup(
+                id: id,
+                name: data.Name ?? id,
+                priority: data.Priority,
+                members: data.Members);
+            groups.Add(group);
+        }
+
+        return groups;
+    }
+
+    private static List<TransitionRule> ParseTransitionRules(List<TransitionRuleData>? rulesData)
+    {
+        var rules = new List<TransitionRule>();
+        if (rulesData == null)
+            return rules;
+
+        foreach (var data in rulesData)
+        {
+            if (string.IsNullOrEmpty(data.FromGroup) || string.IsNullOrEmpty(data.ToGroup))
+                continue;
+
+            var edgeTiles = new Dictionary<int, string?>();
+            if (data.EdgeTiles != null)
+            {
+                foreach (var (maskStr, tileId) in data.EdgeTiles)
+                {
+                    if (int.TryParse(maskStr, out var mask) && mask is >= 0 and <= 15)
+                        edgeTiles[mask] = tileId;
+                }
+            }
+
+            var rule = new TransitionRule(data.FromGroup, data.ToGroup, edgeTiles);
+            rules.Add(rule);
+        }
+
+        return rules;
+    }
+
+    private static BlobGenerationConfig ParseBlobGenerationConfig(BlobGenerationData? data)
+    {
+        if (data == null)
+            return new BlobGenerationConfig();
+
+        return new BlobGenerationConfig(
+            Enabled: data.Enabled,
+            NoiseScale: data.NoiseScale,
+            ClusterStrength: data.ClusterStrength,
+            MinBlobSize: data.MinBlobSize,
+            MaxBlobSize: data.MaxBlobSize);
     }
 
     private static TileDefinition? ConvertToTileDefinition(TileData data)
@@ -165,6 +286,57 @@ public static class TileDataLoader
 
         [JsonPropertyName("tiles")]
         public List<TileData>? Tiles { get; set; }
+
+        [JsonPropertyName("terrainGroups")]
+        public Dictionary<string, TerrainGroupData>? TerrainGroups { get; set; }
+
+        [JsonPropertyName("transitionRules")]
+        public List<TransitionRuleData>? TransitionRules { get; set; }
+
+        [JsonPropertyName("blobGeneration")]
+        public BlobGenerationData? BlobGeneration { get; set; }
+    }
+
+    private sealed class TerrainGroupData
+    {
+        [JsonPropertyName("name")]
+        public string? Name { get; set; }
+
+        [JsonPropertyName("priority")]
+        public int Priority { get; set; } = 50;
+
+        [JsonPropertyName("members")]
+        public List<string>? Members { get; set; }
+    }
+
+    private sealed class TransitionRuleData
+    {
+        [JsonPropertyName("fromGroup")]
+        public string? FromGroup { get; set; }
+
+        [JsonPropertyName("toGroup")]
+        public string? ToGroup { get; set; }
+
+        [JsonPropertyName("edgeTiles")]
+        public Dictionary<string, string?>? EdgeTiles { get; set; }
+    }
+
+    private sealed class BlobGenerationData
+    {
+        [JsonPropertyName("enabled")]
+        public bool Enabled { get; set; } = true;
+
+        [JsonPropertyName("noiseScale")]
+        public float NoiseScale { get; set; } = 0.15f;
+
+        [JsonPropertyName("clusterStrength")]
+        public float ClusterStrength { get; set; } = 0.7f;
+
+        [JsonPropertyName("minBlobSize")]
+        public int MinBlobSize { get; set; } = 3;
+
+        [JsonPropertyName("maxBlobSize")]
+        public int MaxBlobSize { get; set; } = 12;
     }
 
     private sealed class TileData

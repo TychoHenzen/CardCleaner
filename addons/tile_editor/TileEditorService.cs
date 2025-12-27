@@ -22,6 +22,9 @@ public partial class TileEditorService : RefCounted
     private static readonly Regex TileIdPattern = new(@"^[a-z][a-z0-9_]*$", RegexOptions.Compiled);
 
     private readonly Dictionary<string, EditableTile> _tiles = new();
+    private readonly Dictionary<string, EditableTerrainGroup> _terrainGroups = new();
+    private readonly List<EditableTransitionRule> _transitionRules = new();
+    private EditableBlobConfig _blobConfig = new();
     private string _version = "1.0";
     private TileSet? _tileSet;
 
@@ -30,15 +33,39 @@ public partial class TileEditorService : RefCounted
     public string TilesetPath { get; private set; } = DefaultTilesetPath;
     public TileSet? TileSet => _tileSet;
 
+    // Terrain group accessors
+    public int TerrainGroupCount => _terrainGroups.Count;
+    public IEnumerable<EditableTerrainGroup> AllTerrainGroups => _terrainGroups.Values;
+    public EditableTerrainGroup? GetTerrainGroup(string id) => _terrainGroups.GetValueOrDefault(id);
+
+    // Transition rule accessors
+    public int TransitionRuleCount => _transitionRules.Count;
+    public IReadOnlyList<EditableTransitionRule> AllTransitionRules => _transitionRules;
+
+    // Blob config accessor
+    public EditableBlobConfig BlobConfig => _blobConfig;
+
     // Signals
     [Signal] public delegate void TilesLoadedEventHandler();
     [Signal] public delegate void TileModifiedEventHandler(string tileId);
     [Signal] public delegate void TileAddedEventHandler(string tileId);
     [Signal] public delegate void TileRemovedEventHandler(string tileId);
 
+    // Terrain signals
+    [Signal] public delegate void TerrainGroupModifiedEventHandler(string groupId);
+    [Signal] public delegate void TerrainGroupAddedEventHandler(string groupId);
+    [Signal] public delegate void TerrainGroupRemovedEventHandler(string groupId);
+    [Signal] public delegate void TransitionRuleModifiedEventHandler(int ruleIndex);
+    [Signal] public delegate void TransitionRuleAddedEventHandler(int ruleIndex);
+    [Signal] public delegate void TransitionRuleRemovedEventHandler(int ruleIndex);
+    [Signal] public delegate void BlobConfigModifiedEventHandler();
+
     public void LoadTiles()
     {
         _tiles.Clear();
+        _terrainGroups.Clear();
+        _transitionRules.Clear();
+        _blobConfig = new EditableBlobConfig();
 
         var absolutePath = ProjectSettings.GlobalizePath(TilesPath);
         if (!File.Exists(absolutePath))
@@ -74,6 +101,7 @@ public partial class TileEditorService : RefCounted
                 GD.PrintErr($"[TileEditorService] TileSet not found: {TilesetPath}");
             }
 
+            // Load tiles
             foreach (var tileData in data.Tiles)
             {
                 if (string.IsNullOrEmpty(tileData.Id)) continue;
@@ -97,7 +125,65 @@ public partial class TileEditorService : RefCounted
                 _tiles[tile.Id] = tile;
             }
 
-            GD.Print($"[TileEditorService] Loaded {_tiles.Count} tiles");
+            // Load terrain groups
+            if (data.TerrainGroups != null)
+            {
+                foreach (var (groupId, groupData) in data.TerrainGroups)
+                {
+                    var group = new EditableTerrainGroup
+                    {
+                        Id = groupId,
+                        Name = groupData.Name ?? groupId,
+                        Priority = groupData.Priority,
+                        Members = groupData.Members?.ToList() ?? new List<string>()
+                    };
+                    _terrainGroups[groupId] = group;
+                }
+            }
+
+            // Load transition rules
+            if (data.TransitionRules != null)
+            {
+                foreach (var ruleData in data.TransitionRules)
+                {
+                    if (string.IsNullOrEmpty(ruleData.FromGroup) || string.IsNullOrEmpty(ruleData.ToGroup))
+                        continue;
+
+                    var rule = new EditableTransitionRule
+                    {
+                        FromGroupId = ruleData.FromGroup,
+                        ToGroupId = ruleData.ToGroup,
+                        EdgeTiles = new Dictionary<int, string?>()
+                    };
+
+                    // Parse edge tiles (keys are string bitmask values "0"-"15")
+                    if (ruleData.EdgeTiles != null)
+                    {
+                        foreach (var (key, tileId) in ruleData.EdgeTiles)
+                        {
+                            if (int.TryParse(key, out var bitmask) && bitmask >= 0 && bitmask <= 15)
+                                rule.EdgeTiles[bitmask] = tileId;
+                        }
+                    }
+
+                    _transitionRules.Add(rule);
+                }
+            }
+
+            // Load blob generation config
+            if (data.BlobGeneration != null)
+            {
+                _blobConfig = new EditableBlobConfig
+                {
+                    Enabled = data.BlobGeneration.Enabled,
+                    NoiseScale = data.BlobGeneration.NoiseScale,
+                    ClusterStrength = data.BlobGeneration.ClusterStrength,
+                    MinBlobSize = data.BlobGeneration.MinBlobSize,
+                    MaxBlobSize = data.BlobGeneration.MaxBlobSize
+                };
+            }
+
+            GD.Print($"[TileEditorService] Loaded {_tiles.Count} tiles, {_terrainGroups.Count} terrain groups, {_transitionRules.Count} transition rules");
             EmitSignal(SignalName.TilesLoaded);
         }
         catch (Exception ex)
@@ -218,6 +304,114 @@ public partial class TileEditorService : RefCounted
             t.Biomes.Count == 0 || t.Biomes.Contains(biome, StringComparer.OrdinalIgnoreCase));
     }
 
+    // ===== Terrain Group Methods =====
+
+    public void UpdateTerrainGroup(EditableTerrainGroup group)
+    {
+        if (!_terrainGroups.ContainsKey(group.Id))
+        {
+            GD.PrintErr($"[TileEditorService] Terrain group not found: {group.Id}");
+            return;
+        }
+
+        _terrainGroups[group.Id] = group;
+        EmitSignal(SignalName.TerrainGroupModified, group.Id);
+    }
+
+    public bool AddTerrainGroup(EditableTerrainGroup group)
+    {
+        if (_terrainGroups.ContainsKey(group.Id))
+        {
+            GD.PrintErr($"[TileEditorService] Terrain group already exists: {group.Id}");
+            return false;
+        }
+
+        _terrainGroups[group.Id] = group;
+        EmitSignal(SignalName.TerrainGroupAdded, group.Id);
+        return true;
+    }
+
+    public bool RemoveTerrainGroup(string id)
+    {
+        if (!_terrainGroups.Remove(id))
+            return false;
+
+        EmitSignal(SignalName.TerrainGroupRemoved, id);
+        return true;
+    }
+
+    public bool AddTileToGroup(string groupId, string tileId)
+    {
+        if (!_terrainGroups.TryGetValue(groupId, out var group))
+            return false;
+
+        if (group.Members.Contains(tileId))
+            return false;
+
+        group.Members.Add(tileId);
+        EmitSignal(SignalName.TerrainGroupModified, groupId);
+        return true;
+    }
+
+    public bool RemoveTileFromGroup(string groupId, string tileId)
+    {
+        if (!_terrainGroups.TryGetValue(groupId, out var group))
+            return false;
+
+        if (!group.Members.Remove(tileId))
+            return false;
+
+        EmitSignal(SignalName.TerrainGroupModified, groupId);
+        return true;
+    }
+
+    // ===== Transition Rule Methods =====
+
+    public EditableTransitionRule? GetTransitionRule(int index)
+    {
+        if (index < 0 || index >= _transitionRules.Count)
+            return null;
+        return _transitionRules[index];
+    }
+
+    public void UpdateTransitionRule(int index, EditableTransitionRule rule)
+    {
+        if (index < 0 || index >= _transitionRules.Count)
+        {
+            GD.PrintErr($"[TileEditorService] Transition rule index out of range: {index}");
+            return;
+        }
+
+        _transitionRules[index] = rule;
+        EmitSignal(SignalName.TransitionRuleModified, index);
+    }
+
+    public int AddTransitionRule(EditableTransitionRule rule)
+    {
+        _transitionRules.Add(rule);
+        var index = _transitionRules.Count - 1;
+        EmitSignal(SignalName.TransitionRuleAdded, index);
+        return index;
+    }
+
+    public bool RemoveTransitionRule(int index)
+    {
+        if (index < 0 || index >= _transitionRules.Count)
+            return false;
+
+        _transitionRules.RemoveAt(index);
+        EmitSignal(SignalName.TransitionRuleRemoved, index);
+        return true;
+    }
+
+    // ===== Blob Config Methods =====
+
+    public void UpdateBlobConfig(EditableBlobConfig config)
+    {
+        _blobConfig = config;
+        EmitSignal(SignalName.BlobConfigModified);
+    }
+
     public (bool success, string message) ValidateTile(EditableTile tile)
     {
         if (string.IsNullOrWhiteSpace(tile.Id))
@@ -257,6 +451,14 @@ public partial class TileEditorService : RefCounted
                 return (false, $"Tile '{tile.Id}': {msg}");
         }
 
+        // Validate terrain groups
+        foreach (var group in _terrainGroups.Values)
+        {
+            var (valid, msg) = ValidateTerrainGroup(group);
+            if (!valid)
+                return (false, $"Terrain group '{group.Id}': {msg}");
+        }
+
         try
         {
             var data = new TileRegistryData
@@ -276,14 +478,45 @@ public partial class TileEditorService : RefCounted
                     IsTransparent = t.IsTransparent,
                     Biomes = t.Biomes.Count > 0 ? t.Biomes : null,
                     Size = (t.SizeX != 1 || t.SizeY != 1) ? new Vector2IData { X = t.SizeX, Y = t.SizeY } : null
-                }).ToList()
+                }).ToList(),
+
+                // Terrain groups
+                TerrainGroups = _terrainGroups.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => new TerrainGroupData
+                    {
+                        Name = kvp.Value.Name,
+                        Priority = kvp.Value.Priority,
+                        Members = kvp.Value.Members.Count > 0 ? kvp.Value.Members : null
+                    }
+                ),
+
+                // Transition rules
+                TransitionRules = _transitionRules.Select(r => new TransitionRuleData
+                {
+                    FromGroup = r.FromGroupId,
+                    ToGroup = r.ToGroupId,
+                    EdgeTiles = r.EdgeTiles.Count > 0
+                        ? r.EdgeTiles.ToDictionary(kvp => kvp.Key.ToString(), kvp => kvp.Value)
+                        : null
+                }).ToList(),
+
+                // Blob generation config
+                BlobGeneration = new BlobGenerationData
+                {
+                    Enabled = _blobConfig.Enabled,
+                    NoiseScale = _blobConfig.NoiseScale,
+                    ClusterStrength = _blobConfig.ClusterStrength,
+                    MinBlobSize = _blobConfig.MinBlobSize,
+                    MaxBlobSize = _blobConfig.MaxBlobSize
+                }
             };
 
             var json = JsonSerializer.Serialize(data, WriteOptions);
             var absolutePath = ProjectSettings.GlobalizePath(TilesPath);
             File.WriteAllText(absolutePath, json);
 
-            GD.Print($"[TileEditorService] Saved {_tiles.Count} tiles to {TilesPath}");
+            GD.Print($"[TileEditorService] Saved {_tiles.Count} tiles, {_terrainGroups.Count} terrain groups, {_transitionRules.Count} transition rules to {TilesPath}");
             return (true, "Saved successfully");
         }
         catch (Exception ex)
@@ -291,6 +524,23 @@ public partial class TileEditorService : RefCounted
             GD.PrintErr($"[TileEditorService] Error saving tiles: {ex.Message}");
             return (false, ex.Message);
         }
+    }
+
+    public (bool success, string message) ValidateTerrainGroup(EditableTerrainGroup group)
+    {
+        if (string.IsNullOrWhiteSpace(group.Id))
+            return (false, "ID is required");
+
+        if (!TileIdPattern.IsMatch(group.Id))
+            return (false, "ID must be snake_case starting with a letter");
+
+        if (string.IsNullOrWhiteSpace(group.Name))
+            return (false, "Name is required");
+
+        if (group.Priority < 0 || group.Priority > 1000)
+            return (false, "Priority must be between 0 and 1000");
+
+        return (true, "Valid");
     }
 
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -320,6 +570,57 @@ public partial class TileEditorService : RefCounted
 
         [JsonPropertyName("tiles")]
         public List<TileData>? Tiles { get; set; }
+
+        [JsonPropertyName("terrainGroups")]
+        public Dictionary<string, TerrainGroupData>? TerrainGroups { get; set; }
+
+        [JsonPropertyName("transitionRules")]
+        public List<TransitionRuleData>? TransitionRules { get; set; }
+
+        [JsonPropertyName("blobGeneration")]
+        public BlobGenerationData? BlobGeneration { get; set; }
+    }
+
+    private sealed class TerrainGroupData
+    {
+        [JsonPropertyName("name")]
+        public string? Name { get; set; }
+
+        [JsonPropertyName("priority")]
+        public int Priority { get; set; }
+
+        [JsonPropertyName("members")]
+        public List<string>? Members { get; set; }
+    }
+
+    private sealed class TransitionRuleData
+    {
+        [JsonPropertyName("fromGroup")]
+        public string? FromGroup { get; set; }
+
+        [JsonPropertyName("toGroup")]
+        public string? ToGroup { get; set; }
+
+        [JsonPropertyName("edgeTiles")]
+        public Dictionary<string, string?>? EdgeTiles { get; set; }
+    }
+
+    private sealed class BlobGenerationData
+    {
+        [JsonPropertyName("enabled")]
+        public bool Enabled { get; set; } = true;
+
+        [JsonPropertyName("noiseScale")]
+        public float NoiseScale { get; set; } = 0.15f;
+
+        [JsonPropertyName("clusterStrength")]
+        public float ClusterStrength { get; set; } = 0.7f;
+
+        [JsonPropertyName("minBlobSize")]
+        public int MinBlobSize { get; set; } = 3;
+
+        [JsonPropertyName("maxBlobSize")]
+        public int MaxBlobSize { get; set; } = 12;
     }
 
     private sealed class TileData
@@ -408,5 +709,85 @@ public class AtlasSourceInfo
     public int SourceId { get; set; }
     public string DisplayName { get; set; } = "";
     public TileSetAtlasSource? Source { get; set; }
+}
+
+/// <summary>
+/// Mutable terrain group data for editing
+/// </summary>
+public class EditableTerrainGroup
+{
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
+    public int Priority { get; set; } = 50;
+    public List<string> Members { get; set; } = new();
+
+    public EditableTerrainGroup Clone() => new()
+    {
+        Id = Id,
+        Name = Name,
+        Priority = Priority,
+        Members = new List<string>(Members)
+    };
+}
+
+/// <summary>
+/// Mutable transition rule data for editing.
+/// Maps 4-bit bitmask (0-15) to edge tile IDs.
+/// Bitmask bits: N=1, E=2, S=4, W=8
+/// </summary>
+public class EditableTransitionRule
+{
+    public string FromGroupId { get; set; } = "";
+    public string ToGroupId { get; set; } = "";
+
+    /// <summary>
+    /// Edge tiles keyed by 4-bit bitmask (0-15).
+    /// Key is the bitmask value, value is the tile ID to render.
+    /// </summary>
+    public Dictionary<int, string?> EdgeTiles { get; set; } = new();
+
+    /// <summary>
+    /// Get the tile ID for a specific bitmask value
+    /// </summary>
+    public string? GetEdgeTile(int bitmask) => EdgeTiles.GetValueOrDefault(bitmask);
+
+    /// <summary>
+    /// Set the tile ID for a specific bitmask value
+    /// </summary>
+    public void SetEdgeTile(int bitmask, string? tileId)
+    {
+        if (string.IsNullOrEmpty(tileId))
+            EdgeTiles.Remove(bitmask);
+        else
+            EdgeTiles[bitmask] = tileId;
+    }
+
+    public EditableTransitionRule Clone() => new()
+    {
+        FromGroupId = FromGroupId,
+        ToGroupId = ToGroupId,
+        EdgeTiles = new Dictionary<int, string?>(EdgeTiles)
+    };
+}
+
+/// <summary>
+/// Mutable blob generation configuration for editing
+/// </summary>
+public class EditableBlobConfig
+{
+    public bool Enabled { get; set; } = true;
+    public float NoiseScale { get; set; } = 0.15f;
+    public float ClusterStrength { get; set; } = 0.7f;
+    public int MinBlobSize { get; set; } = 3;
+    public int MaxBlobSize { get; set; } = 12;
+
+    public EditableBlobConfig Clone() => new()
+    {
+        Enabled = Enabled,
+        NoiseScale = NoiseScale,
+        ClusterStrength = ClusterStrength,
+        MinBlobSize = MinBlobSize,
+        MaxBlobSize = MaxBlobSize
+    };
 }
 #endif

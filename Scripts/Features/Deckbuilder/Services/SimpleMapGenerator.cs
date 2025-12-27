@@ -4,6 +4,7 @@ using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.BlobGeneration;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -22,8 +23,10 @@ public class SimpleMapGenerator
     private readonly IBiomeProvider _biomeProvider;
     private readonly ITileRegistry _tileRegistry;
     private readonly RandomNumberGenerator _rng;
+    private readonly TerrainBlobGenerator? _blobGenerator;
 
-    public SimpleMapGenerator(RandomNumberGenerator rng, IBiomeProvider biomeProvider, ITileRegistry tileRegistry)
+    public SimpleMapGenerator(RandomNumberGenerator rng, IBiomeProvider biomeProvider, ITileRegistry tileRegistry,
+        TerrainBlobGenerator? blobGenerator = null)
     {
         ArgumentNullException.ThrowIfNull(rng);
         ArgumentNullException.ThrowIfNull(biomeProvider);
@@ -31,6 +34,7 @@ public class SimpleMapGenerator
         _rng = rng;
         _biomeProvider = biomeProvider;
         _tileRegistry = tileRegistry;
+        _blobGenerator = blobGenerator;
     }
 
     public SimpleMapData GenerateMap(Vector2I size)
@@ -64,16 +68,14 @@ public class SimpleMapGenerator
                 if (!placed)
                 {
                     // Fallback: place as passable terrain if no blocked tile fits
-                    var fallbackTileId = biome.SelectPassableTile(_rng) ?? FloorTileId;
-                    tileIds[y, x] = fallbackTileId;
+                    tileIds[y, x] = SelectPassableTile(position, biome);
                     occupiedCells.Add(position);
                     passableTiles.Add(position);
                 }
             }
             else
             {
-                var tileId = biome.SelectPassableTile(_rng) ?? FloorTileId;
-                tileIds[y, x] = tileId;
+                tileIds[y, x] = SelectPassableTile(position, biome);
                 occupiedCells.Add(position);
                 passableTiles.Add(position);
             }
@@ -87,7 +89,7 @@ public class SimpleMapGenerator
 
             var position = new Vector2I(x, y);
             var biome = _biomeProvider.GetBiomeAt(position);
-            tileIds[y, x] = biome.SelectPassableTile(_rng) ?? FloorTileId;
+            tileIds[y, x] = SelectPassableTile(position, biome);
 
             // Only add to passable tiles if not covered by a multi-tile
             if (!multiTileSecondaryCells.Contains(position))
@@ -295,7 +297,7 @@ public class SimpleMapGenerator
             if (IsValidPosition(current, size))
             {
                 var biome = _biomeProvider.GetBiomeAt(current);
-                tileIds[current.Y, current.X] = biome.SelectPassableTile(_rng) ?? FloorTileId;
+                tileIds[current.Y, current.X] = SelectPassableTile(current, biome);
             }
         }
 
@@ -305,7 +307,7 @@ public class SimpleMapGenerator
             if (IsValidPosition(current, size))
             {
                 var biome = _biomeProvider.GetBiomeAt(current);
-                tileIds[current.Y, current.X] = biome.SelectPassableTile(_rng) ?? FloorTileId;
+                tileIds[current.Y, current.X] = SelectPassableTile(current, biome);
             }
         }
     }
@@ -319,5 +321,20 @@ public class SimpleMapGenerator
     {
         var tile = _tileRegistry.GetTile(tileId);
         return tile?.IsPassable ?? false;
+    }
+
+    /// <summary>
+    /// Select a passable tile using blob generation when available, otherwise random selection.
+    /// </summary>
+    private string SelectPassableTile(Vector2I position, BiomeDefinition biome)
+    {
+        if (_blobGenerator != null)
+        {
+            var tile = _blobGenerator.SelectTileWithClustering(position, biome.PassableTiles, _rng);
+            if (tile != null)
+                return tile;
+        }
+
+        return biome.SelectPassableTile(_rng) ?? FloorTileId;
     }
 }

@@ -17,6 +17,20 @@
     "tiles": {
       "type": "array",
       "items": { "$ref": "#/definitions/tile" }
+    },
+    "terrainGroups": {
+      "type": "object",
+      "description": "Groups of tiles that share transition behavior",
+      "additionalProperties": { "$ref": "#/definitions/terrainGroup" }
+    },
+    "transitionRules": {
+      "type": "array",
+      "description": "Rules for edge transitions between terrain groups",
+      "items": { "$ref": "#/definitions/transitionRule" }
+    },
+    "blobGeneration": {
+      "$ref": "#/definitions/blobGenerationConfig",
+      "description": "Configuration for coherent terrain region generation"
     }
   },
   "definitions": {
@@ -83,6 +97,92 @@
       "properties": {
         "x": { "type": "integer" },
         "y": { "type": "integer" }
+      }
+    },
+    "terrainGroup": {
+      "type": "object",
+      "required": ["name", "members"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Display name for the terrain group"
+        },
+        "priority": {
+          "type": "integer",
+          "default": 50,
+          "minimum": 0,
+          "maximum": 255,
+          "description": "Higher priority groups render edges on top of lower priority groups"
+        },
+        "members": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Tile IDs that belong to this group"
+        }
+      }
+    },
+    "transitionRule": {
+      "type": "object",
+      "required": ["fromGroup", "toGroup", "edgeTiles"],
+      "properties": {
+        "fromGroup": {
+          "type": "string",
+          "description": "Terrain group that has the edges (higher priority, renders on top)"
+        },
+        "toGroup": {
+          "type": "string",
+          "description": "Terrain group being transitioned to (lower priority, underneath)"
+        },
+        "edgeTiles": {
+          "type": "object",
+          "description": "Maps 4-bit bitmask (0-15) to transition tile ID. Bits: N=1, E=2, S=4, W=8",
+          "patternProperties": {
+            "^([0-9]|1[0-5])$": {
+              "oneOf": [
+                { "type": "string" },
+                { "type": "null" }
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "blobGenerationConfig": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to use noise-based clustering for terrain tiles"
+        },
+        "noiseScale": {
+          "type": "number",
+          "default": 0.15,
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "description": "Scale of the noise pattern (smaller = larger blobs)"
+        },
+        "clusterStrength": {
+          "type": "number",
+          "default": 0.7,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "How strongly tiles cluster together (0 = random, 1 = very clustered)"
+        },
+        "minBlobSize": {
+          "type": "integer",
+          "default": 3,
+          "minimum": 1,
+          "description": "Minimum blob size in tiles"
+        },
+        "maxBlobSize": {
+          "type": "integer",
+          "default": 12,
+          "minimum": 1,
+          "description": "Maximum blob size in tiles"
+        }
       }
     }
   }
