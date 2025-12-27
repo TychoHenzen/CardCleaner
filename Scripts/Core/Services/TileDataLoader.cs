@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CardCleaner.Scripts.Core.Enumeration;
@@ -211,7 +212,10 @@ public static class TileDataLoader
             elevation: data.Elevation ?? 0f,
             isTransparent: data.IsTransparent,
             allowedBiomes: biomes,
-            size: size);
+            size: size,
+            decorationDensity: data.DecorationDensity ?? 1.0f,
+            blobSettings: data.BlobSettings != null ? ParseBlobGenerationConfig(data.BlobSettings) : null,
+            autoTileVariants: ParseAutoTileVariants(data.AutoTileVariants));
     }
 
     private static TilePassability ParsePassability(string? value)
@@ -261,6 +265,22 @@ public static class TileDataLoader
         }
 
         return result.Count > 0 ? result : null;
+    }
+
+    private static Vector2I?[]? ParseAutoTileVariants(Vector2IData?[]? variants)
+    {
+        if (variants == null || variants.Length == 0)
+            return null;
+
+        var result = new Vector2I?[16];
+        for (var i = 0; i < Math.Min(16, variants.Length); i++)
+        {
+            if (variants[i] != null)
+                result[i] = new Vector2I(variants[i]!.X, variants[i]!.Y);
+        }
+
+        // Return null if no variants were actually set
+        return result.Any(v => v.HasValue) ? result : null;
     }
 
     // JSON data model classes
@@ -320,6 +340,12 @@ public static class TileDataLoader
         [JsonPropertyName("biomes")] public List<string>? Biomes { get; set; }
 
         [JsonPropertyName("size")] public Vector2IData? Size { get; set; }
+
+        [JsonPropertyName("decorationDensity")] public float? DecorationDensity { get; set; }
+
+        [JsonPropertyName("blobSettings")] public BlobGenerationData? BlobSettings { get; set; }
+
+        [JsonPropertyName("autoTileVariants")] public Vector2IData?[]? AutoTileVariants { get; set; }
     }
 
     private sealed class Vector2IData

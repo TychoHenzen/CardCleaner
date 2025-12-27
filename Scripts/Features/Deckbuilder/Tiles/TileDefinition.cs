@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Services;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Tiles;
@@ -19,7 +20,10 @@ public class TileDefinition
         float elevation = 0f,
         bool? isTransparent = null,
         HashSet<BiomeType>? allowedBiomes = null,
-        Vector2I? size = null)
+        Vector2I? size = null,
+        float decorationDensity = 1.0f,
+        BlobGenerationConfig? blobSettings = null,
+        Vector2I?[]? autoTileVariants = null)
     {
         Id = id;
         Name = name;
@@ -31,6 +35,9 @@ public class TileDefinition
         IsTransparent = isTransparent ?? (passability == TilePassability.Passable);
         AllowedBiomes = allowedBiomes;
         Size = size ?? Vector2I.One;
+        DecorationDensity = decorationDensity;
+        BlobSettings = blobSettings;
+        AutoTileVariants = autoTileVariants;
     }
 
     public string Id { get; }
@@ -49,7 +56,48 @@ public class TileDefinition
     /// </summary>
     public Vector2I Size { get; }
 
+    /// <summary>
+    /// Probability (0.0-1.0) of this decoration tile appearing on valid positions.
+    /// Only meaningful for decoration layer tiles. Default 1.0 = 100% coverage.
+    /// </summary>
+    public float DecorationDensity { get; }
+
+    /// <summary>
+    /// Per-tile blob generation settings. Null means use global defaults.
+    /// </summary>
+    public BlobGenerationConfig? BlobSettings { get; }
+
+    /// <summary>
+    /// Auto-tile variant atlas coordinates indexed by 4-bit NESW bitmask (0-15).
+    /// Null array means no auto-tiling. Null elements use the base tile's atlas coords.
+    /// </summary>
+    public Vector2I?[]? AutoTileVariants { get; }
+
     public bool IsPassable => Passability == TilePassability.Passable;
+    public bool HasAutoTileVariants => AutoTileVariants != null;
 
     public bool IsAllowedInBiome(BiomeType biome) => AllowedBiomes == null || AllowedBiomes.Contains(biome);
+
+    /// <summary>
+    /// Check if this decoration tile should appear based on its density probability.
+    /// </summary>
+    /// <param name="rng">Random number generator</param>
+    /// <returns>True if decoration should appear, false to skip</returns>
+    public bool ShouldPlaceDecoration(RandomNumberGenerator rng)
+    {
+        if (Layer != TileLayer.Decoration) return true;
+        return rng.Randf() <= DecorationDensity;
+    }
+
+    /// <summary>
+    /// Get the atlas coordinates for a specific auto-tile bitmask.
+    /// Returns base atlas coords if no variant is defined for that bitmask.
+    /// </summary>
+    public Vector2I GetAutoTileCoords(int bitmask)
+    {
+        if (AutoTileVariants == null || bitmask < 0 || bitmask >= 16)
+            return AtlasCoords;
+
+        return AutoTileVariants[bitmask] ?? AtlasCoords;
+    }
 }

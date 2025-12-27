@@ -130,6 +130,35 @@ public partial class TileEditorService : RefCounted
                     SizeY = tileData.Size?.Y ?? 1
                 };
 
+                // Load auto-tile variants if present
+                if (tileData.AutoTileVariants != null && tileData.AutoTileVariants.Any(v => v != null))
+                {
+                    tile.AutoTileVariants = new Vector2I?[16];
+                    for (var i = 0; i < Math.Min(16, tileData.AutoTileVariants.Length); i++)
+                    {
+                        var v = tileData.AutoTileVariants[i];
+                        if (v != null)
+                            tile.AutoTileVariants[i] = new Vector2I(v.X, v.Y);
+                    }
+                }
+
+                // Load decoration density (default 1.0 if not specified)
+                if (tileData.DecorationDensity.HasValue)
+                    tile.DecorationDensity = Math.Clamp(tileData.DecorationDensity.Value, 0f, 1f);
+
+                // Load per-tile blob settings if present
+                if (tileData.BlobSettings != null)
+                {
+                    tile.BlobSettings = new EditableBlobConfig
+                    {
+                        Enabled = tileData.BlobSettings.Enabled,
+                        NoiseScale = tileData.BlobSettings.NoiseScale,
+                        ClusterStrength = tileData.BlobSettings.ClusterStrength,
+                        MinBlobSize = tileData.BlobSettings.MinBlobSize,
+                        MaxBlobSize = tileData.BlobSettings.MaxBlobSize
+                    };
+                }
+
                 _tiles[tile.Id] = tile;
             }
 
@@ -370,7 +399,19 @@ public partial class TileEditorService : RefCounted
                     Elevation = t.Elevation,
                     IsTransparent = t.IsTransparent,
                     Biomes = t.Biomes.Count > 0 ? t.Biomes : null,
-                    Size = (t.SizeX != 1 || t.SizeY != 1) ? new Vector2IData { X = t.SizeX, Y = t.SizeY } : null
+                    Size = (t.SizeX != 1 || t.SizeY != 1) ? new Vector2IData { X = t.SizeX, Y = t.SizeY } : null,
+                    AutoTileVariants = t.HasAutoTileVariants
+                        ? t.AutoTileVariants!.Select(v => v.HasValue ? new Vector2IData { X = v.Value.X, Y = v.Value.Y } : null).ToArray()
+                        : null,
+                    DecorationDensity = t.DecorationDensity < 1.0f ? t.DecorationDensity : null,
+                    BlobSettings = t.BlobSettings != null ? new BlobGenerationData
+                    {
+                        Enabled = t.BlobSettings.Enabled,
+                        NoiseScale = t.BlobSettings.NoiseScale,
+                        ClusterStrength = t.BlobSettings.ClusterStrength,
+                        MinBlobSize = t.BlobSettings.MinBlobSize,
+                        MaxBlobSize = t.BlobSettings.MaxBlobSize
+                    } : null
                 }).ToList(),
 
                 // Blob generation config
@@ -467,6 +508,12 @@ public partial class TileEditorService : RefCounted
         [JsonPropertyName("biomes")] public List<string>? Biomes { get; set; }
 
         [JsonPropertyName("size")] public Vector2IData? Size { get; set; }
+
+        [JsonPropertyName("autoTileVariants")] public Vector2IData?[]? AutoTileVariants { get; set; }
+
+        [JsonPropertyName("decorationDensity")] public float? DecorationDensity { get; set; }
+
+        [JsonPropertyName("blobSettings")] public BlobGenerationData? BlobSettings { get; set; }
     }
 
     private sealed class Vector2IData
@@ -495,21 +542,56 @@ public class EditableTile
     public int SizeX { get; set; } = 1;
     public int SizeY { get; set; } = 1;
 
-    public EditableTile Clone() => new()
+    /// <summary>
+    /// Auto-tile variant atlas coordinates indexed by 4-bit NESW bitmask (0-15).
+    /// Null array means no auto-tiling. Null elements use the base tile's atlas coords.
+    /// </summary>
+    public Vector2I?[]? AutoTileVariants { get; set; }
+
+    /// <summary>
+    /// Returns true if this tile has any auto-tile variants defined.
+    /// </summary>
+    public bool HasAutoTileVariants => AutoTileVariants?.Any(v => v.HasValue) == true;
+
+    /// <summary>
+    /// Probability (0.0-1.0) of this decoration tile appearing on valid positions.
+    /// Only meaningful for decoration layer tiles. Default 1.0 = 100% coverage.
+    /// </summary>
+    public float DecorationDensity { get; set; } = 1.0f;
+
+    /// <summary>
+    /// Per-tile blob generation settings. Null means use global defaults.
+    /// </summary>
+    public EditableBlobConfig? BlobSettings { get; set; }
+
+    public EditableTile Clone()
     {
-        Id = Id,
-        Name = Name,
-        Passability = Passability,
-        AtlasX = AtlasX,
-        AtlasY = AtlasY,
-        SourceId = SourceId,
-        Layer = Layer,
-        Elevation = Elevation,
-        IsTransparent = IsTransparent,
-        Biomes = new List<string>(Biomes),
-        SizeX = SizeX,
-        SizeY = SizeY
-    };
+        var clone = new EditableTile
+        {
+            Id = Id,
+            Name = Name,
+            Passability = Passability,
+            AtlasX = AtlasX,
+            AtlasY = AtlasY,
+            SourceId = SourceId,
+            Layer = Layer,
+            Elevation = Elevation,
+            IsTransparent = IsTransparent,
+            Biomes = new List<string>(Biomes),
+            SizeX = SizeX,
+            SizeY = SizeY,
+            DecorationDensity = DecorationDensity,
+            BlobSettings = BlobSettings?.Clone()
+        };
+
+        if (AutoTileVariants != null)
+        {
+            clone.AutoTileVariants = new Vector2I?[16];
+            Array.Copy(AutoTileVariants, clone.AutoTileVariants, 16);
+        }
+
+        return clone;
+    }
 }
 
 /// <summary>

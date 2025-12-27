@@ -36,6 +36,33 @@ public partial class TilePropertiesPanel : ScrollContainer
     private readonly Dictionary<string, CheckBox> _biomeCheckboxes = new();
     private Label? _validationLabel;
 
+    // Auto-tile foldout controls
+    private FoldoutContainer? _autoTileFoldout;
+    private GridContainer? _variantGrid;
+    private readonly TextureRect?[] _variantThumbnails = new TextureRect?[16];
+    private AcceptDialog? _variantPickerDialog;
+    private TilesetAtlasPicker? _variantPicker;
+    private int _editingVariantIndex = -1;
+
+    // Blob settings foldout controls
+    private FoldoutContainer? _blobSettingsFoldout;
+    private CheckBox? _blobOverrideCheckbox;
+    private CheckBox? _blobEnabledField;
+    private SpinBox? _blobNoiseScaleField;
+    private SpinBox? _blobClusterStrengthField;
+    private SpinBox? _blobMinSizeField;
+    private SpinBox? _blobMaxSizeField;
+
+    // Decoration density control
+    private HBoxContainer? _decorationDensityRow;
+    private SpinBox? _decorationDensityField;
+
+    private static readonly string[] BitmaskLabels =
+    {
+        "None", "N", "E", "N+E", "S", "N+S", "E+S", "N+E+S",
+        "W", "N+W", "E+W", "N+E+W", "S+W", "N+S+W", "E+S+W", "All"
+    };
+
     private bool _isUpdating;
 
     public TilePropertiesPanel(TileEditorService service)
@@ -277,6 +304,201 @@ public partial class TilePropertiesPanel : ScrollContainer
 
         vbox.AddChild(new HSeparator());
 
+        // Auto-Tiling foldout
+        _autoTileFoldout = new FoldoutContainer("Auto-Tiling", false);
+        vbox.AddChild(_autoTileFoldout);
+
+        var autoTileInfo = new Label
+        {
+            Text = "Assign atlas variants for each neighbor pattern (NESW bitmask):",
+            AutowrapMode = TextServer.AutowrapMode.Word,
+            Modulate = new Color(0.8f, 0.8f, 0.8f)
+        };
+        autoTileInfo.AddThemeFontSizeOverride("font_size", 11);
+        _autoTileFoldout.Content.AddChild(autoTileInfo);
+
+        _variantGrid = new GridContainer
+        {
+            Columns = 4,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _variantGrid.AddThemeConstantOverride("h_separation", 4);
+        _variantGrid.AddThemeConstantOverride("v_separation", 4);
+        _autoTileFoldout.Content.AddChild(_variantGrid);
+
+        for (int i = 0; i < 16; i++)
+        {
+            var slotContainer = new VBoxContainer
+            {
+                CustomMinimumSize = new Vector2(75, 90),
+                SizeFlagsHorizontal = SizeFlags.ExpandFill
+            };
+
+            var label = new Label
+            {
+                Text = $"{i}: {BitmaskLabels[i]}",
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+            label.AddThemeFontSizeOverride("font_size", 10);
+            slotContainer.AddChild(label);
+
+            var thumbnailPanel = new PanelContainer
+            {
+                CustomMinimumSize = new Vector2(48, 48),
+                SizeFlagsHorizontal = SizeFlags.ShrinkCenter
+            };
+            var thumbnail = new TextureRect
+            {
+                CustomMinimumSize = new Vector2(48, 48),
+                ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+                StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered
+            };
+            thumbnailPanel.AddChild(thumbnail);
+            slotContainer.AddChild(thumbnailPanel);
+            _variantThumbnails[i] = thumbnail;
+
+            var buttonRow = new HBoxContainer { SizeFlagsHorizontal = SizeFlags.ShrinkCenter };
+            var selectBtn = new Button
+            {
+                Text = "Set",
+                CustomMinimumSize = new Vector2(32, 0)
+            };
+            int index = i;
+            selectBtn.Pressed += () => OpenVariantPickerDialog(index);
+            buttonRow.AddChild(selectBtn);
+
+            var clearBtn = new Button
+            {
+                Text = "X",
+                CustomMinimumSize = new Vector2(24, 0),
+                TooltipText = "Clear variant"
+            };
+            clearBtn.Pressed += () => ClearVariant(index);
+            buttonRow.AddChild(clearBtn);
+            slotContainer.AddChild(buttonRow);
+
+            _variantGrid.AddChild(slotContainer);
+        }
+
+        var clearAllBtn = new Button
+        {
+            Text = "Clear All Variants",
+            SizeFlagsHorizontal = SizeFlags.ShrinkCenter
+        };
+        clearAllBtn.Pressed += ClearAllVariants;
+        _autoTileFoldout.Content.AddChild(clearAllBtn);
+
+        vbox.AddChild(new HSeparator());
+
+        // Decoration Density (only for decoration layer tiles)
+        _decorationDensityRow = CreateRow("Decoration Density:");
+        _decorationDensityField = new SpinBox
+        {
+            MinValue = 0,
+            MaxValue = 100,
+            Step = 5,
+            Suffix = "%",
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _decorationDensityField.ValueChanged += _ => OnFieldChanged("");
+        _decorationDensityRow.AddChild(_decorationDensityField);
+        _decorationDensityRow.Visible = false; // Hidden by default, shown for decoration layer
+        vbox.AddChild(_decorationDensityRow);
+
+        var densityNote = new Label
+        {
+            Text = "(Probability of decoration appearing in blob regions)",
+            Modulate = new Color(0.7f, 0.7f, 0.7f),
+            Visible = false
+        };
+        densityNote.AddThemeFontSizeOverride("font_size", 11);
+        vbox.AddChild(densityNote);
+
+        vbox.AddChild(new HSeparator());
+
+        // Blob Settings foldout (per-tile override)
+        _blobSettingsFoldout = new FoldoutContainer("Blob Settings Override", false);
+        vbox.AddChild(_blobSettingsFoldout);
+
+        _blobOverrideCheckbox = new CheckBox
+        {
+            Text = "Override global blob settings for this tile"
+        };
+        _blobOverrideCheckbox.Toggled += OnBlobOverrideToggled;
+        _blobSettingsFoldout.Content.AddChild(_blobOverrideCheckbox);
+
+        var blobNote = new Label
+        {
+            Text = "(When disabled, uses global blob settings from Blob Settings tab)",
+            AutowrapMode = TextServer.AutowrapMode.Word,
+            Modulate = new Color(0.7f, 0.7f, 0.7f)
+        };
+        blobNote.AddThemeFontSizeOverride("font_size", 10);
+        _blobSettingsFoldout.Content.AddChild(blobNote);
+
+        var blobEnabledRow = CreateRow("Enabled:");
+        _blobEnabledField = new CheckBox { ButtonPressed = true };
+        _blobEnabledField.Toggled += _ => OnBlobSettingsChanged();
+        blobEnabledRow.AddChild(_blobEnabledField);
+        _blobSettingsFoldout.Content.AddChild(blobEnabledRow);
+
+        var noiseRow = CreateRow("Noise Scale:");
+        _blobNoiseScaleField = new SpinBox
+        {
+            MinValue = 0.01,
+            MaxValue = 1.0,
+            Step = 0.01,
+            Value = 0.15,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _blobNoiseScaleField.ValueChanged += _ => OnBlobSettingsChanged();
+        noiseRow.AddChild(_blobNoiseScaleField);
+        _blobSettingsFoldout.Content.AddChild(noiseRow);
+
+        var clusterRow = CreateRow("Cluster Strength:");
+        _blobClusterStrengthField = new SpinBox
+        {
+            MinValue = 0.0,
+            MaxValue = 1.0,
+            Step = 0.05,
+            Value = 0.7,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _blobClusterStrengthField.ValueChanged += _ => OnBlobSettingsChanged();
+        clusterRow.AddChild(_blobClusterStrengthField);
+        _blobSettingsFoldout.Content.AddChild(clusterRow);
+
+        var minSizeRow = CreateRow("Min Blob Size:");
+        _blobMinSizeField = new SpinBox
+        {
+            MinValue = 1,
+            MaxValue = 50,
+            Step = 1,
+            Value = 3,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _blobMinSizeField.ValueChanged += _ => OnBlobSettingsChanged();
+        minSizeRow.AddChild(_blobMinSizeField);
+        _blobSettingsFoldout.Content.AddChild(minSizeRow);
+
+        var maxSizeRow = CreateRow("Max Blob Size:");
+        _blobMaxSizeField = new SpinBox
+        {
+            MinValue = 1,
+            MaxValue = 100,
+            Step = 1,
+            Value = 12,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _blobMaxSizeField.ValueChanged += _ => OnBlobSettingsChanged();
+        maxSizeRow.AddChild(_blobMaxSizeField);
+        _blobSettingsFoldout.Content.AddChild(maxSizeRow);
+
+        // Initially disable blob fields
+        SetBlobFieldsEnabled(false);
+
+        vbox.AddChild(new HSeparator());
+
         // Validation message
         _validationLabel = new Label
         {
@@ -407,6 +629,41 @@ public partial class TilePropertiesPanel : ScrollContainer
             checkbox.ButtonPressed = _currentTile.Biomes.Contains(biome, StringComparer.OrdinalIgnoreCase);
         }
 
+        // Update auto-tile variant thumbnails
+        for (int i = 0; i < 16; i++)
+        {
+            UpdateVariantThumbnail(i);
+        }
+
+        // Show decoration density only for decoration layer tiles
+        var isDecorationLayer = _currentTile.Layer.ToLowerInvariant() == "decoration";
+        _decorationDensityRow!.Visible = isDecorationLayer;
+        _decorationDensityField!.Value = _currentTile.DecorationDensity * 100;
+
+        // Populate blob settings
+        var hasBlobOverride = _currentTile.BlobSettings != null;
+        _blobOverrideCheckbox!.ButtonPressed = hasBlobOverride;
+        SetBlobFieldsEnabled(hasBlobOverride);
+
+        if (hasBlobOverride)
+        {
+            _blobEnabledField!.ButtonPressed = _currentTile.BlobSettings!.Enabled;
+            _blobNoiseScaleField!.Value = _currentTile.BlobSettings.NoiseScale;
+            _blobClusterStrengthField!.Value = _currentTile.BlobSettings.ClusterStrength;
+            _blobMinSizeField!.Value = _currentTile.BlobSettings.MinBlobSize;
+            _blobMaxSizeField!.Value = _currentTile.BlobSettings.MaxBlobSize;
+        }
+        else
+        {
+            // Show global defaults as placeholder values
+            var globalConfig = _service.BlobConfig;
+            _blobEnabledField!.ButtonPressed = globalConfig.Enabled;
+            _blobNoiseScaleField!.Value = globalConfig.NoiseScale;
+            _blobClusterStrengthField!.Value = globalConfig.ClusterStrength;
+            _blobMinSizeField!.Value = globalConfig.MinBlobSize;
+            _blobMaxSizeField!.Value = globalConfig.MaxBlobSize;
+        }
+
         _validationLabel!.Text = "";
         _isUpdating = false;
     }
@@ -448,6 +705,13 @@ public partial class TilePropertiesPanel : ScrollContainer
             3 => "effects",
             _ => "terrain"
         };
+
+        // Update decoration density visibility when layer changes
+        var isDecorationLayer = _currentTile.Layer.ToLowerInvariant() == "decoration";
+        _decorationDensityRow!.Visible = isDecorationLayer;
+
+        // Update decoration density value
+        _currentTile.DecorationDensity = (float)(_decorationDensityField!.Value / 100.0);
 
         _currentTile.Elevation = (float)_elevationField!.Value;
         _currentTile.IsTransparent = _transparentField!.ButtonPressed;
@@ -503,6 +767,214 @@ public partial class TilePropertiesPanel : ScrollContainer
         {
             checkbox.Disabled = !enabled;
         }
+    }
+
+    private void OpenVariantPickerDialog(int variantIndex)
+    {
+        if (_currentTile == null) return;
+
+        _editingVariantIndex = variantIndex;
+
+        // Initialize AutoTileVariants if needed
+        _currentTile.AutoTileVariants ??= new Vector2I?[16];
+
+        // Create dialog lazily
+        if (_variantPickerDialog == null)
+        {
+            _variantPickerDialog = new AcceptDialog
+            {
+                Title = "Select Atlas Variant",
+                InitialPosition = Window.WindowInitialPosition.CenterMainWindowScreen,
+                Size = new Vector2I(550, 450),
+                OkButtonText = "Assign",
+            };
+
+            var dialogVBox = new VBoxContainer
+            {
+                SizeFlagsHorizontal = SizeFlags.ExpandFill,
+                SizeFlagsVertical = SizeFlags.ExpandFill
+            };
+
+            var pickerScroll = new ScrollContainer
+            {
+                CustomMinimumSize = new Vector2(0, 380),
+                SizeFlagsHorizontal = SizeFlags.ExpandFill,
+                SizeFlagsVertical = SizeFlags.ExpandFill,
+                HorizontalScrollMode = ScrollMode.Auto,
+                VerticalScrollMode = ScrollMode.Auto
+            };
+
+            _variantPicker = new TilesetAtlasPicker();
+            pickerScroll.AddChild(_variantPicker);
+            dialogVBox.AddChild(pickerScroll);
+
+            _variantPickerDialog.AddChild(dialogVBox);
+            AddChild(_variantPickerDialog);
+
+            // Handle dialog confirmed
+            _variantPickerDialog.Confirmed += OnVariantPickerConfirmed;
+            _variantPickerDialog.Canceled += OnVariantPickerCanceled;
+        }
+
+        // Configure picker with current tile's atlas source
+        var source = _service.GetAtlasSource(_currentTile.SourceId);
+        if (source != null && _variantPicker != null)
+        {
+            var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
+            _variantPicker.SetSource(source, tileSize, _currentTile.SourceId);
+
+            // Pre-select current variant or base tile coords
+            if (_currentTile.AutoTileVariants[variantIndex].HasValue)
+            {
+                _variantPicker.SelectedCoords = _currentTile.AutoTileVariants[variantIndex]!.Value;
+            }
+            else
+            {
+                _variantPicker.SelectedCoords = new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY);
+            }
+        }
+
+        _variantPickerDialog.Title = $"Select Variant for Bitmask {variantIndex}: {BitmaskLabels[variantIndex]}";
+        _variantPickerDialog.Popup();
+    }
+
+    private void OnVariantPickerConfirmed()
+    {
+        if (_editingVariantIndex < 0 || _currentTile == null || _variantPicker == null) return;
+
+        _currentTile.AutoTileVariants ??= new Vector2I?[16];
+        _currentTile.AutoTileVariants[_editingVariantIndex] = _variantPicker.SelectedCoords;
+        UpdateVariantThumbnail(_editingVariantIndex);
+        _service.UpdateTile(_currentTile);
+
+        _editingVariantIndex = -1;
+    }
+
+    private void OnVariantPickerCanceled()
+    {
+        _editingVariantIndex = -1;
+    }
+
+    private void ClearVariant(int index)
+    {
+        if (_currentTile?.AutoTileVariants == null) return;
+
+        _currentTile.AutoTileVariants[index] = null;
+        UpdateVariantThumbnail(index);
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void ClearAllVariants()
+    {
+        if (_currentTile == null) return;
+
+        _currentTile.AutoTileVariants = null;
+        for (int i = 0; i < 16; i++)
+        {
+            UpdateVariantThumbnail(i);
+        }
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void UpdateVariantThumbnail(int index)
+    {
+        if (_currentTile == null || _variantThumbnails[index] == null) return;
+
+        var thumbnail = _variantThumbnails[index]!;
+
+        // Check if variant is defined
+        if (_currentTile.AutoTileVariants == null || !_currentTile.AutoTileVariants[index].HasValue)
+        {
+            thumbnail.Texture = null;
+            return;
+        }
+
+        var coords = _currentTile.AutoTileVariants[index]!.Value;
+        var texture = _service.GetTileTexture(_currentTile);
+        if (texture == null)
+        {
+            thumbnail.Texture = null;
+            return;
+        }
+
+        var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
+        var region = new Rect2I(coords * tileSize, tileSize);
+
+        var atlasTex = new AtlasTexture
+        {
+            Atlas = texture,
+            Region = region
+        };
+        thumbnail.Texture = atlasTex;
+    }
+
+    private void OnBlobOverrideToggled(bool enabled)
+    {
+        if (_isUpdating || _currentTile == null) return;
+
+        SetBlobFieldsEnabled(enabled);
+
+        if (enabled)
+        {
+            // Create blob settings from current field values (which show global defaults)
+            _currentTile.BlobSettings = new EditableBlobConfig
+            {
+                Enabled = _blobEnabledField!.ButtonPressed,
+                NoiseScale = (float)_blobNoiseScaleField!.Value,
+                ClusterStrength = (float)_blobClusterStrengthField!.Value,
+                MinBlobSize = (int)_blobMinSizeField!.Value,
+                MaxBlobSize = (int)_blobMaxSizeField!.Value
+            };
+        }
+        else
+        {
+            // Clear per-tile settings, use global
+            _currentTile.BlobSettings = null;
+        }
+
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void OnBlobSettingsChanged()
+    {
+        if (_isUpdating || _currentTile == null) return;
+        if (!_blobOverrideCheckbox!.ButtonPressed) return; // Only update if override is enabled
+
+        // Ensure min <= max
+        if (_blobMinSizeField!.Value > _blobMaxSizeField!.Value)
+        {
+            _isUpdating = true;
+            _blobMaxSizeField.Value = _blobMinSizeField.Value;
+            _isUpdating = false;
+        }
+
+        _currentTile.BlobSettings = new EditableBlobConfig
+        {
+            Enabled = _blobEnabledField!.ButtonPressed,
+            NoiseScale = (float)_blobNoiseScaleField!.Value,
+            ClusterStrength = (float)_blobClusterStrengthField!.Value,
+            MinBlobSize = (int)_blobMinSizeField.Value,
+            MaxBlobSize = (int)_blobMaxSizeField.Value
+        };
+
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void SetBlobFieldsEnabled(bool enabled)
+    {
+        _blobEnabledField!.Disabled = !enabled;
+        _blobNoiseScaleField!.Editable = enabled;
+        _blobClusterStrengthField!.Editable = enabled;
+        _blobMinSizeField!.Editable = enabled;
+        _blobMaxSizeField!.Editable = enabled;
+
+        // Visual feedback: dim fields when disabled
+        var color = enabled ? Colors.White : new Color(0.6f, 0.6f, 0.6f);
+        _blobEnabledField.Modulate = color;
+        _blobNoiseScaleField.Modulate = color;
+        _blobClusterStrengthField.Modulate = color;
+        _blobMinSizeField.Modulate = color;
+        _blobMaxSizeField.Modulate = color;
     }
 
     private static HBoxContainer CreateRow(string label)

@@ -8,7 +8,6 @@ namespace CardCleaner.Addons.TileEditor;
 public partial class TileEditorDock : Control
 {
     private TileAtlasPanel? _atlasPanel;
-    private AutoTileConfigPanel? _autoTileConfigPanel;
     private BiomePoolPanel? _biomePoolPanel;
     private BlobSettingsPanel? _blobSettingsPanel;
     private bool _initialized;
@@ -29,7 +28,6 @@ public partial class TileEditorDock : Control
             _service.TilesLoaded += OnTilesLoaded;
             _service.TileModified += OnTileModified;
             _service.BlobConfigModified += OnBlobConfigModified;
-            _service.AutoTileConfigModified += OnAutoTileConfigModified;
 
             SetupUI();
             _initialized = true;
@@ -104,15 +102,10 @@ public partial class TileEditorDock : Control
         _biomePoolPanel.Name = "Biomes";
         _tabContainer.AddChild(_biomePoolPanel);
 
-        // Blob Settings tab
+        // Blob Settings tab (global terrain clustering config)
         _blobSettingsPanel = new BlobSettingsPanel(_service!);
         _blobSettingsPanel.Name = "Blob Settings";
         _tabContainer.AddChild(_blobSettingsPanel);
-
-        // Auto-Tile Config tab
-        _autoTileConfigPanel = new AutoTileConfigPanel(_service!);
-        _autoTileConfigPanel.Name = "Auto-Tiling";
-        _tabContainer.AddChild(_autoTileConfigPanel);
     }
 
     private void OnTilesLoaded()
@@ -130,13 +123,6 @@ public partial class TileEditorDock : Control
     }
 
     private void OnBlobConfigModified()
-    {
-        _isDirty = true;
-        _saveButton!.Disabled = false;
-        UpdateTitle();
-    }
-
-    private void OnAutoTileConfigModified(string baseTileId)
     {
         _isDirty = true;
         _saveButton!.Disabled = false;

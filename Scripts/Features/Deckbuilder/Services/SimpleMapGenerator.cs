@@ -162,6 +162,11 @@ public class SimpleMapGenerator
             if (tileId == null) return false;
 
             var tile = _tileRegistry.GetTile(tileId);
+
+            // Check decoration density - if this decoration shouldn't appear, try another
+            if (tile != null && !tile.ShouldPlaceDecoration(_rng))
+                continue;
+
             var tileSize = tile?.Size ?? Vector2I.One;
 
             // Single-cell tile always fits
