@@ -11,12 +11,36 @@ namespace CardCleaner.Scripts.Features.Player.Controllers;
 /// </summary>
 public partial class InteractionSystem : Node3D
 {
+    // Default values as constants
+    private const float DefaultRayLength = 100f;
+    private const uint DefaultInteractableCollisionMask = 6; // Layer 2 (cards) + Layer 3 (buttons)
+
     private IInputService? _inputService;
 
     [Export] public Camera3D? Camera { get; set; }
-    [Export] public float RayLength { get; set; } = 100f;
-    [Export] public uint InteractableCollisionMask { get; set; } = 6; // Layer 2 (cards) + Layer 3 (buttons)
+    [Export] public float RayLength { get; set; } = DefaultRayLength;
+    [Export] public uint InteractableCollisionMask { get; set; } = DefaultInteractableCollisionMask;
     private IInteractable? CurrentTarget { get; set; }
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(RayLength) => true,
+            nameof(InteractableCollisionMask) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(RayLength) => DefaultRayLength,
+            nameof(InteractableCollisionMask) => DefaultInteractableCollisionMask,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public override void _Ready()
     {

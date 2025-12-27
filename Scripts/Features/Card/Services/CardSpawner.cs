@@ -12,11 +12,32 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 [Service(ServiceLifetime.Singleton, typeof(ICardSpawner))]
 public partial class CardSpawner : Node3D, ICardSpawner
 {
+    // Default values as constants
+    private static readonly Vector3 DefaultOffsetRange = Vector3.Zero;
+
     private ICardSpawningService? _spawningService;
     private IInputService? _inputService;
 
     private int _spawnQueue;
-    [Export] public Vector3 OffsetRange { get; set; } = Vector3.Zero;
+    [Export] public Vector3 OffsetRange { get; set; } = DefaultOffsetRange;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(OffsetRange) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(OffsetRange) => Variant.From(DefaultOffsetRange),
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public override void _Ready()
     {

@@ -17,7 +17,11 @@ public partial class CompatibilityTag : Resource
         Not // Compatible with tags that DON'T match this pattern
     }
 
-    [Export] public string Tag { get; set; } = "";
+    // Default values as constants
+    private const string DefaultTag = "";
+    private const CompatibilityMode DefaultMode = CompatibilityMode.Self;
+
+    [Export] public string Tag { get; set; } = DefaultTag;
 
     // Runtime object references - not serialized
     [Newtonsoft.Json.JsonIgnore]
@@ -26,7 +30,27 @@ public partial class CompatibilityTag : Resource
     // String names for JSON serialization
     [JsonPropertyName("compatibleWith")] public Array<string> CompatibleWithNames { get; set; } = new();
 
-    [Export] public CompatibilityMode Mode { get; set; } = CompatibilityMode.Self;
+    [Export] public CompatibilityMode Mode { get; set; } = DefaultMode;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(Tag) => true,
+            nameof(Mode) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(Tag) => DefaultTag,
+            nameof(Mode) => (int)DefaultMode,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public bool IsCompatibleWith(CompatibilityTag other)
     {

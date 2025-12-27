@@ -8,6 +8,11 @@ namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 [GlobalClass]
 public partial class BiomeDefinition : Resource
 {
+    // Default values as constants
+    private const BiomeType DefaultType = BiomeType.Plains;
+    private const float DefaultBlockedPercentage = 0.3f;
+    private static readonly CardSignature DefaultAffinitySignature = new();
+
     public BiomeDefinition() { }
 
     public BiomeDefinition(
@@ -15,7 +20,7 @@ public partial class BiomeDefinition : Resource
         CardSignature affinitySignature,
         TilePool passableTiles,
         TilePool blockedTiles,
-        float blockedPercentage = 0.3f)
+        float blockedPercentage = DefaultBlockedPercentage)
     {
         Type = type;
         AffinitySignature = affinitySignature;
@@ -24,7 +29,7 @@ public partial class BiomeDefinition : Resource
         BlockedPercentage = Mathf.Clamp(blockedPercentage, 0f, 1f);
     }
 
-    [Export] public BiomeType Type { get; set; } = BiomeType.Plains;
+    [Export] public BiomeType Type { get; set; } = DefaultType;
 
     [Export] public CardSignature AffinitySignature { get; set; } = new();
 
@@ -33,7 +38,29 @@ public partial class BiomeDefinition : Resource
     [Export] public TilePool BlockedTiles { get; set; } = new();
 
     [Export(PropertyHint.Range, "0,1,0.01")]
-    public float BlockedPercentage { get; set; } = 0.3f;
+    public float BlockedPercentage { get; set; } = DefaultBlockedPercentage;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(Type) => true,
+            nameof(AffinitySignature) => true,
+            nameof(BlockedPercentage) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(Type) => (int)DefaultType,
+            nameof(AffinitySignature) => Variant.From(DefaultAffinitySignature),
+            nameof(BlockedPercentage) => DefaultBlockedPercentage,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public string? SelectPassableTile(RandomNumberGenerator rng) => PassableTiles.SelectRandom(rng);
 

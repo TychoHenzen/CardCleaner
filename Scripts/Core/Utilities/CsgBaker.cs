@@ -8,11 +8,35 @@ namespace CardCleaner.Scripts.Core.Utilities;
 [Tool]
 public partial class CsgBaker : CsgBox3D, ICardComponent
 {
+    // Default values as constants
+    private const bool DefaultBakeOnSetup = true;
+    private const bool DefaultDebugUVs = false;
+
     private static readonly Dictionary<string, ArrayMesh> MeshCache = new();
     private bool _baked;
-    [Export] public bool BakeOnSetup = true;
-    [Export] public bool DebugUVs;
+    [Export] public bool BakeOnSetup = DefaultBakeOnSetup;
+    [Export] public bool DebugUVs = DefaultDebugUVs;
     [Export] public CardDesigner? Designer { get; set; }
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(BakeOnSetup) => true,
+            nameof(DebugUVs) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(BakeOnSetup) => DefaultBakeOnSetup,
+            nameof(DebugUVs) => DefaultDebugUVs,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public void Setup(Node cardRoot)
     {

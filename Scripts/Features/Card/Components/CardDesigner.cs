@@ -8,16 +8,25 @@ namespace CardCleaner.Scripts.Features.Card.Components;
 public partial class CardDesigner : Node, ICardComponent
 {
     private const float InnerThicknessOffset = 0.002f;
+
+    // Default values as constants
+    private const float DefaultWidth = 0.635f;
+    private const float DefaultHeight = 0.889f;
+    private const float DefaultThickness = 0.005f;
+    private const float DefaultBevelSize = 0.032f;
+    private const int DefaultBevelSides = 16;
+    private const float DefaultOutlineMargin = 0.01f;
+
     private BoxShape3D? _collisionBoxShape;
     private CollisionShape3D? _collisionShape;
     private CsgCombiner3D? _combiner;
     private CsgCylinder3D[] _cornerCylinders = Array.Empty<CsgCylinder3D>();
-    private float _height = 0.889f;
+    private float _height = DefaultHeight;
     private CsgBox3D? _outerBox;
     private CsgBox3D? _outlineBox;
-    private float _thickness = 0.005f;
+    private float _thickness = DefaultThickness;
     private CsgBox3D[] _trimBoxes = Array.Empty<CsgBox3D>();
-    private float _width = 0.635f;
+    private float _width = DefaultWidth;
 
     [Export(PropertyHint.Range, "0.1,3.0,0.01")]
     public float Width
@@ -56,10 +65,38 @@ public partial class CardDesigner : Node, ICardComponent
     }
 
     [Export(PropertyHint.Range, "0.0,1.0,0.001")]
-    public float BevelSize { get; set; } = 0.032f;
+    public float BevelSize { get; set; } = DefaultBevelSize;
 
-    [Export] public int BevelSides { get; set; } = 16;
-    [Export] public float OutlineMargin { get; set; } = 0.01f;
+    [Export] public int BevelSides { get; set; } = DefaultBevelSides;
+    [Export] public float OutlineMargin { get; set; } = DefaultOutlineMargin;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(Width) => true,
+            nameof(Height) => true,
+            nameof(Thickness) => true,
+            nameof(BevelSize) => true,
+            nameof(BevelSides) => true,
+            nameof(OutlineMargin) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(Width) => DefaultWidth,
+            nameof(Height) => DefaultHeight,
+            nameof(Thickness) => DefaultThickness,
+            nameof(BevelSize) => DefaultBevelSize,
+            nameof(BevelSides) => DefaultBevelSides,
+            nameof(OutlineMargin) => DefaultOutlineMargin,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public void Setup(Node cardRoot)
     {

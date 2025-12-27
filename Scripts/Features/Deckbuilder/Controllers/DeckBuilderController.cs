@@ -10,12 +10,33 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 /// </summary>
 public partial class DeckBuilderController : Node
 {
+    // Default values as constants
+    private static readonly Vector3 DefaultScreenSpawnPosition = Vector3.Zero;
+
     [Export] public DeckSlot AbilityDeckSlot { get; set; } = null!;
     [Export] public DeckSlot MapCardSlot { get; set; } = null!;
     [Export] public InteractableButton ActivateButton { get; set; } = null!;
     [Export] public PackedScene BattleScreenScene { get; set; } = null!;
     [Export] public SimpleWorldMapScreen WorldTileMapScreenScene { get; set; } = null!;
-    [Export] public Vector3 ScreenSpawnPosition { get; set; } = Vector3.Zero;
+    [Export] public Vector3 ScreenSpawnPosition { get; set; } = DefaultScreenSpawnPosition;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(ScreenSpawnPosition) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(ScreenSpawnPosition) => Variant.From(DefaultScreenSpawnPosition),
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public override void _Ready()
     {

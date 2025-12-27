@@ -12,7 +12,28 @@ namespace CardCleaner.Scripts.Core.DependencyInjection;
 /// </summary>
 public partial class AutoServiceProvider : Node, IServiceProvider
 {
-    [Export] public bool EnableDebugLogging { get; set; } = true;
+    // Default values as constants
+    private const bool DefaultEnableDebugLogging = true;
+
+    [Export] public bool EnableDebugLogging { get; set; } = DefaultEnableDebugLogging;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(EnableDebugLogging) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(EnableDebugLogging) => DefaultEnableDebugLogging,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public void RegisterServices(IServiceContainer container)
     {

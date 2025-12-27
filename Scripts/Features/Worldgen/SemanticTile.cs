@@ -12,21 +12,63 @@ namespace CardCleaner.Scripts.Features.Worldgen;
 [GlobalClass]
 public partial class SemanticTile : Resource
 {
-    [Export] public string TileName { get; set; } = "";
-    [Export] public TilePassability Passability { get; set; } = TilePassability.Passable;
+    // Default values as constants
+    private const string DefaultTileName = "";
+    private const TilePassability DefaultPassability = TilePassability.Passable;
+    private const string DefaultTileSetPath = "";
+    private const float DefaultGlobalSpawnChance = 0.0f;
+    private const TileLayer DefaultLayer = TileLayer.Terrain;
+    private const float DefaultBaseWeight = 1.0f;
+    private static readonly Vector2I DefaultSize = Vector2I.One;
+    private static readonly CardSignature DefaultSignature = new();
+
+    [Export] public string TileName { get; set; } = DefaultTileName;
+    [Export] public TilePassability Passability { get; set; } = DefaultPassability;
 
     // Pattern properties (every tile is now a pattern)
 
-    [JsonPropertyName("tileSetPath")] public string TileSetPath { get; set; } = "";
+    [JsonPropertyName("tileSetPath")] public string TileSetPath { get; set; } = DefaultTileSetPath;
     [Export] public TileSet? TileSet { get; set; }
-    [Export] public Vector2I Size { get; set; } = Vector2I.One;
+    [Export] public Vector2I Size { get; set; } = DefaultSize;
     [Export] public TilePlacement Tile { get; set; } = new();
 
     // Layered spawning system
-    [Export] public float GlobalSpawnChance { get; set; } = 0.0f;
-    [Export] public TileLayer Layer { get; set; }
-    [Export] public float BaseWeight { get; set; } = 1.0f;
+    [Export] public float GlobalSpawnChance { get; set; } = DefaultGlobalSpawnChance;
+    [Export] public TileLayer Layer { get; set; } = DefaultLayer;
+    [Export] public float BaseWeight { get; set; } = DefaultBaseWeight;
     [Export] public CardSignature Signature { get; set; } = new();
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(TileName) => true,
+            nameof(Passability) => true,
+            nameof(TileSetPath) => true,
+            nameof(Size) => true,
+            nameof(GlobalSpawnChance) => true,
+            nameof(Layer) => true,
+            nameof(BaseWeight) => true,
+            nameof(Signature) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(TileName) => DefaultTileName,
+            nameof(Passability) => (int)DefaultPassability,
+            nameof(TileSetPath) => DefaultTileSetPath,
+            nameof(Size) => Variant.From(DefaultSize),
+            nameof(GlobalSpawnChance) => DefaultGlobalSpawnChance,
+            nameof(Layer) => (int)DefaultLayer,
+            nameof(BaseWeight) => DefaultBaseWeight,
+            nameof(Signature) => Variant.From(DefaultSignature),
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     /// <summary>
     /// Constraint modifications this tile applies to other layers when placed

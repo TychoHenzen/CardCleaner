@@ -20,13 +20,52 @@ public enum ModifierType
 [GlobalClass]
 public partial class ResidualEnergyModifier : Resource
 {
-    [Export] public string Name { get; set; } = "";
-    [Export] public ModifierType Type { get; set; } = ModifierType.Power;
-    [Export] public Element SourceElement { get; set; } = Element.Solidum;
-    [Export] public float Intensity { get; set; } = 1.0f; // How strongly this element affects the modifier
-    [Export] public bool UsePositiveAspect { get; set; } = true; // Whether to use positive or negative aspect
-    [Export] public float BaseValue { get; set; } // Starting value before residual energy
-    [Export] public string EffectTemplate { get; set; } = ""; // Text template for describing the effect
+    // Default values as constants
+    private const string DefaultName = "";
+    private const ModifierType DefaultType = ModifierType.Power;
+    private const Element DefaultSourceElement = Element.Solidum;
+    private const float DefaultIntensity = 1.0f;
+    private const bool DefaultUsePositiveAspect = true;
+    private const float DefaultBaseValue = 0f;
+    private const string DefaultEffectTemplate = "";
+
+    [Export] public string Name { get; set; } = DefaultName;
+    [Export] public ModifierType Type { get; set; } = DefaultType;
+    [Export] public Element SourceElement { get; set; } = DefaultSourceElement;
+    [Export] public float Intensity { get; set; } = DefaultIntensity; // How strongly this element affects the modifier
+    [Export] public bool UsePositiveAspect { get; set; } = DefaultUsePositiveAspect; // Whether to use positive or negative aspect
+    [Export] public float BaseValue { get; set; } = DefaultBaseValue; // Starting value before residual energy
+    [Export] public string EffectTemplate { get; set; } = DefaultEffectTemplate; // Text template for describing the effect
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(Name) => true,
+            nameof(Type) => true,
+            nameof(SourceElement) => true,
+            nameof(Intensity) => true,
+            nameof(UsePositiveAspect) => true,
+            nameof(BaseValue) => true,
+            nameof(EffectTemplate) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(Name) => DefaultName,
+            nameof(Type) => (int)DefaultType,
+            nameof(SourceElement) => (int)DefaultSourceElement,
+            nameof(Intensity) => DefaultIntensity,
+            nameof(UsePositiveAspect) => DefaultUsePositiveAspect,
+            nameof(BaseValue) => DefaultBaseValue,
+            nameof(EffectTemplate) => DefaultEffectTemplate,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public float CalculateEffect(Models.CardSignature residualEnergy)
     {

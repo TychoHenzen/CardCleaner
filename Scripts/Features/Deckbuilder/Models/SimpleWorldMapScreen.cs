@@ -63,6 +63,9 @@ public partial class SimpleWorldMapScreen : Node3D
 
     private ITileRegistry? _tileRegistry;
 
+    // Default values as constants
+    private const bool DefaultShowBiomeOverlay = true;
+
     // Export properties for editor assignment - multiple layers for proper rendering order
     [Export] public TileMapLayer? TerrainLayer { get; set; }
     [Export] public TileMapLayer? DecorationLayer { get; set; }
@@ -75,7 +78,25 @@ public partial class SimpleWorldMapScreen : Node3D
     [Export] public Label? StatusLabel { get; set; }
     [Export] public Sprite2D? PlayerSprite { get; set; }
     [Export] public Control? CombatUI { get; set; }
-    [Export] public bool ShowBiomeOverlay { get; set; } = true;
+    [Export] public bool ShowBiomeOverlay { get; set; } = DefaultShowBiomeOverlay;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(ShowBiomeOverlay) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(ShowBiomeOverlay) => DefaultShowBiomeOverlay,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public override void _Ready()
     {

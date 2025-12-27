@@ -10,9 +10,33 @@ namespace CardCleaner.Scripts.Core.Utilities;
 [Tool]
 public partial class CardSleepEnforcer : Node, IPhysicsComponent
 {
+    // Default values as constants
+    private const float DefaultAngularSleepThreshold = 0.05f;
+    private const float DefaultLinearSleepThreshold = 0.05f;
+
     private RigidBody3D _body = null!;
-    [Export] public float AngularSleepThreshold = 0.05f;
-    [Export] public float LinearSleepThreshold = 0.05f;
+    [Export] public float AngularSleepThreshold = DefaultAngularSleepThreshold;
+    [Export] public float LinearSleepThreshold = DefaultLinearSleepThreshold;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(AngularSleepThreshold) => true,
+            nameof(LinearSleepThreshold) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(AngularSleepThreshold) => DefaultAngularSleepThreshold,
+            nameof(LinearSleepThreshold) => DefaultLinearSleepThreshold,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public void Setup(Node cardRoot)
     {

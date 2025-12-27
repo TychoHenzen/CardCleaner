@@ -12,9 +12,36 @@ public abstract partial class BaselineGradient : Resource
 [GlobalClass]
 public partial class RadialGradient : BaselineGradient
 {
+    // Default values as constants
+    private const float DefaultFalloff = 1.0f;
+    private static readonly CardSignature DefaultCenterSignature = new();
+    private static readonly CardSignature DefaultEdgeSignature = new();
+
     [Export] public CardSignature CenterSignature { get; set; } = new();
     [Export] public CardSignature EdgeSignature { get; set; } = new();
-    [Export] public float Falloff { get; set; } = 1.0f;
+    [Export] public float Falloff { get; set; } = DefaultFalloff;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(CenterSignature) => true,
+            nameof(EdgeSignature) => true,
+            nameof(Falloff) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(CenterSignature) => Variant.From(DefaultCenterSignature),
+            nameof(EdgeSignature) => Variant.From(DefaultEdgeSignature),
+            nameof(Falloff) => DefaultFalloff,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public override CardSignature GetSignatureAt(Vector2I position, Vector2I mapSize)
     {
@@ -38,12 +65,42 @@ public partial class RadialGradient : BaselineGradient
 [GlobalClass]
 public partial class NoiseGradient : BaselineGradient
 {
+    // Default values as constants
+    private const float DefaultNoiseScale = 0.1f;
+    private const float DefaultNoiseStrength = 0.3f;
+    private const int DefaultNoiseSeed = 42;
+    private static readonly CardSignature DefaultBaseSignature = new();
+
     [Export] public CardSignature BaseSignature { get; set; } = new();
-    [Export] public float NoiseScale { get; set; } = 0.1f;
-    [Export] public float NoiseStrength { get; set; } = 0.3f;
-    [Export] public int NoiseSeed { get; set; } = 42;
+    [Export] public float NoiseScale { get; set; } = DefaultNoiseScale;
+    [Export] public float NoiseStrength { get; set; } = DefaultNoiseStrength;
+    [Export] public int NoiseSeed { get; set; } = DefaultNoiseSeed;
 
     private FastNoiseLite? _noise;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(BaseSignature) => true,
+            nameof(NoiseScale) => true,
+            nameof(NoiseStrength) => true,
+            nameof(NoiseSeed) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(BaseSignature) => Variant.From(DefaultBaseSignature),
+            nameof(NoiseScale) => DefaultNoiseScale,
+            nameof(NoiseStrength) => DefaultNoiseStrength,
+            nameof(NoiseSeed) => DefaultNoiseSeed,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public override CardSignature GetSignatureAt(Vector2I position, Vector2I mapSize)
     {

@@ -6,10 +6,31 @@ namespace CardCleaner.Scripts.Features.Card.Controllers;
 [Tool]
 public partial class BlacklightController : Node, IPhysicsComponent
 {
+    // Default values as constants
+    private const float DefaultBlacklightRange = 5.0f;
+
     private ShaderMaterial? _activeMaterial;
 
     private Node3D? _cardRoot;
-    [Export] public float BlacklightRange { get; set; } = 5.0f;
+    [Export] public float BlacklightRange { get; set; } = DefaultBlacklightRange;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(BlacklightRange) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(BlacklightRange) => DefaultBlacklightRange,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public void Setup(Node cardRoot)
     {

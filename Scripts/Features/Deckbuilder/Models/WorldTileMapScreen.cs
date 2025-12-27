@@ -36,16 +36,54 @@ public partial class WorldTileMapScreen : Node3D
     [Export] public MeshInstance3D? ScreenMesh { get; set; }
     private Camera2D? _camera2D;
 
+    // Default values as constants/static readonly
+    private static readonly Vector2I DefaultPreviewSize = new(15, 10);
+    private const bool DefaultSeeded = true;
+    private const bool DefaultShowTerrain = true;
+    private const bool DefaultShowStructure = true;
+    private const bool DefaultShowDecoration = true;
+    private const bool DefaultShowEffects = true;
+    private static readonly CardSignature DefaultSignature = new();
 
     // Layer visibility toggles for preview
-    [ExportCategory("Preview")] [Export] public Vector2I PreviewSize { get; set; } = new(15, 10);
-    [Export] public bool Seeded { get; set; } = true;
-    [Export] public bool ShowTerrain { get; set; } = true;
-    [Export] public bool ShowStructure { get; set; } = true;
-    [Export] public bool ShowDecoration { get; set; } = true;
-    [Export] public bool ShowEffects { get; set; } = true;
+    [ExportCategory("Preview")] [Export] public Vector2I PreviewSize { get; set; } = DefaultPreviewSize;
+    [Export] public bool Seeded { get; set; } = DefaultSeeded;
+    [Export] public bool ShowTerrain { get; set; } = DefaultShowTerrain;
+    [Export] public bool ShowStructure { get; set; } = DefaultShowStructure;
+    [Export] public bool ShowDecoration { get; set; } = DefaultShowDecoration;
+    [Export] public bool ShowEffects { get; set; } = DefaultShowEffects;
     [Export] public CardSignature Signature { get; set; } = new();
     private bool _generatePreview;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(PreviewSize) => true,
+            nameof(Seeded) => true,
+            nameof(ShowTerrain) => true,
+            nameof(ShowStructure) => true,
+            nameof(ShowDecoration) => true,
+            nameof(ShowEffects) => true,
+            nameof(Signature) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(PreviewSize) => Variant.From(DefaultPreviewSize),
+            nameof(Seeded) => DefaultSeeded,
+            nameof(ShowTerrain) => DefaultShowTerrain,
+            nameof(ShowStructure) => DefaultShowStructure,
+            nameof(ShowDecoration) => DefaultShowDecoration,
+            nameof(ShowEffects) => DefaultShowEffects,
+            nameof(Signature) => Variant.From(DefaultSignature),
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     [Export]
     public bool GeneratePreview
