@@ -1,30 +1,35 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 using CardController = CardCleaner.Scripts.Features.Card.Controllers.CardController;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 
-[Tool]
 public partial class DeckSlot : Node3D
 {
     [Signal]
     public delegate void CardsChangedEventHandler();
 
+    // Default values for exported properties
+    private const float DefaultEjectForce = 2f;
+    private const int DefaultCapacity = 5;
+    private static readonly Vector3 DefaultStackOffset = new(0, 0.02f, 0);
+
     private readonly List<RigidBody3D> _cards = new();
     private bool _processingEntry;
 
-    // Default values for exported properties
-    private const float DefaultEjectForce = 2f;
-    private static readonly Vector3 DefaultStackOffset = new(0, 0.02f, 0);
-    private const int DefaultCapacity = 5;
-
     [Export] public Area3D Area = null!;
     [Export] public float EjectForce = DefaultEjectForce;
-    [Export] public Vector3 StackOffset = DefaultStackOffset;
     [Export] public Vector3 PositionOffset = Vector3.Zero;
+    [Export] public Vector3 StackOffset = DefaultStackOffset;
     [Export] public int Capacity { get; set; } = DefaultCapacity;
+
+    public bool HasCards => _cards.Count > 0;
+
+    // Convenience property for single-card usage (when Capacity = 1)
+    public bool HasCard => HasCards;
 
     public override bool _PropertyCanRevert(StringName property)
     {
@@ -49,11 +54,6 @@ public partial class DeckSlot : Node3D
             _ => base._PropertyGetRevert(property)
         };
     }
-
-    public bool HasCards => _cards.Count > 0;
-
-    // Convenience property for single-card usage (when Capacity = 1)
-    public bool HasCard => HasCards;
 
     public override void _Ready()
     {
@@ -140,9 +140,9 @@ public partial class DeckSlot : Node3D
         card.ApplyImpulse(Vector3.Up * EjectForce);
     }
 
-    public List<Card.Models.CardSignature> ConsumeAllCardSignatures()
+    public List<CardSignature> ConsumeAllCardSignatures()
     {
-        var sigs = new List<Card.Models.CardSignature>();
+        var sigs = new List<CardSignature>();
         foreach (var c in _cards.ToList()) // ToList to avoid modification during iteration
         {
             // Disconnect from pickup signal before destroying
@@ -158,7 +158,7 @@ public partial class DeckSlot : Node3D
     }
 
     // Convenience method for single-card usage (when Capacity = 1)
-    public Card.Models.CardSignature? ConsumeCardSignature()
+    public CardSignature? ConsumeCardSignature()
     {
         var allSignatures = ConsumeAllCardSignatures();
         return allSignatures.FirstOrDefault();

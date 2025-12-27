@@ -37,55 +37,60 @@ The project uses `.editorconfig` for code style enforcement with Godot-specific 
   - CA1031 lenient (game code exception handling)
 - **Tests/Addons**: Tests have relaxed null checking; addons folder has all analyzers disabled
 
-### Export Default Preservation
+### [Tool] Attribute Usage
 
-Godot serializes ALL exported property values to `.tscn` files, which can override code-defined defaults with stale values. To prevent this, use `_PropertyCanRevert()` and `_PropertyGetRevert()` to declare default values:
+The `[Tool]` attribute causes Godot to execute scripts in the editor. **Only use `[Tool]` on scripts that genuinely need editor functionality:**
+
+**WHEN TO USE `[Tool]`:**
+- Resources with `[GlobalClass]` that are edited in the inspector
+- Nodes with editor preview features (e.g., `GeneratePreview` button)
+- Editor plugins and custom inspectors
+
+**WHEN NOT TO USE `[Tool]`:**
+- Runtime-only nodes (interaction, physics, game logic)
+- Components that only run during gameplay
+- Services and controllers
+
+**The Problem:** `[Tool]` scripts run `_Ready()` in the editor, which populates private fields. Godot then serializes these runtime values to `.tscn` files, causing:
+- Private fields like `_rng`, `_originalPosition` appearing in scene files
+- Version control noise from random state changes
+- Potential deserialization bugs
+
+**The Fix:** Remove `[Tool]` from runtime-only scripts. If `[Tool]` is truly needed, guard `_Ready()`:
+
+```csharp
+public override void _Ready()
+{
+    if (Engine.IsEditorHint()) return;
+    // Runtime initialization...
+}
+```
+
+### Export Default Preservation (Inspector Reset Button)
+
+The `_PropertyCanRevert()` pattern enables the "reset to default" button in the Godot inspector. Note: this does NOT prevent serialization - it only affects the inspector UI.
 
 ```csharp
 public partial class MyNode : Node3D
 {
-    // Define defaults as constants (single source of truth)
     private const float DefaultSpeed = 5.0f;
-    private const bool DefaultEnabled = true;
-    private static readonly Vector3 DefaultOffset = new(0, 0.5f, 0);
-
     [Export] public float Speed = DefaultSpeed;
-    [Export] public bool Enabled = DefaultEnabled;
-    [Export] public Vector3 Offset = DefaultOffset;
 
     public override bool _PropertyCanRevert(StringName property)
     {
-        return property.ToString() switch
-        {
-            nameof(Speed) => true,
-            nameof(Enabled) => true,
-            nameof(Offset) => true,
-            _ => base._PropertyCanRevert(property)
-        };
+        return property.ToString() == nameof(Speed) || base._PropertyCanRevert(property);
     }
 
     public override Variant _PropertyGetRevert(StringName property)
     {
-        return property.ToString() switch
-        {
-            nameof(Speed) => DefaultSpeed,
-            nameof(Enabled) => DefaultEnabled,
-            nameof(Offset) => Variant.From(DefaultOffset),
-            _ => base._PropertyGetRevert(property)
-        };
+        return property.ToString() == nameof(Speed)
+            ? DefaultSpeed
+            : base._PropertyGetRevert(property);
     }
 }
 ```
 
-**Benefits**:
-- Code defaults are the source of truth (not scene files)
-- Editor shows reset button for non-default values
-- Changing defaults in code propagates to scenes automatically
-- Reduces scene file churn in version control
-
-**When to use**: Apply to classes where exported properties have non-zero/non-null defaults that should be respected across scene instances. Not needed for `null!` references that must be set in the editor.
-
-**Reference implementation**: See `CardHolder.cs` for a working example.
+**When to use**: For exported properties where you want the inspector's reset button to work correctly.
 
 ## Architecture
 

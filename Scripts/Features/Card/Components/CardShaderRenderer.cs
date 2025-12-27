@@ -5,7 +5,6 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
-[Tool]
 public partial class CardShaderRenderer : Node, ICardComponent
 {
     private bool _baked;

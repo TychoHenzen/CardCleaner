@@ -3,21 +3,19 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
-[Tool]
 public partial class FlutterCard : Node, IPhysicsComponent
 {
-    private float _flipPhase;
-
-    // RNG and phase offsets for two flutter modes
-    private RandomNumberGenerator _rng = null!;
-    private float _twistPhase;
-
     // Default values for exported properties
     private const float DefaultAirDensity = 1.0f;
     private const float DefaultDragCoeff = 0.5f;
     private const float DefaultFlutterPitch = 0.05f;
     private const float DefaultFlutterTwist = 0.1f;
     private const float DefaultLiftCoeff = 0.2f;
+    private float _flipPhase;
+
+    // RNG and phase offsets for two flutter modes
+    private RandomNumberGenerator _rng = null!;
+    private float _twistPhase;
 
     [Export] public float AirDensity = DefaultAirDensity;
 
@@ -26,32 +24,6 @@ public partial class FlutterCard : Node, IPhysicsComponent
     [Export] public float FlutterPitch = DefaultFlutterPitch; // flip around side
     [Export] public float FlutterTwist = DefaultFlutterTwist; // twist around normal
     [Export] public float LiftCoeff = DefaultLiftCoeff;
-
-    public override bool _PropertyCanRevert(StringName property)
-    {
-        return property.ToString() switch
-        {
-            nameof(AirDensity) => true,
-            nameof(DragCoeff) => true,
-            nameof(FlutterPitch) => true,
-            nameof(FlutterTwist) => true,
-            nameof(LiftCoeff) => true,
-            _ => base._PropertyCanRevert(property)
-        };
-    }
-
-    public override Variant _PropertyGetRevert(StringName property)
-    {
-        return property.ToString() switch
-        {
-            nameof(AirDensity) => DefaultAirDensity,
-            nameof(DragCoeff) => DefaultDragCoeff,
-            nameof(FlutterPitch) => DefaultFlutterPitch,
-            nameof(FlutterTwist) => DefaultFlutterTwist,
-            nameof(LiftCoeff) => DefaultLiftCoeff,
-            _ => base._PropertyGetRevert(property)
-        };
-    }
 
     public void Setup(Node cardRoot)
     {
@@ -117,5 +89,31 @@ public partial class FlutterCard : Node, IPhysicsComponent
     public void PhysicsProcess(double delta)
     {
         //no-op
+    }
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(AirDensity) => true,
+            nameof(DragCoeff) => true,
+            nameof(FlutterPitch) => true,
+            nameof(FlutterTwist) => true,
+            nameof(LiftCoeff) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(AirDensity) => DefaultAirDensity,
+            nameof(DragCoeff) => DefaultDragCoeff,
+            nameof(FlutterPitch) => DefaultFlutterPitch,
+            nameof(FlutterTwist) => DefaultFlutterTwist,
+            nameof(LiftCoeff) => DefaultLiftCoeff,
+            _ => base._PropertyGetRevert(property)
+        };
     }
 }

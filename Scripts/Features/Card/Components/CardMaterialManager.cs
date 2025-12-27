@@ -1,10 +1,10 @@
-﻿using CardCleaner.Scripts.Core.Interfaces;
+﻿using CardCleaner.Scripts.Core.Data;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 using Godot.Collections;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
-[Tool]
 public partial class CardMaterialManager : Node, ICardMaterialComponent
 {
     private readonly Dictionary<string, Variant> _shaderParameters = new();
@@ -12,7 +12,7 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
     private ShaderMaterial _activeMaterial = null!;
     [Export] public ShaderMaterial CardMaterialTemplate { get; set; } = null!;
 
-    public void SetLayerTextures(Core.Data.LayerData[] layers)
+    public void SetLayerTextures(LayerData[] layers)
     {
         var texturesArr = new Array<Texture2D>();
         var regionsArr = new Array<Vector4>();

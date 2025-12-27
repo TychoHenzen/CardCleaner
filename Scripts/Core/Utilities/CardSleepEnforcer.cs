@@ -7,7 +7,6 @@ namespace CardCleaner.Scripts.Core.Utilities;
 ///     Forces the card to re-enter sleep if motion is below threshold,
 ///     to prevent wakeups from other cards landing on it.
 /// </summary>
-[Tool]
 public partial class CardSleepEnforcer : Node, IPhysicsComponent
 {
     // Default values as constants
@@ -17,6 +16,20 @@ public partial class CardSleepEnforcer : Node, IPhysicsComponent
     private RigidBody3D _body = null!;
     [Export] public float AngularSleepThreshold = DefaultAngularSleepThreshold;
     [Export] public float LinearSleepThreshold = DefaultLinearSleepThreshold;
+
+    public void Setup(Node cardRoot) => _body = (cardRoot as RigidBody3D)!;
+
+    public void IntegrateForces(PhysicsDirectBodyState3D state)
+    {
+        if (state.LinearVelocity.LengthSquared() < LinearSleepThreshold * LinearSleepThreshold &&
+            state.AngularVelocity.LengthSquared() < AngularSleepThreshold * AngularSleepThreshold)
+            _body.Freeze = true;
+    }
+
+    public void PhysicsProcess(double delta)
+    {
+        //no-op
+    }
 
     public override bool _PropertyCanRevert(StringName property)
     {
@@ -36,22 +49,5 @@ public partial class CardSleepEnforcer : Node, IPhysicsComponent
             nameof(LinearSleepThreshold) => DefaultLinearSleepThreshold,
             _ => base._PropertyGetRevert(property)
         };
-    }
-
-    public void Setup(Node cardRoot)
-    {
-        _body = (cardRoot as RigidBody3D)!;
-    }
-
-    public void IntegrateForces(PhysicsDirectBodyState3D state)
-    {
-        if (state.LinearVelocity.LengthSquared() < LinearSleepThreshold * LinearSleepThreshold &&
-            state.AngularVelocity.LengthSquared() < AngularSleepThreshold * AngularSleepThreshold)
-            _body.Freeze = true;
-    }
-
-    public void PhysicsProcess(double delta)
-    {
-        //no-op
     }
 }

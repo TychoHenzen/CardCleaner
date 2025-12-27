@@ -5,7 +5,6 @@ using Godot;
 
 namespace CardCleaner.Scripts.Core.Utilities;
 
-[Tool]
 public partial class CsgBaker : CsgBox3D, ICardComponent
 {
     // Default values as constants
@@ -17,6 +16,13 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
     [Export] public bool BakeOnSetup = DefaultBakeOnSetup;
     [Export] public bool DebugUVs = DefaultDebugUVs;
     [Export] public CardDesigner? Designer { get; set; }
+
+    public void Setup(Node cardRoot)
+    {
+        if (_baked || !BakeOnSetup) return;
+        if (Designer == null) Designer = cardRoot.GetNodeOrNull<CardDesigner>("Designer");
+        CallDeferred(MethodName.PerformDeferredBake, cardRoot);
+    }
 
     public override bool _PropertyCanRevert(StringName property)
     {
@@ -36,13 +42,6 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
             nameof(DebugUVs) => DefaultDebugUVs,
             _ => base._PropertyGetRevert(property)
         };
-    }
-
-    public void Setup(Node cardRoot)
-    {
-        if (_baked || !BakeOnSetup) return;
-        if (Designer == null) Designer = cardRoot.GetNodeOrNull<CardDesigner>("Designer");
-        CallDeferred(MethodName.PerformDeferredBake, cardRoot);
     }
 
     private void PerformDeferredBake(Node? cardRoot)
@@ -71,9 +70,7 @@ public partial class CsgBaker : CsgBox3D, ICardComponent
 
         var meshInstance = new MeshInstance3D
         {
-            Name = $"{Name}_Baked",
-            Mesh = cachedMesh,
-            MaterialOverride = MaterialOverride
+            Name = $"{Name}_Baked", Mesh = cachedMesh, MaterialOverride = MaterialOverride
         };
         cardRoot.AddChild(meshInstance);
         Visible = false;

@@ -6,7 +6,6 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Conveyor.Components;
 
-[Tool]
 public partial class ConveyorBelt : Node3D
 {
     private readonly List<RigidBody3D> _onBelt = new();

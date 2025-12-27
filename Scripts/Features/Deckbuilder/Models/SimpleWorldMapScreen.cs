@@ -13,12 +13,14 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 /// <summary>
 /// Enhanced world map screen with visual feedback for exploration and combat
 /// </summary>
-[Tool]
 [GlobalClass]
 public partial class SimpleWorldMapScreen : Node3D
 {
     // Visual constants
     private const int TILE_SIZE = 16;
+
+    // Default values as constants
+    private const bool DefaultShowBiomeOverlay = true;
 
     // Biome colors for overlay visualization (semi-transparent)
     private static readonly System.Collections.Generic.Dictionary<BiomeType, Color> BiomeColors = new()
@@ -35,16 +37,16 @@ public partial class SimpleWorldMapScreen : Node3D
 
     // Cache for biome overlay textures
     private readonly System.Collections.Generic.Dictionary<BiomeType, ImageTexture> _biomeTextures = new();
-    private readonly HashSet<Vector2I> _renderedDebugTiles = new();
+    private readonly List<Sprite2D> _enemySprites = new();
 
     // Fog of war system
     private readonly System.Collections.Generic.Dictionary<Vector2I, Sprite2D> _fogSprites = new();
-    private ImageTexture? _fogTexture;
+    private readonly HashSet<Vector2I> _renderedDebugTiles = new();
     private Label? _actionLabel;
     private Camera2D? _camera2D;
     private ProgressBar? _enemyHealthBar;
     private Label? _enemyHealthLabel;
-    private readonly List<Sprite2D> _enemySprites = new();
+    private ImageTexture? _fogTexture;
     private IGameSessionService? _gameSession;
 
     private bool _hasLoggedTileInfo;
@@ -63,9 +65,6 @@ public partial class SimpleWorldMapScreen : Node3D
 
     private ITileRegistry? _tileRegistry;
     private ITransitionRegistry? _transitionRegistry;
-
-    // Default values as constants
-    private const bool DefaultShowBiomeOverlay = true;
 
     // Export properties for editor assignment - multiple layers for proper rendering order
     [Export] public TileMapLayer? TerrainLayer { get; set; }

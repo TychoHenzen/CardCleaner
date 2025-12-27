@@ -8,14 +8,10 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Components;
 /// A physical button that can be clicked in the world.
 /// Implements IInteractable for use with the generic interaction system.
 /// </summary>
-[Tool]
 public partial class InteractableButton : StaticBody3D, IInteractable
 {
     [Signal]
     public delegate void ButtonPressedEventHandler();
-
-    private Vector3 _originalPosition;
-    private Tween? _pressTween;
 
     // Default values for exported properties
     private const bool DefaultEnabled = true;
@@ -23,12 +19,43 @@ public partial class InteractableButton : StaticBody3D, IInteractable
     private const float DefaultPressDepth = 0.02f;
     private const float DefaultPressAnimationSpeed = 0.1f;
 
+    private Vector3 _originalPosition;
+    private Tween? _pressTween;
+
     [Export] public bool Enabled { get; set; } = DefaultEnabled;
-    [Export] public float InteractionRange { get; set; } = DefaultInteractionRange;
     [Export] public float PressDepth { get; set; } = DefaultPressDepth;
     [Export] public float PressAnimationSpeed { get; set; } = DefaultPressAnimationSpeed;
     [Export] public MeshInstance3D? ButtonMesh { get; set; }
     [Export] public MeshInstance3D? HighlightMesh { get; set; }
+    [Export] public float InteractionRange { get; set; } = DefaultInteractionRange;
+
+    public bool CanInteract => Enabled;
+    public Node3D InteractionBody => this;
+
+    public void Interact()
+    {
+        if (!CanInteract) return;
+
+        ILog.Print($"Button '{Name}' pressed!");
+
+        // Play press animation
+        PlayPressAnimation();
+
+        // Emit signal
+        EmitSignal(SignalName.ButtonPressed);
+    }
+
+    public void Highlight()
+    {
+        if (!CanInteract) return; // Only highlight if we can interact
+
+        if (HighlightMesh != null) HighlightMesh.Visible = true;
+    }
+
+    public void ClearHighlight()
+    {
+        if (HighlightMesh != null) HighlightMesh.Visible = false;
+    }
 
     public override bool _PropertyCanRevert(StringName property)
     {
@@ -54,9 +81,6 @@ public partial class InteractableButton : StaticBody3D, IInteractable
         };
     }
 
-    public bool CanInteract => Enabled;
-    public Node3D InteractionBody => this;
-
     public override void _Ready()
     {
         // Set up collision layer for interactables (layer 3)
@@ -74,31 +98,6 @@ public partial class InteractableButton : StaticBody3D, IInteractable
         // Ensure we have a collision shape
         if (GetChildren().OfType<CollisionShape3D>().FirstOrDefault() == null)
             ILog.Error($"{Name} needs a CollisionShape3D child for interaction detection");
-    }
-
-    public void Interact()
-    {
-        if (!CanInteract) return;
-
-        ILog.Print($"Button '{Name}' pressed!");
-
-        // Play press animation
-        PlayPressAnimation();
-
-        // Emit signal
-        EmitSignal(SignalName.ButtonPressed);
-    }
-
-    public void Highlight()
-    {
-        if (!CanInteract) return; // Only highlight if we can interact
-
-        if (HighlightMesh != null) HighlightMesh.Visible = true;
-    }
-
-    public void ClearHighlight()
-    {
-        if (HighlightMesh != null) HighlightMesh.Visible = false;
     }
 
     private void PlayPressAnimation()

@@ -3,7 +3,6 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Controllers;
 
-[Tool]
 public partial class BlacklightController : Node, IPhysicsComponent
 {
     // Default values as constants
@@ -13,6 +12,21 @@ public partial class BlacklightController : Node, IPhysicsComponent
 
     private Node3D? _cardRoot;
     [Export] public float BlacklightRange { get; set; } = DefaultBlacklightRange;
+
+    public void Setup(Node cardRoot) => _cardRoot = cardRoot as Node3D;
+
+    public void IntegrateForces(PhysicsDirectBodyState3D state)
+    {
+        //no-op
+    }
+
+    public void PhysicsProcess(double delta)
+    {
+        if (Engine.IsEditorHint() || _cardRoot == null || _activeMaterial == null) return;
+
+        var exposure = CalculateExposure(_cardRoot.GlobalPosition);
+        _activeMaterial.SetShaderParameter("blacklight_exposure", exposure);
+    }
 
     public override bool _PropertyCanRevert(StringName property)
     {
@@ -30,11 +44,6 @@ public partial class BlacklightController : Node, IPhysicsComponent
             nameof(BlacklightRange) => DefaultBlacklightRange,
             _ => base._PropertyGetRevert(property)
         };
-    }
-
-    public void Setup(Node cardRoot)
-    {
-        _cardRoot = cardRoot as Node3D;
     }
 
     public float CalculateExposure(Vector3 cardPosition)
@@ -65,18 +74,5 @@ public partial class BlacklightController : Node, IPhysicsComponent
     public void UpdateBlacklightEffect(ShaderMaterial? material)
     {
         _activeMaterial = material;
-    }
-
-    public void IntegrateForces(PhysicsDirectBodyState3D state)
-    {
-        //no-op
-    }
-
-    public void PhysicsProcess(double delta)
-    {
-        if (Engine.IsEditorHint() || _cardRoot == null || _activeMaterial == null) return;
-
-        var exposure = CalculateExposure(_cardRoot.GlobalPosition);
-        _activeMaterial.SetShaderParameter("blacklight_exposure", exposure);
     }
 }
