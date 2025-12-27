@@ -17,12 +17,42 @@ public partial class InteractableButton : StaticBody3D, IInteractable
     private Vector3 _originalPosition;
     private Tween? _pressTween;
 
-    [Export] public bool Enabled { get; set; } = true;
-    [Export] public float InteractionRange { get; set; } = 5.0f;
-    [Export] public float PressDepth { get; set; } = 0.02f;
-    [Export] public float PressAnimationSpeed { get; set; } = 0.1f;
+    // Default values for exported properties
+    private const bool DefaultEnabled = true;
+    private const float DefaultInteractionRange = 5.0f;
+    private const float DefaultPressDepth = 0.02f;
+    private const float DefaultPressAnimationSpeed = 0.1f;
+
+    [Export] public bool Enabled { get; set; } = DefaultEnabled;
+    [Export] public float InteractionRange { get; set; } = DefaultInteractionRange;
+    [Export] public float PressDepth { get; set; } = DefaultPressDepth;
+    [Export] public float PressAnimationSpeed { get; set; } = DefaultPressAnimationSpeed;
     [Export] public MeshInstance3D? ButtonMesh { get; set; }
     [Export] public MeshInstance3D? HighlightMesh { get; set; }
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(Enabled) => true,
+            nameof(InteractionRange) => true,
+            nameof(PressDepth) => true,
+            nameof(PressAnimationSpeed) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(Enabled) => DefaultEnabled,
+            nameof(InteractionRange) => DefaultInteractionRange,
+            nameof(PressDepth) => DefaultPressDepth,
+            nameof(PressAnimationSpeed) => DefaultPressAnimationSpeed,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public bool CanInteract => Enabled;
     public Node3D InteractionBody => this;

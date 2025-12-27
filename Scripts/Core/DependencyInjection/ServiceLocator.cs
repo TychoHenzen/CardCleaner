@@ -15,6 +15,8 @@ namespace CardCleaner.Scripts.Core.DependencyInjection;
 public partial class ServiceLocator : Node
 {
     private static ServiceLocator _instance = null!;
+    // Static pending callbacks for when Get<T>(callback) is called before _instance exists
+    private static readonly Dictionary<Type, List<Action<object>>> StaticPendingCallbacks = new();
     private readonly Dictionary<Type, List<Action<object>>> _pendingCallbacks = new();
     private IServiceContainer _container = new ServiceContainer();
 
@@ -27,6 +29,19 @@ public partial class ServiceLocator : Node
         if (_instance != null)
             ILog.Error("!!!Duplicate service locator!!!");
         _instance = this;
+
+        // Transfer any callbacks that were registered before _instance existed
+        foreach (var kvp in StaticPendingCallbacks)
+        {
+            if (!_pendingCallbacks.TryGetValue(kvp.Key, out var list))
+            {
+                list = new List<Action<object>>();
+                _pendingCallbacks[kvp.Key] = list;
+            }
+            list.AddRange(kvp.Value);
+        }
+        StaticPendingCallbacks.Clear();
+
         CallDeferred(MethodName.ResolveServices);
     }
 
@@ -108,6 +123,19 @@ public partial class ServiceLocator : Node
     public static void Get<T>(Action<T> callback) where T : class
     {
         var serviceType = typeof(T);
+
+        // If _instance doesn't exist yet, queue in static callbacks
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (_instance == null)
+        {
+            if (!StaticPendingCallbacks.TryGetValue(serviceType, out var staticList))
+            {
+                staticList = new List<Action<object>>();
+                StaticPendingCallbacks[serviceType] = staticList;
+            }
+            staticList.Add(obj => callback((T)obj));
+            return;
+        }
 
         // If service is already available, call callback immediately
         if (Container.IsRegistered<T>())

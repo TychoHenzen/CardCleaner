@@ -17,9 +17,33 @@ public partial class CardHolder : Node3D, ICardHolder
     public RigidBody3D[] HeldCards => _heldCards.ToArray();
     private readonly List<RigidBody3D> _heldCards = new();
     private Node3D _handParent = null!;
-    [Export] public uint CardCollisionLayer = 2;
 
-    [Export] public float HoldDistance = 2f;
+    // Define defaults as constants to use in both field initializers and reversion
+    private const uint DefaultCardCollisionLayer = 2;
+    private const float DefaultHoldDistance = 2f;
+
+    [Export] public uint CardCollisionLayer = DefaultCardCollisionLayer;
+    [Export] public float HoldDistance = DefaultHoldDistance;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(CardCollisionLayer) => true,
+            nameof(HoldDistance) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(CardCollisionLayer) => DefaultCardCollisionLayer,
+            nameof(HoldDistance) => DefaultHoldDistance,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public int HeldCount => _heldCards.Count;
     public bool HasCards => _heldCards.Count > 0;

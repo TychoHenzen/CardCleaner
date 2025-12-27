@@ -12,13 +12,46 @@ public partial class FlutterCard : Node, IPhysicsComponent
     private RandomNumberGenerator _rng = null!;
     private float _twistPhase;
 
-    [Export] public float AirDensity = 1.0f;
+    // Default values for exported properties
+    private const float DefaultAirDensity = 1.0f;
+    private const float DefaultDragCoeff = 0.5f;
+    private const float DefaultFlutterPitch = 0.05f;
+    private const float DefaultFlutterTwist = 0.1f;
+    private const float DefaultLiftCoeff = 0.2f;
+
+    [Export] public float AirDensity = DefaultAirDensity;
 
     // Aerodynamic coefficients
-    [Export] public float DragCoeff = 0.5f;
-    [Export] public float FlutterPitch = 0.05f; // flip around side
-    [Export] public float FlutterTwist = 0.1f; // twist around normal
-    [Export] public float LiftCoeff = 0.2f;
+    [Export] public float DragCoeff = DefaultDragCoeff;
+    [Export] public float FlutterPitch = DefaultFlutterPitch; // flip around side
+    [Export] public float FlutterTwist = DefaultFlutterTwist; // twist around normal
+    [Export] public float LiftCoeff = DefaultLiftCoeff;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(AirDensity) => true,
+            nameof(DragCoeff) => true,
+            nameof(FlutterPitch) => true,
+            nameof(FlutterTwist) => true,
+            nameof(LiftCoeff) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(AirDensity) => DefaultAirDensity,
+            nameof(DragCoeff) => DefaultDragCoeff,
+            nameof(FlutterPitch) => DefaultFlutterPitch,
+            nameof(FlutterTwist) => DefaultFlutterTwist,
+            nameof(LiftCoeff) => DefaultLiftCoeff,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public void Setup(Node cardRoot)
     {

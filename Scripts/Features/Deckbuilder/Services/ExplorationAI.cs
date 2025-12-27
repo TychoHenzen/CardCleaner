@@ -287,7 +287,6 @@ public class ExplorationAI
         // Update vision from new position
         _frontierBehavior.UpdateVision(CurrentPosition);
 
-        ILog.Print($"Player moved to {CurrentPosition} (seen {_frontierBehavior.SeenTiles.Count} tiles, visited {_frontierBehavior.VisitedTiles.Count})");
         PlayerMoved?.Invoke(CurrentPosition);
         VisitedTilesUpdated?.Invoke(_frontierBehavior.VisitedTiles);
         VisibilityUpdated?.Invoke(_frontierBehavior.SeenTiles, _frontierBehavior.CurrentlyVisibleTiles);

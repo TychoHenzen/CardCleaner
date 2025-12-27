@@ -30,7 +30,7 @@ project/assembly_name="CardCleaner"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/saveable/plugin.cfg", "res://addons/tile_editor/plugin.cfg")
+enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/saveable/plugin.cfg")
 
 [gdunit4]
 

@@ -14,9 +14,33 @@ namespace CardCleaner.Scripts.Core.Services;
 [Service]
 public partial class GameSaveService : Node, ISaveable
 {
-    [Export] public float AutoSaveInterval { get; set; } = 10.0f; // Save every 10 seconds
-    [Export] public bool AutoLoadOnStart { get; set; } = true;
-    
+    // Default values for exported properties
+    private const float DefaultAutoSaveInterval = 10.0f;
+    private const bool DefaultAutoLoadOnStart = true;
+
+    [Export] public float AutoSaveInterval { get; set; } = DefaultAutoSaveInterval; // Save every 10 seconds
+    [Export] public bool AutoLoadOnStart { get; set; } = DefaultAutoLoadOnStart;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(AutoSaveInterval) => true,
+            nameof(AutoLoadOnStart) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(AutoSaveInterval) => DefaultAutoSaveInterval,
+            nameof(AutoLoadOnStart) => DefaultAutoLoadOnStart,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
+
     private const string SavePath = "user://game_save.json";
     private Timer? _autoSaveTimer;
     private ICardSpawningService? _cardSpawningService;

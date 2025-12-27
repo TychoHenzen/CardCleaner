@@ -37,6 +37,56 @@ The project uses `.editorconfig` for code style enforcement with Godot-specific 
   - CA1031 lenient (game code exception handling)
 - **Tests/Addons**: Tests have relaxed null checking; addons folder has all analyzers disabled
 
+### Export Default Preservation
+
+Godot serializes ALL exported property values to `.tscn` files, which can override code-defined defaults with stale values. To prevent this, use `_PropertyCanRevert()` and `_PropertyGetRevert()` to declare default values:
+
+```csharp
+public partial class MyNode : Node3D
+{
+    // Define defaults as constants (single source of truth)
+    private const float DefaultSpeed = 5.0f;
+    private const bool DefaultEnabled = true;
+    private static readonly Vector3 DefaultOffset = new(0, 0.5f, 0);
+
+    [Export] public float Speed = DefaultSpeed;
+    [Export] public bool Enabled = DefaultEnabled;
+    [Export] public Vector3 Offset = DefaultOffset;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(Speed) => true,
+            nameof(Enabled) => true,
+            nameof(Offset) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(Speed) => DefaultSpeed,
+            nameof(Enabled) => DefaultEnabled,
+            nameof(Offset) => Variant.From(DefaultOffset),
+            _ => base._PropertyGetRevert(property)
+        };
+    }
+}
+```
+
+**Benefits**:
+- Code defaults are the source of truth (not scene files)
+- Editor shows reset button for non-default values
+- Changing defaults in code propagates to scenes automatically
+- Reduces scene file churn in version control
+
+**When to use**: Apply to classes where exported properties have non-zero/non-null defaults that should be respected across scene instances. Not needed for `null!` references that must be set in the editor.
+
+**Reference implementation**: See `CardHolder.cs` for a working example.
+
 ## Architecture
 
 ### Dependency Injection

@@ -15,11 +15,40 @@ public partial class DeckSlot : Node3D
     private readonly List<RigidBody3D> _cards = new();
     private bool _processingEntry;
 
+    // Default values for exported properties
+    private const float DefaultEjectForce = 2f;
+    private static readonly Vector3 DefaultStackOffset = new(0, 0.02f, 0);
+    private const int DefaultCapacity = 5;
+
     [Export] public Area3D Area = null!;
-    [Export] public float EjectForce = 2f;
-    [Export] public Vector3 StackOffset = new(0, 0.02f, 0);
+    [Export] public float EjectForce = DefaultEjectForce;
+    [Export] public Vector3 StackOffset = DefaultStackOffset;
     [Export] public Vector3 PositionOffset = Vector3.Zero;
-    [Export] public int Capacity { get; set; } = 5;
+    [Export] public int Capacity { get; set; } = DefaultCapacity;
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(EjectForce) => true,
+            nameof(StackOffset) => true,
+            nameof(PositionOffset) => true,
+            nameof(Capacity) => true,
+            _ => base._PropertyCanRevert(property)
+        };
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() switch
+        {
+            nameof(EjectForce) => DefaultEjectForce,
+            nameof(StackOffset) => Variant.From(DefaultStackOffset),
+            nameof(PositionOffset) => Variant.From(Vector3.Zero),
+            nameof(Capacity) => DefaultCapacity,
+            _ => base._PropertyGetRevert(property)
+        };
+    }
 
     public bool HasCards => _cards.Count > 0;
 

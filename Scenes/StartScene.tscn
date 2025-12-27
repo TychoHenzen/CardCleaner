@@ -80,8 +80,8 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 3, 0.4
 
 [node name="DeckSlot" parent="World" instance=ExtResource("4_sstrp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 5)
-PositionOffset = Vector3(0, 0.135, 0.2)
 StackOffset = Vector3(0, 0.005, 0)
+PositionOffset = Vector3(0, 0.135, 0.2)
 
 [node name="Button" parent="World" instance=ExtResource("30_up2yq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.83772, 0.127075, 5.26458)
@@ -98,10 +98,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0334473, 0.221375)
 
 [node name="DeckbuilderController" type="Node" parent="World" node_paths=PackedStringArray("AbilityDeckSlot", "MapCardSlot", "ActivateButton", "WorldTileMapScreenScene")]
 script = ExtResource("28_up2yq")
-BattleScreenScene = ExtResource("4_dta7m")
 AbilityDeckSlot = NodePath("../DeckSlot")
 MapCardSlot = NodePath("../CardSlot")
 ActivateButton = NodePath("../Button/StaticBody3D")
+BattleScreenScene = ExtResource("4_dta7m")
 WorldTileMapScreenScene = NodePath("../SimpleTileMapScreen")
 
 [node name="Cards" type="Node3D" parent="World"]
