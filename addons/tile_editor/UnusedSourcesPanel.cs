@@ -15,6 +15,7 @@ public partial class UnusedSourcesPanel : ScrollContainer
     private readonly TileEditorService _service;
     private VBoxContainer? _container;
     private Label? _summaryLabel;
+    private Button? _compactIdsButton;
     private List<AtlasSourceInfo> _currentUnusedSources = new();
 
     public UnusedSourcesPanel(TileEditorService service)
@@ -48,15 +49,37 @@ public partial class UnusedSourcesPanel : ScrollContainer
         _container.AddChild(_summaryLabel);
 
         _container.AddChild(new HSeparator());
+
+        // Compact IDs button (always visible, disabled when already contiguous)
+        _compactIdsButton = new Button
+        {
+            Text = "Compact Atlas IDs",
+            TooltipText = "Renumber atlas source IDs to be contiguous (0, 1, 2, ...) and update tiles.json",
+            SizeFlagsHorizontal = SizeFlags.ShrinkCenter
+        };
+        _compactIdsButton.Pressed += OnCompactIdsPressed;
+        _container.AddChild(_compactIdsButton);
+
+        _container.AddChild(new HSeparator());
     }
 
     private void RefreshDisplay()
     {
         if (_container == null || _summaryLabel == null) return;
 
-        // Clear existing entries (keep summary label and separator)
+        // Update compact button state
+        if (_compactIdsButton != null)
+        {
+            var isContiguous = _service.AreSourceIdsContiguous();
+            _compactIdsButton.Disabled = isContiguous;
+            _compactIdsButton.TooltipText = isContiguous
+                ? "Atlas source IDs are already contiguous"
+                : "Renumber atlas source IDs to be contiguous (0, 1, 2, ...) and update tiles.json";
+        }
+
+        // Clear existing entries (keep summary label, separators, and compact button)
         var children = _container.GetChildren().ToList();
-        for (var i = 2; i < children.Count; i++)
+        for (var i = 4; i < children.Count; i++)
         {
             children[i].QueueFree();
         }
@@ -160,6 +183,94 @@ public partial class UnusedSourcesPanel : ScrollContainer
         }
 
         GD.Print($"[UnusedSourcesPanel] Removed {removed} sources, {failed} failed");
+        RefreshDisplay();
+    }
+
+    private void OnCompactIdsPressed()
+    {
+        if (_service.AreSourceIdsContiguous())
+        {
+            var infoDialog = new AcceptDialog
+            {
+                DialogText = "Atlas source IDs are already contiguous.",
+                Title = "No Changes Needed"
+            };
+            infoDialog.Confirmed += () => infoDialog.QueueFree();
+            AddChild(infoDialog);
+            infoDialog.PopupCentered();
+            return;
+        }
+
+        var allSources = _service.GetAvailableAtlasSources();
+        var sourceList = string.Join("\n", allSources.Select(s => $"  [{s.SourceId}] → [{allSources.IndexOf(s)}]"));
+
+        var dialog = new ConfirmationDialog
+        {
+            DialogText = $"Compact {allSources.Count} atlas source IDs to be contiguous?\n\n" +
+                         $"ID remapping:\n{sourceList}\n\n" +
+                         "This will:\n" +
+                         "• Renumber all atlas sources in the TileSet\n" +
+                         "• Update all tile sourceId references in tiles.json\n\n" +
+                         "Both the TileSet and tiles.json will be saved.",
+            Title = "Confirm Compact Atlas IDs",
+            Size = new Vector2I(500, 350)
+        };
+        dialog.Confirmed += () =>
+        {
+            ExecuteCompactIds();
+            dialog.QueueFree();
+        };
+        dialog.Canceled += () => dialog.QueueFree();
+        AddChild(dialog);
+        dialog.PopupCentered();
+    }
+
+    private void ExecuteCompactIds()
+    {
+        var mapping = _service.CompactAtlasSourceIds();
+
+        if (mapping.Count == 0)
+        {
+            var infoDialog = new AcceptDialog
+            {
+                DialogText = "No changes were made. IDs were already contiguous or an error occurred.",
+                Title = "Compact Complete"
+            };
+            infoDialog.Confirmed += () => infoDialog.QueueFree();
+            AddChild(infoDialog);
+            infoDialog.PopupCentered();
+            return;
+        }
+
+        // Save tiles.json with updated sourceIds
+        var (success, message) = _service.SaveTiles();
+
+        if (success)
+        {
+            var successDialog = new AcceptDialog
+            {
+                DialogText = $"Successfully compacted {mapping.Count} atlas source IDs.\n\n" +
+                             $"Remapped IDs:\n" +
+                             string.Join("\n", mapping.Select(kvp => $"  {kvp.Key} → {kvp.Value}")) +
+                             "\n\nBoth TileSet and tiles.json have been saved.",
+                Title = "Compact Complete"
+            };
+            successDialog.Confirmed += () => successDialog.QueueFree();
+            AddChild(successDialog);
+            successDialog.PopupCentered();
+        }
+        else
+        {
+            var errorDialog = new AcceptDialog
+            {
+                DialogText = $"TileSet was updated but failed to save tiles.json:\n{message}",
+                Title = "Partial Success"
+            };
+            errorDialog.Confirmed += () => errorDialog.QueueFree();
+            AddChild(errorDialog);
+            errorDialog.PopupCentered();
+        }
+
         RefreshDisplay();
     }
 }

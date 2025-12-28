@@ -18,16 +18,6 @@
       "type": "array",
       "items": { "$ref": "#/definitions/tile" }
     },
-    "terrainGroups": {
-      "type": "object",
-      "description": "Groups of tiles that share transition behavior",
-      "additionalProperties": { "$ref": "#/definitions/terrainGroup" }
-    },
-    "transitionRules": {
-      "type": "array",
-      "description": "Rules for edge transitions between terrain groups",
-      "items": { "$ref": "#/definitions/transitionRule" }
-    },
     "blobGeneration": {
       "$ref": "#/definitions/blobGenerationConfig",
       "description": "Configuration for coherent terrain region generation"
@@ -88,6 +78,30 @@
             }
           ],
           "description": "Biomes where this tile can spawn. Null means universal."
+        },
+        "size": {
+          "$ref": "#/definitions/vector2i",
+          "description": "Tile size for multi-tile support (default 1x1)"
+        },
+        "autoTileVariants": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "$ref": "#/definitions/vector2i" },
+              { "type": "null" }
+            ]
+          },
+          "description": "Auto-tile variant atlas coordinates indexed by bitmask"
+        },
+        "decorationDensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Probability of decoration tile appearing (0-1)"
+        },
+        "blobSettings": {
+          "$ref": "#/definitions/blobGenerationConfig",
+          "description": "Per-tile blob generation settings (overrides global)"
         }
       }
     },
@@ -97,56 +111,6 @@
       "properties": {
         "x": { "type": "integer" },
         "y": { "type": "integer" }
-      }
-    },
-    "terrainGroup": {
-      "type": "object",
-      "required": ["name", "members"],
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "Display name for the terrain group"
-        },
-        "priority": {
-          "type": "integer",
-          "default": 50,
-          "minimum": 0,
-          "maximum": 255,
-          "description": "Higher priority groups render edges on top of lower priority groups"
-        },
-        "members": {
-          "type": "array",
-          "items": { "type": "string" },
-          "minItems": 1,
-          "description": "Tile IDs that belong to this group"
-        }
-      }
-    },
-    "transitionRule": {
-      "type": "object",
-      "required": ["fromGroup", "toGroup", "edgeTiles"],
-      "properties": {
-        "fromGroup": {
-          "type": "string",
-          "description": "Terrain group that has the edges (higher priority, renders on top)"
-        },
-        "toGroup": {
-          "type": "string",
-          "description": "Terrain group being transitioned to (lower priority, underneath)"
-        },
-        "edgeTiles": {
-          "type": "object",
-          "description": "Maps 4-bit bitmask (0-15) to transition tile ID. Bits: N=1, E=2, S=4, W=8",
-          "patternProperties": {
-            "^([0-9]|1[0-5])$": {
-              "oneOf": [
-                { "type": "string" },
-                { "type": "null" }
-              ]
-            }
-          },
-          "additionalProperties": false
-        }
       }
     },
     "blobGenerationConfig": {

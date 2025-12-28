@@ -126,23 +126,16 @@ Signatures influence card generation, combat calculations, map generation parame
 
 > **Architecture Document**: See `docs/WORLDGEN_ARCHITECTURE.md` for the complete worldgen redesign plan, including implementation phases, data definition guides, and technical reference.
 
-**Current State**: Two parallel systems exist during transition:
+**Active System**: **SimpleMapGenerator** (`Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs`)
+- Lightweight random placement with connectivity guarantees
+- Signature-influenced tile selection (Febris→terrain, Ordinem→structure)
+- Biome system with tile pools and weighted selection
+- Auto-tiling support (Corner16 and Blob47 formats)
 
-1. **SimpleMapGenerator** (`Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs`) - Active
-   - Lightweight random placement with connectivity guarantees
-   - Signature-influenced tile selection (Febris→terrain, Ordinem→structure)
-   - Being extended with biome system (Phase 1 of redesign)
-
-2. **SemanticWfc3dGenerator** (`Scripts/Features/Worldgen/SemanticWfc3dGenerator.cs`) - Legacy
-   - Full 3D WFC with 4 vertical layers and 10-directional sockets
-   - Complex constraint propagation system
-   - To be deprecated after new system is validated
-
-**Gradient Systems** (Keep - these are solid):
+**Gradient Systems**:
 - `CardBasedGradient`: Creates gradients from input cards (sphere/capsule/Bezier)
 - `RadialGradient`: Center-to-edge signature blending
 - `NoiseGradient`: FastNoiseLite-based variation
-- `GradientInfluenceComponent`: Adjusts tile weights by signature similarity
 
 **Target Architecture** (see docs for details):
 - Stage 1: Biome Placement (card gradient → biome grid)
@@ -178,7 +171,7 @@ Uses the Saveable addon (`addons/saveable/`) with Newtonsoft.Json. Implement `IS
 Code is organized by feature under `Scripts/Features/`:
 - **Card/**: Card models, controllers, components, and services (spawning, generation)
 - **Deckbuilder/**: Game session management, map generation, combat, exploration
-- **Worldgen/**: WFC-based procedural generation, semantic tiles, gradients
+- **Worldgen/**: Procedural generation support (auto-tiling, biomes, gradients, blob generation)
 - **Player/**: Player controller and interaction system
 - **Conveyor/**: Conveyor belt mechanics
 - **Pause/**: Pause menu controller

@@ -303,6 +303,123 @@ public partial class TileEditorService : RefCounted
         return false;
     }
 
+    /// <summary>
+    /// Check if atlas source IDs are already contiguous (0, 1, 2, ... N-1)
+    /// </summary>
+    public bool AreSourceIdsContiguous()
+    {
+        if (_tileSet == null) return true;
+
+        var sourceCount = _tileSet.GetSourceCount();
+        if (sourceCount == 0) return true;
+
+        var sourceIds = new List<int>();
+        for (var i = 0; i < sourceCount; i++)
+        {
+            sourceIds.Add(_tileSet.GetSourceId(i));
+        }
+        sourceIds.Sort();
+
+        for (var i = 0; i < sourceIds.Count; i++)
+        {
+            if (sourceIds[i] != i) return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Compact atlas source IDs to be contiguous (0, 1, 2, ... N-1).
+    /// Updates in-memory tile data but does NOT save tiles.json - caller must call SaveTiles().
+    /// </summary>
+    /// <returns>Dictionary mapping old IDs to new IDs, empty if already contiguous or failed</returns>
+    public Dictionary<int, int> CompactAtlasSourceIds()
+    {
+        var mapping = new Dictionary<int, int>();
+        if (_tileSet == null)
+        {
+            GD.PrintErr("[TileEditorService] Cannot compact: TileSet not loaded");
+            return mapping;
+        }
+
+        var sourceCount = _tileSet.GetSourceCount();
+        if (sourceCount == 0)
+        {
+            return mapping;
+        }
+
+        // Collect and sort current source IDs
+        var sourceIds = new List<int>();
+        for (var i = 0; i < sourceCount; i++)
+        {
+            sourceIds.Add(_tileSet.GetSourceId(i));
+        }
+        sourceIds.Sort();
+
+        // Check if already contiguous
+        var isContiguous = true;
+        for (var i = 0; i < sourceIds.Count; i++)
+        {
+            if (sourceIds[i] != i)
+            {
+                isContiguous = false;
+                break;
+            }
+        }
+
+        if (isContiguous)
+        {
+            GD.Print("[TileEditorService] Source IDs already contiguous");
+            return mapping;
+        }
+
+        // Collect sources before removing (references should survive RemoveSource)
+        var sources = new List<(int oldId, TileSetAtlasSource source)>();
+        foreach (var oldId in sourceIds)
+        {
+            var source = _tileSet.GetSource(oldId) as TileSetAtlasSource;
+            if (source != null)
+            {
+                sources.Add((oldId, source));
+            }
+        }
+
+        // Remove all sources
+        foreach (var oldId in sourceIds)
+        {
+            _tileSet.RemoveSource(oldId);
+        }
+
+        // Re-add with contiguous IDs
+        for (var newId = 0; newId < sources.Count; newId++)
+        {
+            var (oldId, source) = sources[newId];
+            _tileSet.AddSource(source, newId);
+            mapping[oldId] = newId;
+        }
+
+        // Update in-memory tile data
+        foreach (var tile in _tiles.Values)
+        {
+            if (mapping.TryGetValue(tile.SourceId, out var newId))
+            {
+                tile.SourceId = newId;
+            }
+        }
+
+        // Save the TileSet resource
+        var saveResult = ResourceSaver.Save(_tileSet, TilesetPath);
+        if (saveResult != Error.Ok)
+        {
+            GD.PrintErr($"[TileEditorService] Failed to save TileSet after compaction: {saveResult}");
+        }
+        else
+        {
+            GD.Print($"[TileEditorService] Compacted {sources.Count} sources, remapped {mapping.Count} IDs");
+        }
+
+        return mapping;
+    }
+
     public EditableTile? GetTile(string id) => _tiles.GetValueOrDefault(id);
 
     public void UpdateTile(EditableTile tile)
