@@ -1,6 +1,8 @@
-﻿using CardCleaner.Scripts.Core.Interfaces;
+﻿using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Controllers;
@@ -12,6 +14,9 @@ public partial class DeckBuilderController : Node
 {
     // Default values as constants
     private static readonly Vector3 DefaultScreenSpawnPosition = Vector3.Zero;
+
+    private IGameSessionService? _gameSession;
+    private bool _awaitingMapReset;
 
     [Export] public DeckSlot AbilityDeckSlot { get; set; } = null!;
     [Export] public DeckSlot MapCardSlot { get; set; } = null!;
@@ -50,16 +55,58 @@ public partial class DeckBuilderController : Node
         // Listen for button activation
         ActivateButton.ButtonPressed += OnButtonPressed;
 
+        // Subscribe to game session state changes
+        ServiceLocator.Get<IGameSessionService>(gameSession =>
+        {
+            _gameSession = gameSession;
+            gameSession.StateChanged += OnSessionStateChanged;
+        });
+
         // Initially disable the button
         UpdateButtonState();
     }
 
+    public override void _ExitTree()
+    {
+        // Clean up event subscriptions
+        if (_gameSession != null)
+        {
+            _gameSession.StateChanged -= OnSessionStateChanged;
+        }
+    }
+
     /// <summary>
-    /// Called when slots are updated - only updates button state, doesn't trigger processing
+    /// Called when the game session state changes.
+    /// Re-enables the button when session completes (map stays visible).
+    /// </summary>
+    private void OnSessionStateChanged(SessionState newState)
+    {
+        if (newState == SessionState.SessionComplete)
+        {
+            ILog.Print("Session complete - map revealed, awaiting reset");
+
+            // Enable button and flag that next press should just reset the view
+            _awaitingMapReset = true;
+            ActivateButton.SetEnabled(true);
+        }
+    }
+
+    /// <summary>
+    /// Called when slots are updated - updates button state and biome preview
     /// </summary>
     private void OnSlotsUpdated()
     {
         UpdateButtonState();
+        UpdateBiomePreview();
+    }
+
+    /// <summary>
+    /// Updates the biome distribution preview based on current MapCardSlot cards
+    /// </summary>
+    private void UpdateBiomePreview()
+    {
+        var signatures = MapCardSlot.GetCardSignatures();
+        WorldTileMapScreenScene.UpdateBiomePreview(signatures.ToArray());
     }
 
     /// <summary>
@@ -72,24 +119,42 @@ public partial class DeckBuilderController : Node
     }
 
     /// <summary>
-    /// Called when the activation button is pressed
+    /// Called when the activation button is pressed.
+    /// If awaiting reset (after session complete): just reset the view.
+    /// Otherwise: start new generation if cards are present.
     /// </summary>
     private void OnButtonPressed()
     {
-        // Double-check that we have cards in both slots
+        ILog.Print("Activation button pressed!");
+
+        // If we're awaiting reset after session complete, just reset the view
+        if (_awaitingMapReset)
+        {
+            ILog.Print("Resetting map view after session complete");
+
+            _awaitingMapReset = false;
+            WorldTileMapScreenScene.ResetToInitialState();
+
+            // Update biome preview and button state based on current slot contents
+            UpdateBiomePreview();
+            UpdateButtonState();
+            return;
+        }
+
+        // Normal flow: start generation if cards are present
         if (!AbilityDeckSlot.HasCards || !MapCardSlot.HasCard)
         {
             ILog.Error("Button pressed but slots not properly filled!");
             return;
         }
 
-        ILog.Print("Activation button pressed! Processing cards...");
+        ILog.Print("Cards present - starting new map generation...");
 
         // Consume the seed cards and ability deck
         var mapSeeds = MapCardSlot.ConsumeAllCardSignatures();
         var abilities = AbilityDeckSlot.ConsumeAllCardSignatures();
 
-        // Instantiate and initialize the 3D map screen
+        // Initialize the map screen with new seeds
         if (mapSeeds.Count > 0)
             WorldTileMapScreenScene.Initialize(mapSeeds.ToArray(), abilities.ToArray());
 

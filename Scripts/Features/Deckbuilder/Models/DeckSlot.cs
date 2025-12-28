@@ -164,6 +164,21 @@ public partial class DeckSlot : Node3D
         return allSignatures.FirstOrDefault();
     }
 
+    /// <summary>
+    /// Returns signatures of all cards in the slot without consuming them.
+    /// Use this for preview/estimation purposes.
+    /// </summary>
+    public List<CardSignature> GetCardSignatures()
+    {
+        var signatures = new List<CardSignature>();
+        foreach (var card in _cards)
+        {
+            var controller = card.GetNode<CardController>(".");
+            signatures.Add(controller.Signature);
+        }
+        return signatures;
+    }
+
     public void Clear()
     {
         foreach (var c in _cards.ToList()) // ToList to avoid modification during iteration

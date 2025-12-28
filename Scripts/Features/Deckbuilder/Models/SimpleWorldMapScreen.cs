@@ -4,7 +4,9 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 using Godot.Collections;
 
@@ -65,6 +67,10 @@ public partial class SimpleWorldMapScreen : Node3D
 
     private ITileRegistry? _tileRegistry;
 
+    // Biome preview support
+    private BiomeRegistry? _biomeRegistry;
+    private BiomeDistributionPreview? _biomePreview;
+
     // Export properties for editor assignment - multiple layers for proper rendering order
     [Export] public TileMapLayer? TerrainLayer { get; set; }
     [Export] public TileMapLayer? DecorationLayer { get; set; }
@@ -100,6 +106,7 @@ public partial class SimpleWorldMapScreen : Node3D
     public override void _Ready()
     {
         SetupCombatUIReferences();
+        SetupBiomePreview();
 
         if (StatusLabel != null) StatusLabel.Text = "Waiting for map data...";
 
@@ -193,6 +200,62 @@ public partial class SimpleWorldMapScreen : Node3D
         _actionLabel = CombatUI?.GetNode<Label>("ActionLabel");
     }
 
+    private void SetupBiomePreview()
+    {
+        // Initialize biome registry with default biomes for preview calculation
+        _biomeRegistry = new BiomeRegistry();
+        _biomeRegistry.RegisterDefaultBiomes();
+
+        // Create and add the preview control to the viewport (fills entire viewport)
+        _biomePreview = new BiomeDistributionPreview();
+        _biomePreview.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        _biomePreview.OffsetLeft = 0;
+        _biomePreview.OffsetTop = 0;
+        _biomePreview.OffsetRight = 0;
+        _biomePreview.OffsetBottom = 0;
+
+        Viewport?.AddChild(_biomePreview);
+
+        // Configure camera for initial preview state
+        ConfigureCameraForPreview();
+    }
+
+    /// <summary>
+    /// Configures the camera to display the biome preview correctly.
+    /// Centers the camera on the viewport and resets zoom.
+    /// </summary>
+    private void ConfigureCameraForPreview()
+    {
+        if (Viewport == null) return;
+
+        _camera2D ??= Viewport.GetNodeOrNull<Camera2D>("Camera2D");
+        if (_camera2D == null) return;
+
+        // Center camera on the viewport area so Controls appear correctly
+        var viewportCenter = new Vector2(Viewport.Size.X / 2f, Viewport.Size.Y / 2f);
+        _camera2D.GlobalPosition = viewportCenter;
+        _camera2D.Zoom = Vector2.One;
+        _camera2D.Enabled = true;
+    }
+
+    /// <summary>
+    /// Updates the biome distribution preview based on the given card signatures.
+    /// Called by DeckBuilderController when MapCardSlot cards change.
+    /// </summary>
+    public void UpdateBiomePreview(CardSignature[] cards)
+    {
+        if (_biomePreview == null || _biomeRegistry == null) return;
+
+        if (cards.Length == 0)
+        {
+            _biomePreview.Clear();
+            return;
+        }
+
+        var distribution = BiomeDistributionCalculator.Calculate(cards, _biomeRegistry);
+        _biomePreview.UpdateDistribution(distribution);
+    }
+
     private void OnSessionStateChanged(SessionState newState)
     {
         if (StatusLabel != null) StatusLabel.Text = $"Status: {newState}";
@@ -224,6 +287,10 @@ public partial class SimpleWorldMapScreen : Node3D
     private void HandleMapGeneration()
     {
         if (StatusLabel != null) StatusLabel.Text = "Generating map...";
+
+        // Hide biome preview when generating map
+        if (_biomePreview != null) _biomePreview.Visible = false;
+
         // Map will be received via OnMapGenerated event
     }
 
@@ -495,6 +562,70 @@ public partial class SimpleWorldMapScreen : Node3D
         if (StatusLabel != null) StatusLabel.Text = "Session complete!";
 
         ILog.Print("Session complete - ready for next round!");
+    }
+
+    /// <summary>
+    /// Resets the map screen to its initial state, clearing all visual elements
+    /// and preparing it to show the biome preview again.
+    /// Called by DeckBuilderController when starting a new session.
+    /// </summary>
+    public void ResetToInitialState()
+    {
+        ILog.Print("Resetting SimpleWorldMapScreen to initial state");
+
+        // Clear all tile layers
+        TerrainLayer?.Clear();
+        DecorationLayer?.Clear();
+        StructureLayer?.Clear();
+        EffectLayer?.Clear();
+        OverlayLayer?.Clear();
+
+        // Clear fog sprites
+        foreach (var sprite in _fogSprites.Values)
+            sprite?.QueueFree();
+        _fogSprites.Clear();
+
+        // Clear enemy sprites
+        foreach (var sprite in _enemySprites)
+            sprite?.QueueFree();
+        _enemySprites.Clear();
+
+        // Clear biome overlay sprites
+        foreach (var sprite in _biomeOverlaySprites)
+            sprite?.QueueFree();
+        _biomeOverlaySprites.Clear();
+
+        // Clear debug overlay tiles
+        _renderedDebugTiles.Clear();
+
+        // Hide player sprite
+        if (PlayerSprite != null)
+            PlayerSprite.Visible = false;
+
+        // Hide combat UI
+        if (CombatUI != null)
+            CombatUI.Visible = false;
+
+        // Reset internal state
+        _mapData = null;
+        _isInitialized = false;
+        _hasLoggedTileInfo = false;
+
+        // Reset status label
+        if (StatusLabel != null)
+            StatusLabel.Text = "Waiting for map data...";
+
+        // Show and clear biome preview (will be updated when cards are added)
+        if (_biomePreview != null)
+        {
+            _biomePreview.Visible = true;
+            _biomePreview.Clear();
+        }
+
+        // Reconfigure camera for preview display
+        ConfigureCameraForPreview();
+
+        ILog.Print("SimpleWorldMapScreen reset complete");
     }
 
     private void RenderMap(SimpleMapData mapData)
