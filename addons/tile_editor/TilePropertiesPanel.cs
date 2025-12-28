@@ -38,11 +38,15 @@ public partial class TilePropertiesPanel : ScrollContainer
 
     // Auto-tile foldout controls
     private FoldoutContainer? _autoTileFoldout;
+    private OptionButton? _autoTileFormatDropdown;
+    private VBoxContainer? _variantGridContainer;
     private GridContainer? _variantGrid;
-    private readonly TextureRect?[] _variantThumbnails = new TextureRect?[16];
+    private TextureRect?[]? _variantThumbnails;
+    private TileShapePreview?[]? _variantShapePreviews;
     private AcceptDialog? _variantPickerDialog;
     private TilesetAtlasPicker? _variantPicker;
     private int _editingVariantIndex = -1;
+    private int _currentVariantCount = 16;
 
     // Blob settings foldout controls
     private FoldoutContainer? _blobSettingsFoldout;
@@ -57,11 +61,31 @@ public partial class TilePropertiesPanel : ScrollContainer
     private HBoxContainer? _decorationDensityRow;
     private SpinBox? _decorationDensityField;
 
-    private static readonly string[] BitmaskLabels =
+    // 4-bit corner format labels (NE=1, SE=2, SW=4, NW=8)
+    private static readonly string[] CornerBitmaskLabels =
     {
-        "None", "N", "E", "N+E", "S", "N+S", "E+S", "N+E+S",
-        "W", "N+W", "E+W", "N+E+W", "S+W", "N+S+W", "E+S+W", "All"
+        "None", "NE", "SE", "NE+SE", "SW", "NE+SW", "SE+SW", "NE+SE+SW",
+        "NW", "NE+NW", "SE+NW", "NE+SE+NW", "SW+NW", "NE+SW+NW", "SE+SW+NW", "All"
     };
+
+    // 8-bit blob format - we only show the 47 valid combinations
+    // Generated from NeighborBitmask8.GetValid47Masks()
+    private static string GetBlobMaskLabel(int index, int mask)
+    {
+        if (mask == 0) return "None";
+        if (mask == 255) return "All";
+
+        var parts = new System.Collections.Generic.List<string>();
+        if ((mask & 1) != 0) parts.Add("N");
+        if ((mask & 2) != 0) parts.Add("NE");
+        if ((mask & 4) != 0) parts.Add("E");
+        if ((mask & 8) != 0) parts.Add("SE");
+        if ((mask & 16) != 0) parts.Add("S");
+        if ((mask & 32) != 0) parts.Add("SW");
+        if ((mask & 64) != 0) parts.Add("W");
+        if ((mask & 128) != 0) parts.Add("NW");
+        return string.Join("+", parts);
+    }
 
     private bool _isUpdating;
 
@@ -308,77 +332,33 @@ public partial class TilePropertiesPanel : ScrollContainer
         _autoTileFoldout = new FoldoutContainer("Auto-Tiling", false);
         vbox.AddChild(_autoTileFoldout);
 
+        // Format selector
+        var formatRow = CreateRow("Format:");
+        _autoTileFormatDropdown = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        _autoTileFormatDropdown.AddItem("4-bit Corner (16 tiles)", 0);
+        _autoTileFormatDropdown.AddItem("8-bit Blob (47 tiles)", 1);
+        _autoTileFormatDropdown.ItemSelected += OnAutoTileFormatChanged;
+        formatRow.AddChild(_autoTileFormatDropdown);
+        _autoTileFoldout.Content.AddChild(formatRow);
+
         var autoTileInfo = new Label
         {
-            Text = "Assign atlas variants for each neighbor pattern (NESW bitmask):",
+            Text = "Assign atlas variants for each neighbor pattern:",
             AutowrapMode = TextServer.AutowrapMode.Word,
             Modulate = new Color(0.8f, 0.8f, 0.8f)
         };
         autoTileInfo.AddThemeFontSizeOverride("font_size", 11);
         _autoTileFoldout.Content.AddChild(autoTileInfo);
 
-        _variantGrid = new GridContainer
+        // Container for the variant grid (will be rebuilt when format changes)
+        _variantGridContainer = new VBoxContainer
         {
-            Columns = 4,
             SizeFlagsHorizontal = SizeFlags.ExpandFill
         };
-        _variantGrid.AddThemeConstantOverride("h_separation", 4);
-        _variantGrid.AddThemeConstantOverride("v_separation", 4);
-        _autoTileFoldout.Content.AddChild(_variantGrid);
+        _autoTileFoldout.Content.AddChild(_variantGridContainer);
 
-        for (int i = 0; i < 16; i++)
-        {
-            var slotContainer = new VBoxContainer
-            {
-                CustomMinimumSize = new Vector2(75, 90),
-                SizeFlagsHorizontal = SizeFlags.ExpandFill
-            };
-
-            var label = new Label
-            {
-                Text = $"{i}: {BitmaskLabels[i]}",
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
-            label.AddThemeFontSizeOverride("font_size", 10);
-            slotContainer.AddChild(label);
-
-            var thumbnailPanel = new PanelContainer
-            {
-                CustomMinimumSize = new Vector2(48, 48),
-                SizeFlagsHorizontal = SizeFlags.ShrinkCenter
-            };
-            var thumbnail = new TextureRect
-            {
-                CustomMinimumSize = new Vector2(48, 48),
-                ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-                StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered
-            };
-            thumbnailPanel.AddChild(thumbnail);
-            slotContainer.AddChild(thumbnailPanel);
-            _variantThumbnails[i] = thumbnail;
-
-            var buttonRow = new HBoxContainer { SizeFlagsHorizontal = SizeFlags.ShrinkCenter };
-            var selectBtn = new Button
-            {
-                Text = "Set",
-                CustomMinimumSize = new Vector2(32, 0)
-            };
-            int index = i;
-            selectBtn.Pressed += () => OpenVariantPickerDialog(index);
-            buttonRow.AddChild(selectBtn);
-
-            var clearBtn = new Button
-            {
-                Text = "X",
-                CustomMinimumSize = new Vector2(24, 0),
-                TooltipText = "Clear variant"
-            };
-            clearBtn.Pressed += () => ClearVariant(index);
-            buttonRow.AddChild(clearBtn);
-            slotContainer.AddChild(buttonRow);
-
-            _variantGrid.AddChild(slotContainer);
-        }
+        // Build initial grid for 16 variants
+        RebuildVariantGrid(16);
 
         var clearAllBtn = new Button
         {
@@ -629,11 +609,11 @@ public partial class TilePropertiesPanel : ScrollContainer
             checkbox.ButtonPressed = _currentTile.Biomes.Contains(biome, StringComparer.OrdinalIgnoreCase);
         }
 
-        // Update auto-tile variant thumbnails
-        for (int i = 0; i < 16; i++)
-        {
-            UpdateVariantThumbnail(i);
-        }
+        // Update auto-tile format dropdown and rebuild grid
+        var isBlob47 = _currentTile.AutoTileFormat == "blob47";
+        _autoTileFormatDropdown!.Selected = isBlob47 ? 1 : 0;
+        var variantCount = isBlob47 ? 47 : 16;
+        RebuildVariantGrid(variantCount);
 
         // Show decoration density only for decoration layer tiles
         var isDecorationLayer = _currentTile.Layer.ToLowerInvariant() == "decoration";
@@ -776,7 +756,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         _editingVariantIndex = variantIndex;
 
         // Initialize AutoTileVariants if needed
-        _currentTile.AutoTileVariants ??= new Vector2I?[16];
+        _currentTile.AutoTileVariants ??= new Vector2I?[_currentVariantCount];
 
         // Create dialog lazily
         if (_variantPickerDialog == null)
@@ -834,7 +814,18 @@ public partial class TilePropertiesPanel : ScrollContainer
             }
         }
 
-        _variantPickerDialog.Title = $"Select Variant for Bitmask {variantIndex}: {BitmaskLabels[variantIndex]}";
+        // Generate title based on format
+        string maskLabel;
+        if (_currentVariantCount == 47)
+        {
+            var blobMasks = CardCleaner.Scripts.Features.Worldgen.AutoTiling.NeighborBitmask8.GetValid47Masks();
+            maskLabel = GetBlobMaskLabel(variantIndex, blobMasks[variantIndex]);
+        }
+        else
+        {
+            maskLabel = CornerBitmaskLabels[variantIndex];
+        }
+        _variantPickerDialog.Title = $"Select Variant for Bitmask {variantIndex}: {maskLabel}";
         _variantPickerDialog.Popup();
     }
 
@@ -842,7 +833,7 @@ public partial class TilePropertiesPanel : ScrollContainer
     {
         if (_editingVariantIndex < 0 || _currentTile == null || _variantPicker == null) return;
 
-        _currentTile.AutoTileVariants ??= new Vector2I?[16];
+        _currentTile.AutoTileVariants ??= new Vector2I?[_currentVariantCount];
         _currentTile.AutoTileVariants[_editingVariantIndex] = _variantPicker.SelectedCoords;
         UpdateVariantThumbnail(_editingVariantIndex);
         _service.UpdateTile(_currentTile);
@@ -869,7 +860,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         if (_currentTile == null) return;
 
         _currentTile.AutoTileVariants = null;
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < _currentVariantCount; i++)
         {
             UpdateVariantThumbnail(i);
         }
@@ -878,12 +869,15 @@ public partial class TilePropertiesPanel : ScrollContainer
 
     private void UpdateVariantThumbnail(int index)
     {
-        if (_currentTile == null || _variantThumbnails[index] == null) return;
+        if (_currentTile == null || _variantThumbnails == null ||
+            index >= _variantThumbnails.Length || _variantThumbnails[index] == null) return;
 
         var thumbnail = _variantThumbnails[index]!;
 
         // Check if variant is defined
-        if (_currentTile.AutoTileVariants == null || !_currentTile.AutoTileVariants[index].HasValue)
+        if (_currentTile.AutoTileVariants == null ||
+            index >= _currentTile.AutoTileVariants.Length ||
+            !_currentTile.AutoTileVariants[index].HasValue)
         {
             thumbnail.Texture = null;
             return;
@@ -987,6 +981,152 @@ public partial class TilePropertiesPanel : ScrollContainer
         };
         row.AddChild(lbl);
         return row;
+    }
+
+    private void OnAutoTileFormatChanged(long index)
+    {
+        if (_isUpdating || _currentTile == null) return;
+
+        var newFormat = index == 1 ? "blob47" : "corner16";
+        if (_currentTile.AutoTileFormat == newFormat) return;
+
+        _currentTile.AutoTileFormat = newFormat;
+        var variantCount = newFormat == "blob47" ? 47 : 16;
+
+        // Resize the variants array
+        if (_currentTile.AutoTileVariants != null)
+        {
+            var oldVariants = _currentTile.AutoTileVariants;
+            _currentTile.AutoTileVariants = new Godot.Vector2I?[variantCount];
+            // Copy what we can (format change may lose data)
+            Array.Copy(oldVariants, _currentTile.AutoTileVariants, Math.Min(oldVariants.Length, variantCount));
+        }
+
+        RebuildVariantGrid(variantCount);
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void RebuildVariantGrid(int variantCount)
+    {
+        if (_variantGridContainer == null) return;
+
+        // Clear existing grid
+        foreach (var child in _variantGridContainer.GetChildren())
+        {
+            child.QueueFree();
+        }
+
+        _currentVariantCount = variantCount;
+        _variantThumbnails = new TextureRect?[variantCount];
+        _variantShapePreviews = new TileShapePreview?[variantCount];
+
+        // Get the 47 valid blob masks if needed
+        var blobMasks = variantCount == 47
+            ? CardCleaner.Scripts.Features.Worldgen.AutoTiling.NeighborBitmask8.GetValid47Masks()
+            : null;
+
+        _variantGrid = new GridContainer
+        {
+            Columns = variantCount == 47 ? 6 : 4,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _variantGrid.AddThemeConstantOverride("h_separation", 4);
+        _variantGrid.AddThemeConstantOverride("v_separation", 4);
+        _variantGridContainer.AddChild(_variantGrid);
+
+        for (int i = 0; i < variantCount; i++)
+        {
+            var slotContainer = new VBoxContainer
+            {
+                CustomMinimumSize = new Vector2(variantCount == 47 ? 60 : 75, variantCount == 47 ? 100 : 110),
+                SizeFlagsHorizontal = SizeFlags.ExpandFill
+            };
+
+            // Label with bitmask info
+            string labelText;
+            int maskValue;
+            if (variantCount == 47 && blobMasks != null)
+            {
+                maskValue = blobMasks[i];
+                labelText = $"{i}: {GetBlobMaskLabel(i, maskValue)}";
+            }
+            else
+            {
+                maskValue = i;
+                labelText = $"{i}: {CornerBitmaskLabels[i]}";
+            }
+
+            var label = new Label
+            {
+                Text = labelText,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                AutowrapMode = TextServer.AutowrapMode.WordSmart
+            };
+            label.AddThemeFontSizeOverride("font_size", 8);
+            slotContainer.AddChild(label);
+
+            // Shape preview
+            var shapePreview = new TileShapePreview
+            {
+                CustomMinimumSize = new Vector2(24, 24),
+                SizeFlagsHorizontal = SizeFlags.ShrinkCenter
+            };
+            shapePreview.SetMask(maskValue, variantCount == 47
+                ? TileShapePreview.Format.Blob47
+                : TileShapePreview.Format.Corner16);
+            slotContainer.AddChild(shapePreview);
+            _variantShapePreviews[i] = shapePreview;
+
+            // Thumbnail
+            var thumbnailPanel = new PanelContainer
+            {
+                CustomMinimumSize = new Vector2(32, 32),
+                SizeFlagsHorizontal = SizeFlags.ShrinkCenter
+            };
+            var thumbnail = new TextureRect
+            {
+                CustomMinimumSize = new Vector2(32, 32),
+                ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+                StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered
+            };
+            thumbnailPanel.AddChild(thumbnail);
+            slotContainer.AddChild(thumbnailPanel);
+            _variantThumbnails[i] = thumbnail;
+
+            // Buttons
+            var buttonRow = new HBoxContainer { SizeFlagsHorizontal = SizeFlags.ShrinkCenter };
+            var selectBtn = new Button
+            {
+                Text = "Set",
+                CustomMinimumSize = new Vector2(28, 0)
+            };
+            selectBtn.AddThemeFontSizeOverride("font_size", 10);
+            int index = i;
+            selectBtn.Pressed += () => OpenVariantPickerDialog(index);
+            buttonRow.AddChild(selectBtn);
+
+            var clearBtn = new Button
+            {
+                Text = "X",
+                CustomMinimumSize = new Vector2(20, 0),
+                TooltipText = "Clear variant"
+            };
+            clearBtn.AddThemeFontSizeOverride("font_size", 10);
+            clearBtn.Pressed += () => ClearVariant(index);
+            buttonRow.AddChild(clearBtn);
+            slotContainer.AddChild(buttonRow);
+
+            _variantGrid.AddChild(slotContainer);
+        }
+
+        // Refresh thumbnails if we have a tile selected
+        if (_currentTile != null)
+        {
+            for (int i = 0; i < variantCount; i++)
+            {
+                UpdateVariantThumbnail(i);
+            }
+        }
     }
 }
 #endif

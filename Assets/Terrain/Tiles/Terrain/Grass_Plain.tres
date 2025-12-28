@@ -13,7 +13,6 @@ Solidum = 0.2
 Febris = 0.1
 Ordinem = 0.4
 Lumines = 0.3
-Varias = 0.0
 Inertiae = -0.2
 Subsidium = 0.5
 Spatium = 0.1
@@ -21,35 +20,18 @@ metadata/_custom_type_script = "uid://dfivx0g2ib815"
 
 [sub_resource type="Resource" id="Resource_g21av"]
 script = ExtResource("3_xybqx")
-NorthName = Array[String]([])
-EastName = Array[String]([])
-SouthName = Array[String]([])
-WestName = Array[String]([])
-NorthEastName = Array[String]([])
-SouthEastName = Array[String]([])
-SouthWestName = Array[String]([])
-NorthWestName = Array[String]([])
-UpName = Array[String]([])
-DownName = Array[String]([])
 
 [sub_resource type="Resource" id="Resource_aqayw"]
 script = ExtResource("3_1bcmo")
-BlocksMovement = false
-BlocksTiles = false
 AnimationFrames = Array[Vector3i]([Vector3i(49, 2, 2)])
-AnimationSpeed = 1.0
 
 [resource]
 script = ExtResource("4_xybqx")
 TileName = "grass_plain"
-Passability = 0
 TileSet = ExtResource("4_4pi0p")
-Size = Vector2i(1, 1)
 Tile = SubResource("Resource_aqayw")
 GlobalSpawnChance = 0.3
-Layer = 0
 BaseWeight = 3.0
 Signature = SubResource("Resource_ogl5x")
-LayerConstraints = Array[ExtResource("2_4pi0p")]([])
 SocketData = SubResource("Resource_g21av")
 metadata/_custom_type_script = "uid://chb1eie0w5etp"

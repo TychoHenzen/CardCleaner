@@ -13,7 +13,6 @@ Solidum = 0.2
 Febris = 0.1
 Ordinem = 0.4
 Lumines = 0.3
-Varias = 0.0
 Inertiae = -0.2
 Subsidium = 0.5
 Spatium = 0.1
@@ -21,35 +20,17 @@ metadata/_custom_type_script = "uid://dfivx0g2ib815"
 
 [sub_resource type="Resource" id="Resource_dqtto"]
 script = ExtResource("3_xwyk1")
-NorthName = Array[String]([])
-EastName = Array[String]([])
-SouthName = Array[String]([])
-WestName = Array[String]([])
-NorthEastName = Array[String]([])
-SouthEastName = Array[String]([])
-SouthWestName = Array[String]([])
-NorthWestName = Array[String]([])
-UpName = Array[String]([])
-DownName = Array[String]([])
 
 [sub_resource type="Resource" id="Resource_aqayw"]
 script = ExtResource("6_au1fa")
-BlocksMovement = false
-BlocksTiles = false
 AnimationFrames = Array[Vector3i]([Vector3i(49, 2, 2)])
-AnimationSpeed = 1.0
 
 [resource]
 script = ExtResource("9_3sktn")
 TileName = "grass_forest_transition"
-Passability = 0
 TileSet = ExtResource("7_axk1y")
-Size = Vector2i(1, 1)
 Tile = SubResource("Resource_aqayw")
 GlobalSpawnChance = 0.25
-Layer = 0
-BaseWeight = 1.0
 Signature = SubResource("Resource_ogl5x")
-LayerConstraints = Array[ExtResource("4_dj2pi")]([])
 SocketData = SubResource("Resource_dqtto")
 metadata/_custom_type_script = "uid://chb1eie0w5etp"

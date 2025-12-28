@@ -11,20 +11,20 @@
         <NoWarn>$(NoWarn);EnableGenerateDocumentationFile</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <Folder Include="addons\"/>
+        <Folder Include="addons\" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="gdUnit4.analyzers" Version="1.0.0-rc7">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0"/>
-        <PackageReference Include="gdUnit4.api" Version="5.0.0-rc3"/>
-        <PackageReference Include="gdUnit4.test.adapter" Version="3.0.0-rc1"/>
-        <PackageReference Update="GodotSharp" Version="4.5.0-dev.5"/>
-        <PackageReference Update="Godot.SourceGenerators" Version="4.5.0-dev.5"/>
-        <PackageReference Include="FsCheck" Version="2.16.6"/>
-        <PackageReference Include="NSubstitute" Version="5.3.0"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+        <PackageReference Include="gdUnit4.api" Version="5.0.0-rc3" />
+        <PackageReference Include="gdUnit4.test.adapter" Version="3.0.0-rc1" />
+        <PackageReference Update="GodotSharp" Version="4.5.0-dev.5" />
+        <PackageReference Update="Godot.SourceGenerators" Version="4.5.0-dev.5" />
+        <PackageReference Include="FsCheck" Version="2.16.6" />
+        <PackageReference Include="NSubstitute" Version="5.3.0" />
         <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="1.0.17">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

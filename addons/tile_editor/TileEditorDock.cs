@@ -10,6 +10,7 @@ public partial class TileEditorDock : Control
     private TileAtlasPanel? _atlasPanel;
     private BiomePoolPanel? _biomePoolPanel;
     private BlobSettingsPanel? _blobSettingsPanel;
+    private AutoTilePreviewPanel? _autoTilePreviewPanel;
     private bool _initialized;
     private bool _isDirty;
     private TilePropertiesPanel? _propertiesPanel;
@@ -106,6 +107,11 @@ public partial class TileEditorDock : Control
         _blobSettingsPanel = new BlobSettingsPanel(_service!);
         _blobSettingsPanel.Name = "Blob Settings";
         _tabContainer.AddChild(_blobSettingsPanel);
+
+        // Auto-Tile Preview tab
+        _autoTilePreviewPanel = new AutoTilePreviewPanel(_service!);
+        _autoTilePreviewPanel.Name = "Auto-Tile Preview";
+        _tabContainer.AddChild(_autoTilePreviewPanel);
     }
 
     private void OnTilesLoaded()
@@ -113,6 +119,7 @@ public partial class TileEditorDock : Control
         _statusLabel!.Text = $"Loaded {_service!.TileCount} tiles";
         _isDirty = false;
         UpdateTitle();
+        _autoTilePreviewPanel?.Refresh();
     }
 
     private void OnTileModified(string tileId)

@@ -543,15 +543,28 @@ public class EditableTile
     public int SizeY { get; set; } = 1;
 
     /// <summary>
-    /// Auto-tile variant atlas coordinates indexed by 4-bit NESW bitmask (0-15).
+    /// Auto-tile variant atlas coordinates indexed by bitmask.
+    /// For Corner16: 16 entries indexed by 4-bit corner mask.
+    /// For Blob47: 47 entries indexed by blob index.
     /// Null array means no auto-tiling. Null elements use the base tile's atlas coords.
     /// </summary>
     public Vector2I?[]? AutoTileVariants { get; set; }
 
     /// <summary>
+    /// The auto-tile format: "corner16" (16 variants) or "blob47" (47 variants).
+    /// Default is corner16 for backward compatibility.
+    /// </summary>
+    public string AutoTileFormat { get; set; } = "corner16";
+
+    /// <summary>
     /// Returns true if this tile has any auto-tile variants defined.
     /// </summary>
     public bool HasAutoTileVariants => AutoTileVariants?.Any(v => v.HasValue) == true;
+
+    /// <summary>
+    /// Get the expected number of variants based on the format.
+    /// </summary>
+    public int ExpectedVariantCount => AutoTileFormat == "blob47" ? 47 : 16;
 
     /// <summary>
     /// Probability (0.0-1.0) of this decoration tile appearing on valid positions.
@@ -581,13 +594,14 @@ public class EditableTile
             SizeX = SizeX,
             SizeY = SizeY,
             DecorationDensity = DecorationDensity,
-            BlobSettings = BlobSettings?.Clone()
+            BlobSettings = BlobSettings?.Clone(),
+            AutoTileFormat = AutoTileFormat
         };
 
         if (AutoTileVariants != null)
         {
-            clone.AutoTileVariants = new Vector2I?[16];
-            Array.Copy(AutoTileVariants, clone.AutoTileVariants, 16);
+            clone.AutoTileVariants = new Vector2I?[AutoTileVariants.Length];
+            Array.Copy(AutoTileVariants, clone.AutoTileVariants, AutoTileVariants.Length);
         }
 
         return clone;

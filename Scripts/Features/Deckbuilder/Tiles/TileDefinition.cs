@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Tiles;
@@ -23,7 +24,8 @@ public class TileDefinition
         Vector2I? size = null,
         float decorationDensity = 1.0f,
         BlobGenerationConfig? blobSettings = null,
-        Vector2I?[]? autoTileVariants = null)
+        Vector2I?[]? autoTileVariants = null,
+        AutoTileFormat autoTileFormat = AutoTileFormat.Corner16)
     {
         Id = id;
         Name = name;
@@ -38,6 +40,7 @@ public class TileDefinition
         DecorationDensity = decorationDensity;
         BlobSettings = blobSettings;
         AutoTileVariants = autoTileVariants;
+        AutoTileFormat = autoTileFormat;
     }
 
     public string Id { get; }
@@ -68,10 +71,24 @@ public class TileDefinition
     public BlobGenerationConfig? BlobSettings { get; }
 
     /// <summary>
-    /// Auto-tile variant atlas coordinates indexed by 4-bit NESW bitmask (0-15).
+    /// Auto-tile variant atlas coordinates indexed by bitmask.
+    /// For Corner16 format: 16 entries indexed by 4-bit corner mask (0-15).
+    /// For Blob47 format: 47 entries indexed by GetBlobIndex().
     /// Null array means no auto-tiling. Null elements use the base tile's atlas coords.
     /// </summary>
     public Vector2I?[]? AutoTileVariants { get; }
+
+    /// <summary>
+    /// The auto-tile format used by this tile.
+    /// Corner16 = 4-bit diagonal corners (16 variants).
+    /// Blob47 = 8-bit edges+corners with constraint (47 variants).
+    /// </summary>
+    public AutoTileFormat AutoTileFormat { get; }
+
+    /// <summary>
+    /// Expected number of auto-tile variants based on format.
+    /// </summary>
+    public int ExpectedVariantCount => AutoTileFormat == AutoTileFormat.Corner16 ? 16 : 47;
 
     public bool IsPassable => Passability == TilePassability.Passable;
     public bool HasAutoTileVariants => AutoTileVariants != null;
@@ -91,13 +108,34 @@ public class TileDefinition
 
     /// <summary>
     /// Get the atlas coordinates for a specific auto-tile bitmask.
+    /// For Corner16 format: bitmask is 0-15 (4-bit corner mask).
+    /// For Blob47 format: bitmask is the raw 8-bit value, converted to index internally.
     /// Returns base atlas coords if no variant is defined for that bitmask.
     /// </summary>
     public Vector2I GetAutoTileCoords(int bitmask)
     {
-        if (AutoTileVariants == null || bitmask < 0 || bitmask >= 16)
+        if (AutoTileVariants == null)
             return AtlasCoords;
 
-        return AutoTileVariants[bitmask] ?? AtlasCoords;
+        int index;
+        int maxIndex;
+
+        if (AutoTileFormat == AutoTileFormat.Blob47)
+        {
+            // For blob format, convert 8-bit mask to 0-46 index
+            index = NeighborBitmask8.GetBlobIndex(bitmask);
+            maxIndex = 47;
+        }
+        else
+        {
+            // For corner format, use mask directly as index
+            index = bitmask;
+            maxIndex = 16;
+        }
+
+        if (index < 0 || index >= maxIndex || index >= AutoTileVariants.Length)
+            return AtlasCoords;
+
+        return AutoTileVariants[index] ?? AtlasCoords;
     }
 }

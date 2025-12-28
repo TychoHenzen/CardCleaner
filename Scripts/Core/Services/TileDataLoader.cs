@@ -201,6 +201,7 @@ public static class TileDataLoader
         var biomes = ParseBiomes(data.Biomes);
         var atlasCoords = new Vector2I(data.AtlasCoords?.X ?? 0, data.AtlasCoords?.Y ?? 0);
         var size = data.Size != null ? new Vector2I(data.Size.X, data.Size.Y) : (Vector2I?)null;
+        var autoTileFormat = ParseAutoTileFormat(data.AutoTileFormat);
 
         return new TileDefinition(
             id: data.Id,
@@ -215,7 +216,17 @@ public static class TileDataLoader
             size: size,
             decorationDensity: data.DecorationDensity ?? 1.0f,
             blobSettings: data.BlobSettings != null ? ParseBlobGenerationConfig(data.BlobSettings) : null,
-            autoTileVariants: ParseAutoTileVariants(data.AutoTileVariants));
+            autoTileVariants: ParseAutoTileVariants(data.AutoTileVariants, autoTileFormat),
+            autoTileFormat: autoTileFormat);
+    }
+
+    private static AutoTileFormat ParseAutoTileFormat(string? value)
+    {
+        return value?.ToLowerInvariant() switch
+        {
+            "blob47" => AutoTileFormat.Blob47,
+            _ => AutoTileFormat.Corner16
+        };
     }
 
     private static TilePassability ParsePassability(string? value)
@@ -267,13 +278,15 @@ public static class TileDataLoader
         return result.Count > 0 ? result : null;
     }
 
-    private static Vector2I?[]? ParseAutoTileVariants(Vector2IData?[]? variants)
+    private static Vector2I?[]? ParseAutoTileVariants(Vector2IData?[]? variants, AutoTileFormat format)
     {
         if (variants == null || variants.Length == 0)
             return null;
 
-        var result = new Vector2I?[16];
-        for (var i = 0; i < Math.Min(16, variants.Length); i++)
+        var expectedCount = format == AutoTileFormat.Blob47 ? 47 : 16;
+        var result = new Vector2I?[expectedCount];
+
+        for (var i = 0; i < Math.Min(expectedCount, variants.Length); i++)
         {
             if (variants[i] != null)
                 result[i] = new Vector2I(variants[i]!.X, variants[i]!.Y);
@@ -346,6 +359,8 @@ public static class TileDataLoader
         [JsonPropertyName("blobSettings")] public BlobGenerationData? BlobSettings { get; set; }
 
         [JsonPropertyName("autoTileVariants")] public Vector2IData?[]? AutoTileVariants { get; set; }
+
+        [JsonPropertyName("autoTileFormat")] public string? AutoTileFormat { get; set; }
     }
 
     private sealed class Vector2IData
