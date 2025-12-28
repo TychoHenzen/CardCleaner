@@ -17,15 +17,18 @@ public partial class TilePropertiesPanel : ScrollContainer
     private EditableTile? _currentTile;
 
     // Atlas picker controls
-    private TilesetAtlasPicker? _atlasPicker;
     private OptionButton? _sourceDropdown;
+    private Button? _atlasCoordButton;
+    private TextureRect? _atlasButtonThumbnail;
+    private Label? _atlasButtonLabel;
+    private AcceptDialog? _atlasPickerDialog;
+    private TilesetAtlasPicker? _atlasDialogPicker;
 
     // Form fields
     private LineEdit? _idField;
     private LineEdit? _nameField;
+    private OptionButton? _tileModeDropdown;
     private OptionButton? _passabilityField;
-    private SpinBox? _atlasXField;
-    private SpinBox? _atlasYField;
     private SpinBox? _sourceIdField;
     private OptionButton? _layerField;
     private SpinBox? _elevationField;
@@ -35,6 +38,9 @@ public partial class TilePropertiesPanel : ScrollContainer
     private VBoxContainer? _biomesContainer;
     private readonly Dictionary<string, CheckBox> _biomeCheckboxes = new();
     private Label? _validationLabel;
+
+    // General properties foldout controls
+    private FoldoutContainer? _generalFoldout;
 
     // Auto-tile foldout controls
     private FoldoutContainer? _autoTileFoldout;
@@ -159,6 +165,25 @@ public partial class TilePropertiesPanel : ScrollContainer
         nameRow.AddChild(_nameField);
         vbox.AddChild(nameRow);
 
+        // Tile Mode selector
+        var modeRow = CreateRow("Tile Mode:");
+        _tileModeDropdown = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        _tileModeDropdown.AddItem("Plain Tile", 0);
+        _tileModeDropdown.AddItem("Per-Tile Variations", 1);
+        _tileModeDropdown.AddItem("Per-Map Variations", 2);
+        _tileModeDropdown.AddItem("Auto-Tile", 3);
+        _tileModeDropdown.AddItem("Per-Map Variation Auto-Tile", 4);
+        _tileModeDropdown.AddItem("Animated Tile", 5);
+        _tileModeDropdown.ItemSelected += OnTileModeChanged;
+        modeRow.AddChild(_tileModeDropdown);
+        vbox.AddChild(modeRow);
+
+        vbox.AddChild(new HSeparator());
+
+        // General Properties foldout
+        _generalFoldout = new FoldoutContainer("General Properties", false);
+        vbox.AddChild(_generalFoldout);
+
         // Passability dropdown
         var passRow = CreateRow("Passability:");
         _passabilityField = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
@@ -167,84 +192,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         _passabilityField.AddItem("Partially Passable", 2);
         _passabilityField.ItemSelected += _ => OnFieldChanged("");
         passRow.AddChild(_passabilityField);
-        vbox.AddChild(passRow);
-
-        vbox.AddChild(new HSeparator());
-
-        // Atlas selection section
-        var atlasHeader = new Label { Text = "Atlas Coordinates" };
-        atlasHeader.AddThemeFontSizeOverride("font_size", 14);
-        vbox.AddChild(atlasHeader);
-
-        // Source dropdown
-        var sourceRow = CreateRow("Source:");
-        _sourceDropdown = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
-        _sourceDropdown.ItemSelected += OnSourceDropdownChanged;
-        sourceRow.AddChild(_sourceDropdown);
-        vbox.AddChild(sourceRow);
-
-        // Atlas picker in scroll container
-        var pickerLabel = new Label
-        {
-            Text = "Click to select tile:",
-            Modulate = new Color(0.8f, 0.8f, 0.8f)
-        };
-        pickerLabel.AddThemeFontSizeOverride("font_size", 11);
-        vbox.AddChild(pickerLabel);
-
-        var pickerScroll = new ScrollContainer
-        {
-            CustomMinimumSize = new Vector2(0, 150),
-            SizeFlagsHorizontal = SizeFlags.ExpandFill,
-            SizeFlagsVertical = SizeFlags.ExpandFill,
-            HorizontalScrollMode = ScrollMode.Auto,
-            VerticalScrollMode = ScrollMode.Auto
-        };
-        _atlasPicker = new TilesetAtlasPicker();
-        _atlasPicker.TileSelected += OnPickerTileSelected;
-        pickerScroll.AddChild(_atlasPicker);
-        vbox.AddChild(pickerScroll);
-
-        // Manual coordinate entry
-        var coordsLabel = new Label
-        {
-            Text = "Or enter manually:",
-            Modulate = new Color(0.8f, 0.8f, 0.8f)
-        };
-        coordsLabel.AddThemeFontSizeOverride("font_size", 11);
-        vbox.AddChild(coordsLabel);
-
-        // Atlas coordinates
-        var atlasRow = CreateRow("Atlas Coords:");
-        var atlasHBox = new HBoxContainer();
-        atlasHBox.AddChild(new Label { Text = "X:" });
-        _atlasXField = new SpinBox
-        {
-            MinValue = 0,
-            MaxValue = 100,
-            Step = 1,
-            SizeFlagsHorizontal = SizeFlags.ExpandFill
-        };
-        _atlasXField.ValueChanged += _ => OnFieldChanged("");
-        atlasHBox.AddChild(_atlasXField);
-        atlasHBox.AddChild(new Label { Text = "Y:" });
-        _atlasYField = new SpinBox
-        {
-            MinValue = 0,
-            MaxValue = 100,
-            Step = 1,
-            SizeFlagsHorizontal = SizeFlags.ExpandFill
-        };
-        _atlasYField.ValueChanged += _ => OnFieldChanged("");
-        atlasHBox.AddChild(_atlasYField);
-        atlasRow.AddChild(atlasHBox);
-        vbox.AddChild(atlasRow);
-
-        // Hidden source ID field for internal tracking
-        _sourceIdField = new SpinBox { Visible = false, Value = 4 };
-        AddChild(_sourceIdField);
-
-        vbox.AddChild(new HSeparator());
+        _generalFoldout.Content.AddChild(passRow);
 
         // Layer dropdown
         var layerRow = CreateRow("Layer:");
@@ -255,7 +203,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         _layerField.AddItem("Effects", 3);
         _layerField.ItemSelected += _ => OnFieldChanged("");
         layerRow.AddChild(_layerField);
-        vbox.AddChild(layerRow);
+        _generalFoldout.Content.AddChild(layerRow);
 
         // Elevation
         var elevRow = CreateRow("Elevation:");
@@ -268,21 +216,19 @@ public partial class TilePropertiesPanel : ScrollContainer
         };
         _elevationField.ValueChanged += _ => OnFieldChanged("");
         elevRow.AddChild(_elevationField);
-        vbox.AddChild(elevRow);
+        _generalFoldout.Content.AddChild(elevRow);
 
         // Transparent
         var transRow = CreateRow("Transparent:");
         _transparentField = new CheckBox();
         _transparentField.Toggled += _ => OnFieldChanged("");
         transRow.AddChild(_transparentField);
-        vbox.AddChild(transRow);
+        _generalFoldout.Content.AddChild(transRow);
 
-        vbox.AddChild(new HSeparator());
-
-        // Size section (for multi-tile objects like trees)
+        // Size section (for multi-cell tiles like trees)
         var sizeHeader = new Label { Text = "Tile Size (cells)" };
-        sizeHeader.AddThemeFontSizeOverride("font_size", 14);
-        vbox.AddChild(sizeHeader);
+        sizeHeader.AddThemeFontSizeOverride("font_size", 12);
+        _generalFoldout.Content.AddChild(sizeHeader);
 
         var sizeRow = CreateRow("Size:");
         var sizeHBox = new HBoxContainer();
@@ -309,7 +255,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         _sizeYField.ValueChanged += _ => OnFieldChanged("");
         sizeHBox.AddChild(_sizeYField);
         sizeRow.AddChild(sizeHBox);
-        vbox.AddChild(sizeRow);
+        _generalFoldout.Content.AddChild(sizeRow);
 
         var sizeNote = new Label
         {
@@ -317,14 +263,12 @@ public partial class TilePropertiesPanel : ScrollContainer
             Modulate = new Color(0.7f, 0.7f, 0.7f)
         };
         sizeNote.AddThemeFontSizeOverride("font_size", 11);
-        vbox.AddChild(sizeNote);
-
-        vbox.AddChild(new HSeparator());
+        _generalFoldout.Content.AddChild(sizeNote);
 
         // Biomes section
-        vbox.AddChild(new Label { Text = "Allowed Biomes:" });
+        _generalFoldout.Content.AddChild(new Label { Text = "Allowed Biomes:" });
         _biomesContainer = new VBoxContainer();
-        vbox.AddChild(_biomesContainer);
+        _generalFoldout.Content.AddChild(_biomesContainer);
 
         var biomes = new[] { "plains", "forest", "desert", "tundra", "swamp", "mountains" };
         foreach (var biome in biomes)
@@ -345,7 +289,52 @@ public partial class TilePropertiesPanel : ScrollContainer
             Modulate = new Color(0.7f, 0.7f, 0.7f)
         };
         biomeNote.AddThemeFontSizeOverride("font_size", 11);
-        vbox.AddChild(biomeNote);
+        _generalFoldout.Content.AddChild(biomeNote);
+
+        vbox.AddChild(new HSeparator());
+
+        // Atlas selection section
+        var atlasHeader = new Label { Text = "Atlas Coordinates" };
+        atlasHeader.AddThemeFontSizeOverride("font_size", 14);
+        vbox.AddChild(atlasHeader);
+
+        // Source dropdown
+        var sourceRow = CreateRow("Source:");
+        _sourceDropdown = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        _sourceDropdown.ItemSelected += OnSourceDropdownChanged;
+        sourceRow.AddChild(_sourceDropdown);
+        vbox.AddChild(sourceRow);
+
+        // Atlas coordinate button with thumbnail preview
+        var coordRow = CreateRow("Coords:");
+        _atlasCoordButton = new Button { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+
+        var buttonContent = new HBoxContainer();
+        _atlasButtonThumbnail = new TextureRect
+        {
+            CustomMinimumSize = new Vector2(32, 32),
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
+            TextureFilter = TextureFilterEnum.Nearest
+        };
+        buttonContent.AddChild(_atlasButtonThumbnail);
+
+        _atlasButtonLabel = new Label
+        {
+            Text = "Click to select...",
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        buttonContent.AddChild(_atlasButtonLabel);
+
+        _atlasCoordButton.AddChild(buttonContent);
+        _atlasCoordButton.Pressed += OpenAtlasPickerDialog;
+        coordRow.AddChild(_atlasCoordButton);
+        vbox.AddChild(coordRow);
+
+        // Hidden source ID field for internal tracking
+        _sourceIdField = new SpinBox { Visible = false, Value = 4 };
+        AddChild(_sourceIdField);
 
         vbox.AddChild(new HSeparator());
 
@@ -406,13 +395,13 @@ public partial class TilePropertiesPanel : ScrollContainer
         _variationsFoldout.Content.AddChild(variationsInfo);
 
         // Variation mode dropdown
-        var modeRow = CreateRow("Mode:");
+        var variationModeRow = CreateRow("Mode:");
         _variationModeDropdown = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
         _variationModeDropdown.AddItem("Per Instance (random each tile)", 0);
         _variationModeDropdown.AddItem("Per Generation (one for whole map)", 1);
         _variationModeDropdown.ItemSelected += OnVariationModeChanged;
-        modeRow.AddChild(_variationModeDropdown);
-        _variationsFoldout.Content.AddChild(modeRow);
+        variationModeRow.AddChild(_variationModeDropdown);
+        _variationsFoldout.Content.AddChild(variationModeRow);
 
         var modeNote = new Label
         {
@@ -630,32 +619,14 @@ public partial class TilePropertiesPanel : ScrollContainer
 
     private void OnSourceDropdownChanged(long index)
     {
-        if (_isUpdating || _sourceDropdown == null) return;
+        if (_isUpdating || _sourceDropdown == null || _currentTile == null) return;
 
         var sourceId = _sourceDropdown.GetItemId((int)index);
         _sourceIdField!.Value = sourceId;
+        _currentTile.SourceId = sourceId;
 
-        // Reload picker with new source
-        var source = _service.GetAtlasSource(sourceId);
-        if (source != null && _atlasPicker != null)
-        {
-            var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
-            _atlasPicker.SetSource(source, tileSize, sourceId);
-        }
-
-        OnFieldChanged("");
-    }
-
-    private void OnPickerTileSelected(Vector2I atlasCoords, int sourceId)
-    {
-        if (_isUpdating || _currentTile == null) return;
-
-        _isUpdating = true;
-        _atlasXField!.Value = atlasCoords.X;
-        _atlasYField!.Value = atlasCoords.Y;
-        _sourceIdField!.Value = sourceId;
-        _isUpdating = false;
-
+        // Update button thumbnail with new source
+        UpdateAtlasButtonAppearance();
         OnFieldChanged("");
     }
 
@@ -702,19 +673,20 @@ public partial class TilePropertiesPanel : ScrollContainer
             }
         }
 
-        // Load atlas picker
-        var source = _service.GetAtlasSource(_currentTile.SourceId);
-        if (source != null && _atlasPicker != null)
-        {
-            var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
-            _atlasPicker.SetSource(source, tileSize, _currentTile.SourceId);
-            _atlasPicker.SelectedCoords = new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY);
-            _atlasPicker.SelectedSize = new Vector2I(_currentTile.SizeX, _currentTile.SizeY);
-        }
-
-        _atlasXField!.Value = _currentTile.AtlasX;
-        _atlasYField!.Value = _currentTile.AtlasY;
+        // Update atlas button appearance
         _sourceIdField!.Value = _currentTile.SourceId;
+        UpdateAtlasButtonAppearance();
+
+        // Set tile mode dropdown
+        _tileModeDropdown!.Selected = _currentTile.TileMode?.ToLowerInvariant() switch
+        {
+            "pertilevariations" => 1,
+            "permapvariations" => 2,
+            "autotile" => 3,
+            "permapvariationautotile" => 4,
+            "animated" => 5,
+            _ => 0
+        };
 
         _layerField!.Selected = _currentTile.Layer.ToLowerInvariant() switch
         {
@@ -790,6 +762,9 @@ public partial class TilePropertiesPanel : ScrollContainer
 
         _validationLabel!.Text = "";
         _isUpdating = false;
+
+        // Update section visibility based on tile mode
+        UpdateSectionVisibility();
     }
 
     private void OnFieldChanged(string _)
@@ -806,21 +781,7 @@ public partial class TilePropertiesPanel : ScrollContainer
             _ => "passable"
         };
 
-        _currentTile.AtlasX = (int)_atlasXField!.Value;
-        _currentTile.AtlasY = (int)_atlasYField!.Value;
         _currentTile.SourceId = (int)_sourceIdField!.Value;
-
-        // Sync picker coordinates if changed via spinbox
-        if (_atlasPicker != null)
-        {
-            var newCoords = new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY);
-            if (_atlasPicker.SelectedCoords != newCoords)
-            {
-                _isUpdating = true;
-                _atlasPicker.SelectedCoords = newCoords;
-                _isUpdating = false;
-            }
-        }
 
         _currentTile.Layer = _layerField!.Selected switch
         {
@@ -841,16 +802,6 @@ public partial class TilePropertiesPanel : ScrollContainer
         _currentTile.IsTransparent = _transparentField!.ButtonPressed;
         _currentTile.SizeX = (int)_sizeXField!.Value;
         _currentTile.SizeY = (int)_sizeYField!.Value;
-
-        // Sync picker size when size fields change
-        if (_atlasPicker != null)
-        {
-            var newSize = new Vector2I(_currentTile.SizeX, _currentTile.SizeY);
-            if (_atlasPicker.SelectedSize != newSize)
-            {
-                _atlasPicker.SelectedSize = newSize;
-            }
-        }
 
         // Update biomes
         _currentTile.Biomes.Clear();
@@ -877,10 +828,10 @@ public partial class TilePropertiesPanel : ScrollContainer
     {
         _idField!.Editable = false; // Always read-only
         _nameField!.Editable = enabled;
+        _tileModeDropdown!.Disabled = !enabled;
         _passabilityField!.Disabled = !enabled;
         _sourceDropdown!.Disabled = !enabled;
-        _atlasXField!.Editable = enabled;
-        _atlasYField!.Editable = enabled;
+        _atlasCoordButton!.Disabled = !enabled;
         _layerField!.Disabled = !enabled;
         _elevationField!.Editable = enabled;
         _transparentField!.Disabled = !enabled;
@@ -890,6 +841,145 @@ public partial class TilePropertiesPanel : ScrollContainer
         foreach (var checkbox in _biomeCheckboxes.Values)
         {
             checkbox.Disabled = !enabled;
+        }
+    }
+
+    private void UpdateAtlasButtonAppearance()
+    {
+        if (_currentTile == null || _atlasButtonLabel == null || _atlasButtonThumbnail == null) return;
+
+        _atlasButtonLabel.Text = $"({_currentTile.AtlasX}, {_currentTile.AtlasY})";
+
+        var texture = _service.GetTileTexture(_currentTile);
+        if (texture != null)
+        {
+            var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
+            var region = new Rect2I(new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY) * tileSize, tileSize);
+            var atlasTex = new AtlasTexture
+            {
+                Atlas = texture,
+                Region = region
+            };
+            _atlasButtonThumbnail.Texture = atlasTex;
+        }
+        else
+        {
+            _atlasButtonThumbnail.Texture = null;
+        }
+    }
+
+    private void OpenAtlasPickerDialog()
+    {
+        if (_currentTile == null) return;
+
+        // Create dialog lazily
+        if (_atlasPickerDialog == null)
+        {
+            _atlasPickerDialog = new AcceptDialog
+            {
+                Title = "Select Atlas Coordinates",
+                InitialPosition = Window.WindowInitialPosition.CenterMainWindowScreen,
+                Size = new Vector2I(550, 450),
+                OkButtonText = "Select"
+            };
+
+            var dialogVBox = new VBoxContainer
+            {
+                SizeFlagsHorizontal = SizeFlags.ExpandFill,
+                SizeFlagsVertical = SizeFlags.ExpandFill
+            };
+
+            var pickerScroll = new ScrollContainer
+            {
+                CustomMinimumSize = new Vector2(0, 380),
+                SizeFlagsHorizontal = SizeFlags.ExpandFill,
+                SizeFlagsVertical = SizeFlags.ExpandFill,
+                HorizontalScrollMode = ScrollMode.Auto,
+                VerticalScrollMode = ScrollMode.Auto
+            };
+
+            _atlasDialogPicker = new TilesetAtlasPicker();
+            pickerScroll.AddChild(_atlasDialogPicker);
+            dialogVBox.AddChild(pickerScroll);
+
+            _atlasPickerDialog.AddChild(dialogVBox);
+            AddChild(_atlasPickerDialog);
+
+            _atlasPickerDialog.Confirmed += OnAtlasPickerConfirmed;
+        }
+
+        // Configure picker with current tile's atlas source
+        var source = _service.GetAtlasSource(_currentTile.SourceId);
+        if (source != null && _atlasDialogPicker != null)
+        {
+            var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
+            _atlasDialogPicker.SetSource(source, tileSize, _currentTile.SourceId);
+            _atlasDialogPicker.SelectedCoords = new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY);
+            _atlasDialogPicker.SelectedSize = new Vector2I(_currentTile.SizeX, _currentTile.SizeY);
+        }
+
+        _atlasPickerDialog.Popup();
+    }
+
+    private void OnAtlasPickerConfirmed()
+    {
+        if (_currentTile == null || _atlasDialogPicker == null) return;
+
+        _currentTile.AtlasX = _atlasDialogPicker.SelectedCoords.X;
+        _currentTile.AtlasY = _atlasDialogPicker.SelectedCoords.Y;
+        UpdateAtlasButtonAppearance();
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void OnTileModeChanged(long index)
+    {
+        if (_isUpdating || _currentTile == null) return;
+
+        _currentTile.TileMode = index switch
+        {
+            1 => "pertilevariations",
+            2 => "permapvariations",
+            3 => "autotile",
+            4 => "permapvariationautotile",
+            5 => "animated",
+            _ => "plain"
+        };
+
+        UpdateSectionVisibility();
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void UpdateSectionVisibility()
+    {
+        if (_currentTile == null) return;
+
+        var mode = _currentTile.TileMode?.ToLowerInvariant() ?? "plain";
+
+        // Determine which sections to show based on mode
+        var showAutoTile = mode is "autotile" or "permapvariationautotile";
+        var showVariations = mode is "pertilevariations" or "permapvariations" or "permapvariationautotile";
+        var showAnimation = mode == "animated";
+
+        // Toggle foldout visibility
+        _autoTileFoldout!.Visible = showAutoTile;
+        _variationsFoldout!.Visible = showVariations;
+        _animationFoldout!.Visible = showAnimation;
+
+        // Update variation mode dropdown based on tile mode
+        if (showVariations && _variationModeDropdown != null)
+        {
+            _isUpdating = true;
+            if (mode is "permapvariations" or "permapvariationautotile")
+            {
+                _variationModeDropdown.Selected = 1; // Per Generation
+                _currentTile.VariationMode = "pergeneration";
+            }
+            else if (mode == "pertilevariations")
+            {
+                _variationModeDropdown.Selected = 0; // Per Instance
+                _currentTile.VariationMode = "perinstance";
+            }
+            _isUpdating = false;
         }
     }
 

@@ -190,6 +190,12 @@ public partial class TileEditorService : RefCounted
                     };
                 }
 
+                // Load tile mode (compute from existing data if not present for backwards compatibility)
+                if (!string.IsNullOrEmpty(tileData.TileMode))
+                    tile.TileMode = tileData.TileMode.ToLowerInvariant();
+                else
+                    tile.TileMode = ComputeTileModeFromData(tile);
+
                 _tiles[tile.Id] = tile;
             }
 
@@ -525,6 +531,31 @@ public partial class TileEditorService : RefCounted
         if (_autoTileConfigs.Remove(baseTileId)) EmitSignal(SignalName.AutoTileConfigModified, baseTileId);
     }
 
+    /// <summary>
+    /// Compute tile mode from existing tile data for backwards compatibility.
+    /// </summary>
+    private static string ComputeTileModeFromData(EditableTile tile)
+    {
+        // Priority: Animation > AutoTile > Variations > Plain
+        if (tile.HasAnimation)
+            return "animated";
+
+        if (tile.HasAutoTileVariants)
+        {
+            // Check if also has variations with per-map mode
+            if (tile.HasVariations && tile.VariationMode == "pergeneration")
+                return "permapvariationautotile";
+            return "autotile";
+        }
+
+        if (tile.HasVariations)
+        {
+            return tile.VariationMode == "pergeneration" ? "permapvariations" : "pertilevariations";
+        }
+
+        return "plain";
+    }
+
     public (bool success, string message) ValidateTile(EditableTile tile)
     {
         if (string.IsNullOrWhiteSpace(tile.Id))
@@ -606,7 +637,8 @@ public partial class TileEditorService : RefCounted
                             Frames = t.AnimationFrames!.Select(f => new Vector2IData { X = f.X, Y = f.Y }).ToArray(),
                             FrameDuration = t.AnimationFrameDuration
                         }
-                        : null
+                        : null,
+                    TileMode = t.TileMode != "plain" ? t.TileMode : null
                 }).ToList(),
 
                 // Blob generation config
@@ -717,6 +749,8 @@ public partial class TileEditorService : RefCounted
         [JsonPropertyName("variationMode")] public string? VariationMode { get; set; }
 
         [JsonPropertyName("animation")] public AnimationData? Animation { get; set; }
+
+        [JsonPropertyName("tileMode")] public string? TileMode { get; set; }
     }
 
     private sealed class AnimationData
@@ -820,6 +854,12 @@ public class EditableTile
     /// </summary>
     public bool HasAnimation => AnimationFrames != null && AnimationFrames.Length > 1;
 
+    /// <summary>
+    /// The tile mode determining which features are active.
+    /// Stored as lowercase string for JSON serialization.
+    /// </summary>
+    public string TileMode { get; set; } = "plain";
+
     public EditableTile Clone()
     {
         var clone = new EditableTile
@@ -840,7 +880,8 @@ public class EditableTile
             BlobSettings = BlobSettings?.Clone(),
             AutoTileFormat = AutoTileFormat,
             VariationMode = VariationMode,
-            AnimationFrameDuration = AnimationFrameDuration
+            AnimationFrameDuration = AnimationFrameDuration,
+            TileMode = TileMode
         };
 
         if (AutoTileVariants != null)
