@@ -268,6 +268,41 @@ public partial class TileEditorService : RefCounted
         return _tileSet?.GetSource(sourceId) as TileSetAtlasSource;
     }
 
+    /// <summary>
+    /// Get the set of all SourceId values currently referenced by tiles
+    /// </summary>
+    public HashSet<int> GetUsedSourceIds()
+    {
+        return _tiles.Values.Select(t => t.SourceId).ToHashSet();
+    }
+
+    /// <summary>
+    /// Remove a source from the TileSet and save the resource
+    /// </summary>
+    public bool RemoveSource(int sourceId)
+    {
+        if (_tileSet == null) return false;
+
+        // Verify no tiles are using this source
+        if (_tiles.Values.Any(t => t.SourceId == sourceId))
+        {
+            GD.PrintErr($"[TileEditorService] Cannot remove source {sourceId}: tiles are using it");
+            return false;
+        }
+
+        _tileSet.RemoveSource(sourceId);
+        var saveResult = ResourceSaver.Save(_tileSet, TilesetPath);
+
+        if (saveResult == Error.Ok)
+        {
+            GD.Print($"[TileEditorService] Removed source {sourceId} and saved TileSet");
+            return true;
+        }
+
+        GD.PrintErr($"[TileEditorService] Failed to save TileSet after removing source: {saveResult}");
+        return false;
+    }
+
     public EditableTile? GetTile(string id) => _tiles.GetValueOrDefault(id);
 
     public void UpdateTile(EditableTile tile)

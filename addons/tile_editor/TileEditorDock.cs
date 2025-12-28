@@ -11,6 +11,7 @@ public partial class TileEditorDock : Control
     private BiomePoolPanel? _biomePoolPanel;
     private BlobSettingsPanel? _blobSettingsPanel;
     private AutoTilePreviewPanel? _autoTilePreviewPanel;
+    private UnusedSourcesPanel? _unusedSourcesPanel;
     private bool _initialized;
     private bool _isDirty;
     private TilePropertiesPanel? _propertiesPanel;
@@ -112,6 +113,11 @@ public partial class TileEditorDock : Control
         _autoTilePreviewPanel = new AutoTilePreviewPanel(_service!);
         _autoTilePreviewPanel.Name = "Auto-Tile Preview";
         _tabContainer.AddChild(_autoTilePreviewPanel);
+
+        // Unused Sources tab
+        _unusedSourcesPanel = new UnusedSourcesPanel(_service!);
+        _unusedSourcesPanel.Name = "Unused Sources";
+        _tabContainer.AddChild(_unusedSourcesPanel);
     }
 
     private void OnTilesLoaded()

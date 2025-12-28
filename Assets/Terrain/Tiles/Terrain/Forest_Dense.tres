@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="SemanticTile" load_steps=10 format=3 uid="uid://b67ldj8bdtjs"]
+[gd_resource type="Resource" load_steps=11 format=3 uid="uid://b67ldj8bdtjs"]
 
 [ext_resource type="Script" uid="uid://bp5hl2y6y18qm" path="res://Scripts/Features/Worldgen/SocketData.cs" id="3_dhcrh"]
+[ext_resource type="Script" uid="uid://d2t3c4inr12or" path="res://Scripts/Core/Data/CompatibilityTag.cs" id="3_hn0k2"]
 [ext_resource type="Script" uid="uid://f5ebq2hn0u4e" path="res://Scripts/Features/Worldgen/LayerConstraint.cs" id="4_4gmwd"]
 [ext_resource type="Script" uid="uid://dfivx0g2ib815" path="res://Scripts/Features/Card/Models/CardSignature.cs" id="5_hq0al"]
 [ext_resource type="Script" uid="uid://ge6gvuoe7v5o" path="res://Scripts/Features/Worldgen/TilePlacement.cs" id="5_s1ug3"]
@@ -17,10 +18,22 @@ Varias = 0.2
 Inertiae = 0.3
 Subsidium = 0.2
 Spatium = -0.3
+Elements = PackedFloat32Array(0.6, -0.2, -0.1, -0.4, 0.2, 0.3, 0.2, -0.3)
+_elements = PackedFloat32Array(0.6, -0.2, -0.1, -0.4, 0.2, 0.3, 0.2, -0.3)
 metadata/_custom_type_script = "uid://dfivx0g2ib815"
 
 [sub_resource type="Resource" id="Resource_hn0k2"]
 script = ExtResource("3_dhcrh")
+North = Array[ExtResource("3_hn0k2")]([])
+East = Array[ExtResource("3_hn0k2")]([])
+South = Array[ExtResource("3_hn0k2")]([])
+West = Array[ExtResource("3_hn0k2")]([])
+NorthEast = Array[ExtResource("3_hn0k2")]([])
+SouthEast = Array[ExtResource("3_hn0k2")]([])
+SouthWest = Array[ExtResource("3_hn0k2")]([])
+NorthWest = Array[ExtResource("3_hn0k2")]([])
+Up = Array[ExtResource("3_hn0k2")]([])
+Down = Array[ExtResource("3_hn0k2")]([])
 
 [sub_resource type="Resource" id="Resource_aqayw"]
 script = ExtResource("5_s1ug3")
@@ -30,6 +43,7 @@ AnimationFrames = Array[Vector3i]([Vector3i(47, 7, 1)])
 script = ExtResource("8_o6njd")
 TileName = "forest_dense"
 Passability = 2
+TileSetPath = ""
 TileSet = ExtResource("6_lsebg")
 Tile = SubResource("Resource_aqayw")
 GlobalSpawnChance = 0.15

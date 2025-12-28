@@ -1,5 +1,6 @@
-[gd_resource type="Resource" script_class="SemanticTile" load_steps=10 format=3 uid="uid://4uusq4rkw8bn"]
+[gd_resource type="Resource" load_steps=11 format=3 uid="uid://4uusq4rkw8bn"]
 
+[ext_resource type="Script" uid="uid://d2t3c4inr12or" path="res://Scripts/Core/Data/CompatibilityTag.cs" id="3_dqtto"]
 [ext_resource type="Script" uid="uid://bp5hl2y6y18qm" path="res://Scripts/Features/Worldgen/SocketData.cs" id="3_xwyk1"]
 [ext_resource type="Script" uid="uid://f5ebq2hn0u4e" path="res://Scripts/Features/Worldgen/LayerConstraint.cs" id="4_dj2pi"]
 [ext_resource type="Script" uid="uid://dfivx0g2ib815" path="res://Scripts/Features/Card/Models/CardSignature.cs" id="5_s4qo1"]
@@ -16,10 +17,22 @@ Lumines = 0.3
 Inertiae = -0.2
 Subsidium = 0.5
 Spatium = 0.1
+Elements = PackedFloat32Array(0.2, 0.1, 0.4, 0.3, 0, -0.2, 0.5, 0.1)
+_elements = PackedFloat32Array(0.2, 0.1, 0.4, 0.3, 0, -0.2, 0.5, 0.1)
 metadata/_custom_type_script = "uid://dfivx0g2ib815"
 
 [sub_resource type="Resource" id="Resource_dqtto"]
 script = ExtResource("3_xwyk1")
+North = Array[ExtResource("3_dqtto")]([])
+East = Array[ExtResource("3_dqtto")]([])
+South = Array[ExtResource("3_dqtto")]([])
+West = Array[ExtResource("3_dqtto")]([])
+NorthEast = Array[ExtResource("3_dqtto")]([])
+SouthEast = Array[ExtResource("3_dqtto")]([])
+SouthWest = Array[ExtResource("3_dqtto")]([])
+NorthWest = Array[ExtResource("3_dqtto")]([])
+Up = Array[ExtResource("3_dqtto")]([])
+Down = Array[ExtResource("3_dqtto")]([])
 
 [sub_resource type="Resource" id="Resource_aqayw"]
 script = ExtResource("6_au1fa")
@@ -28,6 +41,7 @@ AnimationFrames = Array[Vector3i]([Vector3i(49, 2, 2)])
 [resource]
 script = ExtResource("9_3sktn")
 TileName = "grass_forest_transition"
+TileSetPath = ""
 TileSet = ExtResource("7_axk1y")
 Tile = SubResource("Resource_aqayw")
 GlobalSpawnChance = 0.25
