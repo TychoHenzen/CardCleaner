@@ -94,6 +94,7 @@ public partial class TilesetAtlasPicker : Control
     public override void _Ready()
     {
         MouseFilter = MouseFilterEnum.Stop;
+        TextureFilter = TextureFilterEnum.Nearest;
         MouseExited += OnMouseExited;
     }
 

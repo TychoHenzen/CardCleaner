@@ -1027,7 +1027,7 @@ public partial class TilePropertiesPanel : ScrollContainer
 
         _variantGrid = new GridContainer
         {
-            Columns = variantCount == 47 ? 6 : 4,
+            Columns = variantCount == 47 ? 4 : 4,
             SizeFlagsHorizontal = SizeFlags.ExpandFill
         };
         _variantGrid.AddThemeConstantOverride("h_separation", 4);
@@ -1038,7 +1038,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         {
             var slotContainer = new VBoxContainer
             {
-                CustomMinimumSize = new Vector2(variantCount == 47 ? 60 : 75, variantCount == 47 ? 100 : 110),
+                CustomMinimumSize = new Vector2(80, 130),
                 SizeFlagsHorizontal = SizeFlags.ExpandFill
             };
 
@@ -1080,14 +1080,15 @@ public partial class TilePropertiesPanel : ScrollContainer
             // Thumbnail
             var thumbnailPanel = new PanelContainer
             {
-                CustomMinimumSize = new Vector2(32, 32),
+                CustomMinimumSize = new Vector2(64, 64),
                 SizeFlagsHorizontal = SizeFlags.ShrinkCenter
             };
             var thumbnail = new TextureRect
             {
-                CustomMinimumSize = new Vector2(32, 32),
+                CustomMinimumSize = new Vector2(64, 64),
                 ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-                StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered
+                StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
+                TextureFilter = TextureFilterEnum.Nearest
             };
             thumbnailPanel.AddChild(thumbnail);
             slotContainer.AddChild(thumbnailPanel);

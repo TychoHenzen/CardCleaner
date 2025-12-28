@@ -7,7 +7,8 @@ using Godot;
 namespace CardCleaner.Addons.TileEditor;
 
 /// <summary>
-///     Panel showing all valid auto-tile permutations for a selected tile rendered over a base tile.
+///     Panel showing auto-tile variants in a contextual map-like preview.
+///     Displays tiles as they would appear in-game with proper neighbor-based variant selection.
 /// </summary>
 [Tool]
 public partial class AutoTilePreviewPanel : ScrollContainer
@@ -15,8 +16,10 @@ public partial class AutoTilePreviewPanel : ScrollContainer
     private readonly TileEditorService _service;
     private OptionButton? _tileSelector;
     private OptionButton? _baseTileSelector;
-    private GridContainer? _permutationGrid;
+    private HSlider? _scaleSlider;
+    private Label? _scaleLabel;
     private Label? _infoLabel;
+    private AutoTileMapPreview? _mapPreview;
     private string? _selectedTileId;
     private string? _selectedBaseTileId;
 
@@ -51,7 +54,7 @@ public partial class AutoTilePreviewPanel : ScrollContainer
 
         // Tile selector row
         var tileRow = new HBoxContainer();
-        tileRow.AddChild(new Label { Text = "Tile with variants:", CustomMinimumSize = new Vector2(120, 0) });
+        tileRow.AddChild(new Label { Text = "Overlay tile:", CustomMinimumSize = new Vector2(100, 0) });
         _tileSelector = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
         _tileSelector.ItemSelected += OnTileSelected;
         tileRow.AddChild(_tileSelector);
@@ -59,11 +62,28 @@ public partial class AutoTilePreviewPanel : ScrollContainer
 
         // Base tile selector row
         var baseRow = new HBoxContainer();
-        baseRow.AddChild(new Label { Text = "Base tile:", CustomMinimumSize = new Vector2(120, 0) });
+        baseRow.AddChild(new Label { Text = "Base tile:", CustomMinimumSize = new Vector2(100, 0) });
         _baseTileSelector = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
         _baseTileSelector.ItemSelected += OnBaseTileSelected;
         baseRow.AddChild(_baseTileSelector);
         mainVBox.AddChild(baseRow);
+
+        // Scale slider row
+        var scaleRow = new HBoxContainer();
+        scaleRow.AddChild(new Label { Text = "Scale:", CustomMinimumSize = new Vector2(100, 0) });
+        _scaleSlider = new HSlider
+        {
+            MinValue = 2,
+            MaxValue = 8,
+            Step = 1,
+            Value = 4,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _scaleSlider.ValueChanged += OnScaleChanged;
+        scaleRow.AddChild(_scaleSlider);
+        _scaleLabel = new Label { Text = "4x", CustomMinimumSize = new Vector2(30, 0) };
+        scaleRow.AddChild(_scaleLabel);
+        mainVBox.AddChild(scaleRow);
 
         mainVBox.AddChild(new HSeparator());
 
@@ -76,8 +96,8 @@ public partial class AutoTilePreviewPanel : ScrollContainer
         _infoLabel.AddThemeFontSizeOverride("font_size", 11);
         mainVBox.AddChild(_infoLabel);
 
-        // Grid for permutations
-        var gridScroll = new ScrollContainer
+        // Map preview in scroll container
+        var previewScroll = new ScrollContainer
         {
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
             SizeFlagsVertical = SizeFlags.ExpandFill,
@@ -85,18 +105,21 @@ public partial class AutoTilePreviewPanel : ScrollContainer
             VerticalScrollMode = ScrollMode.Auto
         };
 
-        _permutationGrid = new GridContainer
-        {
-            Columns = 8,
-            SizeFlagsHorizontal = SizeFlags.ExpandFill
-        };
-        _permutationGrid.AddThemeConstantOverride("h_separation", 8);
-        _permutationGrid.AddThemeConstantOverride("v_separation", 8);
-        gridScroll.AddChild(_permutationGrid);
-        mainVBox.AddChild(gridScroll);
+        _mapPreview = new AutoTileMapPreview(_service);
+        _mapPreview.BitmaskChanged += OnBitmaskChanged;
+        previewScroll.AddChild(_mapPreview);
+        mainVBox.AddChild(previewScroll);
 
         // Populate dropdowns after service loads
         CallDeferred(MethodName.PopulateDropdowns);
+    }
+
+    private void OnBitmaskChanged(int bitmask, string description)
+    {
+        if (_infoLabel != null)
+        {
+            _infoLabel.Text = $"Click tiles to toggle. {description}";
+        }
     }
 
     private void PopulateDropdowns()
@@ -130,7 +153,6 @@ public partial class AutoTilePreviewPanel : ScrollContainer
         var index = 1;
         foreach (var tile in _service.AllTiles)
         {
-            // Show terrain tiles as base options
             if (tile.Layer.Equals("terrain", StringComparison.OrdinalIgnoreCase))
             {
                 _baseTileSelector.AddItem($"{tile.Name} ({tile.Id})", index);
@@ -166,172 +188,47 @@ public partial class AutoTilePreviewPanel : ScrollContainer
         RefreshPreview();
     }
 
+    private void OnScaleChanged(double value)
+    {
+        _scaleLabel!.Text = $"{(int)value}x";
+        _mapPreview?.SetScale((float)value);
+    }
+
     private void ClearPreview()
     {
-        if (_permutationGrid == null) return;
-
-        foreach (var child in _permutationGrid.GetChildren())
-        {
-            child.QueueFree();
-        }
-
         _infoLabel!.Text = "Select a tile with auto-tile variants to preview.";
+        _mapPreview?.ClearPreview();
     }
 
     private void RefreshPreview()
     {
-        if (_permutationGrid == null || string.IsNullOrEmpty(_selectedTileId)) return;
-
-        // Clear existing
-        foreach (var child in _permutationGrid.GetChildren())
+        if (string.IsNullOrEmpty(_selectedTileId))
         {
-            child.QueueFree();
+            ClearPreview();
+            return;
         }
 
         var tile = _service.GetTile(_selectedTileId);
         if (tile == null || !tile.HasAutoTileVariants)
         {
             _infoLabel!.Text = "Selected tile has no auto-tile variants.";
+            _mapPreview?.ClearPreview();
             return;
         }
 
-        // Determine format and get valid masks
         var isBlob47 = tile.AutoTileFormat == "blob47";
-        var variantCount = isBlob47 ? 47 : 16;
-        IReadOnlyList<int>? blobMasks = isBlob47 ? NeighborBitmask8.GetValid47Masks() : null;
+        var formatName = isBlob47 ? "blob47" : "corner16";
+        _infoLabel!.Text = $"Click tiles to toggle neighbors ({formatName}). Bitmask: 0";
 
-        _infoLabel!.Text = $"Showing {variantCount} permutations ({(isBlob47 ? "8-bit Blob" : "4-bit Corner")} format)";
-        _permutationGrid.Columns = isBlob47 ? 8 : 4;
-
-        // Get textures
-        var tileTexture = _service.GetTileTexture(tile);
         EditableTile? baseTile = null;
-        Texture2D? baseTexture = null;
         if (!string.IsNullOrEmpty(_selectedBaseTileId))
         {
             baseTile = _service.GetTile(_selectedBaseTileId);
-            if (baseTile != null)
-                baseTexture = _service.GetTileTexture(baseTile);
         }
 
-        var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
-
-        for (var i = 0; i < variantCount; i++)
-        {
-            var container = new VBoxContainer
-            {
-                CustomMinimumSize = new Vector2(isBlob47 ? 48 : 64, isBlob47 ? 72 : 88),
-                SizeFlagsHorizontal = SizeFlags.ShrinkCenter
-            };
-
-            // Label
-            int maskValue = blobMasks != null ? blobMasks[i] : i;
-            string labelText;
-            if (isBlob47)
-            {
-                labelText = $"{i}: {maskValue}";
-            }
-            else
-            {
-                labelText = $"{i}: {GetCornerLabel(i)}";
-            }
-
-            var label = new Label
-            {
-                Text = labelText,
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
-            label.AddThemeFontSizeOverride("font_size", 8);
-            container.AddChild(label);
-
-            // Shape preview
-            var shapePreview = new TileShapePreview
-            {
-                CustomMinimumSize = new Vector2(24, 24),
-                SizeFlagsHorizontal = SizeFlags.ShrinkCenter
-            };
-            shapePreview.SetMask(maskValue, isBlob47 ? TileShapePreview.Format.Blob47 : TileShapePreview.Format.Corner16);
-            container.AddChild(shapePreview);
-
-            // Tile preview (base + variant layered)
-            var previewContainer = new Control
-            {
-                CustomMinimumSize = new Vector2(32, 32),
-                SizeFlagsHorizontal = SizeFlags.ShrinkCenter
-            };
-
-            // Base tile layer
-            if (baseTexture != null && baseTile != null)
-            {
-                var baseRect = new TextureRect
-                {
-                    CustomMinimumSize = new Vector2(32, 32),
-                    ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-                    StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered
-                };
-                var baseCoords = new Vector2I(baseTile.AtlasX, baseTile.AtlasY);
-                var baseRegion = new Rect2I(baseCoords * tileSize, tileSize);
-                baseRect.Texture = new AtlasTexture { Atlas = baseTexture, Region = baseRegion };
-                previewContainer.AddChild(baseRect);
-            }
-
-            // Variant tile layer
-            if (tileTexture != null && tile.AutoTileVariants != null && i < tile.AutoTileVariants.Length)
-            {
-                var variantRect = new TextureRect
-                {
-                    CustomMinimumSize = new Vector2(32, 32),
-                    ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-                    StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered
-                };
-
-                Vector2I variantCoords;
-                if (tile.AutoTileVariants[i].HasValue)
-                {
-                    variantCoords = tile.AutoTileVariants[i]!.Value;
-                }
-                else
-                {
-                    variantCoords = new Vector2I(tile.AtlasX, tile.AtlasY);
-                }
-
-                var variantRegion = new Rect2I(variantCoords * tileSize, tileSize);
-                variantRect.Texture = new AtlasTexture { Atlas = tileTexture, Region = variantRegion };
-                previewContainer.AddChild(variantRect);
-            }
-
-            container.AddChild(previewContainer);
-            _permutationGrid.AddChild(container);
-        }
+        _mapPreview?.SetTiles(tile, baseTile, (float)_scaleSlider!.Value);
     }
 
-    private static string GetCornerLabel(int mask)
-    {
-        return mask switch
-        {
-            0 => "None",
-            1 => "NE",
-            2 => "SE",
-            3 => "NE+SE",
-            4 => "SW",
-            5 => "NE+SW",
-            6 => "SE+SW",
-            7 => "NE+SE+SW",
-            8 => "NW",
-            9 => "NE+NW",
-            10 => "SE+NW",
-            11 => "NE+SE+NW",
-            12 => "SW+NW",
-            13 => "NE+SW+NW",
-            14 => "SE+SW+NW",
-            15 => "All",
-            _ => $"({mask})"
-        };
-    }
-
-    /// <summary>
-    ///     Refresh dropdowns when tiles are reloaded.
-    /// </summary>
     public void Refresh()
     {
         PopulateDropdowns();
@@ -339,6 +236,345 @@ public partial class AutoTilePreviewPanel : ScrollContainer
         {
             RefreshPreview();
         }
+    }
+}
+
+/// <summary>
+///     Interactive 3x3 grid control for exploring auto-tile bitmask configurations.
+///     Center tile is always the overlay; surrounding 8 tiles are toggleable.
+/// </summary>
+[Tool]
+public partial class AutoTileMapPreview : Control
+{
+    /// <summary>
+    ///     Event fired when the bitmask changes due to user interaction.
+    /// </summary>
+    [Signal]
+    public delegate void BitmaskChangedEventHandler(int bitmask, string description);
+
+    private readonly TileEditorService _service;
+    private EditableTile? _overlayTile;
+    private EditableTile? _baseTile;
+    private float _scale = 4f;
+    private Vector2I _tileSize = new(16, 16);
+
+    // Toggle state for the 8 surrounding tiles (3x3 grid, center is always overlay)
+    // Layout: [0]=NW, [1]=N, [2]=NE, [3]=W, [4]=E, [5]=SW, [6]=S, [7]=SE
+    private readonly bool[] _neighborToggles = new bool[8];
+
+    // Grid positions for each neighbor index (row, col offsets from center)
+    private static readonly (int row, int col)[] NeighborOffsets =
+    {
+        (-1, -1), // 0: NW
+        (-1, 0),  // 1: N
+        (-1, 1),  // 2: NE
+        (0, -1),  // 3: W
+        (0, 1),   // 4: E
+        (1, -1),  // 5: SW
+        (1, 0),   // 6: S
+        (1, 1)    // 7: SE
+    };
+
+    public AutoTileMapPreview(TileEditorService service)
+    {
+        _service = service;
+        TextureFilter = TextureFilterEnum.Nearest;
+        MouseFilter = MouseFilterEnum.Stop;
+    }
+
+    public void SetScale(float scale)
+    {
+        _scale = scale;
+        UpdateSize();
+        QueueRedraw();
+    }
+
+    public void SetTiles(EditableTile? overlayTile, EditableTile? baseTile, float scale)
+    {
+        _overlayTile = overlayTile;
+        _baseTile = baseTile;
+        _scale = scale;
+        _tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
+        UpdateSize();
+        QueueRedraw();
+        EmitBitmaskChanged();
+    }
+
+    public void ClearPreview()
+    {
+        _overlayTile = null;
+        _baseTile = null;
+        UpdateSize();
+        QueueRedraw();
+    }
+
+    /// <summary>
+    ///     Get the current toggle state array for external display.
+    /// </summary>
+    public bool[] GetNeighborToggles() => _neighborToggles;
+
+    private void UpdateSize()
+    {
+        if (_overlayTile == null)
+        {
+            CustomMinimumSize = Vector2.Zero;
+            return;
+        }
+
+        var scaledTileSize = new Vector2(_tileSize.X, _tileSize.Y) * _scale;
+        CustomMinimumSize = new Vector2(3 * scaledTileSize.X, 3 * scaledTileSize.Y);
+    }
+
+    public override void _GuiInput(InputEvent @event)
+    {
+        if (_overlayTile == null) return;
+
+        if (@event is InputEventMouseButton mouseButton &&
+            mouseButton.Pressed &&
+            mouseButton.ButtonIndex == MouseButton.Left)
+        {
+            var scaledTileSize = new Vector2(_tileSize.X, _tileSize.Y) * _scale;
+            var col = (int)(mouseButton.Position.X / scaledTileSize.X);
+            var row = (int)(mouseButton.Position.Y / scaledTileSize.Y);
+
+            // Don't toggle center cell (1,1)
+            if (row == 1 && col == 1) return;
+
+            // Find which neighbor index this corresponds to
+            var neighborIndex = GetNeighborIndex(row, col);
+            if (neighborIndex >= 0)
+            {
+                _neighborToggles[neighborIndex] = !_neighborToggles[neighborIndex];
+                QueueRedraw();
+                EmitBitmaskChanged();
+            }
+        }
+    }
+
+    private int GetNeighborIndex(int row, int col)
+    {
+        for (var i = 0; i < NeighborOffsets.Length; i++)
+        {
+            // Center is at (1,1), so neighbor at offset (dr, dc) is at (1+dr, 1+dc)
+            if (row == 1 + NeighborOffsets[i].row && col == 1 + NeighborOffsets[i].col)
+                return i;
+        }
+        return -1;
+    }
+
+    private void EmitBitmaskChanged()
+    {
+        if (_overlayTile == null) return;
+
+        var isBlob47 = _overlayTile.AutoTileFormat == "blob47";
+        var bitmask = ComputeCenterBitmask(isBlob47);
+        var description = GetBitmaskDescription(bitmask, isBlob47);
+        EmitSignal(SignalName.BitmaskChanged, bitmask, description);
+    }
+
+    public override void _Draw()
+    {
+        if (_overlayTile == null)
+            return;
+
+        var scaledTileSize = new Vector2(_tileSize.X, _tileSize.Y) * _scale;
+
+        var overlayTexture = _service.GetTileTexture(_overlayTile);
+        Texture2D? baseTexture = null;
+        if (_baseTile != null)
+        {
+            baseTexture = _service.GetTileTexture(_baseTile);
+        }
+
+        var isBlob47 = _overlayTile.AutoTileFormat == "blob47";
+        var blobMasks = isBlob47 ? NeighborBitmask8.GetValid47Masks() : null;
+
+        // Draw 3x3 grid
+        for (var row = 0; row < 3; row++)
+        {
+            for (var col = 0; col < 3; col++)
+            {
+                var destRect = new Rect2(col * scaledTileSize.X, row * scaledTileSize.Y, scaledTileSize.X, scaledTileSize.Y);
+                var isCenter = row == 1 && col == 1;
+                var hasOverlay = isCenter || IsNeighborToggled(row, col);
+
+                // Draw base tile first (always, for background)
+                if (baseTexture != null && _baseTile != null)
+                {
+                    var baseCoords = new Vector2I(_baseTile.AtlasX, _baseTile.AtlasY);
+                    var baseSrcRect = new Rect2(baseCoords.X * _tileSize.X, baseCoords.Y * _tileSize.Y, _tileSize.X, _tileSize.Y);
+                    DrawTextureRectRegion(baseTexture, destRect, baseSrcRect);
+                }
+
+                // Draw overlay tile with appropriate variant
+                if (hasOverlay && overlayTexture != null)
+                {
+                    var bitmask = ComputeBitmaskForCell(row, col, isBlob47);
+                    var variantCoords = GetVariantCoords(bitmask, isBlob47, blobMasks);
+                    var srcRect = new Rect2(variantCoords.X * _tileSize.X, variantCoords.Y * _tileSize.Y, _tileSize.X, _tileSize.Y);
+                    DrawTextureRectRegion(overlayTexture, destRect, srcRect);
+                }
+
+                // Draw toggle indicator for non-center cells
+                if (!isCenter)
+                {
+                    var indicatorColor = hasOverlay
+                        ? new Color(0.2f, 0.8f, 0.2f, 0.3f)  // Green tint for toggled on
+                        : new Color(0.8f, 0.2f, 0.2f, 0.15f); // Red tint for toggled off
+                    DrawRect(destRect, indicatorColor);
+                }
+            }
+        }
+
+        // Draw grid lines
+        var gridColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+        for (var col = 0; col <= 3; col++)
+        {
+            var x = col * scaledTileSize.X;
+            DrawLine(new Vector2(x, 0), new Vector2(x, 3 * scaledTileSize.Y), gridColor, 1.0f);
+        }
+        for (var row = 0; row <= 3; row++)
+        {
+            var y = row * scaledTileSize.Y;
+            DrawLine(new Vector2(0, y), new Vector2(3 * scaledTileSize.X, y), gridColor, 1.0f);
+        }
+
+        // Highlight center cell
+        var centerRect = new Rect2(scaledTileSize.X, scaledTileSize.Y, scaledTileSize.X, scaledTileSize.Y);
+        DrawRect(centerRect, new Color(1.0f, 1.0f, 0.0f, 0.2f)); // Yellow highlight for center
+    }
+
+    private bool IsNeighborToggled(int row, int col)
+    {
+        var idx = GetNeighborIndex(row, col);
+        return idx >= 0 && _neighborToggles[idx];
+    }
+
+    private int ComputeBitmaskForCell(int row, int col, bool isBlob47)
+    {
+        // Build a 3x3 pattern from toggle state
+        var pattern = BuildPatternFromToggles();
+        if (isBlob47)
+            return ComputeBlob47Bitmask(pattern, row, col);
+        return ComputeCorner16Bitmask(pattern, row, col);
+    }
+
+    private int ComputeCenterBitmask(bool isBlob47)
+    {
+        return ComputeBitmaskForCell(1, 1, isBlob47);
+    }
+
+    private int[,] BuildPatternFromToggles()
+    {
+        var pattern = new int[3, 3];
+        pattern[1, 1] = 1; // Center always overlay
+
+        for (var i = 0; i < 8; i++)
+        {
+            var (dr, dc) = NeighborOffsets[i];
+            pattern[1 + dr, 1 + dc] = _neighborToggles[i] ? 1 : 0;
+        }
+
+        return pattern;
+    }
+
+    private int ComputeBlob47Bitmask(int[,] pattern, int row, int col)
+    {
+        // 8-bit blob: N=1, NE=2, E=4, SE=8, S=16, SW=32, W=64, NW=128
+        int mask = 0;
+
+        bool hasN = row > 0 && pattern[row - 1, col] == 1;
+        bool hasE = col < 2 && pattern[row, col + 1] == 1;
+        bool hasS = row < 2 && pattern[row + 1, col] == 1;
+        bool hasW = col > 0 && pattern[row, col - 1] == 1;
+        bool hasNE = row > 0 && col < 2 && pattern[row - 1, col + 1] == 1;
+        bool hasSE = row < 2 && col < 2 && pattern[row + 1, col + 1] == 1;
+        bool hasSW = row < 2 && col > 0 && pattern[row + 1, col - 1] == 1;
+        bool hasNW = row > 0 && col > 0 && pattern[row - 1, col - 1] == 1;
+
+        if (hasN) mask |= 1;
+        if (hasE) mask |= 4;
+        if (hasS) mask |= 16;
+        if (hasW) mask |= 64;
+
+        // Corners only count if both adjacent edges are present
+        if (hasNE && hasN && hasE) mask |= 2;
+        if (hasSE && hasS && hasE) mask |= 8;
+        if (hasSW && hasS && hasW) mask |= 32;
+        if (hasNW && hasN && hasW) mask |= 128;
+
+        return mask;
+    }
+
+    private int ComputeCorner16Bitmask(int[,] pattern, int row, int col)
+    {
+        // 4-bit corner: NE=1, SE=2, SW=4, NW=8
+        int mask = 0;
+
+        bool hasNE = row > 0 && col < 2 && pattern[row - 1, col + 1] == 1;
+        bool hasSE = row < 2 && col < 2 && pattern[row + 1, col + 1] == 1;
+        bool hasSW = row < 2 && col > 0 && pattern[row + 1, col - 1] == 1;
+        bool hasNW = row > 0 && col > 0 && pattern[row - 1, col - 1] == 1;
+
+        if (hasNE) mask |= 1;
+        if (hasSE) mask |= 2;
+        if (hasSW) mask |= 4;
+        if (hasNW) mask |= 8;
+
+        return mask;
+    }
+
+    private string GetBitmaskDescription(int bitmask, bool isBlob47)
+    {
+        if (isBlob47)
+        {
+            var index = NeighborBitmask8.GetBlobIndex(bitmask);
+            return $"Bitmask: {bitmask} (index {index}/46)";
+        }
+        return $"Bitmask: {bitmask} ({NeighborBitmaskCorner.GetDescription(bitmask)})";
+    }
+
+    private Vector2I GetVariantCoords(int bitmask, bool isBlob47, IReadOnlyList<int>? blobMasks)
+    {
+        if (_overlayTile?.AutoTileVariants == null)
+        {
+            return new Vector2I(_overlayTile?.AtlasX ?? 0, _overlayTile?.AtlasY ?? 0);
+        }
+
+        int variantIndex;
+        if (isBlob47 && blobMasks != null)
+        {
+            variantIndex = blobMasks.IndexOf(bitmask);
+            if (variantIndex < 0) variantIndex = 0;
+        }
+        else
+        {
+            variantIndex = bitmask;
+        }
+
+        if (variantIndex >= 0 && variantIndex < _overlayTile.AutoTileVariants.Length &&
+            _overlayTile.AutoTileVariants[variantIndex].HasValue)
+        {
+            return _overlayTile.AutoTileVariants[variantIndex]!.Value;
+        }
+
+        return new Vector2I(_overlayTile.AtlasX, _overlayTile.AtlasY);
+    }
+}
+
+/// <summary>
+///     Extension method to find index in IReadOnlyList
+/// </summary>
+internal static class ReadOnlyListExtensions
+{
+    public static int IndexOf<T>(this IReadOnlyList<T> list, T item) where T : IEquatable<T>
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i].Equals(item))
+                return i;
+        }
+        return -1;
     }
 }
 #endif
