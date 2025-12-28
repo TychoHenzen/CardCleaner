@@ -7,6 +7,29 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
 /// <summary>
+/// Animation configuration for animated tiles.
+/// </summary>
+public record TileAnimation(
+    Vector2I[] Frames,
+    float FrameDuration = 0.2f)
+{
+    /// <summary>
+    /// Frame atlas coordinates. First frame is typically the base AtlasCoords.
+    /// </summary>
+    public Vector2I[] Frames { get; init; } = Frames;
+
+    /// <summary>
+    /// Duration of each frame in seconds.
+    /// </summary>
+    public float FrameDuration { get; init; } = FrameDuration;
+
+    /// <summary>
+    /// Total animation duration in seconds.
+    /// </summary>
+    public float TotalDuration => Frames.Length * FrameDuration;
+}
+
+/// <summary>
 /// Defines a tile type with all its properties
 /// </summary>
 public class TileDefinition
@@ -25,7 +48,10 @@ public class TileDefinition
         float decorationDensity = 1.0f,
         BlobGenerationConfig? blobSettings = null,
         Vector2I?[]? autoTileVariants = null,
-        AutoTileFormat autoTileFormat = AutoTileFormat.Corner16)
+        AutoTileFormat autoTileFormat = AutoTileFormat.Corner16,
+        Vector2I[]? variations = null,
+        VariationMode variationMode = VariationMode.PerInstance,
+        TileAnimation? animation = null)
     {
         Id = id;
         Name = name;
@@ -41,6 +67,9 @@ public class TileDefinition
         BlobSettings = blobSettings;
         AutoTileVariants = autoTileVariants;
         AutoTileFormat = autoTileFormat;
+        Variations = variations;
+        VariationMode = variationMode;
+        Animation = animation;
     }
 
     public string Id { get; }
@@ -81,14 +110,49 @@ public class TileDefinition
     /// <summary>
     /// The auto-tile format used by this tile.
     /// Corner16 = 4-bit diagonal corners (16 variants).
+    /// Edge16 = 4-bit cardinal edges (16 variants).
     /// Blob47 = 8-bit edges+corners with constraint (47 variants).
     /// </summary>
     public AutoTileFormat AutoTileFormat { get; }
 
     /// <summary>
+    /// Visual variations for this tile (different atlas coordinates for the same tile type).
+    /// Null means no variations (always use base AtlasCoords).
+    /// </summary>
+    public Vector2I[]? Variations { get; }
+
+    /// <summary>
+    /// How variations are selected during map generation.
+    /// PerInstance: Random per tile placement (foliage-style).
+    /// PerGeneration: One variant selected at generation start, used for all instances.
+    /// </summary>
+    public VariationMode VariationMode { get; }
+
+    /// <summary>
+    /// Animation configuration for this tile. Null means no animation.
+    /// </summary>
+    public TileAnimation? Animation { get; }
+
+    /// <summary>
+    /// Whether this tile has visual variations.
+    /// </summary>
+    public bool HasVariations => Variations != null && Variations.Length > 0;
+
+    /// <summary>
+    /// Whether this tile has animation frames.
+    /// </summary>
+    public bool HasAnimation => Animation != null && Animation.Frames.Length > 1;
+
+    /// <summary>
     /// Expected number of auto-tile variants based on format.
     /// </summary>
-    public int ExpectedVariantCount => AutoTileFormat == AutoTileFormat.Corner16 ? 16 : 47;
+    public int ExpectedVariantCount => AutoTileFormat switch
+    {
+        AutoTileFormat.Corner16 => 16,
+        AutoTileFormat.Edge16 => 16,
+        AutoTileFormat.Blob47 => 47,
+        _ => 16
+    };
 
     public bool IsPassable => Passability == TilePassability.Passable;
     public bool HasAutoTileVariants => AutoTileVariants != null;
@@ -128,7 +192,7 @@ public class TileDefinition
         }
         else
         {
-            // For corner format, use mask directly as index
+            // For corner16 and edge16 formats, use mask directly as index (both are 4-bit, 0-15)
             index = bitmask;
             maxIndex = 16;
         }

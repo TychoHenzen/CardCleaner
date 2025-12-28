@@ -15,5 +15,11 @@ public enum AutoTileFormat
     ///     8-bit blob format: N=1, NE=2, E=4, SE=8, S=16, SW=32, W=64, NW=128.
     ///     Corners only valid when both adjacent edges are set. 47 valid combinations.
     /// </summary>
-    Blob47 = 1
+    Blob47 = 1,
+
+    /// <summary>
+    ///     4-bit edge format: N=1, E=2, S=4, W=8.
+    ///     Checks cardinal neighbors only (not diagonals). 16 possible combinations.
+    /// </summary>
+    Edge16 = 2
 }

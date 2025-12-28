@@ -25,16 +25,12 @@ public static class AutoTileHelper
             return neighborId == tileDef.Id;
         };
 
-        if (tileDef.AutoTileFormat == AutoTileFormat.Blob47)
+        return tileDef.AutoTileFormat switch
         {
-            // 8-bit blob format with edge-implies-corner constraint
-            return NeighborBitmask8.Compute(position, isSameTerrain);
-        }
-        else
-        {
-            // 4-bit corner format (default)
-            return NeighborBitmaskCorner.Compute(position, isSameTerrain);
-        }
+            AutoTileFormat.Blob47 => NeighborBitmask8.Compute(position, isSameTerrain),
+            AutoTileFormat.Edge16 => NeighborBitmask.Compute(position, isSameTerrain),
+            _ => NeighborBitmaskCorner.Compute(position, isSameTerrain)
+        };
     }
 
     /// <summary>

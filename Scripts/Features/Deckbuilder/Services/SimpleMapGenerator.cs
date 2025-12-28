@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.BlobGeneration;
@@ -43,6 +44,9 @@ public class SimpleMapGenerator
     public SimpleMapData GenerateMap(Vector2I size)
     {
         ILog.Print($"Generating biome-based map {size.X}x{size.Y}");
+
+        // Pre-select per-generation variants for all tiles that use VariationMode.PerGeneration
+        var perGenerationVariants = SelectPerGenerationVariants();
 
         var tileIds = new string?[size.Y, size.X];
         var biomeMap = new BiomeType[size.Y, size.X];
@@ -143,7 +147,8 @@ public class SimpleMapGenerator
             Size = size,
             PlayerStart = playerStart,
             EnemyPositions = enemyPositions,
-            PassableTiles = passableTiles
+            PassableTiles = passableTiles,
+            PerGenerationVariants = perGenerationVariants
         };
     }
 
@@ -354,5 +359,29 @@ public class SimpleMapGenerator
         }
 
         return biome.SelectPassableTile(_rng) ?? FloorTileId;
+    }
+
+    /// <summary>
+    /// Pre-select variation indices for all tiles that use VariationMode.PerGeneration.
+    /// This ensures consistent appearance across the entire map for themed tiles.
+    /// </summary>
+    private Dictionary<string, int> SelectPerGenerationVariants()
+    {
+        var variants = new Dictionary<string, int>();
+
+        foreach (var tile in _tileRegistry.GetAllTiles())
+        {
+            if (tile.VariationMode == VariationMode.PerGeneration && tile.HasVariations)
+            {
+                // Select a random variation index for this tile type
+                var variantIndex = _rng.RandiRange(0, tile.Variations!.Length - 1);
+                variants[tile.Id] = variantIndex;
+            }
+        }
+
+        if (variants.Count > 0)
+            ILog.Print($"Selected per-generation variants for {variants.Count} tile types");
+
+        return variants;
     }
 }

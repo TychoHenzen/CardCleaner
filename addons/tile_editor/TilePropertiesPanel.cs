@@ -61,11 +61,32 @@ public partial class TilePropertiesPanel : ScrollContainer
     private HBoxContainer? _decorationDensityRow;
     private SpinBox? _decorationDensityField;
 
+    // Variations foldout controls
+    private FoldoutContainer? _variationsFoldout;
+    private OptionButton? _variationModeDropdown;
+    private VBoxContainer? _variationsListContainer;
+    private AcceptDialog? _variationPickerDialog;
+    private TilesetAtlasPicker? _variationPicker;
+
+    // Animation foldout controls
+    private FoldoutContainer? _animationFoldout;
+    private SpinBox? _animationFrameDurationField;
+    private VBoxContainer? _animationFramesContainer;
+    private AcceptDialog? _animationFramePickerDialog;
+    private TilesetAtlasPicker? _animationFramePicker;
+
     // 4-bit corner format labels (NE=1, SE=2, SW=4, NW=8)
     private static readonly string[] CornerBitmaskLabels =
     {
         "None", "NE", "SE", "NE+SE", "SW", "NE+SW", "SE+SW", "NE+SE+SW",
         "NW", "NE+NW", "SE+NW", "NE+SE+NW", "SW+NW", "NE+SW+NW", "SE+SW+NW", "All"
+    };
+
+    // 4-bit edge format labels (N=1, E=2, S=4, W=8)
+    private static readonly string[] EdgeBitmaskLabels =
+    {
+        "None", "N", "E", "N+E", "S", "N+S", "E+S", "N+E+S",
+        "W", "N+W", "E+W", "N+E+W", "S+W", "N+S+W", "E+S+W", "All"
     };
 
     // 8-bit blob format - we only show the 47 valid combinations
@@ -337,6 +358,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         _autoTileFormatDropdown = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
         _autoTileFormatDropdown.AddItem("4-bit Corner (16 tiles)", 0);
         _autoTileFormatDropdown.AddItem("8-bit Blob (47 tiles)", 1);
+        _autoTileFormatDropdown.AddItem("4-bit Edge (16 tiles)", 2);
         _autoTileFormatDropdown.ItemSelected += OnAutoTileFormatChanged;
         formatRow.AddChild(_autoTileFormatDropdown);
         _autoTileFoldout.Content.AddChild(formatRow);
@@ -357,8 +379,8 @@ public partial class TilePropertiesPanel : ScrollContainer
         };
         _autoTileFoldout.Content.AddChild(_variantGridContainer);
 
-        // Build initial grid for 16 variants
-        RebuildVariantGrid(16);
+        // Build initial grid for 16 variants (corner16 is default)
+        RebuildVariantGrid(16, "corner16");
 
         var clearAllBtn = new Button
         {
@@ -367,6 +389,110 @@ public partial class TilePropertiesPanel : ScrollContainer
         };
         clearAllBtn.Pressed += ClearAllVariants;
         _autoTileFoldout.Content.AddChild(clearAllBtn);
+
+        vbox.AddChild(new HSeparator());
+
+        // Variations foldout (visual variations - multiple atlas coords for same tile type)
+        _variationsFoldout = new FoldoutContainer("Tile Variations", false);
+        vbox.AddChild(_variationsFoldout);
+
+        var variationsInfo = new Label
+        {
+            Text = "Add visual variations for this tile type:",
+            AutowrapMode = TextServer.AutowrapMode.Word,
+            Modulate = new Color(0.8f, 0.8f, 0.8f)
+        };
+        variationsInfo.AddThemeFontSizeOverride("font_size", 11);
+        _variationsFoldout.Content.AddChild(variationsInfo);
+
+        // Variation mode dropdown
+        var modeRow = CreateRow("Mode:");
+        _variationModeDropdown = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        _variationModeDropdown.AddItem("Per Instance (random each tile)", 0);
+        _variationModeDropdown.AddItem("Per Generation (one for whole map)", 1);
+        _variationModeDropdown.ItemSelected += OnVariationModeChanged;
+        modeRow.AddChild(_variationModeDropdown);
+        _variationsFoldout.Content.AddChild(modeRow);
+
+        var modeNote = new Label
+        {
+            Text = "Per Instance: Each tile placement uses random variant.\nPer Generation: One variant chosen at map start.",
+            AutowrapMode = TextServer.AutowrapMode.Word,
+            Modulate = new Color(0.7f, 0.7f, 0.7f)
+        };
+        modeNote.AddThemeFontSizeOverride("font_size", 9);
+        _variationsFoldout.Content.AddChild(modeNote);
+
+        // Container for variation entries
+        _variationsListContainer = new VBoxContainer
+        {
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _variationsFoldout.Content.AddChild(_variationsListContainer);
+
+        // Add variation button
+        var addVariationBtn = new Button
+        {
+            Text = "+ Add Variation",
+            SizeFlagsHorizontal = SizeFlags.ShrinkCenter
+        };
+        addVariationBtn.Pressed += OpenAddVariationDialog;
+        _variationsFoldout.Content.AddChild(addVariationBtn);
+
+        vbox.AddChild(new HSeparator());
+
+        // Animation foldout
+        _animationFoldout = new FoldoutContainer("Tile Animation", false);
+        vbox.AddChild(_animationFoldout);
+
+        var animationInfo = new Label
+        {
+            Text = "Configure animation frames for this tile:",
+            AutowrapMode = TextServer.AutowrapMode.Word,
+            Modulate = new Color(0.8f, 0.8f, 0.8f)
+        };
+        animationInfo.AddThemeFontSizeOverride("font_size", 11);
+        _animationFoldout.Content.AddChild(animationInfo);
+
+        // Frame duration
+        var durationRow = CreateRow("Frame Duration:");
+        _animationFrameDurationField = new SpinBox
+        {
+            MinValue = 0.05,
+            MaxValue = 5.0,
+            Step = 0.05,
+            Value = 0.2,
+            Suffix = "s",
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _animationFrameDurationField.ValueChanged += OnAnimationDurationChanged;
+        durationRow.AddChild(_animationFrameDurationField);
+        _animationFoldout.Content.AddChild(durationRow);
+
+        // Container for animation frame entries
+        _animationFramesContainer = new VBoxContainer
+        {
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _animationFoldout.Content.AddChild(_animationFramesContainer);
+
+        // Add frame button
+        var addFrameBtn = new Button
+        {
+            Text = "+ Add Frame",
+            SizeFlagsHorizontal = SizeFlags.ShrinkCenter
+        };
+        addFrameBtn.Pressed += OpenAddAnimationFrameDialog;
+        _animationFoldout.Content.AddChild(addFrameBtn);
+
+        var animNote = new Label
+        {
+            Text = "Note: Animation plays automatically in Godot's TileMap if configured in the TileSet.",
+            AutowrapMode = TextServer.AutowrapMode.Word,
+            Modulate = new Color(0.7f, 0.7f, 0.7f)
+        };
+        animNote.AddThemeFontSizeOverride("font_size", 9);
+        _animationFoldout.Content.AddChild(animNote);
 
         vbox.AddChild(new HSeparator());
 
@@ -610,15 +736,33 @@ public partial class TilePropertiesPanel : ScrollContainer
         }
 
         // Update auto-tile format dropdown and rebuild grid
-        var isBlob47 = _currentTile.AutoTileFormat == "blob47";
-        _autoTileFormatDropdown!.Selected = isBlob47 ? 1 : 0;
-        var variantCount = isBlob47 ? 47 : 16;
-        RebuildVariantGrid(variantCount);
+        var formatIndex = _currentTile.AutoTileFormat?.ToLowerInvariant() switch
+        {
+            "blob47" => 1,
+            "edge16" => 2,
+            _ => 0
+        };
+        _autoTileFormatDropdown!.Selected = formatIndex;
+        var variantCount = _currentTile.AutoTileFormat == "blob47" ? 47 : 16;
+        RebuildVariantGrid(variantCount, _currentTile.AutoTileFormat ?? "corner16");
 
         // Show decoration density only for decoration layer tiles
         var isDecorationLayer = _currentTile.Layer.ToLowerInvariant() == "decoration";
         _decorationDensityRow!.Visible = isDecorationLayer;
         _decorationDensityField!.Value = _currentTile.DecorationDensity * 100;
+
+        // Populate variation settings
+        var variationModeIndex = _currentTile.VariationMode?.ToLowerInvariant() switch
+        {
+            "pergeneration" or "per_generation" => 1,
+            _ => 0
+        };
+        _variationModeDropdown!.Selected = variationModeIndex;
+        RebuildVariationsList();
+
+        // Populate animation settings
+        _animationFrameDurationField!.Value = _currentTile.AnimationFrameDuration;
+        RebuildAnimationFramesList();
 
         // Populate blob settings
         var hasBlobOverride = _currentTile.BlobSettings != null;
@@ -987,7 +1131,12 @@ public partial class TilePropertiesPanel : ScrollContainer
     {
         if (_isUpdating || _currentTile == null) return;
 
-        var newFormat = index == 1 ? "blob47" : "corner16";
+        var newFormat = index switch
+        {
+            1 => "blob47",
+            2 => "edge16",
+            _ => "corner16"
+        };
         if (_currentTile.AutoTileFormat == newFormat) return;
 
         _currentTile.AutoTileFormat = newFormat;
@@ -1002,11 +1151,11 @@ public partial class TilePropertiesPanel : ScrollContainer
             Array.Copy(oldVariants, _currentTile.AutoTileVariants, Math.Min(oldVariants.Length, variantCount));
         }
 
-        RebuildVariantGrid(variantCount);
+        RebuildVariantGrid(variantCount, newFormat);
         _service.UpdateTile(_currentTile);
     }
 
-    private void RebuildVariantGrid(int variantCount)
+    private void RebuildVariantGrid(int variantCount, string format)
     {
         if (_variantGridContainer == null) return;
 
@@ -1021,13 +1170,13 @@ public partial class TilePropertiesPanel : ScrollContainer
         _variantShapePreviews = new TileShapePreview?[variantCount];
 
         // Get the 47 valid blob masks if needed
-        var blobMasks = variantCount == 47
+        var blobMasks = format == "blob47"
             ? CardCleaner.Scripts.Features.Worldgen.AutoTiling.NeighborBitmask8.GetValid47Masks()
             : null;
 
         _variantGrid = new GridContainer
         {
-            Columns = variantCount == 47 ? 4 : 4,
+            Columns = 4,
             SizeFlagsHorizontal = SizeFlags.ExpandFill
         };
         _variantGrid.AddThemeConstantOverride("h_separation", 4);
@@ -1045,10 +1194,15 @@ public partial class TilePropertiesPanel : ScrollContainer
             // Label with bitmask info
             string labelText;
             int maskValue;
-            if (variantCount == 47 && blobMasks != null)
+            if (format == "blob47" && blobMasks != null)
             {
                 maskValue = blobMasks[i];
                 labelText = $"{i}: {GetBlobMaskLabel(i, maskValue)}";
+            }
+            else if (format == "edge16")
+            {
+                maskValue = i;
+                labelText = $"{i}: {EdgeBitmaskLabels[i]}";
             }
             else
             {
@@ -1071,9 +1225,13 @@ public partial class TilePropertiesPanel : ScrollContainer
                 CustomMinimumSize = new Vector2(24, 24),
                 SizeFlagsHorizontal = SizeFlags.ShrinkCenter
             };
-            shapePreview.SetMask(maskValue, variantCount == 47
-                ? TileShapePreview.Format.Blob47
-                : TileShapePreview.Format.Corner16);
+            var shapeFormat = format switch
+            {
+                "blob47" => TileShapePreview.Format.Blob47,
+                "edge16" => TileShapePreview.Format.Edge16,
+                _ => TileShapePreview.Format.Corner16
+            };
+            shapePreview.SetMask(maskValue, shapeFormat);
             slotContainer.AddChild(shapePreview);
             _variantShapePreviews[i] = shapePreview;
 
@@ -1128,6 +1286,386 @@ public partial class TilePropertiesPanel : ScrollContainer
                 UpdateVariantThumbnail(i);
             }
         }
+    }
+
+    private void OnVariationModeChanged(long index)
+    {
+        if (_isUpdating || _currentTile == null) return;
+
+        _currentTile.VariationMode = index switch
+        {
+            1 => "pergeneration",
+            _ => "perinstance"
+        };
+
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void RebuildVariationsList()
+    {
+        if (_variationsListContainer == null || _currentTile == null) return;
+
+        // Clear existing entries
+        foreach (var child in _variationsListContainer.GetChildren())
+        {
+            child.QueueFree();
+        }
+
+        // Add base tile entry (informational)
+        var baseRow = new HBoxContainer();
+        var baseThumbnail = CreateVariationThumbnail(
+            new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY));
+        baseRow.AddChild(baseThumbnail);
+        baseRow.AddChild(new Label
+        {
+            Text = $"Base: ({_currentTile.AtlasX}, {_currentTile.AtlasY})",
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        });
+        _variationsListContainer.AddChild(baseRow);
+
+        // Add variation entries
+        if (_currentTile.Variations != null)
+        {
+            for (int i = 0; i < _currentTile.Variations.Length; i++)
+            {
+                var variation = _currentTile.Variations[i];
+                var row = CreateVariationRow(i, variation);
+                _variationsListContainer.AddChild(row);
+            }
+        }
+    }
+
+    private HBoxContainer CreateVariationRow(int index, Vector2I coords)
+    {
+        var row = new HBoxContainer();
+
+        var thumbnail = CreateVariationThumbnail(coords);
+        row.AddChild(thumbnail);
+
+        row.AddChild(new Label
+        {
+            Text = $"Var {index + 1}: ({coords.X}, {coords.Y})",
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        });
+
+        var removeBtn = new Button
+        {
+            Text = "X",
+            CustomMinimumSize = new Vector2(24, 0),
+            TooltipText = "Remove variation"
+        };
+        int capturedIndex = index;
+        removeBtn.Pressed += () => RemoveVariation(capturedIndex);
+        row.AddChild(removeBtn);
+
+        return row;
+    }
+
+    private PanelContainer CreateVariationThumbnail(Vector2I coords)
+    {
+        var panel = new PanelContainer
+        {
+            CustomMinimumSize = new Vector2(32, 32)
+        };
+
+        var textureRect = new TextureRect
+        {
+            CustomMinimumSize = new Vector2(32, 32),
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
+            TextureFilter = TextureFilterEnum.Nearest
+        };
+
+        if (_currentTile != null)
+        {
+            var texture = _service.GetTileTexture(_currentTile);
+            if (texture != null)
+            {
+                var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
+                var region = new Rect2I(coords * tileSize, tileSize);
+                var atlasTex = new AtlasTexture
+                {
+                    Atlas = texture,
+                    Region = region
+                };
+                textureRect.Texture = atlasTex;
+            }
+        }
+
+        panel.AddChild(textureRect);
+        return panel;
+    }
+
+    private void OpenAddVariationDialog()
+    {
+        if (_currentTile == null) return;
+
+        // Create dialog lazily
+        if (_variationPickerDialog == null)
+        {
+            _variationPickerDialog = new AcceptDialog
+            {
+                Title = "Add Tile Variation",
+                InitialPosition = Window.WindowInitialPosition.CenterMainWindowScreen,
+                Size = new Vector2I(550, 450),
+                OkButtonText = "Add"
+            };
+
+            var dialogVBox = new VBoxContainer
+            {
+                SizeFlagsHorizontal = SizeFlags.ExpandFill,
+                SizeFlagsVertical = SizeFlags.ExpandFill
+            };
+
+            var pickerScroll = new ScrollContainer
+            {
+                CustomMinimumSize = new Vector2(0, 380),
+                SizeFlagsHorizontal = SizeFlags.ExpandFill,
+                SizeFlagsVertical = SizeFlags.ExpandFill,
+                HorizontalScrollMode = ScrollMode.Auto,
+                VerticalScrollMode = ScrollMode.Auto
+            };
+
+            _variationPicker = new TilesetAtlasPicker();
+            pickerScroll.AddChild(_variationPicker);
+            dialogVBox.AddChild(pickerScroll);
+
+            _variationPickerDialog.AddChild(dialogVBox);
+            AddChild(_variationPickerDialog);
+
+            _variationPickerDialog.Confirmed += OnAddVariationConfirmed;
+        }
+
+        // Configure picker with current tile's atlas source
+        var source = _service.GetAtlasSource(_currentTile.SourceId);
+        if (source != null && _variationPicker != null)
+        {
+            var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
+            _variationPicker.SetSource(source, tileSize, _currentTile.SourceId);
+            _variationPicker.SelectedCoords = new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY);
+        }
+
+        _variationPickerDialog.Popup();
+    }
+
+    private void OnAddVariationConfirmed()
+    {
+        if (_currentTile == null || _variationPicker == null) return;
+
+        var newCoords = _variationPicker.SelectedCoords;
+
+        // Don't add if same as base coords
+        if (newCoords.X == _currentTile.AtlasX && newCoords.Y == _currentTile.AtlasY)
+            return;
+
+        // Don't add duplicates
+        if (_currentTile.Variations != null)
+        {
+            foreach (var v in _currentTile.Variations)
+            {
+                if (v.X == newCoords.X && v.Y == newCoords.Y)
+                    return;
+            }
+        }
+
+        // Add to variations array
+        var existing = _currentTile.Variations ?? Array.Empty<Vector2I>();
+        var newVariations = new Vector2I[existing.Length + 1];
+        Array.Copy(existing, newVariations, existing.Length);
+        newVariations[existing.Length] = newCoords;
+        _currentTile.Variations = newVariations;
+
+        RebuildVariationsList();
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void RemoveVariation(int index)
+    {
+        if (_currentTile?.Variations == null || index >= _currentTile.Variations.Length)
+            return;
+
+        var oldVariations = _currentTile.Variations;
+        if (oldVariations.Length == 1)
+        {
+            _currentTile.Variations = null;
+        }
+        else
+        {
+            var newVariations = new Vector2I[oldVariations.Length - 1];
+            int newIdx = 0;
+            for (int i = 0; i < oldVariations.Length; i++)
+            {
+                if (i != index)
+                    newVariations[newIdx++] = oldVariations[i];
+            }
+            _currentTile.Variations = newVariations;
+        }
+
+        RebuildVariationsList();
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void OnAnimationDurationChanged(double value)
+    {
+        if (_isUpdating || _currentTile == null) return;
+
+        _currentTile.AnimationFrameDuration = (float)value;
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void RebuildAnimationFramesList()
+    {
+        if (_animationFramesContainer == null || _currentTile == null) return;
+
+        // Clear existing entries
+        foreach (var child in _animationFramesContainer.GetChildren())
+        {
+            child.QueueFree();
+        }
+
+        // Add base tile as frame 0 (informational)
+        var baseRow = new HBoxContainer();
+        var baseThumbnail = CreateVariationThumbnail(
+            new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY));
+        baseRow.AddChild(baseThumbnail);
+        baseRow.AddChild(new Label
+        {
+            Text = $"Frame 0 (Base): ({_currentTile.AtlasX}, {_currentTile.AtlasY})",
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        });
+        _animationFramesContainer.AddChild(baseRow);
+
+        // Add additional frame entries
+        if (_currentTile.AnimationFrames != null)
+        {
+            for (int i = 0; i < _currentTile.AnimationFrames.Length; i++)
+            {
+                var frame = _currentTile.AnimationFrames[i];
+                var row = CreateAnimationFrameRow(i, frame);
+                _animationFramesContainer.AddChild(row);
+            }
+        }
+    }
+
+    private HBoxContainer CreateAnimationFrameRow(int index, Vector2I coords)
+    {
+        var row = new HBoxContainer();
+
+        var thumbnail = CreateVariationThumbnail(coords);
+        row.AddChild(thumbnail);
+
+        row.AddChild(new Label
+        {
+            Text = $"Frame {index + 1}: ({coords.X}, {coords.Y})",
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        });
+
+        var removeBtn = new Button
+        {
+            Text = "X",
+            CustomMinimumSize = new Vector2(24, 0),
+            TooltipText = "Remove frame"
+        };
+        int capturedIndex = index;
+        removeBtn.Pressed += () => RemoveAnimationFrame(capturedIndex);
+        row.AddChild(removeBtn);
+
+        return row;
+    }
+
+    private void OpenAddAnimationFrameDialog()
+    {
+        if (_currentTile == null) return;
+
+        // Create dialog lazily
+        if (_animationFramePickerDialog == null)
+        {
+            _animationFramePickerDialog = new AcceptDialog
+            {
+                Title = "Add Animation Frame",
+                InitialPosition = Window.WindowInitialPosition.CenterMainWindowScreen,
+                Size = new Vector2I(550, 450),
+                OkButtonText = "Add"
+            };
+
+            var dialogVBox = new VBoxContainer
+            {
+                SizeFlagsHorizontal = SizeFlags.ExpandFill,
+                SizeFlagsVertical = SizeFlags.ExpandFill
+            };
+
+            var pickerScroll = new ScrollContainer
+            {
+                CustomMinimumSize = new Vector2(0, 380),
+                SizeFlagsHorizontal = SizeFlags.ExpandFill,
+                SizeFlagsVertical = SizeFlags.ExpandFill,
+                HorizontalScrollMode = ScrollMode.Auto,
+                VerticalScrollMode = ScrollMode.Auto
+            };
+
+            _animationFramePicker = new TilesetAtlasPicker();
+            pickerScroll.AddChild(_animationFramePicker);
+            dialogVBox.AddChild(pickerScroll);
+
+            _animationFramePickerDialog.AddChild(dialogVBox);
+            AddChild(_animationFramePickerDialog);
+
+            _animationFramePickerDialog.Confirmed += OnAddAnimationFrameConfirmed;
+        }
+
+        // Configure picker with current tile's atlas source
+        var source = _service.GetAtlasSource(_currentTile.SourceId);
+        if (source != null && _animationFramePicker != null)
+        {
+            var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
+            _animationFramePicker.SetSource(source, tileSize, _currentTile.SourceId);
+            _animationFramePicker.SelectedCoords = new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY);
+        }
+
+        _animationFramePickerDialog.Popup();
+    }
+
+    private void OnAddAnimationFrameConfirmed()
+    {
+        if (_currentTile == null || _animationFramePicker == null) return;
+
+        var newCoords = _animationFramePicker.SelectedCoords;
+
+        // Add to animation frames array
+        var existing = _currentTile.AnimationFrames ?? Array.Empty<Vector2I>();
+        var newFrames = new Vector2I[existing.Length + 1];
+        Array.Copy(existing, newFrames, existing.Length);
+        newFrames[existing.Length] = newCoords;
+        _currentTile.AnimationFrames = newFrames;
+
+        RebuildAnimationFramesList();
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void RemoveAnimationFrame(int index)
+    {
+        if (_currentTile?.AnimationFrames == null || index >= _currentTile.AnimationFrames.Length)
+            return;
+
+        var oldFrames = _currentTile.AnimationFrames;
+        if (oldFrames.Length == 1)
+        {
+            _currentTile.AnimationFrames = null;
+        }
+        else
+        {
+            var newFrames = new Vector2I[oldFrames.Length - 1];
+            int newIdx = 0;
+            for (int i = 0; i < oldFrames.Length; i++)
+            {
+                if (i != index)
+                    newFrames[newIdx++] = oldFrames[i];
+            }
+            _currentTile.AnimationFrames = newFrames;
+        }
+
+        RebuildAnimationFramesList();
+        _service.UpdateTile(_currentTile);
     }
 }
 #endif

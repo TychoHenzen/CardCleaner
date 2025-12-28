@@ -366,9 +366,9 @@ public partial class AutoTileMapPreview : Control
     {
         if (_overlayTile == null) return;
 
-        var isBlob47 = _overlayTile.AutoTileFormat == "blob47";
-        var bitmask = ComputeCenterBitmask(isBlob47);
-        var description = GetBitmaskDescription(bitmask, isBlob47);
+        var format = _overlayTile.AutoTileFormat?.ToLowerInvariant();
+        var bitmask = ComputeCenterBitmask(format);
+        var description = GetBitmaskDescription(bitmask, format);
         EmitSignal(SignalName.BitmaskChanged, bitmask, description);
     }
 
@@ -386,8 +386,8 @@ public partial class AutoTileMapPreview : Control
             baseTexture = _service.GetTileTexture(_baseTile);
         }
 
-        var isBlob47 = _overlayTile.AutoTileFormat == "blob47";
-        var blobMasks = isBlob47 ? NeighborBitmask8.GetValid47Masks() : null;
+        var format = _overlayTile.AutoTileFormat?.ToLowerInvariant();
+        var blobMasks = format == "blob47" ? NeighborBitmask8.GetValid47Masks() : null;
 
         // Draw 3x3 grid
         for (var row = 0; row < 3; row++)
@@ -409,8 +409,8 @@ public partial class AutoTileMapPreview : Control
                 // Draw overlay tile with appropriate variant
                 if (hasOverlay && overlayTexture != null)
                 {
-                    var bitmask = ComputeBitmaskForCell(row, col, isBlob47);
-                    var variantCoords = GetVariantCoords(bitmask, isBlob47, blobMasks);
+                    var bitmask = ComputeBitmaskForCell(row, col, format);
+                    var variantCoords = GetVariantCoords(bitmask, format, blobMasks);
                     var srcRect = new Rect2(variantCoords.X * _tileSize.X, variantCoords.Y * _tileSize.Y, _tileSize.X, _tileSize.Y);
                     DrawTextureRectRegion(overlayTexture, destRect, srcRect);
                 }
@@ -450,18 +450,21 @@ public partial class AutoTileMapPreview : Control
         return idx >= 0 && _neighborToggles[idx];
     }
 
-    private int ComputeBitmaskForCell(int row, int col, bool isBlob47)
+    private int ComputeBitmaskForCell(int row, int col, string? format)
     {
         // Build a 3x3 pattern from toggle state
         var pattern = BuildPatternFromToggles();
-        if (isBlob47)
-            return ComputeBlob47Bitmask(pattern, row, col);
-        return ComputeCorner16Bitmask(pattern, row, col);
+        return format switch
+        {
+            "blob47" => ComputeBlob47Bitmask(pattern, row, col),
+            "edge16" => ComputeEdge16Bitmask(pattern, row, col),
+            _ => ComputeCorner16Bitmask(pattern, row, col)
+        };
     }
 
-    private int ComputeCenterBitmask(bool isBlob47)
+    private int ComputeCenterBitmask(string? format)
     {
-        return ComputeBitmaskForCell(1, 1, isBlob47);
+        return ComputeBitmaskForCell(1, 1, format);
     }
 
     private int[,] BuildPatternFromToggles()
@@ -524,17 +527,35 @@ public partial class AutoTileMapPreview : Control
         return mask;
     }
 
-    private string GetBitmaskDescription(int bitmask, bool isBlob47)
+    private int ComputeEdge16Bitmask(int[,] pattern, int row, int col)
     {
-        if (isBlob47)
-        {
-            var index = NeighborBitmask8.GetBlobIndex(bitmask);
-            return $"Bitmask: {bitmask} (index {index}/46)";
-        }
-        return $"Bitmask: {bitmask} ({NeighborBitmaskCorner.GetDescription(bitmask)})";
+        // 4-bit edge: N=1, E=2, S=4, W=8
+        int mask = 0;
+
+        bool hasN = row > 0 && pattern[row - 1, col] == 1;
+        bool hasE = col < 2 && pattern[row, col + 1] == 1;
+        bool hasS = row < 2 && pattern[row + 1, col] == 1;
+        bool hasW = col > 0 && pattern[row, col - 1] == 1;
+
+        if (hasN) mask |= 1;
+        if (hasE) mask |= 2;
+        if (hasS) mask |= 4;
+        if (hasW) mask |= 8;
+
+        return mask;
     }
 
-    private Vector2I GetVariantCoords(int bitmask, bool isBlob47, IReadOnlyList<int>? blobMasks)
+    private string GetBitmaskDescription(int bitmask, string? format)
+    {
+        return format switch
+        {
+            "blob47" => $"Bitmask: {bitmask} (index {NeighborBitmask8.GetBlobIndex(bitmask)}/46)",
+            "edge16" => $"Bitmask: {bitmask} ({NeighborBitmask.GetDescription(bitmask)})",
+            _ => $"Bitmask: {bitmask} ({NeighborBitmaskCorner.GetDescription(bitmask)})"
+        };
+    }
+
+    private Vector2I GetVariantCoords(int bitmask, string? format, IReadOnlyList<int>? blobMasks)
     {
         if (_overlayTile?.AutoTileVariants == null)
         {
@@ -542,13 +563,14 @@ public partial class AutoTileMapPreview : Control
         }
 
         int variantIndex;
-        if (isBlob47 && blobMasks != null)
+        if (format == "blob47" && blobMasks != null)
         {
             variantIndex = blobMasks.IndexOf(bitmask);
             if (variantIndex < 0) variantIndex = 0;
         }
         else
         {
+            // Both corner16 and edge16 use bitmask directly as index (0-15)
             variantIndex = bitmask;
         }
 

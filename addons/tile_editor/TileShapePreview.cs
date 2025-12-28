@@ -10,14 +10,17 @@ namespace CardCleaner.Addons.TileEditor;
 [Tool]
 public partial class TileShapePreview : Control
 {
-    /// <summary>Auto-tile format: Corner16 (4-bit corners) or Blob47 (8-bit edges+corners)</summary>
+    /// <summary>Auto-tile format: Corner16 (4-bit corners), Edge16 (4-bit edges), or Blob47 (8-bit edges+corners)</summary>
     public enum Format
     {
         /// <summary>4-bit corner format: NE=1, SE=2, SW=4, NW=8 (16 combinations)</summary>
         Corner16,
 
         /// <summary>8-bit blob format: N=1, NE=2, E=4, SE=8, S=16, SW=32, W=64, NW=128 (47 valid)</summary>
-        Blob47
+        Blob47,
+
+        /// <summary>4-bit edge format: N=1, E=2, S=4, W=8 (16 combinations)</summary>
+        Edge16
     }
 
     private int _bitmask;
@@ -110,9 +113,13 @@ public partial class TileShapePreview : Control
             return _centerColor;
 
         // Map grid position to direction and check bitmask
-        var isFilled = _format == Format.Corner16
-            ? IsCellFilledCorner16(row, col)
-            : IsCellFilledBlob47(row, col);
+        var isFilled = _format switch
+        {
+            Format.Corner16 => IsCellFilledCorner16(row, col),
+            Format.Edge16 => IsCellFilledEdge16(row, col),
+            Format.Blob47 => IsCellFilledBlob47(row, col),
+            _ => false
+        };
 
         return isFilled ? _filledColor : _emptyColor;
     }
@@ -136,6 +143,28 @@ public partial class TileShapePreview : Control
             (2, 0) => (_bitmask & 4) != 0,  // SW = bit 2
             (0, 0) => (_bitmask & 8) != 0,  // NW = bit 3
             _ => false // Edges (N, E, S, W) are not controlled in corner format
+        };
+    }
+
+    /// <summary>
+    ///     Check if a cell is filled for 4-bit edge format.
+    ///     Only cardinal directions are controlled by bits; corners are empty.
+    ///     N=1 (bit 0), E=2 (bit 1), S=4 (bit 2), W=8 (bit 3)
+    /// </summary>
+    private bool IsCellFilledEdge16(int row, int col)
+    {
+        // Grid layout (row, col):
+        // (0,0)=NW  (0,1)=N   (0,2)=NE
+        // (1,0)=W   (1,1)=C   (1,2)=E
+        // (2,0)=SW  (2,1)=S   (2,2)=SE
+
+        return (row, col) switch
+        {
+            (0, 1) => (_bitmask & 1) != 0,  // N = bit 0
+            (1, 2) => (_bitmask & 2) != 0,  // E = bit 1
+            (2, 1) => (_bitmask & 4) != 0,  // S = bit 2
+            (1, 0) => (_bitmask & 8) != 0,  // W = bit 3
+            _ => false // Corners (NE, SE, SW, NW) are not controlled in edge format
         };
     }
 

@@ -20,6 +20,12 @@ public class SimpleMapData
     public List<Vector2I> EnemyPositions { get; set; } = new();
     public List<Vector2I> PassableTiles { get; set; } = new();
 
+    /// <summary>
+    /// Pre-selected variation indices for tiles with VariationMode.PerGeneration.
+    /// Maps tile ID to the selected variation index (0-based into TileDefinition.Variations).
+    /// </summary>
+    public Dictionary<string, int> PerGenerationVariants { get; set; } = new();
+
     public BiomeType GetBiomeAt(Vector2I pos)
     {
         if (BiomeMap == null || pos.X < 0 || pos.X >= Size.X || pos.Y < 0 || pos.Y >= Size.Y)

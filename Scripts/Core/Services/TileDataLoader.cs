@@ -9,6 +9,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
+using VariationMode = CardCleaner.Scripts.Features.Deckbuilder.Tiles.VariationMode;
 
 namespace CardCleaner.Scripts.Core.Services;
 
@@ -202,6 +203,9 @@ public static class TileDataLoader
         var atlasCoords = new Vector2I(data.AtlasCoords?.X ?? 0, data.AtlasCoords?.Y ?? 0);
         var size = data.Size != null ? new Vector2I(data.Size.X, data.Size.Y) : (Vector2I?)null;
         var autoTileFormat = ParseAutoTileFormat(data.AutoTileFormat);
+        var variations = ParseVariations(data.Variations);
+        var variationMode = ParseVariationMode(data.VariationMode);
+        var animation = ParseAnimation(data.Animation);
 
         return new TileDefinition(
             id: data.Id,
@@ -217,7 +221,10 @@ public static class TileDataLoader
             decorationDensity: data.DecorationDensity ?? 1.0f,
             blobSettings: data.BlobSettings != null ? ParseBlobGenerationConfig(data.BlobSettings) : null,
             autoTileVariants: ParseAutoTileVariants(data.AutoTileVariants, autoTileFormat),
-            autoTileFormat: autoTileFormat);
+            autoTileFormat: autoTileFormat,
+            variations: variations,
+            variationMode: variationMode,
+            animation: animation);
     }
 
     private static AutoTileFormat ParseAutoTileFormat(string? value)
@@ -225,8 +232,46 @@ public static class TileDataLoader
         return value?.ToLowerInvariant() switch
         {
             "blob47" => AutoTileFormat.Blob47,
+            "edge16" => AutoTileFormat.Edge16,
             _ => AutoTileFormat.Corner16
         };
+    }
+
+    private static VariationMode ParseVariationMode(string? value)
+    {
+        return value?.ToLowerInvariant() switch
+        {
+            "pergeneration" or "per_generation" => VariationMode.PerGeneration,
+            _ => VariationMode.PerInstance
+        };
+    }
+
+    private static Vector2I[]? ParseVariations(Vector2IData[]? variations)
+    {
+        if (variations == null || variations.Length == 0)
+            return null;
+
+        var result = new Vector2I[variations.Length];
+        for (var i = 0; i < variations.Length; i++)
+        {
+            result[i] = new Vector2I(variations[i].X, variations[i].Y);
+        }
+
+        return result;
+    }
+
+    private static TileAnimation? ParseAnimation(AnimationData? data)
+    {
+        if (data?.Frames == null || data.Frames.Length == 0)
+            return null;
+
+        var frames = new Vector2I[data.Frames.Length];
+        for (var i = 0; i < data.Frames.Length; i++)
+        {
+            frames[i] = new Vector2I(data.Frames[i].X, data.Frames[i].Y);
+        }
+
+        return new TileAnimation(frames, data.FrameDuration);
     }
 
     private static TilePassability ParsePassability(string? value)
@@ -283,7 +328,13 @@ public static class TileDataLoader
         if (variants == null || variants.Length == 0)
             return null;
 
-        var expectedCount = format == AutoTileFormat.Blob47 ? 47 : 16;
+        var expectedCount = format switch
+        {
+            AutoTileFormat.Blob47 => 47,
+            AutoTileFormat.Edge16 => 16,
+            AutoTileFormat.Corner16 => 16,
+            _ => 16
+        };
         var result = new Vector2I?[expectedCount];
 
         for (var i = 0; i < Math.Min(expectedCount, variants.Length); i++)
@@ -361,6 +412,19 @@ public static class TileDataLoader
         [JsonPropertyName("autoTileVariants")] public Vector2IData?[]? AutoTileVariants { get; set; }
 
         [JsonPropertyName("autoTileFormat")] public string? AutoTileFormat { get; set; }
+
+        [JsonPropertyName("variations")] public Vector2IData[]? Variations { get; set; }
+
+        [JsonPropertyName("variationMode")] public string? VariationMode { get; set; }
+
+        [JsonPropertyName("animation")] public AnimationData? Animation { get; set; }
+    }
+
+    private sealed class AnimationData
+    {
+        [JsonPropertyName("frames")] public Vector2IData[]? Frames { get; set; }
+
+        [JsonPropertyName("frameDuration")] public float FrameDuration { get; set; } = 0.2f;
     }
 
     private sealed class Vector2IData

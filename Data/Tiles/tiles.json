@@ -262,7 +262,7 @@
       "name": "Forest Clearing",
       "passability": "passable",
       "atlasCoords": {
-        "x": 5,
+        "x": 21,
         "y": 5
       },
       "sourceId": 13,

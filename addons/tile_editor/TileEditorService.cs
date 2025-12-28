@@ -146,6 +146,37 @@ public partial class TileEditorService : RefCounted
                 if (tileData.DecorationDensity.HasValue)
                     tile.DecorationDensity = Math.Clamp(tileData.DecorationDensity.Value, 0f, 1f);
 
+                // Load auto-tile format
+                if (!string.IsNullOrEmpty(tileData.AutoTileFormat))
+                    tile.AutoTileFormat = tileData.AutoTileFormat;
+
+                // Load variations if present
+                if (tileData.Variations != null && tileData.Variations.Length > 0)
+                {
+                    tile.Variations = new Vector2I[tileData.Variations.Length];
+                    for (var i = 0; i < tileData.Variations.Length; i++)
+                    {
+                        tile.Variations[i] = new Vector2I(tileData.Variations[i].X, tileData.Variations[i].Y);
+                    }
+                }
+
+                // Load variation mode
+                if (!string.IsNullOrEmpty(tileData.VariationMode))
+                    tile.VariationMode = tileData.VariationMode.ToLowerInvariant();
+
+                // Load animation if present
+                if (tileData.Animation?.Frames != null && tileData.Animation.Frames.Length > 0)
+                {
+                    tile.AnimationFrames = new Vector2I[tileData.Animation.Frames.Length];
+                    for (var i = 0; i < tileData.Animation.Frames.Length; i++)
+                    {
+                        tile.AnimationFrames[i] = new Vector2I(
+                            tileData.Animation.Frames[i].X,
+                            tileData.Animation.Frames[i].Y);
+                    }
+                    tile.AnimationFrameDuration = tileData.Animation.FrameDuration;
+                }
+
                 // Load per-tile blob settings if present
                 if (tileData.BlobSettings != null)
                 {
@@ -563,7 +594,19 @@ public partial class TileEditorService : RefCounted
                         ClusterStrength = t.BlobSettings.ClusterStrength,
                         MinBlobSize = t.BlobSettings.MinBlobSize,
                         MaxBlobSize = t.BlobSettings.MaxBlobSize
-                    } : null
+                    } : null,
+                    AutoTileFormat = t.AutoTileFormat != "corner16" ? t.AutoTileFormat : null,
+                    Variations = t.HasVariations
+                        ? t.Variations!.Select(v => new Vector2IData { X = v.X, Y = v.Y }).ToArray()
+                        : null,
+                    VariationMode = t.VariationMode != "perinstance" ? t.VariationMode : null,
+                    Animation = t.HasAnimation
+                        ? new AnimationData
+                        {
+                            Frames = t.AnimationFrames!.Select(f => new Vector2IData { X = f.X, Y = f.Y }).ToArray(),
+                            FrameDuration = t.AnimationFrameDuration
+                        }
+                        : null
                 }).ToList(),
 
                 // Blob generation config
@@ -666,6 +709,21 @@ public partial class TileEditorService : RefCounted
         [JsonPropertyName("decorationDensity")] public float? DecorationDensity { get; set; }
 
         [JsonPropertyName("blobSettings")] public BlobGenerationData? BlobSettings { get; set; }
+
+        [JsonPropertyName("autoTileFormat")] public string? AutoTileFormat { get; set; }
+
+        [JsonPropertyName("variations")] public Vector2IData[]? Variations { get; set; }
+
+        [JsonPropertyName("variationMode")] public string? VariationMode { get; set; }
+
+        [JsonPropertyName("animation")] public AnimationData? Animation { get; set; }
+    }
+
+    private sealed class AnimationData
+    {
+        [JsonPropertyName("frames")] public Vector2IData[]? Frames { get; set; }
+
+        [JsonPropertyName("frameDuration")] public float FrameDuration { get; set; } = 0.2f;
     }
 
     private sealed class Vector2IData
@@ -729,6 +787,39 @@ public class EditableTile
     /// </summary>
     public EditableBlobConfig? BlobSettings { get; set; }
 
+    /// <summary>
+    /// Visual variations for this tile (different atlas coordinates for the same tile type).
+    /// Null means no variations (always use base AtlasCoords).
+    /// </summary>
+    public Vector2I[]? Variations { get; set; }
+
+    /// <summary>
+    /// How variations are selected during map generation.
+    /// "perinstance" = Random per tile placement (foliage-style).
+    /// "pergeneration" = One variant selected at generation start, used for all instances.
+    /// </summary>
+    public string VariationMode { get; set; } = "perinstance";
+
+    /// <summary>
+    /// Whether this tile has visual variations.
+    /// </summary>
+    public bool HasVariations => Variations != null && Variations.Length > 0;
+
+    /// <summary>
+    /// Animation frame atlas coordinates. Null means no animation.
+    /// </summary>
+    public Vector2I[]? AnimationFrames { get; set; }
+
+    /// <summary>
+    /// Duration of each animation frame in seconds.
+    /// </summary>
+    public float AnimationFrameDuration { get; set; } = 0.2f;
+
+    /// <summary>
+    /// Whether this tile has animation frames.
+    /// </summary>
+    public bool HasAnimation => AnimationFrames != null && AnimationFrames.Length > 1;
+
     public EditableTile Clone()
     {
         var clone = new EditableTile
@@ -747,13 +838,27 @@ public class EditableTile
             SizeY = SizeY,
             DecorationDensity = DecorationDensity,
             BlobSettings = BlobSettings?.Clone(),
-            AutoTileFormat = AutoTileFormat
+            AutoTileFormat = AutoTileFormat,
+            VariationMode = VariationMode,
+            AnimationFrameDuration = AnimationFrameDuration
         };
 
         if (AutoTileVariants != null)
         {
             clone.AutoTileVariants = new Vector2I?[AutoTileVariants.Length];
             Array.Copy(AutoTileVariants, clone.AutoTileVariants, AutoTileVariants.Length);
+        }
+
+        if (Variations != null)
+        {
+            clone.Variations = new Vector2I[Variations.Length];
+            Array.Copy(Variations, clone.Variations, Variations.Length);
+        }
+
+        if (AnimationFrames != null)
+        {
+            clone.AnimationFrames = new Vector2I[AnimationFrames.Length];
+            Array.Copy(AnimationFrames, clone.AnimationFrames, AnimationFrames.Length);
         }
 
         return clone;
