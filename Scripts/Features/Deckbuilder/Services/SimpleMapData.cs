@@ -26,6 +26,13 @@ public class SimpleMapData
     /// </summary>
     public Dictionary<string, int> PerGenerationVariants { get; set; } = new();
 
+    /// <summary>
+    /// Decoration layer tiles for terrain transitions.
+    /// Maps position to (tileId, bitmask) for auto-tiled edge variants.
+    /// These are rendered on top of base terrain to show transition edges.
+    /// </summary>
+    public Dictionary<Vector2I, (string TileId, int Bitmask)> DecorationOverlays { get; set; } = new();
+
     public BiomeType GetBiomeAt(Vector2I pos)
     {
         if (BiomeMap == null || pos.X < 0 || pos.X >= Size.X || pos.Y < 0 || pos.Y >= Size.Y)

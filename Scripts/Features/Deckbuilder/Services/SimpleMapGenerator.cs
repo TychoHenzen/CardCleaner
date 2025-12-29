@@ -22,6 +22,19 @@ public class SimpleMapGenerator
     public const string DirtTileId = "dirt";
     public const string StoneTileId = "stone";
     public const string WaterTileId = "water";
+
+    /// <summary>
+    /// Number of cellular automata smoothing iterations to apply.
+    /// Higher values create larger contiguous regions but may reduce variety.
+    /// </summary>
+    public int SmoothingIterations { get; set; } = 3;
+
+    /// <summary>
+    /// Minimum neighbor count required for a cell to become passable during smoothing.
+    /// Range 1-4 (4-directional neighbors). Lower values create more passable terrain.
+    /// </summary>
+    public int SmoothingThreshold { get; set; } = 2;
+
     private readonly AutoTileResolver? _autoTileResolver;
     private readonly IBiomeProvider _biomeProvider;
     private readonly TerrainBlobGenerator? _blobGenerator;
@@ -48,48 +61,61 @@ public class SimpleMapGenerator
         // Pre-select per-generation variants for all tiles that use VariationMode.PerGeneration
         var perGenerationVariants = SelectPerGenerationVariants();
 
-        var tileIds = new string?[size.Y, size.X];
         var biomeMap = new BiomeType[size.Y, size.X];
-        var passableTiles = new List<Vector2I>();
-        var occupiedCells = new HashSet<Vector2I>();
-        var multiTileSecondaryCells = new HashSet<Vector2I>(); // Secondary cells covered by multi-tiles
 
-        // First pass: place tiles based on biome, respecting multi-tile sizes
+        // Phase 1: Generate initial passability map based on biome BlockedPercentage
+        var isPassable = new bool[size.Y, size.X];
         for (var y = 0; y < size.Y; y++)
         for (var x = 0; x < size.X; x++)
         {
             var position = new Vector2I(x, y);
             var biome = _biomeProvider.GetBiomeAt(position);
             biomeMap[y, x] = biome.Type;
+            isPassable[y, x] = _rng.Randf() >= biome.BlockedPercentage;
+        }
 
-            // Skip if already occupied by a multi-tile
+        // Phase 2: Apply cellular automata smoothing to create larger contiguous regions
+        if (SmoothingIterations > 0)
+        {
+            isPassable = ApplyRegionSmoothing(isPassable, biomeMap, size);
+            ILog.Print($"Applied {SmoothingIterations} smoothing iterations (threshold={SmoothingThreshold})");
+        }
+
+        // Phase 3: Place tiles based on smoothed passability map
+        var tileIds = new string?[size.Y, size.X];
+        var passableTiles = new List<Vector2I>();
+        var occupiedCells = new HashSet<Vector2I>();
+        var multiTileSecondaryCells = new HashSet<Vector2I>();
+
+        for (var y = 0; y < size.Y; y++)
+        for (var x = 0; x < size.X; x++)
+        {
+            var position = new Vector2I(x, y);
+            var biome = _biomeProvider.GetBiomeAt(position);
+
             if (occupiedCells.Contains(position))
                 continue;
 
-            var isBlocked = _rng.Randf() < biome.BlockedPercentage;
-
-            if (isBlocked)
-            {
-                // Try to place a blocked tile, retrying if multi-tile doesn't fit
-                var placed = TryPlaceBlockedTile(tileIds, position, size, biome, occupiedCells,
-                    multiTileSecondaryCells);
-                if (!placed)
-                {
-                    // Fallback: place as passable terrain if no blocked tile fits
-                    tileIds[y, x] = SelectPassableTile(position, biome);
-                    occupiedCells.Add(position);
-                    passableTiles.Add(position);
-                }
-            }
-            else
+            if (isPassable[y, x])
             {
                 tileIds[y, x] = SelectPassableTile(position, biome);
                 occupiedCells.Add(position);
                 passableTiles.Add(position);
             }
+            else
+            {
+                var placed = TryPlaceBlockedTile(tileIds, position, size, biome, occupiedCells,
+                    multiTileSecondaryCells);
+                if (!placed)
+                {
+                    tileIds[y, x] = SelectPassableTile(position, biome);
+                    occupiedCells.Add(position);
+                    passableTiles.Add(position);
+                }
+            }
         }
 
-        // Second pass: fill any remaining empty cells with default terrain
+        // Fill any remaining empty cells (from multi-tile secondary cells)
         for (var y = 0; y < size.Y; y++)
         for (var x = 0; x < size.X; x++)
         {
@@ -99,7 +125,6 @@ public class SimpleMapGenerator
             var biome = _biomeProvider.GetBiomeAt(position);
             tileIds[y, x] = SelectPassableTile(position, biome);
 
-            // Only add to passable tiles if not covered by a multi-tile
             if (!multiTileSecondaryCells.Contains(position))
                 passableTiles.Add(position);
         }
@@ -112,7 +137,7 @@ public class SimpleMapGenerator
             passableTiles.Add(center);
         }
 
-        // Convert to non-nullable array (all cells should now be filled)
+        // Convert to non-nullable array
         var finalTileIds = new string[size.Y, size.X];
         for (var y = 0; y < size.Y; y++)
         for (var x = 0; x < size.X; x++)
@@ -120,6 +145,11 @@ public class SimpleMapGenerator
 
         // Ensure all passable tiles are connected
         EnsureConnectivity(finalTileIds, size, passableTiles);
+
+        // Detect terrain transitions and generate decoration overlays
+        var decorationOverlays = GenerateTerrainTransitions(finalTileIds, size);
+        if (decorationOverlays.Count > 0)
+            ILog.Print($"Terrain transitions: {decorationOverlays.Count} decoration overlays generated");
 
         // Apply auto-tiling post-processing (select edge variants based on neighbors)
         if (_autoTileResolver != null && _autoTileResolver.ConfigCount > 0)
@@ -148,7 +178,8 @@ public class SimpleMapGenerator
             PlayerStart = playerStart,
             EnemyPositions = enemyPositions,
             PassableTiles = passableTiles,
-            PerGenerationVariants = perGenerationVariants
+            PerGenerationVariants = perGenerationVariants,
+            DecorationOverlays = decorationOverlays
         };
     }
 
@@ -383,5 +414,183 @@ public class SimpleMapGenerator
             ILog.Print($"Selected per-generation variants for {variants.Count} tile types");
 
         return variants;
+    }
+
+    /// <summary>
+    /// Apply cellular automata smoothing to create larger contiguous regions.
+    /// Uses 4-directional neighbor counting with biome boundary preservation.
+    /// </summary>
+    private bool[,] ApplyRegionSmoothing(bool[,] isPassable, BiomeType[,] biomeMap, Vector2I size)
+    {
+        var current = isPassable;
+        var next = new bool[size.Y, size.X];
+
+        for (var iteration = 0; iteration < SmoothingIterations; iteration++)
+        {
+            for (var y = 0; y < size.Y; y++)
+            for (var x = 0; x < size.X; x++)
+            {
+                var passableNeighbors = CountPassableNeighbors(current, biomeMap, size, x, y);
+
+                // Apply threshold: cell becomes passable if enough neighbors are passable
+                // This creates larger contiguous regions of both passable and blocked tiles
+                next[y, x] = passableNeighbors >= SmoothingThreshold;
+            }
+
+            // Swap buffers for next iteration
+            (current, next) = (next, current);
+        }
+
+        return current;
+    }
+
+    /// <summary>
+    /// Count passable neighbors in 4 cardinal directions, respecting biome boundaries.
+    /// Cells in different biomes are treated as blocked for smoothing purposes.
+    /// </summary>
+    private static int CountPassableNeighbors(bool[,] isPassable, BiomeType[,] biomeMap, Vector2I size, int x, int y)
+    {
+        var count = 0;
+        var currentBiome = biomeMap[y, x];
+
+        // Check 4 cardinal neighbors (N, E, S, W)
+        ReadOnlySpan<(int dx, int dy)> neighbors = [(0, -1), (1, 0), (0, 1), (-1, 0)];
+
+        foreach (var (dx, dy) in neighbors)
+        {
+            var nx = x + dx;
+            var ny = y + dy;
+
+            // Out of bounds counts as blocked
+            if (nx < 0 || nx >= size.X || ny < 0 || ny >= size.Y)
+                continue;
+
+            // Different biome counts as blocked (preserves biome boundaries)
+            if (biomeMap[ny, nx] != currentBiome)
+                continue;
+
+            if (isPassable[ny, nx])
+                count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Generate decoration overlays for terrain transitions.
+    /// When a dominant terrain type borders a less dominant one, the dominant terrain's
+    /// edge graphics are placed on the decoration layer over the less dominant terrain.
+    /// </summary>
+    private Dictionary<Vector2I, (string TileId, int Bitmask)> GenerateTerrainTransitions(
+        string[,] tileIds, Vector2I size)
+    {
+        var overlays = new Dictionary<Vector2I, (string TileId, int Bitmask)>();
+
+        for (var y = 0; y < size.Y; y++)
+        for (var x = 0; x < size.X; x++)
+        {
+            var position = new Vector2I(x, y);
+            var currentTile = tileIds[y, x];
+            var currentBase = GetBaseTileId(currentTile);
+            var currentDominance = GetTerrainDominance(currentBase);
+
+            // Check all 4 cardinal neighbors for more dominant terrain
+            string? dominantNeighborBase = null;
+            var dominantNeighborDominance = currentDominance;
+            var bitmask = 0;
+
+            // N=1, E=2, S=4, W=8 (4-bit cardinal bitmask)
+            ReadOnlySpan<(int dx, int dy, int bit)> neighbors = [(0, -1, 1), (1, 0, 2), (0, 1, 4), (-1, 0, 8)];
+
+            foreach (var (dx, dy, bit) in neighbors)
+            {
+                var nx = x + dx;
+                var ny = y + dy;
+
+                if (nx < 0 || nx >= size.X || ny < 0 || ny >= size.Y)
+                    continue;
+
+                var neighborTile = tileIds[ny, nx];
+                var neighborBase = GetBaseTileId(neighborTile);
+
+                // Skip if same base terrain type
+                if (neighborBase == currentBase)
+                    continue;
+
+                var neighborDominance = GetTerrainDominance(neighborBase);
+
+                // If this neighbor is more dominant than current, track it
+                if (neighborDominance > dominantNeighborDominance)
+                {
+                    dominantNeighborBase = neighborBase;
+                    dominantNeighborDominance = neighborDominance;
+                    bitmask = bit;
+                }
+                else if (neighborDominance == dominantNeighborDominance && neighborBase == dominantNeighborBase)
+                {
+                    // Same dominant terrain in another direction - add to bitmask
+                    bitmask |= bit;
+                }
+            }
+
+            // If we found a more dominant neighbor, create decoration overlay
+            if (dominantNeighborBase != null && bitmask > 0)
+            {
+                overlays[position] = (dominantNeighborBase, bitmask);
+            }
+        }
+
+        return overlays;
+    }
+
+    /// <summary>
+    /// Get the base tile ID by stripping numeric suffixes and edge variant suffixes.
+    /// e.g., "grass_1" -> "grass", "sand_edge_3" -> "sand", "stone" -> "stone"
+    /// </summary>
+    private static string GetBaseTileId(string tileId)
+    {
+        // Remove common suffixes that indicate variants
+        var result = tileId;
+
+        // Strip "_edge_N" suffix first
+        var edgeIndex = result.IndexOf("_edge", StringComparison.Ordinal);
+        if (edgeIndex > 0)
+            result = result[..edgeIndex];
+
+        // Strip trailing "_N" numeric suffix
+        var lastUnderscore = result.LastIndexOf('_');
+        if (lastUnderscore > 0 && lastUnderscore < result.Length - 1)
+        {
+            var suffix = result[(lastUnderscore + 1)..];
+            if (int.TryParse(suffix, out _))
+                result = result[..lastUnderscore];
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Get the visual dominance of a terrain type.
+    /// Higher values mean the terrain's edges will render over lower-dominance terrain.
+    /// This determines which terrain "wins" at boundaries.
+    /// </summary>
+    private static int GetTerrainDominance(string baseTileId)
+    {
+        // Dominance hierarchy: higher value = more dominant (edges show over less dominant)
+        // Solid/dense terrain dominates over soft/passable terrain
+        return baseTileId switch
+        {
+            "wall" or "stone" or "rock" => 100,           // Walls/stone most dominant
+            "water" or "lava" => 90,                       // Liquids
+            "mountains" or "cliff" => 80,                  // Mountain terrain
+            "forest" or "trees" => 70,                     // Dense vegetation
+            "swamp" or "marsh" => 60,                      // Wet terrain
+            "sand" or "desert" => 50,                      // Desert terrain
+            "dirt" or "mud" => 40,                         // Dirt variants
+            "snow" or "ice" or "tundra" => 30,             // Cold terrain
+            "grass" or "plains" => 20,                     // Basic grass
+            "floor" => 10,                                 // Interior floors
+            _ => 25                                        // Default middle value
+        };
     }
 }

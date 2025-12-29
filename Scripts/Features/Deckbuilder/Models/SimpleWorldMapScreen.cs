@@ -664,6 +664,9 @@ public partial class SimpleWorldMapScreen : Node3D
             RenderTileWithLayering(position, tileId, mapData);
         }
 
+        // Render terrain transition overlays on decoration layer
+        RenderTerrainTransitions(mapData);
+
         // Render biome overlay if enabled
         if (ShowBiomeOverlay) RenderBiomeOverlay(mapData);
 
@@ -809,6 +812,35 @@ public partial class SimpleWorldMapScreen : Node3D
             BiomeType.Mountains => "mountains_rock",
             _ => "plains_grass"
         };
+    }
+
+    /// <summary>
+    /// Render terrain transition overlays from DecorationOverlays data.
+    /// These are edge tiles from dominant terrain types rendered on the decoration layer.
+    /// </summary>
+    private void RenderTerrainTransitions(SimpleMapData mapData)
+    {
+        if (DecorationLayer == null || _tileRegistry == null)
+            return;
+
+        var rendered = 0;
+        foreach (var (position, (tileId, bitmask)) in mapData.DecorationOverlays)
+        {
+            var tile = _tileRegistry.GetTile(tileId);
+            if (tile == null)
+                continue;
+
+            // Get the auto-tiled atlas coords for this edge configuration
+            var atlasCoords = tile.HasAutoTileVariants
+                ? tile.GetAutoTileCoords(bitmask)
+                : tile.AtlasCoords;
+
+            DecorationLayer.SetCell(position, tile.SourceId, atlasCoords);
+            rendered++;
+        }
+
+        if (rendered > 0)
+            ILog.Print($"[TERRAIN TRANSITIONS] Rendered {rendered} decoration overlays");
     }
 
     /// <summary>
