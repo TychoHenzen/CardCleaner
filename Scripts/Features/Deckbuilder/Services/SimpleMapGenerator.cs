@@ -656,70 +656,123 @@ public class SimpleMapGenerator
     }
 
     /// <summary>
-    /// Generate decoration overlays for terrain transitions.
-    /// When a dominant terrain type borders a less dominant one, the dominant terrain's
-    /// edge graphics are placed on the decoration layer over the less dominant terrain.
+    /// Generate decoration overlays for terrain transitions using dual-grid technique.
+    /// Visual overlay tiles are placed at half-tile offset from the terrain grid.
+    /// Each overlay tile samples 4 corner terrain cells to compute its Corner16 bitmask.
+    /// This prevents invalid auto-tile states since visual tiles always sample actual terrain.
     /// </summary>
     private Dictionary<Vector2I, (string TileId, int Bitmask)> GenerateTerrainTransitions(
         string[,] tileIds, Vector2I size)
     {
         var overlays = new Dictionary<Vector2I, (string TileId, int Bitmask)>();
 
-        for (var y = 0; y < size.Y; y++)
-        for (var x = 0; x < size.X; x++)
+        // Visual grid is (size+1) x (size+1) since visual tiles sit at intersections
+        // Visual tile at (vx, vy) samples terrain cells at corners:
+        // TL = (vx-1, vy-1), TR = (vx, vy-1), BL = (vx-1, vy), BR = (vx, vy)
+        var visualWidth = size.X + 1;
+        var visualHeight = size.Y + 1;
+
+        for (var vy = 0; vy < visualHeight; vy++)
+        for (var vx = 0; vx < visualWidth; vx++)
         {
-            var position = new Vector2I(x, y);
-            var currentTile = tileIds[y, x];
-            var currentBase = GetBaseTileId(currentTile);
-            var currentDominance = GetTerrainDominance(currentBase);
+            // Sample the 4 corner terrain cells
+            var terrainTypes = new Dictionary<string, int>(); // base tile -> count
+            var terrainDominance = new Dictionary<string, int>(); // base tile -> dominance
 
-            // Check all 4 cardinal neighbors for more dominant terrain
-            string? dominantNeighborBase = null;
-            var dominantNeighborDominance = currentDominance;
-            var bitmask = 0;
+            // TL corner: terrain cell (vx-1, vy-1)
+            SampleTerrainCell(tileIds, size, vx - 1, vy - 1, terrainTypes, terrainDominance);
+            // TR corner: terrain cell (vx, vy-1)
+            SampleTerrainCell(tileIds, size, vx, vy - 1, terrainTypes, terrainDominance);
+            // BL corner: terrain cell (vx-1, vy)
+            SampleTerrainCell(tileIds, size, vx - 1, vy, terrainTypes, terrainDominance);
+            // BR corner: terrain cell (vx, vy)
+            SampleTerrainCell(tileIds, size, vx, vy, terrainTypes, terrainDominance);
 
-            // N=1, E=2, S=4, W=8 (4-bit cardinal bitmask)
-            ReadOnlySpan<(int dx, int dy, int bit)> neighbors = [(0, -1, 1), (1, 0, 2), (0, 1, 4), (-1, 0, 8)];
+            // Skip if only one terrain type (or none) - no transition needed
+            if (terrainTypes.Count <= 1)
+                continue;
 
-            foreach (var (dx, dy, bit) in neighbors)
+            // Find the most dominant terrain type among the 4 corners
+            string? dominantTerrain = null;
+            var maxDominance = -1;
+            foreach (var (terrain, dominance) in terrainDominance)
             {
-                var nx = x + dx;
-                var ny = y + dy;
-
-                if (nx < 0 || nx >= size.X || ny < 0 || ny >= size.Y)
-                    continue;
-
-                var neighborTile = tileIds[ny, nx];
-                var neighborBase = GetBaseTileId(neighborTile);
-
-                // Skip if same base terrain type
-                if (neighborBase == currentBase)
-                    continue;
-
-                var neighborDominance = GetTerrainDominance(neighborBase);
-
-                // If this neighbor is more dominant than current, track it
-                if (neighborDominance > dominantNeighborDominance)
+                if (dominance > maxDominance)
                 {
-                    dominantNeighborBase = neighborBase;
-                    dominantNeighborDominance = neighborDominance;
-                    bitmask = bit;
-                }
-                else if (neighborDominance == dominantNeighborDominance && neighborBase == dominantNeighborBase)
-                {
-                    // Same dominant terrain in another direction - add to bitmask
-                    bitmask |= bit;
+                    maxDominance = dominance;
+                    dominantTerrain = terrain;
                 }
             }
 
-            // If we found a more dominant neighbor, create decoration overlay
-            if (dominantNeighborBase != null && bitmask > 0)
+            if (dominantTerrain == null)
+                continue;
+
+            // Compute Corner16 bitmask: which corners have the dominant terrain?
+            // Corner16 format: NE=1, SE=2, SW=4, NW=8
+            // From visual tile perspective: TR=NE, BR=SE, BL=SW, TL=NW
+            var bitmask = 0;
+
+            // TL (NW from visual tile's view) = terrain at (vx-1, vy-1)
+            if (IsTerrainAtPosition(tileIds, size, vx - 1, vy - 1, dominantTerrain))
+                bitmask |= NeighborBitmaskCorner.NorthWest; // 8
+
+            // TR (NE from visual tile's view) = terrain at (vx, vy-1)
+            if (IsTerrainAtPosition(tileIds, size, vx, vy - 1, dominantTerrain))
+                bitmask |= NeighborBitmaskCorner.NorthEast; // 1
+
+            // BL (SW from visual tile's view) = terrain at (vx-1, vy)
+            if (IsTerrainAtPosition(tileIds, size, vx - 1, vy, dominantTerrain))
+                bitmask |= NeighborBitmaskCorner.SouthWest; // 4
+
+            // BR (SE from visual tile's view) = terrain at (vx, vy)
+            if (IsTerrainAtPosition(tileIds, size, vx, vy, dominantTerrain))
+                bitmask |= NeighborBitmaskCorner.SouthEast; // 2
+
+            // Only create overlay if there's a transition (not all corners same)
+            if (bitmask > 0 && bitmask < 15)
             {
-                overlays[position] = (dominantNeighborBase, bitmask);
+                // Store with visual grid position (will be rendered at half-tile offset)
+                var visualPosition = new Vector2I(vx, vy);
+                overlays[visualPosition] = (dominantTerrain, bitmask);
             }
         }
 
         return overlays;
+    }
+
+    /// <summary>
+    /// Sample a terrain cell and add it to the terrain type tracking dictionaries.
+    /// </summary>
+    private void SampleTerrainCell(string[,] tileIds, Vector2I size, int x, int y,
+        Dictionary<string, int> terrainTypes, Dictionary<string, int> terrainDominance)
+    {
+        if (x < 0 || x >= size.X || y < 0 || y >= size.Y)
+            return;
+
+        var tileId = tileIds[y, x];
+        var baseTileId = GetBaseTileId(tileId);
+        var dominance = GetTerrainDominance(baseTileId);
+
+        if (terrainTypes.ContainsKey(baseTileId))
+            terrainTypes[baseTileId]++;
+        else
+        {
+            terrainTypes[baseTileId] = 1;
+            terrainDominance[baseTileId] = dominance;
+        }
+    }
+
+    /// <summary>
+    /// Check if the terrain at the given position matches the specified base terrain type.
+    /// </summary>
+    private bool IsTerrainAtPosition(string[,] tileIds, Vector2I size, int x, int y, string baseTerrain)
+    {
+        if (x < 0 || x >= size.X || y < 0 || y >= size.Y)
+            return false;
+
+        var tileId = tileIds[y, x];
+        var baseTileId = GetBaseTileId(tileId);
+        return baseTileId == baseTerrain;
     }
 
     /// <summary>

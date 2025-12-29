@@ -7,8 +7,9 @@ using Godot;
 namespace CardCleaner.Addons.TileEditor;
 
 /// <summary>
-///     Panel showing auto-tile variants in a contextual map-like preview.
-///     Displays tiles as they would appear in-game with proper neighbor-based variant selection.
+///     Panel showing auto-tile variants in an interactive dual-grid preview.
+///     Uses the dual-tilemap technique where the visual grid is offset by half a tile
+///     from the data grid, ensuring valid auto-tile states at all times.
 /// </summary>
 [Tool]
 public partial class AutoTilePreviewPanel : ScrollContainer
@@ -19,7 +20,8 @@ public partial class AutoTilePreviewPanel : ScrollContainer
     private HSlider? _scaleSlider;
     private Label? _scaleLabel;
     private Label? _infoLabel;
-    private AutoTileMapPreview? _mapPreview;
+    private CheckBox? _showDataGridCheckbox;
+    private DualGridAutoTilePreview? _mapPreview;
     private string? _selectedTileId;
     private string? _selectedBaseTileId;
 
@@ -44,7 +46,7 @@ public partial class AutoTilePreviewPanel : ScrollContainer
         // Header
         var header = new Label
         {
-            Text = "Auto-Tile Preview",
+            Text = "Auto-Tile Preview (Dual Grid)",
             HorizontalAlignment = HorizontalAlignment.Center
         };
         header.AddThemeFontSizeOverride("font_size", 16);
@@ -73,25 +75,33 @@ public partial class AutoTilePreviewPanel : ScrollContainer
         scaleRow.AddChild(new Label { Text = "Scale:", CustomMinimumSize = new Vector2(100, 0) });
         _scaleSlider = new HSlider
         {
-            MinValue = 2,
-            MaxValue = 8,
-            Step = 1,
-            Value = 4,
+            MinValue = 1,
+            MaxValue = 4,
+            Step = 0.5,
+            Value = 2,
             SizeFlagsHorizontal = SizeFlags.ExpandFill
         };
         _scaleSlider.ValueChanged += OnScaleChanged;
         scaleRow.AddChild(_scaleSlider);
-        _scaleLabel = new Label { Text = "4x", CustomMinimumSize = new Vector2(30, 0) };
+        _scaleLabel = new Label { Text = "2x", CustomMinimumSize = new Vector2(30, 0) };
         scaleRow.AddChild(_scaleLabel);
         mainVBox.AddChild(scaleRow);
+
+        // Show data grid checkbox
+        var optionsRow = new HBoxContainer();
+        _showDataGridCheckbox = new CheckBox { Text = "Show data grid overlay", ButtonPressed = true };
+        _showDataGridCheckbox.Toggled += OnShowDataGridToggled;
+        optionsRow.AddChild(_showDataGridCheckbox);
+        mainVBox.AddChild(optionsRow);
 
         mainVBox.AddChild(new HSeparator());
 
         // Info label
         _infoLabel = new Label
         {
-            Text = "Select a tile with auto-tile variants to preview.",
-            Modulate = new Color(0.8f, 0.8f, 0.8f)
+            Text = "Click cells to toggle. Visual tiles update automatically.",
+            Modulate = new Color(0.8f, 0.8f, 0.8f),
+            AutowrapMode = TextServer.AutowrapMode.Word
         };
         _infoLabel.AddThemeFontSizeOverride("font_size", 11);
         mainVBox.AddChild(_infoLabel);
@@ -105,8 +115,8 @@ public partial class AutoTilePreviewPanel : ScrollContainer
             VerticalScrollMode = ScrollMode.Auto
         };
 
-        _mapPreview = new AutoTileMapPreview(_service);
-        _mapPreview.BitmaskChanged += OnBitmaskChanged;
+        _mapPreview = new DualGridAutoTilePreview(_service);
+        _mapPreview.InfoChanged += OnInfoChanged;
         previewScroll.AddChild(_mapPreview);
         mainVBox.AddChild(previewScroll);
 
@@ -114,12 +124,15 @@ public partial class AutoTilePreviewPanel : ScrollContainer
         CallDeferred(MethodName.PopulateDropdowns);
     }
 
-    private void OnBitmaskChanged(int bitmask, string description)
+    private void OnInfoChanged(string info)
     {
         if (_infoLabel != null)
-        {
-            _infoLabel.Text = $"Click tiles to toggle. {description}";
-        }
+            _infoLabel.Text = info;
+    }
+
+    private void OnShowDataGridToggled(bool pressed)
+    {
+        _mapPreview?.SetShowDataGrid(pressed);
     }
 
     private void PopulateDropdowns()
@@ -190,7 +203,7 @@ public partial class AutoTilePreviewPanel : ScrollContainer
 
     private void OnScaleChanged(double value)
     {
-        _scaleLabel!.Text = $"{(int)value}x";
+        _scaleLabel!.Text = $"{value:F1}x";
         _mapPreview?.SetScale((float)value);
     }
 
@@ -216,9 +229,8 @@ public partial class AutoTilePreviewPanel : ScrollContainer
             return;
         }
 
-        var isBlob47 = tile.AutoTileFormat == "blob47";
-        var formatName = isBlob47 ? "blob47" : "corner16";
-        _infoLabel!.Text = $"Click tiles to toggle neighbors ({formatName}). Bitmask: 0";
+        var formatName = tile.AutoTileFormat?.ToLowerInvariant() ?? "corner16";
+        _infoLabel!.Text = $"Click cells to toggle ({formatName}). Visual grid shows correct transitions.";
 
         EditableTile? baseTile = null;
         if (!string.IsNullOrEmpty(_selectedBaseTileId))
@@ -240,52 +252,72 @@ public partial class AutoTilePreviewPanel : ScrollContainer
 }
 
 /// <summary>
-///     Interactive 3x3 grid control for exploring auto-tile bitmask configurations.
-///     Center tile is always the overlay; surrounding 8 tiles are toggleable.
+///     Interactive dual-grid preview for exploring auto-tile configurations.
+///     Data grid (15x10): What the user toggles - is this cell "filled"?
+///     Visual grid (16x11): Rendered at half-tile offset, each tile samples 4 corner data cells.
+///     This approach prevents invalid auto-tile states because visual tiles always
+///     compute bitmasks from actual data cell states.
 /// </summary>
 [Tool]
-public partial class AutoTileMapPreview : Control
+public partial class DualGridAutoTilePreview : Control
 {
-    /// <summary>
-    ///     Event fired when the bitmask changes due to user interaction.
-    /// </summary>
+    private const int DataGridCols = 15;
+    private const int DataGridRows = 10;
+    private const int VisualGridCols = DataGridCols + 1; // 16
+    private const int VisualGridRows = DataGridRows + 1; // 11
+
     [Signal]
-    public delegate void BitmaskChangedEventHandler(int bitmask, string description);
+    public delegate void InfoChangedEventHandler(string info);
 
     private readonly TileEditorService _service;
     private EditableTile? _overlayTile;
     private EditableTile? _baseTile;
-    private float _scale = 4f;
+    private float _scale = 2f;
     private Vector2I _tileSize = new(16, 16);
+    private bool _showDataGrid = true;
 
-    // Toggle state for the 8 surrounding tiles (3x3 grid, center is always overlay)
-    // Layout: [0]=NW, [1]=N, [2]=NE, [3]=W, [4]=E, [5]=SW, [6]=S, [7]=SE
-    private readonly bool[] _neighborToggles = new bool[8];
+    // Data grid: what the user toggles (true = filled with overlay tile)
+    private readonly bool[,] _dataGrid = new bool[DataGridRows, DataGridCols];
 
-    // Grid positions for each neighbor index (row, col offsets from center)
-    private static readonly (int row, int col)[] NeighborOffsets =
-    {
-        (-1, -1), // 0: NW
-        (-1, 0),  // 1: N
-        (-1, 1),  // 2: NE
-        (0, -1),  // 3: W
-        (0, 1),   // 4: E
-        (1, -1),  // 5: SW
-        (1, 0),   // 6: S
-        (1, 1)    // 7: SE
-    };
+    // Cached bitmasks for visual grid (recomputed when data grid changes)
+    private int[,] _visualBitmasks = new int[VisualGridRows, VisualGridCols];
 
-    public AutoTileMapPreview(TileEditorService service)
+    public DualGridAutoTilePreview(TileEditorService service)
     {
         _service = service;
         TextureFilter = TextureFilterEnum.Nearest;
         MouseFilter = MouseFilterEnum.Stop;
+
+        // Initialize with some sample data to show the dual-grid effect
+        InitializeSamplePattern();
+    }
+
+    private void InitializeSamplePattern()
+    {
+        // Create an interesting initial pattern
+        // A rectangular blob in the center
+        for (var row = 3; row <= 6; row++)
+        for (var col = 5; col <= 9; col++)
+            _dataGrid[row, col] = true;
+
+        // Add a smaller blob nearby
+        for (var row = 1; row <= 2; row++)
+        for (var col = 2; col <= 3; col++)
+            _dataGrid[row, col] = true;
+
+        RecomputeVisualBitmasks();
     }
 
     public void SetScale(float scale)
     {
         _scale = scale;
         UpdateSize();
+        QueueRedraw();
+    }
+
+    public void SetShowDataGrid(bool show)
+    {
+        _showDataGrid = show;
         QueueRedraw();
     }
 
@@ -296,8 +328,9 @@ public partial class AutoTileMapPreview : Control
         _scale = scale;
         _tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
         UpdateSize();
+        RecomputeVisualBitmasks();
         QueueRedraw();
-        EmitBitmaskChanged();
+        EmitInfo();
     }
 
     public void ClearPreview()
@@ -308,11 +341,6 @@ public partial class AutoTileMapPreview : Control
         QueueRedraw();
     }
 
-    /// <summary>
-    ///     Get the current toggle state array for external display.
-    /// </summary>
-    public bool[] GetNeighborToggles() => _neighborToggles;
-
     private void UpdateSize()
     {
         if (_overlayTile == null)
@@ -322,7 +350,11 @@ public partial class AutoTileMapPreview : Control
         }
 
         var scaledTileSize = new Vector2(_tileSize.X, _tileSize.Y) * _scale;
-        CustomMinimumSize = new Vector2(3 * scaledTileSize.X, 3 * scaledTileSize.Y);
+        // Size includes visual grid which extends half a tile beyond data grid on all sides
+        CustomMinimumSize = new Vector2(
+            (DataGridCols + 1) * scaledTileSize.X,
+            (DataGridRows + 1) * scaledTileSize.Y
+        );
     }
 
     public override void _GuiInput(InputEvent @event)
@@ -334,42 +366,45 @@ public partial class AutoTileMapPreview : Control
             mouseButton.ButtonIndex == MouseButton.Left)
         {
             var scaledTileSize = new Vector2(_tileSize.X, _tileSize.Y) * _scale;
-            var col = (int)(mouseButton.Position.X / scaledTileSize.X);
-            var row = (int)(mouseButton.Position.Y / scaledTileSize.Y);
 
-            // Don't toggle center cell (1,1)
-            if (row == 1 && col == 1) return;
+            // Data grid is offset by half a tile (visual grid starts at 0,0)
+            // So data cell (0,0) is at pixel position (halfTile, halfTile)
+            var halfTile = scaledTileSize / 2;
+            var adjustedPos = mouseButton.Position - halfTile;
 
-            // Find which neighbor index this corresponds to
-            var neighborIndex = GetNeighborIndex(row, col);
-            if (neighborIndex >= 0)
+            var col = (int)(adjustedPos.X / scaledTileSize.X);
+            var row = (int)(adjustedPos.Y / scaledTileSize.Y);
+
+            // Check if within data grid bounds
+            if (row >= 0 && row < DataGridRows && col >= 0 && col < DataGridCols)
             {
-                _neighborToggles[neighborIndex] = !_neighborToggles[neighborIndex];
+                _dataGrid[row, col] = !_dataGrid[row, col];
+                RecomputeVisualBitmasks();
                 QueueRedraw();
-                EmitBitmaskChanged();
+                EmitInfo();
             }
         }
     }
 
-    private int GetNeighborIndex(int row, int col)
+    private void RecomputeVisualBitmasks()
     {
-        for (var i = 0; i < NeighborOffsets.Length; i++)
-        {
-            // Center is at (1,1), so neighbor at offset (dr, dc) is at (1+dr, 1+dc)
-            if (row == 1 + NeighborOffsets[i].row && col == 1 + NeighborOffsets[i].col)
-                return i;
-        }
-        return -1;
+        _visualBitmasks = DualGridAutoTile.ComputeAllBitmasks(_dataGrid);
     }
 
-    private void EmitBitmaskChanged()
+    private void EmitInfo()
     {
         if (_overlayTile == null) return;
 
-        var format = _overlayTile.AutoTileFormat?.ToLowerInvariant();
-        var bitmask = ComputeCenterBitmask(format);
-        var description = GetBitmaskDescription(bitmask, format);
-        EmitSignal(SignalName.BitmaskChanged, bitmask, description);
+        var filledCount = 0;
+        for (var r = 0; r < DataGridRows; r++)
+        for (var c = 0; c < DataGridCols; c++)
+            if (_dataGrid[r, c])
+                filledCount++;
+
+        var format = _overlayTile.AutoTileFormat?.ToLowerInvariant() ?? "corner16";
+        var info = $"Data grid: {filledCount}/{DataGridRows * DataGridCols} cells filled. " +
+                   $"Format: {format}. Click to toggle cells.";
+        EmitSignal(SignalName.InfoChanged, info);
     }
 
     public override void _Draw()
@@ -378,6 +413,7 @@ public partial class AutoTileMapPreview : Control
             return;
 
         var scaledTileSize = new Vector2(_tileSize.X, _tileSize.Y) * _scale;
+        var halfTile = scaledTileSize / 2;
 
         var overlayTexture = _service.GetTileTexture(_overlayTile);
         Texture2D? baseTexture = null;
@@ -386,191 +422,109 @@ public partial class AutoTileMapPreview : Control
             baseTexture = _service.GetTileTexture(_baseTile);
         }
 
-        var format = _overlayTile.AutoTileFormat?.ToLowerInvariant();
-        var blobMasks = format == "blob47" ? NeighborBitmask8.GetValid47Masks() : null;
-
-        // Draw 3x3 grid
-        for (var row = 0; row < 3; row++)
+        // Draw base tiles for entire area
+        if (baseTexture != null && _baseTile != null)
         {
-            for (var col = 0; col < 3; col++)
+            var baseCoords = new Vector2I(_baseTile.AtlasX, _baseTile.AtlasY);
+            var baseSrcRect = new Rect2(baseCoords.X * _tileSize.X, baseCoords.Y * _tileSize.Y,
+                _tileSize.X, _tileSize.Y);
+
+            for (var row = 0; row < DataGridRows + 1; row++)
+            for (var col = 0; col < DataGridCols + 1; col++)
             {
-                var destRect = new Rect2(col * scaledTileSize.X, row * scaledTileSize.Y, scaledTileSize.X, scaledTileSize.Y);
-                var isCenter = row == 1 && col == 1;
-                var hasOverlay = isCenter || IsNeighborToggled(row, col);
-
-                // Draw base tile first (always, for background)
-                if (baseTexture != null && _baseTile != null)
-                {
-                    var baseCoords = new Vector2I(_baseTile.AtlasX, _baseTile.AtlasY);
-                    var baseSrcRect = new Rect2(baseCoords.X * _tileSize.X, baseCoords.Y * _tileSize.Y, _tileSize.X, _tileSize.Y);
-                    DrawTextureRectRegion(baseTexture, destRect, baseSrcRect);
-                }
-
-                // Draw overlay tile with appropriate variant
-                if (hasOverlay && overlayTexture != null)
-                {
-                    var bitmask = ComputeBitmaskForCell(row, col, format);
-                    var variantCoords = GetVariantCoords(bitmask, format, blobMasks);
-                    var srcRect = new Rect2(variantCoords.X * _tileSize.X, variantCoords.Y * _tileSize.Y, _tileSize.X, _tileSize.Y);
-                    DrawTextureRectRegion(overlayTexture, destRect, srcRect);
-                }
-
-                // Draw toggle indicator for non-center cells
-                if (!isCenter)
-                {
-                    var indicatorColor = hasOverlay
-                        ? new Color(0.2f, 0.8f, 0.2f, 0.3f)  // Green tint for toggled on
-                        : new Color(0.8f, 0.2f, 0.2f, 0.15f); // Red tint for toggled off
-                    DrawRect(destRect, indicatorColor);
-                }
+                var destRect = new Rect2(col * scaledTileSize.X, row * scaledTileSize.Y,
+                    scaledTileSize.X, scaledTileSize.Y);
+                DrawTextureRectRegion(baseTexture, destRect, baseSrcRect);
             }
         }
 
-        // Draw grid lines
-        var gridColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
-        for (var col = 0; col <= 3; col++)
+        // Draw visual grid (auto-tile overlays) at half-tile offset
+        if (overlayTexture != null)
         {
-            var x = col * scaledTileSize.X;
-            DrawLine(new Vector2(x, 0), new Vector2(x, 3 * scaledTileSize.Y), gridColor, 1.0f);
-        }
-        for (var row = 0; row <= 3; row++)
-        {
-            var y = row * scaledTileSize.Y;
-            DrawLine(new Vector2(0, y), new Vector2(3 * scaledTileSize.X, y), gridColor, 1.0f);
-        }
+            for (var vy = 0; vy < VisualGridRows; vy++)
+            for (var vx = 0; vx < VisualGridCols; vx++)
+            {
+                var bitmask = _visualBitmasks[vy, vx];
+                if (bitmask == 0) continue; // No corners filled, skip
 
-        // Highlight center cell
-        var centerRect = new Rect2(scaledTileSize.X, scaledTileSize.Y, scaledTileSize.X, scaledTileSize.Y);
-        DrawRect(centerRect, new Color(1.0f, 1.0f, 0.0f, 0.2f)); // Yellow highlight for center
-    }
+                var variantCoords = GetVariantCoords(bitmask);
+                var srcRect = new Rect2(
+                    variantCoords.X * _tileSize.X,
+                    variantCoords.Y * _tileSize.Y,
+                    _tileSize.X,
+                    _tileSize.Y
+                );
 
-    private bool IsNeighborToggled(int row, int col)
-    {
-        var idx = GetNeighborIndex(row, col);
-        return idx >= 0 && _neighborToggles[idx];
-    }
+                // Visual tile position: offset by -half tile from data grid
+                // Visual (0,0) is at pixel (-halfTile, -halfTile)
+                // We render at (vx * tileSize - halfTile, vy * tileSize - halfTile)
+                // But since our control starts at 0,0, we shift everything by +halfTile
+                // So visual (0,0) renders at (0,0) and data grid renders at (halfTile, halfTile)
+                var destRect = new Rect2(
+                    vx * scaledTileSize.X,
+                    vy * scaledTileSize.Y,
+                    scaledTileSize.X,
+                    scaledTileSize.Y
+                );
 
-    private int ComputeBitmaskForCell(int row, int col, string? format)
-    {
-        // Build a 3x3 pattern from toggle state
-        var pattern = BuildPatternFromToggles();
-        return format switch
-        {
-            "blob47" => ComputeBlob47Bitmask(pattern, row, col),
-            "edge16" => ComputeEdge16Bitmask(pattern, row, col),
-            _ => ComputeCorner16Bitmask(pattern, row, col)
-        };
-    }
-
-    private int ComputeCenterBitmask(string? format)
-    {
-        return ComputeBitmaskForCell(1, 1, format);
-    }
-
-    private int[,] BuildPatternFromToggles()
-    {
-        var pattern = new int[3, 3];
-        pattern[1, 1] = 1; // Center always overlay
-
-        for (var i = 0; i < 8; i++)
-        {
-            var (dr, dc) = NeighborOffsets[i];
-            pattern[1 + dr, 1 + dc] = _neighborToggles[i] ? 1 : 0;
+                DrawTextureRectRegion(overlayTexture, destRect, srcRect);
+            }
         }
 
-        return pattern;
-    }
-
-    private int ComputeBlob47Bitmask(int[,] pattern, int row, int col)
-    {
-        // 8-bit blob: N=1, NE=2, E=4, SE=8, S=16, SW=32, W=64, NW=128
-        int mask = 0;
-
-        bool hasN = row > 0 && pattern[row - 1, col] == 1;
-        bool hasE = col < 2 && pattern[row, col + 1] == 1;
-        bool hasS = row < 2 && pattern[row + 1, col] == 1;
-        bool hasW = col > 0 && pattern[row, col - 1] == 1;
-        bool hasNE = row > 0 && col < 2 && pattern[row - 1, col + 1] == 1;
-        bool hasSE = row < 2 && col < 2 && pattern[row + 1, col + 1] == 1;
-        bool hasSW = row < 2 && col > 0 && pattern[row + 1, col - 1] == 1;
-        bool hasNW = row > 0 && col > 0 && pattern[row - 1, col - 1] == 1;
-
-        if (hasN) mask |= 1;
-        if (hasE) mask |= 4;
-        if (hasS) mask |= 16;
-        if (hasW) mask |= 64;
-
-        // Corners only count if both adjacent edges are present
-        if (hasNE && hasN && hasE) mask |= 2;
-        if (hasSE && hasS && hasE) mask |= 8;
-        if (hasSW && hasS && hasW) mask |= 32;
-        if (hasNW && hasN && hasW) mask |= 128;
-
-        return mask;
-    }
-
-    private int ComputeCorner16Bitmask(int[,] pattern, int row, int col)
-    {
-        // 4-bit corner: NE=1, SE=2, SW=4, NW=8
-        int mask = 0;
-
-        bool hasNE = row > 0 && col < 2 && pattern[row - 1, col + 1] == 1;
-        bool hasSE = row < 2 && col < 2 && pattern[row + 1, col + 1] == 1;
-        bool hasSW = row < 2 && col > 0 && pattern[row + 1, col - 1] == 1;
-        bool hasNW = row > 0 && col > 0 && pattern[row - 1, col - 1] == 1;
-
-        if (hasNE) mask |= 1;
-        if (hasSE) mask |= 2;
-        if (hasSW) mask |= 4;
-        if (hasNW) mask |= 8;
-
-        return mask;
-    }
-
-    private int ComputeEdge16Bitmask(int[,] pattern, int row, int col)
-    {
-        // 4-bit edge: N=1, E=2, S=4, W=8
-        int mask = 0;
-
-        bool hasN = row > 0 && pattern[row - 1, col] == 1;
-        bool hasE = col < 2 && pattern[row, col + 1] == 1;
-        bool hasS = row < 2 && pattern[row + 1, col] == 1;
-        bool hasW = col > 0 && pattern[row, col - 1] == 1;
-
-        if (hasN) mask |= 1;
-        if (hasE) mask |= 2;
-        if (hasS) mask |= 4;
-        if (hasW) mask |= 8;
-
-        return mask;
-    }
-
-    private string GetBitmaskDescription(int bitmask, string? format)
-    {
-        return format switch
+        // Draw data grid overlay (shows which cells are "filled")
+        if (_showDataGrid)
         {
-            "blob47" => $"Bitmask: {bitmask} (index {NeighborBitmask8.GetBlobIndex(bitmask)}/46)",
-            "edge16" => $"Bitmask: {bitmask} ({NeighborBitmask.GetDescription(bitmask)})",
-            _ => $"Bitmask: {bitmask} ({NeighborBitmaskCorner.GetDescription(bitmask)})"
-        };
+            for (var row = 0; row < DataGridRows; row++)
+            for (var col = 0; col < DataGridCols; col++)
+            {
+                // Data grid is offset by half a tile
+                var destRect = new Rect2(
+                    col * scaledTileSize.X + halfTile.X,
+                    row * scaledTileSize.Y + halfTile.Y,
+                    scaledTileSize.X,
+                    scaledTileSize.Y
+                );
+
+                var isFilled = _dataGrid[row, col];
+                var color = isFilled
+                    ? new Color(0.2f, 0.8f, 0.2f, 0.25f) // Green for filled
+                    : new Color(0.8f, 0.2f, 0.2f, 0.1f); // Faint red for empty
+
+                DrawRect(destRect, color);
+
+                // Draw border for data cells
+                DrawRect(destRect, new Color(0.5f, 0.5f, 0.5f, 0.3f), false, 1.0f);
+            }
+        }
+
+        // Draw outer boundary to show visual grid extent
+        var totalSize = new Vector2(
+            (DataGridCols + 1) * scaledTileSize.X,
+            (DataGridRows + 1) * scaledTileSize.Y
+        );
+        DrawRect(new Rect2(Vector2.Zero, totalSize), new Color(0.7f, 0.7f, 0.7f, 0.5f), false, 2.0f);
     }
 
-    private Vector2I GetVariantCoords(int bitmask, string? format, IReadOnlyList<int>? blobMasks)
+    private Vector2I GetVariantCoords(int bitmask)
     {
         if (_overlayTile?.AutoTileVariants == null)
         {
             return new Vector2I(_overlayTile?.AtlasX ?? 0, _overlayTile?.AtlasY ?? 0);
         }
 
+        var format = _overlayTile.AutoTileFormat?.ToLowerInvariant();
         int variantIndex;
-        if (format == "blob47" && blobMasks != null)
+
+        if (format == "blob47")
         {
+            // Blob47 uses index lookup
+            var blobMasks = NeighborBitmask8.GetValid47Masks();
             variantIndex = blobMasks.IndexOf(bitmask);
             if (variantIndex < 0) variantIndex = 0;
         }
         else
         {
-            // Both corner16 and edge16 use bitmask directly as index (0-15)
+            // Corner16 and Edge16 use bitmask directly as index (0-15)
             variantIndex = bitmask;
         }
 

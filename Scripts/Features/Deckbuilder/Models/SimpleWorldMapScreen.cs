@@ -816,12 +816,25 @@ public partial class SimpleWorldMapScreen : Node3D
 
     /// <summary>
     /// Render terrain transition overlays from DecorationOverlays data.
-    /// These are edge tiles from dominant terrain types rendered on the decoration layer.
+    /// Uses dual-grid technique: visual grid is offset by half a tile from terrain grid.
+    /// Each visual tile sits at the intersection of 4 terrain cells.
     /// </summary>
     private void RenderTerrainTransitions(SimpleMapData mapData)
     {
         if (DecorationLayer == null || _tileRegistry == null)
             return;
+
+        // Apply half-tile offset for dual-grid rendering
+        // Visual grid position (vx, vy) should render at pixel (-8 + vx*16, -8 + vy*16)
+        // We achieve this by offsetting the DecorationLayer by half a tile
+        if (mapData.UsesDualGridOverlays)
+        {
+            DecorationLayer.Position = new Vector2(-TILE_SIZE / 2f, -TILE_SIZE / 2f);
+        }
+        else
+        {
+            DecorationLayer.Position = Vector2.Zero;
+        }
 
         var rendered = 0;
         foreach (var (position, (tileId, bitmask)) in mapData.DecorationOverlays)
@@ -840,7 +853,7 @@ public partial class SimpleWorldMapScreen : Node3D
         }
 
         if (rendered > 0)
-            ILog.Print($"[TERRAIN TRANSITIONS] Rendered {rendered} decoration overlays");
+            ILog.Print($"[TERRAIN TRANSITIONS] Rendered {rendered} dual-grid overlays (offset: {DecorationLayer.Position})");
     }
 
     /// <summary>
