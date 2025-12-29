@@ -134,10 +134,8 @@ Example: grass tile with N+E neighbors → bitmask 3 → grass_ne variant
 **Implemented Files:**
 - `BaselineGradient.cs` - Abstract base class for all gradients
 - `CardBasedGradient.cs` - Creates gradients from input cards (primary implementation)
-
-**Planned Gradient Types:**
-- RadialGradient - Center-to-edge blending
-- NoiseGradient - FastNoiseLite-based variation
+- `RadialGradient` - Center-to-edge signature blending with configurable falloff
+- `NoiseGradient` - FastNoiseLite-based variation around a base signature
 
 **Gradient modes by card count:**
 - 1 card: Hypersphere sampling around single signature
@@ -349,10 +347,12 @@ This would create more coherent patterns because high-certainty cells (cells whe
 
 **Implemented Features:**
 - 4-bit neighbor bitmask system (NESW)
-- 16-variant edge tile support (Corner16 format)
+- Three auto-tile formats:
+  - **Edge16**: 4-bit cardinal format (N=1, E=2, S=4, W=8) - 16 combinations
+  - **Corner16**: 4-bit diagonal format (NE=1, SE=2, SW=4, NW=8) - 16 combinations
+  - **Blob47**: 8-bit format with all 8 neighbors - 47 valid combinations
 - Two-pass algorithm for consistent results
 - Editor UI for configuring variants
-- Blob47 format support planned
 
 ### Phase 3: Weight Modifiers ✅ COMPLETE
 
@@ -658,9 +658,12 @@ Scripts/Features/Worldgen/
 │   └── BiomeDistributionCalculator.cs
 ├── AutoTiling/                      # ✅ IMPLEMENTED
 │   ├── AutoTileResolver.cs
-│   ├── NeighborBitmask.cs
 │   ├── AutoTileConfig.cs
-│   └── AutoTileFormat.cs
+│   ├── AutoTileFormat.cs
+│   ├── AutoTileHelper.cs
+│   ├── NeighborBitmask.cs           # Edge16 (NESW cardinal)
+│   ├── NeighborBitmaskCorner.cs     # Corner16 (diagonal)
+│   └── NeighborBitmask8.cs          # Blob47 (8-direction)
 ├── WeightModifiers/                 # ✅ IMPLEMENTED
 │   ├── IWeightModifier.cs
 │   ├── WeightModifierPipeline.cs
@@ -674,8 +677,9 @@ Scripts/Features/Worldgen/
 │   └── TileAffinityEntry.cs
 ├── BlobGeneration/                  # ✅ IMPLEMENTED
 │   └── TerrainBlobGenerator.cs
-├── BaselineGradient.cs              # ✅ IMPLEMENTED
+├── BaselineGradient.cs              # ✅ IMPLEMENTED (includes RadialGradient, NoiseGradient)
 ├── CardBasedGradient.cs             # ✅ IMPLEMENTED
+├── TilePlacement.cs                 # ✅ IMPLEMENTED
 ├── Structures/                      # ✅ IMPLEMENTED
 │   ├── StructureStamp.cs
 │   ├── StructureTileEntry.cs

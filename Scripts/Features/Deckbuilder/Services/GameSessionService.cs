@@ -8,6 +8,7 @@ using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.BlobGeneration;
+using CardCleaner.Scripts.Features.Worldgen.WeightModifiers;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -168,8 +169,17 @@ public partial class GameSessionService : Node, IGameSessionService
             blobGenerator = new TerrainBlobGenerator(_blobConfig, (int)_rng.Seed);
         }
 
-        // Create map generator with biome provider, blob generator, and auto-tile resolver
-        var mapGenerator = new SimpleMapGenerator(_rng, biomeProvider, _tileRegistry, blobGenerator, _autoTileResolver);
+        // Create Soft WFC weight modifier pipeline for context-aware tile selection
+        var pipeline = new WeightModifierPipeline()
+            .AddModifier(new AdjacencyBoostModifier(AdjacencyBoostModifier.StripNumericSuffix)
+            {
+                BoostPerNeighbor = 1.5f // Tiles matching neighbors get 1.5x boost per match
+            });
+        var weightedSelector = new WeightedTileSelector(_tileRegistry, pipeline);
+
+        // Create map generator with biome provider, blob generator, auto-tile resolver, and Soft WFC
+        var mapGenerator = new SimpleMapGenerator(
+            _rng, biomeProvider, _tileRegistry, blobGenerator, _autoTileResolver, weightedSelector);
         _currentMap = mapGenerator.GenerateMap(mapSize);
 
         // Log biome distribution for debugging

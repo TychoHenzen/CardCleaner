@@ -18,7 +18,16 @@ public partial class TilePropertiesPanel : ScrollContainer
 
     // Atlas picker controls
     private OptionButton? _sourceDropdown;
+    private Button? _sourcePickerButton;
     private Button? _atlasCoordButton;
+
+    // Source picker dialog
+    private AcceptDialog? _sourcePickerDialog;
+    private int _selectedSourceIdForPicker;
+    private Dictionary<int, PanelContainer>? _sourcePanelsBySourceId;
+    private List<TextureRect>? _sourcePickerThumbnails;
+    private HSlider? _sourcePickerZoomSlider;
+    private float _sourcePickerZoom = 1.0f;
     private TextureRect? _atlasButtonThumbnail;
     private Label? _atlasButtonLabel;
     private AcceptDialog? _atlasPickerDialog;
@@ -298,11 +307,23 @@ public partial class TilePropertiesPanel : ScrollContainer
         atlasHeader.AddThemeFontSizeOverride("font_size", 14);
         vbox.AddChild(atlasHeader);
 
-        // Source dropdown
+        // Source selection button (opens visual picker)
         var sourceRow = CreateRow("Source:");
-        _sourceDropdown = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        _sourceDropdown = new OptionButton
+        {
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            Visible = false // Hidden, used for internal tracking only
+        };
         _sourceDropdown.ItemSelected += OnSourceDropdownChanged;
         sourceRow.AddChild(_sourceDropdown);
+
+        _sourcePickerButton = new Button
+        {
+            Text = "Click to select source...",
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _sourcePickerButton.Pressed += OpenSourcePickerDialog;
+        sourceRow.AddChild(_sourcePickerButton);
         vbox.AddChild(sourceRow);
 
         // Atlas coordinate button with thumbnail preview
@@ -626,8 +647,18 @@ public partial class TilePropertiesPanel : ScrollContainer
         _currentTile.SourceId = sourceId;
 
         // Update button thumbnail with new source
+        UpdateSourceButtonText();
         UpdateAtlasButtonAppearance();
         OnFieldChanged("");
+    }
+
+    private void UpdateSourceButtonText()
+    {
+        if (_sourcePickerButton == null || _currentTile == null) return;
+
+        var sources = _service.GetAvailableAtlasSources();
+        var sourceInfo = sources.Find(s => s.SourceId == _currentTile.SourceId);
+        _sourcePickerButton.Text = sourceInfo?.DisplayName ?? $"Source {_currentTile.SourceId}";
     }
 
     public void SelectTile(string tileId)
@@ -675,6 +706,7 @@ public partial class TilePropertiesPanel : ScrollContainer
 
         // Update atlas button appearance
         _sourceIdField!.Value = _currentTile.SourceId;
+        UpdateSourceButtonText();
         UpdateAtlasButtonAppearance();
 
         // Set tile mode dropdown
@@ -831,6 +863,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         _tileModeDropdown!.Disabled = !enabled;
         _passabilityField!.Disabled = !enabled;
         _sourceDropdown!.Disabled = !enabled;
+        _sourcePickerButton!.Disabled = !enabled;
         _atlasCoordButton!.Disabled = !enabled;
         _layerField!.Disabled = !enabled;
         _elevationField!.Editable = enabled;
@@ -927,6 +960,221 @@ public partial class TilePropertiesPanel : ScrollContainer
 
         _currentTile.AtlasX = _atlasDialogPicker.SelectedCoords.X;
         _currentTile.AtlasY = _atlasDialogPicker.SelectedCoords.Y;
+        UpdateAtlasButtonAppearance();
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void OpenSourcePickerDialog()
+    {
+        if (_currentTile == null) return;
+
+        if (_sourcePickerDialog == null)
+        {
+            _sourcePickerDialog = new AcceptDialog
+            {
+                Title = "Select Atlas Source",
+                InitialPosition = Window.WindowInitialPosition.CenterMainWindowScreen,
+                Size = new Vector2I(650, 580),
+                OkButtonText = "Select"
+            };
+
+            var dialogVBox = new VBoxContainer
+            {
+                SizeFlagsHorizontal = SizeFlags.ExpandFill,
+                SizeFlagsVertical = SizeFlags.ExpandFill
+            };
+
+            // Zoom slider row
+            var zoomRow = new HBoxContainer();
+            zoomRow.AddChild(new Label { Text = "Zoom:" });
+            _sourcePickerZoomSlider = new HSlider
+            {
+                MinValue = 0.5,
+                MaxValue = 2.0,
+                Step = 0.1,
+                Value = 1.0,
+                CustomMinimumSize = new Vector2(150, 0),
+                SizeFlagsHorizontal = SizeFlags.ExpandFill
+            };
+            _sourcePickerZoomSlider.ValueChanged += OnSourcePickerZoomChanged;
+            zoomRow.AddChild(_sourcePickerZoomSlider);
+            var zoomLabel = new Label { Text = "100%" };
+            _sourcePickerZoomSlider.ValueChanged += (val) => zoomLabel.Text = $"{(int)(val * 100)}%";
+            zoomRow.AddChild(zoomLabel);
+            dialogVBox.AddChild(zoomRow);
+
+            var scroll = new ScrollContainer
+            {
+                CustomMinimumSize = new Vector2(0, 480),
+                SizeFlagsHorizontal = SizeFlags.ExpandFill,
+                SizeFlagsVertical = SizeFlags.ExpandFill
+            };
+            scroll.GuiInput += OnSourcePickerScrollInput;
+
+            var grid = new GridContainer
+            {
+                Columns = 2,
+                SizeFlagsHorizontal = SizeFlags.ExpandFill
+            };
+            grid.AddThemeConstantOverride("h_separation", 12);
+            grid.AddThemeConstantOverride("v_separation", 12);
+
+            _sourcePanelsBySourceId = new Dictionary<int, PanelContainer>();
+            _sourcePickerThumbnails = new List<TextureRect>();
+            var sources = _service.GetAvailableAtlasSources();
+
+            foreach (var sourceInfo in sources)
+            {
+                var panel = new PanelContainer
+                {
+                    CustomMinimumSize = new Vector2(280, 300),
+                    MouseFilter = MouseFilterEnum.Pass
+                };
+
+                var vbox = new VBoxContainer
+                {
+                    SizeFlagsHorizontal = SizeFlags.ExpandFill,
+                    SizeFlagsVertical = SizeFlags.ExpandFill
+                };
+
+                var thumbnail = new TextureRect
+                {
+                    CustomMinimumSize = new Vector2(256, 256),
+                    ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+                    StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
+                    TextureFilter = TextureFilterEnum.Nearest,
+                    SizeFlagsHorizontal = SizeFlags.ShrinkCenter
+                };
+                _sourcePickerThumbnails.Add(thumbnail);
+
+                // Show entire atlas texture
+                if (sourceInfo.Source?.Texture != null)
+                {
+                    thumbnail.Texture = sourceInfo.Source.Texture;
+                }
+
+                vbox.AddChild(thumbnail);
+                var label = new Label
+                {
+                    Text = sourceInfo.DisplayName,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    AutowrapMode = TextServer.AutowrapMode.WordSmart
+                };
+                label.AddThemeFontSizeOverride("font_size", 10);
+                vbox.AddChild(label);
+
+                panel.AddChild(vbox);
+                int capturedSourceId = sourceInfo.SourceId;
+                panel.GuiInput += (evt) => OnSourcePanelClicked(capturedSourceId, evt);
+                _sourcePanelsBySourceId[sourceInfo.SourceId] = panel;
+                grid.AddChild(panel);
+            }
+
+            scroll.AddChild(grid);
+            dialogVBox.AddChild(scroll);
+            _sourcePickerDialog.AddChild(dialogVBox);
+            AddChild(_sourcePickerDialog);
+            _sourcePickerDialog.Confirmed += OnSourcePickerConfirmed;
+        }
+
+        _selectedSourceIdForPicker = _currentTile.SourceId;
+        UpdateSourcePanelHighlights();
+        _sourcePickerDialog.Popup();
+    }
+
+    private void OnSourcePanelClicked(int sourceId, InputEvent evt)
+    {
+        if (evt is InputEventMouseButton mouseBtn && mouseBtn.Pressed && mouseBtn.ButtonIndex == MouseButton.Left)
+        {
+            _selectedSourceIdForPicker = sourceId;
+            UpdateSourcePanelHighlights();
+        }
+    }
+
+    private void UpdateSourcePanelHighlights()
+    {
+        if (_sourcePanelsBySourceId == null) return;
+
+        foreach (var (sourceId, panel) in _sourcePanelsBySourceId)
+        {
+            if (sourceId == _selectedSourceIdForPicker)
+            {
+                panel.Modulate = new Color(1.2f, 1.2f, 1.0f);
+            }
+            else
+            {
+                panel.Modulate = Colors.White;
+            }
+        }
+    }
+
+    private void OnSourcePickerZoomChanged(double value)
+    {
+        _sourcePickerZoom = (float)value;
+        UpdateSourcePickerThumbnailSizes();
+    }
+
+    private void OnSourcePickerScrollInput(InputEvent evt)
+    {
+        if (evt is InputEventMouseButton mouseBtn && mouseBtn.Pressed && mouseBtn.CtrlPressed)
+        {
+            if (mouseBtn.ButtonIndex == MouseButton.WheelUp)
+            {
+                _sourcePickerZoom = Mathf.Min(_sourcePickerZoom + 0.1f, 2.0f);
+                if (_sourcePickerZoomSlider != null)
+                    _sourcePickerZoomSlider.Value = _sourcePickerZoom;
+                UpdateSourcePickerThumbnailSizes();
+            }
+            else if (mouseBtn.ButtonIndex == MouseButton.WheelDown)
+            {
+                _sourcePickerZoom = Mathf.Max(_sourcePickerZoom - 0.1f, 0.5f);
+                if (_sourcePickerZoomSlider != null)
+                    _sourcePickerZoomSlider.Value = _sourcePickerZoom;
+                UpdateSourcePickerThumbnailSizes();
+            }
+        }
+    }
+
+    private void UpdateSourcePickerThumbnailSizes()
+    {
+        if (_sourcePickerThumbnails == null || _sourcePanelsBySourceId == null) return;
+
+        var baseSize = 256f;
+        var basePanelWidth = 280f;
+        var basePanelHeight = 300f;
+
+        var newSize = new Vector2(baseSize * _sourcePickerZoom, baseSize * _sourcePickerZoom);
+        var newPanelSize = new Vector2(basePanelWidth * _sourcePickerZoom, basePanelHeight * _sourcePickerZoom);
+
+        foreach (var thumbnail in _sourcePickerThumbnails)
+        {
+            thumbnail.CustomMinimumSize = newSize;
+        }
+
+        foreach (var panel in _sourcePanelsBySourceId.Values)
+        {
+            panel.CustomMinimumSize = newPanelSize;
+        }
+    }
+
+    private void OnSourcePickerConfirmed()
+    {
+        if (_currentTile == null) return;
+
+        _currentTile.SourceId = _selectedSourceIdForPicker;
+        _sourceIdField!.Value = _selectedSourceIdForPicker;
+
+        // Update dropdown to match
+        for (int i = 0; i < _sourceDropdown!.ItemCount; i++)
+        {
+            if (_sourceDropdown.GetItemId(i) == _selectedSourceIdForPicker)
+            {
+                _sourceDropdown.Selected = i;
+                break;
+            }
+        }
+
+        UpdateSourceButtonText();
         UpdateAtlasButtonAppearance();
         _service.UpdateTile(_currentTile);
     }

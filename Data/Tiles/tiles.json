@@ -385,16 +385,68 @@
       "name": "Dense Trees",
       "passability": "solid",
       "atlasCoords": {
-        "x": 25,
+        "x": 6,
         "y": 2
       },
-      "sourceId": 11,
+      "sourceId": 174,
       "layer": "structure",
       "elevation": 2.5,
-      "isTransparent": false,
+      "isTransparent": true,
       "biomes": [
         "forest"
-      ]
+      ],
+      "autoTileVariants": [
+        null,
+        {
+          "x": 5,
+          "y": 3
+        },
+        {
+          "x": 5,
+          "y": 1
+        },
+        {
+          "x": 5,
+          "y": 2
+        },
+        {
+          "x": 7,
+          "y": 1
+        },
+        {
+          "x": 3,
+          "y": 3
+        },
+        {
+          "x": 6,
+          "y": 1
+        },
+        {
+          "x": 3,
+          "y": 1
+        },
+        null,
+        null,
+        null,
+        null,
+        {
+          "x": 7,
+          "y": 2
+        },
+        {
+          "x": 4,
+          "y": 2
+        },
+        {
+          "x": 4,
+          "y": 1
+        },
+        {
+          "x": 6,
+          "y": 2
+        }
+      ],
+      "tileMode": "autotile"
     },
     {
       "id": "forest_fallen_log",
@@ -638,7 +690,38 @@
       "isTransparent": true,
       "biomes": [
         "desert"
-      ]
+      ],
+      "variations": [
+        {
+          "x": 5,
+          "y": 2
+        },
+        {
+          "x": 5,
+          "y": 3
+        },
+        {
+          "x": 5,
+          "y": 4
+        },
+        {
+          "x": 4,
+          "y": 1
+        },
+        {
+          "x": 4,
+          "y": 2
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 4,
+          "y": 4
+        }
+      ],
+      "tileMode": "pertilevariations"
     },
     {
       "id": "desert_bones",
@@ -1110,7 +1193,38 @@
       "isTransparent": false,
       "biomes": [
         "mountains"
-      ]
+      ],
+      "variations": [
+        {
+          "x": 19,
+          "y": 17
+        },
+        {
+          "x": 20,
+          "y": 16
+        },
+        {
+          "x": 20,
+          "y": 17
+        },
+        {
+          "x": 21,
+          "y": 16
+        },
+        {
+          "x": 21,
+          "y": 17
+        },
+        {
+          "x": 22,
+          "y": 16
+        },
+        {
+          "x": 22,
+          "y": 17
+        }
+      ],
+      "tileMode": "pertilevariations"
     },
     {
       "id": "mountains_ore",

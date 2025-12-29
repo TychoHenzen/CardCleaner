@@ -41,6 +41,24 @@ public partial class TileEditorDock : Control
         {
             GD.PrintErr($"[TileEditorDock] Failed to initialize: {ex.Message}");
             GD.PrintErr(ex.StackTrace);
+            ShowErrorState($"Init failed: {ex.Message}");
+        }
+    }
+
+    private void ShowErrorState(string message)
+    {
+        // Create a simple error display if the main UI failed to load
+        if (GetChildCount() == 0)
+        {
+            var errorLabel = new Label
+            {
+                Text = $"Tile Editor Error:\n{message}\n\nTry: Build > Rebuild Solution, then reload the plugin.",
+                AutowrapMode = TextServer.AutowrapMode.Word,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            errorLabel.SetAnchorsPreset(LayoutPreset.FullRect);
+            AddChild(errorLabel);
         }
     }
 
@@ -48,6 +66,11 @@ public partial class TileEditorDock : Control
     {
         try
         {
+            if (_service == null)
+            {
+                GD.PrintErr("[TileEditorDock] Service is null - reinitializing");
+                ReinitializeService();
+            }
             _service?.LoadTiles();
         }
         catch (Exception ex)
@@ -55,6 +78,21 @@ public partial class TileEditorDock : Control
             GD.PrintErr($"[TileEditorDock] Failed to load tiles: {ex.Message}");
             if (_statusLabel != null)
                 _statusLabel.Text = $"Error: {ex.Message}";
+        }
+    }
+
+    private void ReinitializeService()
+    {
+        try
+        {
+            _service = new TileEditorService();
+            _service.TilesLoaded += OnTilesLoaded;
+            _service.TileModified += OnTileModified;
+            _service.BlobConfigModified += OnBlobConfigModified;
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[TileEditorDock] Failed to reinitialize service: {ex.Message}");
         }
     }
 

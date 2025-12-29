@@ -245,10 +245,36 @@ public partial class TileEditorService : RefCounted
     /// </summary>
     public Texture2D? GetTileTexture(EditableTile tile)
     {
-        if (_tileSet == null) return null;
+        if (!IsTileSetValid()) return null;
 
-        var source = _tileSet.GetSource(tile.SourceId) as TileSetAtlasSource;
-        return source?.Texture;
+        try
+        {
+            var source = _tileSet!.GetSource(tile.SourceId) as TileSetAtlasSource;
+            return source?.Texture;
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[TileEditorService] Failed to get tile texture: {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Check if the TileSet reference is still valid (not freed after a rebuild)
+    /// </summary>
+    private bool IsTileSetValid()
+    {
+        if (_tileSet == null) return false;
+        try
+        {
+            // Try to access a property to verify the object is still valid
+            return GodotObject.IsInstanceValid(_tileSet);
+        }
+        catch
+        {
+            _tileSet = null;
+            return false;
+        }
     }
 
     /// <summary>
@@ -256,17 +282,25 @@ public partial class TileEditorService : RefCounted
     /// </summary>
     public Rect2I GetTileTextureRegion(EditableTile tile)
     {
-        if (_tileSet == null) return new Rect2I(0, 0, 16, 16);
+        if (!IsTileSetValid()) return new Rect2I(0, 0, 16, 16);
 
-        var source = _tileSet.GetSource(tile.SourceId) as TileSetAtlasSource;
-        if (source == null) return new Rect2I(0, 0, 16, 16);
+        try
+        {
+            var source = _tileSet!.GetSource(tile.SourceId) as TileSetAtlasSource;
+            if (source == null) return new Rect2I(0, 0, 16, 16);
 
-        var tileSize = _tileSet.TileSize;
-        var atlasCoords = new Vector2I(tile.AtlasX, tile.AtlasY);
+            var tileSize = _tileSet.TileSize;
+            var atlasCoords = new Vector2I(tile.AtlasX, tile.AtlasY);
 
-        // Use the tile's size for multi-tile support
-        var regionSize = new Vector2I(tileSize.X * tile.SizeX, tileSize.Y * tile.SizeY);
-        return new Rect2I(atlasCoords * tileSize, regionSize);
+            // Use the tile's size for multi-tile support
+            var regionSize = new Vector2I(tileSize.X * tile.SizeX, tileSize.Y * tile.SizeY);
+            return new Rect2I(atlasCoords * tileSize, regionSize);
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[TileEditorService] Failed to get texture region: {ex.Message}");
+            return new Rect2I(0, 0, 16, 16);
+        }
     }
 
     /// <summary>
@@ -275,23 +309,30 @@ public partial class TileEditorService : RefCounted
     public List<AtlasSourceInfo> GetAvailableAtlasSources()
     {
         var sources = new List<AtlasSourceInfo>();
-        if (_tileSet == null) return sources;
+        if (!IsTileSetValid()) return sources;
 
-        var sourceCount = _tileSet.GetSourceCount();
-        for (int i = 0; i < sourceCount; i++)
+        try
         {
-            var sourceId = _tileSet.GetSourceId(i);
-            var source = _tileSet.GetSource(sourceId) as TileSetAtlasSource;
-            if (source == null) continue;
-
-            var textureName = source.Texture?.ResourcePath ?? "Unknown";
-            if (textureName.Contains('/'))
-                textureName = textureName.GetFile();
-
-            sources.Add(new AtlasSourceInfo
+            var sourceCount = _tileSet!.GetSourceCount();
+            for (int i = 0; i < sourceCount; i++)
             {
-                SourceId = sourceId, DisplayName = $"Source {sourceId}: {textureName}", Source = source
-            });
+                var sourceId = _tileSet.GetSourceId(i);
+                var source = _tileSet.GetSource(sourceId) as TileSetAtlasSource;
+                if (source == null) continue;
+
+                var textureName = source.Texture?.ResourcePath ?? "Unknown";
+                if (textureName.Contains('/'))
+                    textureName = textureName.GetFile();
+
+                sources.Add(new AtlasSourceInfo
+                {
+                    SourceId = sourceId, DisplayName = $"Source {sourceId}: {textureName}", Source = source
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[TileEditorService] Failed to get atlas sources: {ex.Message}");
         }
 
         return sources;
@@ -302,7 +343,16 @@ public partial class TileEditorService : RefCounted
     /// </summary>
     public TileSetAtlasSource? GetAtlasSource(int sourceId)
     {
-        return _tileSet?.GetSource(sourceId) as TileSetAtlasSource;
+        if (!IsTileSetValid()) return null;
+        try
+        {
+            return _tileSet!.GetSource(sourceId) as TileSetAtlasSource;
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[TileEditorService] Failed to get atlas source {sourceId}: {ex.Message}");
+            return null;
+        }
     }
 
     /// <summary>
@@ -318,26 +368,34 @@ public partial class TileEditorService : RefCounted
     /// </summary>
     public bool RemoveSource(int sourceId)
     {
-        if (_tileSet == null) return false;
+        if (!IsTileSetValid()) return false;
 
-        // Verify no tiles are using this source
-        if (_tiles.Values.Any(t => t.SourceId == sourceId))
+        try
         {
-            GD.PrintErr($"[TileEditorService] Cannot remove source {sourceId}: tiles are using it");
+            // Verify no tiles are using this source
+            if (_tiles.Values.Any(t => t.SourceId == sourceId))
+            {
+                GD.PrintErr($"[TileEditorService] Cannot remove source {sourceId}: tiles are using it");
+                return false;
+            }
+
+            _tileSet!.RemoveSource(sourceId);
+            var saveResult = ResourceSaver.Save(_tileSet, TilesetPath);
+
+            if (saveResult == Error.Ok)
+            {
+                GD.Print($"[TileEditorService] Removed source {sourceId} and saved TileSet");
+                return true;
+            }
+
+            GD.PrintErr($"[TileEditorService] Failed to save TileSet after removing source: {saveResult}");
             return false;
         }
-
-        _tileSet.RemoveSource(sourceId);
-        var saveResult = ResourceSaver.Save(_tileSet, TilesetPath);
-
-        if (saveResult == Error.Ok)
+        catch (Exception ex)
         {
-            GD.Print($"[TileEditorService] Removed source {sourceId} and saved TileSet");
-            return true;
+            GD.PrintErr($"[TileEditorService] Failed to remove source: {ex.Message}");
+            return false;
         }
-
-        GD.PrintErr($"[TileEditorService] Failed to save TileSet after removing source: {saveResult}");
-        return false;
     }
 
     /// <summary>
@@ -345,23 +403,31 @@ public partial class TileEditorService : RefCounted
     /// </summary>
     public bool AreSourceIdsContiguous()
     {
-        if (_tileSet == null) return true;
+        if (!IsTileSetValid()) return true;
 
-        var sourceCount = _tileSet.GetSourceCount();
-        if (sourceCount == 0) return true;
-
-        var sourceIds = new List<int>();
-        for (var i = 0; i < sourceCount; i++)
+        try
         {
-            sourceIds.Add(_tileSet.GetSourceId(i));
-        }
-        sourceIds.Sort();
+            var sourceCount = _tileSet!.GetSourceCount();
+            if (sourceCount == 0) return true;
 
-        for (var i = 0; i < sourceIds.Count; i++)
-        {
-            if (sourceIds[i] != i) return false;
+            var sourceIds = new List<int>();
+            for (var i = 0; i < sourceCount; i++)
+            {
+                sourceIds.Add(_tileSet.GetSourceId(i));
+            }
+            sourceIds.Sort();
+
+            for (var i = 0; i < sourceIds.Count; i++)
+            {
+                if (sourceIds[i] != i) return false;
+            }
+            return true;
         }
-        return true;
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[TileEditorService] Failed to check source IDs: {ex.Message}");
+            return true;
+        }
     }
 
     /// <summary>
@@ -372,13 +438,15 @@ public partial class TileEditorService : RefCounted
     public Dictionary<int, int> CompactAtlasSourceIds()
     {
         var mapping = new Dictionary<int, int>();
-        if (_tileSet == null)
+        if (!IsTileSetValid())
         {
             GD.PrintErr("[TileEditorService] Cannot compact: TileSet not loaded");
             return mapping;
         }
 
-        var sourceCount = _tileSet.GetSourceCount();
+        try
+        {
+        var sourceCount = _tileSet!.GetSourceCount();
         if (sourceCount == 0)
         {
             return mapping;
@@ -455,6 +523,12 @@ public partial class TileEditorService : RefCounted
         }
 
         return mapping;
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[TileEditorService] Failed to compact atlas source IDs: {ex.Message}");
+            return mapping;
+        }
     }
 
     public EditableTile? GetTile(string id) => _tiles.GetValueOrDefault(id);

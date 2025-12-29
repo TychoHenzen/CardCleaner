@@ -177,3 +177,19 @@ Code is organized by feature under `Scripts/Features/`:
 - **Pause/**: Pause menu controller
 
 Core utilities and interfaces are in `Scripts/Core/`.
+
+## Memory Tools
+
+Claude Code has access to persistent memory through the claude-mem MCP plugin. Use these tools to access prior session context:
+
+**3-Layer Workflow** (always follow this pattern to minimize token usage):
+1. `search(query)` → Get index with observation IDs (~50-100 tokens/result)
+2. `timeline(anchor=ID)` → Get context around interesting results
+3. `get_observations([IDs])` → Fetch full details ONLY for filtered IDs
+
+**When to use memory:**
+- Starting a new session - check for recent context on the current project
+- Before re-reading files - past analysis may already be captured
+- When debugging - prior discoveries and decisions are indexed by type (🔴 bugfix, ⚖️ decision, 🔵 discovery)
+
+**Token economics:** Memory provides ~90% token savings vs re-reading files. The session start hook automatically loads recent context summaries.
