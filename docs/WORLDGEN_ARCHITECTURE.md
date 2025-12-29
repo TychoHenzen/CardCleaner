@@ -1,327 +1,435 @@
 # World Generation Architecture
 
-This document describes the target architecture for CardCleaner's procedural world generation system, including implementation phases and data definition guides.
+This document describes the architecture for CardCleaner's procedural world generation system, built on a **Soft WFC** approach using probability-based tile selection with composable weight modifiers.
 
 ## Table of Contents
 
-1. [Current State](#current-state)
-2. [Target Architecture](#target-architecture)
-3. [Implementation Phases](#implementation-phases)
-4. [Data Definition Guide](#data-definition-guide)
-5. [Technical Reference](#technical-reference)
+1. [Core Concept: Soft WFC](#core-concept-soft-wfc)
+2. [Current State](#current-state)
+3. [Weight Modifier System](#weight-modifier-system)
+4. [Generation Pipeline](#generation-pipeline)
+5. [Implementation Phases](#implementation-phases)
+6. [Data Definition Guide](#data-definition-guide)
+7. [Technical Reference](#technical-reference)
+
+---
+
+## Core Concept: Soft WFC
+
+### The Problem with Hard Constraints
+
+Traditional Wave Function Collapse (WFC) uses **hard socket rules**: tile X at position (0,0) completely bans tiles A, B, C from position (0,1). This approach has drawbacks:
+
+- **Constraint explosion**: Each tile needs explicit compatibility rules with every other tile
+- **Brittle failures**: One incompatible placement can make entire regions unsolvable
+- **Difficult to extend**: Adding new tiles requires updating many existing constraint definitions
+- **Over-deterministic**: Maps feel "solved" rather than naturally varied
+
+### Soft WFC: Probability Over Prohibition
+
+CardCleaner uses **Soft WFC** - a probabilistic approach where:
+
+```
+Instead of: "Forest floor tiles are BANNED in mountain biomes"
+We use:     "Forest floor tiles have 0.2x weight in mountain biomes"
+```
+
+**Key Principles:**
+
+1. **No hard bans** - Every tile has some probability everywhere (even if tiny)
+2. **Multiplicative weights** - Multiple factors combine: biome affinity × adjacency boost × spacing penalty
+3. **Composable modifiers** - New rules added without changing existing ones
+4. **Context-aware selection** - Same tile pool, different probabilities based on position and neighbors
+
+### How It Works
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    SOFT WFC TILE SELECTION                      │
+├─────────────────────────────────────────────────────────────────┤
+│  1. Initialize all candidate tiles with weight 1.0              │
+│                                                                 │
+│  2. Apply weight modifier pipeline:                             │
+│     weight *= BiomeAffinityModifier    (forest floor → 1.5x)   │
+│     weight *= AdjacencyBoostModifier   (matches neighbor → 2x) │
+│     weight *= DecorationSpacing        (near decor → 0.3x)     │
+│     weight *= StructureProximity       (near shrine → 1.8x)    │
+│     ... additional modifiers ...                                │
+│                                                                 │
+│  3. Weighted random selection from final distribution           │
+│     Tile A: 0.45, Tile B: 2.7, Tile C: 0.1 → B most likely     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Comparison: Hard vs Soft Constraints
+
+| Aspect | Hard WFC (Socket Rules) | Soft WFC (Weight Modifiers) |
+|--------|-------------------------|----------------------------|
+| Constraint type | Binary (allowed/banned) | Continuous (0.0 to ∞) |
+| Failure mode | Contradiction → backtrack | Always solvable |
+| Adding new tiles | Update all neighbor rules | Define affinity values |
+| Map variety | Deterministic patterns | Probabilistic variation |
+| Biome influence | Must encode in sockets | Natural weight adjustment |
+| Performance | Constraint propagation | Simple multiplication |
 
 ---
 
 ## Current State
 
-### Two Parallel Systems
+### Implemented Systems
 
-**SemanticWfc3dGenerator** (`Scripts/Features/Worldgen/SemanticWfc3dGenerator.cs`)
-- Full 3D Wave Function Collapse implementation (~590 lines)
-- 4 vertical layers: Terrain → Decoration → Structure → Effects
-- 10-directional socket compatibility system (N/E/S/W, diagonals, Up/Down)
-- Cross-layer constraints via `LayerConstraint`
-- Gradient influence on tile weights via `GradientInfluenceComponent`
-- **Status**: Complex, difficult to extend, socket management became overwhelming
+| System | Status | Location |
+|--------|--------|----------|
+| **Biome System** | ✅ Complete | `Scripts/Features/Worldgen/Biomes/` |
+| **Auto-Tiling** | ✅ Complete | `Scripts/Features/Worldgen/AutoTiling/` |
+| **Weight Modifiers** | ✅ Complete | `Scripts/Features/Worldgen/WeightModifiers/` |
+| **Terrain Blobs** | ✅ Complete | `Scripts/Features/Worldgen/BlobGeneration/` |
+| **Map Generator** | ✅ Complete | `Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs` |
+| **Structures** | 🔲 Planned | Phase 3 |
+| **Tile Variants** | 🔲 Planned | Phase 4 |
 
-**SimpleMapGenerator** (`Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs`)
-- Lightweight random placement (~270 lines)
-- Basic spatial noise for terrain coherence (sin/cos waves)
-- Signature-influenced tile selection
-- Flood-fill connectivity guarantee
-- **Status**: Fast but produces random-feeling maps without structure
+### Biome System
 
-### Existing Gradient System (Keep)
+**Files:**
+- `BiomeDefinition.cs` - Resource defining biome properties
+- `BiomeRegistry.cs` - Registry with 6 pre-configured biomes (Plains, Forest, Desert, Tundra, Swamp, Mountains)
+- `BiomeMapGenerator.cs` - Implements `IBiomeProvider`, maps gradient positions to biomes
+- `TilePool.cs` - Weighted random tile selection from pool
+- `IBiomeProvider.cs` - Interface for biome/signature queries
 
-The gradient system is solid and will be reused:
+**How biome selection works:**
 
-| File | Purpose |
-|------|---------|
-| `BaselineGradient.cs` | Abstract base class for gradients |
-| `CardBasedGradient.cs` | Creates gradients from 1-3+ cards (sphere/capsule/Bezier) |
-| `RadialGradient.cs` | Center-to-edge blending |
-| `NoiseGradient.cs` | FastNoiseLite-based variation |
-| `GradientInfluenceComponent.cs` | Adjusts tile weights by signature similarity |
+```csharp
+// Each biome has an 8D affinity signature
+// Position signature comes from card-based gradient
+// Closest signature distance wins
 
-### Existing Tile System
+var positionSignature = gradient.GetSignatureAt(position);
+var selectedBiome = biomes
+    .OrderBy(b => positionSignature.DistanceTo(b.AffinitySignature))
+    .First();
+```
 
-**SemanticTile** (`Scripts/Features/Worldgen/SemanticTile.cs`)
-- Godot Resource with tile metadata
-- `TileLayer` assignment (Terrain/Decoration/Structure/Effects)
-- `BaseWeight` for selection probability
-- `CardSignature` for gradient affinity
-- `SocketData` with 10-directional compatibility tags
+### Auto-Tiling System
 
-**TileDefinition** (`Scripts/Features/Deckbuilder/Data/TileDefinition.cs`)
-- Simpler tile metadata for SimpleMapGenerator
-- ID, name, passability, atlas coordinates
-- Used for rendering and registry lookup
+**Files:**
+- `AutoTileResolver.cs` - Two-pass algorithm (compute then apply)
+- `NeighborBitmask.cs` - 4-bit NESW bitmask utility (N=1, E=2, S=4, W=8)
+- `AutoTileConfig.cs` - Resource mapping base tile → 16 edge variants
+- `AutoTileFormat.cs` - Format enumeration (Corner16, Blob47)
+
+**How auto-tiling works:**
+
+```
+For each tile:
+  1. Compute 4-bit neighbor bitmask (same-type neighbors)
+  2. Look up edge variant in AutoTileConfig
+  3. Replace with variant (or keep base if no variant defined)
+
+Example: grass tile with N+E neighbors → bitmask 3 → grass_ne variant
+```
+
+### Gradient System
+
+**Implemented Files:**
+- `BaselineGradient.cs` - Abstract base class for all gradients
+- `CardBasedGradient.cs` - Creates gradients from input cards (primary implementation)
+
+**Planned Gradient Types:**
+- RadialGradient - Center-to-edge blending
+- NoiseGradient - FastNoiseLite-based variation
+
+**Gradient modes by card count:**
+- 1 card: Hypersphere sampling around single signature
+- 2 cards: Capsule interpolation between signatures
+- 3+ cards: Bezier curve through all signature points
 
 ---
 
-## Target Architecture
+## Weight Modifier System
 
-### Design Principles
+The weight modifier system is the core of Soft WFC - it provides the probabilistic constraint mechanism.
 
-1. **Layered Pipeline**: Each stage does one thing well
-2. **Data-Driven**: New content through Resources, not code
-3. **Incremental Progress**: Each phase produces playable results
-4. **Biome-Centric**: Biomes are the organizing principle for all content
+### Architecture
 
-### Generation Pipeline
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                 WEIGHT MODIFIER PIPELINE                        │
+├─────────────────────────────────────────────────────────────────┤
+│  TileSelectionContext                                           │
+│  ├── Position: Vector2I                                         │
+│  ├── PlacedTiles: IReadOnlyDictionary<Vector2I, string>        │
+│  ├── CurrentBiome: BiomeDefinition                              │
+│  ├── Rng: RandomNumberGenerator                                 │
+│  └── Weights: Dictionary<string, float>  ← MUTABLE              │
+├─────────────────────────────────────────────────────────────────┤
+│  Pipeline applies modifiers in sequence:                        │
+│                                                                 │
+│  weights["grass"] = 1.0                                         │
+│       ↓ BiomeAffinityModifier                                   │
+│  weights["grass"] = 1.5  (forest biome boosts grass)           │
+│       ↓ AdjacencyBoostModifier                                  │
+│  weights["grass"] = 3.375  (2 grass neighbors: 1.5^2 × 1.5)    │
+│       ↓ DecorationSpacingModifier                               │
+│  weights["grass"] = 3.375  (not a decoration, unchanged)       │
+│       ↓ ... more modifiers ...                                  │
+│  Final weight used for random selection                         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Core Interfaces
+
+```csharp
+/// <summary>
+/// Modifiers apply multiplicative adjustments to tile weights in-place.
+/// </summary>
+public interface IWeightModifier
+{
+    void ApplyModifier(TileSelectionContext context);
+}
+```
+
+### Implemented Modifiers
+
+#### BiomeAffinityModifier
+
+Applies per-biome multipliers to tile weights. This is how "forest floor tiles are boosted in forest biomes" works.
+
+```csharp
+// Configuration example:
+var modifier = new BiomeAffinityModifier()
+    .WithAffinity(new BiomeTileAffinity(BiomeType.Forest)
+        .Add("forest_floor", 1.8f)   // 80% boost in forests
+        .Add("grass", 1.2f)          // 20% boost
+        .Add("sand", 0.3f))          // 70% reduction
+    .WithAffinity(new BiomeTileAffinity(BiomeType.Desert)
+        .Add("sand", 1.5f)
+        .Add("forest_floor", 0.2f)); // 80% reduction in deserts
+```
+
+#### AdjacencyBoostModifier
+
+Boosts tiles that match already-placed neighbors, creating natural clustering.
+
+```csharp
+// Default: 1.5x per matching neighbor
+// 4 matching neighbors = 1.5^4 = 5.06x boost
+
+var modifier = new AdjacencyBoostModifier(
+    getTileGroup: AdjacencyBoostModifier.StripNumericSuffix
+) { BoostPerNeighbor = 1.5f };
+
+// "grass_1" and "grass_2" both count as "grass" group
+```
+
+#### DecorationSpacingModifier
+
+Reduces decoration probability based on proximity to other decorations.
+
+```csharp
+var modifier = new DecorationSpacingModifier(
+    decorationTileIds: new HashSet<string> { "tree", "rock", "flower" }
+) {
+    BaseRadius = 2,      // Any decoration within 2 tiles reduces weight
+    SameTypeRadius = 4,  // Same decoration type has larger exclusion
+    MinWeight = 0.1f     // Never reduce below 10%
+};
+```
+
+### Creating Custom Modifiers
+
+To add new soft constraints, implement `IWeightModifier`:
+
+```csharp
+/// <summary>
+/// Example: Boost water tiles near rivers, reduce near mountains.
+/// </summary>
+public class RiverProximityModifier : IWeightModifier
+{
+    private readonly HashSet<Vector2I> _riverTiles;
+
+    public void ApplyModifier(TileSelectionContext context)
+    {
+        var distanceToRiver = CalculateDistance(context.Position, _riverTiles);
+
+        var waterBoost = distanceToRiver <= 3 ? 2.0f : 1.0f;
+
+        if (context.Weights.TryGetValue("water", out var weight))
+            context.Weights["water"] = weight * waterBoost;
+    }
+}
+```
+
+### Pipeline Configuration
+
+```csharp
+var pipeline = new WeightModifierPipeline()
+    .AddModifier(biomeAffinityModifier)
+    .AddModifier(adjacencyBoostModifier)
+    .AddModifier(decorationSpacingModifier);
+    // Add more as needed
+
+var selector = new WeightedTileSelector(tileRegistry, pipeline);
+```
+
+---
+
+## Generation Pipeline
+
+### Current 5-Phase Pipeline
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                    GENERATION PIPELINE                          │
 ├─────────────────────────────────────────────────────────────────┤
-│  Stage 1: BIOME PLACEMENT                                       │
-│    Input:  Card signatures from deck                            │
-│    Output: 2D grid of BiomeType + signature values              │
-│    Method: CardBasedGradient → signature → biome mapping        │
+│  Phase 1: BIOME-BASED PASSABILITY                               │
+│    • Query biome at each position via gradient                  │
+│    • Randomly assign passable/blocked based on BlockedPercentage│
+│    • Output: biomeMap[y,x] and isPassable[y,x]                 │
 ├─────────────────────────────────────────────────────────────────┤
-│  Stage 2: TERRAIN GENERATION                                    │
-│    Input:  Biome grid                                           │
-│    Output: Base terrain tile grid                               │
-│    Method: Per-biome tile palette with weighted selection       │
+│  Phase 2: CELLULAR AUTOMATA SMOOTHING                           │
+│    • Count passable neighbors (4-directional)                   │
+│    • Apply threshold: passable if N >= SmoothingThreshold       │
+│    • Respects biome boundaries (different biome = blocked)      │
+│    • Creates larger contiguous regions                          │
 ├─────────────────────────────────────────────────────────────────┤
-│  Stage 3: TRANSITIONS                                           │
-│    Input:  Terrain grid + biome grid                            │
-│    Output: Transition overlay tiles                             │
-│    Method: 4-bit neighbor bitmask auto-tiling                   │
+│  Phase 3: TILE PLACEMENT                                        │
+│    • For each position, select tile using Soft WFC:             │
+│      1. WeightedTileSelector with modifier pipeline             │
+│      2. Fallback: TerrainBlobGenerator (noise clustering)       │
+│      3. Fallback: biome.SelectPassableTile()                    │
+│    • Handle multi-tile placements with space validation         │
 ├─────────────────────────────────────────────────────────────────┤
-│  Stage 4: STRUCTURES                                            │
-│    Input:  Terrain + biome data                                 │
-│    Output: Structure tiles (buildings, forests, caves)          │
-│    Method: Stamp placement + procedural generators              │
+│  Phase 4: CONNECTIVITY GUARANTEE                                │
+│    • Flood-fill to identify connected components                │
+│    • Create corridors between disconnected regions              │
+│    • Ensure single connected component                          │
 ├─────────────────────────────────────────────────────────────────┤
-│  Stage 5: ENTITIES                                              │
-│    Input:  Complete map data                                    │
-│    Output: Player spawn, enemy positions, items                 │
-│    Method: Card rarity/quantity → counts, biome → types         │
+│  Phase 5: POST-PROCESSING                                       │
+│    • Generate terrain transition overlays (edge decorations)    │
+│    • Apply auto-tiling (select edge variants)                   │
+│    • Select per-generation tile variants                        │
+│    • Place player spawn and enemies                             │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### What to Keep vs Replace
+### Future: Entropy-Based Cell Selection
 
-**Keep from WFC:**
-- Layer concept (terrain, decoration, structure, effects)
-- `GradientInfluenceComponent` for signature-based weighting
-- SemanticTile as base for tile definitions
+The current implementation processes cells sequentially. A future enhancement would use WFC-style entropy-based ordering:
 
-**Keep from Simple:**
-- Connectivity guarantee algorithm (flood-fill + corridor creation)
-- Signature-influenced tile selection concept
-- Performance-oriented approach
+```
+Instead of: for y in 0..height, for x in 0..width: place_tile(x, y)
 
-**Replace/Simplify:**
-- 10-directional sockets → simpler neighbor rules at biome level
-- Per-tile constraint propagation → biome-level placement rules
-- CompatibilityTag complexity → straightforward enum-based compatibility
+Use: while uncollapsed_cells remain:
+       1. Find cell with lowest entropy (fewest high-probability options)
+       2. Collapse that cell (weighted random selection)
+       3. Recompute neighbor entropies
+       4. Repeat
+```
+
+This would create more coherent patterns because high-certainty cells (cells where the context strongly suggests one tile) are placed first, propagating their influence outward.
 
 ---
 
 ## Implementation Phases
 
-### Phase 1: Biome System Foundation
+### Phase 1: Biome System ✅ COMPLETE
 
 **Goal**: Cards create meaningful biome zones on the map
 
-**New Files to Create:**
+**Implemented Features:**
+- 6 pre-configured biomes with signature affinities
+- Gradient-based biome selection via signature distance
+- Per-biome passable/blocked tile pools
+- Configurable blocked percentage per biome
 
-```
-Scripts/Features/Worldgen/Biomes/
-├── BiomeDefinition.cs      # Resource defining a biome
-├── BiomeRegistry.cs        # Central registry of all biomes
-├── BiomeMapGenerator.cs    # Converts gradient to biome grid
-└── IBiomeProvider.cs       # Interface for querying biome at position
-```
+### Phase 2: Auto-Tiling ✅ COMPLETE
 
-**BiomeDefinition Properties:**
-- `BiomeType` enum identifier
-- `CardSignature AffinitySignature` - which signature values favor this biome
-- `TilePool PassableTiles` - weighted list of ground tiles
-- `TilePool BlockedTiles` - weighted list of obstacle tiles
-- `float BlockedPercentage` - density of obstacles
-- `StructureRule[] AllowedStructures` - what can spawn here
+**Goal**: Smooth visual transitions for terrain tiles
 
-**Integration Points:**
-- Modify `SimpleMapGenerator` to accept `IBiomeProvider`
-- Use `CardBasedGradient.GetSignatureAt()` → find closest biome by signature distance
+**Implemented Features:**
+- 4-bit neighbor bitmask system (NESW)
+- 16-variant edge tile support (Corner16 format)
+- Two-pass algorithm for consistent results
+- Editor UI for configuring variants
+- Blob47 format support planned
 
-**Acceptance Criteria:**
-- [ ] Maps show distinct biome regions
-- [ ] Different biomes use different tile sets
-- [ ] Biome placement influenced by input cards
+### Phase 3: Weight Modifiers ✅ COMPLETE
 
----
+**Goal**: Soft constraint system for context-aware tile selection
 
-### Phase 2: Auto-Tiling (IMPLEMENTED)
+**Implemented Features:**
+- Pipeline architecture (Chain of Responsibility)
+- BiomeAffinityModifier (biome-specific tile weights)
+- AdjacencyBoostModifier (neighbor matching, exponential boost)
+- DecorationSpacingModifier (dual-radius exclusion)
+- TileSelectionContext with full position/neighbor info
+- WeightedTileSelector integration
 
-**Goal**: Smooth visual transitions for terrain tiles based on neighbors
+### Phase 4: Structure System 🔲 PLANNED
 
-**Status**: ✅ Implemented
+**Goal**: Place landmarks and points of interest with Soft WFC integration
 
-**Approach**: 4-bit neighbor bitmask with per-tile configuration
+**Planned Approach:**
 
-```
-For each terrain tile:
-  Check 4 neighbors (N=1, E=2, S=4, W=8)
-  Sum bits where neighbor is SAME tile type
-  → 16 possible edge combinations (0-15)
-  → Each configured tile provides up to 16 edge variants
-```
+Structures will integrate with the weight modifier system:
 
-**Implementation Files:**
-
-```
-Scripts/Features/Worldgen/AutoTiling/
-├── AutoTileConfig.cs         # Resource mapping base tile → 16 variants
-├── NeighborBitmask.cs        # Computes 4-bit NESW bitmask
-└── AutoTileResolver.cs       # Applies auto-tiling to entire map
-
-addons/tile_editor/
-└── AutoTileConfigPanel.cs    # Editor UI for configuring variants
-
-Scripts/Core/Services/
-└── TileDataLoader.cs         # Loads auto-tile configs from tiles.json
-```
-
-**Data Format (tiles.json):**
-
-```json
+```csharp
+public class StructureProximityModifier : IWeightModifier
 {
-  "autoTileConfigs": [
+    public void ApplyModifier(TileSelectionContext context)
     {
-      "baseTileId": "grass",
-      "displayName": "Grass Auto-Tile",
-      "variants": [
-        null,           // 0: No neighbors - use base
-        "grass_n",      // 1: North neighbor
-        "grass_e",      // 2: East neighbor
-        "grass_ne",     // 3: North+East
-        "grass_s",      // 4: South neighbor
-        "grass_ns",     // 5: North+South (corridor)
-        "grass_es",     // 6: East+South
-        "grass_nes",    // 7: North+East+South
-        "grass_w",      // 8: West neighbor
-        "grass_nw",     // 9: North+West
-        "grass_ew",     // 10: East+West (corridor)
-        "grass_new",    // 11: North+East+West
-        "grass_sw",     // 12: South+West
-        "grass_nsw",    // 13: North+South+West
-        "grass_esw",    // 14: East+South+West
-        null            // 15: All neighbors - use base
-      ]
+        // Near shrine? Boost "sacred_stone" tiles
+        // Near forge? Boost "ash", "coal" tiles
+        // Inside building footprint? Use structure-specific tiles
     }
-  ]
 }
 ```
-
-**Usage:**
-1. Open Tile Editor dock in Godot
-2. Go to "Auto-Tiling" tab
-3. Create new config for a base terrain tile
-4. Assign variant tiles to each bitmask slot
-5. Save - auto-tiling automatically applies during map generation
-
-**Acceptance Criteria:**
-- [x] Per-tile auto-tile configuration via editor UI
-- [x] 16-variant bitmask system (NESW neighbors)
-- [x] Automatic application during map generation
-- [x] Persistence to tiles.json
-
----
-
-### Phase 3: Structure System
-
-**Goal**: Place landmarks and points of interest
 
 **Concepts:**
 
 | Term | Definition |
 |------|------------|
-| **Stamp** | Fixed tile arrangement (boulder, single tree, small ruin) |
+| **Stamp** | Fixed tile arrangement (well, shrine, small ruin) |
 | **Procedural Structure** | Algorithm-generated (building, cave, forest cluster) |
-| **Placement Rule** | Constraints for where structures can appear |
+| **Structure Zone** | Area around structure with modified tile weights |
 
-**New Files:**
+**Planned Files:**
 
 ```
 Scripts/Features/Worldgen/Structures/
 ├── StructureStamp.cs               # Fixed tile pattern resource
 ├── IProceduralStructure.cs         # Interface for generated structures
-├── StructurePlacementRule.cs       # Biome/spacing/terrain requirements
-├── StructurePlacer.cs              # Orchestrates structure placement
+├── StructurePlacementRule.cs       # Biome/spacing requirements
+├── StructurePlacer.cs              # Orchestrates placement
+├── StructureProximityModifier.cs   # Weight modifier for structure zones
 └── Implementations/
-    ├── ForestGenerator.cs          # Clusters of trees
-    ├── BuildingGenerator.cs        # Rectangular buildings
-    └── CaveEntranceGenerator.cs    # Cave mouth with interior
+    ├── ForestClusterGenerator.cs
+    ├── BuildingGenerator.cs
+    └── CaveEntranceGenerator.cs
 ```
 
-**StructureStamp Properties:**
-- `string Id`
-- `TileOffset[]` - relative positions and tile IDs
-- `Vector2I Size` - bounding box
-- `BiomeType[] AllowedBiomes`
-- `float SpawnWeight`
-- `int MinSpacing` - minimum distance from other structures
-- `TerrainRequirement` - e.g., "needs 3x3 passable area"
-
-**Placement Algorithm:**
-1. Divide map into placement regions
-2. For each region, query allowed structures for that biome
-3. Attempt placement with spacing checks
-4. Write tiles to map
-
-**Acceptance Criteria:**
-- [ ] Stamps place correctly without overlapping
-- [ ] Procedural structures generate valid layouts
-- [ ] Structures respect biome boundaries
-- [ ] Structures don't block map connectivity
-
----
-
-### Phase 4: Tile Variations
+### Phase 5: Tile Variants 🔲 PLANNED
 
 **Goal**: Visual variety without definition explosion
 
-**New File:**
+**Planned Approach:**
 
-```
-Scripts/Features/Worldgen/TileVariantPool.cs
-```
+Tile variants as weight modifier source:
 
-**TileVariantPool Properties:**
-- `string BaseId` - logical tile ID (e.g., "grass")
-- `TileVariant[] Variants` - array of visual variants
-- Each variant: `TileDefinition Tile`, `float Weight`
-
-**Usage:**
 ```csharp
-// Instead of:
-tileId = "grass";
-
-// Use:
-tileId = variantPool.SelectVariant("grass", rng);
-// Returns "grass_1", "grass_2", etc. based on weights
+public class TileVariantModifier : IWeightModifier
+{
+    // Boost specific variants based on context:
+    // - "grass_flowers" more likely in spring/fertile areas
+    // - "stone_mossy" more likely near water
+    // - "dirt_cracked" more likely in dry biomes
+}
 ```
 
-**Acceptance Criteria:**
-- [ ] Same logical tile can have multiple visual appearances
-- [ ] Weights control variant distribution
-- [ ] Backwards compatible with existing tile IDs
-
----
-
-### Phase 5: Card Input Refactoring
+### Phase 6: Card Input Refactoring 🔲 PLANNED
 
 **Goal**: Separate deck purposes for clearer gameplay
-
-**Current State:**
-- Two decks consumed as input (mapSeed + abilityCards)
-- Both contribute to map generation somehow
-
-**Target State:**
 
 | Deck | Purpose |
 |------|---------|
@@ -333,33 +441,13 @@ tileId = variantPool.SelectVariant("grass", rng);
 - Card rarity distribution → enemy count/difficulty
 - Card signatures → biome gradient (existing)
 
-**Loadout Deck Effects:**
-- Equipment cards → starting gear
-- Skill cards → ability unlocks
-- Behavior cards → AI modifiers
-
-**New Files:**
-
-```
-Scripts/Features/Deckbuilder/Services/
-├── MapParameterCalculator.cs    # Deck → size, enemy count, etc.
-└── LoadoutApplicator.cs         # Deck → player configuration
-```
-
-**Acceptance Criteria:**
-- [ ] Map deck clearly affects world generation
-- [ ] Loadout deck affects player without affecting world
-- [ ] UI clearly distinguishes the two purposes
-
 ---
 
 ## Data Definition Guide
 
-This section explains how to define content for each system.
-
 ### Defining a Biome
 
-Create a new `BiomeDefinition` resource in Godot:
+Create `BiomeDefinition` resources:
 
 ```
 Resources/Biomes/
@@ -369,22 +457,20 @@ Resources/Biomes/
 └── plains.tres
 ```
 
-**Required Properties:**
+**Properties:**
 
-```gdscript
-# In Godot Inspector or .tres file:
-
-BiomeType: Forest  # Enum value
+```csharp
+BiomeType: Forest
 
 AffinitySignature:
-  Solidum: 0.0      # Neutral solidity
-  Febris: -0.3      # Slightly cool
-  Ordinem: -0.2     # Slightly chaotic
-  Lumines: -0.1     # Slightly dark
-  Varias: 0.0       # Neutral
-  Inertiae: 0.2     # Slightly light/airy
-  Subsidium: 0.3    # Helpful
-  Spatium: 0.0      # Neutral distance
+  Solidum: 0.0      // Neutral solidity
+  Febris: -0.3      // Slightly cool
+  Ordinem: -0.2     // Slightly chaotic
+  Lumines: -0.1     // Slightly dark
+  Varias: 0.0       // Neutral
+  Inertiae: 0.2     // Slightly light/airy
+  Subsidium: 0.3    // Helpful
+  Spatium: 0.0      // Neutral distance
 
 PassableTiles:
   - TileId: "grass", Weight: 0.6
@@ -397,16 +483,9 @@ BlockedTiles:
   - TileId: "rock", Weight: 0.1
 
 BlockedPercentage: 0.35
-
-AllowedStructures:
-  - StructureId: "tree_cluster", SpawnChance: 0.3
-  - StructureId: "fallen_log", SpawnChance: 0.1
-  - StructureId: "forest_shrine", SpawnChance: 0.02
 ```
 
-**Signature Affinity Explained:**
-
-The biome with the smallest signature distance to the gradient at a position wins. Design signatures to create natural groupings:
+**Signature Affinity Reference:**
 
 | Biome | Key Signature Traits |
 |-------|---------------------|
@@ -415,176 +494,30 @@ The biome with the smallest signature distance to the gradient at a position win
 | Swamp | Cool (Febris-), chaotic (Ordinem-), heavy (Inertiae-) |
 | Plains | Neutral temperature, ordered (Ordinem+), light |
 
----
+### Defining Weight Modifiers
 
-### Defining a Tile
-
-Tiles are defined in the `TileRegistry` or as `TileDefinition` resources:
-
-```
-Resources/Tiles/
-├── Terrain/
-│   ├── grass.tres
-│   ├── dirt.tres
-│   └── stone.tres
-├── Obstacles/
-│   ├── tree.tres
-│   └── rock.tres
-└── Structures/
-    ├── wall.tres
-    └── floor.tres
-```
-
-**TileDefinition Properties:**
-
-```gdscript
-Id: "grass"
-DisplayName: "Grass"
-Passability: Passable  # Passable, Solid, PartiallyPassable
-AtlasCoords: Vector2I(0, 0)
-SourceId: 0
-Layer: Terrain
-IsTransparent: true
-Elevation: 0
-```
-
----
-
-### Defining a Stamp (Fixed Structure)
-
-Stamps are small fixed tile arrangements:
-
-```
-Resources/Structures/Stamps/
-├── boulder_small.tres
-├── tree_single.tres
-├── well.tres
-└── signpost.tres
-```
-
-**StructureStamp Properties:**
-
-```gdscript
-Id: "well"
-Size: Vector2I(3, 3)
-
-Tiles:
-  # Relative positions and tile IDs
-  - Offset: Vector2I(0, 0), TileId: "well_nw"
-  - Offset: Vector2I(1, 0), TileId: "well_n"
-  - Offset: Vector2I(2, 0), TileId: "well_ne"
-  - Offset: Vector2I(0, 1), TileId: "well_w"
-  - Offset: Vector2I(1, 1), TileId: "well_center"
-  - Offset: Vector2I(2, 1), TileId: "well_e"
-  - Offset: Vector2I(0, 2), TileId: "well_sw"
-  - Offset: Vector2I(1, 2), TileId: "well_s"
-  - Offset: Vector2I(2, 2), TileId: "well_se"
-
-AllowedBiomes: [Plains, Forest]
-SpawnWeight: 0.5
-MinSpacing: 10  # Tiles away from other structures
-
-Requirements:
-  - Type: FlatGround
-    Size: Vector2I(3, 3)
-```
-
----
-
-### Defining a Procedural Structure
-
-Procedural structures are code-based generators:
+**BiomeTileAffinity:**
 
 ```csharp
-public class ForestGenerator : IProceduralStructure
-{
-    public string Id => "tree_cluster";
-
-    public StructureResult Generate(
-        Vector2I position,
-        int seed,
-        BiomeDefinition biome,
-        IMapQuery mapQuery)
-    {
-        var result = new StructureResult();
-        var rng = new RandomNumberGenerator { Seed = (ulong)seed };
-
-        // Generate 3-7 trees in a cluster
-        var treeCount = rng.RandiRange(3, 7);
-        var radius = 3;
-
-        for (int i = 0; i < treeCount; i++)
-        {
-            var offset = new Vector2I(
-                rng.RandiRange(-radius, radius),
-                rng.RandiRange(-radius, radius)
-            );
-
-            var treePos = position + offset;
-
-            if (mapQuery.IsPassable(treePos))
-            {
-                result.AddTile(treePos, "tree_trunk");
-            }
-        }
-
-        return result;
-    }
-}
+// In code or as resource:
+new BiomeTileAffinity(BiomeType.Forest)
+    .Add("forest_floor", 1.8f)  // 80% boost
+    .Add("moss", 1.5f)          // 50% boost
+    .Add("grass", 1.2f)         // 20% boost
+    .Add("sand", 0.2f)          // 80% reduction
+    .Add("stone", 0.5f);        // 50% reduction
 ```
 
----
-
-### Defining Tile Variants
-
-Group visual variants under a logical ID:
-
-```
-Resources/TileVariants/
-├── grass_variants.tres
-└── stone_variants.tres
-```
-
-**TileVariantPool Properties:**
-
-```gdscript
-BaseId: "grass"
-
-Variants:
-  - TileId: "grass_1", Weight: 0.4
-  - TileId: "grass_2", Weight: 0.3
-  - TileId: "grass_3", Weight: 0.2
-  - TileId: "grass_flowers", Weight: 0.1
-```
-
-When the generator requests "grass", it randomly selects from these variants based on weights.
-
----
+**Rule of thumb for multipliers:**
+- `2.0+` = Strong preference (tile very likely)
+- `1.2-1.5` = Mild preference
+- `1.0` = Neutral (no effect)
+- `0.5-0.8` = Mild avoidance
+- `0.1-0.3` = Strong avoidance (but never zero!)
 
 ### Defining Auto-Tile Configurations
 
-Auto-tiling uses a 4-bit bitmask system based on SAME-type neighbors:
-
-```
-Bit layout (neighbor is SAME tile type):
-  N = 1, E = 2, S = 4, W = 8
-
-Examples:
-  0  = No neighbors (isolated tile)
-  1  = North neighbor only
-  3  = North + East neighbors (inside corner)
-  15 = All neighbors (fully surrounded/interior)
-```
-
-**Configuration via Tile Editor UI:**
-
-1. Open Tile Editor dock → "Auto-Tiling" tab
-2. Click "+ New" to create a configuration
-3. Select a base terrain tile (e.g., "grass")
-4. For each of the 16 bitmask slots, click to assign a variant tile
-5. Leave slots empty to use the base tile for that configuration
-
-**Bitmask Slot Reference:**
+**Bitmask Reference (NESW):**
 
 | Bitmask | Neighbors | Typical Use |
 |---------|-----------|-------------|
@@ -605,6 +538,45 @@ Examples:
 | 14 | E+S+W | North edge (peninsula) |
 | 15 | All | Interior (fully surrounded) |
 
+**Configuration via Tile Editor UI:**
+
+1. Open Tile Editor dock → "Auto-Tiling" tab
+2. Create new config for a base terrain tile
+3. Assign variant tiles to each bitmask slot
+4. Leave slots empty to use base tile
+
+### Defining Stamps (Fixed Structures)
+
+```
+Resources/Structures/Stamps/
+├── well.tres
+├── shrine.tres
+└── signpost.tres
+```
+
+**StructureStamp Properties:**
+
+```csharp
+Id: "well"
+Size: Vector2I(3, 3)
+
+Tiles:
+  - Offset: Vector2I(0, 0), TileId: "well_nw"
+  - Offset: Vector2I(1, 0), TileId: "well_n"
+  - Offset: Vector2I(2, 0), TileId: "well_ne"
+  // ... remaining tiles
+
+AllowedBiomes: [Plains, Forest]
+SpawnWeight: 0.5
+MinSpacing: 10  // Tiles away from other structures
+
+// Zone of influence for weight modifiers:
+InfluenceRadius: 5
+TileAffinities:
+  - TileId: "cobblestone", Multiplier: 1.8f
+  - TileId: "grass", Multiplier: 0.6f
+```
+
 ---
 
 ## Technical Reference
@@ -612,23 +584,27 @@ Examples:
 ### Key Interfaces
 
 ```csharp
-/// Provides biome information at any map position
+/// <summary>
+/// Provides biome information at any map position.
+/// </summary>
 public interface IBiomeProvider
 {
     BiomeDefinition GetBiomeAt(Vector2I position);
     CardSignature GetSignatureAt(Vector2I position);
 }
 
-/// Queries map state during generation
-public interface IMapQuery
+/// <summary>
+/// Weight modification rules for tile selection.
+/// Implementations should multiply weights, never replace.
+/// </summary>
+public interface IWeightModifier
 {
-    bool IsPassable(Vector2I position);
-    bool IsInBounds(Vector2I position);
-    string? GetTileAt(Vector2I position);
-    BiomeDefinition? GetBiomeAt(Vector2I position);
+    void ApplyModifier(TileSelectionContext context);
 }
 
-/// Generates procedural structures
+/// <summary>
+/// Generates procedural structures.
+/// </summary>
 public interface IProceduralStructure
 {
     string Id { get; }
@@ -640,118 +616,85 @@ public interface IProceduralStructure
 }
 ```
 
-### Biome Selection Algorithm
+### Weighted Random Selection Algorithm
 
 ```csharp
-public BiomeDefinition SelectBiome(CardSignature signature, BiomeDefinition[] biomes)
+// After pipeline applies all modifiers:
+public static string? SelectWeighted(Dictionary<string, float> weights, RandomNumberGenerator rng)
 {
-    BiomeDefinition? best = null;
-    float bestDistance = float.MaxValue;
+    // 1. Sum positive weights
+    var totalWeight = weights.Values.Where(w => w > 0).Sum();
+    if (totalWeight <= 0) return null;
 
-    foreach (var biome in biomes)
+    // 2. Roll random value in [0, totalWeight)
+    var roll = rng.Randf() * totalWeight;
+
+    // 3. Find tile where cumulative weight exceeds roll
+    var cumulative = 0f;
+    foreach (var (tileId, weight) in weights)
     {
-        var distance = signature.DistanceTo(biome.AffinitySignature);
-        if (distance < bestDistance)
-        {
-            bestDistance = distance;
-            best = biome;
-        }
+        if (weight <= 0) continue;
+        cumulative += weight;
+        if (roll <= cumulative) return tileId;
     }
 
-    return best ?? biomes[0];
+    return null;
 }
 ```
 
-### Transition Bitmask Calculation
-
-```csharp
-public int CalculateTransitionMask(Vector2I position, BiomeType myBiome, IBiomeProvider provider)
-{
-    int mask = 0;
-
-    if (GetBiomeType(position + Vector2I.Up) != myBiome)    mask |= 1;  // North
-    if (GetBiomeType(position + Vector2I.Right) != myBiome) mask |= 2;  // East
-    if (GetBiomeType(position + Vector2I.Down) != myBiome)  mask |= 4;  // South
-    if (GetBiomeType(position + Vector2I.Left) != myBiome)  mask |= 8;  // West
-
-    return mask;
-}
-```
-
-### File Locations Summary
+### File Organization
 
 ```
 Scripts/Features/Worldgen/
-├── Biomes/                         # Phase 1: IMPLEMENTED
+├── Biomes/                          # ✅ IMPLEMENTED
 │   ├── BiomeDefinition.cs
 │   ├── BiomeRegistry.cs
 │   ├── BiomeMapGenerator.cs
-│   └── IBiomeProvider.cs
-├── AutoTiling/                     # Phase 2: IMPLEMENTED
-│   ├── AutoTileConfig.cs           # Resource: base tile → 16 variants
-│   ├── NeighborBitmask.cs          # Utility: compute 4-bit NESW bitmask
-│   └── AutoTileResolver.cs         # Service: apply auto-tiling to map
-├── BlobGeneration/                 # Terrain clustering
+│   ├── IBiomeProvider.cs
+│   ├── TilePool.cs
+│   └── BiomeDistributionCalculator.cs
+├── AutoTiling/                      # ✅ IMPLEMENTED
+│   ├── AutoTileResolver.cs
+│   ├── NeighborBitmask.cs
+│   ├── AutoTileConfig.cs
+│   └── AutoTileFormat.cs
+├── WeightModifiers/                 # ✅ IMPLEMENTED
+│   ├── IWeightModifier.cs
+│   ├── WeightModifierPipeline.cs
+│   ├── WeightedTileSelector.cs
+│   ├── TileSelectionContext.cs
+│   ├── BiomeAffinityModifier.cs
+│   ├── AdjacencyBoostModifier.cs
+│   ├── DecorationSpacingModifier.cs
+│   ├── BiomeTileAffinity.cs
+│   └── TileAffinityEntry.cs
+├── BlobGeneration/                  # ✅ IMPLEMENTED
 │   └── TerrainBlobGenerator.cs
-├── Structures/                     # Phase 3: PLANNED
+├── BaselineGradient.cs              # ✅ IMPLEMENTED
+├── CardBasedGradient.cs             # ✅ IMPLEMENTED
+├── Structures/                      # 🔲 PLANNED
 │   ├── StructureStamp.cs
 │   ├── IProceduralStructure.cs
 │   ├── StructurePlacementRule.cs
 │   ├── StructurePlacer.cs
-│   └── Implementations/
-│       ├── ForestGenerator.cs
-│       ├── BuildingGenerator.cs
-│       └── CaveEntranceGenerator.cs
-├── TileVariantPool.cs              # Phase 4: PLANNED
-├── Gradients/
-│   └── (existing gradient files)
-└── (existing WFC files - to be deprecated)
+│   └── StructureProximityModifier.cs
+└── TileVariantPool.cs               # 🔲 PLANNED
 
-addons/tile_editor/                 # Editor UI
-├── AutoTileConfigPanel.cs          # Auto-tile configuration UI
-├── BlobSettingsPanel.cs            # Blob generation settings
-├── BiomePoolPanel.cs               # Biome tile assignments
-├── TilePropertiesPanel.cs          # Individual tile properties
-├── TileAtlasPanel.cs               # Tile browser
-├── TileEditorDock.cs               # Main dock container
-└── TileEditorService.cs            # Editor data management
+Scripts/Features/Deckbuilder/Services/
+└── SimpleMapGenerator.cs            # ✅ IMPLEMENTED (5-phase pipeline)
+
+addons/tile_editor/
+├── AutoTileConfigPanel.cs           # ✅ IMPLEMENTED
+├── BlobSettingsPanel.cs
+├── BiomePoolPanel.cs
+├── TilePropertiesPanel.cs
+├── TileAtlasPanel.cs
+├── TileEditorDock.cs
+└── TileEditorService.cs
 
 Data/Tiles/
-└── tiles.json                      # All tile data + auto-tile configs
-
-Resources/
-├── Biomes/
-│   ├── forest.tres
-│   ├── desert.tres
-│   └── ...
-├── Tiles/
-│   └── ...
-├── Structures/
-│   ├── Stamps/
-│   └── Procedural/
-└── TileVariants/
-    └── ...
+└── tiles.json                       # All tile data + auto-tile configs
 ```
-
----
-
-## Migration Strategy
-
-### Phase 1 Transition
-
-1. Create `IBiomeProvider` interface
-2. Create initial `BiomeDefinition` resources for existing terrain types
-3. Modify `SimpleMapGenerator` to accept optional `IBiomeProvider`
-4. When provider is null, use current behavior (backwards compatible)
-5. When provider exists, use biome-based tile selection
-
-### Deprecation Path
-
-The WFC system (`SemanticWfc3dGenerator`) will not be immediately removed. Instead:
-
-1. Mark as `[Obsolete]` with message pointing to new system
-2. Keep for reference during development
-3. Remove after Phase 3 is complete and validated
 
 ---
 
@@ -770,6 +713,6 @@ The WFC system (`SemanticWfc3dGenerator`) will not be immediately removed. Inste
 
 ---
 
-*Document Version: 1.1*
-*Last Updated: 2025-12-27*
-*Status: Phase 1 & 2 Implemented - Biomes and Auto-Tiling complete*
+*Document Version: 2.0*
+*Last Updated: 2025-12-29*
+*Status: Soft WFC architecture established - Phases 1-3 complete*
