@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Worldgen.Structures;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -32,6 +33,12 @@ public class SimpleMapData
     /// These are rendered on top of base terrain to show transition edges.
     /// </summary>
     public Dictionary<Vector2I, (string TileId, int Bitmask)> DecorationOverlays { get; set; } = new();
+
+    /// <summary>
+    /// Structures placed during map generation.
+    /// Contains position, structure ID, and result data for each placed structure.
+    /// </summary>
+    public List<StructurePlacement> StructurePlacements { get; set; } = [];
 
     public BiomeType GetBiomeAt(Vector2I pos)
     {

@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.BlobGeneration;
+using CardCleaner.Scripts.Features.Worldgen.Structures;
 using CardCleaner.Scripts.Features.Worldgen.WeightModifiers;
 using Godot;
 
@@ -36,16 +37,28 @@ public class SimpleMapGenerator
     /// </summary>
     public int SmoothingThreshold { get; set; } = 2;
 
+    /// <summary>
+    /// Enable or disable structure placement during map generation.
+    /// </summary>
+    public bool StructuresEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Maximum number of structures to place per map.
+    /// </summary>
+    public int MaxStructures { get; set; } = 5;
+
     private readonly AutoTileResolver? _autoTileResolver;
     private readonly IBiomeProvider _biomeProvider;
     private readonly TerrainBlobGenerator? _blobGenerator;
     private readonly RandomNumberGenerator _rng;
     private readonly ITileRegistry _tileRegistry;
     private readonly WeightedTileSelector? _weightedSelector;
+    private readonly StructurePlacer? _structurePlacer;
+    private readonly List<StructureStamp> _structureStamps = [];
 
     public SimpleMapGenerator(RandomNumberGenerator rng, IBiomeProvider biomeProvider, ITileRegistry tileRegistry,
         TerrainBlobGenerator? blobGenerator = null, AutoTileResolver? autoTileResolver = null,
-        WeightedTileSelector? weightedSelector = null)
+        WeightedTileSelector? weightedSelector = null, StructurePlacer? structurePlacer = null)
     {
         ArgumentNullException.ThrowIfNull(rng);
         ArgumentNullException.ThrowIfNull(biomeProvider);
@@ -56,7 +69,22 @@ public class SimpleMapGenerator
         _blobGenerator = blobGenerator;
         _autoTileResolver = autoTileResolver;
         _weightedSelector = weightedSelector;
+        _structurePlacer = structurePlacer;
     }
+
+    /// <summary>
+    /// Add a structure stamp to be placed during map generation.
+    /// </summary>
+    public void AddStructureStamp(StructureStamp stamp)
+    {
+        ArgumentNullException.ThrowIfNull(stamp);
+        _structureStamps.Add(stamp);
+    }
+
+    /// <summary>
+    /// Clear all registered structure stamps.
+    /// </summary>
+    public void ClearStructureStamps() => _structureStamps.Clear();
 
     public SimpleMapData GenerateMap(Vector2I size)
     {
@@ -156,6 +184,14 @@ public class SimpleMapGenerator
         for (var x = 0; x < size.X; x++)
             finalTileIds[y, x] = tileIds[y, x] ?? FloorTileId;
 
+        // Phase 3.5: Place structures
+        var structurePlacements = new List<StructurePlacement>();
+        if (StructuresEnabled && _structurePlacer != null && _structureStamps.Count > 0)
+        {
+            _structurePlacer.Clear();
+            structurePlacements = PlaceStructures(finalTileIds, size, passableTiles);
+        }
+
         // Ensure all passable tiles are connected
         EnsureConnectivity(finalTileIds, size, passableTiles);
 
@@ -192,8 +228,101 @@ public class SimpleMapGenerator
             EnemyPositions = enemyPositions,
             PassableTiles = passableTiles,
             PerGenerationVariants = perGenerationVariants,
-            DecorationOverlays = decorationOverlays
+            DecorationOverlays = decorationOverlays,
+            StructurePlacements = structurePlacements
         };
+    }
+
+    /// <summary>
+    /// Place structures on the map using registered stamps.
+    /// </summary>
+    private List<StructurePlacement> PlaceStructures(string[,] tileIds, Vector2I size, List<Vector2I> passableTiles)
+    {
+        var placements = new List<StructurePlacement>();
+
+        if (_structurePlacer == null || _structureStamps.Count == 0)
+            return placements;
+
+        // Create a set for fast passability lookups
+        var passableSet = new HashSet<Vector2I>(passableTiles);
+
+        // Sort stamps by spawn weight for weighted selection
+        var weightedStamps = _structureStamps
+            .Where(s => s.SpawnWeight > 0)
+            .OrderByDescending(s => s.SpawnWeight)
+            .ToList();
+
+        var placedCount = 0;
+        var attempts = 0;
+        const int maxAttempts = 100;
+
+        while (placedCount < MaxStructures && attempts < maxAttempts && weightedStamps.Count > 0)
+        {
+            attempts++;
+
+            // Weighted random selection of stamp
+            var stamp = SelectWeightedStamp(weightedStamps);
+            if (stamp == null)
+                break;
+
+            // Try to place the stamp
+            var placed = _structurePlacer.TryPlaceRandom(
+                stamp,
+                size,
+                pos => _biomeProvider.GetBiomeAt(pos),
+                pos => passableSet.Contains(pos),
+                tileIds,
+                _rng);
+
+            if (placed)
+            {
+                placedCount++;
+
+                // Update passable tiles - remove tiles covered by structure
+                var lastPlacement = _structurePlacer.PlacedStructures[^1];
+                for (var dy = 0; dy < lastPlacement.Result.Size.Y; dy++)
+                {
+                    for (var dx = 0; dx < lastPlacement.Result.Size.X; dx++)
+                    {
+                        var structurePos = lastPlacement.Position + new Vector2I(dx, dy);
+                        passableSet.Remove(structurePos);
+                        passableTiles.Remove(structurePos);
+                    }
+                }
+
+                placements.Add(lastPlacement);
+            }
+        }
+
+        if (placedCount > 0)
+            ILog.Print($"Structures placed: {placedCount} of {MaxStructures} max");
+
+        return placements;
+    }
+
+    /// <summary>
+    /// Select a stamp using weighted random selection.
+    /// </summary>
+    private StructureStamp? SelectWeightedStamp(List<StructureStamp> stamps)
+    {
+        if (stamps.Count == 0)
+            return null;
+
+        var totalWeight = stamps.Sum(s => s.SpawnWeight);
+        if (totalWeight <= 0)
+            return stamps[0];
+
+        var roll = _rng.Randf() * totalWeight;
+        var cumulative = 0f;
+
+        foreach (var stamp in stamps)
+        {
+            cumulative += stamp.SpawnWeight;
+            if (roll <= cumulative)
+                return stamp;
+        }
+
+        return stamps[^1];
     }
 
     /// <summary>

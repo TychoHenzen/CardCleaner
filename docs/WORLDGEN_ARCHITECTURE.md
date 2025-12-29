@@ -85,8 +85,8 @@ We use:     "Forest floor tiles have 0.2x weight in mountain biomes"
 | **Weight Modifiers** | ✅ Complete | `Scripts/Features/Worldgen/WeightModifiers/` |
 | **Terrain Blobs** | ✅ Complete | `Scripts/Features/Worldgen/BlobGeneration/` |
 | **Map Generator** | ✅ Complete | `Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs` |
-| **Structures** | 🔲 Planned | Phase 3 |
-| **Tile Variants** | 🔲 Planned | Phase 4 |
+| **Structures** | ✅ Complete | `Scripts/Features/Worldgen/Structures/` |
+| **Tile Variants** | 🔲 Planned | Phase 5 |
 
 ### Biome System
 
@@ -366,47 +366,50 @@ This would create more coherent patterns because high-certainty cells (cells whe
 - TileSelectionContext with full position/neighbor info
 - WeightedTileSelector integration
 
-### Phase 4: Structure System 🔲 PLANNED
+### Phase 4: Structure System ✅ COMPLETE
 
 **Goal**: Place landmarks and points of interest with Soft WFC integration
 
-**Planned Approach:**
+**Implemented Features:**
+- StructureStamp resource for fixed tile patterns (well, shrine, ruin)
+- IProceduralStructure interface for algorithm-generated structures
+- StructureProximityModifier for tile weight adjustment near structures
+- StructurePlacer service orchestrates placement with spacing rules
+- Integration with SimpleMapGenerator (Phase 3.5 placement)
+- Biome-aware placement with AllowedBiomes constraint
+- Configurable influence radius and tile affinities per structure
 
-Structures will integrate with the weight modifier system:
-
-```csharp
-public class StructureProximityModifier : IWeightModifier
-{
-    public void ApplyModifier(TileSelectionContext context)
-    {
-        // Near shrine? Boost "sacred_stone" tiles
-        // Near forge? Boost "ash", "coal" tiles
-        // Inside building footprint? Use structure-specific tiles
-    }
-}
-```
-
-**Concepts:**
-
-| Term | Definition |
-|------|------------|
-| **Stamp** | Fixed tile arrangement (well, shrine, small ruin) |
-| **Procedural Structure** | Algorithm-generated (building, cave, forest cluster) |
-| **Structure Zone** | Area around structure with modified tile weights |
-
-**Planned Files:**
+**Key Files:**
 
 ```
 Scripts/Features/Worldgen/Structures/
 ├── StructureStamp.cs               # Fixed tile pattern resource
+├── StructureTileEntry.cs           # Offset + tile ID entry
 ├── IProceduralStructure.cs         # Interface for generated structures
-├── StructurePlacementRule.cs       # Biome/spacing requirements
+├── IMapQuery.cs                    # Map query interface for generators
+├── StructureResult.cs              # Generation result with tiles/influence
 ├── StructurePlacer.cs              # Orchestrates placement
-├── StructureProximityModifier.cs   # Weight modifier for structure zones
-└── Implementations/
-    ├── ForestClusterGenerator.cs
-    ├── BuildingGenerator.cs
-    └── CaveEntranceGenerator.cs
+
+Scripts/Features/Worldgen/WeightModifiers/
+└── StructureProximityModifier.cs   # Weight modifier for structure zones
+```
+
+**Usage Example:**
+
+```csharp
+// Create stamp with tile affinities
+var wellStamp = new StructureStamp
+{
+    Id = "well",
+    Size = new Vector2I(3, 3),
+    AllowedBiomes = [BiomeType.Plains, BiomeType.Forest],
+    MinSpacing = 10,
+    InfluenceRadius = 5,
+    TileAffinities = [new TileAffinityEntry("cobblestone", 1.8f)]
+};
+
+// Add to generator
+mapGenerator.AddStructureStamp(wellStamp);
 ```
 
 ### Phase 5: Tile Variants 🔲 PLANNED
@@ -666,18 +669,20 @@ Scripts/Features/Worldgen/
 │   ├── BiomeAffinityModifier.cs
 │   ├── AdjacencyBoostModifier.cs
 │   ├── DecorationSpacingModifier.cs
+│   ├── StructureProximityModifier.cs
 │   ├── BiomeTileAffinity.cs
 │   └── TileAffinityEntry.cs
 ├── BlobGeneration/                  # ✅ IMPLEMENTED
 │   └── TerrainBlobGenerator.cs
 ├── BaselineGradient.cs              # ✅ IMPLEMENTED
 ├── CardBasedGradient.cs             # ✅ IMPLEMENTED
-├── Structures/                      # 🔲 PLANNED
+├── Structures/                      # ✅ IMPLEMENTED
 │   ├── StructureStamp.cs
+│   ├── StructureTileEntry.cs
 │   ├── IProceduralStructure.cs
-│   ├── StructurePlacementRule.cs
-│   ├── StructurePlacer.cs
-│   └── StructureProximityModifier.cs
+│   ├── IMapQuery.cs
+│   ├── StructureResult.cs
+│   └── StructurePlacer.cs
 └── TileVariantPool.cs               # 🔲 PLANNED
 
 Scripts/Features/Deckbuilder/Services/
@@ -713,6 +718,6 @@ Data/Tiles/
 
 ---
 
-*Document Version: 2.0*
+*Document Version: 2.1*
 *Last Updated: 2025-12-29*
-*Status: Soft WFC architecture established - Phases 1-3 complete*
+*Status: Soft WFC architecture established - Phases 1-4 complete*
