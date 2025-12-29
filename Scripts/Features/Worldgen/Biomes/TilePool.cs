@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 using Godot.Collections;
 
@@ -98,4 +99,16 @@ public partial class TilePool : Resource
     }
 
     public void MarkDirty() => _weightsDirty = true;
+
+    /// <summary>
+    /// Get all tile IDs in this pool.
+    /// </summary>
+    public IEnumerable<string> GetAllTileIds()
+    {
+        foreach (var entry in Entries)
+        {
+            if (!string.IsNullOrEmpty(entry.TileId))
+                yield return entry.TileId;
+        }
+    }
 }

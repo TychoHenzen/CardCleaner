@@ -22,6 +22,7 @@ public partial class TileAtlasPanel : Control
     private LineEdit? _searchBox;
     private OptionButton? _biomeFilter;
     private OptionButton? _passabilityFilter;
+    private OptionButton? _layerFilter;
 
     private string? _selectedTileId;
     private readonly Dictionary<string, TileButton> _tileButtons = new();
@@ -79,6 +80,16 @@ public partial class TileAtlasPanel : Control
         _passabilityFilter.AddItem("Solid", 2);
         filterBar.AddChild(_passabilityFilter);
         _passabilityFilter.ItemSelected += _ => RefreshTileDisplay();
+
+        filterBar.AddChild(new Label { Text = "Layer:" });
+        _layerFilter = new OptionButton();
+        _layerFilter.AddItem("All", 0);
+        _layerFilter.AddItem("Terrain", 1);
+        _layerFilter.AddItem("Decoration", 2);
+        _layerFilter.AddItem("Structure", 3);
+        _layerFilter.AddItem("Effects", 4);
+        filterBar.AddChild(_layerFilter);
+        _layerFilter.ItemSelected += _ => RefreshTileDisplay();
 
         // Scroll container for tile grid
         _scrollContainer = new ScrollContainer
@@ -190,6 +201,17 @@ public partial class TileAtlasPanel : Control
             var passability = passabilityIndex == 1 ? "passable" : "solid";
             tiles = tiles.Where(t =>
                 t.Passability.Equals(passability, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Layer filter
+        var layerIndex = _layerFilter?.Selected ?? 0;
+        if (layerIndex > 0)
+        {
+            var layers = new[] { "", "terrain", "decoration", "structure", "effects" };
+            var layer = layers[layerIndex];
+            tiles = tiles.Where(t =>
+                (string.IsNullOrEmpty(t.Layer) ? "terrain" : t.Layer)
+                    .Equals(layer, StringComparison.OrdinalIgnoreCase));
         }
 
         return tiles.OrderBy(t => t.Id);

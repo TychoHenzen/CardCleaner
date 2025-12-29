@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.BlobGeneration;
+using CardCleaner.Scripts.Features.Worldgen.WeightModifiers;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -40,9 +41,11 @@ public class SimpleMapGenerator
     private readonly TerrainBlobGenerator? _blobGenerator;
     private readonly RandomNumberGenerator _rng;
     private readonly ITileRegistry _tileRegistry;
+    private readonly WeightedTileSelector? _weightedSelector;
 
     public SimpleMapGenerator(RandomNumberGenerator rng, IBiomeProvider biomeProvider, ITileRegistry tileRegistry,
-        TerrainBlobGenerator? blobGenerator = null, AutoTileResolver? autoTileResolver = null)
+        TerrainBlobGenerator? blobGenerator = null, AutoTileResolver? autoTileResolver = null,
+        WeightedTileSelector? weightedSelector = null)
     {
         ArgumentNullException.ThrowIfNull(rng);
         ArgumentNullException.ThrowIfNull(biomeProvider);
@@ -52,6 +55,7 @@ public class SimpleMapGenerator
         _tileRegistry = tileRegistry;
         _blobGenerator = blobGenerator;
         _autoTileResolver = autoTileResolver;
+        _weightedSelector = weightedSelector;
     }
 
     public SimpleMapData GenerateMap(Vector2I size)
@@ -62,6 +66,7 @@ public class SimpleMapGenerator
         var perGenerationVariants = SelectPerGenerationVariants();
 
         var biomeMap = new BiomeType[size.Y, size.X];
+        var placedTiles = new Dictionary<Vector2I, string>();
 
         // Phase 1: Generate initial passability map based on biome BlockedPercentage
         var isPassable = new bool[size.Y, size.X];
@@ -98,18 +103,22 @@ public class SimpleMapGenerator
 
             if (isPassable[y, x])
             {
-                tileIds[y, x] = SelectPassableTile(position, biome);
+                var tileId = SelectPassableTile(position, biome, placedTiles);
+                tileIds[y, x] = tileId;
                 occupiedCells.Add(position);
+                placedTiles[position] = tileId;
                 passableTiles.Add(position);
             }
             else
             {
                 var placed = TryPlaceBlockedTile(tileIds, position, size, biome, occupiedCells,
-                    multiTileSecondaryCells);
+                    multiTileSecondaryCells, placedTiles);
                 if (!placed)
                 {
-                    tileIds[y, x] = SelectPassableTile(position, biome);
+                    var tileId = SelectPassableTile(position, biome, placedTiles);
+                    tileIds[y, x] = tileId;
                     occupiedCells.Add(position);
+                    placedTiles[position] = tileId;
                     passableTiles.Add(position);
                 }
             }
@@ -123,10 +132,14 @@ public class SimpleMapGenerator
 
             var position = new Vector2I(x, y);
             var biome = _biomeProvider.GetBiomeAt(position);
-            tileIds[y, x] = SelectPassableTile(position, biome);
+            var tileId = SelectPassableTile(position, biome, placedTiles);
+            tileIds[y, x] = tileId;
 
             if (!multiTileSecondaryCells.Contains(position))
+            {
+                placedTiles[position] = tileId;
                 passableTiles.Add(position);
+            }
         }
 
         // Ensure we have at least some passable tiles
@@ -188,7 +201,8 @@ public class SimpleMapGenerator
     /// If a multi-tile is selected but doesn't fit, retry with other tiles.
     /// </summary>
     private bool TryPlaceBlockedTile(string?[,] tileIds, Vector2I position, Vector2I mapSize,
-        BiomeDefinition biome, HashSet<Vector2I> occupiedCells, HashSet<Vector2I> multiTileSecondaryCells)
+        BiomeDefinition biome, HashSet<Vector2I> occupiedCells, HashSet<Vector2I> multiTileSecondaryCells,
+        Dictionary<Vector2I, string> placedTiles)
     {
         const int maxAttempts = 5;
 
@@ -210,6 +224,7 @@ public class SimpleMapGenerator
             {
                 tileIds[position.Y, position.X] = tileId;
                 occupiedCells.Add(position);
+                placedTiles[position] = tileId;
                 return true;
             }
 
@@ -217,6 +232,12 @@ public class SimpleMapGenerator
             if (CanPlaceMultiTile(position, tileSize, mapSize, occupiedCells))
             {
                 PlaceMultiTile(tileIds, position, tileId, tileSize, occupiedCells, multiTileSecondaryCells);
+                placedTiles[position] = tileId;
+                // Track secondary cells as well
+                for (var dy = 0; dy < tileSize.Y; dy++)
+                for (var dx = 0; dx < tileSize.X; dx++)
+                    if (!(dx == 0 && dy == 0))
+                        placedTiles[position + new Vector2I(dx, dy)] = tileId;
                 return true;
             }
 
@@ -343,6 +364,8 @@ public class SimpleMapGenerator
 
     private void CreateCorridor(string[,] tileIds, Vector2I size, Vector2I from, Vector2I to)
     {
+        // Build placedTiles from current array state for corridor creation
+        var placedTiles = BuildPlacedTilesFromArray(tileIds, size);
         var current = from;
 
         while (current.X != to.X)
@@ -351,7 +374,9 @@ public class SimpleMapGenerator
             if (IsValidPosition(current, size))
             {
                 var biome = _biomeProvider.GetBiomeAt(current);
-                tileIds[current.Y, current.X] = SelectPassableTile(current, biome);
+                var tileId = SelectPassableTile(current, biome, placedTiles);
+                tileIds[current.Y, current.X] = tileId;
+                placedTiles[current] = tileId;
             }
         }
 
@@ -361,9 +386,24 @@ public class SimpleMapGenerator
             if (IsValidPosition(current, size))
             {
                 var biome = _biomeProvider.GetBiomeAt(current);
-                tileIds[current.Y, current.X] = SelectPassableTile(current, biome);
+                var tileId = SelectPassableTile(current, biome, placedTiles);
+                tileIds[current.Y, current.X] = tileId;
+                placedTiles[current] = tileId;
             }
         }
+    }
+
+    private static Dictionary<Vector2I, string> BuildPlacedTilesFromArray(string[,] tileIds, Vector2I size)
+    {
+        var result = new Dictionary<Vector2I, string>();
+        for (var y = 0; y < size.Y; y++)
+        for (var x = 0; x < size.X; x++)
+        {
+            var tile = tileIds[y, x];
+            if (tile != null)
+                result[new Vector2I(x, y)] = tile;
+        }
+        return result;
     }
 
     private static bool IsValidPosition(Vector2I pos, Vector2I size)
@@ -378,10 +418,20 @@ public class SimpleMapGenerator
     }
 
     /// <summary>
-    /// Select a passable tile using blob generation when available, otherwise random selection.
+    /// Select a passable tile using weighted selection when available,
+    /// falling back to blob generation or random selection.
     /// </summary>
-    private string SelectPassableTile(Vector2I position, BiomeDefinition biome)
+    private string SelectPassableTile(Vector2I position, BiomeDefinition biome,
+        IReadOnlyDictionary<Vector2I, string> placedTiles)
     {
+        if (_weightedSelector != null)
+        {
+            var candidateTiles = biome.PassableTiles.GetAllTileIds();
+            var selectedTile = _weightedSelector.SelectTile(position, placedTiles, biome, _rng, candidateTiles);
+            if (selectedTile != null)
+                return selectedTile;
+        }
+
         if (_blobGenerator != null)
         {
             var tile = _blobGenerator.SelectTileWithClustering(position, biome.PassableTiles, _rng);
