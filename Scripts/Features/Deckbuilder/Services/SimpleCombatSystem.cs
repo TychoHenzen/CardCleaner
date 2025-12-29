@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Services.Combat;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -12,7 +13,10 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 /// </summary>
 public class SimpleCombatSystem
 {
-    public class Combatant
+    /// <summary>
+    /// Combat participant that implements ICombatant for command pattern integration.
+    /// </summary>
+    public class Combatant : ICombatant
     {
         public required string Name { get; set; }
         public int Health { get; set; }
@@ -35,69 +39,10 @@ public class SimpleCombatSystem
         }
     }
 
-    public class CombatAction
-    {
-        public required string Name { get; set; }
-        public int Damage { get; set; }
-        public int Healing { get; set; }
-        public required string Description { get; set; }
-
-        public static CombatAction FromCardSignature(CardSignature signature)
-        {
-            // Convert card signature into combat action
-            // Use signature values to determine action properties
-
-            var totalPower = 0f;
-            var totalHealing = 0f;
-            var actionName = "Card Action";
-
-            // Calculate power from signature elements
-            for (var i = 0; i < 8; i++)
-            {
-                var value = signature[i];
-                if (value > 0.3f) // Positive elements contribute to damage
-                    totalPower += value * 10f; // Scale to reasonable damage range
-                else if (value < -0.3f) // Negative elements contribute to healing
-                    totalHealing += Mathf.Abs(value) * 8f;
-            }
-
-            // Determine action type based on strongest element
-            var strongestElementIndex = 0;
-            var strongestValue = Mathf.Abs(signature[0]);
-            for (var i = 1; i < 8; i++)
-                if (Mathf.Abs(signature[i]) > strongestValue)
-                {
-                    strongestValue = Mathf.Abs(signature[i]);
-                    strongestElementIndex = i;
-                }
-
-            actionName = strongestElementIndex switch
-            {
-                0 => "Earth Strike",
-                1 => "Fire Blast",
-                2 => "Order Shield",
-                3 => "Light Ray",
-                4 => "Space Warp",
-                5 => "Heavy Slam",
-                6 => "Aid Spell",
-                7 => "Distance Shot",
-                _ => "Card Action"
-            };
-
-            return new CombatAction
-            {
-                Name = actionName,
-                Damage = Mathf.RoundToInt(Mathf.Max(1, totalPower)),
-                Healing = Mathf.RoundToInt(totalHealing),
-                Description = $"Deals {Mathf.RoundToInt(totalPower)} damage" +
-                              (totalHealing > 0 ? $" and heals {Mathf.RoundToInt(totalHealing)}" : "")
-            };
-        }
-    }
-
     private readonly Combatant _player;
     private readonly Combatant _enemy;
-    private readonly List<CombatAction> _playerActions;
+    private readonly List<CombatCommand> _playerCommands;
+    private readonly CombatCommandInvoker _commandInvoker;
     private readonly RandomNumberGenerator _rng;
     private bool _playerTurn = true;
 
@@ -113,6 +58,8 @@ public class SimpleCombatSystem
         ArgumentNullException.ThrowIfNull(enemySeed);
 
         _rng = rng;
+        _commandInvoker = new CombatCommandInvoker();
+        _commandInvoker.CommandExecuted += log => CombatLogUpdated?.Invoke(log);
 
         // Create player
         _player = new Combatant
@@ -135,16 +82,16 @@ public class SimpleCombatSystem
             IsPlayer = false
         };
 
-        // Convert player abilities to combat actions
-        _playerActions = (playerAbilities ?? new List<CardSignature>())
-            .Select(CombatAction.FromCardSignature).ToList();
+        // Convert player abilities to combat commands
+        _playerCommands = (playerAbilities ?? new List<CardSignature>())
+            .Select(CombatCommand.FromCardSignature).ToList();
 
         ILog.Print($"=== COMBAT STARTED ===");
         ILog.Print($"Player: {_player.Health} HP");
         ILog.Print($"Enemy: {_enemy.Name} ({_enemy.Health} HP, {_enemy.AttackPower} ATK)");
-        ILog.Print($"Player has {_playerActions.Count} abilities");
+        ILog.Print($"Player has {_playerCommands.Count} abilities");
 
-        foreach (var action in _playerActions) ILog.Print($"  - {action.Name}: {action.Description}");
+        foreach (var command in _playerCommands) ILog.Print($"  - {command.Name}: {command.Description}");
     }
 
     /// <summary>
@@ -174,46 +121,40 @@ public class SimpleCombatSystem
 
     private void ProcessPlayerTurn()
     {
-        if (_playerActions.Count == 0)
+        var context = new CombatContext { Source = _player, Target = _enemy };
+
+        if (_playerCommands.Count == 0)
         {
             // Basic attack if no abilities
-            _enemy.TakeDamage(_player.AttackPower);
-            CombatLogUpdated?.Invoke($"Player attacks for {_player.AttackPower} damage!");
+            var basicAttack = new CombatCommand("Basic Attack", _player.AttackPower, 0,
+                $"Deals {_player.AttackPower} damage");
+            _commandInvoker.ExecuteCommand(basicAttack, context);
             return;
         }
 
-        // Choose random action from available abilities
-        var action = _playerActions[_rng.RandiRange(0, _playerActions.Count - 1)];
+        // Choose random command from available abilities
+        var command = _playerCommands[_rng.RandiRange(0, _playerCommands.Count - 1)];
 
-        var logMessage = $"Player uses {action.Name}!";
+        // Create a fresh command instance for execution (commands track their own state)
+        var executionCommand = new CombatCommand(command.Name, command.Damage, command.Healing, command.Description);
+        var logMessage = _commandInvoker.ExecuteCommand(executionCommand, context);
 
-        if (action.Damage > 0)
-        {
-            _enemy.TakeDamage(action.Damage);
-            logMessage += $" Deals {action.Damage} damage!";
-        }
-
-        if (action.Healing > 0)
-        {
-            _player.Heal(action.Healing);
-            logMessage += $" Heals {action.Healing} HP!";
-        }
-
-        ILog.Print(logMessage);
-        CombatLogUpdated?.Invoke(logMessage);
+        if (logMessage != null)
+            ILog.Print(logMessage);
     }
 
     private void ProcessEnemyTurn()
     {
         // Simple enemy AI: just attack
-        var damage = _enemy.AttackPower + _rng.RandiRange(-2, 3); // Add some variance
+        var damage = _enemy.AttackPower + _rng.RandiRange(-2, 3);
         damage = Mathf.Max(1, damage);
 
-        _player.TakeDamage(damage);
+        var context = new CombatContext { Source = _enemy, Target = _player };
+        var attackCommand = new CombatCommand("Attack", damage, 0, $"Deals {damage} damage");
+        var logMessage = _commandInvoker.ExecuteCommand(attackCommand, context);
 
-        var logMessage = $"{_enemy.Name} attacks for {damage} damage!";
-        ILog.Print(logMessage);
-        CombatLogUpdated?.Invoke(logMessage);
+        if (logMessage != null)
+            ILog.Print(logMessage);
     }
 
     private static float CalculateEnemyPower(CardSignature signature)
@@ -228,4 +169,17 @@ public class SimpleCombatSystem
     {
         return (_player.Health, _player.MaxHealth, _enemy.Health, _enemy.MaxHealth);
     }
+
+    /// <summary>
+    /// Undo the last combat action. Returns true if an action was undone.
+    /// </summary>
+    public bool UndoLastAction()
+    {
+        return _commandInvoker.UndoLastCommand();
+    }
+
+    /// <summary>
+    /// Number of actions that can be undone.
+    /// </summary>
+    public int UndoableActionCount => _commandInvoker.HistoryCount;
 }

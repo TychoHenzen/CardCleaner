@@ -154,7 +154,7 @@
         "y": 2
       },
       "sourceId": 3,
-      "layer": "terrain",
+      "layer": "structure",
       "elevation": 0,
       "isTransparent": true,
       "biomes": [
@@ -717,7 +717,7 @@
         "y": 6
       },
       "sourceId": 4,
-      "layer": "terrain",
+      "layer": "decoration",
       "elevation": 0,
       "isTransparent": true,
       "biomes": [
@@ -749,7 +749,7 @@
         "y": 6
       },
       "sourceId": 4,
-      "layer": "terrain",
+      "layer": "decoration",
       "elevation": 0,
       "isTransparent": true,
       "biomes": [
@@ -761,8 +761,8 @@
       "name": "Ice Block",
       "passability": "solid",
       "atlasCoords": {
-        "x": 17,
-        "y": 4
+        "x": 6,
+        "y": 8
       },
       "sourceId": 4,
       "layer": "structure",
@@ -829,8 +829,8 @@
       "name": "Snowdrift",
       "passability": "solid",
       "atlasCoords": {
-        "x": 1,
-        "y": 4
+        "x": 7,
+        "y": 8
       },
       "sourceId": 19,
       "layer": "decoration",
@@ -897,7 +897,7 @@
         "y": 19
       },
       "sourceId": 11,
-      "layer": "terrain",
+      "layer": "decoration",
       "elevation": 0,
       "isTransparent": true,
       "biomes": [

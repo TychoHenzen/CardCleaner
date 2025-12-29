@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Services.Combat;
 using GdUnit4;
 using Godot;
 using static GdUnit4.Assertions;
@@ -35,37 +36,37 @@ public class SimpleCombatSystemTest
     }
 
     [TestCase]
-    public void TestCombatActionFromPositiveSignature()
+    public void TestCombatCommandFromPositiveSignature()
     {
         var signature = new CardSignature(new[] { 0.8f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
 
-        var action = SimpleCombatSystem.CombatAction.FromCardSignature(signature);
+        var command = CombatCommand.FromCardSignature(signature);
 
-        AssertThat(action).IsNotNull();
-        AssertThat(action.Damage).IsGreater(0);
-        AssertThat(action.Name).IsNotNull();
-        AssertThat(action.Description).IsNotNull();
+        AssertThat(command).IsNotNull();
+        AssertThat(command.Damage).IsGreater(0);
+        AssertThat(command.Name).IsNotNull();
+        AssertThat(command.Description).IsNotNull();
     }
 
     [TestCase]
-    public void TestCombatActionFromNegativeSignature()
+    public void TestCombatCommandFromNegativeSignature()
     {
         var signature = new CardSignature(new[] { -0.8f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
 
-        var action = SimpleCombatSystem.CombatAction.FromCardSignature(signature);
+        var command = CombatCommand.FromCardSignature(signature);
 
-        AssertThat(action).IsNotNull();
-        AssertThat(action.Healing).IsGreater(0);
+        AssertThat(command).IsNotNull();
+        AssertThat(command.Healing).IsGreater(0);
     }
 
     [TestCase]
-    public void TestCombatActionMinimumDamage()
+    public void TestCombatCommandMinimumDamage()
     {
         var signature = new CardSignature(new[] { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
 
-        var action = SimpleCombatSystem.CombatAction.FromCardSignature(signature);
+        var command = CombatCommand.FromCardSignature(signature);
 
-        AssertThat(action.Damage).IsGreaterEqual(1);
+        AssertThat(command.Damage).IsGreaterEqual(1);
     }
 
     [TestCase]
@@ -220,21 +221,21 @@ public class SimpleCombatSystemTest
     }
 
     [TestCase]
-    public void TestCombatActionNaming()
+    public void TestCombatCommandNaming()
     {
         var solidumSignature = new CardSignature(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
-        var action = SimpleCombatSystem.CombatAction.FromCardSignature(solidumSignature);
+        var command = CombatCommand.FromCardSignature(solidumSignature);
 
-        AssertThat(action.Name).IsEqual("Earth Strike");
+        AssertThat(command.Name).IsEqual("Earth Strike");
     }
 
     [TestCase]
-    public void TestCombatActionFireBlast()
+    public void TestCombatCommandFireBlast()
     {
         var febrisSignature = new CardSignature(new[] { 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
-        var action = SimpleCombatSystem.CombatAction.FromCardSignature(febrisSignature);
+        var command = CombatCommand.FromCardSignature(febrisSignature);
 
-        AssertThat(action.Name).IsEqual("Fire Blast");
+        AssertThat(command.Name).IsEqual("Fire Blast");
     }
 
     [TestCase]
@@ -327,5 +328,117 @@ public class SimpleCombatSystemTest
         combatant.Heal(100);
 
         AssertThat(combatant.Health).IsEqual(50);
+    }
+
+    [TestCase]
+    public void TestUndoLastActionReversesDamage()
+    {
+        var abilities = new List<CardSignature>
+        {
+            new CardSignature(new[] { 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
+        };
+        var enemySeed = new CardSignature();
+        var combat = new SimpleCombatSystem(abilities, enemySeed, _rng);
+
+        var (_, _, initialEnemyHealth, _) = combat.GetCombatStatus();
+
+        // Player turn deals damage
+        combat.ProcessTurn();
+        var (_, _, afterDamageHealth, _) = combat.GetCombatStatus();
+
+        // Undo should restore enemy health
+        combat.UndoLastAction();
+        var (_, _, afterUndoHealth, _) = combat.GetCombatStatus();
+
+        AssertThat(afterDamageHealth).IsLess(initialEnemyHealth);
+        AssertThat(afterUndoHealth).IsEqual(initialEnemyHealth);
+    }
+
+    [TestCase]
+    public void TestUndoableActionCountTracksHistory()
+    {
+        var abilities = new List<CardSignature> { new CardSignature() };
+        var enemySeed = new CardSignature();
+        var combat = new SimpleCombatSystem(abilities, enemySeed, _rng);
+
+        AssertThat(combat.UndoableActionCount).IsEqual(0);
+
+        combat.ProcessTurn();
+        AssertThat(combat.UndoableActionCount).IsEqual(1);
+
+        combat.ProcessTurn();
+        AssertThat(combat.UndoableActionCount).IsEqual(2);
+
+        combat.UndoLastAction();
+        AssertThat(combat.UndoableActionCount).IsEqual(1);
+    }
+
+    [TestCase]
+    public void TestCombatCommandCanExecuteReturnsFalseWhenAlreadyExecuted()
+    {
+        var command = new CombatCommand("Test", 10, 0, "Test damage");
+        var source = new SimpleCombatSystem.Combatant { Name = "Source", Health = 50, MaxHealth = 50 };
+        var target = new SimpleCombatSystem.Combatant { Name = "Target", Health = 50, MaxHealth = 50 };
+        var context = new CombatContext { Source = source, Target = target };
+
+        AssertBool(command.CanExecute(context)).IsTrue();
+
+        command.Execute(context);
+
+        AssertBool(command.CanExecute(context)).IsFalse();
+    }
+
+    [TestCase]
+    public void TestCombatCommandInvokerExecutesAndTracksCommands()
+    {
+        var invoker = new CombatCommandInvoker();
+        var command = new CombatCommand("Test", 10, 0, "Test");
+        var source = new SimpleCombatSystem.Combatant { Name = "Source", Health = 50, MaxHealth = 50 };
+        var target = new SimpleCombatSystem.Combatant { Name = "Target", Health = 50, MaxHealth = 50 };
+        var context = new CombatContext { Source = source, Target = target };
+
+        var log = invoker.ExecuteCommand(command, context);
+
+        AssertThat(log).IsNotNull();
+        AssertThat(invoker.HistoryCount).IsEqual(1);
+        AssertThat(target.Health).IsEqual(40);
+    }
+
+    [TestCase]
+    public void TestCombatCommandInvokerUndoRestoresState()
+    {
+        var invoker = new CombatCommandInvoker();
+        var command = new CombatCommand("Test", 10, 5, "Test");
+        var source = new SimpleCombatSystem.Combatant { Name = "Source", Health = 40, MaxHealth = 50 };
+        var target = new SimpleCombatSystem.Combatant { Name = "Target", Health = 50, MaxHealth = 50 };
+        var context = new CombatContext { Source = source, Target = target };
+
+        invoker.ExecuteCommand(command, context);
+
+        AssertThat(target.Health).IsEqual(40);
+        AssertThat(source.Health).IsEqual(45);
+
+        invoker.UndoLastCommand();
+
+        AssertThat(target.Health).IsEqual(50);
+        AssertThat(source.Health).IsEqual(40);
+    }
+
+    [TestCase]
+    public void TestCombatantImplementsICombatant()
+    {
+        var combatant = new SimpleCombatSystem.Combatant
+        {
+            Name = "Test",
+            Health = 50,
+            MaxHealth = 50
+        };
+
+        ICombatant iCombatant = combatant;
+
+        AssertThat(iCombatant.Name).IsEqual("Test");
+        AssertThat(iCombatant.Health).IsEqual(50);
+        AssertThat(iCombatant.MaxHealth).IsEqual(50);
+        AssertBool(iCombatant.IsAlive).IsTrue();
     }
 }

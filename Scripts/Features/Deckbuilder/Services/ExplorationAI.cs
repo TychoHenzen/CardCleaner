@@ -4,6 +4,7 @@ using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Services.Exploration;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -25,6 +26,9 @@ public class ExplorationAI
     private readonly List<Vector2I> _pathToTarget = new();
     private readonly FrontierExplorationBehavior _frontierBehavior;
     private readonly IVisibilityChecker _visibilityChecker;
+    private readonly IExplorationStrategy _frontierStrategy;
+    private readonly IExplorationStrategy _enemyPursuitStrategy;
+    private IExplorationStrategy _currentStrategy;
     private Vector2I? _currentTargetTile;
     private Vector2I? _lastKnownEnemyPosition;
     private Vector2I? _pendingEnemyPosition;
@@ -72,6 +76,11 @@ public class ExplorationAI
 
         _frontierBehavior = new FrontierExplorationBehavior(mapData, _visibilityChecker, visionRange);
 
+        // Initialize exploration strategies
+        _frontierStrategy = new FrontierExplorationStrategy();
+        _enemyPursuitStrategy = new PathToEnemyStrategy();
+        _currentStrategy = _frontierStrategy;
+
         CurrentPosition = startPosition ?? mapData.PlayerStart;
         _visitedTiles.Add(CurrentPosition);
 
@@ -88,6 +97,20 @@ public class ExplorationAI
         }
 
         ILog.Print($"Exploration AI initialized at {CurrentPosition}");
+    }
+
+    /// <summary>
+    /// Set the exploration mode and corresponding strategy.
+    /// </summary>
+    private void SetMode(ExplorationMode mode)
+    {
+        CurrentMode = mode;
+        _currentStrategy = mode switch
+        {
+            ExplorationMode.FrontierExploration => _frontierStrategy,
+            ExplorationMode.PathToEnemy => _enemyPursuitStrategy,
+            _ => _frontierStrategy
+        };
     }
 
     /// <summary>
@@ -126,18 +149,21 @@ public class ExplorationAI
             if (_pendingEnemyPosition != null && CurrentMode == ExplorationMode.FrontierExploration)
             {
                 ILog.Print($"Reached destination, now pursuing pending enemy at {_pendingEnemyPosition}.");
-                CurrentMode = ExplorationMode.PathToEnemy;
+                SetMode(ExplorationMode.PathToEnemy);
                 _lastKnownEnemyPosition = _pendingEnemyPosition;
                 _pendingEnemyPosition = null;
             }
 
-            // Find next target based on current mode
-            Vector2I? target = CurrentMode switch
+            // Find next target using current strategy
+            var context = new ExplorationContext
             {
-                ExplorationMode.PathToEnemy => VisibleEnemyPosition ?? _lastKnownEnemyPosition,
-                ExplorationMode.FrontierExploration => _frontierBehavior.FindNearestFrontierTile(CurrentPosition),
-                _ => null
+                MapData = _mapData,
+                CurrentPosition = CurrentPosition,
+                FrontierBehavior = _frontierBehavior,
+                VisibleEnemyPosition = VisibleEnemyPosition,
+                LastKnownEnemyPosition = _lastKnownEnemyPosition
             };
+            var target = _currentStrategy.GetNextTarget(context);
 
             if (target == null)
             {
@@ -225,7 +251,7 @@ public class ExplorationAI
                 var shouldRecalculatePath = _pathToTarget.Count == 0 ||
                     _currentTargetTile != closestVisibleEnemy.Value;
 
-                CurrentMode = ExplorationMode.PathToEnemy;
+                SetMode(ExplorationMode.PathToEnemy);
 
                 if (shouldRecalculatePath)
                 {
@@ -245,7 +271,7 @@ public class ExplorationAI
                 ILog.Print($"Reached last known enemy position {_lastKnownEnemyPosition} but no enemy found. Returning to exploration.");
                 _lastKnownEnemyPosition = null;
                 VisibleEnemyPosition = null;
-                CurrentMode = ExplorationMode.FrontierExploration;
+                SetMode(ExplorationMode.FrontierExploration);
                 _pathToTarget.Clear();
                 _currentTargetTile = null;
                 PathUpdated?.Invoke();
@@ -268,7 +294,7 @@ public class ExplorationAI
                 _currentTargetTile = null;
                 PathUpdated?.Invoke();
             }
-            CurrentMode = ExplorationMode.FrontierExploration;
+            SetMode(ExplorationMode.FrontierExploration);
             VisibleEnemyPosition = null;
         }
     }
