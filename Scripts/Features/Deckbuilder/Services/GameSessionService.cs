@@ -5,7 +5,6 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.BlobGeneration;
 using CardCleaner.Scripts.Features.Worldgen.WeightModifiers;
@@ -20,7 +19,6 @@ public partial class GameSessionService : Node, IGameSessionService
     private const float ExplorationStepDelay = 0.1f; // 500ms between exploration steps
     private const float CombatTurnDelay = 1.0f; // 1s between combat turns
     private List<CardSignature> _abilityCards = new();
-    private AutoTileResolver _autoTileResolver = new();
     private BiomeRegistry _biomeRegistry = null!;
     private BlobGenerationConfig _blobConfig = new();
     private SimpleCombatSystem? _combatSystem;
@@ -131,9 +129,8 @@ public partial class GameSessionService : Node, IGameSessionService
         _biomeRegistry = new BiomeRegistry();
         _biomeRegistry.RegisterDefaultBiomes();
 
-        // Load blob config and auto-tile resolver from tiles.json
+        // Load blob config from tiles.json
         _blobConfig = TileDataLoader.LoadBlobConfig();
-        _autoTileResolver = TileDataLoader.LoadAutoTileResolver();
 
         // Get services via async callback (may not be registered yet during startup)
         ServiceLocator.Get<ITileRegistry>(registry => _tileRegistry = registry);
@@ -177,9 +174,9 @@ public partial class GameSessionService : Node, IGameSessionService
             });
         var weightedSelector = new WeightedTileSelector(_tileRegistry, pipeline);
 
-        // Create map generator with biome provider, blob generator, auto-tile resolver, and Soft WFC
+        // Create map generator with biome provider, blob generator, and Soft WFC
         var mapGenerator = new SimpleMapGenerator(
-            _rng, biomeProvider, _tileRegistry, blobGenerator, _autoTileResolver, weightedSelector);
+            _rng, biomeProvider, _tileRegistry, blobGenerator, weightedSelector);
         _currentMap = mapGenerator.GenerateMap(mapSize);
 
         // Log biome distribution for debugging

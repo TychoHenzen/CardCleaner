@@ -35,12 +35,80 @@
       "passability": "passable",
       "atlasCoords": {
         "x": 6,
-        "y": 0
+        "y": 8
       },
-      "sourceId": 0,
+      "sourceId": 2,
       "layer": "terrain",
       "elevation": 0,
-      "isTransparent": true
+      "isTransparent": true,
+      "size": {
+        "x": 3,
+        "y": 3
+      },
+      "autoTileVariants": [
+        null,
+        {
+          "x": 6,
+          "y": 10
+        },
+        {
+          "x": 6,
+          "y": 8
+        },
+        {
+          "x": 6,
+          "y": 9
+        },
+        {
+          "x": 8,
+          "y": 8
+        },
+        {
+          "x": 9,
+          "y": 11
+        },
+        {
+          "x": 10,
+          "y": 10
+        },
+        {
+          "x": 11,
+          "y": 10
+        },
+        {
+          "x": 8,
+          "y": 10
+        },
+        {
+          "x": 10,
+          "y": 8
+        },
+        {
+          "x": 11,
+          "y": 11
+        },
+        {
+          "x": 11,
+          "y": 8
+        },
+        {
+          "x": 9,
+          "y": 9
+        },
+        {
+          "x": 9,
+          "y": 8
+        },
+        {
+          "x": 9,
+          "y": 10
+        },
+        {
+          "x": 7,
+          "y": 9
+        }
+      ],
+      "tileMode": "autotile"
     },
     {
       "id": "wall",

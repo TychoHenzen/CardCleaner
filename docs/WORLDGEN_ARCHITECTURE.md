@@ -86,7 +86,7 @@ We use:     "Forest floor tiles have 0.2x weight in mountain biomes"
 | **Terrain Blobs** | ✅ Complete | `Scripts/Features/Worldgen/BlobGeneration/` |
 | **Map Generator** | ✅ Complete | `Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs` |
 | **Structures** | ✅ Complete | `Scripts/Features/Worldgen/Structures/` |
-| **Tile Variants** | 🔲 Planned | Phase 5 |
+| **Tile Variants** | ✅ Complete | `Scripts/Features/Worldgen/VariantModifiers/` |
 
 ### Biome System
 
@@ -113,20 +113,26 @@ var selectedBiome = biomes
 ### Auto-Tiling System
 
 **Files:**
-- `AutoTileResolver.cs` - Two-pass algorithm (compute then apply)
-- `NeighborBitmask.cs` - 4-bit NESW bitmask utility (N=1, E=2, S=4, W=8)
-- `AutoTileConfig.cs` - Resource mapping base tile → 16 edge variants
-- `AutoTileFormat.cs` - Format enumeration (Corner16, Blob47)
+- `AutoTileFormat.cs` - Format enumeration (Corner16, Edge16, Blob47)
+- `NeighborBitmaskCorner.cs` - 4-bit corner bitmask utility (NE=1, SE=2, SW=4, NW=8)
+- `NeighborBitmask8.cs` - 8-bit blob bitmask utility for Blob47 format
+- `DualGridAutoTile.cs` - Dual-grid technique for terrain transitions
+- `AutoTileHelper.cs` - Convenience methods for auto-tile coordinate lookup
 
 **How auto-tiling works:**
 
-```
-For each tile:
-  1. Compute 4-bit neighbor bitmask (same-type neighbors)
-  2. Look up edge variant in AutoTileConfig
-  3. Replace with variant (or keep base if no variant defined)
+Per-tile `autoTileVariants` array stores atlas coordinates indexed by bitmask:
+- **Corner16**: 16 entries indexed by 4-bit corner mask (0-15)
+- **Blob47**: 47 entries indexed by constrained 8-bit mask
+- **Edge16**: 16 entries indexed by 4-bit cardinal mask (0-15)
 
-Example: grass tile with N+E neighbors → bitmask 3 → grass_ne variant
+```
+For each tile with auto-tile variants:
+  1. Compute neighbor bitmask based on format
+  2. Look up atlas coords in tile's autoTileVariants array
+  3. Render using variant coords (or base coords if null)
+
+Example: dirt tile with NE+SE corners → bitmask 3 → autoTileVariants[3] coords
 ```
 
 ### Gradient System
@@ -412,21 +418,75 @@ var wellStamp = new StructureStamp
 mapGenerator.AddStructureStamp(wellStamp);
 ```
 
-### Phase 5: Tile Variants 🔲 PLANNED
+### Phase 5: Tile Variants ✅ COMPLETE
 
 **Goal**: Visual variety without definition explosion
 
-**Planned Approach:**
+**Implemented Features:**
+- VariationMode.Contextual for context-aware variant selection
+- IVariantWeightModifier interface (separate from tile selection modifiers)
+- BiomeVariantModifier (boost variants by biome type)
+- ProximityVariantModifier (boost variants near/far from specific tiles)
+- VariantWeightPipeline for chaining variant modifiers
+- WeightedVariantSelector for selecting variants with weighted randomness
+- Integration with SimpleMapGenerator (Phase 5 post-processing)
 
-Tile variants as weight modifier source:
+**Key Files:**
+
+```
+Scripts/Features/Worldgen/VariantModifiers/
+├── IVariantWeightModifier.cs        # Interface for variant weight modifiers
+├── VariantSelectionContext.cs       # Context with position, biome, neighbors, weights
+├── BiomeVariantModifier.cs          # Boost variants by biome (grass_flowers in forest)
+├── ProximityVariantModifier.cs      # Boost variants by tile proximity (mossy near water)
+├── VariantWeightPipeline.cs         # Chain of responsibility for variant modifiers
+└── WeightedVariantSelector.cs       # Weighted random variant selection
+```
+
+**How Contextual Variants Work:**
+
+1. Tile placed during Phase 3 with VariationMode.Contextual
+2. After Phase 4 (auto-tiling), Phase 5 selects contextual variants:
+   - Initialize all variant weights to 1.0
+   - Apply variant modifier pipeline (biome, proximity, etc.)
+   - Weighted random selection from final weights
+3. Selected variant index stored in SimpleMapData.ContextualVariants
+
+**Usage Example:**
 
 ```csharp
-public class TileVariantModifier : IWeightModifier
+// Configure variant modifiers
+var biomeVariants = new BiomeVariantModifier()
+    .WithPreference("grass", BiomeType.Forest, 2.0f, 1.0f, 0.5f)  // Variant 0 boosted in forest
+    .WithPreference("grass", BiomeType.Desert, 0.3f, 0.5f, 2.0f); // Variant 2 boosted in desert
+
+var proximityVariants = new ProximityVariantModifier()
+    .WithRule("stone", variantIndex: 1, nearTileId: "water", radius: 3, multiplier: 2.5f)  // Mossy near water
+    .WithInverseRule("dirt", variantIndex: 2, farFromTileId: "water", radius: 5, multiplier: 1.8f);  // Cracked far from water
+
+// Build pipeline
+var variantPipeline = new VariantWeightPipeline()
+    .AddModifier(biomeVariants)
+    .AddModifier(proximityVariants);
+
+var variantSelector = new WeightedVariantSelector(variantPipeline);
+
+// Use in map generator
+var generator = new SimpleMapGenerator(rng, biomeProvider, tileRegistry,
+    variantSelector: variantSelector);
+```
+
+**Tile Definition:**
+
+```json
 {
-    // Boost specific variants based on context:
-    // - "grass_flowers" more likely in spring/fertile areas
-    // - "stone_mossy" more likely near water
-    // - "dirt_cracked" more likely in dry biomes
+  "id": "grass",
+  "variations": [
+    {"x": 0, "y": 0},  // Variant 0: Lush grass
+    {"x": 1, "y": 0},  // Variant 1: Normal grass
+    {"x": 2, "y": 0}   // Variant 2: Dry grass
+  ],
+  "variationMode": "contextual"
 }
 ```
 
@@ -657,10 +717,9 @@ Scripts/Features/Worldgen/
 │   ├── TilePool.cs
 │   └── BiomeDistributionCalculator.cs
 ├── AutoTiling/                      # ✅ IMPLEMENTED
-│   ├── AutoTileResolver.cs
-│   ├── AutoTileConfig.cs
 │   ├── AutoTileFormat.cs
 │   ├── AutoTileHelper.cs
+│   ├── DualGridAutoTile.cs          # Dual-grid visual tile computation
 │   ├── NeighborBitmask.cs           # Edge16 (NESW cardinal)
 │   ├── NeighborBitmaskCorner.cs     # Corner16 (diagonal)
 │   └── NeighborBitmask8.cs          # Blob47 (8-direction)
@@ -687,13 +746,18 @@ Scripts/Features/Worldgen/
 │   ├── IMapQuery.cs
 │   ├── StructureResult.cs
 │   └── StructurePlacer.cs
-└── TileVariantPool.cs               # 🔲 PLANNED
+└── VariantModifiers/                # ✅ IMPLEMENTED
+    ├── IVariantWeightModifier.cs
+    ├── VariantSelectionContext.cs
+    ├── BiomeVariantModifier.cs
+    ├── ProximityVariantModifier.cs
+    ├── VariantWeightPipeline.cs
+    └── WeightedVariantSelector.cs
 
 Scripts/Features/Deckbuilder/Services/
 └── SimpleMapGenerator.cs            # ✅ IMPLEMENTED (5-phase pipeline)
 
 addons/tile_editor/
-├── AutoTileConfigPanel.cs           # ✅ IMPLEMENTED
 ├── BlobSettingsPanel.cs
 ├── BiomePoolPanel.cs
 ├── TilePropertiesPanel.cs
@@ -722,6 +786,6 @@ Data/Tiles/
 
 ---
 
-*Document Version: 2.1*
-*Last Updated: 2025-12-29*
-*Status: Soft WFC architecture established - Phases 1-4 complete*
+*Document Version: 3.0*
+*Last Updated: 2025-12-30*
+*Status: Soft WFC architecture complete - Phases 1-5 implemented*

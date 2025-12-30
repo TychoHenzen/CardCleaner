@@ -17,9 +17,6 @@ namespace CardCleaner.Addons.TileEditor;
 public partial class TileEditorService : RefCounted
 {
     [Signal]
-    public delegate void AutoTileConfigModifiedEventHandler(string baseTileId);
-
-    [Signal]
     public delegate void BlobConfigModifiedEventHandler();
 
     [Signal]
@@ -51,8 +48,6 @@ public partial class TileEditorService : RefCounted
         WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
-    private readonly Dictionary<string, EditableAutoTileConfig> _autoTileConfigs = new();
-
     private readonly Dictionary<string, EditableTile> _tiles = new();
     private EditableBlobConfig _blobConfig = new();
     private TileSet? _tileSet;
@@ -66,13 +61,9 @@ public partial class TileEditorService : RefCounted
     // Blob config accessor
     public EditableBlobConfig BlobConfig => _blobConfig;
 
-    // Auto-tile config accessors
-    public IEnumerable<EditableAutoTileConfig> AllAutoTileConfigs => _autoTileConfigs.Values;
-
     public void LoadTiles()
     {
         _tiles.Clear();
-        _autoTileConfigs.Clear();
         _blobConfig = new EditableBlobConfig();
 
         var absolutePath = ProjectSettings.GlobalizePath(TilesPath);
@@ -218,25 +209,7 @@ public partial class TileEditorService : RefCounted
                 };
             }
 
-            // Load auto-tile configs
-            if (data.AutoTileConfigs != null)
-                foreach (var configData in data.AutoTileConfigs)
-                {
-                    if (string.IsNullOrEmpty(configData.BaseTileId)) continue;
-
-                    var config = new EditableAutoTileConfig
-                    {
-                        BaseTileId = configData.BaseTileId, DisplayName = configData.DisplayName ?? ""
-                    };
-
-                    if (configData.Variants != null)
-                        for (var i = 0; i < Math.Min(16, configData.Variants.Length); i++)
-                            config.Variants[i] = configData.Variants[i];
-
-                    _autoTileConfigs[config.BaseTileId] = config;
-                }
-
-            GD.Print($"[TileEditorService] Loaded {_tiles.Count} tiles, {_autoTileConfigs.Count} auto-tile configs");
+            GD.Print($"[TileEditorService] Loaded {_tiles.Count} tiles");
             EmitSignal(SignalName.TilesLoaded);
         }
         catch (Exception ex)
@@ -594,28 +567,6 @@ public partial class TileEditorService : RefCounted
         EmitSignal(SignalName.BlobConfigModified);
     }
 
-    // ===== Auto-Tile Config Methods =====
-
-    public EditableAutoTileConfig? GetAutoTileConfig(string baseTileId) =>
-        _autoTileConfigs.GetValueOrDefault(baseTileId);
-
-    public void AddAutoTileConfig(EditableAutoTileConfig config)
-    {
-        _autoTileConfigs[config.BaseTileId] = config;
-        EmitSignal(SignalName.AutoTileConfigModified, config.BaseTileId);
-    }
-
-    public void UpdateAutoTileConfig(EditableAutoTileConfig config)
-    {
-        _autoTileConfigs[config.BaseTileId] = config;
-        EmitSignal(SignalName.AutoTileConfigModified, config.BaseTileId);
-    }
-
-    public void RemoveAutoTileConfig(string baseTileId)
-    {
-        if (_autoTileConfigs.Remove(baseTileId)) EmitSignal(SignalName.AutoTileConfigModified, baseTileId);
-    }
-
     /// <summary>
     /// Compute tile mode from existing tile data for backwards compatibility.
     /// </summary>
@@ -741,17 +692,7 @@ public partial class TileEditorService : RefCounted
                     ClusterStrength = _blobConfig.ClusterStrength,
                     MinBlobSize = _blobConfig.MinBlobSize,
                     MaxBlobSize = _blobConfig.MaxBlobSize
-                },
-
-                // Auto-tile configs
-                AutoTileConfigs = _autoTileConfigs.Count > 0
-                    ? _autoTileConfigs.Values.Select(c => new AutoTileConfigData
-                    {
-                        BaseTileId = c.BaseTileId,
-                        DisplayName = string.IsNullOrEmpty(c.DisplayName) ? null : c.DisplayName,
-                        Variants = c.Variants.Any(v => !string.IsNullOrEmpty(v)) ? c.Variants : null
-                    }).ToList()
-                    : null
+                }
             };
 
             var json = JsonSerializer.Serialize(data, WriteOptions);
@@ -805,17 +746,6 @@ public partial class TileEditorService : RefCounted
         [JsonPropertyName("tiles")] public List<TileData>? Tiles { get; set; }
 
         [JsonPropertyName("blobGeneration")] public BlobGenerationData? BlobGeneration { get; set; }
-
-        [JsonPropertyName("autoTileConfigs")] public List<AutoTileConfigData>? AutoTileConfigs { get; set; }
-    }
-
-    private sealed class AutoTileConfigData
-    {
-        [JsonPropertyName("baseTileId")] public string? BaseTileId { get; set; }
-
-        [JsonPropertyName("displayName")] public string? DisplayName { get; set; }
-
-        [JsonPropertyName("variants")] public string?[]? Variants { get; set; }
     }
 
     private sealed class BlobGenerationData
@@ -1073,26 +1003,5 @@ public class EditableBlobConfig
         MinBlobSize = MinBlobSize,
         MaxBlobSize = MaxBlobSize
     };
-}
-
-/// <summary>
-///     Mutable auto-tile configuration for editing.
-///     Maps a base tile to 16 edge variants based on 4-bit NESW neighbor bitmask.
-/// </summary>
-public class EditableAutoTileConfig
-{
-    public string BaseTileId { get; set; } = "";
-    public string DisplayName { get; set; } = "";
-    public string?[] Variants { get; set; } = new string?[16];
-
-    public EditableAutoTileConfig Clone()
-    {
-        var clone = new EditableAutoTileConfig
-        {
-            BaseTileId = BaseTileId, DisplayName = DisplayName, Variants = new string?[16]
-        };
-        Array.Copy(Variants, clone.Variants, 16);
-        return clone;
-    }
 }
 #endif

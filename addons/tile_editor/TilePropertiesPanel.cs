@@ -1039,7 +1039,7 @@ public partial class TilePropertiesPanel : ScrollContainer
             _sourcePickerZoomSlider = new HSlider
             {
                 MinValue = 0.5,
-                MaxValue = 2.0,
+                MaxValue = 5.0,
                 Step = 0.1,
                 Value = 1.0,
                 CustomMinimumSize = new Vector2(150, 0),
@@ -1062,7 +1062,7 @@ public partial class TilePropertiesPanel : ScrollContainer
 
             var grid = new GridContainer
             {
-                Columns = 2,
+                Columns = (int)(5f/_sourcePickerZoomSlider.Value),
                 SizeFlagsHorizontal = SizeFlags.ExpandFill
             };
             grid.AddThemeConstantOverride("h_separation", 12);

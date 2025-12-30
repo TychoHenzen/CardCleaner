@@ -142,58 +142,6 @@ public static class TileDataLoader
             MaxBlobSize: data.MaxBlobSize);
     }
 
-    /// <summary>
-    ///     Load auto-tile configurations from JSON and create an AutoTileResolver
-    /// </summary>
-    public static AutoTileResolver LoadAutoTileResolver(string? path = null)
-    {
-        path ??= DefaultTilesPath;
-        var resolver = new AutoTileResolver();
-
-        var absolutePath = ProjectSettings.GlobalizePath(path);
-        if (!File.Exists(absolutePath))
-        {
-            ILog.Print($"[TileDataLoader] File not found for auto-tile configs: {absolutePath}");
-            return resolver;
-        }
-
-        try
-        {
-            var json = File.ReadAllText(absolutePath);
-            var data = JsonSerializer.Deserialize<TileRegistryData>(json, JsonOptions);
-            if (data?.AutoTileConfigs == null || data.AutoTileConfigs.Count == 0)
-            {
-                ILog.Print("[TileDataLoader] No auto-tile configs found");
-                return resolver;
-            }
-
-            foreach (var configData in data.AutoTileConfigs)
-            {
-                if (string.IsNullOrEmpty(configData.BaseTileId))
-                    continue;
-
-                var config = new AutoTileConfig
-                {
-                    BaseTileId = configData.BaseTileId, DisplayName = configData.DisplayName ?? ""
-                };
-
-                if (configData.Variants != null)
-                    for (var i = 0; i < Math.Min(16, configData.Variants.Length); i++)
-                        config.Variants[i] = configData.Variants[i];
-
-                resolver.Register(config);
-            }
-
-            ILog.Print($"[TileDataLoader] Loaded {resolver.ConfigCount} auto-tile configs");
-            return resolver;
-        }
-        catch (Exception ex)
-        {
-            ILog.Print($"[TileDataLoader] Error loading auto-tile configs: {ex.Message}");
-            return resolver;
-        }
-    }
-
     private static TileDefinition? ConvertToTileDefinition(TileData data, int fileIndex)
     {
         if (string.IsNullOrEmpty(data.Id) || string.IsNullOrEmpty(data.Name))
@@ -247,6 +195,7 @@ public static class TileDataLoader
         return value?.ToLowerInvariant() switch
         {
             "pergeneration" or "per_generation" => VariationMode.PerGeneration,
+            "contextual" => VariationMode.Contextual,
             _ => VariationMode.PerInstance
         };
     }
@@ -362,17 +311,6 @@ public static class TileDataLoader
         [JsonPropertyName("tiles")] public List<TileData>? Tiles { get; set; }
 
         [JsonPropertyName("blobGeneration")] public BlobGenerationData? BlobGeneration { get; set; }
-
-        [JsonPropertyName("autoTileConfigs")] public List<AutoTileConfigData>? AutoTileConfigs { get; set; }
-    }
-
-    private sealed class AutoTileConfigData
-    {
-        [JsonPropertyName("baseTileId")] public string? BaseTileId { get; set; }
-
-        [JsonPropertyName("displayName")] public string? DisplayName { get; set; }
-
-        [JsonPropertyName("variants")] public string?[]? Variants { get; set; }
     }
 
     private sealed class BlobGenerationData

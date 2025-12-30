@@ -28,6 +28,13 @@ public class SimpleMapData
     public Dictionary<string, int> PerGenerationVariants { get; set; } = new();
 
     /// <summary>
+    /// Context-selected variation indices for tiles with VariationMode.Contextual.
+    /// Maps tile position to variation index (0-based into TileDefinition.Variations).
+    /// Variants are selected based on biome, nearby tiles, and other context.
+    /// </summary>
+    public Dictionary<Vector2I, int> ContextualVariants { get; set; } = new();
+
+    /// <summary>
     /// Dual-grid terrain data for proper base + top layer rendering.
     /// Maps visual grid position to (baseTileId, topTileId, bitmask) for dual-layer rendering.
     /// Visual grid is (Size.X+1, Size.Y+1) and offset by half a tile from terrain grid.

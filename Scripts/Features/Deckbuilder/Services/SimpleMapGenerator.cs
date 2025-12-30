@@ -4,10 +4,11 @@ using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.BlobGeneration;
 using CardCleaner.Scripts.Features.Worldgen.Structures;
+using CardCleaner.Scripts.Features.Worldgen.VariantModifiers;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.WeightModifiers;
 using Godot;
 
@@ -47,18 +48,19 @@ public class SimpleMapGenerator
     /// </summary>
     public int MaxStructures { get; set; } = 5;
 
-    private readonly AutoTileResolver? _autoTileResolver;
     private readonly IBiomeProvider _biomeProvider;
     private readonly TerrainBlobGenerator? _blobGenerator;
     private readonly RandomNumberGenerator _rng;
     private readonly ITileRegistry _tileRegistry;
     private readonly WeightedTileSelector? _weightedSelector;
+    private readonly WeightedVariantSelector? _variantSelector;
     private readonly StructurePlacer? _structurePlacer;
     private readonly List<StructureStamp> _structureStamps = [];
 
     public SimpleMapGenerator(RandomNumberGenerator rng, IBiomeProvider biomeProvider, ITileRegistry tileRegistry,
-        TerrainBlobGenerator? blobGenerator = null, AutoTileResolver? autoTileResolver = null,
-        WeightedTileSelector? weightedSelector = null, StructurePlacer? structurePlacer = null)
+        TerrainBlobGenerator? blobGenerator = null,
+        WeightedTileSelector? weightedSelector = null, StructurePlacer? structurePlacer = null,
+        WeightedVariantSelector? variantSelector = null)
     {
         ArgumentNullException.ThrowIfNull(rng);
         ArgumentNullException.ThrowIfNull(biomeProvider);
@@ -67,8 +69,8 @@ public class SimpleMapGenerator
         _biomeProvider = biomeProvider;
         _tileRegistry = tileRegistry;
         _blobGenerator = blobGenerator;
-        _autoTileResolver = autoTileResolver;
         _weightedSelector = weightedSelector;
+        _variantSelector = variantSelector;
         _structurePlacer = structurePlacer;
     }
 
@@ -200,13 +202,8 @@ public class SimpleMapGenerator
         var transitionCount = decorationOverlays.Count(kvp => kvp.Value.Bitmask > 0 && kvp.Value.Bitmask < 15);
         ILog.Print($"Dual-grid terrain: {decorationOverlays.Count} visual tiles, {transitionCount} transitions");
 
-        // Apply auto-tiling post-processing (select edge variants based on neighbors)
-        if (_autoTileResolver != null && _autoTileResolver.ConfigCount > 0)
-        {
-            var replacements = _autoTileResolver.ApplyToMap(finalTileIds, size);
-            if (replacements > 0)
-                ILog.Print($"Auto-tiling applied: {replacements} tiles replaced with edge variants");
-        }
+        // Select contextual variants for tiles that use VariationMode.Contextual
+        var contextualVariants = SelectContextualVariants(finalTileIds, size, placedTiles, biomeMap);
 
         // Choose random positions for player and enemies
         var shuffledTiles = passableTiles.OrderBy(_ => _rng.Randf()).ToList();
@@ -228,6 +225,7 @@ public class SimpleMapGenerator
             EnemyPositions = enemyPositions,
             PassableTiles = passableTiles,
             PerGenerationVariants = perGenerationVariants,
+            ContextualVariants = contextualVariants,
             DecorationOverlays = decorationOverlays,
             StructurePlacements = structurePlacements
         };
@@ -591,6 +589,56 @@ public class SimpleMapGenerator
 
         if (variants.Count > 0)
             ILog.Print($"Selected per-generation variants for {variants.Count} tile types");
+
+        return variants;
+    }
+
+    /// <summary>
+    /// Select contextual variants for tiles that use VariationMode.Contextual.
+    /// Variants are selected based on position, biome, and nearby tiles.
+    /// </summary>
+    private Dictionary<Vector2I, int> SelectContextualVariants(
+        string[,] tileIds,
+        Vector2I size,
+        Dictionary<Vector2I, string> placedTiles,
+        BiomeType[,] biomeMap)
+    {
+        var variants = new Dictionary<Vector2I, int>();
+
+        // If no variant selector is configured, return empty dictionary
+        if (_variantSelector == null)
+            return variants;
+
+        for (var y = 0; y < size.Y; y++)
+        for (var x = 0; x < size.X; x++)
+        {
+            var position = new Vector2I(x, y);
+            var tileId = tileIds[y, x];
+
+            if (string.IsNullOrEmpty(tileId))
+                continue;
+
+            var tile = _tileRegistry.GetTile(tileId);
+            if (tile == null)
+                continue;
+
+            // Only process tiles with Contextual variation mode that have variants
+            if (tile.VariationMode != VariationMode.Contextual || !tile.HasVariations)
+                continue;
+
+            // Get biome at position
+            var biome = _biomeProvider.GetBiomeAt(position);
+
+            // Select variant using the weighted variant selector
+            var variantIndex = _variantSelector.SelectVariant(position, placedTiles, biome, tile, _rng);
+            if (variantIndex >= 0)
+            {
+                variants[position] = variantIndex;
+            }
+        }
+
+        if (variants.Count > 0)
+            ILog.Print($"Selected contextual variants for {variants.Count} tile positions");
 
         return variants;
     }

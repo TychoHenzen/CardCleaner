@@ -16,5 +16,12 @@ public enum VariationMode
     /// Good for themed tiles where consistency across the map is desired.
     /// The selected variant also affects auto-tile coordinates.
     /// </summary>
-    PerGeneration = 1
+    PerGeneration = 1,
+
+    /// <summary>
+    /// Variant is selected based on context (biome, nearby tiles, etc.) using
+    /// the variant weight modifier pipeline. Enables context-aware visual variety
+    /// like "grass_flowers" near water or "stone_mossy" in damp biomes.
+    /// </summary>
+    Contextual = 2
 }
