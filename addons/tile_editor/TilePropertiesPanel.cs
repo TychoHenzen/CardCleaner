@@ -44,6 +44,7 @@ public partial class TilePropertiesPanel : ScrollContainer
     private CheckBox? _transparentField;
     private SpinBox? _sizeXField;
     private SpinBox? _sizeYField;
+    private OptionButton? _sourceScaleDropdown;
     private VBoxContainer? _biomesContainer;
     private readonly Dictionary<string, CheckBox> _biomeCheckboxes = new();
     private Label? _validationLabel;
@@ -274,6 +275,28 @@ public partial class TilePropertiesPanel : ScrollContainer
         sizeNote.AddThemeFontSizeOverride("font_size", 11);
         _generalFoldout.Content.AddChild(sizeNote);
 
+        // Source Scale dropdown (for tiles from differently-sized source textures)
+        var scaleRow = CreateRow("Source Scale:");
+        _sourceScaleDropdown = new OptionButton
+        {
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        _sourceScaleDropdown.AddItem("0.5x (32px source)", 0);
+        _sourceScaleDropdown.AddItem("1.0x (16px source)", 1);
+        _sourceScaleDropdown.AddItem("2.0x (8px source)", 2);
+        _sourceScaleDropdown.Selected = 1; // Default to 1.0x
+        _sourceScaleDropdown.ItemSelected += _ => OnFieldChanged("");
+        scaleRow.AddChild(_sourceScaleDropdown);
+        _generalFoldout.Content.AddChild(scaleRow);
+
+        var scaleNote = new Label
+        {
+            Text = "(For tiles from 8x8 or 32x32 source textures)",
+            Modulate = new Color(0.7f, 0.7f, 0.7f)
+        };
+        scaleNote.AddThemeFontSizeOverride("font_size", 11);
+        _generalFoldout.Content.AddChild(scaleNote);
+
         // Biomes section
         _generalFoldout.Content.AddChild(new Label { Text = "Allowed Biomes:" });
         _biomesContainer = new VBoxContainer();
@@ -354,7 +377,8 @@ public partial class TilePropertiesPanel : ScrollContainer
         vbox.AddChild(coordRow);
 
         // Hidden source ID field for internal tracking
-        _sourceIdField = new SpinBox { Visible = false, Value = 4 };
+        // MaxValue must be high enough to accommodate all source IDs (can be 500+)
+        _sourceIdField = new SpinBox { Visible = false, Value = 4, MinValue = 0, MaxValue = 10000 };
         AddChild(_sourceIdField);
 
         vbox.AddChild(new HSeparator());
@@ -733,6 +757,14 @@ public partial class TilePropertiesPanel : ScrollContainer
         _sizeXField!.Value = _currentTile.SizeX;
         _sizeYField!.Value = _currentTile.SizeY;
 
+        // Source scale dropdown (0.5x=0, 1.0x=1, 2.0x=2)
+        _sourceScaleDropdown!.Selected = _currentTile.SourceScale switch
+        {
+            0.5f => 0,
+            2.0f => 2,
+            _ => 1 // Default to 1.0x
+        };
+
         // Update biome checkboxes
         foreach (var (biome, checkbox) in _biomeCheckboxes)
         {
@@ -835,6 +867,14 @@ public partial class TilePropertiesPanel : ScrollContainer
         _currentTile.SizeX = (int)_sizeXField!.Value;
         _currentTile.SizeY = (int)_sizeYField!.Value;
 
+        // Source scale (0=0.5x, 1=1.0x, 2=2.0x)
+        _currentTile.SourceScale = _sourceScaleDropdown!.Selected switch
+        {
+            0 => 0.5f,
+            2 => 2.0f,
+            _ => 1.0f
+        };
+
         // Update biomes
         _currentTile.Biomes.Clear();
         foreach (var (biome, checkbox) in _biomeCheckboxes)
@@ -870,6 +910,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         _transparentField!.Disabled = !enabled;
         _sizeXField!.Editable = enabled;
         _sizeYField!.Editable = enabled;
+        _sourceScaleDropdown!.Disabled = !enabled;
 
         foreach (var checkbox in _biomeCheckboxes.Values)
         {
@@ -886,8 +927,16 @@ public partial class TilePropertiesPanel : ScrollContainer
         var texture = _service.GetTileTexture(_currentTile);
         if (texture != null)
         {
-            var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
-            var region = new Rect2I(new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY) * tileSize, tileSize);
+            var baseTileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
+            // Account for source scale: 0.5x = 32px source, 2.0x = 8px source
+            var actualTileSize = new Vector2I(
+                (int)(baseTileSize.X / _currentTile.SourceScale),
+                (int)(baseTileSize.Y / _currentTile.SourceScale)
+            );
+            var region = new Rect2I(
+                new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY) * actualTileSize,
+                actualTileSize
+            );
             var atlasTex = new AtlasTexture
             {
                 Atlas = texture,
@@ -946,7 +995,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         if (source != null && _atlasDialogPicker != null)
         {
             var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
-            _atlasDialogPicker.SetSource(source, tileSize, _currentTile.SourceId);
+            _atlasDialogPicker.SetSource(source, tileSize, _currentTile.SourceId, _currentTile.SourceScale);
             _atlasDialogPicker.SelectedCoords = new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY);
             _atlasDialogPicker.SelectedSize = new Vector2I(_currentTile.SizeX, _currentTile.SizeY);
         }
@@ -1237,8 +1286,16 @@ public partial class TilePropertiesPanel : ScrollContainer
 
         _editingVariantIndex = variantIndex;
 
-        // Initialize AutoTileVariants if needed
-        _currentTile.AutoTileVariants ??= new Vector2I?[_currentVariantCount];
+        // Ensure AutoTileVariants is properly sized for the current variant count
+        if (_currentTile.AutoTileVariants == null || _currentTile.AutoTileVariants.Length < _currentVariantCount)
+        {
+            var newArray = new Vector2I?[_currentVariantCount];
+            if (_currentTile.AutoTileVariants != null)
+            {
+                Array.Copy(_currentTile.AutoTileVariants, newArray, _currentTile.AutoTileVariants.Length);
+            }
+            _currentTile.AutoTileVariants = newArray;
+        }
 
         // Create dialog lazily
         if (_variantPickerDialog == null)
@@ -1283,7 +1340,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         if (source != null && _variantPicker != null)
         {
             var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
-            _variantPicker.SetSource(source, tileSize, _currentTile.SourceId);
+            _variantPicker.SetSource(source, tileSize, _currentTile.SourceId, _currentTile.SourceScale);
 
             // Pre-select current variant or base tile coords
             if (_currentTile.AutoTileVariants[variantIndex].HasValue)
@@ -1373,8 +1430,13 @@ public partial class TilePropertiesPanel : ScrollContainer
             return;
         }
 
-        var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
-        var region = new Rect2I(coords * tileSize, tileSize);
+        var baseTileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
+        // Account for source scale: 0.5x = 32px source, 2.0x = 8px source
+        var actualTileSize = new Vector2I(
+            (int)(baseTileSize.X / _currentTile.SourceScale),
+            (int)(baseTileSize.Y / _currentTile.SourceScale)
+        );
+        var region = new Rect2I(coords * actualTileSize, actualTileSize);
 
         var atlasTex = new AtlasTexture
         {
@@ -1719,8 +1781,13 @@ public partial class TilePropertiesPanel : ScrollContainer
             var texture = _service.GetTileTexture(_currentTile);
             if (texture != null)
             {
-                var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
-                var region = new Rect2I(coords * tileSize, tileSize);
+                var baseTileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
+                // Account for source scale: 0.5x = 32px source, 2.0x = 8px source
+                var actualTileSize = new Vector2I(
+                    (int)(baseTileSize.X / _currentTile.SourceScale),
+                    (int)(baseTileSize.Y / _currentTile.SourceScale)
+                );
+                var region = new Rect2I(coords * actualTileSize, actualTileSize);
                 var atlasTex = new AtlasTexture
                 {
                     Atlas = texture,
@@ -1779,7 +1846,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         if (source != null && _variationPicker != null)
         {
             var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
-            _variationPicker.SetSource(source, tileSize, _currentTile.SourceId);
+            _variationPicker.SetSource(source, tileSize, _currentTile.SourceId, _currentTile.SourceScale);
             _variationPicker.SelectedCoords = new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY);
         }
 
@@ -1956,7 +2023,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         if (source != null && _animationFramePicker != null)
         {
             var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
-            _animationFramePicker.SetSource(source, tileSize, _currentTile.SourceId);
+            _animationFramePicker.SetSource(source, tileSize, _currentTile.SourceId, _currentTile.SourceScale);
             _animationFramePicker.SelectedCoords = new Vector2I(_currentTile.AtlasX, _currentTile.AtlasY);
         }
 

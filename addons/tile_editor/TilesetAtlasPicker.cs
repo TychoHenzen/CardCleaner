@@ -18,13 +18,22 @@ public partial class TilesetAtlasPicker : Control
     private Vector2I _selectedCoords = new(-1, -1);
     private Vector2I _hoveredCoords = new(-1, -1);
     private Vector2I _selectedSize = new(1, 1); // Size of the selected tile (for multi-tile support)
+    private float _sourceScale = 1.0f; // Source scale factor (0.5=32px, 1.0=16px, 2.0=8px)
     private int _sourceId;
 
     private static readonly Color GridColor = new(0.3f, 0.3f, 0.3f, 0.8f);
     private static readonly Color SelectionColor = new(1f, 0.8f, 0f, 0.8f);
     private static readonly Color HoverColor = new(1f, 1f, 1f, 0.4f);
 
-    private Vector2 ScaledTileSize => new Vector2(_tileSize.X, _tileSize.Y) * Scale;
+    // Actual tile size in source texture pixels (adjusted by source scale)
+    // For scale 2.0 (8px sources): 16/2.0 = 8px tiles
+    // For scale 0.5 (32px sources): 16/0.5 = 32px tiles
+    private Vector2I ActualSourceTileSize => new Vector2I(
+        (int)(_tileSize.X / _sourceScale),
+        (int)(_tileSize.Y / _sourceScale)
+    );
+
+    private Vector2 ScaledTileSize => new Vector2(ActualSourceTileSize.X, ActualSourceTileSize.Y) * Scale;
 
     [Signal]
     public delegate void TileSelectedEventHandler(Vector2I atlasCoords, int sourceId);
@@ -72,11 +81,12 @@ public partial class TilesetAtlasPicker : Control
         }
     }
 
-    public void SetSource(TileSetAtlasSource? source, Vector2I tileSize, int sourceId)
+    public void SetSource(TileSetAtlasSource? source, Vector2I tileSize, int sourceId, float sourceScale = 1.0f)
     {
         _source = source;
         _sourceId = sourceId;
         _tileSize = tileSize;
+        _sourceScale = sourceScale > 0 ? sourceScale : 1.0f;
         _texture = source?.Texture;
 
         if (_texture != null)
@@ -110,9 +120,10 @@ public partial class TilesetAtlasPicker : Control
         // Draw the atlas texture scaled
         DrawTextureRect(_texture, new Rect2(Vector2.Zero, scaledSize), false);
 
-        // Calculate grid dimensions
-        int cols = (int)(textureSize.X / _tileSize.X);
-        int rows = (int)(textureSize.Y / _tileSize.Y);
+        // Calculate grid dimensions using actual source tile size
+        var actualTileSize = ActualSourceTileSize;
+        int cols = (int)(textureSize.X / actualTileSize.X);
+        int rows = (int)(textureSize.Y / actualTileSize.Y);
 
         // Draw hover highlight (uses SelectedSize for multi-tile preview)
         if (_hoveredCoords.X >= 0 && _hoveredCoords.Y >= 0 &&
@@ -187,8 +198,9 @@ public partial class TilesetAtlasPicker : Control
             return;
 
         var textureSize = _texture.GetSize();
-        int cols = (int)(textureSize.X / _tileSize.X);
-        int rows = (int)(textureSize.Y / _tileSize.Y);
+        var actualTileSize = ActualSourceTileSize;
+        int cols = (int)(textureSize.X / actualTileSize.X);
+        int rows = (int)(textureSize.Y / actualTileSize.Y);
 
         if (@event is InputEventMouseMotion motion)
         {

@@ -1,6 +1,5 @@
 #if TOOLS
 using System;
-using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
@@ -388,7 +387,39 @@ public partial class DualGridAutoTilePreview : Control
 
     private void RecomputeVisualBitmasks()
     {
-        _visualBitmasks = DualGridAutoTile.ComputeAllBitmasks(_dataGrid);
+        var format = _overlayTile?.AutoTileFormat?.ToLowerInvariant() ?? "corner16";
+
+        if (format == "blob47")
+        {
+            // Blob47: Single-grid technique - compute 8-neighbor bitmasks for each data cell
+            // The bitmask array matches the data grid dimensions
+            _visualBitmasks = new int[DataGridRows, DataGridCols];
+
+            for (var row = 0; row < DataGridRows; row++)
+            for (var col = 0; col < DataGridCols; col++)
+            {
+                if (!_dataGrid[row, col])
+                {
+                    _visualBitmasks[row, col] = -1; // Mark as empty (no overlay)
+                    continue;
+                }
+
+                // Compute 8-neighbor blob mask using NeighborBitmask8
+                var position = new Vector2I(col, row);
+                _visualBitmasks[row, col] = NeighborBitmask8.Compute(position, neighborPos =>
+                {
+                    if (neighborPos.X < 0 || neighborPos.X >= DataGridCols ||
+                        neighborPos.Y < 0 || neighborPos.Y >= DataGridRows)
+                        return false;
+                    return _dataGrid[neighborPos.Y, neighborPos.X];
+                });
+            }
+        }
+        else
+        {
+            // Corner16/Edge16: Dual-grid technique - visual grid offset by half tile
+            _visualBitmasks = DualGridAutoTile.ComputeAllBitmasks(_dataGrid);
+        }
     }
 
     private void EmitInfo()
@@ -425,9 +456,17 @@ public partial class DualGridAutoTilePreview : Control
         // Draw base tiles for entire area
         if (baseTexture != null && _baseTile != null)
         {
+            // Calculate actual source tile size accounting for base tile's SourceScale
+            var baseActualTileSize = new Vector2I(
+                (int)(_tileSize.X / _baseTile.SourceScale),
+                (int)(_tileSize.Y / _baseTile.SourceScale)
+            );
             var baseCoords = new Vector2I(_baseTile.AtlasX, _baseTile.AtlasY);
-            var baseSrcRect = new Rect2(baseCoords.X * _tileSize.X, baseCoords.Y * _tileSize.Y,
-                _tileSize.X, _tileSize.Y);
+            var baseSrcRect = new Rect2(
+                baseCoords.X * baseActualTileSize.X,
+                baseCoords.Y * baseActualTileSize.Y,
+                baseActualTileSize.X,
+                baseActualTileSize.Y);
 
             for (var row = 0; row < DataGridRows + 1; row++)
             for (var col = 0; col < DataGridCols + 1; col++)
@@ -438,36 +477,79 @@ public partial class DualGridAutoTilePreview : Control
             }
         }
 
-        // Draw visual grid (auto-tile overlays) at half-tile offset
+        // Draw overlay tiles - different grid alignment based on format
         if (overlayTexture != null)
         {
-            for (var vy = 0; vy < VisualGridRows; vy++)
-            for (var vx = 0; vx < VisualGridCols; vx++)
+            // Calculate actual source tile size accounting for SourceScale
+            // For scale 2.0 (8px sources): 16/2.0 = 8px tiles
+            // For scale 0.5 (32px sources): 16/0.5 = 32px tiles
+            var overlayActualTileSize = new Vector2I(
+                (int)(_tileSize.X / _overlayTile.SourceScale),
+                (int)(_tileSize.Y / _overlayTile.SourceScale)
+            );
+
+            var format = _overlayTile.AutoTileFormat?.ToLowerInvariant() ?? "corner16";
+
+            if (format == "blob47")
             {
-                var bitmask = _visualBitmasks[vy, vx];
-                if (bitmask == 0) continue; // No corners filled, skip
+                // Blob47: Single-grid - tiles aligned with data grid cells
+                // Data grid is offset by half tile from visual origin
+                for (var row = 0; row < DataGridRows; row++)
+                for (var col = 0; col < DataGridCols; col++)
+                {
+                    var bitmask = _visualBitmasks[row, col];
+                    if (bitmask < 0) continue; // Empty cell (not filled)
 
-                var variantCoords = GetVariantCoords(bitmask);
-                var srcRect = new Rect2(
-                    variantCoords.X * _tileSize.X,
-                    variantCoords.Y * _tileSize.Y,
-                    _tileSize.X,
-                    _tileSize.Y
-                );
+                    var variantCoords = GetVariantCoords(bitmask);
+                    var srcRect = new Rect2(
+                        variantCoords.X * overlayActualTileSize.X,
+                        variantCoords.Y * overlayActualTileSize.Y,
+                        overlayActualTileSize.X,
+                        overlayActualTileSize.Y
+                    );
 
-                // Visual tile position: offset by -half tile from data grid
-                // Visual (0,0) is at pixel (-halfTile, -halfTile)
-                // We render at (vx * tileSize - halfTile, vy * tileSize - halfTile)
-                // But since our control starts at 0,0, we shift everything by +halfTile
-                // So visual (0,0) renders at (0,0) and data grid renders at (halfTile, halfTile)
-                var destRect = new Rect2(
-                    vx * scaledTileSize.X,
-                    vy * scaledTileSize.Y,
-                    scaledTileSize.X,
-                    scaledTileSize.Y
-                );
+                    // Data cell position: offset by half tile from origin
+                    var destRect = new Rect2(
+                        col * scaledTileSize.X + halfTile.X,
+                        row * scaledTileSize.Y + halfTile.Y,
+                        scaledTileSize.X,
+                        scaledTileSize.Y
+                    );
 
-                DrawTextureRectRegion(overlayTexture, destRect, srcRect);
+                    DrawTextureRectRegion(overlayTexture, destRect, srcRect);
+                }
+            }
+            else
+            {
+                // Corner16/Edge16: Dual-grid - visual tiles at half-tile offset from data
+                for (var vy = 0; vy < VisualGridRows; vy++)
+                for (var vx = 0; vx < VisualGridCols; vx++)
+                {
+                    var bitmask = _visualBitmasks[vy, vx];
+                    if (bitmask == 0) continue; // No corners filled, skip
+
+                    var variantCoords = GetVariantCoords(bitmask);
+                    var srcRect = new Rect2(
+                        variantCoords.X * overlayActualTileSize.X,
+                        variantCoords.Y * overlayActualTileSize.Y,
+                        overlayActualTileSize.X,
+                        overlayActualTileSize.Y
+                    );
+
+                    // Visual tile position: offset by -half tile from data grid
+                    // Visual (0,0) is at pixel (-halfTile, -halfTile)
+                    // We render at (vx * tileSize - halfTile, vy * tileSize - halfTile)
+                    // But since our control starts at 0,0, we shift everything by +halfTile
+                    // So visual (0,0) renders at (0,0) and data grid renders at (halfTile, halfTile)
+                    var destRect = new Rect2(
+                        vx * scaledTileSize.X,
+                        vy * scaledTileSize.Y,
+                        scaledTileSize.X,
+                        scaledTileSize.Y
+                    );
+
+                    DrawTextureRectRegion(overlayTexture, destRect, srcRect);
+                }
             }
         }
 
@@ -517,9 +599,8 @@ public partial class DualGridAutoTilePreview : Control
 
         if (format == "blob47")
         {
-            // Blob47 uses index lookup
-            var blobMasks = NeighborBitmask8.GetValid47Masks();
-            variantIndex = blobMasks.IndexOf(bitmask);
+            // Blob47 uses index lookup - GetBlobIndex returns 0-46 or -1 if invalid
+            variantIndex = NeighborBitmask8.GetBlobIndex(bitmask);
             if (variantIndex < 0) variantIndex = 0;
         }
         else
@@ -535,22 +616,6 @@ public partial class DualGridAutoTilePreview : Control
         }
 
         return new Vector2I(_overlayTile.AtlasX, _overlayTile.AtlasY);
-    }
-}
-
-/// <summary>
-///     Extension method to find index in IReadOnlyList
-/// </summary>
-internal static class ReadOnlyListExtensions
-{
-    public static int IndexOf<T>(this IReadOnlyList<T> list, T item) where T : IEquatable<T>
-    {
-        for (int i = 0; i < list.Count; i++)
-        {
-            if (list[i].Equals(item))
-                return i;
-        }
-        return -1;
     }
 }
 #endif

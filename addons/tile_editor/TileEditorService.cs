@@ -127,14 +127,17 @@ public partial class TileEditorService : RefCounted
                     IsTransparent = tileData.IsTransparent ?? true,
                     Biomes = tileData.Biomes?.ToList() ?? new List<string>(),
                     SizeX = tileData.Size?.X ?? 1,
-                    SizeY = tileData.Size?.Y ?? 1
+                    SizeY = tileData.Size?.Y ?? 1,
+                    SourceScale = tileData.SourceScale ?? 1.0f
                 };
 
                 // Load auto-tile variants if present
                 if (tileData.AutoTileVariants != null && tileData.AutoTileVariants.Any(v => v != null))
                 {
-                    tile.AutoTileVariants = new Vector2I?[16];
-                    for (var i = 0; i < Math.Min(16, tileData.AutoTileVariants.Length); i++)
+                    // Determine correct array size based on format (47 for blob47, 16 for corner16/edge16)
+                    var variantCount = tileData.AutoTileFormat == "blob47" ? 47 : 16;
+                    tile.AutoTileVariants = new Vector2I?[variantCount];
+                    for (var i = 0; i < Math.Min(variantCount, tileData.AutoTileVariants.Length); i++)
                     {
                         var v = tileData.AutoTileVariants[i];
                         if (v != null)
@@ -281,7 +284,7 @@ public partial class TileEditorService : RefCounted
     }
 
     /// <summary>
-    /// Get the texture region for a tile (supports multi-tile sizes)
+    /// Get the texture region for a tile (supports multi-tile sizes and source scaling)
     /// </summary>
     public Rect2I GetTileTextureRegion(EditableTile tile)
     {
@@ -292,12 +295,17 @@ public partial class TileEditorService : RefCounted
             var source = _tileSet!.GetSource(tile.SourceId) as TileSetAtlasSource;
             if (source == null) return new Rect2I(0, 0, 16, 16);
 
-            var tileSize = _tileSet.TileSize;
+            var baseTileSize = _tileSet.TileSize;
+            // Account for source scale: 0.5x = 32px source, 2.0x = 8px source
+            var actualTileSize = new Vector2I(
+                (int)(baseTileSize.X / tile.SourceScale),
+                (int)(baseTileSize.Y / tile.SourceScale)
+            );
             var atlasCoords = new Vector2I(tile.AtlasX, tile.AtlasY);
 
             // Use the tile's size for multi-tile support
-            var regionSize = new Vector2I(tileSize.X * tile.SizeX, tileSize.Y * tile.SizeY);
-            return new Rect2I(atlasCoords * tileSize, regionSize);
+            var regionSize = new Vector2I(actualTileSize.X * tile.SizeX, actualTileSize.Y * tile.SizeY);
+            return new Rect2I(atlasCoords * actualTileSize, regionSize);
         }
         catch (Exception ex)
         {
@@ -696,6 +704,7 @@ public partial class TileEditorService : RefCounted
                     IsTransparent = t.IsTransparent,
                     Biomes = t.Biomes.Count > 0 ? t.Biomes : null,
                     Size = (t.SizeX != 1 || t.SizeY != 1) ? new Vector2IData { X = t.SizeX, Y = t.SizeY } : null,
+                    SourceScale = t.SourceScale != 1.0f ? t.SourceScale : null,
                     AutoTileVariants = t.HasAutoTileVariants
                         ? t.AutoTileVariants!.Select(v => v.HasValue ? new Vector2IData { X = v.Value.X, Y = v.Value.Y } : null).ToArray()
                         : null,
@@ -861,6 +870,8 @@ public partial class TileEditorService : RefCounted
         [JsonPropertyName("tileMode")] public string? TileMode { get; set; }
 
         [JsonPropertyName("dominance")] public int? Dominance { get; set; }
+
+        [JsonPropertyName("sourceScale")] public float? SourceScale { get; set; }
     }
 
     private sealed class AnimationData
@@ -895,6 +906,14 @@ public class EditableTile
     public List<string> Biomes { get; set; } = new();
     public int SizeX { get; set; } = 1;
     public int SizeY { get; set; } = 1;
+
+    /// <summary>
+    /// Source scale factor for tiles from differently-sized source textures.
+    /// 0.5 = 32x32 source scaled down to 16x16
+    /// 1.0 = 16x16 source (standard, no scaling)
+    /// 2.0 = 8x8 source scaled up to 16x16
+    /// </summary>
+    public float SourceScale { get; set; } = 1.0f;
 
     /// <summary>
     /// Auto-tile variant atlas coordinates indexed by bitmask.
@@ -993,6 +1012,7 @@ public class EditableTile
             Biomes = new List<string>(Biomes),
             SizeX = SizeX,
             SizeY = SizeY,
+            SourceScale = SourceScale,
             DecorationDensity = DecorationDensity,
             BlobSettings = BlobSettings?.Clone(),
             AutoTileFormat = AutoTileFormat,

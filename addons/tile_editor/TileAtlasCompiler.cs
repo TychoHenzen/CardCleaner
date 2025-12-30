@@ -82,16 +82,18 @@ public class TileAtlasCompiler
 
         foreach (var tile in service.AllTiles)
         {
-            // Add base tile
-            AddRegionIfNew(regions, seenRegions, tile.SourceId, tile.AtlasX, tile.AtlasY, tile.SizeX, tile.SizeY);
+            var sourceScale = tile.SourceScale;
 
-            // Add auto-tile variants
+            // Add base tile
+            AddRegionIfNew(regions, seenRegions, tile.SourceId, tile.AtlasX, tile.AtlasY, tile.SizeX, tile.SizeY, sourceScale);
+
+            // Add auto-tile variants (always 1x1 cell size, but inherit source scale)
             if (tile.AutoTileVariants != null)
             {
                 foreach (var variant in tile.AutoTileVariants)
                 {
                     if (variant.HasValue)
-                        AddRegionIfNew(regions, seenRegions, tile.SourceId, variant.Value.X, variant.Value.Y, 1, 1);
+                        AddRegionIfNew(regions, seenRegions, tile.SourceId, variant.Value.X, variant.Value.Y, 1, 1, sourceScale);
                 }
             }
 
@@ -100,7 +102,7 @@ public class TileAtlasCompiler
             {
                 foreach (var variation in tile.Variations)
                 {
-                    AddRegionIfNew(regions, seenRegions, tile.SourceId, variation.X, variation.Y, tile.SizeX, tile.SizeY);
+                    AddRegionIfNew(regions, seenRegions, tile.SourceId, variation.X, variation.Y, tile.SizeX, tile.SizeY, sourceScale);
                 }
             }
 
@@ -109,7 +111,7 @@ public class TileAtlasCompiler
             {
                 foreach (var frame in tile.AnimationFrames)
                 {
-                    AddRegionIfNew(regions, seenRegions, tile.SourceId, frame.X, frame.Y, tile.SizeX, tile.SizeY);
+                    AddRegionIfNew(regions, seenRegions, tile.SourceId, frame.X, frame.Y, tile.SizeX, tile.SizeY, sourceScale);
                 }
             }
         }
@@ -117,14 +119,14 @@ public class TileAtlasCompiler
         return regions;
     }
 
-    private void AddRegionIfNew(List<TileRegion> regions, HashSet<string> seen, int sourceId, int x, int y, int w, int h)
+    private void AddRegionIfNew(List<TileRegion> regions, HashSet<string> seen, int sourceId, int x, int y, int w, int h, float sourceScale)
     {
         var key = $"{sourceId}:{x},{y}";
         if (seen.Contains(key))
             return;
 
         seen.Add(key);
-        regions.Add(new TileRegion(sourceId, x, y, w, h));
+        regions.Add(new TileRegion(sourceId, x, y, w, h, sourceScale));
     }
 
     /// <summary>
@@ -246,21 +248,48 @@ public class TileAtlasCompiler
                     continue;
                 }
 
-                // Calculate source rectangle (in pixels)
+                // Calculate source pixel size based on SourceScale
+                // SourceScale 0.5 = 32px source (32/16=2, so divide tileSize by 0.5 = multiply by 2)
+                // SourceScale 1.0 = 16px source (standard)
+                // SourceScale 2.0 = 8px source (8/16=0.5, so divide tileSize by 2.0)
+                var sourceScale = packed.Region.SourceScale;
+                var sourcePixelSize = (int)(tileSize.X / sourceScale);
+
+                // Calculate source rectangle (in source texture pixels)
                 var srcRect = new Rect2I(
-                    packed.Region.AtlasX * tileSize.X,
-                    packed.Region.AtlasY * tileSize.Y,
-                    packed.Region.Width * tileSize.X,
-                    packed.Region.Height * tileSize.Y);
+                    packed.Region.AtlasX * sourcePixelSize,
+                    packed.Region.AtlasY * sourcePixelSize,
+                    packed.Region.Width * sourcePixelSize,
+                    packed.Region.Height * sourcePixelSize);
+
+                // Target size in output atlas (always 16px base * cell count)
+                var targetWidth = packed.Region.Width * tileSize.X;
+                var targetHeight = packed.Region.Height * tileSize.Y;
 
                 // Destination position (with padding offset)
                 var dstPos = new Vector2I(packed.AtlasX + TilePadding, packed.AtlasY + TilePadding);
 
-                // Blit the tile region to the atlas
-                atlasImage.BlitRect(sourceImage, srcRect, dstPos);
+                // Handle scaling if needed
+                if (Math.Abs(sourceScale - 1.0f) > 0.001f)
+                {
+                    // Extract tile region to temp image
+                    var extractedTile = Image.CreateEmpty(srcRect.Size.X, srcRect.Size.Y, false, Image.Format.Rgba8);
+                    extractedTile.BlitRect(sourceImage, srcRect, Vector2I.Zero);
+
+                    // Resize to target output size using nearest neighbor for pixel art
+                    extractedTile.Resize(targetWidth, targetHeight, Image.Interpolation.Nearest);
+
+                    // Blit the resized tile to the atlas
+                    atlasImage.BlitRect(extractedTile, new Rect2I(0, 0, targetWidth, targetHeight), dstPos);
+                }
+                else
+                {
+                    // No scaling needed - direct blit
+                    atlasImage.BlitRect(sourceImage, srcRect, dstPos);
+                }
 
                 // Optional: Extend edges into padding to reduce bleeding
-                ExtendEdgesToPadding(atlasImage, dstPos, srcRect.Size, TilePadding);
+                ExtendEdgesToPadding(atlasImage, dstPos, new Vector2I(targetWidth, targetHeight), TilePadding);
             }
 
             // Save as PNG
@@ -367,7 +396,7 @@ public class TileAtlasCompiler
     }
 
     // Data structures for packing
-    private record TileRegion(int SourceId, int AtlasX, int AtlasY, int Width, int Height);
+    private record TileRegion(int SourceId, int AtlasX, int AtlasY, int Width, int Height, float SourceScale);
     private record PackedTile(TileRegion Region, int AtlasX, int AtlasY);
 
     // Type alias for mapping structure: sourceId -> coordKey -> rect
