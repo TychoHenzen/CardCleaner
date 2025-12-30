@@ -385,8 +385,8 @@
       "name": "Dense Trees",
       "passability": "solid",
       "atlasCoords": {
-        "x": 6,
-        "y": 2
+        "x": 0,
+        "y": 0
       },
       "sourceId": 174,
       "layer": "structure",

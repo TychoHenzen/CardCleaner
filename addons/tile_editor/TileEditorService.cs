@@ -196,6 +196,9 @@ public partial class TileEditorService : RefCounted
                 else
                     tile.TileMode = ComputeTileModeFromData(tile);
 
+                // Load dominance (null means use file order)
+                tile.Dominance = tileData.Dominance;
+
                 _tiles[tile.Id] = tile;
             }
 
@@ -712,7 +715,8 @@ public partial class TileEditorService : RefCounted
                             FrameDuration = t.AnimationFrameDuration
                         }
                         : null,
-                    TileMode = t.TileMode != "plain" ? t.TileMode : null
+                    TileMode = t.TileMode != "plain" ? t.TileMode : null,
+                    Dominance = t.Dominance
                 }).ToList(),
 
                 // Blob generation config
@@ -825,6 +829,8 @@ public partial class TileEditorService : RefCounted
         [JsonPropertyName("animation")] public AnimationData? Animation { get; set; }
 
         [JsonPropertyName("tileMode")] public string? TileMode { get; set; }
+
+        [JsonPropertyName("dominance")] public int? Dominance { get; set; }
     }
 
     private sealed class AnimationData
@@ -934,6 +940,13 @@ public class EditableTile
     /// </summary>
     public string TileMode { get; set; } = "plain";
 
+    /// <summary>
+    /// Visual dominance for terrain transitions. Higher values render on top of lower values.
+    /// Used by dual-grid auto-tiling to determine which terrain's edges show at boundaries.
+    /// Defaults to file order index if not specified.
+    /// </summary>
+    public int? Dominance { get; set; }
+
     public EditableTile Clone()
     {
         var clone = new EditableTile
@@ -955,7 +968,8 @@ public class EditableTile
             AutoTileFormat = AutoTileFormat,
             VariationMode = VariationMode,
             AnimationFrameDuration = AnimationFrameDuration,
-            TileMode = TileMode
+            TileMode = TileMode,
+            Dominance = Dominance
         };
 
         if (AutoTileVariants != null)

@@ -69,11 +69,13 @@ public static class TileDataLoader
 
             var tilesetPath = data.Tileset ?? DefaultTilesetPath;
             var tiles = new List<TileDefinition>();
+            var index = 0;
             foreach (var tileData in data.Tiles)
             {
-                var tile = ConvertToTileDefinition(tileData);
+                var tile = ConvertToTileDefinition(tileData, index);
                 if (tile != null)
                     tiles.Add(tile);
+                index++;
             }
 
             ILog.Print($"[TileDataLoader] Loaded {tiles.Count} tiles from {path} using tileset {tilesetPath}");
@@ -192,7 +194,7 @@ public static class TileDataLoader
         }
     }
 
-    private static TileDefinition? ConvertToTileDefinition(TileData data)
+    private static TileDefinition? ConvertToTileDefinition(TileData data, int fileIndex)
     {
         if (string.IsNullOrEmpty(data.Id) || string.IsNullOrEmpty(data.Name))
             return null;
@@ -206,6 +208,8 @@ public static class TileDataLoader
         var variations = ParseVariations(data.Variations);
         var variationMode = ParseVariationMode(data.VariationMode);
         var animation = ParseAnimation(data.Animation);
+        // Use explicit dominance if provided, otherwise default to file order index
+        var dominance = data.Dominance ?? fileIndex;
 
         return new TileDefinition(
             id: data.Id,
@@ -224,7 +228,8 @@ public static class TileDataLoader
             autoTileFormat: autoTileFormat,
             variations: variations,
             variationMode: variationMode,
-            animation: animation);
+            animation: animation,
+            dominance: dominance);
     }
 
     private static AutoTileFormat ParseAutoTileFormat(string? value)
@@ -418,6 +423,8 @@ public static class TileDataLoader
         [JsonPropertyName("variationMode")] public string? VariationMode { get; set; }
 
         [JsonPropertyName("animation")] public AnimationData? Animation { get; set; }
+
+        [JsonPropertyName("dominance")] public int? Dominance { get; set; }
     }
 
     private sealed class AnimationData

@@ -28,12 +28,13 @@ public class SimpleMapData
     public Dictionary<string, int> PerGenerationVariants { get; set; } = new();
 
     /// <summary>
-    /// Decoration layer tiles for terrain transitions using dual-grid technique.
-    /// Maps visual grid position to (tileId, bitmask) for auto-tiled edge variants.
+    /// Dual-grid terrain data for proper base + top layer rendering.
+    /// Maps visual grid position to (baseTileId, topTileId, bitmask) for dual-layer rendering.
     /// Visual grid is (Size.X+1, Size.Y+1) and offset by half a tile from terrain grid.
-    /// These are rendered on top of base terrain to show transition edges.
+    /// Base terrain fills background, top terrain uses Corner16 auto-tiling.
+    /// Bitmask of 15 (all corners) indicates no transition at this position.
     /// </summary>
-    public Dictionary<Vector2I, (string TileId, int Bitmask)> DecorationOverlays { get; set; } = new();
+    public Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> DecorationOverlays { get; set; } = new();
 
     /// <summary>
     /// Whether decoration overlays use dual-grid positioning (half-tile offset).
@@ -141,8 +142,12 @@ public class SimpleMapData
         {
             _edgeTileCoverage = new HashSet<Vector2I>();
 
-            foreach (var (visualPos, _) in DecorationOverlays)
+            foreach (var (visualPos, (_, _, bitmask)) in DecorationOverlays)
             {
+                // Only count positions with actual transitions (not 0 or 15)
+                if (bitmask == 0 || bitmask == 15)
+                    continue;
+
                 // Visual tile at (vx, vy) covers terrain cells at its 4 corners
                 // TL corner: (vx-1, vy-1)
                 // TR corner: (vx, vy-1)

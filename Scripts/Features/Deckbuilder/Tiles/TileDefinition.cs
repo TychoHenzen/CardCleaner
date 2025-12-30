@@ -51,7 +51,8 @@ public class TileDefinition
         AutoTileFormat autoTileFormat = AutoTileFormat.Corner16,
         Vector2I[]? variations = null,
         VariationMode variationMode = VariationMode.PerInstance,
-        TileAnimation? animation = null)
+        TileAnimation? animation = null,
+        int dominance = 0)
     {
         Id = id;
         Name = name;
@@ -70,6 +71,7 @@ public class TileDefinition
         Variations = variations;
         VariationMode = variationMode;
         Animation = animation;
+        Dominance = dominance;
     }
 
     public string Id { get; }
@@ -132,6 +134,13 @@ public class TileDefinition
     /// Animation configuration for this tile. Null means no animation.
     /// </summary>
     public TileAnimation? Animation { get; }
+
+    /// <summary>
+    /// Visual dominance for terrain transitions. Higher values render on top of lower values.
+    /// Used by dual-grid auto-tiling to determine which terrain's edges show at boundaries.
+    /// Defaults to file order index if not specified in tile definition.
+    /// </summary>
+    public int Dominance { get; }
 
     /// <summary>
     /// Whether this tile has visual variations.

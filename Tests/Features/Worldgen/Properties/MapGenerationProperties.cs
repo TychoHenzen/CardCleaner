@@ -205,10 +205,10 @@ public partial class MapGenerationProperties : PropertyTestBase
                 {
                     var map = GenerateMapWithSeed((ulong)args.Seed, new Vector2I(args.Width, args.Height));
 
-                    // All decoration overlays should have valid 4-bit bitmasks (1-15)
-                    foreach (var (_, (_, bitmask)) in map.DecorationOverlays)
+                    // All decoration overlays should have valid 4-bit bitmasks (0-15)
+                    foreach (var (_, (_, _, bitmask)) in map.DecorationOverlays)
                     {
-                        if (bitmask < 1 || bitmask > 15)
+                        if (bitmask < 0 || bitmask > 15)
                             return false;
                     }
 
@@ -233,10 +233,13 @@ public partial class MapGenerationProperties : PropertyTestBase
                 {
                     var map = GenerateMapWithSeed((ulong)args.Seed, new Vector2I(args.Width, args.Height));
 
+                    // Visual grid is (size+1) in each dimension for dual-grid auto-tiling
+                    var visualWidth = args.Width + 1;
+                    var visualHeight = args.Height + 1;
                     foreach (var (position, _) in map.DecorationOverlays)
                     {
-                        if (position.X < 0 || position.X >= args.Width ||
-                            position.Y < 0 || position.Y >= args.Height)
+                        if (position.X < 0 || position.X >= visualWidth ||
+                            position.Y < 0 || position.Y >= visualHeight)
                             return false;
                     }
 
@@ -447,13 +450,15 @@ public partial class MapGenerationProperties : PropertyTestBase
         if (map.PassableTiles.Any(pos => pos.X < 0 || pos.X >= expectedWidth || pos.Y < 0 || pos.Y >= expectedHeight))
             return false;
 
-        // Decoration overlays are valid
-        foreach (var (position, (_, bitmask)) in map.DecorationOverlays)
+        // Decoration overlays are valid (visual grid is size+1 in each dimension)
+        var visualWidth = expectedWidth + 1;
+        var visualHeight = expectedHeight + 1;
+        foreach (var (position, (_, _, bitmask)) in map.DecorationOverlays)
         {
-            if (position.X < 0 || position.X >= expectedWidth || position.Y < 0 || position.Y >= expectedHeight)
+            if (position.X < 0 || position.X >= visualWidth || position.Y < 0 || position.Y >= visualHeight)
                 return false;
 
-            if (bitmask < 1 || bitmask > 15)
+            if (bitmask < 0 || bitmask > 15)
                 return false;
         }
 

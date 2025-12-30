@@ -653,19 +653,13 @@ public partial class SimpleWorldMapScreen : Node3D
         // Log tile info for debugging
         LogTileRenderingSample();
 
-        // Render the map with proper layering:
-        // 1. First pass: render terrain for ALL cells (ensures background exists everywhere)
-        // 2. Second pass: render structure/decoration tiles on top of terrain
-        for (var y = 0; y < mapData.Size.Y; y++)
-        for (var x = 0; x < mapData.Size.X; x++)
-        {
-            var position = new Vector2I(x, y);
-            var tileId = mapData.GetTileId(position);
-            RenderTileWithLayering(position, tileId, mapData);
-        }
-
-        // Render terrain transition overlays on decoration layer
+        // Render dual-grid terrain (base + top layers with half-tile offset)
+        // This handles ALL terrain rendering using the visual grid
         RenderTerrainTransitions(mapData);
+
+        // Render non-terrain tiles (structures, decorations, effects) from data grid
+        // These render at data grid positions (no offset) on top of the dual-grid terrain
+        RenderNonTerrainTiles(mapData);
 
         // Render biome overlay if enabled
         if (ShowBiomeOverlay) RenderBiomeOverlay(mapData);
@@ -739,109 +733,65 @@ public partial class SimpleWorldMapScreen : Node3D
     }
 
     /// <summary>
-    /// Render a tile with proper layering - terrain first, then structure/decoration on top.
-    /// This ensures transparent tiles always have terrain visible underneath.
-    /// Handles multi-tile sprites by rendering each cell with correct atlas offsets.
-    /// </summary>
-    private void RenderTileWithLayering(Vector2I position, string tileId, SimpleMapData mapData)
-    {
-        var (sourceId, atlasCoords, layer, tileSize) = GetTileRenderInfoFull(tileId);
-
-        if (layer == TileLayer.Terrain)
-        {
-            // For terrain tiles, just render to terrain layer (terrain is always 1x1)
-            TerrainLayer?.SetCell(position, sourceId, atlasCoords);
-        }
-        else
-        {
-            // For non-terrain tiles (structure, decoration, effects):
-            // 1. First render terrain underneath all cells the tile will cover
-            var biomeType = mapData.GetBiomeAt(position);
-            var terrainTileId = GetDefaultTerrainTileForBiome(biomeType);
-            if (terrainTileId != null)
-            {
-                var (terrainSourceId, terrainAtlasCoords, _, _) = GetTileRenderInfoFull(terrainTileId);
-                // Render terrain for each cell the multi-tile covers
-                for (var dy = 0; dy < tileSize.Y; dy++)
-                for (var dx = 0; dx < tileSize.X; dx++)
-                {
-                    var cellPos = new Vector2I(position.X + dx, position.Y + dy);
-                    if (cellPos.X < mapData.Size.X && cellPos.Y < mapData.Size.Y)
-                    {
-                        TerrainLayer?.SetCell(cellPos, terrainSourceId, terrainAtlasCoords);
-                    }
-                }
-            }
-
-            // 2. Render each cell of the multi-tile with correct atlas offsets
-            var targetLayer = layer switch
-            {
-                TileLayer.Decoration => DecorationLayer,
-                TileLayer.Structure => StructureLayer,
-                TileLayer.Effects => EffectLayer,
-                _ => TerrainLayer
-            };
-
-            for (var dy = 0; dy < tileSize.Y; dy++)
-            for (var dx = 0; dx < tileSize.X; dx++)
-            {
-                var cellPos = new Vector2I(position.X + dx, position.Y + dy);
-                if (cellPos.X < mapData.Size.X && cellPos.Y < mapData.Size.Y)
-                {
-                    // Offset atlas coords for this cell of the multi-tile
-                    var cellAtlasCoords = new Vector2I(atlasCoords.X + dx, atlasCoords.Y + dy);
-                    targetLayer?.SetCell(cellPos, sourceId, cellAtlasCoords);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Get a default terrain tile ID for a biome type.
-    /// This is used when rendering structure/decoration tiles to ensure terrain is underneath.
-    /// </summary>
-    private static string? GetDefaultTerrainTileForBiome(BiomeType biomeType)
-    {
-        return biomeType switch
-        {
-            BiomeType.Plains => "plains_grass",
-            BiomeType.Forest => "forest_floor",
-            BiomeType.Desert => "desert_sand",
-            BiomeType.Tundra => "tundra_snow",
-            BiomeType.Swamp => "swamp_mud",
-            BiomeType.Mountains => "mountains_rock",
-            _ => "plains_grass"
-        };
-    }
-
-    /// <summary>
-    /// Render terrain transition overlays from DecorationOverlays data.
-    /// Uses dual-grid technique: visual grid is offset by half a tile from terrain grid.
-    /// Each visual tile sits at the intersection of 4 terrain cells.
+    /// Render complete dual-grid terrain system with base and top layers.
+    /// Visual grid covers the entire map with half-tile offset.
+    /// Base layer (TerrainLayer) fills background, top layer (DecorationLayer) adds auto-tiled transitions.
     /// </summary>
     private void RenderTerrainTransitions(SimpleMapData mapData)
     {
-        if (DecorationLayer == null || _tileRegistry == null)
+        if (TerrainLayer == null || DecorationLayer == null || _tileRegistry == null)
             return;
 
-        // Apply half-tile offset for dual-grid rendering
-        // Visual grid position (vx, vy) should render at pixel (-8 + vx*16, -8 + vy*16)
-        // We achieve this by offsetting the DecorationLayer by half a tile
-        if (mapData.UsesDualGridOverlays)
+        if (mapData.DecorationOverlays.Count == 0)
         {
-            DecorationLayer.Position = new Vector2(-TILE_SIZE / 2f, -TILE_SIZE / 2f);
-        }
-        else
-        {
-            DecorationLayer.Position = Vector2.Zero;
+            ILog.Print("[DUAL-GRID] No terrain data available, skipping dual-grid rendering");
+            return;
         }
 
-        var rendered = 0;
-        foreach (var (position, (tileId, bitmask)) in mapData.DecorationOverlays)
+        // Apply half-tile offset to BOTH layers for dual-grid rendering
+        var offset = mapData.UsesDualGridOverlays
+            ? new Vector2(-TILE_SIZE / 2f, -TILE_SIZE / 2f)
+            : Vector2.Zero;
+
+        TerrainLayer.Position = offset;
+        DecorationLayer.Position = offset;
+
+        // Pass 1: Render ALL base terrain to TerrainLayer
+        var baseRendered = 0;
+        var baseMissing = 0;
+        var missingTileIds = new HashSet<string>();
+
+        foreach (var (position, (baseTileId, _, _)) in mapData.DecorationOverlays)
         {
-            var tile = _tileRegistry.GetTile(tileId);
-            if (tile == null)
+            var baseTile = _tileRegistry.GetTile(baseTileId);
+            if (baseTile == null)
+            {
+                baseMissing++;
+                missingTileIds.Add(baseTileId);
                 continue;
+            }
+
+            TerrainLayer.SetCell(position, baseTile.SourceId, baseTile.AtlasCoords);
+            baseRendered++;
+        }
+
+        // Pass 2: Render top terrain with auto-tiling to DecorationLayer (only where transitions exist)
+        var topRendered = 0;
+        var topMissing = 0;
+
+        foreach (var (position, (_, topTileId, bitmask)) in mapData.DecorationOverlays)
+        {
+            // Skip if bitmask is 0 (no corners) or 15 (all corners - no transition visible)
+            if (bitmask == 0 || bitmask == 15)
+                continue;
+
+            var tile = _tileRegistry.GetTile(topTileId);
+            if (tile == null)
+            {
+                topMissing++;
+                missingTileIds.Add(topTileId);
+                continue;
+            }
 
             // Get the auto-tiled atlas coords for this edge configuration
             var atlasCoords = tile.HasAutoTileVariants
@@ -849,11 +799,70 @@ public partial class SimpleWorldMapScreen : Node3D
                 : tile.AtlasCoords;
 
             DecorationLayer.SetCell(position, tile.SourceId, atlasCoords);
-            rendered++;
+            topRendered++;
         }
 
-        if (rendered > 0)
-            ILog.Print($"[TERRAIN TRANSITIONS] Rendered {rendered} dual-grid overlays (offset: {DecorationLayer.Position})");
+        ILog.Print($"[DUAL-GRID] Rendered {baseRendered} base tiles, {topRendered} top transitions (offset: {offset})");
+
+        if (baseMissing > 0 || topMissing > 0)
+            ILog.Print($"[DUAL-GRID] WARNING: {baseMissing} missing base tiles, {topMissing} missing top tiles. IDs: {string.Join(", ", missingTileIds)}");
+    }
+
+    /// <summary>
+    /// Render non-terrain tiles (structures, decorations, effects) from the data grid.
+    /// Terrain is now handled entirely by the dual-grid transition system.
+    /// </summary>
+    private void RenderNonTerrainTiles(SimpleMapData mapData)
+    {
+        var structureCount = 0;
+        var decorationCount = 0;
+        var effectCount = 0;
+
+        for (var y = 0; y < mapData.Size.Y; y++)
+        for (var x = 0; x < mapData.Size.X; x++)
+        {
+            var position = new Vector2I(x, y);
+            var tileId = mapData.GetTileId(position);
+            var (sourceId, atlasCoords, layer, tileSize) = GetTileRenderInfoFull(tileId);
+
+            // Skip terrain tiles - they're handled by dual-grid system
+            if (layer == TileLayer.Terrain)
+                continue;
+
+            var targetLayer = layer switch
+            {
+                TileLayer.Decoration => DecorationLayer,
+                TileLayer.Structure => StructureLayer,
+                TileLayer.Effects => EffectLayer,
+                _ => null
+            };
+
+            if (targetLayer == null)
+                continue;
+
+            // Render each cell of multi-tile with proper atlas offset
+            for (var dy = 0; dy < tileSize.Y; dy++)
+            for (var dx = 0; dx < tileSize.X; dx++)
+            {
+                var cellPos = new Vector2I(position.X + dx, position.Y + dy);
+                if (cellPos.X >= mapData.Size.X || cellPos.Y >= mapData.Size.Y)
+                    continue;
+
+                var cellAtlasCoords = new Vector2I(atlasCoords.X + dx, atlasCoords.Y + dy);
+                targetLayer.SetCell(cellPos, sourceId, cellAtlasCoords);
+            }
+
+            // Track counts for logging
+            switch (layer)
+            {
+                case TileLayer.Structure: structureCount++; break;
+                case TileLayer.Decoration: decorationCount++; break;
+                case TileLayer.Effects: effectCount++; break;
+            }
+        }
+
+        if (structureCount + decorationCount + effectCount > 0)
+            ILog.Print($"[NON-TERRAIN] Rendered {structureCount} structures, {decorationCount} decorations, {effectCount} effects");
     }
 
     /// <summary>
