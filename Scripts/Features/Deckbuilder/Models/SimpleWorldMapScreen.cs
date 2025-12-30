@@ -115,8 +115,20 @@ public partial class SimpleWorldMapScreen : Node3D
         CallDeferred(nameof(SetupScreenMesh));
         CallDeferred(nameof(SetupScreenMaterial));
 
-        // Get tile registry for rendering
-        ServiceLocator.Get<ITileRegistry>(registry => _tileRegistry = registry);
+        // Get tile registry for rendering and assign TileSet to layers
+        ServiceLocator.Get<ITileRegistry>(registry =>
+        {
+            _tileRegistry = registry;
+            // Use compiled TileSet directly if available, otherwise load from path
+            if (registry.UsingCompiledAtlas && registry.CompiledTileSet != null)
+            {
+                AssignTileSetDirectly(registry.CompiledTileSet);
+            }
+            else
+            {
+                AssignTileSetToLayers(registry.TilesetPath);
+            }
+        });
 
         // Use dependency injection to get the game session service
         ServiceLocator.Get<IGameSessionService>(gameSession =>
@@ -198,6 +210,47 @@ public partial class SimpleWorldMapScreen : Node3D
         _playerHealthLabel = CombatUI?.GetNode<Label>("PlayerHealthLabel");
         _enemyHealthLabel = CombatUI?.GetNode<Label>("EnemyHealthLabel");
         _actionLabel = CombatUI?.GetNode<Label>("ActionLabel");
+    }
+
+    /// <summary>
+    /// Loads the TileSet at runtime and assigns it to all TileMapLayer nodes.
+    /// This avoids loading the massive TileSet at scene parse time.
+    /// </summary>
+    private void AssignTileSetToLayers(string tilesetPath)
+    {
+        var tileSet = GD.Load<TileSet>(tilesetPath);
+        if (tileSet == null)
+        {
+            ILog.Error($"Failed to load TileSet from {tilesetPath}");
+            return;
+        }
+
+        AssignTileSetDirectly(tileSet);
+        ILog.Print($"[SimpleWorldMapScreen] Assigned TileSet from {tilesetPath} to all layers");
+    }
+
+    /// <summary>
+    /// Assigns a TileSet directly to all TileMapLayer nodes.
+    /// Used when TileSet is already loaded (e.g., from compiled atlas).
+    /// </summary>
+    private void AssignTileSetDirectly(TileSet tileSet)
+    {
+        // Assign TileSet and ensure nearest-neighbor filtering for pixel art
+        SetLayerTileSet(TerrainLayer, tileSet);
+        SetLayerTileSet(DecorationLayer, tileSet);
+        SetLayerTileSet(StructureLayer, tileSet);
+        SetLayerTileSet(EffectLayer, tileSet);
+        SetLayerTileSet(OverlayLayer, tileSet);
+        SetLayerTileSet(BiomeOverlayLayer, tileSet);
+
+        ILog.Print($"[SimpleWorldMapScreen] Assigned compiled TileSet to all layers");
+    }
+
+    private static void SetLayerTileSet(TileMapLayer? layer, TileSet tileSet)
+    {
+        if (layer == null) return;
+        layer.SetTileSet(tileSet);
+        layer.TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
     }
 
     private void SetupBiomePreview()

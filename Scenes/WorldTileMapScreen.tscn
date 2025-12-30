@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/Features/Deckbuilder/Models/WorldTileMapScreen.cs" id="1_q7ehv"]
 [ext_resource type="Resource" path="res://Assets/Terrain/WorldData/Base.tres" id="2_de14p"]
 [ext_resource type="Script" uid="uid://dfivx0g2ib815" path="res://Scripts/Features/Card/Models/CardSignature.cs" id="3_de14p"]
-[ext_resource type="TileSet" uid="uid://cs7m5recytaxd" path="res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres" id="8_1jn4e"]
+[ext_resource type="TileSet" uid="uid://placeholder_tileset_empty" path="res://Assets/Terrain/TileSets/PlaceholderTileSet.tres" id="8_1jn4e"]
 
 [sub_resource type="Resource" id="Resource_dwpdh"]
 script = ExtResource("3_de14p")

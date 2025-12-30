@@ -12,7 +12,7 @@
         "y": 4
       },
       "sourceId": 12,
-      "layer": "terrain",
+      "layer": "effects",
       "elevation": 0,
       "isTransparent": true
     },
@@ -25,7 +25,7 @@
         "y": 6
       },
       "sourceId": 8,
-      "layer": "terrain",
+      "layer": "effects",
       "elevation": 0,
       "isTransparent": true
     },
@@ -425,10 +425,22 @@
           "x": 3,
           "y": 1
         },
-        null,
-        null,
-        null,
-        null,
+        {
+          "x": 7,
+          "y": 3
+        },
+        {
+          "x": 6,
+          "y": 3
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 2
+        },
         {
           "x": 7,
           "y": 2
@@ -585,48 +597,248 @@
       "name": "Sand Dune",
       "passability": "passable",
       "atlasCoords": {
-        "x": 2,
+        "x": 8,
         "y": 0
       },
-      "sourceId": 9,
-      "layer": "terrain",
+      "sourceId": 170,
+      "layer": "structure",
       "elevation": 0.2,
       "isTransparent": true,
       "biomes": [
         "desert"
-      ]
+      ],
+      "autoTileVariants": [
+        null,
+        {
+          "x": 13,
+          "y": 12
+        },
+        {
+          "x": 13,
+          "y": 10
+        },
+        {
+          "x": 13,
+          "y": 11
+        },
+        {
+          "x": 15,
+          "y": 10
+        },
+        {
+          "x": 11,
+          "y": 12
+        },
+        {
+          "x": 14,
+          "y": 10
+        },
+        {
+          "x": 11,
+          "y": 10
+        },
+        {
+          "x": 15,
+          "y": 12
+        },
+        {
+          "x": 14,
+          "y": 12
+        },
+        {
+          "x": 12,
+          "y": 12
+        },
+        {
+          "x": 11,
+          "y": 11
+        },
+        {
+          "x": 15,
+          "y": 11
+        },
+        {
+          "x": 12,
+          "y": 11
+        },
+        {
+          "x": 12,
+          "y": 10
+        },
+        {
+          "x": 14,
+          "y": 11
+        }
+      ],
+      "tileMode": "autotile"
     },
     {
       "id": "desert_cracked",
       "name": "Cracked Earth",
       "passability": "passable",
       "atlasCoords": {
-        "x": 13,
-        "y": 23
+        "x": 4,
+        "y": 8
       },
-      "sourceId": 10,
+      "sourceId": 390,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
       "biomes": [
         "desert"
-      ]
+      ],
+      "size": {
+        "x": 2,
+        "y": 2
+      },
+      "autoTileVariants": [
+        null,
+        {
+          "x": 4,
+          "y": 9
+        },
+        {
+          "x": 4,
+          "y": 8
+        },
+        {
+          "x": 3,
+          "y": 9
+        },
+        {
+          "x": 5,
+          "y": 8
+        },
+        {
+          "x": 2,
+          "y": 9
+        },
+        {
+          "x": 2,
+          "y": 10
+        },
+        {
+          "x": 3,
+          "y": 10
+        },
+        {
+          "x": 5,
+          "y": 9
+        },
+        {
+          "x": 2,
+          "y": 8
+        },
+        {
+          "x": 2,
+          "y": 9
+        },
+        {
+          "x": 3,
+          "y": 8
+        },
+        {
+          "x": 1,
+          "y": 9
+        },
+        {
+          "x": 1,
+          "y": 8
+        },
+        {
+          "x": 1,
+          "y": 10
+        },
+        {
+          "x": 2,
+          "y": 11
+        }
+      ],
+      "tileMode": "autotile"
     },
     {
       "id": "desert_gravel",
       "name": "Gravel",
       "passability": "passable",
       "atlasCoords": {
-        "x": 5,
-        "y": 3
+        "x": 28,
+        "y": 36
       },
-      "sourceId": 12,
+      "sourceId": 350,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
       "biomes": [
         "desert"
-      ]
+      ],
+      "size": {
+        "x": 3,
+        "y": 3
+      },
+      "autoTileVariants": [
+        null,
+        {
+          "x": 28,
+          "y": 38
+        },
+        {
+          "x": 28,
+          "y": 36
+        },
+        {
+          "x": 28,
+          "y": 37
+        },
+        {
+          "x": 30,
+          "y": 36
+        },
+        {
+          "x": 28,
+          "y": 39
+        },
+        {
+          "x": 29,
+          "y": 36
+        },
+        {
+          "x": 30,
+          "y": 35
+        },
+        {
+          "x": 30,
+          "y": 38
+        },
+        {
+          "x": 29,
+          "y": 38
+        },
+        {
+          "x": 30,
+          "y": 39
+        },
+        {
+          "x": 30,
+          "y": 33
+        },
+        {
+          "x": 30,
+          "y": 37
+        },
+        {
+          "x": 28,
+          "y": 33
+        },
+        {
+          "x": 28,
+          "y": 35
+        },
+        {
+          "x": 29,
+          "y": 37
+        }
+      ],
+      "tileMode": "autotile"
     },
     {
       "id": "desert_rocky",

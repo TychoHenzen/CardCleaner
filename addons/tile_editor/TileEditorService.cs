@@ -664,6 +664,11 @@ public partial class TileEditorService : RefCounted
 
     public (bool success, string message) SaveTiles()
     {
+        return SaveTiles(compileAtlas: true);
+    }
+
+    public (bool success, string message) SaveTiles(bool compileAtlas)
+    {
         // Validate all tiles first
         foreach (var tile in _tiles.Values)
         {
@@ -745,6 +750,18 @@ public partial class TileEditorService : RefCounted
             File.WriteAllText(absolutePath, json);
 
             GD.Print($"[TileEditorService] Saved {_tiles.Count} tiles to {TilesPath}");
+
+            // Compile atlas after saving tiles.json
+            if (compileAtlas)
+            {
+                var atlasResult = CompileAtlas();
+                if (!atlasResult.success)
+                {
+                    GD.PrintErr($"[TileEditorService] Atlas compilation failed: {atlasResult.message}");
+                    return (true, $"Saved tiles, but atlas compilation failed: {atlasResult.message}");
+                }
+            }
+
             return (true, "Saved successfully");
         }
         catch (Exception ex)
@@ -752,6 +769,19 @@ public partial class TileEditorService : RefCounted
             GD.PrintErr($"[TileEditorService] Error saving tiles: {ex.Message}");
             return (false, ex.Message);
         }
+    }
+
+    /// <summary>
+    /// Compiles tiles into a single atlas texture with coordinate mapping.
+    /// Called automatically after SaveTiles() unless compileAtlas=false.
+    /// </summary>
+    public (bool success, string message) CompileAtlas()
+    {
+        if (_tileSet == null)
+            return (false, "No TileSet loaded - cannot compile atlas");
+
+        var compiler = new TileAtlasCompiler();
+        return compiler.CompileAtlas(this);
     }
 
     // JSON data model classes
