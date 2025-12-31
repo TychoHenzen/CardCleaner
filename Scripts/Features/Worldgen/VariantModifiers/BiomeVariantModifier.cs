@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
 
 namespace CardCleaner.Scripts.Features.Worldgen.VariantModifiers;
 
@@ -9,24 +8,24 @@ namespace CardCleaner.Scripts.Features.Worldgen.VariantModifiers;
 /// </summary>
 public sealed class BiomeVariantModifier : IVariantWeightModifier
 {
-    private readonly Dictionary<string, Dictionary<BiomeType, BiomeVariantPreference>> _preferences = new();
+    private readonly Dictionary<string, Dictionary<string, BiomeVariantPreference>> _preferences = new();
 
     /// <summary>
     /// Configure variant preferences for a tile in a specific biome.
     /// </summary>
     /// <param name="tileId">The base tile ID (e.g., "grass").</param>
-    /// <param name="biome">The biome where these preferences apply.</param>
+    /// <param name="biomeId">The biome where these preferences apply.</param>
     /// <param name="variantMultipliers">Multipliers indexed by variant index. Missing indices = 1.0.</param>
     /// <returns>This modifier for fluent configuration.</returns>
-    public BiomeVariantModifier WithPreference(string tileId, BiomeType biome, params float[] variantMultipliers)
+    public BiomeVariantModifier WithPreference(string tileId, string biomeId, params float[] variantMultipliers)
     {
         if (!_preferences.TryGetValue(tileId, out var tilePrefs))
         {
-            tilePrefs = new Dictionary<BiomeType, BiomeVariantPreference>();
+            tilePrefs = new Dictionary<string, BiomeVariantPreference>();
             _preferences[tileId] = tilePrefs;
         }
 
-        tilePrefs[biome] = new BiomeVariantPreference(variantMultipliers);
+        tilePrefs[biomeId] = new BiomeVariantPreference(variantMultipliers);
         return this;
     }
 
@@ -35,30 +34,30 @@ public sealed class BiomeVariantModifier : IVariantWeightModifier
     /// </summary>
     public BiomeVariantModifier WithPreference(
         string tileId,
-        BiomeType biome,
+        string biomeId,
         Dictionary<int, float> indexedMultipliers)
     {
         if (!_preferences.TryGetValue(tileId, out var tilePrefs))
         {
-            tilePrefs = new Dictionary<BiomeType, BiomeVariantPreference>();
+            tilePrefs = new Dictionary<string, BiomeVariantPreference>();
             _preferences[tileId] = tilePrefs;
         }
 
-        tilePrefs[biome] = new BiomeVariantPreference(indexedMultipliers);
+        tilePrefs[biomeId] = new BiomeVariantPreference(indexedMultipliers);
         return this;
     }
 
     public void ApplyModifier(VariantSelectionContext context)
     {
         var tileId = context.Tile.Id;
-        var biome = context.CurrentBiome.Type;
+        var biomeId = context.CurrentBiome.Id;
 
         // Check if we have preferences for this tile
         if (!_preferences.TryGetValue(tileId, out var tilePrefs))
             return;
 
         // Check if we have preferences for this biome
-        if (!tilePrefs.TryGetValue(biome, out var preference))
+        if (!tilePrefs.TryGetValue(biomeId, out var preference))
             return;
 
         // Apply multipliers to variant weights

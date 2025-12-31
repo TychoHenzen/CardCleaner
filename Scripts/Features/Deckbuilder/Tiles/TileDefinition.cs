@@ -42,7 +42,7 @@ public class TileDefinition
         TileLayer layer = TileLayer.Terrain,
         float elevation = 0f,
         bool? isTransparent = null,
-        HashSet<BiomeType>? allowedBiomes = null,
+        HashSet<string>? allowedBiomes = null,
         Vector2I? size = null,
         float decorationDensity = 1.0f,
         Vector2I?[]? autoTileVariants = null,
@@ -83,7 +83,7 @@ public class TileDefinition
     public TileLayer Layer { get; }
     public float Elevation { get; }
     public bool IsTransparent { get; }
-    public HashSet<BiomeType>? AllowedBiomes { get; }
+    public HashSet<string>? AllowedBiomes { get; }
 
     /// <summary>
     /// Size of this tile in grid cells (width, height). Default is (1, 1).
@@ -188,7 +188,7 @@ public class TileDefinition
     public bool IsPassable => Passability == TilePassability.Passable;
     public bool HasAutoTileVariants => AutoTileVariants != null;
 
-    public bool IsAllowedInBiome(BiomeType biome) => AllowedBiomes == null || AllowedBiomes.Contains(biome);
+    public bool IsAllowedInBiome(string biomeId) => AllowedBiomes == null || AllowedBiomes.Contains(biomeId);
 
     /// <summary>
     /// Check if this decoration tile should appear based on its density probability.

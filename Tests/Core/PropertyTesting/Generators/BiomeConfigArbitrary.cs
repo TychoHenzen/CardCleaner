@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using FsCheck;
@@ -16,24 +15,24 @@ public static class BiomeConfigArbitrary
     ///     Generator for random biome definitions.
     /// </summary>
     public static Gen<BiomeDefinition> Default =>
-        from type in BiomeTypeGen
+        from id in BiomeIdGen
         from signature in CardSignatureArbitrary.Generator
         from passable in TilePoolGen
         from blocked in TilePoolGen
         from blockedPct in Gen.Choose(0, 100).Select(i => i / 100f)
-        select new BiomeDefinition(type, signature, passable, blocked, blockedPct);
+        select new BiomeDefinition(id, signature, passable, blocked, blockedPct);
 
     /// <summary>
-    ///     Generator for biome types.
+    ///     Generator for biome IDs (string-based).
     /// </summary>
-    public static Gen<BiomeType> BiomeTypeGen =>
+    public static Gen<string> BiomeIdGen =>
         Gen.Elements(
-            BiomeType.Plains,
-            BiomeType.Forest,
-            BiomeType.Desert,
-            BiomeType.Mountains,
-            BiomeType.Swamp,
-            BiomeType.Tundra
+            "plains",
+            "forest",
+            "desert",
+            "mountains",
+            "swamp",
+            "tundra"
         );
 
     /// <summary>
@@ -68,7 +67,7 @@ public static class BiomeConfigArbitrary
         if (biome.BlockedPercentage > 0)
         {
             yield return new BiomeDefinition(
-                biome.Type,
+                biome.Id,
                 biome.AffinitySignature,
                 biome.PassableTiles,
                 biome.BlockedTiles,
@@ -78,7 +77,7 @@ public static class BiomeConfigArbitrary
         if (biome.BlockedPercentage > 0.5f)
         {
             yield return new BiomeDefinition(
-                biome.Type,
+                biome.Id,
                 biome.AffinitySignature,
                 biome.PassableTiles,
                 biome.BlockedTiles,
@@ -103,23 +102,23 @@ public static class BiomeConfigArbitrary
 public static class BiomeConfigGenerators
 {
     /// <summary>
-    ///     Generator for biomes of a specific type.
+    ///     Generator for biomes of a specific ID.
     /// </summary>
-    public static Gen<BiomeDefinition> WithType(BiomeType type) =>
+    public static Gen<BiomeDefinition> WithId(string biomeId) =>
         from signature in CardSignatureArbitrary.Generator
         from passable in BiomeConfigArbitrary.TilePoolGen
         from blocked in BiomeConfigArbitrary.TilePoolGen
         from blockedPct in Gen.Choose(0, 100).Select(i => i / 100f)
-        select new BiomeDefinition(type, signature, passable, blocked, blockedPct);
+        select new BiomeDefinition(biomeId, signature, passable, blocked, blockedPct);
 
     /// <summary>
     ///     Generator for biomes with blocked percentage in a specific range.
     /// </summary>
     public static Gen<BiomeDefinition> WithBlockedPercentage(float min, float max) =>
-        from type in BiomeConfigArbitrary.BiomeTypeGen
+        from id in BiomeConfigArbitrary.BiomeIdGen
         from signature in CardSignatureArbitrary.Generator
         from passable in BiomeConfigArbitrary.TilePoolGen
         from blocked in BiomeConfigArbitrary.TilePoolGen
         from blockedPct in Gen.Choose((int)(min * 100), (int)(max * 100)).Select(i => i / 100f)
-        select new BiomeDefinition(type, signature, passable, blocked, blockedPct);
+        select new BiomeDefinition(id, signature, passable, blocked, blockedPct);
 }

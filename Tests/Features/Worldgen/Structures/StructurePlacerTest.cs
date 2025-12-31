@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Structures;
@@ -23,8 +22,8 @@ public class StructurePlacerTest
     {
         _rng = new RandomNumberGenerator();
         _rng.Seed = 12345;
-        _plainsBiome = new BiomeDefinition(BiomeType.Plains, new CardSignature(), new TilePool(), new TilePool());
-        _forestBiome = new BiomeDefinition(BiomeType.Forest, new CardSignature(), new TilePool(), new TilePool());
+        _plainsBiome = new BiomeDefinition("plains", new CardSignature(), new TilePool(), new TilePool());
+        _forestBiome = new BiomeDefinition("forest", new CardSignature(), new TilePool(), new TilePool());
     }
 
     [TestCase]
@@ -82,7 +81,7 @@ public class StructurePlacerTest
         {
             Id = "test",
             Size = new Vector2I(1, 1),
-            AllowedBiomes = [BiomeType.Forest] // Only forest allowed
+            AllowedBiomes = ["forest"] // Only forest allowed
         };
         var mapSize = new Vector2I(10, 10);
 

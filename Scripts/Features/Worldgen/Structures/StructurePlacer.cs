@@ -107,7 +107,7 @@ public sealed class StructurePlacer
 
         // Check biome at anchor position
         var biome = getBiomeAt(position);
-        if (!stamp.IsBiomeAllowed(biome.Type))
+        if (!stamp.IsBiomeAllowed(biome.Id))
             return false;
 
         // Check spacing from other structures

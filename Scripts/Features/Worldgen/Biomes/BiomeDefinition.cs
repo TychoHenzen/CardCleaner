@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
@@ -10,20 +9,20 @@ namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 public partial class BiomeDefinition : Resource
 {
     // Default values as constants
-    private const BiomeType DefaultType = BiomeType.Plains;
+    private const string DefaultId = "plains";
     private const float DefaultBlockedPercentage = 0.3f;
     private static readonly CardSignature DefaultAffinitySignature = new();
 
     public BiomeDefinition() { }
 
     public BiomeDefinition(
-        BiomeType type,
+        string id,
         CardSignature affinitySignature,
         TilePool passableTiles,
         TilePool blockedTiles,
         float blockedPercentage = DefaultBlockedPercentage)
     {
-        Type = type;
+        Id = id;
         AffinitySignature = affinitySignature;
         PassableTiles = passableTiles;
         BlockedTiles = blockedTiles;
@@ -35,7 +34,6 @@ public partial class BiomeDefinition : Resource
     /// </summary>
     public static BiomeDefinition FromData(string biomeId, BiomeData data)
     {
-        var biomeType = ParseBiomeType(biomeId);
         var signature = new CardSignature(data.Signature);
 
         var passableTiles = new TilePool();
@@ -47,28 +45,14 @@ public partial class BiomeDefinition : Resource
             blockedTiles.Add(tileId, weight);
 
         return new BiomeDefinition(
-            biomeType,
+            biomeId,
             signature,
             passableTiles,
             blockedTiles,
             data.BlockedPercentage);
     }
 
-    private static BiomeType ParseBiomeType(string biomeId)
-    {
-        return biomeId.ToLowerInvariant() switch
-        {
-            "plains" => BiomeType.Plains,
-            "forest" => BiomeType.Forest,
-            "desert" => BiomeType.Desert,
-            "tundra" => BiomeType.Tundra,
-            "swamp" => BiomeType.Swamp,
-            "mountains" => BiomeType.Mountains,
-            _ => BiomeType.Plains // Default fallback
-        };
-    }
-
-    [Export] public BiomeType Type { get; set; } = DefaultType;
+    [Export] public string Id { get; set; } = DefaultId;
 
     [Export] public CardSignature AffinitySignature { get; set; } = new();
 
@@ -83,7 +67,7 @@ public partial class BiomeDefinition : Resource
     {
         return property.ToString() switch
         {
-            nameof(Type) => true,
+            nameof(Id) => true,
             nameof(AffinitySignature) => true,
             nameof(BlockedPercentage) => true,
             _ => base._PropertyCanRevert(property)
@@ -94,7 +78,7 @@ public partial class BiomeDefinition : Resource
     {
         return property.ToString() switch
         {
-            nameof(Type) => (int)DefaultType,
+            nameof(Id) => DefaultId,
             nameof(AffinitySignature) => Variant.From(DefaultAffinitySignature),
             nameof(BlockedPercentage) => DefaultBlockedPercentage,
             _ => base._PropertyGetRevert(property)

@@ -91,7 +91,7 @@ public class SimpleMapGenerator
         // Pre-select per-generation variants for all tiles that use VariationMode.PerGeneration
         var perGenerationVariants = SelectPerGenerationVariants();
 
-        var biomeMap = new BiomeType[size.Y, size.X];
+        var biomeMap = new string[size.Y, size.X];
         var placedTiles = new Dictionary<Vector2I, string>();
 
         // Phase 1: Generate initial passability map based on biome BlockedPercentage
@@ -101,7 +101,7 @@ public class SimpleMapGenerator
         {
             var position = new Vector2I(x, y);
             var biome = _biomeProvider.GetBiomeAt(position);
-            biomeMap[y, x] = biome.Type;
+            biomeMap[y, x] = biome.Id;
             isPassable[y, x] = _rng.Randf() >= biome.BlockedPercentage;
         }
 
@@ -596,7 +596,7 @@ public class SimpleMapGenerator
         string[,] tileIds,
         Vector2I size,
         Dictionary<Vector2I, string> placedTiles,
-        BiomeType[,] biomeMap)
+        string[,] biomeMap)
     {
         var variants = new Dictionary<Vector2I, int>();
 
@@ -642,7 +642,7 @@ public class SimpleMapGenerator
     /// Apply cellular automata smoothing to create larger contiguous regions.
     /// Uses 4-directional neighbor counting with biome boundary preservation.
     /// </summary>
-    private bool[,] ApplyRegionSmoothing(bool[,] isPassable, BiomeType[,] biomeMap, Vector2I size)
+    private bool[,] ApplyRegionSmoothing(bool[,] isPassable, string[,] biomeMap, Vector2I size)
     {
         var current = isPassable;
         var next = new bool[size.Y, size.X];
@@ -670,7 +670,7 @@ public class SimpleMapGenerator
     /// Count passable neighbors in 4 cardinal directions, respecting biome boundaries.
     /// Cells in different biomes are treated as blocked for smoothing purposes.
     /// </summary>
-    private static int CountPassableNeighbors(bool[,] isPassable, BiomeType[,] biomeMap, Vector2I size, int x, int y)
+    private static int CountPassableNeighbors(bool[,] isPassable, string[,] biomeMap, Vector2I size, int x, int y)
     {
         var count = 0;
         var currentBiome = biomeMap[y, x];

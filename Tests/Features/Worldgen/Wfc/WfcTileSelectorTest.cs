@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -51,7 +50,7 @@ public class WfcTileSelectorTest
         passable.Add("grass", 1.0f);
 
         var biome = new BiomeDefinition(
-            BiomeType.Plains,
+            "plains",
             new CardSignature(),
             passable,
             new TilePool(),
@@ -103,7 +102,7 @@ public class WfcTileSelectorTest
         passable.Add("rare", 1.0f);
 
         var biome = new BiomeDefinition(
-            BiomeType.Plains,
+            "plains",
             new CardSignature(),
             passable,
             new TilePool(),
@@ -171,7 +170,7 @@ public class WfcTileSelectorTest
         passable.Add("biome_tile", 1.0f);
 
         var biome = new BiomeDefinition(
-            BiomeType.Plains,
+            "plains",
             new CardSignature(),
             passable,
             new TilePool(),

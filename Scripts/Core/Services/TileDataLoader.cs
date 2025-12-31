@@ -235,27 +235,17 @@ public static class TileDataLoader
         };
     }
 
-    private static HashSet<BiomeType>? ParseBiomes(List<string>? biomes)
+    private static HashSet<string>? ParseBiomes(List<string>? biomes)
     {
         if (biomes == null || biomes.Count == 0)
             return null;
 
-        var result = new HashSet<BiomeType>();
+        var result = new HashSet<string>();
         foreach (var biome in biomes)
         {
-            var parsed = biome.ToLowerInvariant() switch
-            {
-                "plains" => BiomeType.Plains,
-                "forest" => BiomeType.Forest,
-                "desert" => BiomeType.Desert,
-                "tundra" => BiomeType.Tundra,
-                "swamp" => BiomeType.Swamp,
-                "mountains" => BiomeType.Mountains,
-                _ => (BiomeType?)null
-            };
-
-            if (parsed.HasValue)
-                result.Add(parsed.Value);
+            var normalized = biome.ToLowerInvariant();
+            if (!string.IsNullOrWhiteSpace(normalized))
+                result.Add(normalized);
         }
 
         return result.Count > 0 ? result : null;

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
 
 namespace CardCleaner.Scripts.Features.Worldgen.WeightModifiers;
 
@@ -9,7 +8,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.WeightModifiers;
 /// </summary>
 public sealed class BiomeAffinityModifier : IWeightModifier
 {
-    private readonly Dictionary<BiomeType, BiomeTileAffinity> _affinities = new();
+    private readonly Dictionary<string, BiomeTileAffinity> _affinities = new();
 
     /// <summary>
     /// Register affinity configuration for a biome.
@@ -33,7 +32,7 @@ public sealed class BiomeAffinityModifier : IWeightModifier
     public void ApplyModifier(TileSelectionContext context)
     {
         // Get affinity config for current biome
-        if (!_affinities.TryGetValue(context.CurrentBiome.Type, out var affinity))
+        if (!_affinities.TryGetValue(context.CurrentBiome.Id, out var affinity))
             return; // No affinity defined - weights unchanged
 
         // Multiply each tile's weight by its affinity

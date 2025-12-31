@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Structures;
 using Godot;
@@ -15,7 +14,7 @@ public class SimpleMapData
     private ITileRegistry? _tileRegistry;
     private HashSet<Vector2I>? _passableTilesSet;
     public string[,] TileIds { get; set; } = new string[0, 0];
-    public BiomeType[,]? BiomeMap { get; set; }
+    public string[,]? BiomeMap { get; set; }
     public Vector2I Size { get; set; }
     public Vector2I PlayerStart { get; set; }
     public List<Vector2I> EnemyPositions { get; set; } = new();
@@ -56,10 +55,10 @@ public class SimpleMapData
     /// </summary>
     public List<StructurePlacement> StructurePlacements { get; set; } = [];
 
-    public BiomeType GetBiomeAt(Vector2I pos)
+    public string GetBiomeAt(Vector2I pos)
     {
         if (BiomeMap == null || pos.X < 0 || pos.X >= Size.X || pos.Y < 0 || pos.Y >= Size.Y)
-            return BiomeType.Plains;
+            return "plains";
         return BiomeMap[pos.Y, pos.X];
     }
 

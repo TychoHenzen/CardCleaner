@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -59,7 +58,7 @@ public class BiomeMapGeneratorTest
 
         var biome = generator.GetBiomeAt(new Vector2I(10, 10));
 
-        AssertThat(biome.Type).IsEqual(BiomeType.Desert);
+        AssertThat(biome.Id).IsEqual("desert");
     }
 
     [TestCase]
@@ -72,7 +71,7 @@ public class BiomeMapGeneratorTest
 
         var biome = generator.GetBiomeAt(new Vector2I(10, 10));
 
-        AssertThat(biome.Type).IsEqual(BiomeType.Tundra);
+        AssertThat(biome.Id).IsEqual("tundra");
     }
 
     [TestCase]
@@ -85,7 +84,7 @@ public class BiomeMapGeneratorTest
 
         var biome = generator.GetBiomeAt(new Vector2I(10, 10));
 
-        AssertThat(biome.Type).IsEqual(BiomeType.Forest);
+        AssertThat(biome.Id).IsEqual("forest");
     }
 
     [TestCase]
@@ -100,7 +99,7 @@ public class BiomeMapGeneratorTest
         var biomeLeft = generator.GetBiomeAt(new Vector2I(0, 10));
         var biomeRight = generator.GetBiomeAt(new Vector2I(19, 10));
 
-        AssertBool(biomeLeft.Type != biomeRight.Type).IsTrue();
+        AssertBool(biomeLeft.Id != biomeRight.Id).IsTrue();
     }
 
     [TestCase]
@@ -114,7 +113,7 @@ public class BiomeMapGeneratorTest
         var biome = generator.GetBiomeAt(new Vector2I(10, 10));
 
         AssertThat(biome).IsNotNull();
-        AssertThat(biome.Type).IsEqual(BiomeType.Plains);
+        AssertThat(biome.Id).IsEqual("plains");
     }
 }
 

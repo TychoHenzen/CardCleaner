@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
@@ -21,15 +20,15 @@ public static class BiomeDistributionCalculator
     /// </summary>
     /// <param name="cards">The input card signatures (empty returns uniform distribution)</param>
     /// <param name="registry">The biome registry with registered biomes</param>
-    /// <returns>Dictionary mapping each biome type to its estimated percentage (0-1)</returns>
-    public static Dictionary<BiomeType, float> Calculate(CardSignature[] cards, BiomeRegistry registry)
+    /// <returns>Dictionary mapping each biome ID to its estimated percentage (0-1)</returns>
+    public static Dictionary<string, float> Calculate(CardSignature[] cards, BiomeRegistry registry)
     {
-        var accumulatedCounts = new Dictionary<BiomeType, float>();
+        var accumulatedCounts = new Dictionary<string, float>();
 
-        // Initialize counts for all biome types
+        // Initialize counts for all biome IDs
         foreach (var biome in registry.GetAllBiomes())
         {
-            accumulatedCounts[biome.Type] = 0f;
+            accumulatedCounts[biome.Id] = 0f;
         }
 
         if (cards.Length == 0 || registry.Count == 0)
@@ -43,9 +42,9 @@ public static class BiomeDistributionCalculator
         {
             var simCounts = RunSingleSimulation(cards, registry);
 
-            foreach (var (biomeType, count) in simCounts)
+            foreach (var (biomeId, count) in simCounts)
             {
-                accumulatedCounts[biomeType] += count;
+                accumulatedCounts[biomeId] += count;
             }
         }
 
@@ -57,14 +56,14 @@ public static class BiomeDistributionCalculator
     /// <summary>
     /// Runs a single simulation with a fresh random seed.
     /// </summary>
-    private static Dictionary<BiomeType, int> RunSingleSimulation(CardSignature[] cards, BiomeRegistry registry)
+    private static Dictionary<string, int> RunSingleSimulation(CardSignature[] cards, BiomeRegistry registry)
     {
-        var counts = new Dictionary<BiomeType, int>();
+        var counts = new Dictionary<string, int>();
 
-        // Initialize counts for all biome types
+        // Initialize counts for all biome IDs
         foreach (var biome in registry.GetAllBiomes())
         {
-            counts[biome.Type] = 0;
+            counts[biome.Id] = 0;
         }
 
         // Create gradient with fresh random seed
@@ -84,7 +83,7 @@ public static class BiomeDistributionCalculator
 
                 if (biome != null)
                 {
-                    counts[biome.Type]++;
+                    counts[biome.Id]++;
                 }
             }
         }
@@ -92,31 +91,31 @@ public static class BiomeDistributionCalculator
         return counts;
     }
 
-    private static Dictionary<BiomeType, float> ToUniformDistribution(Dictionary<BiomeType, float> counts)
+    private static Dictionary<string, float> ToUniformDistribution(Dictionary<string, float> counts)
     {
-        var result = new Dictionary<BiomeType, float>();
+        var result = new Dictionary<string, float>();
         var uniformValue = counts.Count > 0 ? 1f / counts.Count : 0f;
 
-        foreach (var biomeType in counts.Keys)
+        foreach (var biomeId in counts.Keys)
         {
-            result[biomeType] = uniformValue;
+            result[biomeId] = uniformValue;
         }
 
         return result;
     }
 
-    private static Dictionary<BiomeType, float> ToPercentages(Dictionary<BiomeType, float> counts, int totalSamples)
+    private static Dictionary<string, float> ToPercentages(Dictionary<string, float> counts, int totalSamples)
     {
-        var result = new Dictionary<BiomeType, float>();
+        var result = new Dictionary<string, float>();
 
         if (totalSamples == 0)
         {
             return ToUniformDistribution(counts);
         }
 
-        foreach (var (biomeType, count) in counts)
+        foreach (var (biomeId, count) in counts)
         {
-            result[biomeType] = count / totalSamples;
+            result[biomeId] = count / totalSamples;
         }
 
         return result;

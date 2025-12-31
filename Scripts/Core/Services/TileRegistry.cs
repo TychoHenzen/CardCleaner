@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
@@ -46,10 +45,10 @@ public class TileRegistry : ITileRegistry
 
     public IEnumerable<TileDefinition> GetAllTiles() => _tiles.Values;
 
-    public IEnumerable<TileDefinition> GetTilesByBiome(BiomeType biome)
+    public IEnumerable<TileDefinition> GetTilesByBiome(string biomeId)
     {
         foreach (var tile in _tiles.Values)
-            if (tile.IsAllowedInBiome(biome))
+            if (tile.IsAllowedInBiome(biomeId))
                 yield return tile;
     }
 

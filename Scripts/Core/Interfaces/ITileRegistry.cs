@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
@@ -27,6 +26,6 @@ public interface ITileRegistry
     void RegisterTile(TileDefinition tile);
     TileDefinition? GetTile(string id);
     IEnumerable<TileDefinition> GetAllTiles();
-    IEnumerable<TileDefinition> GetTilesByBiome(BiomeType biome);
+    IEnumerable<TileDefinition> GetTilesByBiome(string biomeId);
     void Clear();
 }

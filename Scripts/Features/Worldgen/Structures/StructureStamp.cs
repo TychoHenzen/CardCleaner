@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Worldgen.WeightModifiers;
 using Godot;
 using Godot.Collections;
@@ -36,7 +35,7 @@ public partial class StructureStamp : Resource
     [Export] public Array<StructureTileEntry> Tiles { get; set; } = [];
 
     /// <summary>Biomes where this structure can spawn. Empty means all biomes allowed.</summary>
-    [Export] public Array<BiomeType> AllowedBiomes { get; set; } = [];
+    [Export] public Array<string> AllowedBiomes { get; set; } = [];
 
     /// <summary>Relative spawn weight (higher = more likely to be selected).</summary>
     [Export(PropertyHint.Range, "0,10,0.1")]
@@ -75,7 +74,7 @@ public partial class StructureStamp : Resource
     /// <summary>
     /// Check if a biome is allowed for this structure.
     /// </summary>
-    public bool IsBiomeAllowed(BiomeType biome)
+    public bool IsBiomeAllowed(string biomeId)
     {
         // Empty list means all biomes allowed
         if (AllowedBiomes.Count == 0)
@@ -83,7 +82,7 @@ public partial class StructureStamp : Resource
 
         foreach (var allowed in AllowedBiomes)
         {
-            if (allowed == biome)
+            if (allowed == biomeId)
                 return true;
         }
         return false;

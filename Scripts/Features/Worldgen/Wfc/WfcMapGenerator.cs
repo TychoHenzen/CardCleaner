@@ -153,12 +153,12 @@ public class WfcMapGenerator
         }
 
         // Build biome map
-        var biomeMap = new Core.Enumeration.BiomeType[size.Y, size.X];
+        var biomeMap = new string[size.Y, size.X];
         for (var y = 0; y < size.Y; y++)
         {
             for (var x = 0; x < size.X; x++)
             {
-                biomeMap[y, x] = getBiomeAt(new Vector2I(x, y)).Type;
+                biomeMap[y, x] = getBiomeAt(new Vector2I(x, y)).Id;
             }
         }
 

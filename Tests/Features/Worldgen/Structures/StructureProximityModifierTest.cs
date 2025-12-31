@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.WeightModifiers;
@@ -21,7 +20,7 @@ public class StructureProximityModifierTest
     {
         _rng = new RandomNumberGenerator();
         _rng.Seed = 12345;
-        _testBiome = new BiomeDefinition(BiomeType.Plains, new CardSignature(), new TilePool(), new TilePool());
+        _testBiome = new BiomeDefinition("plains", new CardSignature(), new TilePool(), new TilePool());
     }
 
     [TestCase]

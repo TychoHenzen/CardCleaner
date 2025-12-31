@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Components;
@@ -14,14 +13,14 @@ public partial class BiomeDistributionPreview : Control
     private const int LabelFontSize = 12;
     private const int PercentageFontSize = 14;
 
-    private static readonly Dictionary<BiomeType, Color> BiomeColors = new()
+    private static readonly Dictionary<string, Color> BiomeColors = new()
     {
-        { BiomeType.Plains, new Color(0.3f, 0.8f, 0.3f) },
-        { BiomeType.Forest, new Color(0.1f, 0.5f, 0.1f) },
-        { BiomeType.Desert, new Color(0.9f, 0.8f, 0.4f) },
-        { BiomeType.Tundra, new Color(0.7f, 0.9f, 1.0f) },
-        { BiomeType.Mountains, new Color(0.5f, 0.5f, 0.5f) },
-        { BiomeType.Swamp, new Color(0.3f, 0.4f, 0.2f) }
+        { "plains", new Color(0.3f, 0.8f, 0.3f) },
+        { "forest", new Color(0.1f, 0.5f, 0.1f) },
+        { "desert", new Color(0.9f, 0.8f, 0.4f) },
+        { "tundra", new Color(0.7f, 0.9f, 1.0f) },
+        { "mountains", new Color(0.5f, 0.5f, 0.5f) },
+        { "swamp", new Color(0.3f, 0.4f, 0.2f) }
     };
 
     private readonly List<ColorRect> _strips = new();
@@ -79,8 +78,8 @@ public partial class BiomeDistributionPreview : Control
     /// <summary>
     /// Updates the preview with new biome distribution data.
     /// </summary>
-    /// <param name="distribution">Dictionary of biome types to percentages (0-1)</param>
-    public void UpdateDistribution(Dictionary<BiomeType, float> distribution)
+    /// <param name="distribution">Dictionary of biome IDs to percentages (0-1)</param>
+    public void UpdateDistribution(Dictionary<string, float> distribution)
     {
         var hasData = distribution.Count > 0 && distribution.Values.Any(v => v > 0.001f);
 
@@ -111,9 +110,9 @@ public partial class BiomeDistributionPreview : Control
             .ToList();
 
         // Create strips for each biome
-        foreach (var (biomeType, percentage) in sortedBiomes)
+        foreach (var (biomeId, percentage) in sortedBiomes)
         {
-            var color = BiomeColors.GetValueOrDefault(biomeType, Colors.Magenta);
+            var color = BiomeColors.GetValueOrDefault(biomeId, Colors.Magenta);
 
             // Color strip
             var strip = new ColorRect { Color = color };
@@ -123,7 +122,7 @@ public partial class BiomeDistributionPreview : Control
             // Biome name label (at top of strip)
             var nameLabel = new Label
             {
-                Text = biomeType.ToString(),
+                Text = biomeId,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Top
             };
@@ -209,6 +208,6 @@ public partial class BiomeDistributionPreview : Control
     /// </summary>
     public void Clear()
     {
-        UpdateDistribution(new Dictionary<BiomeType, float>());
+        UpdateDistribution(new Dictionary<string, float>());
     }
 }

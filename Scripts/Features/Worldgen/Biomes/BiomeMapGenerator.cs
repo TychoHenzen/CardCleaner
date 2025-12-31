@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
@@ -8,7 +7,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 
 public class BiomeMapGenerator : IBiomeProvider
 {
-    private readonly Dictionary<BiomeType, int> _biomeStats = new();
+    private readonly Dictionary<string, int> _biomeStats = new();
     private readonly BiomeDefinition _fallbackBiome;
     private readonly BaselineGradient _gradient;
     private readonly Vector2I _mapSize;
@@ -28,9 +27,9 @@ public class BiomeMapGenerator : IBiomeProvider
 
     /// <summary>
     ///     Returns biome selection statistics for the last generated map.
-    ///     Key = BiomeType, Value = number of tiles assigned to that biome.
+    ///     Key = biome ID string, Value = number of tiles assigned to that biome.
     /// </summary>
-    public IReadOnlyDictionary<BiomeType, int> BiomeStats => _biomeStats;
+    public IReadOnlyDictionary<string, int> BiomeStats => _biomeStats;
 
     public BiomeDefinition GetBiomeAt(Vector2I position)
     {
@@ -38,8 +37,8 @@ public class BiomeMapGenerator : IBiomeProvider
         var biome = _registry.FindClosestBySignature(signature) ?? _fallbackBiome;
 
         // Track biome statistics
-        _biomeStats.TryGetValue(biome.Type, out var count);
-        _biomeStats[biome.Type] = count + 1;
+        _biomeStats.TryGetValue(biome.Id, out var count);
+        _biomeStats[biome.Id] = count + 1;
 
         return biome;
     }
@@ -49,10 +48,10 @@ public class BiomeMapGenerator : IBiomeProvider
     public void LogBiomeStats()
     {
         GD.Print("[BiomeMapGenerator] Biome distribution:");
-        foreach (var (biomeType, count) in _biomeStats)
+        foreach (var (biomeId, count) in _biomeStats)
         {
             var percentage = (float)count / (_mapSize.X * _mapSize.Y) * 100;
-            GD.Print($"  {biomeType}: {count} tiles ({percentage:F1}%)");
+            GD.Print($"  {biomeId}: {count} tiles ({percentage:F1}%)");
         }
     }
 
@@ -66,7 +65,7 @@ public class BiomeMapGenerator : IBiomeProvider
         blocked.Add("wall");
 
         return new BiomeDefinition(
-            BiomeType.Plains,
+            "plains",
             new CardSignature(),
             passable,
             blocked);

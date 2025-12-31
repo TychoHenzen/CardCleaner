@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using GdUnit4;
@@ -18,19 +17,19 @@ public class BiomeRegistryTest
     [TestCase]
     public void TestRegisterAndRetrieveBiome()
     {
-        var biome = CreateTestBiome(BiomeType.Forest);
+        var biome = CreateTestBiome("forest");
         _registry.Register(biome);
 
-        var retrieved = _registry.GetBiome(BiomeType.Forest);
+        var retrieved = _registry.GetBiome("forest");
 
         AssertThat(retrieved).IsNotNull();
-        AssertThat(retrieved!.Type).IsEqual(BiomeType.Forest);
+        AssertThat(retrieved!.Id).IsEqual("forest");
     }
 
     [TestCase]
     public void TestGetBiomeReturnsNullForMissing()
     {
-        var result = _registry.GetBiome(BiomeType.Desert);
+        var result = _registry.GetBiome("desert");
 
         AssertThat(result).IsNull();
     }
@@ -40,10 +39,10 @@ public class BiomeRegistryTest
     {
         AssertThat(_registry.Count).IsEqual(0);
 
-        _registry.Register(CreateTestBiome(BiomeType.Forest));
+        _registry.Register(CreateTestBiome("forest"));
         AssertThat(_registry.Count).IsEqual(1);
 
-        _registry.Register(CreateTestBiome(BiomeType.Desert));
+        _registry.Register(CreateTestBiome("desert"));
         AssertThat(_registry.Count).IsEqual(2);
     }
 
@@ -63,8 +62,8 @@ public class BiomeRegistryTest
         var forestSignature = new CardSignature(new[] { 0f, -0.5f, 0f, 0f, 0f, 0f, 0f, 0f });
         var desertSignature = new CardSignature(new[] { 0f, 0.5f, 0f, 0f, 0f, 0f, 0f, 0f });
 
-        var forest = CreateTestBiome(BiomeType.Forest, forestSignature);
-        var desert = CreateTestBiome(BiomeType.Desert, desertSignature);
+        var forest = CreateTestBiome("forest", forestSignature);
+        var desert = CreateTestBiome("desert", desertSignature);
 
         _registry.Register(forest);
         _registry.Register(desert);
@@ -73,7 +72,7 @@ public class BiomeRegistryTest
         var result = _registry.FindClosestBySignature(querySignature);
 
         AssertThat(result).IsNotNull();
-        AssertThat(result!.Type).IsEqual(BiomeType.Forest);
+        AssertThat(result!.Id).IsEqual("forest");
     }
 
     [TestCase]
@@ -82,8 +81,8 @@ public class BiomeRegistryTest
         var coldSignature = new CardSignature(new[] { 0f, -0.8f, 0f, 0f, 0f, 0f, 0f, 0f });
         var hotSignature = new CardSignature(new[] { 0f, 0.8f, 0f, 0f, 0f, 0f, 0f, 0f });
 
-        var tundra = CreateTestBiome(BiomeType.Tundra, coldSignature);
-        var desert = CreateTestBiome(BiomeType.Desert, hotSignature);
+        var tundra = CreateTestBiome("tundra", coldSignature);
+        var desert = CreateTestBiome("desert", hotSignature);
 
         _registry.Register(tundra);
         _registry.Register(desert);
@@ -92,14 +91,14 @@ public class BiomeRegistryTest
         var result = _registry.FindClosestBySignature(slightlyColdQuery);
 
         AssertThat(result).IsNotNull();
-        AssertThat(result!.Type).IsEqual(BiomeType.Tundra);
+        AssertThat(result!.Id).IsEqual("tundra");
     }
 
     [TestCase]
     public void TestClearRemovesAllBiomes()
     {
-        _registry.Register(CreateTestBiome(BiomeType.Forest));
-        _registry.Register(CreateTestBiome(BiomeType.Desert));
+        _registry.Register(CreateTestBiome("forest"));
+        _registry.Register(CreateTestBiome("desert"));
         AssertThat(_registry.Count).IsEqual(2);
 
         _registry.Clear();
@@ -113,19 +112,19 @@ public class BiomeRegistryTest
         _registry.RegisterDefaultBiomes();
 
         AssertThat(_registry.Count).IsEqual(6);
-        AssertThat(_registry.GetBiome(BiomeType.Plains)).IsNotNull();
-        AssertThat(_registry.GetBiome(BiomeType.Forest)).IsNotNull();
-        AssertThat(_registry.GetBiome(BiomeType.Desert)).IsNotNull();
-        AssertThat(_registry.GetBiome(BiomeType.Tundra)).IsNotNull();
-        AssertThat(_registry.GetBiome(BiomeType.Swamp)).IsNotNull();
-        AssertThat(_registry.GetBiome(BiomeType.Mountains)).IsNotNull();
+        AssertThat(_registry.GetBiome("plains")).IsNotNull();
+        AssertThat(_registry.GetBiome("forest")).IsNotNull();
+        AssertThat(_registry.GetBiome("desert")).IsNotNull();
+        AssertThat(_registry.GetBiome("tundra")).IsNotNull();
+        AssertThat(_registry.GetBiome("swamp")).IsNotNull();
+        AssertThat(_registry.GetBiome("mountains")).IsNotNull();
     }
 
     [TestCase]
     public void TestGetAllBiomesReturnsRegisteredBiomes()
     {
-        _registry.Register(CreateTestBiome(BiomeType.Forest));
-        _registry.Register(CreateTestBiome(BiomeType.Desert));
+        _registry.Register(CreateTestBiome("forest"));
+        _registry.Register(CreateTestBiome("desert"));
 
         var allBiomes = _registry.GetAllBiomes();
         var count = 0;
@@ -133,13 +132,13 @@ public class BiomeRegistryTest
         foreach (var biome in allBiomes)
         {
             count++;
-            AssertBool(biome.Type == BiomeType.Forest || biome.Type == BiomeType.Desert).IsTrue();
+            AssertBool(biome.Id == "forest" || biome.Id == "desert").IsTrue();
         }
 
         AssertThat(count).IsEqual(2);
     }
 
-    private static BiomeDefinition CreateTestBiome(BiomeType type, CardSignature? signature = null)
+    private static BiomeDefinition CreateTestBiome(string id, CardSignature? signature = null)
     {
         var passable = new TilePool();
         passable.Add("grass");
@@ -147,7 +146,7 @@ public class BiomeRegistryTest
         blocked.Add("wall");
 
         return new BiomeDefinition(
-            type,
+            id,
             signature ?? new CardSignature(),
             passable,
             blocked);

@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Worldgen.Structures;
 using CardCleaner.Scripts.Features.Worldgen.WeightModifiers;
 using GdUnit4;
@@ -82,9 +81,9 @@ public class StructureStampTest
     {
         var stamp = new StructureStamp { Id = "test" };
 
-        AssertBool(stamp.IsBiomeAllowed(BiomeType.Plains)).IsTrue();
-        AssertBool(stamp.IsBiomeAllowed(BiomeType.Forest)).IsTrue();
-        AssertBool(stamp.IsBiomeAllowed(BiomeType.Desert)).IsTrue();
+        AssertBool(stamp.IsBiomeAllowed("plains")).IsTrue();
+        AssertBool(stamp.IsBiomeAllowed("forest")).IsTrue();
+        AssertBool(stamp.IsBiomeAllowed("desert")).IsTrue();
     }
 
     [TestCase]
@@ -93,13 +92,13 @@ public class StructureStampTest
         var stamp = new StructureStamp
         {
             Id = "test",
-            AllowedBiomes = [BiomeType.Plains, BiomeType.Forest]
+            AllowedBiomes = ["plains", "forest"]
         };
 
-        AssertBool(stamp.IsBiomeAllowed(BiomeType.Plains)).IsTrue();
-        AssertBool(stamp.IsBiomeAllowed(BiomeType.Forest)).IsTrue();
-        AssertBool(stamp.IsBiomeAllowed(BiomeType.Desert)).IsFalse();
-        AssertBool(stamp.IsBiomeAllowed(BiomeType.Tundra)).IsFalse();
+        AssertBool(stamp.IsBiomeAllowed("plains")).IsTrue();
+        AssertBool(stamp.IsBiomeAllowed("forest")).IsTrue();
+        AssertBool(stamp.IsBiomeAllowed("desert")).IsFalse();
+        AssertBool(stamp.IsBiomeAllowed("tundra")).IsFalse();
     }
 
     [TestCase]

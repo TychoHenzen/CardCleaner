@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
@@ -30,7 +29,7 @@ public class WfcMapDataAdapter
         {
             Size = new Vector2I(width, height),
             TileIds = new string[height, width],
-            BiomeMap = new BiomeType[height, width]
+            BiomeMap = new string[height, width]
         };
 
         var passablePositions = new List<Vector2I>();
@@ -57,7 +56,7 @@ public class WfcMapDataAdapter
                     mapData.TileIds[y, x] = cell.GetCollapsedTile();
                 }
 
-                mapData.BiomeMap[y, x] = biome.Type;
+                mapData.BiomeMap[y, x] = biome.Id;
 
                 // Track passable positions
                 if (passableTileIds.Contains(mapData.TileIds[y, x]))
@@ -82,7 +81,7 @@ public class WfcMapDataAdapter
     /// </summary>
     public SimpleMapData ToSimpleMapData(
         WfcGrid grid,
-        BiomeType[,] biomeMap,
+        string[,] biomeMap,
         HashSet<string> passableTileIds)
     {
         var width = grid.Width;

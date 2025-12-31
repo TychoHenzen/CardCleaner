@@ -39,14 +39,14 @@ public class TileRegistryTest
             "Test Tile",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            allowedBiomes: [BiomeType.Forest, BiomeType.Plains]);
+            allowedBiomes: ["forest", "plains"]);
 
         AssertThat(tile.AllowedBiomes).IsNotNull();
         AssertThat(tile.AllowedBiomes!.Count).IsEqual(2);
-        AssertBool(tile.IsAllowedInBiome(BiomeType.Forest)).IsTrue();
-        AssertBool(tile.IsAllowedInBiome(BiomeType.Plains)).IsTrue();
-        AssertBool(tile.IsAllowedInBiome(BiomeType.Desert)).IsFalse();
-        AssertBool(tile.IsAllowedInBiome(BiomeType.Tundra)).IsFalse();
+        AssertBool(tile.IsAllowedInBiome("forest")).IsTrue();
+        AssertBool(tile.IsAllowedInBiome("plains")).IsTrue();
+        AssertBool(tile.IsAllowedInBiome("desert")).IsFalse();
+        AssertBool(tile.IsAllowedInBiome("tundra")).IsFalse();
     }
 
     [TestCase]
@@ -59,12 +59,12 @@ public class TileRegistryTest
             new Vector2I(0, 0));
 
         AssertThat(tile.AllowedBiomes).IsNull();
-        AssertBool(tile.IsAllowedInBiome(BiomeType.Plains)).IsTrue();
-        AssertBool(tile.IsAllowedInBiome(BiomeType.Forest)).IsTrue();
-        AssertBool(tile.IsAllowedInBiome(BiomeType.Desert)).IsTrue();
-        AssertBool(tile.IsAllowedInBiome(BiomeType.Tundra)).IsTrue();
-        AssertBool(tile.IsAllowedInBiome(BiomeType.Swamp)).IsTrue();
-        AssertBool(tile.IsAllowedInBiome(BiomeType.Mountains)).IsTrue();
+        AssertBool(tile.IsAllowedInBiome("plains")).IsTrue();
+        AssertBool(tile.IsAllowedInBiome("forest")).IsTrue();
+        AssertBool(tile.IsAllowedInBiome("desert")).IsTrue();
+        AssertBool(tile.IsAllowedInBiome("tundra")).IsTrue();
+        AssertBool(tile.IsAllowedInBiome("swamp")).IsTrue();
+        AssertBool(tile.IsAllowedInBiome("mountains")).IsTrue();
     }
 
     [TestCase]
@@ -77,14 +77,14 @@ public class TileRegistryTest
             "Forest Only",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            allowedBiomes: [BiomeType.Forest]));
+            allowedBiomes: ["forest"]));
 
         _registry.RegisterTile(new TileDefinition(
             "desert_only",
             "Desert Only",
             TilePassability.Passable,
             new Vector2I(1, 0),
-            allowedBiomes: [BiomeType.Desert]));
+            allowedBiomes: ["desert"]));
 
         _registry.RegisterTile(new TileDefinition(
             "universal",
@@ -92,9 +92,9 @@ public class TileRegistryTest
             TilePassability.Passable,
             new Vector2I(2, 0)));
 
-        var forestTiles = _registry.GetTilesByBiome(BiomeType.Forest).ToList();
-        var desertTiles = _registry.GetTilesByBiome(BiomeType.Desert).ToList();
-        var plainsTiles = _registry.GetTilesByBiome(BiomeType.Plains).ToList();
+        var forestTiles = _registry.GetTilesByBiome("forest").ToList();
+        var desertTiles = _registry.GetTilesByBiome("desert").ToList();
+        var plainsTiles = _registry.GetTilesByBiome("plains").ToList();
 
         AssertThat(forestTiles.Count).IsEqual(2);
         AssertBool(forestTiles.Any(t => t.Id == "forest_only")).IsTrue();
@@ -113,12 +113,12 @@ public class TileRegistryTest
     public void TestEachBiomeHasTiles()
     {
         // Each biome should have specific tiles
-        var plainsTiles = _registry.GetTilesByBiome(BiomeType.Plains).ToList();
-        var forestTiles = _registry.GetTilesByBiome(BiomeType.Forest).ToList();
-        var desertTiles = _registry.GetTilesByBiome(BiomeType.Desert).ToList();
-        var tundraTiles = _registry.GetTilesByBiome(BiomeType.Tundra).ToList();
-        var swampTiles = _registry.GetTilesByBiome(BiomeType.Swamp).ToList();
-        var mountainsTiles = _registry.GetTilesByBiome(BiomeType.Mountains).ToList();
+        var plainsTiles = _registry.GetTilesByBiome("plains").ToList();
+        var forestTiles = _registry.GetTilesByBiome("forest").ToList();
+        var desertTiles = _registry.GetTilesByBiome("desert").ToList();
+        var tundraTiles = _registry.GetTilesByBiome("tundra").ToList();
+        var swampTiles = _registry.GetTilesByBiome("swamp").ToList();
+        var mountainsTiles = _registry.GetTilesByBiome("mountains").ToList();
 
         // Each biome should have multiple tiles (passable + blocked)
         AssertThat(plainsTiles.Count).IsGreater(5);
@@ -147,11 +147,11 @@ public class TileRegistryTest
     public void TestBiomeTilesHaveDistinctPrefixes()
     {
         // Biome-specific tiles should be named with biome prefix
-        var plainsTiles = _registry.GetTilesByBiome(BiomeType.Plains)
-            .Where(t => t.AllowedBiomes?.Contains(BiomeType.Plains) == true)
+        var plainsTiles = _registry.GetTilesByBiome("plains")
+            .Where(t => t.AllowedBiomes?.Contains("plains") == true)
             .ToList();
-        var forestTiles = _registry.GetTilesByBiome(BiomeType.Forest)
-            .Where(t => t.AllowedBiomes?.Contains(BiomeType.Forest) == true)
+        var forestTiles = _registry.GetTilesByBiome("forest")
+            .Where(t => t.AllowedBiomes?.Contains("forest") == true)
             .ToList();
 
         // Plains-specific tiles should start with "plains_"
@@ -167,10 +167,10 @@ public class TileRegistryTest
 
         AssertThat(dirt).IsNotNull();
         AssertThat(dirt!.AllowedBiomes).IsNull();
-        AssertBool(dirt.IsAllowedInBiome(BiomeType.Plains)).IsTrue();
-        AssertBool(dirt.IsAllowedInBiome(BiomeType.Forest)).IsTrue();
-        AssertBool(dirt.IsAllowedInBiome(BiomeType.Desert)).IsTrue();
-        AssertBool(dirt.IsAllowedInBiome(BiomeType.Tundra)).IsTrue();
+        AssertBool(dirt.IsAllowedInBiome("plains")).IsTrue();
+        AssertBool(dirt.IsAllowedInBiome("forest")).IsTrue();
+        AssertBool(dirt.IsAllowedInBiome("desert")).IsTrue();
+        AssertBool(dirt.IsAllowedInBiome("tundra")).IsTrue();
     }
 
     [TestCase]
@@ -180,8 +180,8 @@ public class TileRegistryTest
 
         AssertThat(wall).IsNotNull();
         AssertThat(wall!.AllowedBiomes).IsNull();
-        AssertBool(wall.IsAllowedInBiome(BiomeType.Plains)).IsTrue();
-        AssertBool(wall.IsAllowedInBiome(BiomeType.Forest)).IsTrue();
+        AssertBool(wall.IsAllowedInBiome("plains")).IsTrue();
+        AssertBool(wall.IsAllowedInBiome("forest")).IsTrue();
     }
 
     [TestCase]

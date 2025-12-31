@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Diagnostics;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -30,7 +29,7 @@ public class WfcMapGeneratorIntegrationTest
     public void TestGeneratesValidMapWithForestBiome()
     {
         var generator = new WfcMapGenerator(_resolver);
-        var biome = _biomeRegistry.GetBiome(BiomeType.Forest);
+        var biome = _biomeRegistry.GetBiome("forest");
 
         AssertThat(biome).IsNotNull();
 
@@ -52,7 +51,7 @@ public class WfcMapGeneratorIntegrationTest
     public void TestGeneratesValidMapWithPlainsBiome()
     {
         var generator = new WfcMapGenerator(_resolver);
-        var biome = _biomeRegistry.GetBiome(BiomeType.Plains);
+        var biome = _biomeRegistry.GetBiome("plains");
 
         AssertThat(biome).IsNotNull();
 
@@ -72,7 +71,7 @@ public class WfcMapGeneratorIntegrationTest
     public void TestNoInvalidAdjacencies()
     {
         var generator = new WfcMapGenerator(_resolver);
-        var biome = _biomeRegistry.GetBiome(BiomeType.Plains);
+        var biome = _biomeRegistry.GetBiome("plains");
 
         var result = generator.Generate(biome!, new Vector2I(8, 8), 42);
 
@@ -114,7 +113,7 @@ public class WfcMapGeneratorIntegrationTest
     public void TestPerformanceUnder500ms()
     {
         var generator = new WfcMapGenerator(_resolver);
-        var biome = _biomeRegistry.GetBiome(BiomeType.Plains);
+        var biome = _biomeRegistry.GetBiome("plains");
 
         var stopwatch = Stopwatch.StartNew();
         var result = generator.Generate(biome!, new Vector2I(20, 20), 12345);
@@ -136,7 +135,7 @@ public class WfcMapGeneratorIntegrationTest
     public void TestDifferentSeedsProduceDifferentMaps()
     {
         var generator = new WfcMapGenerator(_resolver);
-        var biome = _biomeRegistry.GetBiome(BiomeType.Plains);
+        var biome = _biomeRegistry.GetBiome("plains");
 
         var result1 = generator.Generate(biome!, new Vector2I(8, 8), 111);
         var result2 = generator.Generate(biome!, new Vector2I(8, 8), 222);
@@ -169,7 +168,7 @@ public class WfcMapGeneratorIntegrationTest
     public void TestSameSeedProducesSameMap()
     {
         var generator = new WfcMapGenerator(_resolver);
-        var biome = _biomeRegistry.GetBiome(BiomeType.Plains);
+        var biome = _biomeRegistry.GetBiome("plains");
 
         var result1 = generator.Generate(biome!, new Vector2I(8, 8), 42);
         var result2 = generator.Generate(biome!, new Vector2I(8, 8), 42);
@@ -197,7 +196,7 @@ public class WfcMapGeneratorIntegrationTest
     public void TestPassableTilesPopulated()
     {
         var generator = new WfcMapGenerator(_resolver);
-        var biome = _biomeRegistry.GetBiome(BiomeType.Plains);
+        var biome = _biomeRegistry.GetBiome("plains");
 
         var result = generator.Generate(biome!, new Vector2I(10, 10), 12345);
 
@@ -224,7 +223,7 @@ public class WfcMapGeneratorIntegrationTest
     public void TestPlayerStartIsPassable()
     {
         var generator = new WfcMapGenerator(_resolver);
-        var biome = _biomeRegistry.GetBiome(BiomeType.Plains);
+        var biome = _biomeRegistry.GetBiome("plains");
 
         var result = generator.Generate(biome!, new Vector2I(10, 10), 12345);
 
@@ -260,7 +259,7 @@ public class WfcMapGeneratorIntegrationTest
         passable.Add("C", 1.0f);
 
         var biome = new BiomeDefinition(
-            BiomeType.Plains,
+            "plains",
             new CardSignature(),
             passable,
             new TilePool(),
@@ -293,7 +292,7 @@ public class WfcMapGeneratorIntegrationTest
         passable.Add("C", 1.0f);
 
         var biome = new BiomeDefinition(
-            BiomeType.Plains,
+            "plains",
             new CardSignature(),
             passable,
             new TilePool(),

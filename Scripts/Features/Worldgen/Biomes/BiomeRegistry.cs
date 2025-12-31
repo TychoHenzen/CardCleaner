@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -8,15 +7,17 @@ namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 
 public class BiomeRegistry
 {
-    private readonly Dictionary<BiomeType, BiomeDefinition> _biomes = new();
+    private readonly Dictionary<string, BiomeDefinition> _biomes = new();
 
     public int Count => _biomes.Count;
 
-    public void Register(BiomeDefinition biome) => _biomes[biome.Type] = biome;
+    public void Register(BiomeDefinition biome) => _biomes[biome.Id] = biome;
 
-    public BiomeDefinition? GetBiome(BiomeType type) => _biomes.GetValueOrDefault(type);
+    public BiomeDefinition? GetBiome(string biomeId) => _biomes.GetValueOrDefault(biomeId);
 
     public IEnumerable<BiomeDefinition> GetAllBiomes() => _biomes.Values;
+
+    public IEnumerable<string> GetAllBiomeIds() => _biomes.Keys;
 
     public BiomeDefinition? FindClosestBySignature(CardSignature signature)
     {

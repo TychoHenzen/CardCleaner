@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 using Godot.Collections;
 
@@ -14,21 +13,21 @@ namespace CardCleaner.Scripts.Features.Worldgen.WeightModifiers;
 [GlobalClass]
 public partial class BiomeTileAffinity : Resource
 {
-    private const BiomeType DefaultBiome = BiomeType.Plains;
+    private const string DefaultBiome = "plains";
     private System.Collections.Generic.Dictionary<string, float>? _affinityCache;
     private bool _cacheInvalid = true;
 
     public BiomeTileAffinity() { }
 
-    public BiomeTileAffinity(BiomeType biome, params TileAffinityEntry[] entries)
+    public BiomeTileAffinity(string biomeId, params TileAffinityEntry[] entries)
     {
-        Biome = biome;
+        Biome = biomeId;
         foreach (var entry in entries)
             Entries.Add(entry);
     }
 
     /// <summary>The biome these affinities apply to.</summary>
-    [Export] public BiomeType Biome { get; set; } = DefaultBiome;
+    [Export] public string Biome { get; set; } = DefaultBiome;
 
     /// <summary>List of tile affinity entries.</summary>
     [Export] public Array<TileAffinityEntry> Entries { get; set; } = [];
@@ -82,7 +81,7 @@ public partial class BiomeTileAffinity : Resource
     {
         return property.ToString() switch
         {
-            nameof(Biome) => (int)DefaultBiome,
+            nameof(Biome) => DefaultBiome,
             _ => base._PropertyGetRevert(property)
         };
     }
