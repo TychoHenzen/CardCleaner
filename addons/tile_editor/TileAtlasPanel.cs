@@ -27,6 +27,16 @@ public partial class TileAtlasPanel : Control
     private string? _selectedTileId;
     private readonly Dictionary<string, TileButton> _tileButtons = new();
 
+    // Toolbar buttons
+    private Button? _duplicateButton;
+    private Button? _deleteButton;
+
+    // Dialogs
+    private AcceptDialog? _duplicateDialog;
+    private LineEdit? _duplicateIdField;
+    private Label? _duplicateValidationLabel;
+    private ConfirmationDialog? _deleteDialog;
+
     [Signal] public delegate void TileSelectedEventHandler(string tileId);
 
     public TileAtlasPanel(TileEditorService service)
@@ -90,6 +100,30 @@ public partial class TileAtlasPanel : Control
         _layerFilter.AddItem("Effects", 4);
         filterBar.AddChild(_layerFilter);
         _layerFilter.ItemSelected += _ => RefreshTileDisplay();
+
+        // Action toolbar
+        var toolbar = new HBoxContainer();
+        vbox.AddChild(toolbar);
+
+        _duplicateButton = new Button
+        {
+            Text = "Duplicate",
+            TooltipText = "Duplicate selected tile with a new ID",
+            Disabled = true
+        };
+        _duplicateButton.Pressed += OnDuplicatePressed;
+        toolbar.AddChild(_duplicateButton);
+
+        _deleteButton = new Button
+        {
+            Text = "Delete",
+            TooltipText = "Delete selected tile",
+            Disabled = true
+        };
+        _deleteButton.Pressed += OnDeletePressed;
+        toolbar.AddChild(_deleteButton);
+
+        toolbar.AddChild(new HSeparator { SizeFlagsHorizontal = SizeFlags.Expand });
 
         // Scroll container for tile grid
         _scrollContainer = new ScrollContainer
@@ -232,7 +266,17 @@ public partial class TileAtlasPanel : Control
             newButton.SetSelected(true);
         }
 
+        // Update toolbar button states
+        UpdateToolbarState();
+
         EmitSignal(SignalName.TileSelected, tileId);
+    }
+
+    private void UpdateToolbarState()
+    {
+        var hasSelection = _selectedTileId != null;
+        if (_duplicateButton != null) _duplicateButton.Disabled = !hasSelection;
+        if (_deleteButton != null) _deleteButton.Disabled = !hasSelection;
     }
 
     public string? SelectedTileId => _selectedTileId;
@@ -257,6 +301,136 @@ public partial class TileAtlasPanel : Control
             { "type", "tile" },
             { "tile_id", _selectedTileId }
         };
+    }
+
+    private void OnDuplicatePressed()
+    {
+        if (_selectedTileId == null) return;
+        var tile = _service.GetTile(_selectedTileId);
+        if (tile == null) return;
+
+        // Create duplicate dialog lazily
+        if (_duplicateDialog == null)
+        {
+            _duplicateDialog = new AcceptDialog
+            {
+                Title = "Duplicate Tile",
+                OkButtonText = "Duplicate",
+                Size = new Vector2I(400, 150)
+            };
+
+            var vbox = new VBoxContainer();
+            _duplicateDialog.AddChild(vbox);
+
+            vbox.AddChild(new Label { Text = "Enter a new ID for the duplicated tile:" });
+
+            _duplicateIdField = new LineEdit
+            {
+                PlaceholderText = "new_tile_id (snake_case)",
+                SizeFlagsHorizontal = SizeFlags.ExpandFill
+            };
+            _duplicateIdField.TextChanged += OnDuplicateIdChanged;
+            vbox.AddChild(_duplicateIdField);
+
+            _duplicateValidationLabel = new Label
+            {
+                Text = "",
+                Modulate = new Color(1, 0.3f, 0.3f)
+            };
+            vbox.AddChild(_duplicateValidationLabel);
+
+            _duplicateDialog.Confirmed += OnDuplicateConfirmed;
+            AddChild(_duplicateDialog);
+        }
+
+        // Reset dialog state
+        _duplicateIdField!.Text = tile.Id + "_copy";
+        OnDuplicateIdChanged(_duplicateIdField.Text);
+        _duplicateDialog.PopupCentered();
+    }
+
+    private void OnDuplicateIdChanged(string newId)
+    {
+        if (_duplicateValidationLabel == null || _duplicateDialog == null) return;
+
+        var (valid, message) = ValidateTileId(newId);
+        _duplicateValidationLabel.Text = valid ? "" : message;
+        _duplicateDialog.GetOkButton().Disabled = !valid;
+    }
+
+    private (bool valid, string message) ValidateTileId(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            return (false, "ID is required");
+
+        if (!System.Text.RegularExpressions.Regex.IsMatch(id, @"^[a-z][a-z0-9_]*$"))
+            return (false, "ID must be snake_case starting with a letter");
+
+        if (_service.GetTile(id) != null)
+            return (false, $"Tile '{id}' already exists");
+
+        return (true, "");
+    }
+
+    private void OnDuplicateConfirmed()
+    {
+        if (_selectedTileId == null || _duplicateIdField == null) return;
+
+        var sourceTile = _service.GetTile(_selectedTileId);
+        if (sourceTile == null) return;
+
+        var newId = _duplicateIdField.Text.Trim();
+        var (valid, _) = ValidateTileId(newId);
+        if (!valid) return;
+
+        // Clone and add
+        var clone = sourceTile.Clone();
+        clone.Id = newId;
+
+        if (_service.AddTile(clone))
+        {
+            // Select the new tile after the grid refreshes
+            CallDeferred(nameof(SelectTileDeferred), newId);
+        }
+    }
+
+    private void SelectTileDeferred(string tileId)
+    {
+        SelectTile(tileId);
+    }
+
+    private void OnDeletePressed()
+    {
+        if (_selectedTileId == null) return;
+        var tile = _service.GetTile(_selectedTileId);
+        if (tile == null) return;
+
+        // Create delete dialog lazily
+        if (_deleteDialog == null)
+        {
+            _deleteDialog = new ConfirmationDialog
+            {
+                Title = "Delete Tile",
+                OkButtonText = "Delete",
+                Size = new Vector2I(400, 120)
+            };
+            _deleteDialog.Confirmed += OnDeleteConfirmed;
+            AddChild(_deleteDialog);
+        }
+
+        _deleteDialog.DialogText = $"Are you sure you want to delete tile '{tile.Name}' ({tile.Id})?\n\nThis action cannot be undone.";
+        _deleteDialog.PopupCentered();
+    }
+
+    private void OnDeleteConfirmed()
+    {
+        if (_selectedTileId == null) return;
+
+        var idToDelete = _selectedTileId;
+        _selectedTileId = null;
+        UpdateToolbarState();
+
+        _service.RemoveTile(idToDelete);
     }
 }
 
