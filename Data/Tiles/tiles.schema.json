@@ -14,13 +14,14 @@
       "pattern": "^res://.*\\.tres$",
       "description": "Path to the TileSet resource (e.g., res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres)"
     },
+    "biomes": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/definitions/biomeDefinition" },
+      "description": "Biome definitions with tile pools and signatures"
+    },
     "tiles": {
       "type": "array",
       "items": { "$ref": "#/definitions/tile" }
-    },
-    "blobGeneration": {
-      "$ref": "#/definitions/blobGenerationConfig",
-      "description": "Configuration for coherent terrain region generation"
     }
   },
   "definitions": {
@@ -99,10 +100,6 @@
           "maximum": 1,
           "description": "Probability of decoration tile appearing (0-1)"
         },
-        "blobSettings": {
-          "$ref": "#/definitions/blobGenerationConfig",
-          "description": "Per-tile blob generation settings (overrides global)"
-        },
         "autoTileFormat": {
           "type": "string",
           "enum": ["corner16", "edge16", "blob47"],
@@ -169,39 +166,46 @@
         "y": { "type": "integer" }
       }
     },
-    "blobGenerationConfig": {
+    "biomeDefinition": {
       "type": "object",
+      "required": ["displayName", "signature", "blockedPercentage", "passableTiles", "blockedTiles"],
       "properties": {
-        "enabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "Whether to use noise-based clustering for terrain tiles"
+        "displayName": {
+          "type": "string",
+          "description": "Human-readable biome name"
         },
-        "noiseScale": {
-          "type": "number",
-          "default": 0.15,
-          "minimum": 0.01,
-          "maximum": 1.0,
-          "description": "Scale of the noise pattern (smaller = larger blobs)"
+        "signature": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          },
+          "minItems": 8,
+          "maxItems": 8,
+          "description": "8D card signature [Solidum, Febris, Ordinem, Lumines, Varias, Inertiae, Subsidium, Spatium]"
         },
-        "clusterStrength": {
+        "blockedPercentage": {
           "type": "number",
-          "default": 0.7,
           "minimum": 0,
           "maximum": 1,
-          "description": "How strongly tiles cluster together (0 = random, 1 = very clustered)"
+          "description": "Percentage of tiles that should be blocked (0-1)"
         },
-        "minBlobSize": {
-          "type": "integer",
-          "default": 3,
-          "minimum": 1,
-          "description": "Minimum blob size in tiles"
+        "passableTiles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          },
+          "description": "Map of tile IDs to weights for passable tiles"
         },
-        "maxBlobSize": {
-          "type": "integer",
-          "default": 12,
-          "minimum": 1,
-          "description": "Maximum blob size in tiles"
+        "blockedTiles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          },
+          "description": "Map of tile IDs to weights for blocked tiles"
         }
       }
     }

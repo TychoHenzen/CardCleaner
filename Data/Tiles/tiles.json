@@ -1,7 +1,121 @@
 {
   "$schema": "./tiles.schema.json",
-  "version": "1.0",
+  "version": "2.0",
   "tileset": "res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres",
+  "biomes": {
+    "plains": {
+      "displayName": "Plains",
+      "signature": [0.0, 0.0, 0.2, 0.1, 0.0, 0.0, 0.2, 0.0],
+      "blockedPercentage": 0.15,
+      "passableTiles": {
+        "plains_grass": 0.40,
+        "plains_grass_tall": 0.25,
+        "plains_wildflowers": 0.15,
+        "plains_fertile_soil": 0.10,
+        "plains_path": 0.10
+      },
+      "blockedTiles": {
+        "plains_small_rock": 0.40,
+        "plains_boulder": 0.30,
+        "plains_shrub": 0.30
+      }
+    },
+    "forest": {
+      "displayName": "Forest",
+      "signature": [0.0, -0.3, -0.3, -0.3, 0.0, 0.2, 0.3, 0.0],
+      "blockedPercentage": 0.40,
+      "passableTiles": {
+        "forest_floor": 0.30,
+        "forest_moss": 0.25,
+        "forest_leaves": 0.20,
+        "forest_clearing": 0.15,
+        "forest_undergrowth": 0.10
+      },
+      "blockedTiles": {
+        "forest_tree": 0.35,
+        "forest_dense_trees": 0.25,
+        "forest_fallen_log": 0.15,
+        "forest_mushrooms": 0.10,
+        "forest_stump": 0.15
+      }
+    },
+    "desert": {
+      "displayName": "Desert",
+      "signature": [0.3, 0.7, 0.3, 0.4, 0.0, -0.2, -0.2, 0.3],
+      "blockedPercentage": 0.12,
+      "passableTiles": {
+        "desert_sand": 0.35,
+        "desert_dune": 0.25,
+        "desert_cracked": 0.15,
+        "desert_gravel": 0.15,
+        "desert_rocky": 0.10
+      },
+      "blockedTiles": {
+        "desert_rock": 0.30,
+        "desert_outcrop": 0.25,
+        "desert_cactus": 0.25,
+        "desert_bones": 0.10,
+        "desert_skull": 0.10
+      }
+    },
+    "tundra": {
+      "displayName": "Tundra",
+      "signature": [0.2, -0.7, 0.5, 0.3, 0.0, 0.1, 0.0, -0.1],
+      "blockedPercentage": 0.22,
+      "passableTiles": {
+        "tundra_snow": 0.35,
+        "tundra_packed_snow": 0.25,
+        "tundra_frost": 0.15,
+        "tundra_permafrost": 0.15,
+        "tundra_ice_path": 0.10
+      },
+      "blockedTiles": {
+        "tundra_ice_block": 0.25,
+        "tundra_frozen_rock": 0.25,
+        "tundra_evergreen": 0.20,
+        "tundra_frozen_lake": 0.15,
+        "tundra_snowdrift": 0.15
+      }
+    },
+    "swamp": {
+      "displayName": "Swamp",
+      "signature": [-0.2, -0.2, -0.5, -0.5, 0.0, -0.3, -0.1, 0.0],
+      "blockedPercentage": 0.35,
+      "passableTiles": {
+        "swamp_mud": 0.30,
+        "swamp_shallow_water": 0.25,
+        "swamp_reeds": 0.20,
+        "swamp_moss": 0.15,
+        "swamp_peat": 0.10
+      },
+      "blockedTiles": {
+        "swamp_murky_pool": 0.30,
+        "swamp_dead_tree": 0.25,
+        "swamp_gnarled_roots": 0.20,
+        "swamp_lily_pads": 0.15,
+        "swamp_fog_hollow": 0.10
+      }
+    },
+    "mountains": {
+      "displayName": "Mountains",
+      "signature": [0.7, -0.2, 0.4, 0.2, 0.0, 0.4, 0.0, 0.3],
+      "blockedPercentage": 0.38,
+      "passableTiles": {
+        "mountains_rock": 0.30,
+        "mountains_gravel": 0.25,
+        "mountains_slate": 0.20,
+        "mountains_scree": 0.15,
+        "mountains_alpine_grass": 0.10
+      },
+      "blockedTiles": {
+        "mountains_cliff": 0.30,
+        "mountains_boulder": 0.30,
+        "mountains_ore": 0.15,
+        "mountains_alpine_shrub": 0.15,
+        "mountains_cave_entrance": 0.10
+      }
+    }
+  },
   "tiles": [
     {
       "id": "debug_path",

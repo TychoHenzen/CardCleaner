@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
@@ -27,6 +28,44 @@ public partial class BiomeDefinition : Resource
         PassableTiles = passableTiles;
         BlockedTiles = blockedTiles;
         BlockedPercentage = Mathf.Clamp(blockedPercentage, 0f, 1f);
+    }
+
+    /// <summary>
+    /// Factory method to create BiomeDefinition from JSON data
+    /// </summary>
+    public static BiomeDefinition FromData(string biomeId, BiomeData data)
+    {
+        var biomeType = ParseBiomeType(biomeId);
+        var signature = new CardSignature(data.Signature);
+
+        var passableTiles = new TilePool();
+        foreach (var (tileId, weight) in data.PassableTiles)
+            passableTiles.Add(tileId, weight);
+
+        var blockedTiles = new TilePool();
+        foreach (var (tileId, weight) in data.BlockedTiles)
+            blockedTiles.Add(tileId, weight);
+
+        return new BiomeDefinition(
+            biomeType,
+            signature,
+            passableTiles,
+            blockedTiles,
+            data.BlockedPercentage);
+    }
+
+    private static BiomeType ParseBiomeType(string biomeId)
+    {
+        return biomeId.ToLowerInvariant() switch
+        {
+            "plains" => BiomeType.Plains,
+            "forest" => BiomeType.Forest,
+            "desert" => BiomeType.Desert,
+            "tundra" => BiomeType.Tundra,
+            "swamp" => BiomeType.Swamp,
+            "mountains" => BiomeType.Mountains,
+            _ => BiomeType.Plains // Default fallback
+        };
     }
 
     [Export] public BiomeType Type { get; set; } = DefaultType;
