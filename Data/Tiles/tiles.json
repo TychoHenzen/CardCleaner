@@ -164,6 +164,21 @@
         "volcanic_lava": 0.60,
         "volcanic_magma_vent": 0.40
       }
+    },
+    "magical": {
+      "displayName": "Magical",
+      "signature": [-0.2, 0.1, -0.6, 0.5, 0.5, -0.3, 0.3, 0.4],
+      "blockedPercentage": 0.25,
+      "passableTiles": {
+        "magical_enchanted_grass": 0.30,
+        "magical_mana_pool": 0.25,
+        "magical_rune_circle": 0.20,
+        "magical_arcane_glyph": 0.25
+      },
+      "blockedTiles": {
+        "magical_crystal_spire": 0.55,
+        "magical_void_rift": 0.45
+      }
     }
   },
   "tiles": [
@@ -2433,6 +2448,102 @@
       "isTransparent": true,
       "biomes": [
         "volcanic"
+      ]
+    },
+    {
+      "id": "magical_enchanted_grass",
+      "name": "Enchanted Grass",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceId": 342,
+      "layer": "terrain",
+      "elevation": 0,
+      "isTransparent": true,
+      "biomes": [
+        "magical"
+      ]
+    },
+    {
+      "id": "magical_rune_circle",
+      "name": "Rune Circle",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 6,
+        "y": 2
+      },
+      "sourceId": 342,
+      "layer": "effects",
+      "elevation": 0,
+      "isTransparent": true,
+      "biomes": [
+        "magical"
+      ]
+    },
+    {
+      "id": "magical_crystal_spire",
+      "name": "Crystal Spire",
+      "passability": "solid",
+      "atlasCoords": {
+        "x": 24,
+        "y": 8
+      },
+      "sourceId": 342,
+      "layer": "structure",
+      "elevation": 1.0,
+      "isTransparent": false,
+      "biomes": [
+        "magical"
+      ]
+    },
+    {
+      "id": "magical_void_rift",
+      "name": "Void Rift",
+      "passability": "solid",
+      "atlasCoords": {
+        "x": 4,
+        "y": 4
+      },
+      "sourceId": 342,
+      "layer": "terrain",
+      "elevation": -0.5,
+      "isTransparent": false,
+      "biomes": [
+        "magical"
+      ]
+    },
+    {
+      "id": "magical_mana_pool",
+      "name": "Mana Pool",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 8,
+        "y": 6
+      },
+      "sourceId": 342,
+      "layer": "terrain",
+      "elevation": -0.2,
+      "isTransparent": true,
+      "biomes": [
+        "magical"
+      ]
+    },
+    {
+      "id": "magical_arcane_glyph",
+      "name": "Arcane Glyph",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 10,
+        "y": 2
+      },
+      "sourceId": 342,
+      "layer": "decoration",
+      "elevation": 0,
+      "isTransparent": true,
+      "biomes": [
+        "magical"
       ]
     }
   ]
