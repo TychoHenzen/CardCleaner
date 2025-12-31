@@ -1050,7 +1050,7 @@ public partial class TilePropertiesPanel : ScrollContainer
             {
                 Title = "Select Atlas Coordinates",
                 InitialPosition = Window.WindowInitialPosition.CenterMainWindowScreen,
-                Size = new Vector2I(550, 450),
+                Size = GetLargeDialogSize(),
                 OkButtonText = "Select"
             };
 
@@ -1062,7 +1062,6 @@ public partial class TilePropertiesPanel : ScrollContainer
 
             var pickerScroll = new ScrollContainer
             {
-                CustomMinimumSize = new Vector2(0, 380),
                 SizeFlagsHorizontal = SizeFlags.ExpandFill,
                 SizeFlagsVertical = SizeFlags.ExpandFill,
                 HorizontalScrollMode = ScrollMode.Auto,
@@ -1112,7 +1111,7 @@ public partial class TilePropertiesPanel : ScrollContainer
             {
                 Title = "Select Atlas Source",
                 InitialPosition = Window.WindowInitialPosition.CenterMainWindowScreen,
-                Size = new Vector2I(650, 580),
+                Size = GetLargeDialogSize(),
                 OkButtonText = "Select"
             };
 
@@ -1143,7 +1142,6 @@ public partial class TilePropertiesPanel : ScrollContainer
 
             var scroll = new ScrollContainer
             {
-                CustomMinimumSize = new Vector2(0, 480),
                 SizeFlagsHorizontal = SizeFlags.ExpandFill,
                 SizeFlagsVertical = SizeFlags.ExpandFill
             };
@@ -1151,7 +1149,7 @@ public partial class TilePropertiesPanel : ScrollContainer
 
             var grid = new GridContainer
             {
-                Columns = (int)(5f/_sourcePickerZoomSlider.Value),
+                Columns = (int)(2f/_sourcePickerZoomSlider.Value),
                 SizeFlagsHorizontal = SizeFlags.ExpandFill
             };
             grid.AddThemeConstantOverride("h_separation", 12);
@@ -1393,7 +1391,7 @@ public partial class TilePropertiesPanel : ScrollContainer
             {
                 Title = "Select Atlas Variant",
                 InitialPosition = Window.WindowInitialPosition.CenterMainWindowScreen,
-                Size = new Vector2I(550, 450),
+                Size = GetLargeDialogSize(),
                 OkButtonText = "Assign",
             };
 
@@ -1405,7 +1403,6 @@ public partial class TilePropertiesPanel : ScrollContainer
 
             var pickerScroll = new ScrollContainer
             {
-                CustomMinimumSize = new Vector2(0, 380),
                 SizeFlagsHorizontal = SizeFlags.ExpandFill,
                 SizeFlagsVertical = SizeFlags.ExpandFill,
                 HorizontalScrollMode = ScrollMode.Auto,
@@ -1614,6 +1611,31 @@ public partial class TilePropertiesPanel : ScrollContainer
         };
         row.AddChild(lbl);
         return row;
+    }
+
+    /// <summary>
+    /// Gets a dialog size that fills approximately 70% of the screen.
+    /// Used for picker dialogs to provide ample space for browsing large atlases.
+    /// </summary>
+    private Vector2I GetLargeDialogSize()
+    {
+        const float fillPercent = 0.70f;
+        const int minWidth = 800;
+        const int minHeight = 600;
+        const int maxWidth = 1920;
+        const int maxHeight = 1200;
+
+        // Get screen size from the editor window
+        var screenSize = DisplayServer.ScreenGetSize();
+
+        var width = (int)(screenSize.X * fillPercent);
+        var height = (int)(screenSize.Y * fillPercent);
+
+        // Clamp to reasonable bounds
+        width = Mathf.Clamp(width, minWidth, maxWidth);
+        height = Mathf.Clamp(height, minHeight, maxHeight);
+
+        return new Vector2I(width, height);
     }
 
     private void OnAutoTileFormatChanged(long index)
@@ -1987,7 +2009,7 @@ public partial class TilePropertiesPanel : ScrollContainer
             {
                 Title = "Add Tile Variation",
                 InitialPosition = Window.WindowInitialPosition.CenterMainWindowScreen,
-                Size = new Vector2I(550, 450),
+                Size = GetLargeDialogSize(),
                 OkButtonText = "Add"
             };
 
@@ -1999,7 +2021,6 @@ public partial class TilePropertiesPanel : ScrollContainer
 
             var pickerScroll = new ScrollContainer
             {
-                CustomMinimumSize = new Vector2(0, 380),
                 SizeFlagsHorizontal = SizeFlags.ExpandFill,
                 SizeFlagsVertical = SizeFlags.ExpandFill,
                 HorizontalScrollMode = ScrollMode.Auto,
@@ -2164,7 +2185,7 @@ public partial class TilePropertiesPanel : ScrollContainer
             {
                 Title = "Add Animation Frame",
                 InitialPosition = Window.WindowInitialPosition.CenterMainWindowScreen,
-                Size = new Vector2I(550, 450),
+                Size = GetLargeDialogSize(),
                 OkButtonText = "Add"
             };
 
@@ -2176,7 +2197,6 @@ public partial class TilePropertiesPanel : ScrollContainer
 
             var pickerScroll = new ScrollContainer
             {
-                CustomMinimumSize = new Vector2(0, 380),
                 SizeFlagsHorizontal = SizeFlags.ExpandFill,
                 SizeFlagsVertical = SizeFlags.ExpandFill,
                 HorizontalScrollMode = ScrollMode.Auto,

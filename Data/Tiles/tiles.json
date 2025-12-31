@@ -283,32 +283,171 @@
       "name": "Forest Floor",
       "passability": "passable",
       "atlasCoords": {
-        "x": 7,
-        "y": 1
+        "x": 12,
+        "y": 36
       },
-      "sourceId": 11,
+      "sourceId": 13,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
       "biomes": [
         "forest"
-      ]
+      ],
+      "size": {
+        "x": 3,
+        "y": 3
+      },
+      "autoTileVariants": [
+        null,
+        {
+          "x": 12,
+          "y": 38
+        },
+        {
+          "x": 12,
+          "y": 36
+        },
+        {
+          "x": 12,
+          "y": 37
+        },
+        {
+          "x": 14,
+          "y": 36
+        },
+        {
+          "x": 12,
+          "y": 39
+        },
+        {
+          "x": 13,
+          "y": 36
+        },
+        {
+          "x": 14,
+          "y": 35
+        },
+        {
+          "x": 14,
+          "y": 38
+        },
+        {
+          "x": 13,
+          "y": 38
+        },
+        {
+          "x": 14,
+          "y": 39
+        },
+        {
+          "x": 14,
+          "y": 33
+        },
+        {
+          "x": 14,
+          "y": 37
+        },
+        {
+          "x": 12,
+          "y": 33
+        },
+        {
+          "x": 12,
+          "y": 35
+        },
+        {
+          "x": 13,
+          "y": 37
+        }
+      ],
+      "variationMode": "pergeneration",
+      "tileMode": "autotile",
+      "outerTerrain": "*"
     },
     {
       "id": "forest_moss",
       "name": "Mossy Ground",
       "passability": "passable",
       "atlasCoords": {
-        "x": 5,
-        "y": 0
+        "x": 3,
+        "y": 18
       },
-      "sourceId": 14,
+      "sourceId": 383,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
       "biomes": [
         "forest"
-      ]
+      ],
+      "size": {
+        "x": 3,
+        "y": 3
+      },
+      "autoTileVariants": [
+        null,
+        {
+          "x": 3,
+          "y": 20
+        },
+        {
+          "x": 3,
+          "y": 18
+        },
+        {
+          "x": 3,
+          "y": 19
+        },
+        {
+          "x": 5,
+          "y": 18
+        },
+        {
+          "x": 3,
+          "y": 17
+        },
+        {
+          "x": 4,
+          "y": 18
+        },
+        {
+          "x": 2,
+          "y": 20
+        },
+        {
+          "x": 5,
+          "y": 20
+        },
+        {
+          "x": 4,
+          "y": 20
+        },
+        {
+          "x": 4,
+          "y": 17
+        },
+        {
+          "x": 2,
+          "y": 18
+        },
+        {
+          "x": 5,
+          "y": 19
+        },
+        {
+          "x": 0,
+          "y": 18
+        },
+        {
+          "x": 0,
+          "y": 20
+        },
+        {
+          "x": 4,
+          "y": 19
+        }
+      ],
+      "tileMode": "autotile",
+      "outerTerrain": "*"
     },
     {
       "id": "forest_leaves",
