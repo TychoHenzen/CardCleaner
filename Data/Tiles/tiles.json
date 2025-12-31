@@ -130,6 +130,24 @@
         "water_coral": 0.30,
         "water_rock": 0.20
       }
+    },
+    "cave": {
+      "displayName": "Cave",
+      "signature": [0.6, -0.1, -0.2, -0.7, 0.0, 0.5, 0.0, -0.3],
+      "blockedPercentage": 0.35,
+      "passableTiles": {
+        "cave_floor": 0.40,
+        "cave_rubble": 0.25,
+        "cave_glowing_moss": 0.20,
+        "cave_wet_floor": 0.15
+      },
+      "blockedTiles": {
+        "cave_wall": 0.30,
+        "cave_stalactite": 0.25,
+        "cave_crystal": 0.20,
+        "cave_underground_lake": 0.15,
+        "cave_boulder": 0.10
+      }
     }
   },
   "tiles": [
@@ -2143,6 +2161,150 @@
       "isTransparent": true,
       "biomes": [
         "water"
+      ]
+    },
+    {
+      "id": "cave_floor",
+      "name": "Cave Floor",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 10,
+        "y": 10
+      },
+      "sourceId": 14,
+      "layer": "terrain",
+      "elevation": 0,
+      "isTransparent": true,
+      "biomes": [
+        "cave"
+      ]
+    },
+    {
+      "id": "cave_rubble",
+      "name": "Cave Rubble",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 11,
+        "y": 10
+      },
+      "sourceId": 14,
+      "layer": "terrain",
+      "elevation": 0.1,
+      "isTransparent": true,
+      "biomes": [
+        "cave"
+      ]
+    },
+    {
+      "id": "cave_glowing_moss",
+      "name": "Glowing Moss",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 13,
+        "y": 10
+      },
+      "sourceId": 14,
+      "layer": "decoration",
+      "elevation": 0,
+      "isTransparent": true,
+      "biomes": [
+        "cave"
+      ]
+    },
+    {
+      "id": "cave_wet_floor",
+      "name": "Wet Cave Floor",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 10,
+        "y": 11
+      },
+      "sourceId": 14,
+      "layer": "terrain",
+      "elevation": -0.1,
+      "isTransparent": true,
+      "biomes": [
+        "cave"
+      ]
+    },
+    {
+      "id": "cave_wall",
+      "name": "Cave Wall",
+      "passability": "solid",
+      "atlasCoords": {
+        "x": 14,
+        "y": 10
+      },
+      "sourceId": 14,
+      "layer": "terrain",
+      "elevation": 1.0,
+      "isTransparent": false,
+      "biomes": [
+        "cave"
+      ]
+    },
+    {
+      "id": "cave_stalactite",
+      "name": "Stalactite",
+      "passability": "solid",
+      "atlasCoords": {
+        "x": 11,
+        "y": 11
+      },
+      "sourceId": 14,
+      "layer": "structure",
+      "elevation": 1.5,
+      "isTransparent": false,
+      "biomes": [
+        "cave"
+      ]
+    },
+    {
+      "id": "cave_crystal",
+      "name": "Crystal Formation",
+      "passability": "solid",
+      "atlasCoords": {
+        "x": 12,
+        "y": 11
+      },
+      "sourceId": 14,
+      "layer": "decoration",
+      "elevation": 0.5,
+      "isTransparent": true,
+      "biomes": [
+        "cave"
+      ]
+    },
+    {
+      "id": "cave_underground_lake",
+      "name": "Underground Lake",
+      "passability": "solid",
+      "atlasCoords": {
+        "x": 13,
+        "y": 11
+      },
+      "sourceId": 14,
+      "layer": "terrain",
+      "elevation": -0.5,
+      "isTransparent": true,
+      "biomes": [
+        "cave"
+      ]
+    },
+    {
+      "id": "cave_boulder",
+      "name": "Cave Boulder",
+      "passability": "solid",
+      "atlasCoords": {
+        "x": 14,
+        "y": 11
+      },
+      "sourceId": 14,
+      "layer": "structure",
+      "elevation": 0.8,
+      "isTransparent": false,
+      "biomes": [
+        "cave"
       ]
     }
   ]
