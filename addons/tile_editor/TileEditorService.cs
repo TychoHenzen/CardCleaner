@@ -402,6 +402,124 @@ public partial class TileEditorService : RefCounted
     }
 
     /// <summary>
+    /// Find duplicate atlas sources by comparing actual texture content.
+    /// Returns groups of source IDs that have identical textures.
+    /// </summary>
+    public List<List<int>> FindDuplicateSources()
+    {
+        var duplicateGroups = new List<List<int>>();
+        if (!IsTileSetValid()) return duplicateGroups;
+
+        try
+        {
+            var sources = GetAvailableAtlasSources();
+            var processed = new HashSet<int>();
+
+            // Build a dictionary of source ID to image data hash
+            var sourceImageData = new Dictionary<int, byte[]>();
+            foreach (var source in sources)
+            {
+                if (source.Source?.Texture == null) continue;
+                var image = source.Source.Texture.GetImage();
+                if (image != null)
+                {
+                    sourceImageData[source.SourceId] = image.GetData();
+                }
+            }
+
+            // Find groups with identical content
+            foreach (var kvp1 in sourceImageData)
+            {
+                if (processed.Contains(kvp1.Key)) continue;
+
+                var group = new List<int> { kvp1.Key };
+
+                foreach (var kvp2 in sourceImageData)
+                {
+                    if (kvp1.Key == kvp2.Key || processed.Contains(kvp2.Key)) continue;
+
+                    // Compare byte arrays
+                    if (kvp1.Value.Length == kvp2.Value.Length && kvp1.Value.SequenceEqual(kvp2.Value))
+                    {
+                        group.Add(kvp2.Key);
+                        processed.Add(kvp2.Key);
+                    }
+                }
+
+                processed.Add(kvp1.Key);
+
+                // Only add if there are duplicates (more than 1 in group)
+                if (group.Count > 1)
+                {
+                    group.Sort(); // Ensure lowest ID is first
+                    duplicateGroups.Add(group);
+                }
+            }
+
+            return duplicateGroups;
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[TileEditorService] Failed to find duplicate sources: {ex.Message}");
+            return duplicateGroups;
+        }
+    }
+
+    /// <summary>
+    /// Remove duplicate sources, keeping the one with the lowest ID.
+    /// Reassigns tiles from higher ID sources to the lowest ID source.
+    /// </summary>
+    /// <returns>Number of duplicate sources removed</returns>
+    public int RemoveDuplicateSources()
+    {
+        if (!IsTileSetValid()) return 0;
+
+        var duplicateGroups = FindDuplicateSources();
+        if (duplicateGroups.Count == 0) return 0;
+
+        var removedCount = 0;
+
+        try
+        {
+            foreach (var group in duplicateGroups)
+            {
+                var keepId = group[0]; // Lowest ID (group is sorted)
+
+                // Reassign tiles from duplicate sources to the kept source
+                for (var i = 1; i < group.Count; i++)
+                {
+                    var removeId = group[i];
+
+                    // Update tiles that reference the duplicate source
+                    foreach (var tile in _tiles.Values.Where(t => t.SourceId == removeId))
+                    {
+                        tile.SourceId = keepId;
+                    }
+
+                    // Remove the duplicate source from TileSet
+                    _tileSet!.RemoveSource(removeId);
+                    removedCount++;
+                    GD.Print($"[TileEditorService] Removed duplicate source {removeId} (kept {keepId})");
+                }
+            }
+
+            // Save the TileSet
+            var saveResult = ResourceSaver.Save(_tileSet!, TilesetPath);
+            if (saveResult != Error.Ok)
+            {
+                GD.PrintErr($"[TileEditorService] Failed to save TileSet after removing duplicates: {saveResult}");
+            }
+
+            return removedCount;
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[TileEditorService] Failed to remove duplicate sources: {ex.Message}");
+            return removedCount;
+        }
+    }
+
+    /// <summary>
     /// Check if atlas source IDs are already contiguous (0, 1, 2, ... N-1)
     /// </summary>
     public bool AreSourceIdsContiguous()
