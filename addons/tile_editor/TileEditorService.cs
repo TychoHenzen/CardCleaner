@@ -200,6 +200,9 @@ public partial class TileEditorService : RefCounted
                 tile.InnerTerrainId = tileData.InnerTerrain;
                 tile.OuterTerrainId = tileData.OuterTerrain;
 
+                // Load description
+                tile.Description = tileData.Description;
+
                 _tiles[tile.Id] = tile;
             }
 
@@ -754,7 +757,8 @@ public partial class TileEditorService : RefCounted
                     TileMode = t.TileMode != "plain" ? t.TileMode : null,
                     Dominance = t.Dominance,
                     InnerTerrain = t.InnerTerrainId,
-                    OuterTerrain = t.OuterTerrainId
+                    OuterTerrain = t.OuterTerrainId,
+                    Description = t.Description
                 }).ToList()
             };
 
@@ -877,6 +881,11 @@ public partial class TileEditorService : RefCounted
         /// Null = use dominance-based resolution at runtime.
         /// </summary>
         [JsonPropertyName("outerTerrain")] public string? OuterTerrain { get; set; }
+
+        /// <summary>
+        /// Visual appearance description for artists and AI image generators.
+        /// </summary>
+        [JsonPropertyName("description")] public string? Description { get; set; }
     }
 
     private sealed class AnimationData
@@ -1011,6 +1020,12 @@ public class EditableTile
     public string? OuterTerrainId { get; set; }
 
     /// <summary>
+    /// Visual appearance description for artists and AI image generators.
+    /// Should include color, texture, and notable visual features.
+    /// </summary>
+    public string? Description { get; set; }
+
+    /// <summary>
     /// Returns true if this auto-tile is compositable (OuterTerrainId is "*"),
     /// meaning its border should be composited onto any base terrain at atlas compile time.
     /// </summary>
@@ -1046,7 +1061,8 @@ public class EditableTile
             TileMode = TileMode,
             Dominance = Dominance,
             InnerTerrainId = InnerTerrainId,
-            OuterTerrainId = OuterTerrainId
+            OuterTerrainId = OuterTerrainId,
+            Description = Description
         };
 
         if (AutoTileVariants != null)

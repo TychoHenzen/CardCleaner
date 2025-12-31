@@ -193,7 +193,8 @@
       "sourceId": 12,
       "layer": "effects",
       "elevation": 0,
-      "isTransparent": true
+      "isTransparent": true,
+      "description": "Semi-transparent cyan/blue overlay marker indicating pathfinding route. Soft glow effect for visibility."
     },
     {
       "id": "debug_target",
@@ -206,7 +207,8 @@
       "sourceId": 8,
       "layer": "effects",
       "elevation": 0,
-      "isTransparent": true
+      "isTransparent": true,
+      "description": "Bright target marker with concentric rings or crosshair pattern. High-contrast color for easy spotting."
     },
     {
       "id": "dirt",
@@ -288,7 +290,8 @@
         }
       ],
       "tileMode": "autotile",
-      "outerTerrain": "*"
+      "outerTerrain": "*",
+      "description": "Medium brown packed earth with subtle texture variation. Dry, compacted surface with occasional small pebbles."
     },
     {
       "id": "wall",
@@ -301,7 +304,8 @@
       "sourceId": 3,
       "layer": "structure",
       "elevation": 1,
-      "isTransparent": false
+      "isTransparent": false,
+      "description": "Gray stone brick wall with mortar lines visible. Weathered surface with slight color variation between bricks."
     },
     {
       "id": "stone",
@@ -314,7 +318,8 @@
       "sourceId": 1,
       "layer": "structure",
       "elevation": 0.5,
-      "isTransparent": false
+      "isTransparent": false,
+      "description": "Solid gray stone block with rough-hewn surface texture. Natural stone coloring with subtle veining."
     },
     {
       "id": "glass",
@@ -327,7 +332,8 @@
       "sourceId": 0,
       "layer": "structure",
       "elevation": 1,
-      "isTransparent": true
+      "isTransparent": true,
+      "description": "Transparent glass panel with subtle blue-green tint. Smooth reflective surface with visible frame edges."
     },
     {
       "id": "grass",
@@ -345,7 +351,8 @@
         "plains",
         "forest",
         "mountains"
-      ]
+      ],
+      "description": "Lush green grass with short, even blades. Bright spring-green coloring with natural variation."
     },
     {
       "id": "plains_grass_tall",
@@ -361,7 +368,8 @@
       "isTransparent": true,
       "biomes": [
         "plains"
-      ]
+      ],
+      "description": "Tall swaying grass blades in yellow-green tones. Wispy tips catching light, dense at base."
     },
     {
       "id": "plains_wildflowers",
@@ -377,7 +385,8 @@
       "isTransparent": true,
       "biomes": [
         "plains"
-      ]
+      ],
+      "description": "Scattered wildflowers in pink, yellow, and white amid green grass. Small delicate blooms."
     },
     {
       "id": "plains_fertile_soil",
@@ -393,7 +402,8 @@
       "isTransparent": true,
       "biomes": [
         "plains"
-      ]
+      ],
+      "description": "Rich dark brown tilled soil with visible furrows. Moist appearance with organic matter visible."
     },
     {
       "id": "plains_path",
@@ -409,7 +419,8 @@
       "isTransparent": true,
       "biomes": [
         "plains"
-      ]
+      ],
+      "description": "Worn tan dirt path with packed earth surface. Lighter colored than surrounding terrain, well-traveled."
     },
     {
       "id": "plains_small_rock",
@@ -425,7 +436,8 @@
       "isTransparent": false,
       "biomes": [
         "plains"
-      ]
+      ],
+      "description": "Small gray-brown fieldstone with rounded edges. Natural weathered appearance, partially embedded in ground."
     },
     {
       "id": "plains_boulder",
@@ -441,7 +453,8 @@
       "isTransparent": false,
       "biomes": [
         "plains"
-      ]
+      ],
+      "description": "Large gray granite boulder with lichen patches. Rough weathered surface, imposing presence."
     },
     {
       "id": "plains_shrub",
@@ -457,7 +470,8 @@
       "isTransparent": true,
       "biomes": [
         "plains"
-      ]
+      ],
+      "description": "Dense green bush with small oval leaves. Rounded dome shape, healthy vibrant foliage."
     },
     {
       "id": "forest_floor",
@@ -543,7 +557,8 @@
       ],
       "variationMode": "pergeneration",
       "tileMode": "autotile",
-      "outerTerrain": "*"
+      "outerTerrain": "*",
+      "description": "Dark brown forest floor with scattered twigs and decomposing leaves. Dappled texture, rich organic matter."
     },
     {
       "id": "forest_moss",
@@ -628,7 +643,8 @@
         }
       ],
       "tileMode": "autotile",
-      "outerTerrain": "*"
+      "outerTerrain": "*",
+      "description": "Thick green moss carpet covering ground. Soft velvety texture in deep emerald tones with patches of darker shade."
     },
     {
       "id": "forest_leaves",
@@ -644,7 +660,8 @@
       "isTransparent": true,
       "biomes": [
         "forest"
-      ]
+      ],
+      "description": "Scattered autumn leaves in orange, red, and brown hues. Crisp dry texture, randomly overlapping."
     },
     {
       "id": "forest_undergrowth",
@@ -660,7 +677,8 @@
       "isTransparent": true,
       "biomes": [
         "forest"
-      ]
+      ],
+      "description": "Low dense ferns and small plants in dark green. Tangled growth with broad fronds."
     },
     {
       "id": "forest_tree",
@@ -680,7 +698,8 @@
       "size": {
         "x": 1,
         "y": 2
-      }
+      },
+      "description": "Tall deciduous tree with brown bark and full green canopy. Thick trunk, spreading branches above."
     },
     {
       "id": "forest_dense_trees",
@@ -761,7 +780,8 @@
         }
       ],
       "tileMode": "autotile",
-      "outerTerrain": "*"
+      "outerTerrain": "*",
+      "description": "Cluster of tall trees forming dense canopy. Multiple overlapping green crowns, minimal gaps between."
     },
     {
       "id": "forest_fallen_log",
@@ -777,7 +797,8 @@
       "isTransparent": false,
       "biomes": [
         "forest"
-      ]
+      ],
+      "description": "Horizontal brown tree trunk lying on ground. Weathered bark with moss patches, decaying ends."
     },
     {
       "id": "forest_mushrooms",
@@ -793,7 +814,8 @@
       "isTransparent": true,
       "biomes": [
         "forest"
-      ]
+      ],
+      "description": "Cluster of red-capped mushrooms with white spots. Small toadstools in fairy-tale style grouping."
     },
     {
       "id": "forest_stump",
@@ -809,7 +831,8 @@
       "isTransparent": false,
       "biomes": [
         "forest"
-      ]
+      ],
+      "description": "Cut tree stump showing growth rings. Flat top surface, brown bark around edges, weathered gray center."
     },
     {
       "id": "desert_sand",
@@ -894,7 +917,8 @@
         }
       ],
       "tileMode": "autotile",
-      "outerTerrain": "*"
+      "outerTerrain": "*",
+      "description": "Golden-tan desert sand with fine granular texture. Soft rippled patterns from wind, warm yellow tones."
     },
     {
       "id": "desert_dune",
@@ -975,7 +999,8 @@
         }
       ],
       "tileMode": "autotile",
-      "outerTerrain": "*"
+      "outerTerrain": "*",
+      "description": "Rolling sand dune with smooth curved surface. Light golden color with subtle shadow on lee side."
     },
     {
       "id": "desert_cracked",
@@ -1060,7 +1085,8 @@
         }
       ],
       "tileMode": "autotile",
-      "outerTerrain": "*"
+      "outerTerrain": "*",
+      "description": "Dried cracked earth in pale tan and gray. Deep fissures forming irregular polygon pattern, parched appearance."
     },
     {
       "id": "gravel",
@@ -1146,7 +1172,8 @@
         }
       ],
       "tileMode": "autotile",
-      "outerTerrain": "*"
+      "outerTerrain": "*",
+      "description": "Loose gray and brown pebbles covering ground. Mixed stone sizes, rough irregular texture."
     },
     {
       "id": "desert_rock",
@@ -1162,7 +1189,8 @@
       "isTransparent": false,
       "biomes": [
         "desert"
-      ]
+      ],
+      "description": "Sun-bleached tan rock formation with wind erosion marks. Smooth rounded edges from sandblasting."
     },
     {
       "id": "desert_outcrop",
@@ -1178,7 +1206,8 @@
       "isTransparent": false,
       "biomes": [
         "desert"
-      ]
+      ],
+      "description": "Tall jagged rock formation in orange-brown sandstone. Layered sedimentary bands visible, dramatic silhouette."
     },
     {
       "id": "desert_cactus",
@@ -1225,7 +1254,8 @@
           "y": 4
         }
       ],
-      "tileMode": "pertilevariations"
+      "tileMode": "pertilevariations",
+      "description": "Tall green saguaro cactus with vertical ribs and spines. Classic desert silhouette with upward-reaching arms."
     },
     {
       "id": "desert_bones",
@@ -1241,7 +1271,8 @@
       "isTransparent": true,
       "biomes": [
         "desert"
-      ]
+      ],
+      "description": "Scattered sun-bleached white bones on sand. Dry brittle remains, stark contrast against tan ground."
     },
     {
       "id": "desert_skull",
@@ -1261,7 +1292,8 @@
       "size": {
         "x": 3,
         "y": 2
-      }
+      },
+      "description": "Large weathered animal skull in ivory white. Horned or antlered, partially buried in sand."
     },
     {
       "id": "tundra_snow",
@@ -1277,7 +1309,8 @@
       "isTransparent": true,
       "biomes": [
         "tundra"
-      ]
+      ],
+      "description": "Fresh white snow with soft powdery texture. Pristine crystalline surface with subtle blue shadows."
     },
     {
       "id": "tundra_packed_snow",
@@ -1293,7 +1326,8 @@
       "isTransparent": true,
       "biomes": [
         "tundra"
-      ]
+      ],
+      "description": "Compacted white snow with harder crusty surface. Slightly grayer than fresh snow, ice crystal sheen."
     },
     {
       "id": "tundra_frost",
@@ -1309,7 +1343,8 @@
       "isTransparent": true,
       "biomes": [
         "tundra"
-      ]
+      ],
+      "description": "Ground with white frost crystals forming feathery patterns. Pale blue-white ice formations on surface."
     },
     {
       "id": "tundra_permafrost",
@@ -1325,7 +1360,8 @@
       "isTransparent": true,
       "biomes": [
         "tundra"
-      ]
+      ],
+      "description": "Frozen gray-brown earth with ice veins visible. Hard solid surface mixing soil and permanent ice."
     },
     {
       "id": "tundra_ice_path",
@@ -1341,7 +1377,8 @@
       "isTransparent": true,
       "biomes": [
         "tundra"
-      ]
+      ],
+      "description": "Smooth translucent ice surface reflecting light. Clear pale blue with slight cloudiness from air bubbles."
     },
     {
       "id": "tundra_ice_block",
@@ -1357,7 +1394,8 @@
       "isTransparent": true,
       "biomes": [
         "tundra"
-      ]
+      ],
+      "description": "Large chunk of pale blue glacial ice. Semi-transparent crystalline structure with sharp angular edges."
     },
     {
       "id": "tundra_frozen_rock",
@@ -1373,7 +1411,8 @@
       "isTransparent": false,
       "biomes": [
         "tundra"
-      ]
+      ],
+      "description": "Dark gray boulder encased in ice and frost. White frost crystals covering surface, frozen in place."
     },
     {
       "id": "tundra_evergreen",
@@ -1393,7 +1432,8 @@
       "size": {
         "x": 2,
         "y": 2
-      }
+      },
+      "description": "Dark green pine or spruce tree with snow on branches. Conical shape, dense needle foliage."
     },
     {
       "id": "tundra_frozen_lake",
@@ -1409,7 +1449,8 @@
       "isTransparent": true,
       "biomes": [
         "tundra"
-      ]
+      ],
+      "description": "Flat frozen water surface in pale blue-white. Smooth ice sheet with occasional cracks visible."
     },
     {
       "id": "tundra_snowdrift",
@@ -1425,7 +1466,8 @@
       "isTransparent": false,
       "biomes": [
         "tundra"
-      ]
+      ],
+      "description": "Piled snow mound formed by wind. White curved surface with smooth windswept contours."
     },
     {
       "id": "swamp_mud",
@@ -1441,7 +1483,8 @@
       "isTransparent": true,
       "biomes": [
         "swamp"
-      ]
+      ],
+      "description": "Wet dark brown mud with glossy sheen. Soft squelchy texture with standing water patches."
     },
     {
       "id": "swamp_shallow_water",
@@ -1457,7 +1500,8 @@
       "isTransparent": true,
       "biomes": [
         "swamp"
-      ]
+      ],
+      "description": "Murky greenish-brown shallow water. Partially opaque with visible mud bottom, stagnant appearance."
     },
     {
       "id": "swamp_reeds",
@@ -1473,7 +1517,8 @@
       "isTransparent": true,
       "biomes": [
         "swamp"
-      ]
+      ],
+      "description": "Tall brown and green cattails and reeds in shallow water. Thin vertical stalks with fluffy seed heads."
     },
     {
       "id": "swamp_moss",
@@ -1489,7 +1534,8 @@
       "isTransparent": true,
       "biomes": [
         "swamp"
-      ]
+      ],
+      "description": "Spanish moss in gray-green draping strands. Stringy hanging texture with aged weathered look."
     },
     {
       "id": "swamp_peat",
@@ -1505,7 +1551,8 @@
       "isTransparent": true,
       "biomes": [
         "swamp"
-      ]
+      ],
+      "description": "Dark brown-black peat bog surface. Spongy organic material with visible decomposed plant matter."
     },
     {
       "id": "swamp_murky_pool",
@@ -1521,7 +1568,8 @@
       "isTransparent": true,
       "biomes": [
         "swamp"
-      ]
+      ],
+      "description": "Dark stagnant pool with opaque black-green water. Oily surface sheen, unknowable depth."
     },
     {
       "id": "swamp_dead_tree",
@@ -1537,7 +1585,8 @@
       "isTransparent": false,
       "biomes": [
         "swamp"
-      ]
+      ],
+      "description": "Skeletal gray dead tree with bare twisted branches. Bark peeling, stark silhouette against sky."
     },
     {
       "id": "swamp_gnarled_roots",
@@ -1553,7 +1602,8 @@
       "isTransparent": false,
       "biomes": [
         "swamp"
-      ]
+      ],
+      "description": "Exposed twisted tree roots in dark brown. Knobby tangled mass rising from swamp water."
     },
     {
       "id": "swamp_lily_pads",
@@ -1569,7 +1619,8 @@
       "isTransparent": true,
       "biomes": [
         "swamp"
-      ]
+      ],
+      "description": "Round green lily pads floating on water. Flat circular leaves with white or pink flower buds."
     },
     {
       "id": "swamp_fog_hollow",
@@ -1585,7 +1636,8 @@
       "isTransparent": true,
       "biomes": [
         "swamp"
-      ]
+      ],
+      "description": "Low-lying white-gray mist obscuring ground. Ethereal foggy haze creating eerie atmosphere."
     },
     {
       "id": "rock",
@@ -1602,7 +1654,8 @@
       "biomes": [
         "mountains",
         "desert"
-      ]
+      ],
+      "description": "Gray-brown natural stone surface with rough texture. Solid bedrock appearance with weathered cracks."
     },
     {
       "id": "mountains_slate",
@@ -1618,7 +1671,8 @@
       "isTransparent": true,
       "biomes": [
         "mountains"
-      ]
+      ],
+      "description": "Dark blue-gray slate rock with layered flat surfaces. Smooth planes at slight angles, fissile texture."
     },
     {
       "id": "mountains_scree",
@@ -1634,7 +1688,8 @@
       "isTransparent": true,
       "biomes": [
         "mountains"
-      ]
+      ],
+      "description": "Loose angular rock fragments in gray and brown. Unstable slope debris with sharp edges."
     },
     {
       "id": "mountains_cliff",
@@ -1650,7 +1705,8 @@
       "isTransparent": false,
       "biomes": [
         "mountains"
-      ]
+      ],
+      "description": "Sheer vertical rock wall in dark gray granite. Jagged ledges and crevices, imposing height."
     },
     {
       "id": "mountains_boulder",
@@ -1697,7 +1753,8 @@
           "y": 17
         }
       ],
-      "tileMode": "pertilevariations"
+      "tileMode": "pertilevariations",
+      "description": "Large irregular gray boulder with rough surface. Massive rounded rock with lichen and weathering."
     },
     {
       "id": "mountains_ore",
@@ -1713,7 +1770,8 @@
       "isTransparent": false,
       "biomes": [
         "mountains"
-      ]
+      ],
+      "description": "Rock outcrop with metallic ore veins visible. Gray stone with shiny copper or iron deposits showing."
     },
     {
       "id": "mountains_alpine_shrub",
@@ -1729,7 +1787,8 @@
       "isTransparent": true,
       "biomes": [
         "mountains"
-      ]
+      ],
+      "description": "Hardy low-growing shrub in muted green. Compact wind-sculpted shape, small tough leaves."
     },
     {
       "id": "mountains_cave_entrance",
@@ -1749,7 +1808,8 @@
       "size": {
         "x": 3,
         "y": 2
-      }
+      },
+      "description": "Dark cave opening in rock face. Shadowy arch entrance with rough stone framing, mysterious interior."
     },
     {
       "id": "water_shallow",
@@ -1765,7 +1825,8 @@
       "isTransparent": true,
       "biomes": [
         "water"
-      ]
+      ],
+      "description": "Clear light blue shallow water with visible sandy bottom. Gentle ripples, transparent enough to see through."
     },
     {
       "id": "water_deep",
@@ -1781,7 +1842,8 @@
       "isTransparent": true,
       "biomes": [
         "water"
-      ]
+      ],
+      "description": "Dark blue deep water with no visible bottom. Rich navy blue color, surface reflections only."
     },
     {
       "id": "water_shore",
@@ -1797,7 +1859,8 @@
       "isTransparent": true,
       "biomes": [
         "water"
-      ]
+      ],
+      "description": "Pale golden sand at water's edge. Wet near waterline, dry further up, smooth beach texture."
     },
     {
       "id": "water_rapids",
@@ -1814,7 +1877,8 @@
       "biomes": [
         "water",
         "mountains"
-      ]
+      ],
+      "description": "Rushing white water over rocks. Churning foam and spray, energetic blue-white turbulence."
     },
     {
       "id": "water_coral",
@@ -1830,7 +1894,8 @@
       "isTransparent": true,
       "biomes": [
         "water"
-      ]
+      ],
+      "description": "Colorful coral formations in pink, orange, and purple. Branching structures underwater, vibrant reef life."
     },
     {
       "id": "water_seaweed",
@@ -1846,7 +1911,8 @@
       "isTransparent": true,
       "biomes": [
         "water"
-      ]
+      ],
+      "description": "Flowing green-brown kelp and seaweed. Long wavy fronds swaying with current, aquatic vegetation."
     },
     {
       "id": "water_rock",
@@ -1862,7 +1928,8 @@
       "isTransparent": true,
       "biomes": [
         "water"
-      ]
+      ],
+      "description": "Dark gray rock visible beneath water surface. Rounded from erosion, algae-covered, hazard marker."
     },
     {
       "id": "cave_floor",
@@ -1878,7 +1945,8 @@
       "isTransparent": true,
       "biomes": [
         "cave"
-      ]
+      ],
+      "description": "Dark gray stone floor with smooth, worn surface. Dusty texture with subtle moisture sheen, cool tones."
     },
     {
       "id": "cave_rubble",
@@ -1894,7 +1962,8 @@
       "isTransparent": true,
       "biomes": [
         "cave"
-      ]
+      ],
+      "description": "Scattered gray stone fragments and debris. Irregular chunks of broken rock, dusty surface with sharp edges."
     },
     {
       "id": "cave_glowing_moss",
@@ -1910,7 +1979,8 @@
       "isTransparent": true,
       "biomes": [
         "cave"
-      ]
+      ],
+      "description": "Soft bioluminescent moss emitting pale blue-green glow. Fuzzy texture, patches of light on dark stone background."
     },
     {
       "id": "cave_wet_floor",
@@ -1926,7 +1996,8 @@
       "isTransparent": true,
       "biomes": [
         "cave"
-      ]
+      ],
+      "description": "Damp stone floor with visible water film. Dark gray with reflective wet sheen, small puddles forming."
     },
     {
       "id": "cave_wall",
@@ -1942,7 +2013,8 @@
       "isTransparent": false,
       "biomes": [
         "cave"
-      ]
+      ],
+      "description": "Solid dark gray rock wall with rough, uneven surface. Dense stone with mineral veins, impenetrable barrier."
     },
     {
       "id": "cave_stalactite",
@@ -1958,7 +2030,8 @@
       "isTransparent": false,
       "biomes": [
         "cave"
-      ]
+      ],
+      "description": "Conical stone formation hanging from ceiling. Gray-brown with mineral deposits, pointed tip, wet dripping surface."
     },
     {
       "id": "cave_crystal",
@@ -1974,7 +2047,8 @@
       "isTransparent": true,
       "biomes": [
         "cave"
-      ]
+      ],
+      "description": "Translucent crystal cluster with geometric facets. Pale purple or blue hues, glittering surface, natural gem formation."
     },
     {
       "id": "cave_underground_lake",
@@ -1990,7 +2064,8 @@
       "isTransparent": true,
       "biomes": [
         "cave"
-      ]
+      ],
+      "description": "Still dark water in underground pool. Deep blue-black surface with faint reflections, mysterious depths."
     },
     {
       "id": "cave_boulder",
@@ -2006,7 +2081,8 @@
       "isTransparent": false,
       "biomes": [
         "cave"
-      ]
+      ],
+      "description": "Large rounded stone mass. Dark gray with smooth weathered surface, massive obstacle blocking passage."
     },
     {
       "id": "volcanic_lava",
@@ -2022,7 +2098,8 @@
       "isTransparent": false,
       "biomes": [
         "volcanic"
-      ]
+      ],
+      "description": "Molten rock pool glowing bright orange-red. Rippling liquid surface with darker cooling crust patches, intense heat shimmer."
     },
     {
       "id": "volcanic_magma_vent",
@@ -2038,7 +2115,8 @@
       "isTransparent": false,
       "biomes": [
         "volcanic"
-      ]
+      ],
+      "description": "Rocky fissure with glowing magma visible below. Dark stone edges, orange-yellow glow emanating upward, sulfurous steam."
     },
     {
       "id": "volcanic_cooled_lava",
@@ -2054,7 +2132,8 @@
       "isTransparent": true,
       "biomes": [
         "volcanic"
-      ]
+      ],
+      "description": "Hardened black lava with rough cracked surface. Dark gray to charcoal coloring, rope-like patterns, porous texture."
     },
     {
       "id": "volcanic_obsidian",
@@ -2070,7 +2149,8 @@
       "isTransparent": true,
       "biomes": [
         "volcanic"
-      ]
+      ],
+      "description": "Smooth black volcanic glass with mirror-like sheen. Deep glossy black, sharp conchoidal fractures, reflective surface."
     },
     {
       "id": "volcanic_ash",
@@ -2086,7 +2166,8 @@
       "isTransparent": true,
       "biomes": [
         "volcanic"
-      ]
+      ],
+      "description": "Fine gray powder covering the ground. Pale gray with dusty texture, light particles suspended in air, desolate appearance."
     },
     {
       "id": "volcanic_rock",
@@ -2102,7 +2183,8 @@
       "isTransparent": true,
       "biomes": [
         "volcanic"
-      ]
+      ],
+      "description": "Dark porous ignite rock with irregular surface. Black to dark red coloring, vesicular texture with small holes, jagged edges."
     },
     {
       "id": "volcanic_lava_crack",
@@ -2118,7 +2200,8 @@
       "isTransparent": true,
       "biomes": [
         "volcanic"
-      ]
+      ],
+      "description": "Dark stone surface with glowing orange fissures. Black rock with web-like cracks, magma visible through splits, heat emanating."
     },
     {
       "id": "magical_enchanted_grass",
@@ -2134,7 +2217,8 @@
       "isTransparent": true,
       "biomes": [
         "magical"
-      ]
+      ],
+      "description": "Luminescent grass blades in shifting purple and teal hues. Magical glow at tips, ethereal shimmer, otherworldly coloring."
     },
     {
       "id": "magical_rune_circle",
@@ -2150,7 +2234,8 @@
       "isTransparent": true,
       "biomes": [
         "magical"
-      ]
+      ],
+      "description": "Glowing arcane symbols in circular pattern. Golden or blue light traces on stone, geometric precision, pulsing magical energy."
     },
     {
       "id": "magical_crystal_spire",
@@ -2166,7 +2251,8 @@
       "isTransparent": false,
       "biomes": [
         "magical"
-      ]
+      ],
+      "description": "Tall crystalline tower with faceted surface. Brilliant amethyst purple, internal light source, geometric pointed structure."
     },
     {
       "id": "magical_void_rift",
@@ -2182,7 +2268,8 @@
       "isTransparent": false,
       "biomes": [
         "magical"
-      ]
+      ],
+      "description": "Tear in reality showing swirling darkness. Deep purple-black void with scattered stars, unstable edges crackling with energy."
     },
     {
       "id": "magical_mana_pool",
@@ -2198,7 +2285,8 @@
       "isTransparent": true,
       "biomes": [
         "magical"
-      ]
+      ],
+      "description": "Shimmering liquid pool of pure magical essence. Brilliant cyan-blue glow, perfectly still surface, radiant light from within."
     },
     {
       "id": "magical_arcane_glyph",
@@ -2214,7 +2302,8 @@
       "isTransparent": true,
       "biomes": [
         "magical"
-      ]
+      ],
+      "description": "Single glowing magical symbol etched into ground. Soft white or gold light, intricate curved lines, mystical ancient script."
     }
   ]
 }

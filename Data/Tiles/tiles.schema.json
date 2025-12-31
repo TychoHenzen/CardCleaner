@@ -155,6 +155,10 @@
         "outerTerrain": {
           "type": "string",
           "description": "For auto-tiles: background terrain. '*' = compositable (transparent, composite onto any base). Specific ID = fixed transition."
+        },
+        "description": {
+          "type": "string",
+          "description": "Visual appearance description for artists and AI image generators. Should include color, texture, and notable visual features."
         }
       }
     },

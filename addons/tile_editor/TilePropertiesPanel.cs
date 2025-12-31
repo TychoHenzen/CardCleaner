@@ -49,6 +49,7 @@ public partial class TilePropertiesPanel : ScrollContainer
     private OptionButton? _sourceScaleDropdown;
     private VBoxContainer? _biomesContainer;
     private readonly Dictionary<string, CheckBox> _biomeCheckboxes = new();
+    private TextEdit? _descriptionField;
     private Label? _validationLabel;
 
     // General properties foldout controls
@@ -169,6 +170,26 @@ public partial class TilePropertiesPanel : ScrollContainer
         _nameField.TextChanged += OnFieldChanged;
         nameRow.AddChild(_nameField);
         vbox.AddChild(nameRow);
+
+        // Description field
+        vbox.AddChild(new Label { Text = "Description:" });
+        _descriptionField = new TextEdit
+        {
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            CustomMinimumSize = new Vector2(0, 80),
+            PlaceholderText = "Visual appearance: color, texture, features...",
+            WrapMode = TextEdit.LineWrappingMode.Boundary
+        };
+        _descriptionField.TextChanged += OnDescriptionChanged;
+        vbox.AddChild(_descriptionField);
+
+        var descNote = new Label
+        {
+            Text = "(For artists and AI image generators)",
+            Modulate = new Color(0.7f, 0.7f, 0.7f)
+        };
+        descNote.AddThemeFontSizeOverride("font_size", 11);
+        vbox.AddChild(descNote);
 
         // Tile Mode selector
         var modeRow = CreateRow("Tile Mode:");
@@ -672,6 +693,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         _idField!.Text = _currentTile.Id;
         _idField.Editable = false; // ID is immutable after creation
         _nameField!.Text = _currentTile.Name;
+        _descriptionField!.Text = _currentTile.Description ?? "";
 
         _passabilityField!.Selected = _currentTile.Passability.ToLowerInvariant() switch
         {
@@ -806,6 +828,17 @@ public partial class TilePropertiesPanel : ScrollContainer
         UpdateSectionVisibility();
     }
 
+    private void OnDescriptionChanged()
+    {
+        if (_isUpdating || _currentTile == null) return;
+
+        _currentTile.Description = string.IsNullOrWhiteSpace(_descriptionField!.Text)
+            ? null
+            : _descriptionField.Text;
+
+        _service.UpdateTile(_currentTile);
+    }
+
     private void OnFieldChanged(string _)
     {
         if (_isUpdating || _currentTile == null) return;
@@ -875,6 +908,7 @@ public partial class TilePropertiesPanel : ScrollContainer
     {
         _idField!.Editable = false; // Always read-only
         _nameField!.Editable = enabled;
+        _descriptionField!.Editable = enabled;
         _tileModeDropdown!.Disabled = !enabled;
         _passabilityField!.Disabled = !enabled;
         _sourceDropdown!.Disabled = !enabled;

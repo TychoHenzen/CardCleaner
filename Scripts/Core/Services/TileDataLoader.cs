@@ -318,6 +318,8 @@ public static class TileDataLoader
         [JsonPropertyName("innerTerrain")] public string? InnerTerrain { get; set; }
 
         [JsonPropertyName("outerTerrain")] public string? OuterTerrain { get; set; }
+
+        [JsonPropertyName("description")] public string? Description { get; set; }
     }
 
     private sealed class AnimationData
