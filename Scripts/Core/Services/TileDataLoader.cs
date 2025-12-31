@@ -84,14 +84,6 @@ public static class TileDataLoader
     }
 
     /// <summary>
-    /// Load tiles only (backwards compatibility)
-    /// </summary>
-    public static List<TileDefinition> LoadTiles(string? path = null)
-    {
-        return LoadTileRegistry(path).Tiles;
-    }
-
-    /// <summary>
     /// Load biome definitions from JSON
     /// </summary>
     public static Dictionary<string, BiomeData> LoadBiomes(string? path = null)

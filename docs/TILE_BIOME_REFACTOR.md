@@ -9,8 +9,10 @@ This document describes a comprehensive refactor of CardCleaner's tile and biome
 4. Remove obsolete BlobGeneration system (replaced by WFC)
 5. Add tile editor functionality for tile management
 
-**Status**: Planning Document
+**Status**: ✅ COMPLETED
 **Last Updated**: 2025-12-31
+
+> All work packages (WP1-WP11) have been implemented. The biome system is now fully data-driven with 10 biomes loaded from tiles.json. Post-refactor cleanup completed: fixed test assertions, removed dead code, fixed TilePool weight caching bug.
 
 ---
 

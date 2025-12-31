@@ -64,10 +64,7 @@ public class BiomeRegistry
     }
 
     /// <summary>
-    /// Register default biomes from tiles.json (backwards compatibility)
+    /// Register all biomes from tiles.json data file.
     /// </summary>
-    public void RegisterDefaultBiomes()
-    {
-        LoadFromData();
-    }
+    public void RegisterDefaultBiomes() => LoadFromData();
 }

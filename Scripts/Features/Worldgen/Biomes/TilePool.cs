@@ -95,7 +95,7 @@ public partial class TilePool : Resource
         foreach (var entry in Entries)
             _totalWeight += entry.Weight;
 
-        _weightsDirty = true;
+        _weightsDirty = false;
     }
 
     public void MarkDirty() => _weightsDirty = true;

@@ -111,13 +111,17 @@ public class BiomeRegistryTest
     {
         _registry.RegisterDefaultBiomes();
 
-        AssertThat(_registry.Count).IsEqual(6);
+        AssertThat(_registry.Count).IsEqual(10);
         AssertThat(_registry.GetBiome("plains")).IsNotNull();
         AssertThat(_registry.GetBiome("forest")).IsNotNull();
         AssertThat(_registry.GetBiome("desert")).IsNotNull();
         AssertThat(_registry.GetBiome("tundra")).IsNotNull();
         AssertThat(_registry.GetBiome("swamp")).IsNotNull();
         AssertThat(_registry.GetBiome("mountains")).IsNotNull();
+        AssertThat(_registry.GetBiome("water")).IsNotNull();
+        AssertThat(_registry.GetBiome("cave")).IsNotNull();
+        AssertThat(_registry.GetBiome("volcanic")).IsNotNull();
+        AssertThat(_registry.GetBiome("magical")).IsNotNull();
     }
 
     [TestCase]
