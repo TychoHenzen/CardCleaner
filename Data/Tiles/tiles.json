@@ -8,7 +8,7 @@
       "signature": [0.0, 0.0, 0.2, 0.1, 0.0, 0.0, 0.2, 0.0],
       "blockedPercentage": 0.15,
       "passableTiles": {
-        "plains_grass": 0.40,
+        "grass": 0.40,
         "plains_grass_tall": 0.25,
         "plains_wildflowers": 0.15,
         "plains_fertile_soil": 0.10,
@@ -28,7 +28,7 @@
         "forest_floor": 0.30,
         "forest_moss": 0.25,
         "forest_leaves": 0.20,
-        "forest_clearing": 0.15,
+        "grass": 0.15,
         "forest_undergrowth": 0.10
       },
       "blockedTiles": {
@@ -47,8 +47,8 @@
         "desert_sand": 0.35,
         "desert_dune": 0.25,
         "desert_cracked": 0.15,
-        "desert_gravel": 0.15,
-        "desert_rocky": 0.10
+        "gravel": 0.15,
+        "rock": 0.10
       },
       "blockedTiles": {
         "desert_rock": 0.30,
@@ -101,11 +101,11 @@
       "signature": [0.7, -0.2, 0.4, 0.2, 0.0, 0.4, 0.0, 0.3],
       "blockedPercentage": 0.38,
       "passableTiles": {
-        "mountains_rock": 0.30,
-        "mountains_gravel": 0.25,
+        "rock": 0.30,
+        "gravel": 0.25,
         "mountains_slate": 0.20,
         "mountains_scree": 0.15,
-        "mountains_alpine_grass": 0.10
+        "grass": 0.10
       },
       "blockedTiles": {
         "mountains_cliff": 0.30,
@@ -330,8 +330,8 @@
       "isTransparent": true
     },
     {
-      "id": "plains_grass",
-      "name": "Plains Grass",
+      "id": "grass",
+      "name": "Grass",
       "passability": "passable",
       "atlasCoords": {
         "x": 6,
@@ -342,7 +342,9 @@
       "elevation": 0,
       "isTransparent": true,
       "biomes": [
-        "plains"
+        "plains",
+        "forest",
+        "mountains"
       ]
     },
     {
@@ -643,94 +645,6 @@
       "biomes": [
         "forest"
       ]
-    },
-    {
-      "id": "forest_clearing",
-      "name": "Forest Clearing",
-      "passability": "passable",
-      "atlasCoords": {
-        "x": 4,
-        "y": 4
-      },
-      "sourceId": 13,
-      "layer": "terrain",
-      "elevation": 0,
-      "isTransparent": true,
-      "biomes": [
-        "forest"
-      ],
-      "size": {
-        "x": 3,
-        "y": 3
-      },
-      "autoTileVariants": [
-        {
-          "x": 3,
-          "y": 5
-        },
-        {
-          "x": 4,
-          "y": 6
-        },
-        {
-          "x": 4,
-          "y": 4
-        },
-        {
-          "x": 4,
-          "y": 5
-        },
-        {
-          "x": 2,
-          "y": 4
-        },
-        {
-          "x": 4,
-          "y": 7
-        },
-        {
-          "x": 5,
-          "y": 4
-        },
-        {
-          "x": 6,
-          "y": 3
-        },
-        {
-          "x": 6,
-          "y": 6
-        },
-        {
-          "x": 5,
-          "y": 6
-        },
-        {
-          "x": 6,
-          "y": 7
-        },
-        {
-          "x": 6,
-          "y": 1
-        },
-        {
-          "x": 6,
-          "y": 5
-        },
-        {
-          "x": 4,
-          "y": 1
-        },
-        {
-          "x": 4,
-          "y": 3
-        },
-        {
-          "x": 5,
-          "y": 5
-        }
-      ],
-      "tileMode": "autotile",
-      "outerTerrain": "*"
     },
     {
       "id": "forest_undergrowth",
@@ -1149,7 +1063,7 @@
       "outerTerrain": "*"
     },
     {
-      "id": "desert_gravel",
+      "id": "gravel",
       "name": "Gravel",
       "passability": "passable",
       "atlasCoords": {
@@ -1161,7 +1075,8 @@
       "elevation": 0,
       "isTransparent": true,
       "biomes": [
-        "desert"
+        "desert",
+        "mountains"
       ],
       "size": {
         "x": 3,
@@ -1231,220 +1146,6 @@
         }
       ],
       "tileMode": "autotile",
-      "outerTerrain": "*"
-    },
-    {
-      "id": "desert_rocky",
-      "name": "Rocky Ground",
-      "passability": "passable",
-      "atlasCoords": {
-        "x": 24,
-        "y": 14
-      },
-      "sourceId": 495,
-      "layer": "terrain",
-      "elevation": 0,
-      "isTransparent": true,
-      "biomes": [
-        "desert"
-      ],
-      "size": {
-        "x": 3,
-        "y": 3
-      },
-      "autoTileVariants": [
-        {
-          "x": 24,
-          "y": 20
-        },
-        {
-          "x": 24,
-          "y": 19
-        },
-        {
-          "x": 25,
-          "y": 20
-        },
-        {
-          "x": 25,
-          "y": 19
-        },
-        {
-          "x": 24,
-          "y": 16
-        },
-        {
-          "x": 24,
-          "y": 17
-        },
-        {
-          "x": 24,
-          "y": 18
-        },
-        {
-          "x": 25,
-          "y": 17
-        },
-        {
-          "x": 25,
-          "y": 18
-        },
-        {
-          "x": 28,
-          "y": 19
-        },
-        {
-          "x": 24,
-          "y": 14
-        },
-        {
-          "x": 28,
-          "y": 18
-        },
-        {
-          "x": 24,
-          "y": 15
-        },
-        {
-          "x": 27,
-          "y": 20
-        },
-        {
-          "x": 27,
-          "y": 19
-        },
-        {
-          "x": 26,
-          "y": 20
-        },
-        {
-          "x": 26,
-          "y": 19
-        },
-        {
-          "x": 29,
-          "y": 20
-        },
-        {
-          "x": 27,
-          "y": 17
-        },
-        {
-          "x": 27,
-          "y": 18
-        },
-        {
-          "x": 26,
-          "y": 17
-        },
-        {
-          "x": 26,
-          "y": 18
-        },
-        {
-          "x": 31,
-          "y": 17
-        },
-        {
-          "x": 29,
-          "y": 17
-        },
-        {
-          "x": 31,
-          "y": 20
-        },
-        {
-          "x": 30,
-          "y": 16
-        },
-        {
-          "x": 26,
-          "y": 14
-        },
-        {
-          "x": 31,
-          "y": 18
-        },
-        {
-          "x": 30,
-          "y": 17
-        },
-        {
-          "x": 28,
-          "y": 20
-        },
-        {
-          "x": 31,
-          "y": 15
-        },
-        {
-          "x": 28,
-          "y": 16
-        },
-        {
-          "x": 30,
-          "y": 14
-        },
-        {
-          "x": 29,
-          "y": 18
-        },
-        {
-          "x": 26,
-          "y": 16
-        },
-        {
-          "x": 30,
-          "y": 20
-        },
-        {
-          "x": 28,
-          "y": 14
-        },
-        {
-          "x": 31,
-          "y": 19
-        },
-        {
-          "x": 28,
-          "y": 17
-        },
-        {
-          "x": 30,
-          "y": 15
-        },
-        {
-          "x": 31,
-          "y": 14
-        },
-        {
-          "x": 29,
-          "y": 19
-        },
-        {
-          "x": 27,
-          "y": 15
-        },
-        {
-          "x": 31,
-          "y": 16
-        },
-        {
-          "x": 30,
-          "y": 19
-        },
-        {
-          "x": 30,
-          "y": 18
-        },
-        {
-          "x": 25,
-          "y": 15
-        }
-      ],
-      "autoTileFormat": "blob47",
-      "tileMode": "autotile",
-      "sourceScale": 0.5,
       "outerTerrain": "*"
     },
     {
@@ -1887,8 +1588,8 @@
       ]
     },
     {
-      "id": "mountains_rock",
-      "name": "Mountain Rock",
+      "id": "rock",
+      "name": "Rock",
       "passability": "passable",
       "atlasCoords": {
         "x": 19,
@@ -1899,23 +1600,8 @@
       "elevation": 0.3,
       "isTransparent": true,
       "biomes": [
-        "mountains"
-      ]
-    },
-    {
-      "id": "mountains_gravel",
-      "name": "Mountain Gravel",
-      "passability": "passable",
-      "atlasCoords": {
-        "x": 5,
-        "y": 45
-      },
-      "sourceId": 13,
-      "layer": "terrain",
-      "elevation": 0.1,
-      "isTransparent": true,
-      "biomes": [
-        "mountains"
+        "mountains",
+        "desert"
       ]
     },
     {
@@ -1945,22 +1631,6 @@
       "sourceId": 17,
       "layer": "terrain",
       "elevation": 0.1,
-      "isTransparent": true,
-      "biomes": [
-        "mountains"
-      ]
-    },
-    {
-      "id": "mountains_alpine_grass",
-      "name": "Alpine Grass",
-      "passability": "passable",
-      "atlasCoords": {
-        "x": 2,
-        "y": 2
-      },
-      "sourceId": 17,
-      "layer": "terrain",
-      "elevation": 0,
       "isTransparent": true,
       "biomes": [
         "mountains"
