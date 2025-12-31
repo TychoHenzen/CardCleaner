@@ -876,13 +876,19 @@ public partial class SimpleWorldMapScreen : Node3D
                     sourceId = _transitionResolver.CompiledAtlasSourceId;
                     transitionsResolved++;
                 }
-                else
+                else if (baseTile.SourceId == _transitionResolver.CompiledAtlasSourceId)
                 {
-                    // Fallback: use the tile's own coordinates (works for non-compositable tiles)
+                    // Tile already uses compiled atlas source - use its coordinates directly
                     atlasCoords = baseTile.HasAutoTileVariants
                         ? baseTile.GetAutoTileCoords(15)
                         : baseTile.AtlasCoords;
                     sourceId = baseTile.SourceId;
+                }
+                else
+                {
+                    // Fallback: use safe default position (atlas 0,0)
+                    atlasCoords = Vector2I.Zero;
+                    sourceId = _transitionResolver.CompiledAtlasSourceId;
                 }
             }
             else

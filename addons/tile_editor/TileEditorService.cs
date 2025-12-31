@@ -36,14 +36,22 @@ public partial class TileEditorService : RefCounted
     private const string DefaultTilesetPath = "res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres";
     private static readonly Regex TileIdPattern = new(@"^[a-z][a-z0-9_]*$", RegexOptions.Compiled);
 
-    private static readonly JsonSerializerOptions JsonOptions = new()
+    /// <summary>
+    /// Creates fresh read JsonSerializerOptions per call to avoid assembly unload issues.
+    /// See: https://github.com/godotengine/godot/issues/78513
+    /// </summary>
+    private static JsonSerializerOptions CreateJsonOptions() => new()
     {
         PropertyNameCaseInsensitive = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
         AllowTrailingCommas = true
     };
 
-    private static readonly JsonSerializerOptions WriteOptions = new()
+    /// <summary>
+    /// Creates fresh write JsonSerializerOptions per call to avoid assembly unload issues.
+    /// See: https://github.com/godotengine/godot/issues/78513
+    /// </summary>
+    private static JsonSerializerOptions CreateWriteOptions() => new()
     {
         WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
@@ -77,7 +85,7 @@ public partial class TileEditorService : RefCounted
         try
         {
             var json = File.ReadAllText(absolutePath);
-            var data = JsonSerializer.Deserialize<TileRegistryData>(json, JsonOptions);
+            var data = JsonSerializer.Deserialize<TileRegistryData>(json, CreateJsonOptions());
 
             if (data?.Tiles == null)
             {
@@ -701,7 +709,7 @@ public partial class TileEditorService : RefCounted
                 }
             };
 
-            var json = JsonSerializer.Serialize(data, WriteOptions);
+            var json = JsonSerializer.Serialize(data, CreateWriteOptions());
             var absolutePath = ProjectSettings.GlobalizePath(TilesPath);
             File.WriteAllText(absolutePath, json);
 

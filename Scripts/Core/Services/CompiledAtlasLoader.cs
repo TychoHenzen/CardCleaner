@@ -15,8 +15,13 @@ namespace CardCleaner.Scripts.Core.Services;
 public static class CompiledAtlasLoader
 {
     private const string DefaultMappingPath = "res://Data/CompiledAtlas/atlas_mapping.json";
+    private const string DefaultTransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";
 
-    private static readonly JsonSerializerOptions JsonOptions = new()
+    /// <summary>
+    /// Creates fresh JsonSerializerOptions per call to avoid assembly unload issues.
+    /// See: https://github.com/godotengine/godot/issues/78513
+    /// </summary>
+    private static JsonSerializerOptions CreateJsonOptions() => new()
     {
         PropertyNameCaseInsensitive = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
@@ -69,7 +74,7 @@ public static class CompiledAtlasLoader
             var json = File.ReadAllText(absolutePath);
             ILog.Print($"[CompiledAtlasLoader] Read {json.Length} chars from mapping file");
 
-            _cachedMapping = JsonSerializer.Deserialize<AtlasMappingData>(json, JsonOptions);
+            _cachedMapping = JsonSerializer.Deserialize<AtlasMappingData>(json, CreateJsonOptions());
             _cachedAtlasPath = mappingPath;
 
             if (_cachedMapping != null)
@@ -209,7 +214,12 @@ public static class CompiledAtlasLoader
                 }
             }
 
-            ILog.Print($"[CompiledAtlasLoader] Created {tilesCreated} tiles, skipped {tilesSkipped} existing");
+            ILog.Print($"[CompiledAtlasLoader] Created {tilesCreated} tiles from atlas_mapping, skipped {tilesSkipped} existing");
+
+            // Also create tiles for transition map coordinates
+            // These are the composited auto-tile variants that aren't in atlas_mapping
+            var transitionTilesCreated = CreateTransitionMapTiles(atlasSource);
+            ILog.Print($"[CompiledAtlasLoader] Created {transitionTilesCreated} additional tiles from transition_map");
 
             // Add the atlas source to the tileset at index 0
             // All tiles will use sourceId 0 when using compiled atlas
@@ -265,6 +275,74 @@ public static class CompiledAtlasLoader
     }
 
     /// <summary>
+    /// Creates tiles in the atlas source for all coordinates referenced in transition_map.json.
+    /// These are the composited auto-tile variants generated during atlas compilation.
+    /// </summary>
+    private static int CreateTransitionMapTiles(TileSetAtlasSource atlasSource)
+    {
+        var absolutePath = ProjectSettings.GlobalizePath(DefaultTransitionMapPath);
+        if (!File.Exists(absolutePath))
+        {
+            ILog.Print($"[CompiledAtlasLoader] Transition map not found: {absolutePath}");
+            return 0;
+        }
+
+        try
+        {
+            var json = File.ReadAllText(absolutePath);
+            var transitionMap = JsonSerializer.Deserialize<TransitionMapData>(json, CreateJsonOptions());
+
+            if (transitionMap?.Transitions == null)
+            {
+                ILog.Print("[CompiledAtlasLoader] Transition map has no transitions");
+                return 0;
+            }
+
+            var tilesCreated = 0;
+            var tilesSkipped = 0;
+
+            foreach (var (key, entry) in transitionMap.Transitions)
+            {
+                if (entry.Variants == null)
+                    continue;
+
+                foreach (var variant in entry.Variants)
+                {
+                    if (variant == null)
+                        continue;
+
+                    var atlasCoords = new Vector2I(variant.X, variant.Y);
+
+                    if (!atlasSource.HasTile(atlasCoords))
+                    {
+                        try
+                        {
+                            atlasSource.CreateTile(atlasCoords);
+                            tilesCreated++;
+                        }
+                        catch (Exception ex)
+                        {
+                            ILog.Print($"[CompiledAtlasLoader] Failed to create transition tile at {atlasCoords}: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        tilesSkipped++;
+                    }
+                }
+            }
+
+            ILog.Print($"[CompiledAtlasLoader] Transition tiles: {tilesCreated} created, {tilesSkipped} already existed");
+            return tilesCreated;
+        }
+        catch (Exception ex)
+        {
+            ILog.Print($"[CompiledAtlasLoader] Error loading transition map: {ex.Message}");
+            return 0;
+        }
+    }
+
+    /// <summary>
     /// Clears the cached mapping and tileset.
     /// Call this if the compiled atlas has been regenerated.
     /// </summary>
@@ -297,5 +375,24 @@ public static class CompiledAtlasLoader
         [JsonPropertyName("y")] public int Y { get; set; }
         [JsonPropertyName("w")] public int W { get; set; }
         [JsonPropertyName("h")] public int H { get; set; }
+    }
+
+    // Transition map deserialization classes
+    public class TransitionMapData
+    {
+        [JsonPropertyName("version")] public string? Version { get; set; }
+        [JsonPropertyName("transitions")] public Dictionary<string, TransitionEntry>? Transitions { get; set; }
+    }
+
+    public class TransitionEntry
+    {
+        [JsonPropertyName("format")] public string? Format { get; set; }
+        [JsonPropertyName("variants")] public VariantCoord?[]? Variants { get; set; }
+    }
+
+    public class VariantCoord
+    {
+        [JsonPropertyName("x")] public int X { get; set; }
+        [JsonPropertyName("y")] public int Y { get; set; }
     }
 }

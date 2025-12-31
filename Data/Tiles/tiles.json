@@ -27,7 +27,7 @@
       "sourceId": 8,
       "layer": "effects",
       "elevation": 0,
-      "isTransparent": false
+      "isTransparent": true
     },
     {
       "id": "dirt",

@@ -36,7 +36,11 @@ public static class TileDataLoader
     private const string DefaultTilesPath = "res://Data/Tiles/tiles.json";
     private const string DefaultTilesetPath = "res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres";
 
-    private static readonly JsonSerializerOptions JsonOptions = new()
+    /// <summary>
+    /// Creates fresh JsonSerializerOptions per call to avoid assembly unload issues.
+    /// See: https://github.com/godotengine/godot/issues/78513
+    /// </summary>
+    private static JsonSerializerOptions CreateJsonOptions() => new()
     {
         PropertyNameCaseInsensitive = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
@@ -60,7 +64,7 @@ public static class TileDataLoader
         try
         {
             var json = File.ReadAllText(absolutePath);
-            var data = JsonSerializer.Deserialize<TileRegistryData>(json, JsonOptions);
+            var data = JsonSerializer.Deserialize<TileRegistryData>(json, CreateJsonOptions());
             if (data?.Tiles == null)
             {
                 ILog.Print("[TileDataLoader] Invalid JSON structure");
@@ -113,7 +117,7 @@ public static class TileDataLoader
         try
         {
             var json = File.ReadAllText(absolutePath);
-            var data = JsonSerializer.Deserialize<TileRegistryData>(json, JsonOptions);
+            var data = JsonSerializer.Deserialize<TileRegistryData>(json, CreateJsonOptions());
             if (data == null)
             {
                 ILog.Print("[TileDataLoader] Invalid JSON structure for blob config");

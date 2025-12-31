@@ -69,6 +69,7 @@ public class CompiledTransitionResolver : ITransitionResolver
 
     /// <summary>
     /// Resolves a transition with full render info, including fallback to provided coordinates.
+    /// When using compiled atlas, ensures fallback always uses sourceId 0.
     /// </summary>
     public TransitionResolveResult ResolveWithFallback(
         string innerTerrainId,
@@ -82,8 +83,18 @@ public class CompiledTransitionResolver : ITransitionResolver
         if (coords.HasValue)
             return new TransitionResolveResult(_compiledAtlasSourceId, coords.Value);
 
-        // Fallback to the provided coordinates (typically from tile's auto-tile variants)
-        return new TransitionResolveResult(fallbackSourceId, fallbackCoords);
+        // Try to find ANY transition with this inner terrain to get valid compiled atlas coords
+        var anyVariant = ResolveAnyVariant(innerTerrainId, bitmask);
+        if (anyVariant.HasValue)
+            return new TransitionResolveResult(_compiledAtlasSourceId, anyVariant.Value);
+
+        // Ultimate fallback: if fallbackSourceId matches compiled atlas, use it
+        // Otherwise return a known-safe position (first tile at 0,0)
+        if (fallbackSourceId == _compiledAtlasSourceId)
+            return new TransitionResolveResult(fallbackSourceId, fallbackCoords);
+
+        // Can't find valid coords - return error marker position (atlas 0,0 is typically valid)
+        return new TransitionResolveResult(_compiledAtlasSourceId, Vector2I.Zero);
     }
 
     /// <summary>
@@ -108,14 +119,26 @@ public class CompiledTransitionResolver : ITransitionResolver
     /// </summary>
     public Vector2I? ResolveSolidFill(string terrainId)
     {
+        return ResolveAnyVariant(terrainId, 15);
+    }
+
+    /// <summary>
+    /// Finds coords for a specific bitmask variant by looking up ANY transition with the given terrain.
+    /// Used as fallback when direct transition lookup fails.
+    /// </summary>
+    public Vector2I? ResolveAnyVariant(string terrainId, int bitmask)
+    {
+        // Validate bitmask range
+        if (bitmask < 0 || bitmask >= 16)
+            return null;
+
         // Find any transition that uses this terrain as the inner (border) terrain
-        // At bitmask 15, the border completely covers the base, giving us the solid fill
         foreach (var (key, entry) in _transitionMap.Transitions)
         {
             var (borderId, _) = CompiledTransitionMap.ParseKey(key);
-            if (borderId == terrainId && entry.Variants.Length > 15 && entry.Variants[15] != null)
+            if (borderId == terrainId && entry.Variants.Length > bitmask && entry.Variants[bitmask] != null)
             {
-                var v = entry.Variants[15];
+                var v = entry.Variants[bitmask];
                 return new Vector2I(v.X, v.Y);
             }
         }
