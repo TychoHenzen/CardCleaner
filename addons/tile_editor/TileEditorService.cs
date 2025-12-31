@@ -25,9 +25,21 @@ public partial class TileEditorService : RefCounted
     [Signal]
     public delegate void TileRemovedEventHandler(string tileId);
 
-    // Signals
     [Signal]
     public delegate void TilesLoadedEventHandler();
+
+    // Biome signals
+    [Signal]
+    public delegate void BiomesLoadedEventHandler();
+
+    [Signal]
+    public delegate void BiomeAddedEventHandler(string biomeId);
+
+    [Signal]
+    public delegate void BiomeModifiedEventHandler(string biomeId);
+
+    [Signal]
+    public delegate void BiomeRemovedEventHandler(string biomeId);
 
     private const string TilesPath = "res://Data/Tiles/tiles.json";
     private const string DefaultTilesetPath = "res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres";
@@ -54,17 +66,21 @@ public partial class TileEditorService : RefCounted
     };
 
     private readonly Dictionary<string, EditableTile> _tiles = new();
+    private readonly Dictionary<string, EditableBiome> _biomes = new();
     private TileSet? _tileSet;
     private string _version = "1.0";
 
     public int TileCount => _tiles.Count;
     public IEnumerable<EditableTile> AllTiles => _tiles.Values;
+    public int BiomeCount => _biomes.Count;
+    public IEnumerable<EditableBiome> AllBiomes => _biomes.Values;
     public string TilesetPath { get; private set; } = DefaultTilesetPath;
     public TileSet? TileSet => _tileSet;
 
     public void LoadTiles()
     {
         _tiles.Clear();
+        _biomes.Clear();
 
         var absolutePath = ProjectSettings.GlobalizePath(TilesPath);
         if (!File.Exists(absolutePath))
@@ -188,12 +204,34 @@ public partial class TileEditorService : RefCounted
             }
 
             GD.Print($"[TileEditorService] Loaded {_tiles.Count} tiles");
+
+            // Load biomes
+            if (data.Biomes != null)
+            {
+                foreach (var (biomeId, biomeData) in data.Biomes)
+                {
+                    var biome = new EditableBiome
+                    {
+                        Id = biomeId,
+                        DisplayName = biomeData.DisplayName ?? biomeId,
+                        Signature = biomeData.Signature ?? new float[8],
+                        BlockedPercentage = biomeData.BlockedPercentage,
+                        PassableTiles = biomeData.PassableTiles ?? new Dictionary<string, float>(),
+                        BlockedTiles = biomeData.BlockedTiles ?? new Dictionary<string, float>()
+                    };
+                    _biomes[biomeId] = biome;
+                }
+                GD.Print($"[TileEditorService] Loaded {_biomes.Count} biomes");
+            }
+
             EmitSignal(SignalName.TilesLoaded);
+            EmitSignal(SignalName.BiomesLoaded);
         }
         catch (Exception ex)
         {
             GD.PrintErr($"[TileEditorService] Error loading tiles: {ex.Message}");
             EmitSignal(SignalName.TilesLoaded);
+            EmitSignal(SignalName.BiomesLoaded);
         }
     }
 
@@ -495,6 +533,8 @@ public partial class TileEditorService : RefCounted
 
     public EditableTile? GetTile(string id) => _tiles.GetValueOrDefault(id);
 
+    public EditableBiome? GetBiome(string id) => _biomes.GetValueOrDefault(id);
+
     public void UpdateTile(EditableTile tile)
     {
         if (!_tiles.ContainsKey(tile.Id))
@@ -535,6 +575,62 @@ public partial class TileEditorService : RefCounted
     {
         return _tiles.Values.Where(t =>
             t.Biomes.Count == 0 || t.Biomes.Contains(biome, StringComparer.OrdinalIgnoreCase));
+    }
+
+    // Biome CRUD operations
+
+    public bool AddBiome(EditableBiome biome)
+    {
+        if (_biomes.ContainsKey(biome.Id))
+        {
+            GD.PrintErr($"[TileEditorService] Biome already exists: {biome.Id}");
+            return false;
+        }
+
+        _biomes[biome.Id] = biome;
+        EmitSignal(SignalName.BiomeAdded, biome.Id);
+        return true;
+    }
+
+    public void UpdateBiome(EditableBiome biome)
+    {
+        if (!_biomes.ContainsKey(biome.Id))
+        {
+            GD.PrintErr($"[TileEditorService] Biome not found: {biome.Id}");
+            return;
+        }
+
+        _biomes[biome.Id] = biome;
+        EmitSignal(SignalName.BiomeModified, biome.Id);
+    }
+
+    public bool RemoveBiome(string id)
+    {
+        if (!_biomes.Remove(id))
+        {
+            return false;
+        }
+
+        EmitSignal(SignalName.BiomeRemoved, id);
+        return true;
+    }
+
+    /// <summary>
+    /// Normalize weights so they sum to 1.0
+    /// </summary>
+    private static Dictionary<string, float> NormalizeWeights(Dictionary<string, float> weights)
+    {
+        if (weights.Count == 0)
+            return weights;
+
+        var sum = weights.Values.Sum();
+        if (sum <= 0)
+            return weights;
+
+        return weights.ToDictionary(
+            kvp => kvp.Key,
+            kvp => (float)Math.Round(kvp.Value / sum, 2)
+        );
     }
 
     /// <summary>
@@ -581,11 +677,14 @@ public partial class TileEditorService : RefCounted
         if (!validLayers.Contains(tile.Layer.ToLowerInvariant()))
             return (false, "Invalid layer value");
 
-        var validBiomes = new[] { "plains", "forest", "desert", "tundra", "swamp", "mountains" };
-        foreach (var biome in tile.Biomes)
+        // Validate biomes against loaded biomes (if any loaded) or allow all
+        if (_biomes.Count > 0)
         {
-            if (!validBiomes.Contains(biome.ToLowerInvariant()))
-                return (false, $"Invalid biome: {biome}");
+            foreach (var biome in tile.Biomes)
+            {
+                if (!_biomes.ContainsKey(biome.ToLowerInvariant()))
+                    return (false, $"Invalid biome: {biome}");
+            }
         }
 
         return (true, "Valid");
@@ -613,6 +712,16 @@ public partial class TileEditorService : RefCounted
                 Schema = "./tiles.schema.json",
                 Version = _version,
                 Tileset = TilesetPath,
+                Biomes = _biomes.Count > 0 ? _biomes.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => new BiomeDataJson
+                    {
+                        DisplayName = kvp.Value.DisplayName,
+                        Signature = kvp.Value.Signature,
+                        BlockedPercentage = kvp.Value.BlockedPercentage,
+                        PassableTiles = NormalizeWeights(kvp.Value.PassableTiles),
+                        BlockedTiles = NormalizeWeights(kvp.Value.BlockedTiles)
+                    }) : null,
                 Tiles = _tiles.Values.Select(t => new TileData
                 {
                     Id = t.Id,
@@ -697,7 +806,22 @@ public partial class TileEditorService : RefCounted
 
         [JsonPropertyName("tileset")] public string? Tileset { get; set; }
 
+        [JsonPropertyName("biomes")] public Dictionary<string, BiomeDataJson>? Biomes { get; set; }
+
         [JsonPropertyName("tiles")] public List<TileData>? Tiles { get; set; }
+    }
+
+    private sealed class BiomeDataJson
+    {
+        [JsonPropertyName("displayName")] public string? DisplayName { get; set; }
+
+        [JsonPropertyName("signature")] public float[]? Signature { get; set; }
+
+        [JsonPropertyName("blockedPercentage")] public float BlockedPercentage { get; set; }
+
+        [JsonPropertyName("passableTiles")] public Dictionary<string, float>? PassableTiles { get; set; }
+
+        [JsonPropertyName("blockedTiles")] public Dictionary<string, float>? BlockedTiles { get; set; }
     }
 
     private sealed class TileData
@@ -955,5 +1079,31 @@ public class AtlasSourceInfo
     public int SourceId { get; set; }
     public string DisplayName { get; set; } = "";
     public TileSetAtlasSource? Source { get; set; }
+}
+
+/// <summary>
+/// Mutable biome data for editing in the tile editor
+/// </summary>
+public class EditableBiome
+{
+    public string Id { get; set; } = "";
+    public string DisplayName { get; set; } = "";
+    public float[] Signature { get; set; } = new float[8];
+    public float BlockedPercentage { get; set; } = 0.2f;
+    public Dictionary<string, float> PassableTiles { get; set; } = new();
+    public Dictionary<string, float> BlockedTiles { get; set; } = new();
+
+    public EditableBiome Clone()
+    {
+        return new EditableBiome
+        {
+            Id = Id,
+            DisplayName = DisplayName,
+            Signature = (float[])Signature.Clone(),
+            BlockedPercentage = BlockedPercentage,
+            PassableTiles = new Dictionary<string, float>(PassableTiles),
+            BlockedTiles = new Dictionary<string, float>(BlockedTiles)
+        };
+    }
 }
 #endif
