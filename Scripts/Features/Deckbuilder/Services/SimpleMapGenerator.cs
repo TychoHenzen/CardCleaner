@@ -180,13 +180,24 @@ public class SimpleMapGenerator
             passableTiles.Add(center);
         }
 
-        // Convert to non-nullable array
-        var finalTileIds = new string[size.Y, size.X];
+        // Convert to non-nullable array - this becomes our TERRAIN grid
+        // We keep this separate from structure data for dual-grid calculations
+        var terrainGrid = new string[size.Y, size.X];
         for (var y = 0; y < size.Y; y++)
         for (var x = 0; x < size.X; x++)
-            finalTileIds[y, x] = tileIds[y, x] ?? FloorTileId;
+            terrainGrid[y, x] = tileIds[y, x] ?? FloorTileId;
 
-        // Phase 3.5: Place structures
+        // Generate terrain transitions BEFORE placing structures
+        // This ensures the dual-grid system sees only terrain data
+        var decorationOverlays = GenerateTerrainTransitions(terrainGrid, size);
+        var transitionCount = decorationOverlays.Count(kvp => kvp.Value.Bitmask > 0 && kvp.Value.Bitmask < 15);
+        ILog.Print($"Dual-grid terrain: {decorationOverlays.Count} visual tiles, {transitionCount} transitions");
+
+        // Now copy terrain to final grid for structure placement
+        var finalTileIds = new string[size.Y, size.X];
+        Array.Copy(terrainGrid, finalTileIds, terrainGrid.Length);
+
+        // Phase 3.5: Place structures (these go on TOP of terrain, don't affect transitions)
         var structurePlacements = new List<StructurePlacement>();
         if (StructuresEnabled && _structurePlacer != null && _structureStamps.Count > 0)
         {
@@ -196,11 +207,6 @@ public class SimpleMapGenerator
 
         // Ensure all passable tiles are connected
         EnsureConnectivity(finalTileIds, size, passableTiles);
-
-        // Detect terrain transitions and generate decoration overlays
-        var decorationOverlays = GenerateTerrainTransitions(finalTileIds, size);
-        var transitionCount = decorationOverlays.Count(kvp => kvp.Value.Bitmask > 0 && kvp.Value.Bitmask < 15);
-        ILog.Print($"Dual-grid terrain: {decorationOverlays.Count} visual tiles, {transitionCount} transitions");
 
         // Select contextual variants for tiles that use VariationMode.Contextual
         var contextualVariants = SelectContextualVariants(finalTileIds, size, placedTiles, biomeMap);
@@ -710,7 +716,7 @@ public class SimpleMapGenerator
     /// Base layer fills background, top layer provides auto-tiled transitions.
     /// </summary>
     private Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> GenerateTerrainTransitions(
-        string[,] tileIds, Vector2I size)
+        string[,] terrainGrid, Vector2I size)
     {
         var overlays = new Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)>();
 
@@ -724,35 +730,88 @@ public class SimpleMapGenerator
         for (var vx = 0; vx < visualWidth; vx++)
         {
             // Sample the 4 corner terrain cells and track all terrain types
-            var terrainTypes = new Dictionary<string, int>(); // base tile -> count
-            var terrainDominance = new Dictionary<string, int>(); // base tile -> dominance
+            var terrainTypes = new Dictionary<string, int>(); // tile id -> count
+            var terrainInfo = new Dictionary<string, (int Dominance, bool HasAutoTile)>(); // tile id -> (dominance, hasAutoTile)
 
             // TL corner: terrain cell (vx-1, vy-1)
-            SampleTerrainCell(tileIds, size, vx - 1, vy - 1, terrainTypes, terrainDominance);
+            SampleTerrainCell(terrainGrid, size, vx - 1, vy - 1, terrainTypes, terrainInfo);
             // TR corner: terrain cell (vx, vy-1)
-            SampleTerrainCell(tileIds, size, vx, vy - 1, terrainTypes, terrainDominance);
+            SampleTerrainCell(terrainGrid, size, vx, vy - 1, terrainTypes, terrainInfo);
             // BL corner: terrain cell (vx-1, vy)
-            SampleTerrainCell(tileIds, size, vx - 1, vy, terrainTypes, terrainDominance);
+            SampleTerrainCell(terrainGrid, size, vx - 1, vy, terrainTypes, terrainInfo);
             // BR corner: terrain cell (vx, vy)
-            SampleTerrainCell(tileIds, size, vx, vy, terrainTypes, terrainDominance);
+            SampleTerrainCell(terrainGrid, size, vx, vy, terrainTypes, terrainInfo);
 
-            // Determine base (lowest dominance) and top (highest dominance) terrain
+            // Determine top and base terrain for dual-grid auto-tiling
+            // Top terrain = the auto-tile that provides the border/transition shape
+            // Base terrain = the background terrain that gets overlaid
+            //
+            // Selection priority:
+            // 1. Auto-tile terrains become "top" (they have the transition sprites)
+            // 2. Non-auto-tile terrains become "base" (they're the background)
+            // 3. If both have auto-tiles or neither does, use dominance as tiebreaker
             string? baseTerrain = null;
             string? topTerrain = null;
-            var minDominance = int.MaxValue;
-            var maxDominance = -1;
+            var baseHasAutoTile = false;
+            var topHasAutoTile = false;
+            var baseDominance = int.MaxValue;
+            var topDominance = -1;
 
-            foreach (var (terrain, dominance) in terrainDominance)
+            foreach (var (terrain, (dominance, hasAutoTile)) in terrainInfo)
             {
-                if (dominance > maxDominance)
+                // Determine if this terrain should become the new top
+                var shouldBeTop = false;
+                if (topTerrain == null)
                 {
-                    maxDominance = dominance;
-                    topTerrain = terrain;
+                    shouldBeTop = true;
                 }
-                if (dominance < minDominance)
+                else if (hasAutoTile && !topHasAutoTile)
                 {
-                    minDominance = dominance;
+                    // Auto-tile beats non-auto-tile for top position
+                    shouldBeTop = true;
+                }
+                else if (hasAutoTile == topHasAutoTile)
+                {
+                    // Same auto-tile status: use dominance, then alphabetical
+                    if (dominance > topDominance ||
+                        (dominance == topDominance && string.CompareOrdinal(terrain, topTerrain) < 0))
+                    {
+                        shouldBeTop = true;
+                    }
+                }
+
+                // Determine if this terrain should become the new base
+                var shouldBeBase = false;
+                if (baseTerrain == null)
+                {
+                    shouldBeBase = true;
+                }
+                else if (!hasAutoTile && baseHasAutoTile)
+                {
+                    // Non-auto-tile beats auto-tile for base position
+                    shouldBeBase = true;
+                }
+                else if (hasAutoTile == baseHasAutoTile)
+                {
+                    // Same auto-tile status: use dominance (lower wins for base), then alphabetical
+                    if (dominance < baseDominance ||
+                        (dominance == baseDominance && string.CompareOrdinal(terrain, baseTerrain) < 0))
+                    {
+                        shouldBeBase = true;
+                    }
+                }
+
+                if (shouldBeTop)
+                {
+                    topTerrain = terrain;
+                    topDominance = dominance;
+                    topHasAutoTile = hasAutoTile;
+                }
+                if (shouldBeBase)
+                {
                     baseTerrain = terrain;
+                    baseDominance = dominance;
+                    baseHasAutoTile = hasAutoTile;
                 }
             }
 
@@ -768,24 +827,17 @@ public class SimpleMapGenerator
             }
 
             // Compute Corner16 bitmask: which corners have the top terrain?
+            // Always check each corner - can't assume all corners have same terrain
+            // because some corners may have non-terrain tiles (decorations) that were skipped
             var bitmask = 0;
-            if (terrainTypes.Count > 1)
-            {
-                // Multiple terrain types - compute actual bitmask
-                if (IsTerrainAtPosition(tileIds, size, vx - 1, vy - 1, topTerrain))
-                    bitmask |= NeighborBitmaskCorner.NorthWest; // 8
-                if (IsTerrainAtPosition(tileIds, size, vx, vy - 1, topTerrain))
-                    bitmask |= NeighborBitmaskCorner.NorthEast; // 1
-                if (IsTerrainAtPosition(tileIds, size, vx - 1, vy, topTerrain))
-                    bitmask |= NeighborBitmaskCorner.SouthWest; // 4
-                if (IsTerrainAtPosition(tileIds, size, vx, vy, topTerrain))
-                    bitmask |= NeighborBitmaskCorner.SouthEast; // 2
-            }
-            else
-            {
-                // Only one terrain type - all corners have it
-                bitmask = 15;
-            }
+            if (IsTerrainAtPosition(terrainGrid, size, vx - 1, vy - 1, topTerrain))
+                bitmask |= NeighborBitmaskCorner.NorthWest; // 8
+            if (IsTerrainAtPosition(terrainGrid, size, vx, vy - 1, topTerrain))
+                bitmask |= NeighborBitmaskCorner.NorthEast; // 1
+            if (IsTerrainAtPosition(terrainGrid, size, vx - 1, vy, topTerrain))
+                bitmask |= NeighborBitmaskCorner.SouthWest; // 4
+            if (IsTerrainAtPosition(terrainGrid, size, vx, vy, topTerrain))
+                bitmask |= NeighborBitmaskCorner.SouthEast; // 2
 
             // Store complete dual-grid data for ALL visual positions
             var visualPosition = new Vector2I(vx, vy);
@@ -797,31 +849,21 @@ public class SimpleMapGenerator
 
     /// <summary>
     /// Sample a terrain cell and add it to the terrain type tracking dictionaries.
-    /// Only terrain-layer tiles are included in transition calculations.
-    /// Out-of-bounds coordinates are clamped to nearest valid cell.
-    /// Non-terrain tiles trigger a search for nearby terrain to ensure coverage.
+    /// Only terrain-layer tiles participate in transitions; decorations etc. are skipped.
+    /// Out-of-bounds coordinates are clamped to nearest valid cell for edge handling.
     /// </summary>
-    private void SampleTerrainCell(string[,] tileIds, Vector2I size, int x, int y,
-        Dictionary<string, int> terrainTypes, Dictionary<string, int> terrainDominance)
+    private void SampleTerrainCell(string[,] terrainGrid, Vector2I size, int x, int y,
+        Dictionary<string, int> terrainTypes, Dictionary<string, (int Dominance, bool HasAutoTile)> terrainInfo)
     {
         // Clamp coordinates to valid range
         x = Math.Clamp(x, 0, size.X - 1);
         y = Math.Clamp(y, 0, size.Y - 1);
 
-        var tileId = tileIds[y, x];
+        var tileId = terrainGrid[y, x];
         var tile = _tileRegistry.GetTile(tileId);
 
-        // If not a terrain tile, search nearby for terrain (structures are placed on top of terrain)
+        // Skip non-terrain tiles - only Layer.Terrain participates in auto-tiling
         if (tile == null || tile.Layer != TileLayer.Terrain)
-        {
-            (tileId, tile) = FindNearbyTerrain(tileIds, size, x, y);
-            if (tile == null)
-                return; // No terrain found nearby
-        }
-
-        // Use tile ID directly (not base ID) since each tile has its own dominance
-        // After FindNearbyTerrain, tileId is guaranteed non-null when tile is non-null
-        if (tileId == null)
             return;
 
         if (terrainTypes.TryGetValue(tileId, out var count))
@@ -829,51 +871,21 @@ public class SimpleMapGenerator
         else
         {
             terrainTypes[tileId] = 1;
-            terrainDominance[tileId] = tile.Dominance;
+            terrainInfo[tileId] = (tile.Dominance, tile.HasAutoTileVariants);
         }
-    }
-
-    /// <summary>
-    /// Find a nearby terrain tile when the sampled position contains a non-terrain tile.
-    /// Searches in a spiral pattern up to 3 cells away.
-    /// </summary>
-    private (string? tileId, TileDefinition? tile) FindNearbyTerrain(string[,] tileIds, Vector2I size, int cx, int cy)
-    {
-        // Search pattern: immediate neighbors first, then expanding
-        ReadOnlySpan<(int dx, int dy)> offsets =
-        [
-            (0, 0), // Center (already checked but included for completeness)
-            (-1, 0), (1, 0), (0, -1), (0, 1), // Cardinals
-            (-1, -1), (1, -1), (-1, 1), (1, 1), // Diagonals
-            (-2, 0), (2, 0), (0, -2), (0, 2) // Extended cardinals
-        ];
-
-        foreach (var (dx, dy) in offsets)
-        {
-            var nx = Math.Clamp(cx + dx, 0, size.X - 1);
-            var ny = Math.Clamp(cy + dy, 0, size.Y - 1);
-
-            var neighborId = tileIds[ny, nx];
-            var neighborTile = _tileRegistry.GetTile(neighborId);
-
-            if (neighborTile?.Layer == TileLayer.Terrain)
-                return (neighborId, neighborTile);
-        }
-
-        return (null, null);
     }
 
     /// <summary>
     /// Check if the terrain at the given position matches the specified terrain tile ID.
     /// Out-of-bounds coordinates are clamped to nearest valid cell for consistent edge handling.
     /// </summary>
-    private static bool IsTerrainAtPosition(string[,] tileIds, Vector2I size, int x, int y, string terrainTileId)
+    private static bool IsTerrainAtPosition(string[,] terrainGrid, Vector2I size, int x, int y, string terrainTileId)
     {
         // Clamp coordinates to valid range for consistent edge handling
         x = Math.Clamp(x, 0, size.X - 1);
         y = Math.Clamp(y, 0, size.Y - 1);
 
-        return tileIds[y, x] == terrainTileId;
+        return terrainGrid[y, x] == terrainTileId;
     }
 
 }

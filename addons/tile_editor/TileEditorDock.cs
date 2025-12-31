@@ -12,6 +12,7 @@ public partial class TileEditorDock : Control
     private BlobSettingsPanel? _blobSettingsPanel;
     private AutoTilePreviewPanel? _autoTilePreviewPanel;
     private UnusedSourcesPanel? _unusedSourcesPanel;
+    private TransitionCoveragePanel? _transitionCoveragePanel;
     private bool _initialized;
     private bool _isDirty;
     private TilePropertiesPanel? _propertiesPanel;
@@ -156,6 +157,11 @@ public partial class TileEditorDock : Control
         _unusedSourcesPanel = new UnusedSourcesPanel(_service!);
         _unusedSourcesPanel.Name = "Unused Sources";
         _tabContainer.AddChild(_unusedSourcesPanel);
+
+        // Transition Coverage tab
+        _transitionCoveragePanel = new TransitionCoveragePanel(_service!);
+        _transitionCoveragePanel.Name = "Transitions";
+        _tabContainer.AddChild(_transitionCoveragePanel);
     }
 
     private void OnTilesLoaded()

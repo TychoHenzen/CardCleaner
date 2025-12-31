@@ -177,7 +177,9 @@ public static class TileDataLoader
             variations: variations,
             variationMode: variationMode,
             animation: animation,
-            dominance: dominance);
+            dominance: dominance,
+            innerTerrainId: data.InnerTerrain,
+            outerTerrainId: data.OuterTerrain);
     }
 
     private static AutoTileFormat ParseAutoTileFormat(string? value)
@@ -363,6 +365,10 @@ public static class TileDataLoader
         [JsonPropertyName("animation")] public AnimationData? Animation { get; set; }
 
         [JsonPropertyName("dominance")] public int? Dominance { get; set; }
+
+        [JsonPropertyName("innerTerrain")] public string? InnerTerrain { get; set; }
+
+        [JsonPropertyName("outerTerrain")] public string? OuterTerrain { get; set; }
     }
 
     private sealed class AnimationData

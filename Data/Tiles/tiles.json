@@ -27,7 +27,7 @@
       "sourceId": 8,
       "layer": "effects",
       "elevation": 0,
-      "isTransparent": true
+      "isTransparent": false
     },
     {
       "id": "dirt",
@@ -108,7 +108,8 @@
           "y": 9
         }
       ],
-      "tileMode": "autotile"
+      "tileMode": "autotile",
+      "outerTerrain": "*"
     },
     {
       "id": "wall",
@@ -410,7 +411,8 @@
           "y": 5
         }
       ],
-      "tileMode": "autotile"
+      "tileMode": "autotile",
+      "outerTerrain": "*"
     },
     {
       "id": "forest_undergrowth",
@@ -526,7 +528,8 @@
           "y": 2
         }
       ],
-      "tileMode": "autotile"
+      "tileMode": "autotile",
+      "outerTerrain": "*"
     },
     {
       "id": "forest_fallen_log",
@@ -658,7 +661,8 @@
           "y": 45
         }
       ],
-      "tileMode": "autotile"
+      "tileMode": "autotile",
+      "outerTerrain": "*"
     },
     {
       "id": "desert_dune",
@@ -738,7 +742,8 @@
           "y": 11
         }
       ],
-      "tileMode": "autotile"
+      "tileMode": "autotile",
+      "outerTerrain": "*"
     },
     {
       "id": "desert_cracked",
@@ -822,7 +827,8 @@
           "y": 11
         }
       ],
-      "tileMode": "autotile"
+      "tileMode": "autotile",
+      "outerTerrain": "*"
     },
     {
       "id": "desert_gravel",
@@ -906,7 +912,8 @@
           "y": 37
         }
       ],
-      "tileMode": "autotile"
+      "tileMode": "autotile",
+      "outerTerrain": "*"
     },
     {
       "id": "desert_rocky",
@@ -1119,7 +1126,8 @@
       ],
       "autoTileFormat": "blob47",
       "tileMode": "autotile",
-      "sourceScale": 0.5
+      "sourceScale": 0.5,
+      "outerTerrain": "*"
     },
     {
       "id": "desert_rock",

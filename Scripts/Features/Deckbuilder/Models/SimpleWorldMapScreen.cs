@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 using Godot.Collections;
@@ -67,6 +68,10 @@ public partial class SimpleWorldMapScreen : Node3D
 
     private ITileRegistry? _tileRegistry;
 
+    // Transition resolver for compiled atlas lookups
+    private ITransitionResolver? _transitionResolver;
+    private bool _usingCompiledAtlas;
+
     // Biome preview support
     private BiomeRegistry? _biomeRegistry;
     private BiomeDistributionPreview? _biomePreview;
@@ -119,13 +124,21 @@ public partial class SimpleWorldMapScreen : Node3D
         ServiceLocator.Get<ITileRegistry>(registry =>
         {
             _tileRegistry = registry;
+            _usingCompiledAtlas = registry.UsingCompiledAtlas && registry.CompiledTileSet != null;
+
+            ILog.Print($"[SimpleWorldMapScreen] TileRegistry: UsingCompiledAtlas={registry.UsingCompiledAtlas}, " +
+                       $"CompiledTileSet={(registry.CompiledTileSet != null ? "present" : "NULL")}, " +
+                       $"TilesetPath={registry.TilesetPath}, _usingCompiledAtlas={_usingCompiledAtlas}");
+
             // Use compiled TileSet directly if available, otherwise load from path
-            if (registry.UsingCompiledAtlas && registry.CompiledTileSet != null)
+            if (_usingCompiledAtlas)
             {
-                AssignTileSetDirectly(registry.CompiledTileSet);
+                ILog.Print("[SimpleWorldMapScreen] Using COMPILED TileSet path");
+                AssignTileSetDirectly(registry.CompiledTileSet!);
             }
             else
             {
+                ILog.Print("[SimpleWorldMapScreen] Using FALLBACK TileSet path - transition resolver will be disabled");
                 AssignTileSetToLayers(registry.TilesetPath);
             }
         });
@@ -235,6 +248,17 @@ public partial class SimpleWorldMapScreen : Node3D
     /// </summary>
     private void AssignTileSetDirectly(TileSet tileSet)
     {
+        // Log TileSet info for debugging
+        var sourceCount = tileSet.GetSourceCount();
+        ILog.Print($"[SimpleWorldMapScreen] Assigning TileSet with {sourceCount} source(s)");
+        for (var i = 0; i < sourceCount; i++)
+        {
+            var sourceId = tileSet.GetSourceId(i);
+            var source = tileSet.GetSource(sourceId);
+            var sourceType = source?.GetType().Name ?? "null";
+            ILog.Print($"[SimpleWorldMapScreen]   Source {sourceId}: {sourceType}");
+        }
+
         // Assign TileSet and ensure nearest-neighbor filtering for pixel art
         SetLayerTileSet(TerrainLayer, tileSet);
         SetLayerTileSet(DecorationLayer, tileSet);
@@ -243,13 +267,13 @@ public partial class SimpleWorldMapScreen : Node3D
         SetLayerTileSet(OverlayLayer, tileSet);
         SetLayerTileSet(BiomeOverlayLayer, tileSet);
 
-        ILog.Print($"[SimpleWorldMapScreen] Assigned compiled TileSet to all layers");
+        ILog.Print($"[SimpleWorldMapScreen] Assigned TileSet to all 6 layers");
     }
 
-    private static void SetLayerTileSet(TileMapLayer? layer, TileSet tileSet)
+    private static void SetLayerTileSet(TileMapLayer? layer, TileSet? tileSet)
     {
-        if (layer == null) return;
-        layer.SetTileSet(tileSet);
+        if (layer == null || tileSet == null) return;
+        layer.TileSet = tileSet;
         layer.TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
     }
 
@@ -786,13 +810,14 @@ public partial class SimpleWorldMapScreen : Node3D
     }
 
     /// <summary>
-    /// Render complete dual-grid terrain system with base and top layers.
-    /// Visual grid covers the entire map with half-tile offset.
-    /// Base layer (TerrainLayer) fills background, top layer (DecorationLayer) adds auto-tiled transitions.
+    /// Render dual-grid terrain: visual grid at standard positions, each tile composited from 4 data corners.
+    /// Uses the dual-tilemap technique from https://excaliburjs.com/blog/Dual%20Tilemap%20Autotiling%20Technique/
+    /// Visual grid is (size+1) x (size+1), each visual tile samples 4 data corners to compute bitmask.
+    /// Pre-composited transition tiles are looked up from the compiled atlas.
     /// </summary>
     private void RenderTerrainTransitions(SimpleMapData mapData)
     {
-        if (TerrainLayer == null || DecorationLayer == null || _tileRegistry == null)
+        if (TerrainLayer == null || _tileRegistry == null)
             return;
 
         if (mapData.DecorationOverlays.Count == 0)
@@ -801,72 +826,105 @@ public partial class SimpleWorldMapScreen : Node3D
             return;
         }
 
-        // Apply half-tile offset to BOTH layers for dual-grid rendering
-        var offset = mapData.UsesDualGridOverlays
-            ? new Vector2(-TILE_SIZE / 2f, -TILE_SIZE / 2f)
-            : Vector2.Zero;
+        // NO layer offset - visual grid renders at standard positions (0,0) to (size, size)
+        // The data grid is conceptually at +half tile offset from visual grid
+        TerrainLayer.Position = Vector2.Zero;
 
-        TerrainLayer.Position = offset;
-        DecorationLayer.Position = offset;
+        // Only use transition resolver if compiled atlas is available
+        // Otherwise, fallback to tile's own coordinates to avoid using sourceId=0 that doesn't exist
+        if (_usingCompiledAtlas)
+        {
+            _transitionResolver ??= new CompiledTransitionResolver();
+        }
 
-        // Pass 1: Render ALL base terrain to TerrainLayer
-        var baseRendered = 0;
-        var baseMissing = 0;
+        var tilesRendered = 0;
+        var transitionsResolved = 0;
         var missingTileIds = new HashSet<string>();
 
-        foreach (var (position, (baseTileId, _, _)) in mapData.DecorationOverlays)
+        foreach (var (position, (baseTileId, topTileId, bitmask)) in mapData.DecorationOverlays)
         {
             var baseTile = _tileRegistry.GetTile(baseTileId);
+            var topTile = _tileRegistry.GetTile(topTileId);
+
             if (baseTile == null)
             {
-                baseMissing++;
                 missingTileIds.Add(baseTileId);
                 continue;
             }
 
-            TerrainLayer.SetCell(position, baseTile.SourceId, baseTile.AtlasCoords);
-            baseRendered++;
-        }
+            int sourceId;
+            Vector2I atlasCoords;
 
-        // Pass 2: Render top terrain with auto-tiling to DecorationLayer (only where transitions exist)
-        var topRendered = 0;
-        var topMissing = 0;
-
-        foreach (var (position, (_, topTileId, bitmask)) in mapData.DecorationOverlays)
-        {
-            // Skip if bitmask is 0 (no corners) or 15 (all corners - no transition visible)
-            if (bitmask == 0 || bitmask == 15)
-                continue;
-
-            var tile = _tileRegistry.GetTile(topTileId);
-            if (tile == null)
+            // If compiled atlas is not available, always use tile's own coordinates
+            if (!_usingCompiledAtlas || _transitionResolver == null)
             {
-                topMissing++;
-                missingTileIds.Add(topTileId);
-                continue;
+                var effectiveTile = topTile ?? baseTile;
+                atlasCoords = effectiveTile.HasAutoTileVariants
+                    ? effectiveTile.GetAutoTileCoords(bitmask)
+                    : effectiveTile.AtlasCoords;
+                sourceId = effectiveTile.SourceId;
+            }
+            // For uniform terrain (top == base, bitmask 15), we need the solid fill
+            // Self-transitions don't exist in the map, so find ANY transition with this tile
+            else if (topTileId == baseTileId && bitmask == 15)
+            {
+                // For compositable tiles, find the solid fill from any transition
+                var solidFillCoords = _transitionResolver.ResolveSolidFill(topTileId);
+                if (solidFillCoords.HasValue)
+                {
+                    atlasCoords = solidFillCoords.Value;
+                    sourceId = _transitionResolver.CompiledAtlasSourceId;
+                    transitionsResolved++;
+                }
+                else
+                {
+                    // Fallback: use the tile's own coordinates (works for non-compositable tiles)
+                    atlasCoords = baseTile.HasAutoTileVariants
+                        ? baseTile.GetAutoTileCoords(15)
+                        : baseTile.AtlasCoords;
+                    sourceId = baseTile.SourceId;
+                }
+            }
+            else
+            {
+                // Standard case: look up transition in compiled map
+                var effectiveTopTile = topTile ?? baseTile;
+                var fallbackCoords = effectiveTopTile.HasAutoTileVariants
+                    ? effectiveTopTile.GetAutoTileCoords(bitmask)
+                    : effectiveTopTile.AtlasCoords;
+
+                var result = _transitionResolver.ResolveWithFallback(
+                    topTileId, baseTileId, bitmask, effectiveTopTile.SourceId, fallbackCoords);
+
+                atlasCoords = result.AtlasCoords;
+                sourceId = result.SourceId;
+
+                if (sourceId == _transitionResolver.CompiledAtlasSourceId)
+                    transitionsResolved++;
             }
 
-            // Get the auto-tiled atlas coords for this edge configuration
-            var atlasCoords = tile.HasAutoTileVariants
-                ? tile.GetAutoTileCoords(bitmask)
-                : tile.AtlasCoords;
-
-            DecorationLayer.SetCell(position, tile.SourceId, atlasCoords);
-            topRendered++;
+            TerrainLayer.SetCell(position, sourceId, atlasCoords);
+            tilesRendered++;
         }
 
-        ILog.Print($"[DUAL-GRID] Rendered {baseRendered} base tiles, {topRendered} top transitions (offset: {offset})");
+        var atlasStatus = _usingCompiledAtlas ? "compiled atlas" : "FALLBACK (no compiled atlas)";
+        ILog.Print($"[DUAL-GRID] Rendered {tilesRendered} terrain tiles ({transitionsResolved} transitions) using {atlasStatus}");
 
-        if (baseMissing > 0 || topMissing > 0)
-            ILog.Print($"[DUAL-GRID] WARNING: {baseMissing} missing base tiles, {topMissing} missing top tiles. IDs: {string.Join(", ", missingTileIds)}");
+        if (missingTileIds.Count > 0)
+            ILog.Print($"[DUAL-GRID] WARNING: Missing tiles: {string.Join(", ", missingTileIds)}");
     }
 
     /// <summary>
     /// Render non-terrain tiles (structures, decorations, effects) from the data grid.
-    /// Terrain is now handled entirely by the dual-grid transition system.
+    /// These render at data-grid positions (no offset) on top of the dual-grid terrain.
     /// </summary>
     private void RenderNonTerrainTiles(SimpleMapData mapData)
     {
+        // Ensure non-terrain layers have no offset (data grid positions, not visual grid)
+        if (DecorationLayer != null) DecorationLayer.Position = Vector2.Zero;
+        if (StructureLayer != null) StructureLayer.Position = Vector2.Zero;
+        if (EffectLayer != null) EffectLayer.Position = Vector2.Zero;
+
         var structureCount = 0;
         var decorationCount = 0;
         var effectCount = 0;

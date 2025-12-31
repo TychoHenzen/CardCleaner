@@ -193,6 +193,10 @@ public partial class TileEditorService : RefCounted
                 // Load dominance (null means use file order)
                 tile.Dominance = tileData.Dominance;
 
+                // Load terrain transition references for auto-tiles
+                tile.InnerTerrainId = tileData.InnerTerrain;
+                tile.OuterTerrainId = tileData.OuterTerrain;
+
                 _tiles[tile.Id] = tile;
             }
 
@@ -681,7 +685,9 @@ public partial class TileEditorService : RefCounted
                         }
                         : null,
                     TileMode = t.TileMode != "plain" ? t.TileMode : null,
-                    Dominance = t.Dominance
+                    Dominance = t.Dominance,
+                    InnerTerrain = t.InnerTerrainId,
+                    OuterTerrain = t.OuterTerrainId
                 }).ToList(),
 
                 // Blob generation config
@@ -802,6 +808,20 @@ public partial class TileEditorService : RefCounted
         [JsonPropertyName("dominance")] public int? Dominance { get; set; }
 
         [JsonPropertyName("sourceScale")] public float? SourceScale { get; set; }
+
+        /// <summary>
+        /// For auto-tiles: the terrain whose border is shown (higher dominance terrain).
+        /// Null means use dominance-based resolution at runtime.
+        /// </summary>
+        [JsonPropertyName("innerTerrain")] public string? InnerTerrain { get; set; }
+
+        /// <summary>
+        /// For auto-tiles: the background terrain.
+        /// "*" = compositable (transparent border, composite onto any base terrain).
+        /// Specific tile ID = fixed transition (baked pair, use as-is).
+        /// Null = use dominance-based resolution at runtime.
+        /// </summary>
+        [JsonPropertyName("outerTerrain")] public string? OuterTerrain { get; set; }
     }
 
     private sealed class AnimationData
@@ -926,6 +946,32 @@ public class EditableTile
     /// </summary>
     public int? Dominance { get; set; }
 
+    /// <summary>
+    /// For auto-tiles: the terrain whose border is shown (higher dominance terrain).
+    /// Null means use dominance-based resolution at runtime.
+    /// </summary>
+    public string? InnerTerrainId { get; set; }
+
+    /// <summary>
+    /// For auto-tiles: the background terrain.
+    /// "*" = compositable (transparent border, composite onto any base terrain).
+    /// Specific tile ID = fixed transition (baked pair, use as-is).
+    /// Null = use dominance-based resolution at runtime.
+    /// </summary>
+    public string? OuterTerrainId { get; set; }
+
+    /// <summary>
+    /// Returns true if this auto-tile is compositable (OuterTerrainId is "*"),
+    /// meaning its border should be composited onto any base terrain at atlas compile time.
+    /// </summary>
+    public bool IsCompositable => OuterTerrainId == "*";
+
+    /// <summary>
+    /// Returns true if this auto-tile has a fixed transition (OuterTerrainId is a specific tile ID),
+    /// meaning it has a baked background and should be used as-is.
+    /// </summary>
+    public bool IsFixedTransition => !string.IsNullOrEmpty(OuterTerrainId) && OuterTerrainId != "*";
+
     public EditableTile Clone()
     {
         var clone = new EditableTile
@@ -949,7 +995,9 @@ public class EditableTile
             VariationMode = VariationMode,
             AnimationFrameDuration = AnimationFrameDuration,
             TileMode = TileMode,
-            Dominance = Dominance
+            Dominance = Dominance,
+            InnerTerrainId = InnerTerrainId,
+            OuterTerrainId = OuterTerrainId
         };
 
         if (AutoTileVariants != null)

@@ -34,7 +34,9 @@ public static class CompiledAtlasLoader
     {
         mappingPath ??= DefaultMappingPath;
         var absolutePath = ProjectSettings.GlobalizePath(mappingPath);
-        return File.Exists(absolutePath);
+        var exists = File.Exists(absolutePath);
+        ILog.Print($"[CompiledAtlasLoader] IsCompiledAtlasAvailable: path={absolutePath}, exists={exists}");
+        return exists;
     }
 
     /// <summary>
@@ -43,33 +45,50 @@ public static class CompiledAtlasLoader
     /// </summary>
     public static AtlasMappingData? LoadMapping(string? mappingPath = null)
     {
+        ILog.Print("[CompiledAtlasLoader] LoadMapping called");
         mappingPath ??= DefaultMappingPath;
 
         // Return cached mapping if already loaded
         if (_cachedMapping != null && _cachedAtlasPath == mappingPath)
+        {
+            ILog.Print("[CompiledAtlasLoader] Returning cached mapping");
             return _cachedMapping;
+        }
 
         var absolutePath = ProjectSettings.GlobalizePath(mappingPath);
+        ILog.Print($"[CompiledAtlasLoader] LoadMapping absolutePath: {absolutePath}");
+
         if (!File.Exists(absolutePath))
         {
-            ILog.Print($"[CompiledAtlasLoader] Mapping file not found: {mappingPath}");
+            ILog.Print($"[CompiledAtlasLoader] Mapping file not found: {absolutePath}");
             return null;
         }
 
         try
         {
             var json = File.ReadAllText(absolutePath);
+            ILog.Print($"[CompiledAtlasLoader] Read {json.Length} chars from mapping file");
+
             _cachedMapping = JsonSerializer.Deserialize<AtlasMappingData>(json, JsonOptions);
             _cachedAtlasPath = mappingPath;
 
             if (_cachedMapping != null)
-                ILog.Print($"[CompiledAtlasLoader] Loaded mapping with {_cachedMapping.Sources?.Count ?? 0} sources");
+            {
+                ILog.Print($"[CompiledAtlasLoader] Loaded mapping: version={_cachedMapping.Version}, " +
+                           $"atlas={((_cachedMapping.Atlas != null) ? "present" : "NULL")}, " +
+                           $"sources={_cachedMapping.Sources?.Count ?? 0}");
+            }
+            else
+            {
+                ILog.Print("[CompiledAtlasLoader] JsonSerializer.Deserialize returned null");
+            }
 
             return _cachedMapping;
         }
         catch (Exception ex)
         {
             ILog.Print($"[CompiledAtlasLoader] Error loading mapping: {ex.Message}");
+            ILog.Print($"[CompiledAtlasLoader] Stack: {ex.StackTrace}");
             return null;
         }
     }
@@ -80,13 +99,23 @@ public static class CompiledAtlasLoader
     /// </summary>
     public static TileSet? LoadCompiledTileSet(string? mappingPath = null)
     {
+        ILog.Print("[CompiledAtlasLoader] LoadCompiledTileSet called");
+
         // Return cached TileSet if available
         if (_cachedTileSet != null && _cachedAtlasPath == (mappingPath ?? DefaultMappingPath))
+        {
+            ILog.Print("[CompiledAtlasLoader] Returning cached TileSet");
             return _cachedTileSet;
+        }
 
         var mapping = LoadMapping(mappingPath);
         if (mapping?.Atlas == null)
+        {
+            ILog.Print($"[CompiledAtlasLoader] FAILED: mapping={mapping != null}, atlas={mapping?.Atlas != null}");
             return null;
+        }
+
+        ILog.Print($"[CompiledAtlasLoader] Atlas info: path={mapping.Atlas.Path}, size={mapping.Atlas.Width}x{mapping.Atlas.Height}, tileSize={mapping.Atlas.TileSize}");
 
         try
         {
@@ -94,37 +123,45 @@ public static class CompiledAtlasLoader
             Texture2D? atlasTexture = null;
 
             // Try loading via ResourceLoader first (works when properly imported)
-            if (ResourceLoader.Exists(atlasPath))
+            var resourceExists = ResourceLoader.Exists(atlasPath);
+            ILog.Print($"[CompiledAtlasLoader] ResourceLoader.Exists({atlasPath})={resourceExists}");
+
+            if (resourceExists)
             {
                 atlasTexture = ResourceLoader.Load<Texture2D>(atlasPath);
                 if (atlasTexture != null)
                     ILog.Print($"[CompiledAtlasLoader] Loaded atlas via ResourceLoader: {atlasPath}");
+                else
+                    ILog.Print($"[CompiledAtlasLoader] ResourceLoader.Load returned null");
             }
 
             // Fallback: load PNG directly from disk and create ImageTexture
             if (atlasTexture == null)
             {
                 var absolutePath = ProjectSettings.GlobalizePath(atlasPath);
+                ILog.Print($"[CompiledAtlasLoader] Trying direct file read: {absolutePath}");
+
                 if (!File.Exists(absolutePath))
                 {
-                    ILog.Print($"[CompiledAtlasLoader] Atlas PNG not found: {absolutePath}");
+                    ILog.Print($"[CompiledAtlasLoader] FAILED: Atlas PNG not found at: {absolutePath}");
                     return null;
                 }
 
                 var image = Image.LoadFromFile(absolutePath);
                 if (image == null)
                 {
-                    ILog.Print($"[CompiledAtlasLoader] Failed to load image from: {absolutePath}");
+                    ILog.Print($"[CompiledAtlasLoader] FAILED: Image.LoadFromFile returned null");
                     return null;
                 }
 
+                ILog.Print($"[CompiledAtlasLoader] Loaded image: {image.GetWidth()}x{image.GetHeight()}");
                 atlasTexture = ImageTexture.CreateFromImage(image);
                 ILog.Print($"[CompiledAtlasLoader] Loaded atlas via direct file read: {atlasPath}");
             }
 
             if (atlasTexture == null)
             {
-                ILog.Print($"[CompiledAtlasLoader] All load methods failed for: {atlasPath}");
+                ILog.Print($"[CompiledAtlasLoader] FAILED: All load methods failed for: {atlasPath}");
                 return null;
             }
 
@@ -139,6 +176,8 @@ public static class CompiledAtlasLoader
             atlasSource.UseTexturePadding = false;
 
             // Create tiles for all mapped coordinates
+            var tilesCreated = 0;
+            var tilesSkipped = 0;
             if (mapping.Sources != null)
             {
                 foreach (var (sourceIdStr, coordMappings) in mapping.Sources)
@@ -152,18 +191,40 @@ public static class CompiledAtlasLoader
                         // Create the tile at these atlas coordinates if not already exists
                         if (!atlasSource.HasTile(atlasCoords))
                         {
-                            atlasSource.CreateTile(atlasCoords, tileSize);
+                            try
+                            {
+                                atlasSource.CreateTile(atlasCoords, tileSize);
+                                tilesCreated++;
+                            }
+                            catch (Exception tileEx)
+                            {
+                                ILog.Print($"[CompiledAtlasLoader] Failed to create tile at {atlasCoords} size {tileSize}: {tileEx.Message}");
+                            }
+                        }
+                        else
+                        {
+                            tilesSkipped++;
                         }
                     }
                 }
             }
+
+            ILog.Print($"[CompiledAtlasLoader] Created {tilesCreated} tiles, skipped {tilesSkipped} existing");
 
             // Add the atlas source to the tileset at index 0
             // All tiles will use sourceId 0 when using compiled atlas
             tileSet.AddSource(atlasSource, 0);
 
             _cachedTileSet = tileSet;
-            ILog.Print($"[CompiledAtlasLoader] Created TileSet from compiled atlas with 1 source");
+
+            // Verify the source was added correctly
+            var sourceCount = tileSet.GetSourceCount();
+            var source0 = tileSet.GetSource(0);
+            var atlasSourceCheck = source0 as TileSetAtlasSource;
+            var textureDims = atlasSourceCheck?.Texture?.GetSize() ?? Vector2.Zero;
+            ILog.Print($"[CompiledAtlasLoader] Created TileSet: {sourceCount} source(s), " +
+                       $"source 0 = {(source0 != null ? "present" : "MISSING")}, " +
+                       $"texture = {textureDims.X}x{textureDims.Y}");
 
             return tileSet;
         }

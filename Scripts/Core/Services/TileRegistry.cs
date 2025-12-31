@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
@@ -63,26 +64,38 @@ public class TileRegistry : ITileRegistry
         var result = TileDataLoader.LoadTileRegistry(path);
 
         // Check if compiled atlas is available
-        if (CompiledAtlasLoader.IsCompiledAtlasAvailable())
+        var isAvailable = CompiledAtlasLoader.IsCompiledAtlasAvailable();
+        ILog.Print($"[TileRegistry] Compiled atlas available: {isAvailable}");
+
+        if (isAvailable)
         {
             _atlasMapping = CompiledAtlasLoader.LoadMapping();
+            ILog.Print($"[TileRegistry] Atlas mapping loaded: {(_atlasMapping != null ? "YES" : "NULL")}");
+
             CompiledTileSet = CompiledAtlasLoader.LoadCompiledTileSet();
+            ILog.Print($"[TileRegistry] Compiled TileSet loaded: {(CompiledTileSet != null ? "YES" : "NULL")}");
 
             if (CompiledTileSet != null && _atlasMapping != null)
             {
+                // Use compiled atlas mode - transition_map.json has all auto-tile transitions
+                // Even if some base tiles can't be translated, auto-tiles will work
                 UsingCompiledAtlas = true;
-                // Use a marker path that tells consumers to use CompiledTileSet instead
                 TilesetPath = _atlasMapping.Atlas?.Path ?? result.TilesetPath;
 
-                // Register tiles with translated coordinates
+                // Register tiles WITH translation - tiles not in atlas_mapping keep original coords
+                // but auto-tiles use transition_map.json which IS complete
                 foreach (var tile in result.Tiles)
                 {
                     var translated = TranslateTileToCompiledAtlas(tile);
                     RegisterTile(translated);
                 }
 
-                ILog.Print($"[TileRegistry] Registered {_tiles.Count} tiles using compiled atlas");
+                ILog.Print($"[TileRegistry] SUCCESS: Registered {_tiles.Count} tiles, using compiled atlas for auto-tiles");
                 return;
+            }
+            else
+            {
+                ILog.Print("[TileRegistry] FAILED: CompiledTileSet or mapping is null, falling back");
             }
         }
 
@@ -94,7 +107,7 @@ public class TileRegistry : ITileRegistry
         foreach (var tile in result.Tiles)
             RegisterTile(tile);
 
-        ILog.Print($"[TileRegistry] Registered {_tiles.Count} tiles from data using tileset {TilesetPath}");
+        ILog.Print($"[TileRegistry] FALLBACK: Registered {_tiles.Count} tiles using tileset {TilesetPath}");
     }
 
     /// <summary>

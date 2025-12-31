@@ -102,6 +102,62 @@
         "blobSettings": {
           "$ref": "#/definitions/blobGenerationConfig",
           "description": "Per-tile blob generation settings (overrides global)"
+        },
+        "autoTileFormat": {
+          "type": "string",
+          "enum": ["corner16", "edge16", "blob47"],
+          "default": "corner16",
+          "description": "Auto-tile format determining variant count (corner16=16, edge16=16, blob47=47)"
+        },
+        "variations": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/vector2i" },
+          "description": "Visual variations for this tile (different atlas coordinates)"
+        },
+        "variationMode": {
+          "type": "string",
+          "enum": ["perinstance", "pergeneration"],
+          "default": "perinstance",
+          "description": "How variations are selected (perinstance=random per tile, pergeneration=one per map)"
+        },
+        "animation": {
+          "type": "object",
+          "properties": {
+            "frames": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/vector2i" },
+              "description": "Animation frame atlas coordinates"
+            },
+            "frameDuration": {
+              "type": "number",
+              "default": 0.2,
+              "description": "Duration of each frame in seconds"
+            }
+          },
+          "description": "Animation configuration for animated tiles"
+        },
+        "tileMode": {
+          "type": "string",
+          "enum": ["plain", "pertile_variations", "permap_variations", "autotile", "permap_variation_autotile", "animated"],
+          "default": "plain",
+          "description": "Rendering mode determining active features"
+        },
+        "dominance": {
+          "type": "integer",
+          "description": "Visual dominance for terrain transitions (higher renders on top)"
+        },
+        "sourceScale": {
+          "type": "number",
+          "default": 1.0,
+          "description": "Source scale for tiles from differently-sized textures (0.5=32px, 1.0=16px, 2.0=8px)"
+        },
+        "innerTerrain": {
+          "type": "string",
+          "description": "For auto-tiles: terrain whose border is shown. Null uses dominance-based resolution."
+        },
+        "outerTerrain": {
+          "type": "string",
+          "description": "For auto-tiles: background terrain. '*' = compositable (transparent, composite onto any base). Specific ID = fixed transition."
         }
       }
     },

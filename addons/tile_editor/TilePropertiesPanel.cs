@@ -55,6 +55,8 @@ public partial class TilePropertiesPanel : ScrollContainer
     // Auto-tile foldout controls
     private FoldoutContainer? _autoTileFoldout;
     private OptionButton? _autoTileFormatDropdown;
+    private OptionButton? _innerTerrainDropdown;
+    private OptionButton? _outerTerrainDropdown;
     private VBoxContainer? _variantGridContainer;
     private GridContainer? _variantGrid;
     private TextureRect?[]? _variantThumbnails;
@@ -396,6 +398,56 @@ public partial class TilePropertiesPanel : ScrollContainer
         _autoTileFormatDropdown.ItemSelected += OnAutoTileFormatChanged;
         formatRow.AddChild(_autoTileFormatDropdown);
         _autoTileFoldout.Content.AddChild(formatRow);
+
+        _autoTileFoldout.Content.AddChild(new HSeparator());
+
+        // Terrain Transition section header
+        var transitionHeader = new Label { Text = "Terrain Transitions" };
+        transitionHeader.AddThemeFontSizeOverride("font_size", 12);
+        _autoTileFoldout.Content.AddChild(transitionHeader);
+
+        var transitionInfo = new Label
+        {
+            Text = "Configure which terrains this auto-tile transitions between:",
+            AutowrapMode = TextServer.AutowrapMode.Word,
+            Modulate = new Color(0.7f, 0.7f, 0.7f)
+        };
+        transitionInfo.AddThemeFontSizeOverride("font_size", 10);
+        _autoTileFoldout.Content.AddChild(transitionInfo);
+
+        // Inner Terrain (the border terrain shown)
+        var innerRow = CreateRow("Inner Terrain:");
+        _innerTerrainDropdown = new OptionButton
+        {
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            TooltipText = "The terrain whose border is rendered. Defaults to this tile if not set."
+        };
+        _innerTerrainDropdown.ItemSelected += OnInnerTerrainChanged;
+        innerRow.AddChild(_innerTerrainDropdown);
+        _autoTileFoldout.Content.AddChild(innerRow);
+
+        // Outer Terrain (the background terrain)
+        var outerRow = CreateRow("Outer Terrain:");
+        _outerTerrainDropdown = new OptionButton
+        {
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            TooltipText = "Background terrain. Use '*' for compositable (transparent, works with any base)."
+        };
+        _outerTerrainDropdown.ItemSelected += OnOuterTerrainChanged;
+        outerRow.AddChild(_outerTerrainDropdown);
+        _autoTileFoldout.Content.AddChild(outerRow);
+
+        var outerNote = new Label
+        {
+            Text = "'*' = Compositable (transparent border, composited onto base terrains at compile time)\n" +
+                   "Specific terrain = Fixed transition (pre-baked, only works with that terrain)",
+            AutowrapMode = TextServer.AutowrapMode.Word,
+            Modulate = new Color(0.6f, 0.6f, 0.6f)
+        };
+        outerNote.AddThemeFontSizeOverride("font_size", 9);
+        _autoTileFoldout.Content.AddChild(outerNote);
+
+        _autoTileFoldout.Content.AddChild(new HSeparator());
 
         var autoTileInfo = new Label
         {
@@ -781,6 +833,43 @@ public partial class TilePropertiesPanel : ScrollContainer
         _autoTileFormatDropdown!.Selected = formatIndex;
         var variantCount = _currentTile.AutoTileFormat == "blob47" ? 47 : 16;
         RebuildVariantGrid(variantCount, _currentTile.AutoTileFormat ?? "corner16");
+
+        // Populate and select terrain transition dropdowns
+        PopulateTerrainDropdowns();
+
+        // Set inner terrain selection
+        if (string.IsNullOrEmpty(_currentTile.InnerTerrainId))
+        {
+            _innerTerrainDropdown!.Selected = 0; // Default
+        }
+        else
+        {
+            var terrainTiles = _service.AllTiles
+                .Where(t => t.Layer == "terrain" && !t.HasAutoTileVariants)
+                .OrderBy(t => t.Name)
+                .ToList();
+            var innerIndex = terrainTiles.FindIndex(t => t.Id == _currentTile.InnerTerrainId);
+            _innerTerrainDropdown!.Selected = innerIndex >= 0 ? innerIndex + 1 : 0;
+        }
+
+        // Set outer terrain selection
+        if (string.IsNullOrEmpty(_currentTile.OuterTerrainId))
+        {
+            _outerTerrainDropdown!.Selected = 0; // None
+        }
+        else if (_currentTile.OuterTerrainId == "*")
+        {
+            _outerTerrainDropdown!.Selected = 1; // Compositable
+        }
+        else
+        {
+            var terrainTiles = _service.AllTiles
+                .Where(t => t.Layer == "terrain" && !t.HasAutoTileVariants)
+                .OrderBy(t => t.Name)
+                .ToList();
+            var outerIndex = terrainTiles.FindIndex(t => t.Id == _currentTile.OuterTerrainId);
+            _outerTerrainDropdown!.Selected = outerIndex >= 0 ? outerIndex + 2 : 0;
+        }
 
         // Show decoration density only for decoration layer tiles
         var isDecorationLayer = _currentTile.Layer.ToLowerInvariant() == "decoration";
@@ -1552,6 +1641,92 @@ public partial class TilePropertiesPanel : ScrollContainer
         }
 
         RebuildVariantGrid(variantCount, newFormat);
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void PopulateTerrainDropdowns()
+    {
+        if (_innerTerrainDropdown == null || _outerTerrainDropdown == null) return;
+
+        _innerTerrainDropdown.Clear();
+        _outerTerrainDropdown.Clear();
+
+        // Get all terrain layer tiles (non-auto-tiles)
+        var terrainTiles = _service.AllTiles
+            .Where(t => t.Layer == "terrain" && !t.HasAutoTileVariants)
+            .OrderBy(t => t.Name)
+            .ToList();
+
+        // Inner terrain: (none/default) + all terrain tiles
+        _innerTerrainDropdown.AddItem("(Default - use this tile's ID)", 0);
+        for (int i = 0; i < terrainTiles.Count; i++)
+        {
+            _innerTerrainDropdown.AddItem($"{terrainTiles[i].Name} ({terrainTiles[i].Id})", i + 1);
+        }
+
+        // Outer terrain: (none) + * (compositable) + all terrain tiles
+        _outerTerrainDropdown.AddItem("(None - no transition)", 0);
+        _outerTerrainDropdown.AddItem("* (Compositable - transparent)", 1);
+        for (int i = 0; i < terrainTiles.Count; i++)
+        {
+            _outerTerrainDropdown.AddItem($"{terrainTiles[i].Name} ({terrainTiles[i].Id})", i + 2);
+        }
+    }
+
+    private void OnInnerTerrainChanged(long index)
+    {
+        if (_isUpdating || _currentTile == null) return;
+
+        if (index == 0)
+        {
+            // Default - clear inner terrain
+            _currentTile.InnerTerrainId = null;
+        }
+        else
+        {
+            // Get terrain tiles in same order as populated
+            var terrainTiles = _service.AllTiles
+                .Where(t => t.Layer == "terrain" && !t.HasAutoTileVariants)
+                .OrderBy(t => t.Name)
+                .ToList();
+
+            if (index - 1 < terrainTiles.Count)
+            {
+                _currentTile.InnerTerrainId = terrainTiles[(int)index - 1].Id;
+            }
+        }
+
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void OnOuterTerrainChanged(long index)
+    {
+        if (_isUpdating || _currentTile == null) return;
+
+        if (index == 0)
+        {
+            // None - clear outer terrain
+            _currentTile.OuterTerrainId = null;
+        }
+        else if (index == 1)
+        {
+            // Compositable
+            _currentTile.OuterTerrainId = "*";
+        }
+        else
+        {
+            // Get terrain tiles in same order as populated
+            var terrainTiles = _service.AllTiles
+                .Where(t => t.Layer == "terrain" && !t.HasAutoTileVariants)
+                .OrderBy(t => t.Name)
+                .ToList();
+
+            if (index - 2 < terrainTiles.Count)
+            {
+                _currentTile.OuterTerrainId = terrainTiles[(int)index - 2].Id;
+            }
+        }
+
         _service.UpdateTile(_currentTile);
     }
 

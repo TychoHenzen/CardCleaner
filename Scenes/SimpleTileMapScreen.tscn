@@ -55,15 +55,19 @@ size = Vector2i(1024, 1024)
 tile_set = ExtResource("4_olmej")
 
 [node name="DecorationLayer" type="TileMapLayer" parent="SubViewport"]
+visible = false
 tile_set = ExtResource("4_olmej")
 
 [node name="StructureLayer" type="TileMapLayer" parent="SubViewport"]
+visible = false
 tile_set = ExtResource("4_olmej")
 
 [node name="EffectLayer" type="TileMapLayer" parent="SubViewport"]
+visible = false
 tile_set = ExtResource("4_olmej")
 
 [node name="OverlayLayer" type="TileMapLayer" parent="SubViewport"]
+visible = false
 tile_set = ExtResource("4_olmej")
 
 [node name="BiomeOverlay" type="TileMapLayer" parent="SubViewport"]

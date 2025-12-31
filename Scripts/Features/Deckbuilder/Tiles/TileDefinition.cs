@@ -52,7 +52,9 @@ public class TileDefinition
         Vector2I[]? variations = null,
         VariationMode variationMode = VariationMode.PerInstance,
         TileAnimation? animation = null,
-        int dominance = 0)
+        int dominance = 0,
+        string? innerTerrainId = null,
+        string? outerTerrainId = null)
     {
         Id = id;
         Name = name;
@@ -72,6 +74,8 @@ public class TileDefinition
         VariationMode = variationMode;
         Animation = animation;
         Dominance = dominance;
+        InnerTerrainId = innerTerrainId;
+        OuterTerrainId = outerTerrainId;
     }
 
     public string Id { get; }
@@ -141,6 +145,32 @@ public class TileDefinition
     /// Defaults to file order index if not specified in tile definition.
     /// </summary>
     public int Dominance { get; }
+
+    /// <summary>
+    /// For auto-tiles: the terrain whose border is shown (higher dominance terrain).
+    /// Null means use dominance-based resolution at runtime.
+    /// </summary>
+    public string? InnerTerrainId { get; }
+
+    /// <summary>
+    /// For auto-tiles: the background terrain.
+    /// "*" = compositable (transparent border, composite onto any base terrain).
+    /// Specific tile ID = fixed transition (baked pair, use as-is).
+    /// Null = use dominance-based resolution at runtime.
+    /// </summary>
+    public string? OuterTerrainId { get; }
+
+    /// <summary>
+    /// Returns true if this auto-tile is compositable (OuterTerrainId is "*"),
+    /// meaning its border should be composited onto any base terrain at atlas compile time.
+    /// </summary>
+    public bool IsCompositable => OuterTerrainId == "*";
+
+    /// <summary>
+    /// Returns true if this auto-tile has a fixed transition (OuterTerrainId is a specific tile ID),
+    /// meaning it has a baked background and should be used as-is.
+    /// </summary>
+    public bool IsFixedTransition => !string.IsNullOrEmpty(OuterTerrainId) && OuterTerrainId != "*";
 
     /// <summary>
     /// Whether this tile has visual variations.
