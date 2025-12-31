@@ -25,8 +25,10 @@ public partial class TilePropertiesPanel : ScrollContainer
     private AcceptDialog? _sourcePickerDialog;
     private int _selectedSourceIdForPicker;
     private Dictionary<int, PanelContainer>? _sourcePanelsBySourceId;
+    private Dictionary<int, string>? _sourceDisplayNames;
     private List<TextureRect>? _sourcePickerThumbnails;
     private HSlider? _sourcePickerZoomSlider;
+    private LineEdit? _sourcePickerFilterField;
     private float _sourcePickerZoom = 1.0f;
     private TextureRect? _atlasButtonThumbnail;
     private Label? _atlasButtonLabel;
@@ -1024,6 +1026,19 @@ public partial class TilePropertiesPanel : ScrollContainer
             zoomRow.AddChild(zoomLabel);
             dialogVBox.AddChild(zoomRow);
 
+            // Filter row
+            var filterRow = new HBoxContainer();
+            filterRow.AddChild(new Label { Text = "Filter:" });
+            _sourcePickerFilterField = new LineEdit
+            {
+                PlaceholderText = "Filter sources...",
+                SizeFlagsHorizontal = SizeFlags.ExpandFill,
+                ClearButtonEnabled = true
+            };
+            _sourcePickerFilterField.TextChanged += OnSourcePickerFilterChanged;
+            filterRow.AddChild(_sourcePickerFilterField);
+            dialogVBox.AddChild(filterRow);
+
             var scroll = new ScrollContainer
             {
                 SizeFlagsHorizontal = SizeFlags.ExpandFill,
@@ -1040,6 +1055,7 @@ public partial class TilePropertiesPanel : ScrollContainer
             grid.AddThemeConstantOverride("v_separation", 12);
 
             _sourcePanelsBySourceId = new Dictionary<int, PanelContainer>();
+            _sourceDisplayNames = new Dictionary<int, string>();
             _sourcePickerThumbnails = new List<TextureRect>();
             var sources = _service.GetAvailableAtlasSources();
 
@@ -1087,6 +1103,7 @@ public partial class TilePropertiesPanel : ScrollContainer
                 int capturedSourceId = sourceInfo.SourceId;
                 panel.GuiInput += (evt) => OnSourcePanelClicked(capturedSourceId, evt);
                 _sourcePanelsBySourceId[sourceInfo.SourceId] = panel;
+                _sourceDisplayNames[sourceInfo.SourceId] = sourceInfo.DisplayName;
                 grid.AddChild(panel);
             }
 
@@ -1099,6 +1116,14 @@ public partial class TilePropertiesPanel : ScrollContainer
 
         _selectedSourceIdForPicker = _currentTile.SourceId;
         UpdateSourcePanelHighlights();
+
+        // Reset filter and show all sources
+        if (_sourcePickerFilterField != null)
+        {
+            _sourcePickerFilterField.Text = "";
+            OnSourcePickerFilterChanged("");
+        }
+
         _sourcePickerDialog.Popup();
     }
 
@@ -1174,6 +1199,26 @@ public partial class TilePropertiesPanel : ScrollContainer
         foreach (var panel in _sourcePanelsBySourceId.Values)
         {
             panel.CustomMinimumSize = newPanelSize;
+        }
+    }
+
+    private void OnSourcePickerFilterChanged(string filterText)
+    {
+        if (_sourcePanelsBySourceId == null || _sourceDisplayNames == null) return;
+
+        var filter = filterText.ToLowerInvariant();
+
+        foreach (var (sourceId, panel) in _sourcePanelsBySourceId)
+        {
+            if (string.IsNullOrEmpty(filter))
+            {
+                panel.Visible = true;
+            }
+            else
+            {
+                var displayName = _sourceDisplayNames.GetValueOrDefault(sourceId, "");
+                panel.Visible = displayName.Contains(filter, StringComparison.OrdinalIgnoreCase);
+            }
         }
     }
 
