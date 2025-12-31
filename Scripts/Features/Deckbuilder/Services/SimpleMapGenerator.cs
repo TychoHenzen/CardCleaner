@@ -5,7 +5,6 @@ using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using CardCleaner.Scripts.Features.Worldgen.BlobGeneration;
 using CardCleaner.Scripts.Features.Worldgen.Structures;
 using CardCleaner.Scripts.Features.Worldgen.VariantModifiers;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
@@ -49,7 +48,6 @@ public class SimpleMapGenerator
     public int MaxStructures { get; set; } = 5;
 
     private readonly IBiomeProvider _biomeProvider;
-    private readonly TerrainBlobGenerator? _blobGenerator;
     private readonly RandomNumberGenerator _rng;
     private readonly ITileRegistry _tileRegistry;
     private readonly WeightedTileSelector? _weightedSelector;
@@ -58,7 +56,6 @@ public class SimpleMapGenerator
     private readonly List<StructureStamp> _structureStamps = [];
 
     public SimpleMapGenerator(RandomNumberGenerator rng, IBiomeProvider biomeProvider, ITileRegistry tileRegistry,
-        TerrainBlobGenerator? blobGenerator = null,
         WeightedTileSelector? weightedSelector = null, StructurePlacer? structurePlacer = null,
         WeightedVariantSelector? variantSelector = null)
     {
@@ -68,7 +65,6 @@ public class SimpleMapGenerator
         _rng = rng;
         _biomeProvider = biomeProvider;
         _tileRegistry = tileRegistry;
-        _blobGenerator = blobGenerator;
         _weightedSelector = weightedSelector;
         _variantSelector = variantSelector;
         _structurePlacer = structurePlacer;
@@ -563,13 +559,6 @@ public class SimpleMapGenerator
             var selectedTile = _weightedSelector.SelectTile(position, placedTiles, biome, _rng, candidateTiles);
             if (selectedTile != null)
                 return selectedTile;
-        }
-
-        if (_blobGenerator != null)
-        {
-            var tile = _blobGenerator.SelectTileWithClustering(position, biome.PassableTiles, _rng);
-            if (tile != null)
-                return tile;
         }
 
         return biome.SelectPassableTile(_rng) ?? FloorTileId;

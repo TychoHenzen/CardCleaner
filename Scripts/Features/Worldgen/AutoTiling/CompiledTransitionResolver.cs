@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -120,6 +121,19 @@ public class CompiledTransitionResolver : ITransitionResolver
     public Vector2I? ResolveSolidFill(string terrainId)
     {
         return ResolveAnyVariant(terrainId, 15);
+    }
+
+    /// <summary>
+    /// Enumerates all terrain transition pairs defined in the map.
+    /// Returns (innerTerrain, outerTerrain) tuples for WFC adjacency rule extraction.
+    /// </summary>
+    public IEnumerable<(string innerTerrain, string outerTerrain)> GetAllTransitionPairs()
+    {
+        foreach (var key in _transitionMap.Transitions.Keys)
+        {
+            var (borderId, outerTerrain) = CompiledTransitionMap.ParseKey(key);
+            yield return (borderId, outerTerrain);
+        }
     }
 
     /// <summary>

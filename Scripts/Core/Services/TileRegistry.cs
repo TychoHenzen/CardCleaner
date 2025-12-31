@@ -186,7 +186,6 @@ public class TileRegistry : ITileRegistry
             allowedBiomes: original.AllowedBiomes,
             size: original.Size,
             decorationDensity: original.DecorationDensity,
-            blobSettings: original.BlobSettings,
             autoTileVariants: translatedVariants,
             autoTileFormat: original.AutoTileFormat,
             variations: translatedVars,

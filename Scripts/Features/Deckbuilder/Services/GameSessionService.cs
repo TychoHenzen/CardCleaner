@@ -6,7 +6,6 @@ using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using CardCleaner.Scripts.Features.Worldgen.BlobGeneration;
 using CardCleaner.Scripts.Features.Worldgen.WeightModifiers;
 using Godot;
 
@@ -20,7 +19,6 @@ public partial class GameSessionService : Node, IGameSessionService
     private const float CombatTurnDelay = 1.0f; // 1s between combat turns
     private List<CardSignature> _abilityCards = new();
     private BiomeRegistry _biomeRegistry = null!;
-    private BlobGenerationConfig _blobConfig = new();
     private SimpleCombatSystem? _combatSystem;
     private Vector2I? _currentEnemyPosition;
 
@@ -129,9 +127,6 @@ public partial class GameSessionService : Node, IGameSessionService
         _biomeRegistry = new BiomeRegistry();
         _biomeRegistry.RegisterDefaultBiomes();
 
-        // Load blob config from tiles.json
-        _blobConfig = TileDataLoader.LoadBlobConfig();
-
         // Get services via async callback (may not be registered yet during startup)
         ServiceLocator.Get<ITileRegistry>(registry => _tileRegistry = registry);
 
@@ -159,13 +154,6 @@ public partial class GameSessionService : Node, IGameSessionService
         // Create biome provider that maps gradient signatures to biomes
         var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, mapSize);
 
-        // Create blob generator for coherent terrain regions
-        TerrainBlobGenerator? blobGenerator = null;
-        if (_blobConfig.Enabled)
-        {
-            blobGenerator = new TerrainBlobGenerator(_blobConfig, (int)_rng.Seed);
-        }
-
         // Create Soft WFC weight modifier pipeline for context-aware tile selection
         var pipeline = new WeightModifierPipeline()
             .AddModifier(new AdjacencyBoostModifier(AdjacencyBoostModifier.StripNumericSuffix)
@@ -174,9 +162,9 @@ public partial class GameSessionService : Node, IGameSessionService
             });
         var weightedSelector = new WeightedTileSelector(_tileRegistry, pipeline);
 
-        // Create map generator with biome provider, blob generator, and Soft WFC
+        // Create map generator with biome provider and Soft WFC
         var mapGenerator = new SimpleMapGenerator(
-            _rng, biomeProvider, _tileRegistry, blobGenerator, weightedSelector);
+            _rng, biomeProvider, _tileRegistry, weightedSelector);
         _currentMap = mapGenerator.GenerateMap(mapSize);
 
         // Log biome distribution for debugging

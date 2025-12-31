@@ -1,0 +1,101 @@
+using System;
+using System.Collections.Generic;
+
+namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
+
+/// <summary>
+/// Represents the state of a single cell in the WFC grid.
+/// Tracks the set of possible tile IDs that can be placed at this position.
+/// </summary>
+public class WfcCellState
+{
+    private readonly HashSet<string> _possibleTiles;
+
+    /// <summary>
+    /// Creates a cell with the given set of possible tiles.
+    /// </summary>
+    public WfcCellState(IEnumerable<string> possibleTiles)
+    {
+        _possibleTiles = new HashSet<string>(possibleTiles);
+    }
+
+    /// <summary>
+    /// Creates a copy of another cell state.
+    /// </summary>
+    public WfcCellState(WfcCellState other)
+    {
+        _possibleTiles = new HashSet<string>(other._possibleTiles);
+    }
+
+    /// <summary>
+    /// Gets the entropy (number of possible tiles remaining).
+    /// Lower entropy means fewer choices, making this cell a priority for collapse.
+    /// </summary>
+    public int GetEntropy() => _possibleTiles.Count;
+
+    /// <summary>
+    /// Returns true if this cell has collapsed to a single tile.
+    /// </summary>
+    public bool IsCollapsed() => _possibleTiles.Count == 1;
+
+    /// <summary>
+    /// Returns true if this cell has no valid options (contradiction state).
+    /// </summary>
+    public bool IsContradiction() => _possibleTiles.Count == 0;
+
+    /// <summary>
+    /// Gets the collapsed tile ID. Throws if not collapsed.
+    /// </summary>
+    public string GetCollapsedTile()
+    {
+        if (!IsCollapsed())
+            throw new InvalidOperationException(
+                $"Cannot get collapsed tile: cell has {_possibleTiles.Count} options");
+
+        foreach (var tile in _possibleTiles)
+            return tile;
+
+        throw new InvalidOperationException("Cell is empty");
+    }
+
+    /// <summary>
+    /// Removes a tile from the possible set.
+    /// Returns true if the tile was present and removed.
+    /// </summary>
+    public bool RemoveTile(string tileId) => _possibleTiles.Remove(tileId);
+
+    /// <summary>
+    /// Checks if a tile is still a valid option.
+    /// </summary>
+    public bool ContainsTile(string tileId) => _possibleTiles.Contains(tileId);
+
+    /// <summary>
+    /// Gets all currently possible tiles (read-only view).
+    /// </summary>
+    public IReadOnlyCollection<string> GetPossibleTiles() => _possibleTiles;
+
+    /// <summary>
+    /// Collapses this cell to a single tile.
+    /// Removes all other options.
+    /// </summary>
+    public void CollapseTo(string tileId)
+    {
+        if (!_possibleTiles.Contains(tileId))
+            throw new ArgumentException($"Cannot collapse to '{tileId}': not in possible set");
+
+        _possibleTiles.Clear();
+        _possibleTiles.Add(tileId);
+    }
+
+    /// <summary>
+    /// Retains only tiles that are in the given set.
+    /// Returns true if any tiles were removed.
+    /// </summary>
+    public bool IntersectWith(IEnumerable<string> validTiles)
+    {
+        var validSet = validTiles is HashSet<string> hs ? hs : new HashSet<string>(validTiles);
+        var originalCount = _possibleTiles.Count;
+        _possibleTiles.IntersectWith(validSet);
+        return _possibleTiles.Count < originalCount;
+    }
+}

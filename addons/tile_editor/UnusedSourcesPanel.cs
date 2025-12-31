@@ -281,7 +281,9 @@ public partial class UnusedSourcesPanel : ScrollContainer
 [Tool]
 public partial class UnusedSourceEntry : PanelContainer
 {
-    private readonly AtlasSourceInfo _source;
+    private readonly AtlasSourceInfo? _source;
+
+    public UnusedSourceEntry() { }
 
     public UnusedSourceEntry(AtlasSourceInfo source)
     {
@@ -290,6 +292,7 @@ public partial class UnusedSourceEntry : PanelContainer
 
     public override void _Ready()
     {
+        if (_source == null) return;
         SizeFlagsHorizontal = SizeFlags.ExpandFill;
 
         var hbox = new HBoxContainer

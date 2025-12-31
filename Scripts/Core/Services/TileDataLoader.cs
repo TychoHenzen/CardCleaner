@@ -19,16 +19,6 @@ namespace CardCleaner.Scripts.Core.Services;
 public record TileRegistryResult(string TilesetPath, List<TileDefinition> Tiles);
 
 /// <summary>
-/// Configuration for blob-based terrain generation
-/// </summary>
-public record BlobGenerationConfig(
-    bool Enabled = true,
-    float NoiseScale = 0.15f,
-    float ClusterStrength = 0.7f,
-    int MinBlobSize = 3,
-    int MaxBlobSize = 12);
-
-/// <summary>
 /// Loads tile definitions from JSON data files
 /// </summary>
 public static class TileDataLoader
@@ -100,52 +90,6 @@ public static class TileDataLoader
         return LoadTileRegistry(path).Tiles;
     }
 
-    /// <summary>
-    /// Load blob generation config from JSON
-    /// </summary>
-    public static BlobGenerationConfig LoadBlobConfig(string? path = null)
-    {
-        path ??= DefaultTilesPath;
-
-        var absolutePath = ProjectSettings.GlobalizePath(path);
-        if (!File.Exists(absolutePath))
-        {
-            ILog.Print($"[TileDataLoader] File not found for blob config: {absolutePath}");
-            return new BlobGenerationConfig();
-        }
-
-        try
-        {
-            var json = File.ReadAllText(absolutePath);
-            var data = JsonSerializer.Deserialize<TileRegistryData>(json, CreateJsonOptions());
-            if (data == null)
-            {
-                ILog.Print("[TileDataLoader] Invalid JSON structure for blob config");
-                return new BlobGenerationConfig();
-            }
-
-            return ParseBlobGenerationConfig(data.BlobGeneration);
-        }
-        catch (Exception ex)
-        {
-            ILog.Print($"[TileDataLoader] Error loading blob config: {ex.Message}");
-            return new BlobGenerationConfig();
-        }
-    }
-
-    private static BlobGenerationConfig ParseBlobGenerationConfig(BlobGenerationData? data)
-    {
-        if (data == null)
-            return new BlobGenerationConfig();
-
-        return new BlobGenerationConfig(
-            Enabled: data.Enabled,
-            NoiseScale: data.NoiseScale,
-            ClusterStrength: data.ClusterStrength,
-            MinBlobSize: data.MinBlobSize,
-            MaxBlobSize: data.MaxBlobSize);
-    }
-
     private static TileDefinition? ConvertToTileDefinition(TileData data, int fileIndex)
     {
         if (string.IsNullOrEmpty(data.Id) || string.IsNullOrEmpty(data.Name))
@@ -175,7 +119,6 @@ public static class TileDataLoader
             allowedBiomes: biomes,
             size: size,
             decorationDensity: data.DecorationDensity ?? 1.0f,
-            blobSettings: data.BlobSettings != null ? ParseBlobGenerationConfig(data.BlobSettings) : null,
             autoTileVariants: ParseAutoTileVariants(data.AutoTileVariants, autoTileFormat),
             autoTileFormat: autoTileFormat,
             variations: variations,
@@ -315,21 +258,6 @@ public static class TileDataLoader
         [JsonPropertyName("tileset")] public string? Tileset { get; set; }
 
         [JsonPropertyName("tiles")] public List<TileData>? Tiles { get; set; }
-
-        [JsonPropertyName("blobGeneration")] public BlobGenerationData? BlobGeneration { get; set; }
-    }
-
-    private sealed class BlobGenerationData
-    {
-        [JsonPropertyName("enabled")] public bool Enabled { get; } = true;
-
-        [JsonPropertyName("noiseScale")] public float NoiseScale { get; } = 0.15f;
-
-        [JsonPropertyName("clusterStrength")] public float ClusterStrength { get; } = 0.7f;
-
-        [JsonPropertyName("minBlobSize")] public int MinBlobSize { get; } = 3;
-
-        [JsonPropertyName("maxBlobSize")] public int MaxBlobSize { get; } = 12;
     }
 
     private sealed class TileData
@@ -355,8 +283,6 @@ public static class TileDataLoader
         [JsonPropertyName("size")] public Vector2IData? Size { get; set; }
 
         [JsonPropertyName("decorationDensity")] public float? DecorationDensity { get; set; }
-
-        [JsonPropertyName("blobSettings")] public BlobGenerationData? BlobSettings { get; set; }
 
         [JsonPropertyName("autoTileVariants")] public Vector2IData?[]? AutoTileVariants { get; set; }
 

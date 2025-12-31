@@ -66,15 +66,6 @@ public partial class TilePropertiesPanel : ScrollContainer
     private int _editingVariantIndex = -1;
     private int _currentVariantCount = 16;
 
-    // Blob settings foldout controls
-    private FoldoutContainer? _blobSettingsFoldout;
-    private CheckBox? _blobOverrideCheckbox;
-    private CheckBox? _blobEnabledField;
-    private SpinBox? _blobNoiseScaleField;
-    private SpinBox? _blobClusterStrengthField;
-    private SpinBox? _blobMinSizeField;
-    private SpinBox? _blobMaxSizeField;
-
     // Decoration density control
     private HBoxContainer? _decorationDensityRow;
     private SpinBox? _decorationDensityField;
@@ -608,89 +599,6 @@ public partial class TilePropertiesPanel : ScrollContainer
 
         vbox.AddChild(new HSeparator());
 
-        // Blob Settings foldout (per-tile override)
-        _blobSettingsFoldout = new FoldoutContainer("Blob Settings Override", false);
-        vbox.AddChild(_blobSettingsFoldout);
-
-        _blobOverrideCheckbox = new CheckBox
-        {
-            Text = "Override global blob settings for this tile"
-        };
-        _blobOverrideCheckbox.Toggled += OnBlobOverrideToggled;
-        _blobSettingsFoldout.Content.AddChild(_blobOverrideCheckbox);
-
-        var blobNote = new Label
-        {
-            Text = "(When disabled, uses global blob settings from Blob Settings tab)",
-            AutowrapMode = TextServer.AutowrapMode.Word,
-            Modulate = new Color(0.7f, 0.7f, 0.7f)
-        };
-        blobNote.AddThemeFontSizeOverride("font_size", 10);
-        _blobSettingsFoldout.Content.AddChild(blobNote);
-
-        var blobEnabledRow = CreateRow("Enabled:");
-        _blobEnabledField = new CheckBox { ButtonPressed = true };
-        _blobEnabledField.Toggled += _ => OnBlobSettingsChanged();
-        blobEnabledRow.AddChild(_blobEnabledField);
-        _blobSettingsFoldout.Content.AddChild(blobEnabledRow);
-
-        var noiseRow = CreateRow("Noise Scale:");
-        _blobNoiseScaleField = new SpinBox
-        {
-            MinValue = 0.01,
-            MaxValue = 1.0,
-            Step = 0.01,
-            Value = 0.15,
-            SizeFlagsHorizontal = SizeFlags.ExpandFill
-        };
-        _blobNoiseScaleField.ValueChanged += _ => OnBlobSettingsChanged();
-        noiseRow.AddChild(_blobNoiseScaleField);
-        _blobSettingsFoldout.Content.AddChild(noiseRow);
-
-        var clusterRow = CreateRow("Cluster Strength:");
-        _blobClusterStrengthField = new SpinBox
-        {
-            MinValue = 0.0,
-            MaxValue = 1.0,
-            Step = 0.05,
-            Value = 0.7,
-            SizeFlagsHorizontal = SizeFlags.ExpandFill
-        };
-        _blobClusterStrengthField.ValueChanged += _ => OnBlobSettingsChanged();
-        clusterRow.AddChild(_blobClusterStrengthField);
-        _blobSettingsFoldout.Content.AddChild(clusterRow);
-
-        var minSizeRow = CreateRow("Min Blob Size:");
-        _blobMinSizeField = new SpinBox
-        {
-            MinValue = 1,
-            MaxValue = 50,
-            Step = 1,
-            Value = 3,
-            SizeFlagsHorizontal = SizeFlags.ExpandFill
-        };
-        _blobMinSizeField.ValueChanged += _ => OnBlobSettingsChanged();
-        minSizeRow.AddChild(_blobMinSizeField);
-        _blobSettingsFoldout.Content.AddChild(minSizeRow);
-
-        var maxSizeRow = CreateRow("Max Blob Size:");
-        _blobMaxSizeField = new SpinBox
-        {
-            MinValue = 1,
-            MaxValue = 100,
-            Step = 1,
-            Value = 12,
-            SizeFlagsHorizontal = SizeFlags.ExpandFill
-        };
-        _blobMaxSizeField.ValueChanged += _ => OnBlobSettingsChanged();
-        maxSizeRow.AddChild(_blobMaxSizeField);
-        _blobSettingsFoldout.Content.AddChild(maxSizeRow);
-
-        // Initially disable blob fields
-        SetBlobFieldsEnabled(false);
-
-        vbox.AddChild(new HSeparator());
-
         // Validation message
         _validationLabel = new Label
         {
@@ -888,30 +796,6 @@ public partial class TilePropertiesPanel : ScrollContainer
         // Populate animation settings
         _animationFrameDurationField!.Value = _currentTile.AnimationFrameDuration;
         RebuildAnimationFramesList();
-
-        // Populate blob settings
-        var hasBlobOverride = _currentTile.BlobSettings != null;
-        _blobOverrideCheckbox!.ButtonPressed = hasBlobOverride;
-        SetBlobFieldsEnabled(hasBlobOverride);
-
-        if (hasBlobOverride)
-        {
-            _blobEnabledField!.ButtonPressed = _currentTile.BlobSettings!.Enabled;
-            _blobNoiseScaleField!.Value = _currentTile.BlobSettings.NoiseScale;
-            _blobClusterStrengthField!.Value = _currentTile.BlobSettings.ClusterStrength;
-            _blobMinSizeField!.Value = _currentTile.BlobSettings.MinBlobSize;
-            _blobMaxSizeField!.Value = _currentTile.BlobSettings.MaxBlobSize;
-        }
-        else
-        {
-            // Show global defaults as placeholder values
-            var globalConfig = _service.BlobConfig;
-            _blobEnabledField!.ButtonPressed = globalConfig.Enabled;
-            _blobNoiseScaleField!.Value = globalConfig.NoiseScale;
-            _blobClusterStrengthField!.Value = globalConfig.ClusterStrength;
-            _blobMinSizeField!.Value = globalConfig.MinBlobSize;
-            _blobMaxSizeField!.Value = globalConfig.MaxBlobSize;
-        }
 
         _validationLabel!.Text = "";
         _isUpdating = false;
@@ -1530,75 +1414,6 @@ public partial class TilePropertiesPanel : ScrollContainer
             Region = region
         };
         thumbnail.Texture = atlasTex;
-    }
-
-    private void OnBlobOverrideToggled(bool enabled)
-    {
-        if (_isUpdating || _currentTile == null) return;
-
-        SetBlobFieldsEnabled(enabled);
-
-        if (enabled)
-        {
-            // Create blob settings from current field values (which show global defaults)
-            _currentTile.BlobSettings = new EditableBlobConfig
-            {
-                Enabled = _blobEnabledField!.ButtonPressed,
-                NoiseScale = (float)_blobNoiseScaleField!.Value,
-                ClusterStrength = (float)_blobClusterStrengthField!.Value,
-                MinBlobSize = (int)_blobMinSizeField!.Value,
-                MaxBlobSize = (int)_blobMaxSizeField!.Value
-            };
-        }
-        else
-        {
-            // Clear per-tile settings, use global
-            _currentTile.BlobSettings = null;
-        }
-
-        _service.UpdateTile(_currentTile);
-    }
-
-    private void OnBlobSettingsChanged()
-    {
-        if (_isUpdating || _currentTile == null) return;
-        if (!_blobOverrideCheckbox!.ButtonPressed) return; // Only update if override is enabled
-
-        // Ensure min <= max
-        if (_blobMinSizeField!.Value > _blobMaxSizeField!.Value)
-        {
-            _isUpdating = true;
-            _blobMaxSizeField.Value = _blobMinSizeField.Value;
-            _isUpdating = false;
-        }
-
-        _currentTile.BlobSettings = new EditableBlobConfig
-        {
-            Enabled = _blobEnabledField!.ButtonPressed,
-            NoiseScale = (float)_blobNoiseScaleField!.Value,
-            ClusterStrength = (float)_blobClusterStrengthField!.Value,
-            MinBlobSize = (int)_blobMinSizeField.Value,
-            MaxBlobSize = (int)_blobMaxSizeField.Value
-        };
-
-        _service.UpdateTile(_currentTile);
-    }
-
-    private void SetBlobFieldsEnabled(bool enabled)
-    {
-        _blobEnabledField!.Disabled = !enabled;
-        _blobNoiseScaleField!.Editable = enabled;
-        _blobClusterStrengthField!.Editable = enabled;
-        _blobMinSizeField!.Editable = enabled;
-        _blobMaxSizeField!.Editable = enabled;
-
-        // Visual feedback: dim fields when disabled
-        var color = enabled ? Colors.White : new Color(0.6f, 0.6f, 0.6f);
-        _blobEnabledField.Modulate = color;
-        _blobNoiseScaleField.Modulate = color;
-        _blobClusterStrengthField.Modulate = color;
-        _blobMinSizeField.Modulate = color;
-        _blobMaxSizeField.Modulate = color;
     }
 
     private static HBoxContainer CreateRow(string label)

@@ -17,9 +17,6 @@ namespace CardCleaner.Addons.TileEditor;
 public partial class TileEditorService : RefCounted
 {
     [Signal]
-    public delegate void BlobConfigModifiedEventHandler();
-
-    [Signal]
     public delegate void TileAddedEventHandler(string tileId);
 
     [Signal]
@@ -57,7 +54,6 @@ public partial class TileEditorService : RefCounted
     };
 
     private readonly Dictionary<string, EditableTile> _tiles = new();
-    private EditableBlobConfig _blobConfig = new();
     private TileSet? _tileSet;
     private string _version = "1.0";
 
@@ -66,13 +62,9 @@ public partial class TileEditorService : RefCounted
     public string TilesetPath { get; private set; } = DefaultTilesetPath;
     public TileSet? TileSet => _tileSet;
 
-    // Blob config accessor
-    public EditableBlobConfig BlobConfig => _blobConfig;
-
     public void LoadTiles()
     {
         _tiles.Clear();
-        _blobConfig = new EditableBlobConfig();
 
         var absolutePath = ProjectSettings.GlobalizePath(TilesPath);
         if (!File.Exists(absolutePath))
@@ -179,19 +171,6 @@ public partial class TileEditorService : RefCounted
                     tile.AnimationFrameDuration = tileData.Animation.FrameDuration;
                 }
 
-                // Load per-tile blob settings if present
-                if (tileData.BlobSettings != null)
-                {
-                    tile.BlobSettings = new EditableBlobConfig
-                    {
-                        Enabled = tileData.BlobSettings.Enabled,
-                        NoiseScale = tileData.BlobSettings.NoiseScale,
-                        ClusterStrength = tileData.BlobSettings.ClusterStrength,
-                        MinBlobSize = tileData.BlobSettings.MinBlobSize,
-                        MaxBlobSize = tileData.BlobSettings.MaxBlobSize
-                    };
-                }
-
                 // Load tile mode (compute from existing data if not present for backwards compatibility)
                 if (!string.IsNullOrEmpty(tileData.TileMode))
                     tile.TileMode = tileData.TileMode.ToLowerInvariant();
@@ -206,19 +185,6 @@ public partial class TileEditorService : RefCounted
                 tile.OuterTerrainId = tileData.OuterTerrain;
 
                 _tiles[tile.Id] = tile;
-            }
-
-            // Load blob generation config
-            if (data.BlobGeneration != null)
-            {
-                _blobConfig = new EditableBlobConfig
-                {
-                    Enabled = data.BlobGeneration.Enabled,
-                    NoiseScale = data.BlobGeneration.NoiseScale,
-                    ClusterStrength = data.BlobGeneration.ClusterStrength,
-                    MinBlobSize = data.BlobGeneration.MinBlobSize,
-                    MaxBlobSize = data.BlobGeneration.MaxBlobSize
-                };
             }
 
             GD.Print($"[TileEditorService] Loaded {_tiles.Count} tiles");
@@ -571,14 +537,6 @@ public partial class TileEditorService : RefCounted
             t.Biomes.Count == 0 || t.Biomes.Contains(biome, StringComparer.OrdinalIgnoreCase));
     }
 
-    // ===== Blob Config Methods =====
-
-    public void UpdateBlobConfig(EditableBlobConfig config)
-    {
-        _blobConfig = config;
-        EmitSignal(SignalName.BlobConfigModified);
-    }
-
     /// <summary>
     /// Compute tile mode from existing tile data for backwards compatibility.
     /// </summary>
@@ -672,14 +630,6 @@ public partial class TileEditorService : RefCounted
                         ? t.AutoTileVariants!.Select(v => v.HasValue ? new Vector2IData { X = v.Value.X, Y = v.Value.Y } : null).ToArray()
                         : null,
                     DecorationDensity = t.DecorationDensity < 1.0f ? t.DecorationDensity : null,
-                    BlobSettings = t.BlobSettings != null ? new BlobGenerationData
-                    {
-                        Enabled = t.BlobSettings.Enabled,
-                        NoiseScale = t.BlobSettings.NoiseScale,
-                        ClusterStrength = t.BlobSettings.ClusterStrength,
-                        MinBlobSize = t.BlobSettings.MinBlobSize,
-                        MaxBlobSize = t.BlobSettings.MaxBlobSize
-                    } : null,
                     AutoTileFormat = t.AutoTileFormat != "corner16" ? t.AutoTileFormat : null,
                     Variations = t.HasVariations
                         ? t.Variations!.Select(v => new Vector2IData { X = v.X, Y = v.Y }).ToArray()
@@ -696,17 +646,7 @@ public partial class TileEditorService : RefCounted
                     Dominance = t.Dominance,
                     InnerTerrain = t.InnerTerrainId,
                     OuterTerrain = t.OuterTerrainId
-                }).ToList(),
-
-                // Blob generation config
-                BlobGeneration = new BlobGenerationData
-                {
-                    Enabled = _blobConfig.Enabled,
-                    NoiseScale = _blobConfig.NoiseScale,
-                    ClusterStrength = _blobConfig.ClusterStrength,
-                    MinBlobSize = _blobConfig.MinBlobSize,
-                    MaxBlobSize = _blobConfig.MaxBlobSize
-                }
+                }).ToList()
             };
 
             var json = JsonSerializer.Serialize(data, CreateWriteOptions());
@@ -758,21 +698,6 @@ public partial class TileEditorService : RefCounted
         [JsonPropertyName("tileset")] public string? Tileset { get; set; }
 
         [JsonPropertyName("tiles")] public List<TileData>? Tiles { get; set; }
-
-        [JsonPropertyName("blobGeneration")] public BlobGenerationData? BlobGeneration { get; set; }
-    }
-
-    private sealed class BlobGenerationData
-    {
-        [JsonPropertyName("enabled")] public bool Enabled { get; set; } = true;
-
-        [JsonPropertyName("noiseScale")] public float NoiseScale { get; set; } = 0.15f;
-
-        [JsonPropertyName("clusterStrength")] public float ClusterStrength { get; set; } = 0.7f;
-
-        [JsonPropertyName("minBlobSize")] public int MinBlobSize { get; set; } = 3;
-
-        [JsonPropertyName("maxBlobSize")] public int MaxBlobSize { get; set; } = 12;
     }
 
     private sealed class TileData
@@ -800,8 +725,6 @@ public partial class TileEditorService : RefCounted
         [JsonPropertyName("autoTileVariants")] public Vector2IData?[]? AutoTileVariants { get; set; }
 
         [JsonPropertyName("decorationDensity")] public float? DecorationDensity { get; set; }
-
-        [JsonPropertyName("blobSettings")] public BlobGenerationData? BlobSettings { get; set; }
 
         [JsonPropertyName("autoTileFormat")] public string? AutoTileFormat { get; set; }
 
@@ -904,11 +827,6 @@ public class EditableTile
     public float DecorationDensity { get; set; } = 1.0f;
 
     /// <summary>
-    /// Per-tile blob generation settings. Null means use global defaults.
-    /// </summary>
-    public EditableBlobConfig? BlobSettings { get; set; }
-
-    /// <summary>
     /// Visual variations for this tile (different atlas coordinates for the same tile type).
     /// Null means no variations (always use base AtlasCoords).
     /// </summary>
@@ -998,7 +916,6 @@ public class EditableTile
             SizeY = SizeY,
             SourceScale = SourceScale,
             DecorationDensity = DecorationDensity,
-            BlobSettings = BlobSettings?.Clone(),
             AutoTileFormat = AutoTileFormat,
             VariationMode = VariationMode,
             AnimationFrameDuration = AnimationFrameDuration,
@@ -1038,26 +955,5 @@ public class AtlasSourceInfo
     public int SourceId { get; set; }
     public string DisplayName { get; set; } = "";
     public TileSetAtlasSource? Source { get; set; }
-}
-
-/// <summary>
-/// Mutable blob generation configuration for editing
-/// </summary>
-public class EditableBlobConfig
-{
-    public bool Enabled { get; set; } = true;
-    public float NoiseScale { get; set; } = 0.15f;
-    public float ClusterStrength { get; set; } = 0.7f;
-    public int MinBlobSize { get; set; } = 3;
-    public int MaxBlobSize { get; set; } = 12;
-
-    public EditableBlobConfig Clone() => new()
-    {
-        Enabled = Enabled,
-        NoiseScale = NoiseScale,
-        ClusterStrength = ClusterStrength,
-        MinBlobSize = MinBlobSize,
-        MaxBlobSize = MaxBlobSize
-    };
 }
 #endif

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Enumeration;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
@@ -46,7 +45,6 @@ public class TileDefinition
         HashSet<BiomeType>? allowedBiomes = null,
         Vector2I? size = null,
         float decorationDensity = 1.0f,
-        BlobGenerationConfig? blobSettings = null,
         Vector2I?[]? autoTileVariants = null,
         AutoTileFormat autoTileFormat = AutoTileFormat.Corner16,
         Vector2I[]? variations = null,
@@ -67,7 +65,6 @@ public class TileDefinition
         AllowedBiomes = allowedBiomes;
         Size = size ?? Vector2I.One;
         DecorationDensity = decorationDensity;
-        BlobSettings = blobSettings;
         AutoTileVariants = autoTileVariants;
         AutoTileFormat = autoTileFormat;
         Variations = variations;
@@ -99,11 +96,6 @@ public class TileDefinition
     /// Only meaningful for decoration layer tiles. Default 1.0 = 100% coverage.
     /// </summary>
     public float DecorationDensity { get; }
-
-    /// <summary>
-    /// Per-tile blob generation settings. Null means use global defaults.
-    /// </summary>
-    public BlobGenerationConfig? BlobSettings { get; }
 
     /// <summary>
     /// Auto-tile variant atlas coordinates indexed by bitmask.

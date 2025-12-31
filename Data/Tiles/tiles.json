@@ -1902,12 +1902,5 @@
         "y": 2
       }
     }
-  ],
-  "blobGeneration": {
-    "enabled": true,
-    "noiseScale": 0.15,
-    "clusterStrength": 0.7,
-    "minBlobSize": 3,
-    "maxBlobSize": 12
-  }
+  ]
 }
