@@ -114,6 +114,22 @@
         "mountains_alpine_shrub": 0.15,
         "mountains_cave_entrance": 0.10
       }
+    },
+    "water": {
+      "displayName": "Water",
+      "signature": [-0.5, -0.3, 0.2, 0.3, 0.2, -0.5, 0.1, 0.0],
+      "blockedPercentage": 0.30,
+      "passableTiles": {
+        "water_shallow": 0.35,
+        "water_shore": 0.25,
+        "water_seaweed": 0.20,
+        "water_rapids": 0.20
+      },
+      "blockedTiles": {
+        "water_deep": 0.50,
+        "water_coral": 0.30,
+        "water_rock": 0.20
+      }
     }
   },
   "tiles": [
@@ -2015,6 +2031,119 @@
         "x": 3,
         "y": 2
       }
+    },
+    {
+      "id": "water_shallow",
+      "name": "Shallow Water",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 28,
+        "y": 26
+      },
+      "sourceId": 21,
+      "layer": "terrain",
+      "elevation": -0.2,
+      "isTransparent": true,
+      "biomes": [
+        "water"
+      ]
+    },
+    {
+      "id": "water_deep",
+      "name": "Deep Water",
+      "passability": "solid",
+      "atlasCoords": {
+        "x": 28,
+        "y": 28
+      },
+      "sourceId": 21,
+      "layer": "terrain",
+      "elevation": -0.5,
+      "isTransparent": true,
+      "biomes": [
+        "water"
+      ]
+    },
+    {
+      "id": "water_shore",
+      "name": "Sandy Shore",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 26,
+        "y": 27
+      },
+      "sourceId": 21,
+      "layer": "terrain",
+      "elevation": 0,
+      "isTransparent": true,
+      "biomes": [
+        "water"
+      ]
+    },
+    {
+      "id": "water_rapids",
+      "name": "Rapids",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 29,
+        "y": 27
+      },
+      "sourceId": 21,
+      "layer": "terrain",
+      "elevation": -0.1,
+      "isTransparent": true,
+      "biomes": [
+        "water",
+        "mountains"
+      ]
+    },
+    {
+      "id": "water_coral",
+      "name": "Coral Reef",
+      "passability": "solid",
+      "atlasCoords": {
+        "x": 27,
+        "y": 28
+      },
+      "sourceId": 21,
+      "layer": "decoration",
+      "elevation": -0.3,
+      "isTransparent": true,
+      "biomes": [
+        "water"
+      ]
+    },
+    {
+      "id": "water_seaweed",
+      "name": "Seaweed",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 27,
+        "y": 26
+      },
+      "sourceId": 21,
+      "layer": "decoration",
+      "elevation": -0.2,
+      "isTransparent": true,
+      "biomes": [
+        "water"
+      ]
+    },
+    {
+      "id": "water_rock",
+      "name": "Submerged Rock",
+      "passability": "solid",
+      "atlasCoords": {
+        "x": 29,
+        "y": 28
+      },
+      "sourceId": 21,
+      "layer": "terrain",
+      "elevation": -0.1,
+      "isTransparent": true,
+      "biomes": [
+        "water"
+      ]
     }
   ]
 }
