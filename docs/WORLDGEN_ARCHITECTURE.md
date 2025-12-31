@@ -83,7 +83,6 @@ We use:     "Forest floor tiles have 0.2x weight in mountain biomes"
 | **Biome System** | ✅ Complete | `Scripts/Features/Worldgen/Biomes/` |
 | **Auto-Tiling** | ✅ Complete | `Scripts/Features/Worldgen/AutoTiling/` |
 | **Weight Modifiers** | ✅ Complete | `Scripts/Features/Worldgen/WeightModifiers/` |
-| **Terrain Blobs** | ✅ Complete | `Scripts/Features/Worldgen/BlobGeneration/` |
 | **Map Generator** | ✅ Complete | `Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs` |
 | **Structures** | ✅ Complete | `Scripts/Features/Worldgen/Structures/` |
 | **Tile Variants** | ✅ Complete | `Scripts/Features/Worldgen/VariantModifiers/` |
@@ -91,11 +90,34 @@ We use:     "Forest floor tiles have 0.2x weight in mountain biomes"
 ### Biome System
 
 **Files:**
-- `BiomeDefinition.cs` - Resource defining biome properties
-- `BiomeRegistry.cs` - Registry with 6 pre-configured biomes (Plains, Forest, Desert, Tundra, Swamp, Mountains)
+- `BiomeDefinition.cs` - Runtime biome model with signature and tile pools
+- `BiomeData.cs` - JSON deserialization model for biome data from tiles.json
+- `BiomeRegistry.cs` - Registry that loads biomes from tiles.json (data-driven)
 - `BiomeMapGenerator.cs` - Implements `IBiomeProvider`, maps gradient positions to biomes
 - `TilePool.cs` - Weighted random tile selection from pool
 - `IBiomeProvider.cs` - Interface for biome/signature queries
+
+**10 Biomes** (loaded from `Data/Tiles/tiles.json`):
+- Plains, Forest, Desert, Tundra, Swamp, Mountains (original)
+- Water, Cave, Volcanic, Magical (added in refactor)
+
+**Data-Driven Loading:**
+
+Biomes are defined in `tiles.json` under the `"biomes"` key:
+
+```json
+{
+  "biomes": {
+    "plains": {
+      "displayName": "Plains",
+      "signature": [0, 0, 0.2, 0.1, 0, 0, 0.2, 0],
+      "blockedPercentage": 0.15,
+      "passableTiles": { "grass": 0.40, "tall_grass": 0.25 },
+      "blockedTiles": { "small_rock": 0.40, "boulder": 0.30 }
+    }
+  }
+}
+```
 
 **How biome selection works:**
 
@@ -202,11 +224,11 @@ Applies per-biome multipliers to tile weights. This is how "forest floor tiles a
 ```csharp
 // Configuration example:
 var modifier = new BiomeAffinityModifier()
-    .WithAffinity(new BiomeTileAffinity(BiomeType.Forest)
+    .WithAffinity(new BiomeTileAffinity("forest")
         .Add("forest_floor", 1.8f)   // 80% boost in forests
         .Add("grass", 1.2f)          // 20% boost
         .Add("sand", 0.3f))          // 70% reduction
-    .WithAffinity(new BiomeTileAffinity(BiomeType.Desert)
+    .WithAffinity(new BiomeTileAffinity("desert")
         .Add("sand", 1.5f)
         .Add("forest_floor", 0.2f)); // 80% reduction in deserts
 ```
@@ -300,8 +322,7 @@ var selector = new WeightedTileSelector(tileRegistry, pipeline);
 │  Phase 3: TILE PLACEMENT                                        │
 │    • For each position, select tile using Soft WFC:             │
 │      1. WeightedTileSelector with modifier pipeline             │
-│      2. Fallback: TerrainBlobGenerator (noise clustering)       │
-│      3. Fallback: biome.SelectPassableTile()                    │
+│      2. Fallback: biome.SelectPassableTile()                    │
 │    • Handle multi-tile placements with space validation         │
 ├─────────────────────────────────────────────────────────────────┤
 │  Phase 4: CONNECTIVITY GUARANTEE                                │
@@ -408,7 +429,7 @@ var wellStamp = new StructureStamp
 {
     Id = "well",
     Size = new Vector2I(3, 3),
-    AllowedBiomes = [BiomeType.Plains, BiomeType.Forest],
+    AllowedBiomes = ["plains", "forest"],
     MinSpacing = 10,
     InfluenceRadius = 5,
     TileAffinities = [new TileAffinityEntry("cobblestone", 1.8f)]
@@ -457,8 +478,8 @@ Scripts/Features/Worldgen/VariantModifiers/
 ```csharp
 // Configure variant modifiers
 var biomeVariants = new BiomeVariantModifier()
-    .WithPreference("grass", BiomeType.Forest, 2.0f, 1.0f, 0.5f)  // Variant 0 boosted in forest
-    .WithPreference("grass", BiomeType.Desert, 0.3f, 0.5f, 2.0f); // Variant 2 boosted in desert
+    .WithPreference("grass", "forest", 2.0f, 1.0f, 0.5f)  // Variant 0 boosted in forest
+    .WithPreference("grass", "desert", 0.3f, 0.5f, 2.0f); // Variant 2 boosted in desert
 
 var proximityVariants = new ProximityVariantModifier()
     .WithRule("stone", variantIndex: 1, nearTileId: "water", radius: 3, multiplier: 2.5f)  // Mossy near water
@@ -510,52 +531,65 @@ var generator = new SimpleMapGenerator(rng, biomeProvider, tileRegistry,
 
 ### Defining a Biome
 
-Create `BiomeDefinition` resources:
+Biomes are defined in `Data/Tiles/tiles.json` under the `"biomes"` key:
 
+```json
+{
+  "biomes": {
+    "forest": {
+      "displayName": "Forest",
+      "signature": [0.0, -0.3, -0.3, -0.3, 0.0, 0.2, 0.3, 0.0],
+      "blockedPercentage": 0.35,
+      "passableTiles": {
+        "grass": 0.40,
+        "forest_floor": 0.35,
+        "forest_moss": 0.25
+      },
+      "blockedTiles": {
+        "forest_tree": 0.50,
+        "forest_dense_trees": 0.30,
+        "forest_stump": 0.20
+      }
+    },
+    "volcanic": {
+      "displayName": "Volcanic",
+      "signature": [0.3, 0.9, -0.4, 0.4, 0.0, 0.3, -0.6, 0.0],
+      "blockedPercentage": 0.30,
+      "passableTiles": {
+        "volcanic_rock": 0.30,
+        "volcanic_cooled_lava": 0.25,
+        "volcanic_obsidian": 0.20,
+        "volcanic_ash": 0.15,
+        "volcanic_lava_crack": 0.10
+      },
+      "blockedTiles": {
+        "volcanic_lava": 0.60,
+        "volcanic_magma_vent": 0.40
+      }
+    }
+  }
+}
 ```
-Resources/Biomes/
-├── forest.tres
-├── desert.tres
-├── swamp.tres
-└── plains.tres
-```
 
-**Properties:**
+**Signature Array Order:**
+`[Solidum, Febris, Ordinem, Lumines, Varias, Inertiae, Subsidium, Spatium]`
 
-```csharp
-BiomeType: Forest
-
-AffinitySignature:
-  Solidum: 0.0      // Neutral solidity
-  Febris: -0.3      // Slightly cool
-  Ordinem: -0.2     // Slightly chaotic
-  Lumines: -0.1     // Slightly dark
-  Varias: 0.0       // Neutral
-  Inertiae: 0.2     // Slightly light/airy
-  Subsidium: 0.3    // Helpful
-  Spatium: 0.0      // Neutral distance
-
-PassableTiles:
-  - TileId: "grass", Weight: 0.6
-  - TileId: "dirt", Weight: 0.3
-  - TileId: "forest_floor", Weight: 0.1
-
-BlockedTiles:
-  - TileId: "tree_trunk", Weight: 0.7
-  - TileId: "bush", Weight: 0.2
-  - TileId: "rock", Weight: 0.1
-
-BlockedPercentage: 0.35
-```
+Each value ranges from -1.0 to 1.0. See Appendix for signature element meanings.
 
 **Signature Affinity Reference:**
 
 | Biome | Key Signature Traits |
 |-------|---------------------|
+| Plains | Neutral temperature, ordered (Ordinem+), helpful |
 | Forest | Cool (Febris-), helpful (Subsidium+), organic |
 | Desert | Hot (Febris+), solid (Solidum+), ordered |
+| Tundra | Cold (Febris-), ordered (Ordinem+), solid |
 | Swamp | Cool (Febris-), chaotic (Ordinem-), heavy (Inertiae-) |
-| Plains | Neutral temperature, ordered (Ordinem+), light |
+| Mountains | Very solid (Solidum+), cool, distant |
+| Water | Fluid (Solidum-), cool (Febris-), light (Inertiae-) |
+| Cave | Solid (Solidum+), dark (Lumines-), dense (Inertiae+) |
+| Volcanic | Hot (Febris++), chaotic (Ordinem-), harmful (Subsidium-) |
+| Magical | Chaotic (Ordinem-), bright (Lumines+), spatial (Varias+) |
 
 ### Defining Weight Modifiers
 
@@ -563,7 +597,7 @@ BlockedPercentage: 0.35
 
 ```csharp
 // In code or as resource:
-new BiomeTileAffinity(BiomeType.Forest)
+new BiomeTileAffinity("forest")
     .Add("forest_floor", 1.8f)  // 80% boost
     .Add("moss", 1.5f)          // 50% boost
     .Add("grass", 1.2f)         // 20% boost
@@ -629,7 +663,7 @@ Tiles:
   - Offset: Vector2I(2, 0), TileId: "well_ne"
   // ... remaining tiles
 
-AllowedBiomes: [Plains, Forest]
+AllowedBiomes: ["plains", "forest"]
 SpawnWeight: 0.5
 MinSpacing: 10  // Tiles away from other structures
 
@@ -710,8 +744,9 @@ public static string? SelectWeighted(Dictionary<string, float> weights, RandomNu
 ```
 Scripts/Features/Worldgen/
 ├── Biomes/                          # ✅ IMPLEMENTED
-│   ├── BiomeDefinition.cs
-│   ├── BiomeRegistry.cs
+│   ├── BiomeData.cs                 # JSON deserialization model
+│   ├── BiomeDefinition.cs           # Runtime biome model
+│   ├── BiomeRegistry.cs             # Data-driven biome loading
 │   ├── BiomeMapGenerator.cs
 │   ├── IBiomeProvider.cs
 │   ├── TilePool.cs
@@ -734,8 +769,6 @@ Scripts/Features/Worldgen/
 │   ├── StructureProximityModifier.cs
 │   ├── BiomeTileAffinity.cs
 │   └── TileAffinityEntry.cs
-├── BlobGeneration/                  # ✅ IMPLEMENTED
-│   └── TerrainBlobGenerator.cs
 ├── BaselineGradient.cs              # ✅ IMPLEMENTED (includes RadialGradient, NoiseGradient)
 ├── CardBasedGradient.cs             # ✅ IMPLEMENTED
 ├── TilePlacement.cs                 # ✅ IMPLEMENTED
@@ -758,15 +791,15 @@ Scripts/Features/Deckbuilder/Services/
 └── SimpleMapGenerator.cs            # ✅ IMPLEMENTED (5-phase pipeline)
 
 addons/tile_editor/
-├── BlobSettingsPanel.cs
-├── BiomePoolPanel.cs
+├── BiomePoolPanel.cs                # Data-driven biome pool editing
+├── TileBrowserPanel.cs              # Tile list with duplicate/delete buttons
 ├── TilePropertiesPanel.cs
 ├── TileAtlasPanel.cs
 ├── TileEditorDock.cs
 └── TileEditorService.cs
 
 Data/Tiles/
-└── tiles.json                       # All tile data + auto-tile configs
+└── tiles.json                       # Tile + biome data (data-driven config)
 ```
 
 ---
@@ -784,8 +817,23 @@ Data/Tiles/
 | 6 | Subsidium | -1 to 1 | Harmful | Helpful |
 | 7 | Spatium | -1 to 1 | Nearby/close | Distant/far |
 
+## Appendix: Biome Signature Values
+
+| Biome | Sol | Feb | Ord | Lum | Var | Ine | Sub | Spa |
+|-------|-----|-----|-----|-----|-----|-----|-----|-----|
+| Plains | 0.0 | 0.0 | 0.2 | 0.1 | 0.0 | 0.0 | 0.2 | 0.0 |
+| Forest | 0.0 | -0.3 | -0.3 | -0.3 | 0.0 | 0.2 | 0.3 | 0.0 |
+| Desert | 0.3 | 0.7 | 0.3 | 0.4 | 0.0 | -0.2 | -0.2 | 0.3 |
+| Tundra | 0.2 | -0.7 | 0.5 | 0.3 | 0.0 | 0.1 | 0.0 | -0.1 |
+| Swamp | -0.2 | -0.2 | -0.5 | -0.5 | 0.0 | -0.3 | -0.1 | 0.0 |
+| Mountains | 0.7 | -0.2 | 0.4 | 0.2 | 0.0 | 0.4 | 0.0 | 0.3 |
+| Water | -0.8 | -0.3 | 0.2 | 0.3 | 0.0 | -0.5 | 0.1 | 0.0 |
+| Cave | 0.6 | -0.1 | -0.2 | -0.7 | 0.0 | 0.5 | 0.0 | -0.3 |
+| Volcanic | 0.3 | 0.9 | -0.4 | 0.4 | 0.0 | 0.3 | -0.6 | 0.0 |
+| Magical | -0.2 | 0.1 | -0.6 | 0.5 | 0.5 | -0.3 | 0.3 | 0.4 |
+
 ---
 
-*Document Version: 3.0*
-*Last Updated: 2025-12-30*
-*Status: Soft WFC architecture complete - Phases 1-5 implemented*
+*Document Version: 4.0*
+*Last Updated: 2025-12-31*
+*Status: Data-driven biome system complete - 10 biomes, tile consolidation done*
