@@ -460,12 +460,15 @@ public partial class BiomeSection : VBoxContainer
 [Tool]
 public partial class BiomeTileEntry : HBoxContainer
 {
-    private readonly EditableTile _tile;
-    private readonly string _biomeId;
-    private readonly TileEditorService _service;
+    private readonly EditableTile? _tile;
+    private readonly string? _biomeId;
+    private readonly TileEditorService? _service;
     private readonly bool _isUniversal;
     private readonly float _weight;
     private readonly bool _isBlocked;
+
+    // Required by Godot for [Tool] classes
+    public BiomeTileEntry() { }
 
     public BiomeTileEntry(EditableTile tile, string biomeId, TileEditorService service, bool isUniversal, float weight, bool isBlocked)
     {
@@ -479,6 +482,9 @@ public partial class BiomeTileEntry : HBoxContainer
 
     public override void _Ready()
     {
+        // Guard for Godot's parameterless constructor case
+        if (_tile == null || _service == null) return;
+
         CustomMinimumSize = new Vector2(280, 30);
 
         // Tile indicator (passability color)
@@ -535,6 +541,8 @@ public partial class BiomeTileEntry : HBoxContainer
 
     private void OnWeightChanged(double newValue)
     {
+        if (_service == null || _biomeId == null || _tile == null) return;
+
         var biome = _service.GetBiome(_biomeId);
         if (biome == null) return;
 
@@ -548,6 +556,8 @@ public partial class BiomeTileEntry : HBoxContainer
 
     private void RemoveFromBiome()
     {
+        if (_service == null || _biomeId == null || _tile == null) return;
+
         var biome = _service.GetBiome(_biomeId);
         if (biome == null) return;
 
