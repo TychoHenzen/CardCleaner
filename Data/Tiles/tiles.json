@@ -148,6 +148,22 @@
         "cave_underground_lake": 0.15,
         "cave_boulder": 0.10
       }
+    },
+    "volcanic": {
+      "displayName": "Volcanic",
+      "signature": [0.3, 0.9, -0.4, 0.4, 0.0, 0.3, -0.6, 0.0],
+      "blockedPercentage": 0.30,
+      "passableTiles": {
+        "volcanic_rock": 0.30,
+        "volcanic_cooled_lava": 0.25,
+        "volcanic_obsidian": 0.20,
+        "volcanic_ash": 0.15,
+        "volcanic_lava_crack": 0.10
+      },
+      "blockedTiles": {
+        "volcanic_lava": 0.60,
+        "volcanic_magma_vent": 0.40
+      }
     }
   },
   "tiles": [
@@ -2305,6 +2321,118 @@
       "isTransparent": false,
       "biomes": [
         "cave"
+      ]
+    },
+    {
+      "id": "volcanic_lava",
+      "name": "Lava Pool",
+      "passability": "solid",
+      "atlasCoords": {
+        "x": 0,
+        "y": 12
+      },
+      "sourceId": 397,
+      "layer": "terrain",
+      "elevation": -0.3,
+      "isTransparent": false,
+      "biomes": [
+        "volcanic"
+      ]
+    },
+    {
+      "id": "volcanic_magma_vent",
+      "name": "Magma Vent",
+      "passability": "solid",
+      "atlasCoords": {
+        "x": 18,
+        "y": 8
+      },
+      "sourceId": 397,
+      "layer": "structure",
+      "elevation": 0.8,
+      "isTransparent": false,
+      "biomes": [
+        "volcanic"
+      ]
+    },
+    {
+      "id": "volcanic_cooled_lava",
+      "name": "Cooled Lava",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 2,
+        "y": 12
+      },
+      "sourceId": 397,
+      "layer": "terrain",
+      "elevation": 0,
+      "isTransparent": true,
+      "biomes": [
+        "volcanic"
+      ]
+    },
+    {
+      "id": "volcanic_obsidian",
+      "name": "Obsidian",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 6,
+        "y": 0
+      },
+      "sourceId": 397,
+      "layer": "terrain",
+      "elevation": 0,
+      "isTransparent": true,
+      "biomes": [
+        "volcanic"
+      ]
+    },
+    {
+      "id": "volcanic_ash",
+      "name": "Volcanic Ash",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 14,
+        "y": 8
+      },
+      "sourceId": 397,
+      "layer": "decoration",
+      "elevation": 0,
+      "isTransparent": true,
+      "biomes": [
+        "volcanic"
+      ]
+    },
+    {
+      "id": "volcanic_rock",
+      "name": "Volcanic Rock",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 4,
+        "y": 0
+      },
+      "sourceId": 397,
+      "layer": "terrain",
+      "elevation": 0.1,
+      "isTransparent": true,
+      "biomes": [
+        "volcanic"
+      ]
+    },
+    {
+      "id": "volcanic_lava_crack",
+      "name": "Lava Cracks",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 16,
+        "y": 8
+      },
+      "sourceId": 397,
+      "layer": "decoration",
+      "elevation": 0,
+      "isTransparent": true,
+      "biomes": [
+        "volcanic"
       ]
     }
   ]
