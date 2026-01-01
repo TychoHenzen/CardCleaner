@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Godot;
 
@@ -210,6 +211,48 @@ public class WfcGrid
 
         var index = rng.RandiRange(0, candidates.Count - 1);
         return candidates[index];
+    }
+
+    /// <summary>
+    /// Finds lowest weighted-entropy cell with random tiebreak.
+    /// Uses provided weight calculator for position-aware weights.
+    /// </summary>
+    /// <param name="getWeightsAt">Function that returns tile weights for a position</param>
+    /// <param name="rng">Random number generator for tiebreaking</param>
+    /// <returns>Position of cell with lowest weighted entropy, or null if all collapsed</returns>
+    public Vector2I? GetLowestEntropyCellWeighted(
+        Func<Vector2I, IReadOnlyDictionary<string, float>> getWeightsAt,
+        RandomNumberGenerator rng)
+    {
+        var lowestEntropy = float.MaxValue;
+        var candidates = new List<Vector2I>();
+
+        for (var y = 0; y < _height; y++)
+        {
+            for (var x = 0; x < _width; x++)
+            {
+                var cell = _cells[y, x];
+                if (cell.IsCollapsed()) continue;
+
+                var pos = new Vector2I(x, y);
+                var weights = getWeightsAt(pos);
+                var entropy = cell.GetWeightedEntropy(weights);
+
+                if (entropy < lowestEntropy)
+                {
+                    lowestEntropy = entropy;
+                    candidates.Clear();
+                    candidates.Add(pos);
+                }
+                else if (Mathf.IsEqualApprox(entropy, lowestEntropy))
+                {
+                    candidates.Add(pos);
+                }
+            }
+        }
+
+        if (candidates.Count == 0) return null;
+        return candidates[rng.RandiRange(0, candidates.Count - 1)];
     }
 
     /// <summary>

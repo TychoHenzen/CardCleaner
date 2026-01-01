@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
@@ -32,6 +33,39 @@ public class WfcCellState
     /// Lower entropy means fewer choices, making this cell a priority for collapse.
     /// </summary>
     public int GetEntropy() => _possibleTiles.Count;
+
+    /// <summary>
+    /// Calculates weighted Shannon entropy based on tile probabilities.
+    /// Lower entropy = clearer winner (more certainty about which tile to pick).
+    /// </summary>
+    /// <param name="weights">Tile ID to weight mapping. Missing tiles default to 1.0.</param>
+    /// <returns>Shannon entropy value. 0 for collapsed/contradiction, float.MaxValue for zero total weight.</returns>
+    public float GetWeightedEntropy(IReadOnlyDictionary<string, float> weights)
+    {
+        if (_possibleTiles.Count <= 1)
+            return 0f; // Already collapsed or contradiction
+
+        var totalWeight = 0f;
+        foreach (var tileId in _possibleTiles)
+        {
+            totalWeight += weights.TryGetValue(tileId, out var w) ? w : 1f;
+        }
+
+        if (totalWeight <= 0f)
+            return float.MaxValue;
+
+        var entropy = 0f;
+        foreach (var tileId in _possibleTiles)
+        {
+            var weight = weights.TryGetValue(tileId, out var w) ? w : 1f;
+            if (weight <= 0f) continue;
+
+            var p = weight / totalWeight;
+            entropy -= p * Mathf.Log(p);
+        }
+
+        return entropy;
+    }
 
     /// <summary>
     /// Returns true if this cell has collapsed to a single tile.
