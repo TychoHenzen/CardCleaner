@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 using Godot;
@@ -104,7 +105,7 @@ public class WfcMapGenerator
         _adjacencyRules = new WfcAdjacencyRules(transitionResolver);
         _blobTracker = new BlobSizeTracker();
         _diminishingReturns = new DiminishingReturnsSoftModifier(_blobTracker);
-        _novelty = new NoveltySoftModifier(_blobTracker);
+        _novelty = new NoveltySoftModifier();
         _compactness = new CompactnessSoftModifier();
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
@@ -119,7 +120,7 @@ public class WfcMapGenerator
         _adjacencyRules = adjacencyRules;
         _blobTracker = new BlobSizeTracker();
         _diminishingReturns = new DiminishingReturnsSoftModifier(_blobTracker);
-        _novelty = new NoveltySoftModifier(_blobTracker);
+        _novelty = new NoveltySoftModifier();
         _compactness = new CompactnessSoftModifier();
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
@@ -148,8 +149,8 @@ public class WfcMapGenerator
                 "No valid tiles found: biome tiles have no overlap with adjacency rules");
         }
 
-        // Configure modifiers
-        ConfigureModifiers();
+        // Configure constraints
+        ConfigureConstraints();
 
         // Create WFC components
         var propagator = new WfcPropagator(_adjacencyRules);
@@ -203,8 +204,8 @@ public class WfcMapGenerator
             return WfcGenerationResult.Failed("No valid tiles across all biomes");
         }
 
-        // Configure modifiers
-        ConfigureModifiers();
+        // Configure constraints
+        ConfigureConstraints();
 
         // For multi-biome, we use a position-aware selector
         // For now, we'll use a simpler approach: solve with all tiles, apply biome after
@@ -244,25 +245,25 @@ public class WfcMapGenerator
     }
 
     /// <summary>
-    /// Configures all soft modifiers based on current enable flags.
+    /// Configures all constraints based on current enable flags.
     /// </summary>
-    private void ConfigureModifiers()
+    private void ConfigureConstraints()
     {
-        _selector.ClearModifiers();
+        _selector.ClearConstraints();
 
         if (EnableDiminishingReturns)
         {
-            _selector.AddModifier(_diminishingReturns);
+            _selector.AddConstraint(_diminishingReturns);
         }
 
         if (EnableNovelty)
         {
-            _selector.AddModifier(_novelty);
+            _selector.AddConstraint(_novelty);
         }
 
         if (EnableCompactness)
         {
-            _selector.AddModifier(_compactness);
+            _selector.AddConstraint(_compactness);
         }
     }
 

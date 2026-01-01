@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
-using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -11,28 +10,18 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 /// Selects tiles from valid options using weighted probabilities.
 /// Applies soft rules: biome-preferred tiles get full weight, others are penalized.
 /// Supports continuity bias to encourage larger contiguous regions.
-/// Supports pluggable soft modifiers for extensible weight adjustments.
+/// Supports pluggable constraints for extensible weight adjustments.
 /// </summary>
 public class WfcTileSelector
 {
-    private readonly List<ISoftModifier> _softModifiers = new();
     private readonly List<IWfcConstraint> _constraints = new();
 
     /// <summary>
-    /// Registers a soft modifier to be applied during tile selection.
-    /// </summary>
-    public void AddModifier(ISoftModifier modifier) => _softModifiers.Add(modifier);
-
-    /// <summary>
-    /// Registers a unified constraint to be applied during tile selection.
-    /// Constraints are applied multiplicatively after soft modifiers.
+    /// Registers a constraint to be applied during tile selection.
+    /// Constraints are applied multiplicatively: final_weight = base_weight × Π(modifiers)
+    /// Return 0.0 to ban a tile, 1.0 for neutral, >1.0 for boost.
     /// </summary>
     public void AddConstraint(IWfcConstraint constraint) => _constraints.Add(constraint);
-
-    /// <summary>
-    /// Clears all registered soft modifiers.
-    /// </summary>
-    public void ClearModifiers() => _softModifiers.Clear();
 
     /// <summary>
     /// Clears all registered constraints.
@@ -108,23 +97,7 @@ public class WfcTileSelector
                 weight *= ContinuityBiasMultiplier;
             }
 
-            // Apply registered soft modifiers
-            if (position.HasValue && grid != null && _softModifiers.Count > 0)
-            {
-                var softContext = new SoftModifierContext
-                {
-                    Position = position.Value,
-                    TileId = tileId,
-                    Grid = grid
-                };
-
-                foreach (var modifier in _softModifiers)
-                {
-                    weight *= modifier.CalculateMultiplier(softContext);
-                }
-            }
-
-            // Apply registered unified constraints
+            // Apply registered constraints
             if (position.HasValue && grid != null && _constraints.Count > 0)
             {
                 var constraintContext = new WfcConstraintContext

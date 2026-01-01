@@ -136,7 +136,66 @@ This document captures discoveries and integration notes during implementation o
   - `WfcTileSelector_ConstraintList_AppliesMultiplicatively`
 
 ### Integration Notes for Later Phases
-- Old interfaces (ISoftModifier, IHardConstraint) still exist for backward compatibility
-- Phase 3.3 will remove ISoftModifier and IHardConstraint after migrating all consumers
+- ~~Old interfaces (ISoftModifier, IHardConstraint) still exist for backward compatibility~~ (Removed in Phase 3.3)
+- ~~Phase 3.3 will remove ISoftModifier and IHardConstraint after migrating all consumers~~ (Done)
 - Constraint application in WfcTileSelector uses early-exit: if any constraint returns 0.0f, weight becomes 0 and remaining constraints are skipped
 - AdjacencyConstraint constructor requires WfcAdjacencyRules instance
+
+---
+
+## Phase 3.3: Remove Legacy Interfaces
+**Date:** 2026-01-01
+**Status:** Complete
+
+### Discoveries
+- NoveltySoftModifier never used its BlobSizeTracker dependency - it counts neighbors directly from grid state, so the constructor parameter was removed
+- Tests that compared ISoftModifier.CalculateMultiplier vs IWfcConstraint.GetProbabilityModifier became redundant after unification - replaced with interface verification tests
+- IHardConstraint was completely unused throughout the codebase - only referenced in its own interface file and documentation
+
+### Files Deleted
+- `Scripts/Features/Worldgen/Wfc/Modifiers/Soft/ISoftModifier.cs` (contained ISoftModifier interface and SoftModifierContext struct)
+- `Scripts/Features/Worldgen/Wfc/Modifiers/Hard/IHardConstraint.cs` (contained IHardConstraint interface and HardConstraintContext struct)
+
+### API Changes Made
+- **WfcTileSelector:**
+  - Removed `_softModifiers` field
+  - Removed `AddModifier(ISoftModifier)` method
+  - Removed `ClearModifiers()` method
+  - Now only uses `_constraints` list with `AddConstraint(IWfcConstraint)` and `ClearConstraints()`
+- **WfcMapGenerator:**
+  - Renamed `ConfigureModifiers()` → `ConfigureConstraints()`
+  - Now uses `_selector.AddConstraint()` instead of `_selector.AddModifier()`
+  - NoveltySoftModifier constructor call updated to use parameterless constructor
+- **DiminishingReturnsSoftModifier:**
+  - Removed `ISoftModifier` interface implementation
+  - Removed `CalculateMultiplier(SoftModifierContext)` method
+  - Logic moved directly into `GetProbabilityModifier(WfcConstraintContext)`
+- **NoveltySoftModifier:**
+  - Removed `ISoftModifier` interface implementation
+  - Removed `CalculateMultiplier(SoftModifierContext)` method
+  - Removed unused BlobSizeTracker constructor parameter
+  - Added default parameterless constructor
+  - Logic moved directly into `GetProbabilityModifier(WfcConstraintContext)`
+- **CompactnessSoftModifier:**
+  - Removed `ISoftModifier` interface implementation
+  - Removed `CalculateMultiplier(SoftModifierContext)` method
+  - Logic moved directly into `GetProbabilityModifier(WfcConstraintContext)`
+
+### Test Changes Made
+- **ConstraintMigrationTest:**
+  - Replaced 3 "both interfaces return same value" tests with interface verification tests
+  - `DiminishingReturns_ImplementsOnlyIWfcConstraint`
+  - `Novelty_ImplementsOnlyIWfcConstraint`
+  - `Compactness_ImplementsOnlyIWfcConstraint`
+  - Added `WfcTileSelector_AddModifier_MethodDoesNotExist` (reflection check)
+  - Added `WfcTileSelector_ClearModifiers_MethodDoesNotExist` (reflection check)
+- **All modifier tests updated:**
+  - Changed from `SoftModifierContext` to `WfcConstraintContext`
+  - Changed from `CalculateMultiplier()` to `GetProbabilityModifier()`
+  - NoveltySoftModifierTest no longer uses BlobSizeTracker
+
+### Integration Notes for Future Phases
+- All constraint-related code now uses unified `IWfcConstraint` interface
+- The `Modifiers/Soft/` namespace still contains the soft modifier classes, but they now only implement `IWfcConstraint`
+- The `Modifiers/Hard/` directory is now empty (IHardConstraint.cs deleted) - can be removed if needed
+- Phase 3 is now complete - the unified constraint interface is fully operational

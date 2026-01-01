@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 using GdUnit4;
 using Godot;
@@ -24,14 +25,14 @@ public class CompactnessSoftModifierTest
     public void TestNoNeighborsIsNeutral()
     {
         // No neighbors - handled by NoveltySoftModifier, this should be neutral
-        var context = new SoftModifierContext
+        var context = new WfcConstraintContext
         {
             Position = new Vector2I(5, 5),
             TileId = "grass",
             Grid = _grid
         };
 
-        var multiplier = _modifier.CalculateMultiplier(context);
+        var multiplier = _modifier.GetProbabilityModifier(context);
 
         AssertFloat(multiplier).IsEqual(1.0f);
     }
@@ -42,14 +43,14 @@ public class CompactnessSoftModifierTest
         // One same-type neighbor - this is a snake extension
         _grid.GetCell(new Vector2I(5, 4)).CollapseTo("grass");
 
-        var context = new SoftModifierContext
+        var context = new WfcConstraintContext
         {
             Position = new Vector2I(5, 5),
             TileId = "grass",
             Grid = _grid
         };
 
-        var multiplier = _modifier.CalculateMultiplier(context);
+        var multiplier = _modifier.GetProbabilityModifier(context);
 
         // Default snake penalty is 0.3x
         AssertFloat(multiplier).IsEqual(0.3f);
@@ -62,14 +63,14 @@ public class CompactnessSoftModifierTest
         _grid.GetCell(new Vector2I(5, 4)).CollapseTo("grass");
         _grid.GetCell(new Vector2I(4, 5)).CollapseTo("grass");
 
-        var context = new SoftModifierContext
+        var context = new WfcConstraintContext
         {
             Position = new Vector2I(5, 5),
             TileId = "grass",
             Grid = _grid
         };
 
-        var multiplier = _modifier.CalculateMultiplier(context);
+        var multiplier = _modifier.GetProbabilityModifier(context);
 
         AssertFloat(multiplier).IsEqual(1.0f);
     }
@@ -82,14 +83,14 @@ public class CompactnessSoftModifierTest
         _grid.GetCell(new Vector2I(4, 5)).CollapseTo("grass");
         _grid.GetCell(new Vector2I(6, 5)).CollapseTo("grass");
 
-        var context = new SoftModifierContext
+        var context = new WfcConstraintContext
         {
             Position = new Vector2I(5, 5),
             TileId = "grass",
             Grid = _grid
         };
 
-        var multiplier = _modifier.CalculateMultiplier(context);
+        var multiplier = _modifier.GetProbabilityModifier(context);
 
         // Default compact boost is 1.5x
         AssertFloat(multiplier).IsEqual(1.5f);
@@ -104,14 +105,14 @@ public class CompactnessSoftModifierTest
         _grid.GetCell(new Vector2I(4, 5)).CollapseTo("grass");
         _grid.GetCell(new Vector2I(6, 5)).CollapseTo("grass");
 
-        var context = new SoftModifierContext
+        var context = new WfcConstraintContext
         {
             Position = new Vector2I(5, 5),
             TileId = "grass",
             Grid = _grid
         };
 
-        var multiplier = _modifier.CalculateMultiplier(context);
+        var multiplier = _modifier.GetProbabilityModifier(context);
 
         // Default compact boost is 1.5x
         AssertFloat(multiplier).IsEqual(1.5f);
@@ -125,14 +126,14 @@ public class CompactnessSoftModifierTest
         _grid.GetCell(new Vector2I(4, 5)).CollapseTo("water");
         _grid.GetCell(new Vector2I(6, 5)).CollapseTo("water");
 
-        var context = new SoftModifierContext
+        var context = new WfcConstraintContext
         {
             Position = new Vector2I(5, 5),
             TileId = "grass",
             Grid = _grid
         };
 
-        var multiplier = _modifier.CalculateMultiplier(context);
+        var multiplier = _modifier.GetProbabilityModifier(context);
 
         // Only 1 grass neighbor = snake penalty
         AssertFloat(multiplier).IsEqual(0.3f);
@@ -145,14 +146,14 @@ public class CompactnessSoftModifierTest
 
         _grid.GetCell(new Vector2I(5, 4)).CollapseTo("grass");
 
-        var context = new SoftModifierContext
+        var context = new WfcConstraintContext
         {
             Position = new Vector2I(5, 5),
             TileId = "grass",
             Grid = _grid
         };
 
-        var multiplier = _modifier.CalculateMultiplier(context);
+        var multiplier = _modifier.GetProbabilityModifier(context);
 
         AssertFloat(multiplier).IsEqual(0.1f);
     }
@@ -166,14 +167,14 @@ public class CompactnessSoftModifierTest
         _grid.GetCell(new Vector2I(4, 5)).CollapseTo("grass");
         _grid.GetCell(new Vector2I(6, 5)).CollapseTo("grass");
 
-        var context = new SoftModifierContext
+        var context = new WfcConstraintContext
         {
             Position = new Vector2I(5, 5),
             TileId = "grass",
             Grid = _grid
         };
 
-        var multiplier = _modifier.CalculateMultiplier(context);
+        var multiplier = _modifier.GetProbabilityModifier(context);
 
         AssertFloat(multiplier).IsEqual(2.0f);
     }

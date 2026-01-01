@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reflection;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
@@ -24,86 +25,45 @@ public class ConstraintMigrationTest
     }
 
     [TestCase]
-    public void DiminishingReturns_BothInterfacesReturnSameValue()
+    public void DiminishingReturns_ImplementsOnlyIWfcConstraint()
     {
         var modifier = new DiminishingReturnsSoftModifier(_tracker);
 
-        // Create some blob for consistent test
-        _tracker.RegisterCollapse(new Vector2I(5, 5), "grass", _grid);
-        _tracker.RegisterCollapse(new Vector2I(5, 6), "grass", _grid);
+        // Verify it implements IWfcConstraint
+        AssertThat(modifier is IWfcConstraint).IsTrue();
 
-        var softContext = new SoftModifierContext
-        {
-            Position = new Vector2I(5, 7),
-            TileId = "grass",
-            Grid = _grid
-        };
-
-        var constraintContext = new WfcConstraintContext
-        {
-            Position = new Vector2I(5, 7),
-            TileId = "grass",
-            Grid = _grid
-        };
-
-        var softResult = modifier.CalculateMultiplier(softContext);
-        var constraintResult = modifier.GetProbabilityModifier(constraintContext);
-
-        AssertFloat(softResult).IsEqual(constraintResult);
+        // Verify ISoftModifier interface is gone (class only implements IWfcConstraint)
+        var interfaces = typeof(DiminishingReturnsSoftModifier).GetInterfaces();
+        AssertThat(interfaces.Length).IsEqual(1);
+        AssertThat(interfaces[0].Name).IsEqual("IWfcConstraint");
     }
 
     [TestCase]
-    public void Novelty_BothInterfacesReturnSameValue()
+    public void Novelty_ImplementsOnlyIWfcConstraint()
     {
-        var modifier = new NoveltySoftModifier(_tracker);
+        var modifier = new NoveltySoftModifier();
 
-        var softContext = new SoftModifierContext
-        {
-            Position = new Vector2I(5, 5),
-            TileId = "water",
-            Grid = _grid
-        };
+        // Verify it implements IWfcConstraint
+        AssertThat(modifier is IWfcConstraint).IsTrue();
 
-        var constraintContext = new WfcConstraintContext
-        {
-            Position = new Vector2I(5, 5),
-            TileId = "water",
-            Grid = _grid
-        };
-
-        var softResult = modifier.CalculateMultiplier(softContext);
-        var constraintResult = modifier.GetProbabilityModifier(constraintContext);
-
-        AssertFloat(softResult).IsEqual(constraintResult);
+        // Verify ISoftModifier interface is gone
+        var interfaces = typeof(NoveltySoftModifier).GetInterfaces();
+        AssertThat(interfaces.Length).IsEqual(1);
+        AssertThat(interfaces[0].Name).IsEqual("IWfcConstraint");
     }
 
     [TestCase]
-    public void Compactness_BothInterfacesReturnSameValue()
+    public void Compactness_ImplementsOnlyIWfcConstraint()
     {
         var modifier = new CompactnessSoftModifier();
 
-        // Collapse some neighbors to test neighbor counting
-        _grid.GetCell(5, 4).CollapseTo("grass");
-        _grid.GetCell(5, 6).CollapseTo("grass");
+        // Verify it implements IWfcConstraint
+        AssertThat(modifier is IWfcConstraint).IsTrue();
 
-        var softContext = new SoftModifierContext
-        {
-            Position = new Vector2I(5, 5),
-            TileId = "grass",
-            Grid = _grid
-        };
-
-        var constraintContext = new WfcConstraintContext
-        {
-            Position = new Vector2I(5, 5),
-            TileId = "grass",
-            Grid = _grid
-        };
-
-        var softResult = modifier.CalculateMultiplier(softContext);
-        var constraintResult = modifier.GetProbabilityModifier(constraintContext);
-
-        AssertFloat(softResult).IsEqual(constraintResult);
+        // Verify ISoftModifier interface is gone
+        var interfaces = typeof(CompactnessSoftModifier).GetInterfaces();
+        AssertThat(interfaces.Length).IsEqual(1);
+        AssertThat(interfaces[0].Name).IsEqual("IWfcConstraint");
     }
 
     [TestCase]
@@ -179,6 +139,22 @@ public class ConstraintMigrationTest
         // Just verify we get a result (constraints were invoked without error)
         AssertThat(result).IsNotNull();
         AssertThat(halfConstraint.CallCount).IsEqual(4); // 2 tiles x 2 constraints
+    }
+
+    [TestCase]
+    public void WfcTileSelector_AddModifier_MethodDoesNotExist()
+    {
+        // Verify legacy AddModifier method is gone
+        var addModifierMethod = typeof(WfcTileSelector).GetMethod("AddModifier");
+        AssertThat(addModifierMethod).IsNull();
+    }
+
+    [TestCase]
+    public void WfcTileSelector_ClearModifiers_MethodDoesNotExist()
+    {
+        // Verify legacy ClearModifiers method is gone
+        var clearModifiersMethod = typeof(WfcTileSelector).GetMethod("ClearModifiers");
+        AssertThat(clearModifiersMethod).IsNull();
     }
 
     private class TestHalfConstraint : IWfcConstraint

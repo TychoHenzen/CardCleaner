@@ -20,10 +20,8 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 /// This modifier gives a configurable boost (default 3.0x) to "new blob starters",
 /// making them competitive with mid-sized dominant blobs.
 /// </summary>
-public class NoveltySoftModifier : ISoftModifier, IWfcConstraint
+public class NoveltySoftModifier : IWfcConstraint
 {
-    private readonly BlobSizeTracker _blobTracker;
-
     /// <summary>
     /// Multiplier boost for tiles with no same-type neighbors.
     /// Default 3.0 means new blobs get 3x weight, helping them compete
@@ -31,12 +29,15 @@ public class NoveltySoftModifier : ISoftModifier, IWfcConstraint
     /// </summary>
     public float NoveltyBoost { get; set; } = 3.0f;
 
-    public NoveltySoftModifier(BlobSizeTracker blobTracker)
+    /// <summary>
+    /// Creates a novelty modifier with default settings.
+    /// </summary>
+    public NoveltySoftModifier()
     {
-        _blobTracker = blobTracker;
     }
 
-    public float CalculateMultiplier(SoftModifierContext context)
+    /// <inheritdoc />
+    public float GetProbabilityModifier(WfcConstraintContext context)
     {
         var sameTypeNeighborCount = CountSameTypeNeighbors(context);
 
@@ -44,7 +45,7 @@ public class NoveltySoftModifier : ISoftModifier, IWfcConstraint
         return sameTypeNeighborCount == 0 ? NoveltyBoost : 1.0f;
     }
 
-    private int CountSameTypeNeighbors(SoftModifierContext context)
+    private static int CountSameTypeNeighbors(WfcConstraintContext context)
     {
         var count = 0;
 
@@ -58,17 +59,5 @@ public class NoveltySoftModifier : ISoftModifier, IWfcConstraint
         }
 
         return count;
-    }
-
-    /// <inheritdoc />
-    public float GetProbabilityModifier(WfcConstraintContext context)
-    {
-        var softContext = new SoftModifierContext
-        {
-            Position = context.Position,
-            TileId = context.TileId,
-            Grid = context.Grid
-        };
-        return CalculateMultiplier(softContext);
     }
 }
