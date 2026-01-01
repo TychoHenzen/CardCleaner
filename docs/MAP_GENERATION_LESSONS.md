@@ -70,3 +70,34 @@ This document captures discoveries and integration notes during implementation o
 - Existing `GetLowestEntropyCellWithTieBreak()` preserved for backward compatibility
 - Phase 3 will update WfcSolver to use weighted entropy with unified constraint weights
 - Entropy comparison uses `Mathf.IsEqualApprox()` for float tolerance (important for floating-point determinism)
+
+---
+
+## Phase 3.1: Create IWfcConstraint Interface
+**Date:** 2026-01-01
+**Status:** Complete
+
+### Discoveries
+- WfcConstraintContext closely mirrors existing SoftModifierContext and HardConstraintContext structures
+- The optional RNG property distinguishes WfcConstraintContext from legacy context types (which lack RNG)
+- IHardConstraint is completely unused in codebase (confirmed via grep) - safe to delete in Phase 3.3
+
+### API Changes Made
+- Created `IWfcConstraint` interface in `Scripts/Features/Worldgen/Wfc/Constraints/`
+  - `float GetProbabilityModifier(WfcConstraintContext context)` method
+  - Return semantics: 0.0 = hard ban, 0.0-1.0 = penalty, 1.0 = neutral, >1.0 = boost
+- Created `WfcConstraintContext` readonly struct
+  - Properties: `Position (Vector2I)`, `TileId (string)`, `Grid (WfcGrid)`, `Rng (RandomNumberGenerator?)`
+  - Uses init-only setters for immutability
+
+### Test Coverage Added
+- Tests/Features/Worldgen/Wfc/Constraints/WfcConstraintContextTest.cs
+- 2 test cases:
+  - `WfcConstraintContext_InitializesCorrectly` (RequireGodotRuntime)
+  - `WfcConstraintContext_DefaultRngIsNull` (RequireGodotRuntime)
+
+### Integration Notes for Later Phases
+- Namespace: `CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints`
+- Context properties mirror SoftModifierContext exactly, with additional optional Rng
+- Phase 3.2 will have soft modifiers implement both ISoftModifier and IWfcConstraint temporarily
+- Constraints are applied multiplicatively: `final_weight = base_weight × Π(modifiers)`
