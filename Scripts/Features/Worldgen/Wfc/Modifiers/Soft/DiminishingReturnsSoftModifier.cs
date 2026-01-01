@@ -1,3 +1,5 @@
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
+
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 
 /// <summary>
@@ -14,7 +16,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 ///
 /// Crossover point where continuity becomes penalty: ~8 tiles (5 * 0.2 = 1.0)
 /// </summary>
-public class DiminishingReturnsSoftModifier : ISoftModifier
+public class DiminishingReturnsSoftModifier : ISoftModifier, IWfcConstraint
 {
     private readonly BlobSizeTracker _blobTracker;
 
@@ -55,5 +57,17 @@ public class DiminishingReturnsSoftModifier : ISoftModifier
         var multiplier = 1.0f / (1.0f + potentialSize * DecayFactor);
 
         return multiplier < MinimumMultiplier ? MinimumMultiplier : multiplier;
+    }
+
+    /// <inheritdoc />
+    public float GetProbabilityModifier(WfcConstraintContext context)
+    {
+        var softContext = new SoftModifierContext
+        {
+            Position = context.Position,
+            TileId = context.TileId,
+            Grid = context.Grid
+        };
+        return CalculateMultiplier(softContext);
     }
 }

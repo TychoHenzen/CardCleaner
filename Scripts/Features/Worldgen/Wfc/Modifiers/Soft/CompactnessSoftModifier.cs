@@ -1,3 +1,5 @@
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
+
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 
 /// <summary>
@@ -13,7 +15,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 /// This shapes blobs toward rounder, more natural-looking formations
 /// rather than long thin snakes or tendrils.
 /// </summary>
-public class CompactnessSoftModifier : ISoftModifier
+public class CompactnessSoftModifier : ISoftModifier, IWfcConstraint
 {
     /// <summary>
     /// Penalty multiplier for snake-like extensions (1 same-type neighbor).
@@ -54,5 +56,17 @@ public class CompactnessSoftModifier : ISoftModifier
         }
 
         return count;
+    }
+
+    /// <inheritdoc />
+    public float GetProbabilityModifier(WfcConstraintContext context)
+    {
+        var softContext = new SoftModifierContext
+        {
+            Position = context.Position,
+            TileId = context.TileId,
+            Grid = context.Grid
+        };
+        return CalculateMultiplier(softContext);
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 using Godot;
 
@@ -15,6 +16,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 public class WfcTileSelector
 {
     private readonly List<ISoftModifier> _softModifiers = new();
+    private readonly List<IWfcConstraint> _constraints = new();
 
     /// <summary>
     /// Registers a soft modifier to be applied during tile selection.
@@ -22,9 +24,20 @@ public class WfcTileSelector
     public void AddModifier(ISoftModifier modifier) => _softModifiers.Add(modifier);
 
     /// <summary>
+    /// Registers a unified constraint to be applied during tile selection.
+    /// Constraints are applied multiplicatively after soft modifiers.
+    /// </summary>
+    public void AddConstraint(IWfcConstraint constraint) => _constraints.Add(constraint);
+
+    /// <summary>
     /// Clears all registered soft modifiers.
     /// </summary>
     public void ClearModifiers() => _softModifiers.Clear();
+
+    /// <summary>
+    /// Clears all registered constraints.
+    /// </summary>
+    public void ClearConstraints() => _constraints.Clear();
 
     /// <summary>
     /// Penalty multiplier for tiles not in the biome's preferred set.
@@ -98,7 +111,7 @@ public class WfcTileSelector
             // Apply registered soft modifiers
             if (position.HasValue && grid != null && _softModifiers.Count > 0)
             {
-                var context = new SoftModifierContext
+                var softContext = new SoftModifierContext
                 {
                     Position = position.Value,
                     TileId = tileId,
@@ -107,7 +120,30 @@ public class WfcTileSelector
 
                 foreach (var modifier in _softModifiers)
                 {
-                    weight *= modifier.CalculateMultiplier(context);
+                    weight *= modifier.CalculateMultiplier(softContext);
+                }
+            }
+
+            // Apply registered unified constraints
+            if (position.HasValue && grid != null && _constraints.Count > 0)
+            {
+                var constraintContext = new WfcConstraintContext
+                {
+                    Position = position.Value,
+                    TileId = tileId,
+                    Grid = grid,
+                    Rng = rng
+                };
+
+                foreach (var constraint in _constraints)
+                {
+                    var modifier = constraint.GetProbabilityModifier(constraintContext);
+                    if (modifier == 0f)
+                    {
+                        weight = 0f;
+                        break;
+                    }
+                    weight *= modifier;
                 }
             }
 

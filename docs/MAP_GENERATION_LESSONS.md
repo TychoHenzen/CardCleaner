@@ -101,3 +101,42 @@ This document captures discoveries and integration notes during implementation o
 - Context properties mirror SoftModifierContext exactly, with additional optional Rng
 - Phase 3.2 will have soft modifiers implement both ISoftModifier and IWfcConstraint temporarily
 - Constraints are applied multiplicatively: `final_weight = base_weight × Π(modifiers)`
+
+---
+
+## Phase 3.2: Migrate Constraints to IWfcConstraint
+**Date:** 2026-01-01
+**Status:** Complete
+
+### Discoveries
+- WfcAdjacencyRules is non-directional: `CanBeAdjacent(tileA, tileB)` checks bidirectional adjacency without needing a Direction enum
+- WfcCellState uses `CollapseTo()` not `Collapse()` for collapsing cells
+- The dual-interface approach (ISoftModifier + IWfcConstraint) requires minimal code duplication since GetProbabilityModifier can delegate to CalculateMultiplier via context conversion
+- NoveltySoftModifier has an unused `_blobTracker` field (analyzer warning IDE0052) - it counts neighbors directly from grid state
+
+### API Changes Made
+- DiminishingReturnsSoftModifier now implements both `ISoftModifier` and `IWfcConstraint`
+- NoveltySoftModifier now implements both `ISoftModifier` and `IWfcConstraint`
+- CompactnessSoftModifier now implements both `ISoftModifier` and `IWfcConstraint`
+- Created `AdjacencyConstraint` class in `Scripts/Features/Worldgen/Wfc/Constraints/`
+  - Wraps `WfcAdjacencyRules` to return 0.0f for invalid adjacencies, 1.0f for valid
+  - No Direction enum needed - WfcAdjacencyRules.CanBeAdjacent() is symmetric
+- Added `AddConstraint(IWfcConstraint)` to WfcTileSelector
+- Added `ClearConstraints()` to WfcTileSelector
+- WfcTileSelector now applies constraints after soft modifiers with early-exit on 0.0f
+
+### Test Coverage Added
+- Tests/Features/Worldgen/Wfc/Constraints/ConstraintMigrationTest.cs
+- 6 test cases:
+  - `DiminishingReturns_BothInterfacesReturnSameValue`
+  - `Novelty_BothInterfacesReturnSameValue`
+  - `Compactness_BothInterfacesReturnSameValue`
+  - `AdjacencyConstraint_ValidAdjacency_ReturnsOne`
+  - `AdjacencyConstraint_InvalidAdjacency_ReturnsZero`
+  - `WfcTileSelector_ConstraintList_AppliesMultiplicatively`
+
+### Integration Notes for Later Phases
+- Old interfaces (ISoftModifier, IHardConstraint) still exist for backward compatibility
+- Phase 3.3 will remove ISoftModifier and IHardConstraint after migrating all consumers
+- Constraint application in WfcTileSelector uses early-exit: if any constraint returns 0.0f, weight becomes 0 and remaining constraints are skipped
+- AdjacencyConstraint constructor requires WfcAdjacencyRules instance

@@ -1,3 +1,5 @@
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
+
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 
 /// <summary>
@@ -18,7 +20,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 /// This modifier gives a configurable boost (default 3.0x) to "new blob starters",
 /// making them competitive with mid-sized dominant blobs.
 /// </summary>
-public class NoveltySoftModifier : ISoftModifier
+public class NoveltySoftModifier : ISoftModifier, IWfcConstraint
 {
     private readonly BlobSizeTracker _blobTracker;
 
@@ -56,5 +58,17 @@ public class NoveltySoftModifier : ISoftModifier
         }
 
         return count;
+    }
+
+    /// <inheritdoc />
+    public float GetProbabilityModifier(WfcConstraintContext context)
+    {
+        var softContext = new SoftModifierContext
+        {
+            Position = context.Position,
+            TileId = context.TileId,
+            Grid = context.Grid
+        };
+        return CalculateMultiplier(softContext);
     }
 }
