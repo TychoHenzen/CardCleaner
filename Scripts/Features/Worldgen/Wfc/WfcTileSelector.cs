@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -8,9 +9,23 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 /// <summary>
 /// Selects tiles from valid options using weighted probabilities.
 /// Applies soft rules: biome-preferred tiles get full weight, others are penalized.
+/// Supports continuity bias to encourage larger contiguous regions.
+/// Supports pluggable soft modifiers for extensible weight adjustments.
 /// </summary>
 public class WfcTileSelector
 {
+    private readonly List<ISoftModifier> _softModifiers = new();
+
+    /// <summary>
+    /// Registers a soft modifier to be applied during tile selection.
+    /// </summary>
+    public void AddModifier(ISoftModifier modifier) => _softModifiers.Add(modifier);
+
+    /// <summary>
+    /// Clears all registered soft modifiers.
+    /// </summary>
+    public void ClearModifiers() => _softModifiers.Clear();
+
     /// <summary>
     /// Penalty multiplier for tiles not in the biome's preferred set.
     /// Default 0.1 means non-biome tiles are 10x less likely to be selected.
@@ -23,13 +38,29 @@ public class WfcTileSelector
     public float DefaultTileWeight { get; set; } = 1.0f;
 
     /// <summary>
+    /// Weight multiplier for tiles matching collapsed neighbors.
+    /// Default 5.0 means matching tiles are 5x more likely to be selected.
+    /// Set to 1.0 to disable continuity bias.
+    /// </summary>
+    public float ContinuityBiasMultiplier { get; set; } = 5.0f;
+
+    /// <summary>
     /// Selects a tile from the valid options using biome-weighted probabilities.
     /// </summary>
     /// <param name="validTiles">Tiles that satisfy hard constraints (from WfcCellState)</param>
     /// <param name="biome">Current biome for soft rule weights</param>
     /// <param name="rng">Random number generator</param>
+    /// <param name="continuityTiles">Optional set of tiles that match collapsed neighbors (for continuity bias)</param>
+    /// <param name="position">Grid position for soft modifier context</param>
+    /// <param name="grid">WFC grid for soft modifier context</param>
     /// <returns>Selected tile ID, or null if no valid tiles</returns>
-    public string? SelectTile(IReadOnlyCollection<string> validTiles, BiomeDefinition? biome, RandomNumberGenerator rng)
+    public string? SelectTile(
+        IReadOnlyCollection<string> validTiles,
+        BiomeDefinition? biome,
+        RandomNumberGenerator rng,
+        IReadOnlySet<string>? continuityTiles = null,
+        Vector2I? position = null,
+        WfcGrid? grid = null)
     {
         if (validTiles.Count == 0)
             return null;
@@ -56,6 +87,28 @@ public class WfcTileSelector
             {
                 // Tile is not in biome - apply penalty
                 weight = DefaultTileWeight * NonBiomeTilePenalty;
+            }
+
+            // Apply continuity bias if tile matches a collapsed neighbor
+            if (continuityTiles != null && continuityTiles.Contains(tileId))
+            {
+                weight *= ContinuityBiasMultiplier;
+            }
+
+            // Apply registered soft modifiers
+            if (position.HasValue && grid != null && _softModifiers.Count > 0)
+            {
+                var context = new SoftModifierContext
+                {
+                    Position = position.Value,
+                    TileId = tileId,
+                    Grid = grid
+                };
+
+                foreach (var modifier in _softModifiers)
+                {
+                    weight *= modifier.CalculateMultiplier(context);
+                }
             }
 
             weights.Add((tileId, weight));

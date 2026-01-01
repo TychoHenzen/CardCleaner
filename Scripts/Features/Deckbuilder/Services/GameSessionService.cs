@@ -5,8 +5,9 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using CardCleaner.Scripts.Features.Worldgen.WeightModifiers;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -154,17 +155,14 @@ public partial class GameSessionService : Node, IGameSessionService
         // Create biome provider that maps gradient signatures to biomes
         var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, mapSize);
 
-        // Create Soft WFC weight modifier pipeline for context-aware tile selection
-        var pipeline = new WeightModifierPipeline()
-            .AddModifier(new AdjacencyBoostModifier(AdjacencyBoostModifier.StripNumericSuffix)
-            {
-                BoostPerNeighbor = 1.5f // Tiles matching neighbors get 1.5x boost per match
-            });
-        var weightedSelector = new WeightedTileSelector(_tileRegistry, pipeline);
+        // Create WFC generator with hard constraints (2x2 window, adjacency rules)
+        var transitionResolver = new CompiledTransitionResolver();
+        var wfcGenerator = new WfcMapGenerator(transitionResolver);
 
-        // Create map generator with biome provider and Soft WFC
+        // Create map generator with WFC for terrain generation
         var mapGenerator = new SimpleMapGenerator(
-            _rng, biomeProvider, _tileRegistry, weightedSelector);
+            _rng, biomeProvider, _tileRegistry, wfcGenerator,
+            null, null, _biomeRegistry);
         _currentMap = mapGenerator.GenerateMap(mapSize);
 
         // Log biome distribution for debugging

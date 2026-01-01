@@ -5,174 +5,264 @@
   "biomes": {
     "plains": {
       "displayName": "Plains",
-      "signature": [0.0, 0.0, 0.2, 0.1, 0.0, 0.0, 0.2, 0.0],
+      "signature": [
+        0,
+        0,
+        0.2,
+        0.1,
+        0,
+        0,
+        0.2,
+        0
+      ],
       "blockedPercentage": 0.15,
       "passableTiles": {
-        "grass": 0.40,
+        "grass": 0.4,
         "plains_grass_tall": 0.25,
         "plains_wildflowers": 0.15,
-        "plains_fertile_soil": 0.10,
-        "plains_path": 0.10
+        "plains_fertile_soil": 0.1,
+        "plains_path": 0.1
       },
       "blockedTiles": {
-        "plains_small_rock": 0.40,
-        "plains_boulder": 0.30,
-        "plains_shrub": 0.30
+        "plains_small_rock": 0.4,
+        "plains_boulder": 0.3,
+        "plains_shrub": 0.3
       }
     },
     "forest": {
       "displayName": "Forest",
-      "signature": [0.0, -0.3, -0.3, -0.3, 0.0, 0.2, 0.3, 0.0],
-      "blockedPercentage": 0.40,
+      "signature": [
+        0,
+        -0.3,
+        -0.3,
+        -0.3,
+        0,
+        0.2,
+        0.3,
+        0
+      ],
+      "blockedPercentage": 0.4,
       "passableTiles": {
-        "forest_floor": 0.30,
+        "forest_floor": 0.3,
         "forest_moss": 0.25,
-        "forest_leaves": 0.20,
+        "forest_leaves": 0.2,
         "grass": 0.15,
-        "forest_undergrowth": 0.10
+        "forest_undergrowth": 0.1
       },
       "blockedTiles": {
         "forest_tree": 0.35,
         "forest_dense_trees": 0.25,
         "forest_fallen_log": 0.15,
-        "forest_mushrooms": 0.10,
+        "forest_mushrooms": 0.1,
         "forest_stump": 0.15
       }
     },
     "desert": {
       "displayName": "Desert",
-      "signature": [0.3, 0.7, 0.3, 0.4, 0.0, -0.2, -0.2, 0.3],
+      "signature": [
+        0.3,
+        0.7,
+        0.3,
+        0.4,
+        0,
+        -0.2,
+        -0.2,
+        0.3
+      ],
       "blockedPercentage": 0.12,
       "passableTiles": {
         "desert_sand": 0.35,
         "desert_dune": 0.25,
         "desert_cracked": 0.15,
         "gravel": 0.15,
-        "rock": 0.10
+        "rock": 0.1
       },
       "blockedTiles": {
-        "desert_rock": 0.30,
+        "desert_rock": 0.3,
         "desert_outcrop": 0.25,
         "desert_cactus": 0.25,
-        "desert_bones": 0.10,
-        "desert_skull": 0.10
+        "desert_bones": 0.1,
+        "desert_skull": 0.1
       }
     },
     "tundra": {
       "displayName": "Tundra",
-      "signature": [0.2, -0.7, 0.5, 0.3, 0.0, 0.1, 0.0, -0.1],
+      "signature": [
+        0.2,
+        -0.7,
+        0.5,
+        0.3,
+        0,
+        0.1,
+        0,
+        -0.1
+      ],
       "blockedPercentage": 0.22,
       "passableTiles": {
         "tundra_snow": 0.35,
         "tundra_packed_snow": 0.25,
         "tundra_frost": 0.15,
         "tundra_permafrost": 0.15,
-        "tundra_ice_path": 0.10
+        "tundra_ice_path": 0.1
       },
       "blockedTiles": {
         "tundra_ice_block": 0.25,
         "tundra_frozen_rock": 0.25,
-        "tundra_evergreen": 0.20,
+        "tundra_evergreen": 0.2,
         "tundra_frozen_lake": 0.15,
         "tundra_snowdrift": 0.15
       }
     },
     "swamp": {
       "displayName": "Swamp",
-      "signature": [-0.2, -0.2, -0.5, -0.5, 0.0, -0.3, -0.1, 0.0],
+      "signature": [
+        -0.2,
+        -0.2,
+        -0.5,
+        -0.5,
+        0,
+        -0.3,
+        -0.1,
+        0
+      ],
       "blockedPercentage": 0.35,
       "passableTiles": {
-        "swamp_mud": 0.30,
+        "swamp_mud": 0.3,
         "swamp_shallow_water": 0.25,
-        "swamp_reeds": 0.20,
+        "swamp_reeds": 0.2,
         "swamp_moss": 0.15,
-        "swamp_peat": 0.10
+        "swamp_peat": 0.1
       },
       "blockedTiles": {
-        "swamp_murky_pool": 0.30,
+        "swamp_murky_pool": 0.3,
         "swamp_dead_tree": 0.25,
-        "swamp_gnarled_roots": 0.20,
+        "swamp_gnarled_roots": 0.2,
         "swamp_lily_pads": 0.15,
-        "swamp_fog_hollow": 0.10
+        "swamp_fog_hollow": 0.1
       }
     },
     "mountains": {
       "displayName": "Mountains",
-      "signature": [0.7, -0.2, 0.4, 0.2, 0.0, 0.4, 0.0, 0.3],
+      "signature": [
+        0.7,
+        -0.2,
+        0.4,
+        0.2,
+        0,
+        0.4,
+        0,
+        0.3
+      ],
       "blockedPercentage": 0.38,
       "passableTiles": {
-        "rock": 0.30,
+        "rock": 0.3,
         "gravel": 0.25,
-        "mountains_slate": 0.20,
+        "mountains_slate": 0.2,
         "mountains_scree": 0.15,
-        "grass": 0.10
+        "grass": 0.1
       },
       "blockedTiles": {
-        "mountains_cliff": 0.30,
-        "mountains_boulder": 0.30,
+        "mountains_cliff": 0.3,
+        "mountains_boulder": 0.3,
         "mountains_ore": 0.15,
         "mountains_alpine_shrub": 0.15,
-        "mountains_cave_entrance": 0.10
+        "mountains_cave_entrance": 0.1
       }
     },
     "water": {
       "displayName": "Water",
-      "signature": [-0.5, -0.3, 0.2, 0.3, 0.2, -0.5, 0.1, 0.0],
-      "blockedPercentage": 0.30,
+      "signature": [
+        -0.5,
+        -0.3,
+        0.2,
+        0.3,
+        0.2,
+        -0.5,
+        0.1,
+        0
+      ],
+      "blockedPercentage": 0.3,
       "passableTiles": {
         "water_shallow": 0.35,
         "water_shore": 0.25,
-        "water_seaweed": 0.20,
-        "water_rapids": 0.20
+        "water_seaweed": 0.2,
+        "water_rapids": 0.2
       },
       "blockedTiles": {
-        "water_deep": 0.50,
-        "water_coral": 0.30,
-        "water_rock": 0.20
+        "water_deep": 0.5,
+        "water_coral": 0.3,
+        "water_rock": 0.2
       }
     },
     "cave": {
       "displayName": "Cave",
-      "signature": [0.6, -0.1, -0.2, -0.7, 0.0, 0.5, 0.0, -0.3],
+      "signature": [
+        0.6,
+        -0.1,
+        -0.2,
+        -0.7,
+        0,
+        0.5,
+        0,
+        -0.3
+      ],
       "blockedPercentage": 0.35,
       "passableTiles": {
-        "cave_floor": 0.40,
+        "cave_floor": 0.4,
         "cave_rubble": 0.25,
-        "cave_glowing_moss": 0.20,
+        "cave_glowing_moss": 0.2,
         "cave_wet_floor": 0.15
       },
       "blockedTiles": {
-        "cave_wall": 0.30,
+        "cave_wall": 0.3,
         "cave_stalactite": 0.25,
-        "cave_crystal": 0.20,
+        "cave_crystal": 0.2,
         "cave_underground_lake": 0.15,
-        "cave_boulder": 0.10
+        "cave_boulder": 0.1
       }
     },
     "volcanic": {
       "displayName": "Volcanic",
-      "signature": [0.3, 0.9, -0.4, 0.4, 0.0, 0.3, -0.6, 0.0],
-      "blockedPercentage": 0.30,
+      "signature": [
+        0.3,
+        0.9,
+        -0.4,
+        0.4,
+        0,
+        0.3,
+        -0.6,
+        0
+      ],
+      "blockedPercentage": 0.3,
       "passableTiles": {
-        "volcanic_rock": 0.30,
+        "volcanic_rock": 0.3,
         "volcanic_cooled_lava": 0.25,
-        "volcanic_obsidian": 0.20,
+        "volcanic_obsidian": 0.2,
         "volcanic_ash": 0.15,
-        "volcanic_lava_crack": 0.10
+        "volcanic_lava_crack": 0.1
       },
       "blockedTiles": {
-        "volcanic_lava": 0.60,
-        "volcanic_magma_vent": 0.40
+        "volcanic_lava": 0.6,
+        "volcanic_magma_vent": 0.4
       }
     },
     "magical": {
       "displayName": "Magical",
-      "signature": [-0.2, 0.1, -0.6, 0.5, 0.5, -0.3, 0.3, 0.4],
+      "signature": [
+        -0.2,
+        0.1,
+        -0.6,
+        0.5,
+        0.5,
+        -0.3,
+        0.3,
+        0.4
+      ],
       "blockedPercentage": 0.25,
       "passableTiles": {
-        "magical_enchanted_grass": 0.30,
+        "magical_enchanted_grass": 0.3,
         "magical_mana_pool": 0.25,
-        "magical_rune_circle": 0.20,
+        "magical_rune_circle": 0.2,
         "magical_arcane_glyph": 0.25
       },
       "blockedTiles": {
@@ -568,7 +658,7 @@
         "x": 3,
         "y": 18
       },
-      "sourceId": 383,
+      "sourceId": 356,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -709,7 +799,7 @@
         "x": 0,
         "y": 0
       },
-      "sourceId": 174,
+      "sourceId": 173,
       "layer": "structure",
       "elevation": 2.5,
       "isTransparent": true,
@@ -1010,7 +1100,7 @@
         "x": 4,
         "y": 8
       },
-      "sourceId": 390,
+      "sourceId": 363,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -1096,7 +1186,7 @@
         "x": 28,
         "y": 36
       },
-      "sourceId": 350,
+      "sourceId": 13,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -1262,16 +1352,40 @@
       "name": "Bleached Bones",
       "passability": "solid",
       "atlasCoords": {
-        "x": 23,
-        "y": 31
+        "x": 9,
+        "y": 6
       },
-      "sourceId": 10,
+      "sourceId": 430,
       "layer": "decoration",
       "elevation": 0.1,
       "isTransparent": true,
       "biomes": [
         "desert"
       ],
+      "decorationDensity": 0,
+      "variations": [
+        {
+          "x": 8,
+          "y": 6
+        },
+        {
+          "x": 10,
+          "y": 6
+        },
+        {
+          "x": 10,
+          "y": 7
+        },
+        {
+          "x": 9,
+          "y": 7
+        },
+        {
+          "x": 8,
+          "y": 7
+        }
+      ],
+      "tileMode": "pertilevariations",
       "description": "Scattered sun-bleached white bones on sand. Dry brittle remains, stark contrast against tan ground."
     },
     {
@@ -1860,7 +1974,7 @@
       "biomes": [
         "water"
       ],
-      "description": "Pale golden sand at water's edge. Wet near waterline, dry further up, smooth beach texture."
+      "description": "Pale golden sand at water\u0027s edge. Wet near waterline, dry further up, smooth beach texture."
     },
     {
       "id": "water_rapids",
@@ -1936,33 +2050,151 @@
       "name": "Cave Floor",
       "passability": "passable",
       "atlasCoords": {
-        "x": 10,
-        "y": 10
+        "x": 0,
+        "y": 44
       },
-      "sourceId": 14,
+      "sourceId": 13,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
-      "biomes": [
-        "cave"
+      "size": {
+        "x": 3,
+        "y": 3
+      },
+      "autoTileVariants": [
+        null,
+        {
+          "x": 0,
+          "y": 46
+        },
+        {
+          "x": 0,
+          "y": 44
+        },
+        {
+          "x": 0,
+          "y": 45
+        },
+        {
+          "x": 2,
+          "y": 44
+        },
+        {
+          "x": 0,
+          "y": 47
+        },
+        {
+          "x": 1,
+          "y": 44
+        },
+        {
+          "x": 2,
+          "y": 43
+        },
+        {
+          "x": 2,
+          "y": 46
+        },
+        {
+          "x": 1,
+          "y": 46
+        },
+        {
+          "x": 2,
+          "y": 47
+        },
+        {
+          "x": 2,
+          "y": 41
+        },
+        {
+          "x": 2,
+          "y": 45
+        },
+        {
+          "x": 0,
+          "y": 41
+        },
+        {
+          "x": 0,
+          "y": 43
+        },
+        {
+          "x": 1,
+          "y": 45
+        }
       ],
+      "tileMode": "autotile",
+      "outerTerrain": "*",
       "description": "Dark gray stone floor with smooth, worn surface. Dusty texture with subtle moisture sheen, cool tones."
     },
     {
       "id": "cave_rubble",
       "name": "Cave Rubble",
-      "passability": "passable",
+      "passability": "solid",
       "atlasCoords": {
         "x": 11,
-        "y": 10
+        "y": 3
       },
-      "sourceId": 14,
-      "layer": "terrain",
+      "sourceId": 430,
+      "layer": "structure",
       "elevation": 0.1,
       "isTransparent": true,
-      "biomes": [
-        "cave"
+      "variations": [
+        {
+          "x": 12,
+          "y": 3
+        },
+        {
+          "x": 13,
+          "y": 3
+        },
+        {
+          "x": 14,
+          "y": 3
+        },
+        {
+          "x": 15,
+          "y": 3
+        },
+        {
+          "x": 11,
+          "y": 4
+        },
+        {
+          "x": 12,
+          "y": 4
+        },
+        {
+          "x": 13,
+          "y": 4
+        },
+        {
+          "x": 14,
+          "y": 4
+        },
+        {
+          "x": 15,
+          "y": 4
+        },
+        {
+          "x": 0,
+          "y": 5
+        },
+        {
+          "x": 1,
+          "y": 5
+        },
+        {
+          "x": 0,
+          "y": 6
+        },
+        {
+          "x": 1,
+          "y": 6
+        }
       ],
+      "tileMode": "pertilevariations",
       "description": "Scattered gray stone fragments and debris. Irregular chunks of broken rock, dusty surface with sharp edges."
     },
     {
@@ -1970,33 +2202,128 @@
       "name": "Glowing Moss",
       "passability": "passable",
       "atlasCoords": {
-        "x": 13,
-        "y": 10
+        "x": 26,
+        "y": 14
       },
-      "sourceId": 14,
+      "sourceId": 11,
       "layer": "decoration",
       "elevation": 0,
       "isTransparent": true,
-      "biomes": [
-        "cave"
+      "decorationDensity": 0.05,
+      "variations": [
+        {
+          "x": 27,
+          "y": 14
+        },
+        {
+          "x": 28,
+          "y": 15
+        },
+        {
+          "x": 30,
+          "y": 22
+        },
+        {
+          "x": 27,
+          "y": 22
+        },
+        {
+          "x": 25,
+          "y": 23
+        },
+        {
+          "x": 28,
+          "y": 30
+        },
+        {
+          "x": 31,
+          "y": 31
+        },
+        {
+          "x": 27,
+          "y": 30
+        }
       ],
+      "tileMode": "pertilevariations",
       "description": "Soft bioluminescent moss emitting pale blue-green glow. Fuzzy texture, patches of light on dark stone background."
     },
     {
       "id": "cave_wet_floor",
       "name": "Wet Cave Floor",
-      "passability": "passable",
+      "passability": "solid",
       "atlasCoords": {
-        "x": 10,
-        "y": 11
+        "x": 7,
+        "y": 5
       },
-      "sourceId": 14,
+      "sourceId": 311,
       "layer": "terrain",
       "elevation": -0.1,
       "isTransparent": true,
-      "biomes": [
-        "cave"
+      "autoTileVariants": [
+        null,
+        {
+          "x": 6,
+          "y": 6
+        },
+        {
+          "x": 6,
+          "y": 4
+        },
+        {
+          "x": 6,
+          "y": 5
+        },
+        {
+          "x": 8,
+          "y": 4
+        },
+        {
+          "x": 9,
+          "y": 7
+        },
+        {
+          "x": 7,
+          "y": 4
+        },
+        {
+          "x": 11,
+          "y": 6
+        },
+        {
+          "x": 8,
+          "y": 6
+        },
+        {
+          "x": 7,
+          "y": 6
+        },
+        {
+          "x": 11,
+          "y": 7
+        },
+        {
+          "x": 11,
+          "y": 4
+        },
+        {
+          "x": 8,
+          "y": 5
+        },
+        {
+          "x": 9,
+          "y": 4
+        },
+        {
+          "x": 9,
+          "y": 6
+        },
+        {
+          "x": 7,
+          "y": 5
+        }
       ],
+      "tileMode": "autotile",
+      "outerTerrain": "*",
       "description": "Damp stone floor with visible water film. Dark gray with reflective wet sheen, small puddles forming."
     },
     {
@@ -2004,12 +2331,12 @@
       "name": "Cave Wall",
       "passability": "solid",
       "atlasCoords": {
-        "x": 14,
-        "y": 10
+        "x": 12,
+        "y": 8
       },
       "sourceId": 14,
       "layer": "terrain",
-      "elevation": 1.0,
+      "elevation": 1,
       "isTransparent": false,
       "biomes": [
         "cave"
@@ -2021,16 +2348,160 @@
       "name": "Stalactite",
       "passability": "solid",
       "atlasCoords": {
-        "x": 11,
-        "y": 11
+        "x": 25,
+        "y": 4
       },
-      "sourceId": 14,
+      "sourceId": 990,
       "layer": "structure",
       "elevation": 1.5,
       "isTransparent": false,
-      "biomes": [
-        "cave"
+      "size": {
+        "x": 1,
+        "y": 2
+      },
+      "variations": [
+        {
+          "x": 28,
+          "y": 4
+        },
+        {
+          "x": 29,
+          "y": 4
+        },
+        {
+          "x": 25,
+          "y": 6
+        },
+        {
+          "x": 28,
+          "y": 6
+        },
+        {
+          "x": 29,
+          "y": 6
+        },
+        {
+          "x": 25,
+          "y": 12
+        },
+        {
+          "x": 28,
+          "y": 12
+        },
+        {
+          "x": 29,
+          "y": 12
+        },
+        {
+          "x": 25,
+          "y": 14
+        },
+        {
+          "x": 28,
+          "y": 14
+        },
+        {
+          "x": 29,
+          "y": 14
+        },
+        {
+          "x": 9,
+          "y": 20
+        },
+        {
+          "x": 12,
+          "y": 20
+        },
+        {
+          "x": 13,
+          "y": 20
+        },
+        {
+          "x": 9,
+          "y": 22
+        },
+        {
+          "x": 12,
+          "y": 22
+        },
+        {
+          "x": 13,
+          "y": 22
+        },
+        {
+          "x": 22,
+          "y": 16
+        },
+        {
+          "x": 23,
+          "y": 16
+        },
+        {
+          "x": 27,
+          "y": 16
+        },
+        {
+          "x": 17,
+          "y": 18
+        },
+        {
+          "x": 19,
+          "y": 18
+        },
+        {
+          "x": 21,
+          "y": 18
+        },
+        {
+          "x": 22,
+          "y": 21
+        },
+        {
+          "x": 23,
+          "y": 21
+        },
+        {
+          "x": 27,
+          "y": 21
+        },
+        {
+          "x": 17,
+          "y": 23
+        },
+        {
+          "x": 19,
+          "y": 23
+        },
+        {
+          "x": 21,
+          "y": 23
+        },
+        {
+          "x": 22,
+          "y": 26
+        },
+        {
+          "x": 23,
+          "y": 26
+        },
+        {
+          "x": 27,
+          "y": 26
+        },
+        {
+          "x": 17,
+          "y": 28
+        },
+        {
+          "x": 19,
+          "y": 28
+        },
+        {
+          "x": 21,
+          "y": 28
+        }
       ],
+      "tileMode": "pertilevariations",
       "description": "Conical stone formation hanging from ceiling. Gray-brown with mineral deposits, pointed tip, wet dripping surface."
     },
     {
@@ -2038,50 +2509,88 @@
       "name": "Crystal Formation",
       "passability": "solid",
       "atlasCoords": {
-        "x": 12,
-        "y": 11
+        "x": 18,
+        "y": 4
       },
-      "sourceId": 14,
+      "sourceId": 341,
       "layer": "decoration",
       "elevation": 0.5,
       "isTransparent": true,
       "biomes": [
         "cave"
       ],
-      "description": "Translucent crystal cluster with geometric facets. Pale purple or blue hues, glittering surface, natural gem formation."
-    },
-    {
-      "id": "cave_underground_lake",
-      "name": "Underground Lake",
-      "passability": "solid",
-      "atlasCoords": {
-        "x": 13,
-        "y": 11
-      },
-      "sourceId": 14,
-      "layer": "terrain",
-      "elevation": -0.5,
-      "isTransparent": true,
-      "biomes": [
-        "cave"
+      "variations": [
+        {
+          "x": 19,
+          "y": 4
+        },
+        {
+          "x": 20,
+          "y": 4
+        },
+        {
+          "x": 21,
+          "y": 4
+        },
+        {
+          "x": 22,
+          "y": 4
+        },
+        {
+          "x": 23,
+          "y": 4
+        }
       ],
-      "description": "Still dark water in underground pool. Deep blue-black surface with faint reflections, mysterious depths."
+      "tileMode": "pertilevariations",
+      "description": "Translucent crystal cluster with geometric facets. Pale purple or blue hues, glittering surface, natural gem formation."
     },
     {
       "id": "cave_boulder",
       "name": "Cave Boulder",
       "passability": "solid",
       "atlasCoords": {
-        "x": 14,
-        "y": 11
+        "x": 20,
+        "y": 2
       },
-      "sourceId": 14,
+      "sourceId": 6,
       "layer": "structure",
       "elevation": 0.8,
       "isTransparent": false,
-      "biomes": [
-        "cave"
+      "size": {
+        "x": 2,
+        "y": 2
+      },
+      "variations": [
+        {
+          "x": 22,
+          "y": 2
+        },
+        {
+          "x": 20,
+          "y": 0
+        },
+        {
+          "x": 22,
+          "y": 0
+        },
+        {
+          "x": 24,
+          "y": 0
+        },
+        {
+          "x": 26,
+          "y": 0
+        },
+        {
+          "x": 26,
+          "y": 2
+        },
+        {
+          "x": 24,
+          "y": 2
+        }
       ],
+      "tileMode": "pertilevariations",
       "description": "Large rounded stone mass. Dark gray with smooth weathered surface, massive obstacle blocking passage."
     },
     {
@@ -2092,7 +2601,7 @@
         "x": 0,
         "y": 12
       },
-      "sourceId": 397,
+      "sourceId": 370,
       "layer": "terrain",
       "elevation": -0.3,
       "isTransparent": false,
@@ -2109,7 +2618,7 @@
         "x": 18,
         "y": 8
       },
-      "sourceId": 397,
+      "sourceId": 370,
       "layer": "structure",
       "elevation": 0.8,
       "isTransparent": false,
@@ -2126,7 +2635,7 @@
         "x": 2,
         "y": 12
       },
-      "sourceId": 397,
+      "sourceId": 370,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -2143,7 +2652,7 @@
         "x": 6,
         "y": 0
       },
-      "sourceId": 397,
+      "sourceId": 370,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -2160,7 +2669,7 @@
         "x": 14,
         "y": 8
       },
-      "sourceId": 397,
+      "sourceId": 370,
       "layer": "decoration",
       "elevation": 0,
       "isTransparent": true,
@@ -2177,7 +2686,7 @@
         "x": 4,
         "y": 0
       },
-      "sourceId": 397,
+      "sourceId": 370,
       "layer": "terrain",
       "elevation": 0.1,
       "isTransparent": true,
@@ -2194,7 +2703,7 @@
         "x": 16,
         "y": 8
       },
-      "sourceId": 397,
+      "sourceId": 370,
       "layer": "decoration",
       "elevation": 0,
       "isTransparent": true,
@@ -2211,7 +2720,7 @@
         "x": 0,
         "y": 0
       },
-      "sourceId": 342,
+      "sourceId": 330,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -2228,7 +2737,7 @@
         "x": 6,
         "y": 2
       },
-      "sourceId": 342,
+      "sourceId": 330,
       "layer": "effects",
       "elevation": 0,
       "isTransparent": true,
@@ -2245,9 +2754,9 @@
         "x": 24,
         "y": 8
       },
-      "sourceId": 342,
+      "sourceId": 330,
       "layer": "structure",
-      "elevation": 1.0,
+      "elevation": 1,
       "isTransparent": false,
       "biomes": [
         "magical"
@@ -2262,7 +2771,7 @@
         "x": 4,
         "y": 4
       },
-      "sourceId": 342,
+      "sourceId": 330,
       "layer": "terrain",
       "elevation": -0.5,
       "isTransparent": false,
@@ -2279,7 +2788,7 @@
         "x": 8,
         "y": 6
       },
-      "sourceId": 342,
+      "sourceId": 330,
       "layer": "terrain",
       "elevation": -0.2,
       "isTransparent": true,
@@ -2296,7 +2805,7 @@
         "x": 10,
         "y": 2
       },
-      "sourceId": 342,
+      "sourceId": 330,
       "layer": "decoration",
       "elevation": 0,
       "isTransparent": true,

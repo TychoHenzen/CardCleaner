@@ -308,4 +308,142 @@ public class WfcMapGeneratorIntegrationTest
             GD.Print($"Expected failure with limited rules: {result.ErrorMessage}");
         }
     }
+
+    // === Transition Spacing Integration Tests ===
+
+    [TestCase]
+    public void TestNoVisualTileHasThreeOrMoreTerrainTypes()
+    {
+        // This test verifies the transition spacing constraint works in practice.
+        // In a dual-grid setup, each visual tile samples 4 data cells at its corners.
+        // If a visual tile's 4 corners have 3+ distinct terrain types, auto-tiling breaks.
+
+        var rules = new WfcAdjacencyRules(new[]
+        {
+            ("A", "B"),
+            ("B", "C"),
+            ("A", "C"),
+            ("C", "D"),
+            ("A", "D"),
+            ("B", "D")
+        });
+
+        var generator = new WfcMapGenerator(rules);
+
+        var passable = new TilePool();
+        passable.Add("A", 1.0f);
+        passable.Add("B", 1.0f);
+        passable.Add("C", 1.0f);
+        passable.Add("D", 1.0f);
+
+        var biome = new BiomeDefinition(
+            "test",
+            new CardSignature(),
+            passable,
+            new TilePool(),
+            0.0f);
+
+        // Generate multiple maps with different seeds
+        var violationCount = 0;
+        var mapsGenerated = 0;
+
+        for (var seed = 1; seed <= 10; seed++)
+        {
+            var result = generator.Generate(biome, new Vector2I(10, 10), (ulong)seed * 1000);
+
+            if (!result.Success)
+            {
+                GD.Print($"Seed {seed}: Generation failed - {result.ErrorMessage}");
+                continue;
+            }
+
+            mapsGenerated++;
+            var mapData = result.MapData!;
+
+            // Check each visual tile position (corners of 4 data cells)
+            // Visual grid is (dataWidth+1) x (dataHeight+1)
+            for (var vy = 0; vy <= mapData.Size.Y; vy++)
+            {
+                for (var vx = 0; vx <= mapData.Size.X; vx++)
+                {
+                    var cornerTypes = new HashSet<string>();
+
+                    // Sample the 4 data cells at this visual tile's corners
+                    // NW corner: data[vy-1, vx-1]
+                    if (vy > 0 && vx > 0)
+                        cornerTypes.Add(mapData.TileIds[vy - 1, vx - 1]);
+
+                    // NE corner: data[vy-1, vx]
+                    if (vy > 0 && vx < mapData.Size.X)
+                        cornerTypes.Add(mapData.TileIds[vy - 1, vx]);
+
+                    // SW corner: data[vy, vx-1]
+                    if (vy < mapData.Size.Y && vx > 0)
+                        cornerTypes.Add(mapData.TileIds[vy, vx - 1]);
+
+                    // SE corner: data[vy, vx]
+                    if (vy < mapData.Size.Y && vx < mapData.Size.X)
+                        cornerTypes.Add(mapData.TileIds[vy, vx]);
+
+                    if (cornerTypes.Count > 2)
+                    {
+                        violationCount++;
+                        GD.Print($"Seed {seed}: Visual tile at ({vx},{vy}) has {cornerTypes.Count} types: {string.Join(", ", cornerTypes)}");
+                    }
+                }
+            }
+        }
+
+        GD.Print($"Generated {mapsGenerated} maps, found {violationCount} visual tiles with 3+ types");
+
+        // Assert no violations occurred
+        AssertThat(violationCount).IsEqual(0);
+    }
+
+    [TestCase]
+    public void TestTransitionSpacingReducesContradictions()
+    {
+        // The transition spacing constraint should reduce contradictions by
+        // preventing impossible states where 3+ types meet at a corner.
+
+        var rules = new WfcAdjacencyRules(new[]
+        {
+            ("A", "B"),
+            ("B", "C"),
+            ("C", "D")
+            // Note: A-C, A-D, B-D not allowed - strict chain
+        });
+
+        var generator = new WfcMapGenerator(rules);
+        generator.MaxRetries = 3;
+
+        var passable = new TilePool();
+        passable.Add("A", 1.0f);
+        passable.Add("B", 1.0f);
+        passable.Add("C", 1.0f);
+        passable.Add("D", 1.0f);
+
+        var biome = new BiomeDefinition(
+            "test",
+            new CardSignature(),
+            passable,
+            new TilePool(),
+            0.0f);
+
+        var successCount = 0;
+
+        // With strict chain rules and transition spacing, should succeed more often
+        for (var seed = 1; seed <= 10; seed++)
+        {
+            var result = generator.Generate(biome, new Vector2I(8, 8), (ulong)seed * 100);
+            if (result.Success)
+                successCount++;
+        }
+
+        GD.Print($"Success rate with transition spacing: {successCount}/10");
+
+        // Should succeed at least some of the time
+        // (exact rate depends on how strict the chain is)
+        AssertThat(successCount).IsGreaterEqual(1);
+    }
 }

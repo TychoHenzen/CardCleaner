@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -33,6 +35,7 @@ public class WfcSolver
 {
     private readonly WfcPropagator _propagator;
     private readonly WfcTileSelector _selector;
+    private readonly BlobSizeTracker? _blobTracker;
 
     /// <summary>
     /// Maximum iterations before giving up (prevents infinite loops).
@@ -40,10 +43,11 @@ public class WfcSolver
     /// </summary>
     public int MaxIterations { get; set; } = 10000;
 
-    public WfcSolver(WfcPropagator propagator, WfcTileSelector selector)
+    public WfcSolver(WfcPropagator propagator, WfcTileSelector selector, BlobSizeTracker? blobTracker = null)
     {
         _propagator = propagator;
         _selector = selector;
+        _blobTracker = blobTracker;
     }
 
     /// <summary>
@@ -56,6 +60,9 @@ public class WfcSolver
     public WfcSolveResult Solve(WfcGrid grid, BiomeDefinition? biome, RandomNumberGenerator rng)
     {
         var iterations = 0;
+
+        // Clear blob tracker for fresh solve
+        _blobTracker?.Clear();
 
         // Initial propagation to apply any pre-existing constraints
         var initialResult = _propagator.PropagateAll(grid);
@@ -98,11 +105,17 @@ public class WfcSolver
                     targetPos);
             }
 
+            // Get tiles matching collapsed neighbors for continuity bias
+            var continuityTiles = GetContinuityMatchingTiles(grid, targetPos.Value);
+
             // Select tile using weighted probabilities
             var selectedTile = _selector.SelectTile(
                 targetCell.GetPossibleTiles(),
                 biome,
-                rng);
+                rng,
+                continuityTiles,
+                targetPos.Value,
+                grid);
 
             if (selectedTile == null)
             {
@@ -114,6 +127,9 @@ public class WfcSolver
 
             // Collapse the cell
             targetCell.CollapseTo(selectedTile);
+
+            // Update blob tracker for soft modifiers
+            _blobTracker?.RegisterCollapse(targetPos.Value, selectedTile, grid);
 
             // Propagate constraints to neighbors
             var propResult = _propagator.Propagate(grid, targetPos.Value);
@@ -167,5 +183,26 @@ public class WfcSolver
             $"All {maxRetries + 1} attempts failed. Last error: {lastResult.ErrorMessage}",
             lastResult.Iterations,
             lastResult.ContradictionPosition), lastGrid!);
+    }
+
+    /// <summary>
+    /// Gets the set of tile IDs from collapsed neighbors at the given position.
+    /// Used to apply continuity bias in tile selection.
+    /// </summary>
+    private static HashSet<string>? GetContinuityMatchingTiles(WfcGrid grid, Vector2I pos)
+    {
+        HashSet<string>? result = null;
+
+        foreach (var neighborPos in grid.GetNeighbors(pos))
+        {
+            var neighborCell = grid.GetCell(neighborPos);
+            if (neighborCell.IsCollapsed())
+            {
+                result ??= new HashSet<string>();
+                result.Add(neighborCell.GetCollapsedTile());
+            }
+        }
+
+        return result;
     }
 }

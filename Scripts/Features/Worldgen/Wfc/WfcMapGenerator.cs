@@ -5,6 +5,8 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -19,6 +21,10 @@ public class WfcMapGenerator
     private readonly WfcAdjacencyRules _adjacencyRules;
     private readonly WfcTileSelector _selector;
     private readonly WfcMapDataAdapter _adapter;
+    private readonly BlobSizeTracker _blobTracker;
+    private readonly DiminishingReturnsSoftModifier _diminishingReturns;
+    private readonly NoveltySoftModifier _novelty;
+    private readonly CompactnessSoftModifier _compactness;
 
     /// <summary>
     /// Number of retry attempts when contradiction occurs (default 3).
@@ -35,11 +41,71 @@ public class WfcMapGenerator
     }
 
     /// <summary>
+    /// Decay factor for diminishing returns modifier.
+    /// Higher values = faster decay, smaller blobs.
+    /// Default 0.5 targets ~8-10 tile blobs before continuity becomes penalty.
+    /// </summary>
+    public float DiminishingReturnsDecay
+    {
+        get => _diminishingReturns.DecayFactor;
+        set => _diminishingReturns.DecayFactor = value;
+    }
+
+    /// <summary>
+    /// Enable or disable the diminishing returns modifier.
+    /// </summary>
+    public bool EnableDiminishingReturns { get; set; } = true;
+
+    /// <summary>
+    /// Enable or disable the novelty modifier (boosts tiles starting new blobs).
+    /// </summary>
+    public bool EnableNovelty { get; set; } = true;
+
+    /// <summary>
+    /// Boost multiplier for tiles with no same-type neighbors.
+    /// Default 3.0 helps new terrain types establish against dominant blobs.
+    /// </summary>
+    public float NoveltyBoost
+    {
+        get => _novelty.NoveltyBoost;
+        set => _novelty.NoveltyBoost = value;
+    }
+
+    /// <summary>
+    /// Enable or disable the compactness modifier (penalizes snake shapes).
+    /// </summary>
+    public bool EnableCompactness { get; set; } = true;
+
+    /// <summary>
+    /// Penalty for snake-like extensions (1 same-type neighbor).
+    /// Default 0.3 means snakes are 70% less likely.
+    /// </summary>
+    public float SnakePenalty
+    {
+        get => _compactness.SnakePenalty;
+        set => _compactness.SnakePenalty = value;
+    }
+
+    /// <summary>
+    /// Boost for compact fills (3-4 same-type neighbors).
+    /// Default 1.5 means filling gaps is 50% more likely.
+    /// </summary>
+    public float CompactBoost
+    {
+        get => _compactness.CompactBoost;
+        set => _compactness.CompactBoost = value;
+    }
+
+    /// <summary>
     /// Creates a WFC map generator using the given transition resolver.
     /// </summary>
     public WfcMapGenerator(CompiledTransitionResolver transitionResolver)
     {
         _adjacencyRules = new WfcAdjacencyRules(transitionResolver);
+        _blobTracker = new BlobSizeTracker();
+        _diminishingReturns = new DiminishingReturnsSoftModifier(_blobTracker);
+        _novelty = new NoveltySoftModifier(_blobTracker);
+        _compactness = new CompactnessSoftModifier();
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
     }
@@ -51,6 +117,10 @@ public class WfcMapGenerator
     public WfcMapGenerator(WfcAdjacencyRules adjacencyRules)
     {
         _adjacencyRules = adjacencyRules;
+        _blobTracker = new BlobSizeTracker();
+        _diminishingReturns = new DiminishingReturnsSoftModifier(_blobTracker);
+        _novelty = new NoveltySoftModifier(_blobTracker);
+        _compactness = new CompactnessSoftModifier();
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
     }
@@ -78,9 +148,12 @@ public class WfcMapGenerator
                 "No valid tiles found: biome tiles have no overlap with adjacency rules");
         }
 
+        // Configure modifiers
+        ConfigureModifiers();
+
         // Create WFC components
         var propagator = new WfcPropagator(_adjacencyRules);
-        var solver = new WfcSolver(propagator, _selector);
+        var solver = new WfcSolver(propagator, _selector, _blobTracker);
 
         // Grid factory for retry support
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, initialTiles);
@@ -130,10 +203,13 @@ public class WfcMapGenerator
             return WfcGenerationResult.Failed("No valid tiles across all biomes");
         }
 
+        // Configure modifiers
+        ConfigureModifiers();
+
         // For multi-biome, we use a position-aware selector
         // For now, we'll use a simpler approach: solve with all tiles, apply biome after
         var propagator = new WfcPropagator(_adjacencyRules);
-        var solver = new WfcSolver(propagator, _selector);
+        var solver = new WfcSolver(propagator, _selector, _blobTracker);
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, allTiles);
 
@@ -165,6 +241,29 @@ public class WfcMapGenerator
         var mapData = _adapter.ToSimpleMapData(grid, biomeMap, passableTiles);
 
         return WfcGenerationResult.Succeeded(mapData, solveResult.Iterations);
+    }
+
+    /// <summary>
+    /// Configures all soft modifiers based on current enable flags.
+    /// </summary>
+    private void ConfigureModifiers()
+    {
+        _selector.ClearModifiers();
+
+        if (EnableDiminishingReturns)
+        {
+            _selector.AddModifier(_diminishingReturns);
+        }
+
+        if (EnableNovelty)
+        {
+            _selector.AddModifier(_novelty);
+        }
+
+        if (EnableCompactness)
+        {
+            _selector.AddModifier(_compactness);
+        }
     }
 
     /// <summary>

@@ -63,6 +63,7 @@ public class WfcGrid
 
     /// <summary>
     /// Enumerates the 4-directional neighbors of a position (N, E, S, W).
+    /// Used for adjacency rule checking where only directly adjacent tiles matter.
     /// </summary>
     public IEnumerable<Vector2I> GetNeighbors(int x, int y)
     {
@@ -80,6 +81,35 @@ public class WfcGrid
     /// Enumerates the 4-directional neighbors of a position.
     /// </summary>
     public IEnumerable<Vector2I> GetNeighbors(Vector2I pos) => GetNeighbors(pos.X, pos.Y);
+
+    /// <summary>
+    /// Enumerates all 8 neighbors of a position (N, NE, E, SE, S, SW, W, NW).
+    /// Used for 2x2 window constraint propagation where diagonal cells share windows.
+    /// </summary>
+    public IEnumerable<Vector2I> GetNeighbors8(int x, int y)
+    {
+        // North
+        if (y > 0) yield return new Vector2I(x, y - 1);
+        // North-East
+        if (y > 0 && x < _width - 1) yield return new Vector2I(x + 1, y - 1);
+        // East
+        if (x < _width - 1) yield return new Vector2I(x + 1, y);
+        // South-East
+        if (y < _height - 1 && x < _width - 1) yield return new Vector2I(x + 1, y + 1);
+        // South
+        if (y < _height - 1) yield return new Vector2I(x, y + 1);
+        // South-West
+        if (y < _height - 1 && x > 0) yield return new Vector2I(x - 1, y + 1);
+        // West
+        if (x > 0) yield return new Vector2I(x - 1, y);
+        // North-West
+        if (y > 0 && x > 0) yield return new Vector2I(x - 1, y - 1);
+    }
+
+    /// <summary>
+    /// Enumerates all 8 neighbors of a position.
+    /// </summary>
+    public IEnumerable<Vector2I> GetNeighbors8(Vector2I pos) => GetNeighbors8(pos.X, pos.Y);
 
     /// <summary>
     /// Checks if all cells have collapsed to a single tile.
