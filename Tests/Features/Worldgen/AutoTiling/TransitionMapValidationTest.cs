@@ -18,8 +18,8 @@ namespace CardCleaner.Tests.Features.Worldgen.AutoTiling;
 public class TransitionMapValidationTest
 {
     private const string TransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";
-    private const int CompiledAtlasWidth = 2048;
-    private const int CompiledAtlasHeight = 1024;
+    private const int CompiledAtlasWidth = 4096;
+    private const int CompiledAtlasHeight = 512;
     private const int TileSize = 16;
 
     private JsonDocument? _transitionDoc;

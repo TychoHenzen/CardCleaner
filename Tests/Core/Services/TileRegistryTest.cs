@@ -146,18 +146,20 @@ public class TileRegistryTest
     [TestCase]
     public void TestBiomeTilesHaveDistinctPrefixes()
     {
-        // Biome-specific tiles should be named with biome prefix
-        var plainsTiles = _registry.GetTilesByBiome("plains")
-            .Where(t => t.AllowedBiomes?.Contains("plains") == true)
+        // Tiles that are EXCLUSIVE to a single biome should be named with that biome's prefix
+        // Tiles shared across multiple biomes don't need a prefix
+
+        var exclusivePlainsTiles = _registry.GetTilesByBiome("plains")
+            .Where(t => t.AllowedBiomes?.Count == 1 && t.AllowedBiomes.Contains("plains"))
             .ToList();
-        var forestTiles = _registry.GetTilesByBiome("forest")
-            .Where(t => t.AllowedBiomes?.Contains("forest") == true)
+        var exclusiveForestTiles = _registry.GetTilesByBiome("forest")
+            .Where(t => t.AllowedBiomes?.Count == 1 && t.AllowedBiomes.Contains("forest"))
             .ToList();
 
-        // Plains-specific tiles should start with "plains_"
-        AssertBool(plainsTiles.All(t => t.Id.StartsWith("plains_"))).IsTrue();
-        // Forest-specific tiles should start with "forest_"
-        AssertBool(forestTiles.All(t => t.Id.StartsWith("forest_"))).IsTrue();
+        // Plains-exclusive tiles should start with "plains_"
+        AssertBool(exclusivePlainsTiles.All(t => t.Id.StartsWith("plains_"))).IsTrue();
+        // Forest-exclusive tiles should start with "forest_"
+        AssertBool(exclusiveForestTiles.All(t => t.Id.StartsWith("forest_"))).IsTrue();
     }
 
     [TestCase]

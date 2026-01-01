@@ -322,10 +322,10 @@ public class DualGridAutoTileTest
             { true, true }
         };
 
-        // Visual (2,0) samples: NW=(0,-1), NE=(1,-1), SW=(0,0), SE=(1,0)
-        // SW and SE are in bounds
+        // Visual (2,0) samples: NW=(1,-1), NE=(2,-1), SW=(1,0), SE=(2,0)
+        // Only SW is in bounds (col=1 valid, row=0 valid); SE col=2 is out of bounds
         var mask = DualGridAutoTile.ComputeBitmask(2, 0, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.SouthWest | NeighborBitmaskCorner.SouthEast); // 6
+        AssertThat(mask).IsEqual(NeighborBitmaskCorner.SouthWest); // 4
     }
 
     [TestCase]
@@ -337,10 +337,10 @@ public class DualGridAutoTileTest
             { true, true }
         };
 
-        // Visual (0,2) samples: NW=(-1,0), NE=(0,0), SW=(-1,1), SE=(0,1)
-        // NE and SE are in bounds
+        // Visual (0,2) samples: NW=(-1,1), NE=(0,1), SW=(-1,2), SE=(0,2)
+        // Only NE is in bounds (col=0 valid, row=1 valid); SE row=2 is out of bounds
         var mask = DualGridAutoTile.ComputeBitmask(0, 2, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.NorthEast | NeighborBitmaskCorner.SouthEast); // 3
+        AssertThat(mask).IsEqual(NeighborBitmaskCorner.NorthEast); // 1
     }
 
     [TestCase]
@@ -352,10 +352,10 @@ public class DualGridAutoTileTest
             { true, true }
         };
 
-        // Visual (2,2) samples: NW=(0,0), NE=(1,0), SW=(0,1), SE=(1,1)
-        // All 4 are in bounds for a 2x2 grid
+        // Visual (2,2) samples: NW=(1,1), NE=(2,1), SW=(1,2), SE=(2,2)
+        // Only NW is in bounds (col=1, row=1 valid); others are out of bounds
         var mask = DualGridAutoTile.ComputeBitmask(2, 2, dataGrid);
-        AssertThat(mask).IsEqual(15); // All corners
+        AssertThat(mask).IsEqual(NeighborBitmaskCorner.NorthWest); // 8
     }
 
     // ==================== Visual Grid Size ====================
@@ -398,11 +398,11 @@ public class DualGridAutoTileTest
         AssertThat(bitmasks.GetLength(0)).IsEqual(3); // rows
         AssertThat(bitmasks.GetLength(1)).IsEqual(3); // cols
 
-        // Check corners
-        AssertThat(bitmasks[0, 0]).IsEqual(2);  // Only SE
-        AssertThat(bitmasks[0, 2]).IsEqual(6);  // SW + SE
-        AssertThat(bitmasks[2, 0]).IsEqual(3);  // NE + SE
-        AssertThat(bitmasks[2, 2]).IsEqual(15); // All
+        // Check corners (bitmasks[row, col] = visual position (col, row))
+        AssertThat(bitmasks[0, 0]).IsEqual(2);  // Visual (0,0): Only SE in bounds
+        AssertThat(bitmasks[0, 2]).IsEqual(4);  // Visual (2,0): Only SW in bounds
+        AssertThat(bitmasks[2, 0]).IsEqual(1);  // Visual (0,2): Only NE in bounds
+        AssertThat(bitmasks[2, 2]).IsEqual(8);  // Visual (2,2): Only NW in bounds
     }
 
     [TestCase]

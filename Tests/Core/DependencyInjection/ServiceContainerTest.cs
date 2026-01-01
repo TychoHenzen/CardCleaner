@@ -50,7 +50,7 @@ public class ServiceContainerTest
         var resolved1 = _container.Resolve<ITestService>();
         var resolved2 = _container.Resolve<ITestService>();
 
-        Assertions.AssertThat(resolved1).IsNotEqual(resolved2); // Different instances
+        Assertions.AssertThat(resolved1).IsNotSame(resolved2); // Different instances (reference check)
         Assertions.AssertThat(resolved1.GetValue()).IsEqual("test_value");
         Assertions.AssertThat(resolved2.GetValue()).IsEqual("test_value");
     }
@@ -69,7 +69,7 @@ public class ServiceContainerTest
         var resolved2 = _container.Resolve<ITestService>();
 
         Assertions.AssertThat(callCount).IsEqual(2); // Factory called twice
-        Assertions.AssertThat(resolved1).IsNotEqual(resolved2); // Different instances
+        Assertions.AssertThat(resolved1).IsNotSame(resolved2); // Different instances (reference check)
     }
 
     [TestCase]

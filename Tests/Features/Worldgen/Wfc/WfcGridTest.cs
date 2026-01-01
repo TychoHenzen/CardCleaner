@@ -116,10 +116,10 @@ public class WfcGridTest
     {
         var grid = new WfcGrid(3, 3, new[] { "grass", "dirt", "sand" });
 
-        // Remove some tiles from one cell to make it lowest entropy
+        // Remove one tile from cell (1,1) to make it lowest entropy but not collapsed
+        // Cell (1,1) will have entropy 2, all others have entropy 3
         var cell = grid.GetCell(1, 1);
         cell.RemoveTile("grass");
-        cell.RemoveTile("dirt");
 
         var lowestPos = grid.GetLowestEntropyCell();
 

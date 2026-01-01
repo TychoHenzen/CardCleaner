@@ -144,8 +144,25 @@ public class SimpleMapGeneratorTest
             new CardSignature(new[] { -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }));
         var map2 = generator2.GenerateMap(size);
 
+        // Check for any difference: passable count, player start, or tile content
         var areDifferent = map1.PassableTiles.Count != map2.PassableTiles.Count ||
                            map1.PlayerStart != map2.PlayerStart;
+
+        // Also check actual tile content if basic metrics match
+        if (!areDifferent)
+        {
+            var differentTileCount = 0;
+            for (var y = 0; y < size.Y; y++)
+            {
+                for (var x = 0; x < size.X; x++)
+                {
+                    if (map1.TileIds[y, x] != map2.TileIds[y, x])
+                        differentTileCount++;
+                }
+            }
+            areDifferent = differentTileCount > 0;
+        }
+
         AssertBool(areDifferent).IsTrue();
     }
 

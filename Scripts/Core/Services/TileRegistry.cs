@@ -190,7 +190,9 @@ public class TileRegistry : ITileRegistry
             variations: translatedVars,
             variationMode: original.VariationMode,
             animation: translatedAnimation,
-            dominance: original.Dominance);
+            dominance: original.Dominance,
+            innerTerrainId: original.InnerTerrainId,
+            outerTerrainId: original.OuterTerrainId);
     }
 
     /// <summary>
