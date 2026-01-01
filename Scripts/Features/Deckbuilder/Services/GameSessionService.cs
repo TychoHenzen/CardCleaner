@@ -122,7 +122,8 @@ public partial class GameSessionService : Node, IGameSessionService
 
     public override void _Ready()
     {
-        _rng.Randomize();
+        // Note: _rng is seeded deterministically in GenerateMap() using ComputeSeedFromCards()
+        // Do not call _rng.Randomize() here as it would make map generation non-reproducible
 
         // Initialize biome registry immediately
         _biomeRegistry = new BiomeRegistry();
@@ -142,6 +143,11 @@ public partial class GameSessionService : Node, IGameSessionService
     private void GenerateMap()
     {
         ILog.Print($"Generating biome-based map from {_mapSeeds.Count} seed signature(s)");
+
+        // Compute deterministic seed from card signatures
+        var seed = ComputeSeedFromCards(_mapSeeds);
+        _rng.Seed = seed;
+        ILog.Print($"Map seed: {seed}");
 
         // Ensure tile registry is available (fallback if async callback hasn't run yet)
         _tileRegistry ??= new TileRegistry();
@@ -376,5 +382,23 @@ public partial class GameSessionService : Node, IGameSessionService
         var size = baseSize + sizeVariation;
 
         return new Vector2I(size, size);
+    }
+
+    /// <summary>
+    /// Computes a deterministic seed from a list of card signatures.
+    /// Same cards in same order always produce the same seed.
+    /// </summary>
+    internal static ulong ComputeSeedFromCards(List<CardSignature> cards)
+    {
+        var hash = 17UL;
+        foreach (var card in cards)
+        {
+            for (var i = 0; i < 8; i++)
+            {
+                // Use BitConverter for deterministic float→bits conversion
+                hash = hash * 31 + BitConverter.ToUInt32(BitConverter.GetBytes(card[i]), 0);
+            }
+        }
+        return hash;
     }
 }
