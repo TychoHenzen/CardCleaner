@@ -43,6 +43,13 @@ public class SimpleMapGenerator
     /// </summary>
     public int MaxWfcRetries { get; set; } = 5;
 
+    /// <summary>
+    /// Enable or disable corridor fallback for connectivity.
+    /// When true (default), EnsureConnectivity creates corridors between disconnected regions.
+    /// When false, relies solely on WFC-native connectivity constraint.
+    /// </summary>
+    public bool EnableCorridorFallback { get; set; } = true;
+
     private readonly IBiomeProvider _biomeProvider;
     private readonly RandomNumberGenerator _rng;
     private readonly ITileRegistry _tileRegistry;
@@ -141,8 +148,11 @@ public class SimpleMapGenerator
             structurePlacements = PlaceStructures(finalTileIds, size, passableTiles);
         }
 
-        // Ensure all passable tiles are connected via corridors
-        EnsureConnectivity(finalTileIds, size, passableTiles);
+        // Ensure all passable tiles are connected via corridors (if fallback enabled)
+        if (EnableCorridorFallback)
+        {
+            EnsureConnectivity(finalTileIds, size, passableTiles);
+        }
 
         // Select contextual variants
         var contextualVariants = SelectContextualVariants(finalTileIds, size, placedTiles, biomeMap);

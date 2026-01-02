@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using Godot;
@@ -124,9 +126,10 @@ public class WfcTileSelector
             totalWeight += weight;
         }
 
-        // Edge case: all weights are zero
+        // Edge case: all weights are zero (all tiles banned by hard constraints)
+        // Return null to signal contradiction - let WFC retry with different seed
         if (totalWeight <= 0)
-            return validTiles.First();
+            return null;
 
         // Weighted random selection
         var roll = rng.Randf() * totalWeight;

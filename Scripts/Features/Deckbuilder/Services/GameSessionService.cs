@@ -162,8 +162,9 @@ public partial class GameSessionService : Node, IGameSessionService
         var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, mapSize);
 
         // Create WFC generator with hard constraints (2x2 window, adjacency rules)
+        // Pass tile registry so WfcMapGenerator uses TileDefinition.IsPassable for connectivity
         var transitionResolver = new CompiledTransitionResolver();
-        var wfcGenerator = new WfcMapGenerator(transitionResolver);
+        var wfcGenerator = new WfcMapGenerator(transitionResolver, _tileRegistry);
 
         // Create map generator with WFC for terrain generation
         var mapGenerator = new SimpleMapGenerator(

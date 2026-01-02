@@ -208,17 +208,17 @@
       ],
       "blockedPercentage": 0.35,
       "passableTiles": {
-        "cave_floor": 0.4,
-        "cave_rubble": 0.25,
-        "cave_glowing_moss": 0.2,
-        "cave_wet_floor": 0.15
+        "cave_floor": 0.5,
+        "cave_glowing_moss": 0.5
       },
       "blockedTiles": {
-        "cave_wall": 0.3,
-        "cave_stalactite": 0.25,
-        "cave_crystal": 0.2,
-        "cave_underground_lake": 0.15,
-        "cave_boulder": 0.1
+        "cave_wall": 0.25,
+        "cave_stalactite": 0.2,
+        "cave_crystal": 0.15,
+        "cave_underground_lake": 0.1,
+        "cave_boulder": 0.1,
+        "cave_rubble": 0.1,
+        "cave_wet_floor": 0.1
       }
     },
     "volcanic": {
@@ -299,6 +299,20 @@
       "elevation": 0,
       "isTransparent": true,
       "description": "Bright target marker with concentric rings or crosshair pattern. High-contrast color for easy spotting."
+    },
+    {
+      "id": "floor",
+      "name": "Floor",
+      "passability": "passable",
+      "atlasCoords": {
+        "x": 6,
+        "y": 8
+      },
+      "sourceId": 2,
+      "layer": "terrain",
+      "elevation": 0,
+      "isTransparent": true,
+      "description": "Basic floor tile used as fallback. Visually identical to dirt."
     },
     {
       "id": "dirt",

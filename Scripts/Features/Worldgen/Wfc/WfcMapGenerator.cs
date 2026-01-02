@@ -27,6 +27,7 @@ public class WfcMapGenerator
     private readonly DiminishingReturnsSoftModifier _diminishingReturns;
     private readonly NoveltySoftModifier _novelty;
     private readonly CompactnessSoftModifier _compactness;
+    private readonly ITileRegistry? _tileRegistry;
 
     /// <summary>
     /// Number of retry attempts when contradiction occurs (default 3).
@@ -107,9 +108,12 @@ public class WfcMapGenerator
     /// <summary>
     /// Creates a WFC map generator using the given transition resolver.
     /// </summary>
-    public WfcMapGenerator(CompiledTransitionResolver transitionResolver)
+    /// <param name="transitionResolver">Transition resolver for adjacency rules.</param>
+    /// <param name="tileRegistry">Tile registry for passability lookups. Required for connectivity constraint.</param>
+    public WfcMapGenerator(CompiledTransitionResolver transitionResolver, ITileRegistry? tileRegistry = null)
     {
         _adjacencyRules = new WfcAdjacencyRules(transitionResolver);
+        _tileRegistry = tileRegistry;
         _blobTracker = new BlobSizeTracker();
         _diminishingReturns = new DiminishingReturnsSoftModifier(_blobTracker);
         _novelty = new NoveltySoftModifier();
@@ -122,9 +126,12 @@ public class WfcMapGenerator
     /// Creates a WFC map generator with custom adjacency rules.
     /// Useful for testing or custom rule sets.
     /// </summary>
-    public WfcMapGenerator(WfcAdjacencyRules adjacencyRules)
+    /// <param name="adjacencyRules">Custom adjacency rules.</param>
+    /// <param name="tileRegistry">Tile registry for passability lookups. Required for connectivity constraint.</param>
+    public WfcMapGenerator(WfcAdjacencyRules adjacencyRules, ITileRegistry? tileRegistry = null)
     {
         _adjacencyRules = adjacencyRules;
+        _tileRegistry = tileRegistry;
         _blobTracker = new BlobSizeTracker();
         _diminishingReturns = new DiminishingReturnsSoftModifier(_blobTracker);
         _novelty = new NoveltySoftModifier();
@@ -147,15 +154,14 @@ public class WfcMapGenerator
         ulong seed,
         CardSignature? signature = null)
     {
-        var initialTiles = DetermineInitialTiles(biome);
+        var (initialTiles, passableSet) = DetermineInitialTiles(biome);
         if (initialTiles.Count == 0)
         {
             return WfcGenerationResult.Failed(
                 "No valid tiles found: biome tiles have no overlap with adjacency rules");
         }
 
-        var passableSet = new HashSet<string>(biome.PassableTiles.GetAllTileIds());
-        var solver = CreateSolver(passableSet);
+        var solver = CreateSolver();
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, initialTiles);
         var (solveResult, grid) = solver.SolveWithRetry(CreateGrid, biome, seed, MaxRetries);
@@ -198,7 +204,7 @@ public class WfcMapGenerator
             _selector.AddConstraint(new BiomeAffinityConstraint(biomeStrengthGrid, biomeRegistry));
         }
 
-        var solver = CreateSolver(passableTiles, skipBaseConstraints: gradient != null);
+        var solver = CreateSolver(skipBaseConstraints: gradient != null);
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, allTiles);
 
@@ -225,24 +231,24 @@ public class WfcMapGenerator
     /// <summary>
     /// Creates a configured WfcSolver with all enabled constraints.
     /// </summary>
-    /// <param name="passableSet">Set of tile IDs considered passable for connectivity.</param>
     /// <param name="skipBaseConstraints">If true, assumes ConfigureConstraints was already called.</param>
-    private WfcSolver CreateSolver(HashSet<string> passableSet, bool skipBaseConstraints = false)
+    private WfcSolver CreateSolver(bool skipBaseConstraints = false)
     {
         if (!skipBaseConstraints)
         {
             ConfigureConstraints();
         }
 
-        var propagator = new WfcPropagator(_adjacencyRules);
+        var propagator = new WfcPropagator(_adjacencyRules, _tileRegistry);
 
-        if (!EnableConnectivity)
+        if (!EnableConnectivity || _tileRegistry == null)
         {
             return new WfcSolver(propagator, _selector, _blobTracker);
         }
 
         var passabilityGraph = new PassabilityGraph();
-        bool IsPassable(string tileId) => passableSet.Contains(tileId);
+        // Use TileRegistry as single source of truth for passability
+        bool IsPassable(string tileId) => _tileRegistry.GetTile(tileId)?.IsPassable ?? false;
 
         _selector.AddConstraint(new ConnectivityConstraint(passabilityGraph, IsPassable));
         return new WfcSolver(propagator, _selector, _blobTracker, passabilityGraph, IsPassable);
@@ -267,31 +273,54 @@ public class WfcMapGenerator
 
     /// <summary>
     /// Determines which tiles to include for a single biome.
-    /// Returns intersection of biome tiles and adjacency-supported tiles.
+    /// Uses PassableTiles from biome pools for candidates (controls obstacle density).
+    /// Uses TileRegistry.IsPassable as the source of truth for ConnectivityConstraint.
     /// </summary>
-    private HashSet<string> DetermineInitialTiles(BiomeDefinition biome)
+    private (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineInitialTiles(BiomeDefinition biome)
     {
-        var tiles = new HashSet<string>();
+        var allTiles = new HashSet<string>();
+        var passableTiles = new HashSet<string>();
         var adjacencyTiles = _adjacencyRules.AllTileIds;
 
+        // Only use PassableTiles from biome pool as candidates (blocked tiles handled separately)
         foreach (var tileId in biome.PassableTiles.GetAllTileIds())
         {
-            if (adjacencyTiles.Contains(tileId))
+            if (!adjacencyTiles.Contains(tileId))
             {
-                tiles.Add(tileId);
+                ILog.Print($"[WfcMapGenerator] Skipping tile '{tileId}': no adjacency rules defined");
+                continue;
+            }
+
+            allTiles.Add(tileId);
+
+            // Use TileRegistry as source of truth for passability (detects miscategorized tiles)
+            if (_tileRegistry != null)
+            {
+                var tile = _tileRegistry.GetTile(tileId);
+                if (tile?.IsPassable == true)
+                {
+                    passableTiles.Add(tileId);
+                }
+                else
+                {
+                    // Log warning: tile is in PassableTiles pool but IsPassable=false
+                    ILog.Print($"[WfcMapGenerator] WARNING: Tile '{tileId}' is in PassableTiles but has IsPassable=false");
+                }
             }
             else
             {
-                ILog.Print($"[WfcMapGenerator] Skipping tile '{tileId}': no adjacency rules defined");
+                // Fallback: assume tiles in PassableTiles pool are passable
+                passableTiles.Add(tileId);
             }
         }
 
-        return tiles;
+        return (allTiles, passableTiles);
     }
 
     /// <summary>
     /// Determines tiles for multi-biome generation.
-    /// Returns union of all tiles across biomes that have adjacency support.
+    /// Uses biome pools for tile candidates (until data migration to tile-declared biomes).
+    /// Uses TileRegistry.IsPassable as the source of truth for passability.
     /// </summary>
     private (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineMultiBiomeTiles(BiomeRegistry registry)
     {
@@ -300,12 +329,37 @@ public class WfcMapGenerator
 
         foreach (var biome in registry.GetAllBiomes())
         {
+            // Collect all tiles from biome pools (both passable and blocked)
+            var biomeTileIds = new HashSet<string>();
             foreach (var tileId in biome.PassableTiles.GetAllTileIds())
+                biomeTileIds.Add(tileId);
+            foreach (var tileId in biome.BlockedTiles.GetAllTileIds())
+                biomeTileIds.Add(tileId);
+
+            foreach (var tileId in biomeTileIds)
             {
-                if (_adjacencyRules.AllTileIds.Contains(tileId))
+                if (!_adjacencyRules.AllTileIds.Contains(tileId))
+                    continue;
+
+                allTiles.Add(tileId);
+
+                // Use TileRegistry as source of truth for passability
+                if (_tileRegistry != null)
                 {
-                    allTiles.Add(tileId);
-                    passableTiles.Add(tileId);
+                    var tile = _tileRegistry.GetTile(tileId);
+                    if (tile?.IsPassable == true)
+                    {
+                        passableTiles.Add(tileId);
+                    }
+                }
+                else
+                {
+                    // Fallback: assume tiles in PassableTiles pool are passable
+                    var passablePool = new HashSet<string>(biome.PassableTiles.GetAllTileIds());
+                    if (passablePool.Contains(tileId))
+                    {
+                        passableTiles.Add(tileId);
+                    }
                 }
             }
         }

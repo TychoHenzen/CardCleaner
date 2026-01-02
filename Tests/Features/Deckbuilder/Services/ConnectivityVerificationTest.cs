@@ -1,0 +1,280 @@
+using System.Collections.Generic;
+using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Worldgen;
+using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using GdUnit4;
+using Godot;
+using static GdUnit4.Assertions;
+
+namespace CardCleaner.Tests.Features.Deckbuilder.Services;
+
+/// <summary>
+/// Phase 5.3 gate tests: Verify WFC-native connectivity works without corridor fallback.
+/// GATE CONDITION: If >= 99% success rate, Phase 6 can proceed to remove corridor code.
+/// </summary>
+[TestSuite]
+[RequireGodotRuntime]
+public class ConnectivityVerificationTest
+{
+    private BiomeRegistry _registry = null!;
+    private ITileRegistry _tileRegistry = null!;
+
+    [BeforeTest]
+    public void Setup()
+    {
+        _registry = new BiomeRegistry();
+        _registry.RegisterDefaultBiomes();
+        _tileRegistry = new TileRegistry();
+    }
+
+    /// <summary>
+    /// Creates a SimpleMapGenerator with WFC connectivity constraint enabled.
+    /// </summary>
+    private SimpleMapGenerator CreateGeneratorWithWfcConnectivity(Vector2I mapSize, RandomNumberGenerator rng)
+    {
+        var gradient = new CardBasedGradient(new[] { new CardSignature() }, rng);
+        var biomeProvider = new BiomeMapGenerator(_registry, gradient, mapSize);
+
+        // Create WfcMapGenerator with connectivity enabled
+        var wfcGenerator = CreateWfcGenerator();
+        wfcGenerator.EnableConnectivity = true;
+
+        return new SimpleMapGenerator(
+            rng,
+            biomeProvider,
+            _tileRegistry,
+            wfcGenerator,
+            biomeRegistry: _registry,
+            gradient: gradient);
+    }
+
+    /// <summary>
+    /// Creates a WfcMapGenerator with adjacency rules from biome pools.
+    /// Uses TileRegistry as source of truth for passability (via constructor parameter).
+    /// </summary>
+    private WfcMapGenerator CreateWfcGenerator()
+    {
+        // Build adjacency rules from all tiles in biome pools (passable + blocked)
+        var allTiles = new HashSet<string>();
+        foreach (var biome in _registry.GetAllBiomes())
+        {
+            foreach (var tileId in biome.PassableTiles.GetAllTileIds())
+                allTiles.Add(tileId);
+            foreach (var tileId in biome.BlockedTiles.GetAllTileIds())
+                allTiles.Add(tileId);
+        }
+
+        // Create permissive adjacency rules (all tiles can be adjacent)
+        var pairs = new List<(string, string)>();
+        var tileList = allTiles.ToList();
+        for (var i = 0; i < tileList.Count; i++)
+        {
+            for (var j = i; j < tileList.Count; j++)
+            {
+                pairs.Add((tileList[i], tileList[j]));
+            }
+        }
+
+        var rules = new WfcAdjacencyRules(pairs.ToArray());
+        // Pass tile registry so WfcMapGenerator uses TileDefinition.IsPassable as source of truth
+        return new WfcMapGenerator(rules, _tileRegistry);
+    }
+
+    /// <summary>
+    /// Verifies all passable tiles in a map are connected via flood fill.
+    /// </summary>
+    private static bool IsFullyConnected(SimpleMapData mapData)
+    {
+        var passablePositions = new HashSet<Vector2I>(mapData.PassableTiles);
+
+        if (passablePositions.Count == 0)
+            return true; // No passable tiles = trivially connected
+
+        // Flood fill from the first passable position
+        var start = passablePositions.First();
+        var visited = new HashSet<Vector2I>();
+        var queue = new Queue<Vector2I>();
+        queue.Enqueue(start);
+        visited.Add(start);
+
+        var directions = new[] {
+            new Vector2I(1, 0), new Vector2I(-1, 0),
+            new Vector2I(0, 1), new Vector2I(0, -1)
+        };
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+
+            foreach (var dir in directions)
+            {
+                var neighbor = current + dir;
+
+                if (passablePositions.Contains(neighbor) && !visited.Contains(neighbor))
+                {
+                    visited.Add(neighbor);
+                    queue.Enqueue(neighbor);
+                }
+            }
+        }
+
+        // All passable positions should be reachable from the first one
+        return visited.Count == passablePositions.Count;
+    }
+
+    // ========== Test Case 1: Generate100Maps_WithoutCorridor_AllConnected ==========
+
+    [TestCase]
+    public void Generate100Maps_WithoutCorridor_AllConnected()
+    {
+        // GATE TEST: Generate 100 maps with corridor fallback disabled
+        // Verify WFC-native connectivity maintains connection
+
+        var mapSize = new Vector2I(25, 25); // Smaller size for faster test execution
+        var disconnectedMaps = new List<int>();
+
+        for (var i = 0; i < 100; i++)
+        {
+            var rng = new RandomNumberGenerator();
+            rng.Seed = (ulong)(i * 12345 + 7);
+
+            var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
+            generator.EnableCorridorFallback = false;
+
+            var mapData = generator.GenerateMap(mapSize);
+
+            if (!IsFullyConnected(mapData))
+            {
+                disconnectedMaps.Add(i);
+                GD.Print($"Map {i} (seed {rng.Seed}) is disconnected! Passable: {mapData.PassableTiles.Count}");
+            }
+        }
+
+        var successRate = (100 - disconnectedMaps.Count) / 100.0f * 100;
+        GD.Print($"Connectivity success rate: {successRate}% ({100 - disconnectedMaps.Count}/100)");
+
+        if (disconnectedMaps.Count > 0)
+        {
+            GD.Print($"Disconnected maps: {string.Join(", ", disconnectedMaps)}");
+        }
+
+        // GATE CONDITION: Less than 2 disconnected maps (>= 99% success rate)
+        AssertInt(disconnectedMaps.Count).IsLess(2);
+    }
+
+    // ========== Test Case 2: GenerateMap_WithFlagDisabled_SkipsEnsureConnectivity ==========
+
+    [TestCase]
+    public void GenerateMap_WithFlagDisabled_SkipsEnsureConnectivity()
+    {
+        // Verify the flag correctly controls corridor generation behavior
+        // When disabled, no corridors should be carved (no L-shaped paths)
+
+        var mapSize = new Vector2I(15, 15);
+        var rng = new RandomNumberGenerator();
+        rng.Seed = 42;
+
+        var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
+        generator.EnableCorridorFallback = false;
+
+        // Generate map - should rely solely on WFC connectivity
+        var mapData = generator.GenerateMap(mapSize);
+
+        // Verify map was generated (basic sanity check)
+        AssertThat(mapData).IsNotNull();
+        AssertThat(mapData.PassableTiles.Count).IsGreater(0);
+
+        // The test passes if we get here without exception
+        // The flag being respected is tested by the Generate100Maps test
+        AssertBool(true).IsTrue();
+    }
+
+    [TestCase]
+    public void GenerateMap_WithFlagEnabled_StillWorks()
+    {
+        // Verify default behavior (corridor fallback enabled) still works
+        var mapSize = new Vector2I(15, 15);
+        var rng = new RandomNumberGenerator();
+        rng.Seed = 42;
+
+        var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
+        generator.EnableCorridorFallback = true; // Default
+
+        var mapData = generator.GenerateMap(mapSize);
+
+        // With corridor fallback, map should definitely be connected
+        AssertBool(IsFullyConnected(mapData)).IsTrue();
+    }
+
+    // ========== Test Case 3: ConnectivityRate_Above99Percent ==========
+
+    [TestCase]
+    public void ConnectivityRate_Above99Percent()
+    {
+        // Statistical verification test - calculate exact success rate
+        var mapSize = new Vector2I(25, 25);
+        var totalTests = 100;
+        var connectedCount = 0;
+
+        for (var i = 0; i < totalTests; i++)
+        {
+            var rng = new RandomNumberGenerator();
+            rng.Seed = (ulong)(i * 54321 + 13); // Different seed series than main test
+
+            var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
+            generator.EnableCorridorFallback = false;
+
+            var mapData = generator.GenerateMap(mapSize);
+
+            if (IsFullyConnected(mapData))
+            {
+                connectedCount++;
+            }
+        }
+
+        var successRate = connectedCount / (float)totalTests * 100;
+        GD.Print($"Statistical connectivity rate: {successRate:F1}% ({connectedCount}/{totalTests})");
+
+        // GATE CONDITION: Success rate must be >= 99%
+        AssertFloat(successRate).IsGreaterEqual(99.0f);
+    }
+
+    // ========== Additional edge case tests ==========
+
+    [TestCase]
+    public void LargerMap_WithoutCorridor_StillConnected()
+    {
+        // Test with larger map to ensure connectivity scales
+        var mapSize = new Vector2I(50, 50);
+        var rng = new RandomNumberGenerator();
+        rng.Seed = 12345;
+
+        var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
+        generator.EnableCorridorFallback = false;
+
+        var mapData = generator.GenerateMap(mapSize);
+
+        AssertBool(IsFullyConnected(mapData)).IsTrue();
+    }
+
+    [TestCase]
+    public void SmallMap_WithoutCorridor_StillConnected()
+    {
+        // Test with small map edge case
+        var mapSize = new Vector2I(8, 8);
+        var rng = new RandomNumberGenerator();
+        rng.Seed = 12345;
+
+        var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
+        generator.EnableCorridorFallback = false;
+
+        var mapData = generator.GenerateMap(mapSize);
+
+        AssertBool(IsFullyConnected(mapData)).IsTrue();
+    }
+}

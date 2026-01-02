@@ -97,6 +97,8 @@ public class PassabilityGraph
     /// <summary>
     /// Finds all articulation points in the graph using Tarjan's algorithm.
     /// An articulation point is a vertex whose removal disconnects the graph.
+    /// Special case: In a 2-node graph A--B, both nodes are considered articulation points
+    /// for WFC purposes (removing either isolates the other from future expansion).
     /// </summary>
     private HashSet<Vector2I> FindAllArticulationPoints()
     {
@@ -104,6 +106,22 @@ public class PassabilityGraph
 
         if (_nodes.Count <= 1)
             return articulationPoints;
+
+        // Special case: 2-node graph
+        // For WFC connectivity, both nodes in a connected pair are critical
+        // (removing either prevents the other from connecting to future tiles)
+        if (_nodes.Count == 2)
+        {
+            // Check if the two nodes are connected
+            var nodesList = _nodes.ToList();
+            if (_adjacency[nodesList[0]].Contains(nodesList[1]))
+            {
+                // They're connected, both are critical
+                articulationPoints.Add(nodesList[0]);
+                articulationPoints.Add(nodesList[1]);
+            }
+            return articulationPoints;
+        }
 
         var discoveryTime = new Dictionary<Vector2I, int>();
         var lowLink = new Dictionary<Vector2I, int>();

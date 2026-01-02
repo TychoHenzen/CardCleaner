@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 using Godot;
 
@@ -51,13 +52,11 @@ public class ConnectivityConstraint : IWfcConstraint
         // First, find collapsed passable neighbors
         var passableNeighbors = GetPassableNeighbors(context.Position, context.Grid);
 
-        // No passable neighbors means this position isn't connecting anything
+        // CRITICAL: No passable neighbors means this position is isolated from the passable region.
+        // We MUST ban impassable tiles here, otherwise they create barriers that fragment the map
+        // into disconnected islands. Impassable tiles ONLY allowed at the edge of passable region.
         if (passableNeighbors.Count == 0)
-            return 1.0f;
-
-        // If only one passable neighbor, can't be an articulation point (nothing to disconnect)
-        if (passableNeighbors.Count == 1)
-            return 1.0f;
+            return 0.0f;
 
         // Temporarily add this position as passable to check if it's an articulation point
         var wasInGraph = _graph.ContainsNode(context.Position);

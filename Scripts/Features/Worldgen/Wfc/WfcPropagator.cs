@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -30,10 +31,12 @@ public readonly struct PropagationResult
 public class WfcPropagator
 {
     private readonly WfcAdjacencyRules _rules;
+    private readonly ITileRegistry? _tileRegistry;
 
-    public WfcPropagator(WfcAdjacencyRules rules)
+    public WfcPropagator(WfcAdjacencyRules rules, ITileRegistry? tileRegistry = null)
     {
         _rules = rules;
+        _tileRegistry = tileRegistry;
     }
 
     /// <summary>
@@ -218,19 +221,29 @@ public class WfcPropagator
 
     /// <summary>
     /// Computes the transition spacing constraint for a position.
-    /// Prevents 3+ distinct terrain types in any 2x2 cell window that this cell participates in.
+    /// Prevents 3+ distinct AUTO-TILE types in any 2x2 cell window that this cell participates in.
     /// A visual tile (dual-grid) samples 4 data cells at its corners - if those 4 cells have
-    /// 3+ distinct types, auto-tiling breaks because transitions only support 2 types.
+    /// 3+ distinct auto-tile types, auto-tiling breaks because transitions only support 2 types.
+    /// Non-auto-tile types can mix freely and don't contribute to this constraint.
     ///
-    /// KEY INSIGHT: As soon as ANY 2 cells in a 2x2 window are collapsed with DIFFERENT types,
-    /// the remaining cells in that window are constrained to those 2 types only.
+    /// KEY INSIGHT: As soon as ANY 2 cells in a 2x2 window are collapsed with DIFFERENT auto-tile types,
+    /// the remaining cells in that window are constrained to those 2 auto-tile types UNION all non-auto-tiles.
     /// We don't wait for 3 cells - by then it's too late.
     /// </summary>
     private HashSet<string>? ComputeTransitionSpacingConstraint(WfcGrid grid, Vector2I pos)
     {
         // This cell participates in 4 different 2x2 windows.
-        // For each window, check if there are already 2 distinct types among collapsed cells.
-        // If so, constrain this cell to only those types.
+        // For each window, check if there are already 2 distinct AUTO-TILE types among collapsed cells.
+        // If so, constrain this cell to those auto-tiles UNION all non-auto-tiles.
+        // Non-auto-tiles can always mix freely regardless of window contents.
+
+        // Pre-compute the set of all non-auto-tiles (reused across windows)
+        var nonAutoTiles = new HashSet<string>();
+        foreach (var tileId in _rules.AllTileIds)
+        {
+            if (!IsAutoTile(tileId))
+                nonAutoTiles.Add(tileId);
+        }
 
         HashSet<string>? constraint = null;
 
@@ -265,30 +278,43 @@ public class WfcPropagator
                 var otherCell = grid.GetCell(otherPos);
                 if (otherCell.IsCollapsed())
                 {
-                    windowTypes.Add(otherCell.GetCollapsedTile());
+                    var tileId = otherCell.GetCollapsedTile();
+                    // Only count auto-tiles for the constraint
+                    if (IsAutoTile(tileId))
+                    {
+                        windowTypes.Add(tileId);
+                    }
                 }
-                // Uncollapsed cells don't contribute to the constraint yet
             }
 
             if (!windowValid)
                 continue;
 
-            // KEY CHANGE: If this window already has 2+ distinct types among collapsed cells,
-            // this cell MUST be one of those types (can't introduce a 3rd)
+            // If this window has 2+ distinct auto-tile types, constrain to those auto-tiles UNION all non-auto-tiles
             if (windowTypes.Count >= 2)
             {
+                // Build constraint: windowTypes (auto-tiles) UNION nonAutoTiles
+                var constraintSet = new HashSet<string>(windowTypes);
+                constraintSet.UnionWith(nonAutoTiles);
+
                 if (constraint == null)
                 {
-                    constraint = new HashSet<string>(windowTypes);
+                    constraint = constraintSet;
                 }
                 else
                 {
-                    // Multiple windows constraining us - intersect them
-                    constraint.IntersectWith(windowTypes);
+                    // Multiple windows constraining us - intersect
+                    constraint.IntersectWith(constraintSet);
                 }
             }
         }
 
         return constraint;
     }
+
+    /// <summary>
+    /// Checks if a tile ID represents an auto-tile type.
+    /// Auto-tiles have variants for different neighbor configurations.
+    /// </summary>
+    private bool IsAutoTile(string tileId) => _tileRegistry?.GetTile(tileId)?.HasAutoTileVariants ?? false;
 }

@@ -3,11 +3,11 @@
     <RunConfiguration>
         <MaxCpuCount>1</MaxCpuCount>
         <ResultsDirectory>./TestResults</ResultsDirectory>
-        <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
+        <TargetFrameworks>net8.0</TargetFrameworks>
         <TestSessionTimeout>180000</TestSessionTimeout>
         <TreatNoTestsAsError>true</TreatNoTestsAsError>
         <EnvironmentVariables>
-            <GODOT_BIN>C:\Development\Godot_v4.4.1-stable_mono_win64\Godot_v4.4.1-stable_mono_win64.exe</GODOT_BIN>
+            <GODOT_BIN>C:\Development\Godot_v4.5.1-stable_mono_win64\Godot_v4.5.1-stable_mono_win64.exe</GODOT_BIN>
         </EnvironmentVariables>
     </RunConfiguration>
 
@@ -32,10 +32,13 @@
     </LoggerRunSettings>
 
     <GdUnit4>
-        <!-- Additional Godot runtime parameters-->
-        <Parameters></Parameters>
-        <!-- Controls the Display name attribute of the TestCase. Allowed values are SimpleName and FullyQualifiedName.
-             This likely determines how the test names are displayed in the test results.-->
+        <!-- Additional Godot runtime parameters - headless for IDE execution -->
+        <Parameters>--headless</Parameters>
+        <!-- Controls the Display name attribute of the TestCase. Allowed values are SimpleName and FullyQualifiedName. -->
         <DisplayName>FullyQualifiedName</DisplayName>
+        <!-- Timeout for the compile/build process in milliseconds (default 30000) -->
+        <CompileProcessTimeout>120000</CompileProcessTimeout>
+        <!-- Capture stdout from test execution for debugging -->
+        <CaptureStdOut>true</CaptureStdOut>
     </GdUnit4>
 </RunSettings>
