@@ -291,3 +291,46 @@ This document captures discoveries and integration notes during implementation o
 - NoiseGradient adds randomness to an otherwise uniform signature
 - The BiomeAffinityConstraint is applied after shape constraints (diminishing returns, novelty, compactness), so it influences selection within the shape context
 - Future: CardBasedGradient (Phase 4.3) will derive gradient from player's card selection
+
+---
+
+## Phase 5.1: Implement Articulation Point Detection
+**Date:** 2026-01-02
+**Status:** Complete
+
+### Discoveries
+- Vector2I works correctly as Dictionary/HashSet key in C# - no custom equality needed
+- Tarjan's algorithm requires special handling for root nodes: a DFS tree root is an articulation point only if it has 2+ children in the DFS tree (not 2+ neighbors in the graph)
+- For two connected nodes A-B, BOTH are articulation points because removing either leaves the other isolated (this is counterintuitive but correct per graph theory)
+- The algorithm handles disconnected graphs by running DFS from all unvisited nodes
+- Low-link value update only happens on back-edges (edges to already visited non-parent nodes)
+
+### API Changes Made
+- Created `PassabilityGraph` class in `Scripts/Features/Worldgen/Wfc/Connectivity/`
+  - `void AddNode(Vector2I position)` - adds node to graph with empty adjacency list
+  - `void RemoveNode(Vector2I position)` - removes node and cleans up all edges
+  - `void AddEdge(Vector2I a, Vector2I b)` - adds bidirectional edge, implicitly adds nodes
+  - `bool IsArticulationPoint(Vector2I position)` - uses Tarjan's algorithm, O(V+E) complexity
+  - `bool ContainsNode(Vector2I position)` - checks if node exists
+  - `IEnumerable<Vector2I> GetNeighbors(Vector2I position)` - returns adjacent nodes
+  - `int NodeCount` - property for number of nodes
+
+### Algorithm Details
+- Uses Tarjan's articulation point algorithm with discovery time and low-link values
+- Root articulation point condition: DFS tree root with childCount >= 2
+- Non-root articulation point condition: lowLink[child] >= discoveryTime[node]
+- Back-edge handling: update lowLink to min(lowLink, discoveryTime[neighbor])
+
+### Test Coverage Added
+- Tests/Features/Worldgen/Wfc/Connectivity/PassabilityGraphTest.cs
+- 14 test cases covering:
+  - Graph mutation: `AddNode_UpdatesGraph`, `AddNode_Idempotent_DoesNotDuplicate`, `RemoveNode_UpdatesGraph`, `RemoveNode_NonExistent_NoOp`, `AddEdge_ConnectsNodes`, `AddEdge_ImplicitlyAddsNodes`
+  - Edge cases: `EmptyGraph_IsArticulationPoint_ReturnsFalse`, `SingleNode_IsArticulationPoint_ReturnsFalse`, `NodeNotInGraph_IsArticulationPoint_ReturnsFalse`
+  - Simple structures: `TwoNodes_EitherIsArticulationPoint`, `LinearPath_MiddleIsArticulationPoint`, `Square_NoArticulationPoints`
+  - Complex structures: `BridgeNode_IsArticulationPoint`, `LongerChain_OnlyMiddleNodesAreArticulationPoints`, `StarGraph_CenterIsArticulationPoint`
+
+### Integration Notes for Later Phases
+- Phase 5.2 will create ConnectivityConstraint that uses PassabilityGraph
+- Graph must be incrementally updated during WFC solve as tiles are collapsed
+- IsArticulationPoint recomputes articulation points each call - could optimize with dirty flag if performance is an issue
+- Graph uses HashSet<Vector2I> for nodes and Dictionary<Vector2I, HashSet<Vector2I>> for adjacency
