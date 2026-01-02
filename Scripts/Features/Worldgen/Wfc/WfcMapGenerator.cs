@@ -134,7 +134,7 @@ public class WfcMapGenerator
     }
 
     /// <summary>
-    /// Generates a terrain map using WFC algorithm.
+    /// Generates a terrain map using WFC algorithm with a single biome.
     /// </summary>
     /// <param name="biome">Biome definition for tile selection weights</param>
     /// <param name="size">Map dimensions (width, height)</param>
@@ -147,40 +147,17 @@ public class WfcMapGenerator
         ulong seed,
         CardSignature? signature = null)
     {
-        // Determine initial tile set: intersection of biome tiles and adjacency-supported tiles
         var initialTiles = DetermineInitialTiles(biome);
-
         if (initialTiles.Count == 0)
         {
             return WfcGenerationResult.Failed(
                 "No valid tiles found: biome tiles have no overlap with adjacency rules");
         }
 
-        // Configure constraints
-        ConfigureConstraints();
-
-        // Create WFC components
-        var propagator = new WfcPropagator(_adjacencyRules);
         var passableSet = new HashSet<string>(biome.PassableTiles.GetAllTileIds());
+        var solver = CreateSolver(passableSet);
 
-        // Create solver with or without connectivity constraint
-        WfcSolver solver;
-        if (EnableConnectivity)
-        {
-            var passabilityGraph = new PassabilityGraph();
-            var connectivityConstraint = new ConnectivityConstraint(passabilityGraph, tileId => passableSet.Contains(tileId));
-            _selector.AddConstraint(connectivityConstraint);
-            solver = new WfcSolver(propagator, _selector, _blobTracker, passabilityGraph, tileId => passableSet.Contains(tileId));
-        }
-        else
-        {
-            solver = new WfcSolver(propagator, _selector, _blobTracker);
-        }
-
-        // Grid factory for retry support
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, initialTiles);
-
-        // Solve with retry
         var (solveResult, grid) = solver.SolveWithRetry(CreateGrid, biome, seed, MaxRetries);
 
         if (!solveResult.Success)
@@ -188,14 +165,12 @@ public class WfcMapGenerator
             return WfcGenerationResult.Failed(solveResult.ErrorMessage ?? "Unknown error");
         }
 
-        // Convert to SimpleMapData (reuse passableSet from above)
         var mapData = _adapter.ToSimpleMapData(grid, biome, passableSet);
-
         return WfcGenerationResult.Succeeded(mapData, solveResult.Iterations);
     }
 
     /// <summary>
-    /// Generates with multiple biomes using a biome map.
+    /// Generates a terrain map with multiple biomes based on a gradient.
     /// </summary>
     /// <param name="biomeRegistry">Registry of all available biomes</param>
     /// <param name="getBiomeAt">Function to get biome at each position</param>
@@ -209,57 +184,25 @@ public class WfcMapGenerator
         ulong seed,
         BaselineGradient? gradient = null)
     {
-        // For multi-biome, we need the union of all tiles that might appear
-        var allTiles = new HashSet<string>();
-        var passableTiles = new HashSet<string>();
-
-        foreach (var biome in biomeRegistry.GetAllBiomes())
-        {
-            foreach (var tileId in biome.PassableTiles.GetAllTileIds())
-            {
-                if (_adjacencyRules.AllTileIds.Contains(tileId))
-                {
-                    allTiles.Add(tileId);
-                    passableTiles.Add(tileId);
-                }
-            }
-        }
-
+        var (allTiles, passableTiles) = DetermineMultiBiomeTiles(biomeRegistry);
         if (allTiles.Count == 0)
         {
             return WfcGenerationResult.Failed("No valid tiles across all biomes");
         }
 
-        // Configure base constraints (diminishing returns, novelty, compactness)
-        ConfigureConstraints();
-
-        // If gradient is provided, create BiomeStrengthGrid and register BiomeAffinityConstraint
+        // Register biome affinity constraint if gradient provided
         if (gradient != null)
         {
+            ConfigureConstraints(); // Must call before adding affinity constraint
             var biomeStrengthGrid = new BiomeStrengthGrid(size, gradient, biomeRegistry);
-            var affinityConstraint = new BiomeAffinityConstraint(biomeStrengthGrid, biomeRegistry);
-            _selector.AddConstraint(affinityConstraint);
+            _selector.AddConstraint(new BiomeAffinityConstraint(biomeStrengthGrid, biomeRegistry));
         }
 
-        var propagator = new WfcPropagator(_adjacencyRules);
-
-        // Create solver with or without connectivity constraint
-        WfcSolver solver;
-        if (EnableConnectivity)
-        {
-            var passabilityGraph = new PassabilityGraph();
-            var connectivityConstraint = new ConnectivityConstraint(passabilityGraph, tileId => passableTiles.Contains(tileId));
-            _selector.AddConstraint(connectivityConstraint);
-            solver = new WfcSolver(propagator, _selector, _blobTracker, passabilityGraph, tileId => passableTiles.Contains(tileId));
-        }
-        else
-        {
-            solver = new WfcSolver(propagator, _selector, _blobTracker);
-        }
+        var solver = CreateSolver(passableTiles, skipBaseConstraints: gradient != null);
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, allTiles);
 
-        // Use the first biome as default (multi-biome support is simplified for now)
+        // Use first biome as default for solve weighting
         BiomeDefinition? defaultBiome = null;
         foreach (var b in biomeRegistry.GetAllBiomes())
         {
@@ -274,54 +217,63 @@ public class WfcMapGenerator
             return WfcGenerationResult.Failed(solveResult.ErrorMessage ?? "Unknown error");
         }
 
-        // Build biome map
-        var biomeMap = new string[size.Y, size.X];
-        for (var y = 0; y < size.Y; y++)
-        {
-            for (var x = 0; x < size.X; x++)
-            {
-                biomeMap[y, x] = getBiomeAt(new Vector2I(x, y)).Id;
-            }
-        }
-
+        var biomeMap = BuildBiomeMap(size, getBiomeAt);
         var mapData = _adapter.ToSimpleMapData(grid, biomeMap, passableTiles);
-
         return WfcGenerationResult.Succeeded(mapData, solveResult.Iterations);
     }
 
     /// <summary>
-    /// Configures all constraints based on current enable flags.
+    /// Creates a configured WfcSolver with all enabled constraints.
+    /// </summary>
+    /// <param name="passableSet">Set of tile IDs considered passable for connectivity.</param>
+    /// <param name="skipBaseConstraints">If true, assumes ConfigureConstraints was already called.</param>
+    private WfcSolver CreateSolver(HashSet<string> passableSet, bool skipBaseConstraints = false)
+    {
+        if (!skipBaseConstraints)
+        {
+            ConfigureConstraints();
+        }
+
+        var propagator = new WfcPropagator(_adjacencyRules);
+
+        if (!EnableConnectivity)
+        {
+            return new WfcSolver(propagator, _selector, _blobTracker);
+        }
+
+        var passabilityGraph = new PassabilityGraph();
+        bool IsPassable(string tileId) => passableSet.Contains(tileId);
+
+        _selector.AddConstraint(new ConnectivityConstraint(passabilityGraph, IsPassable));
+        return new WfcSolver(propagator, _selector, _blobTracker, passabilityGraph, IsPassable);
+    }
+
+    /// <summary>
+    /// Configures base constraints (diminishing returns, novelty, compactness) based on enable flags.
     /// </summary>
     private void ConfigureConstraints()
     {
         _selector.ClearConstraints();
 
         if (EnableDiminishingReturns)
-        {
             _selector.AddConstraint(_diminishingReturns);
-        }
 
         if (EnableNovelty)
-        {
             _selector.AddConstraint(_novelty);
-        }
 
         if (EnableCompactness)
-        {
             _selector.AddConstraint(_compactness);
-        }
     }
 
     /// <summary>
-    /// Determines which tiles to include in the initial WFC grid.
-    /// Uses intersection of biome-defined tiles and adjacency-supported tiles.
+    /// Determines which tiles to include for a single biome.
+    /// Returns intersection of biome tiles and adjacency-supported tiles.
     /// </summary>
     private HashSet<string> DetermineInitialTiles(BiomeDefinition biome)
     {
         var tiles = new HashSet<string>();
         var adjacencyTiles = _adjacencyRules.AllTileIds;
 
-        // Add passable tiles that have adjacency support
         foreach (var tileId in biome.PassableTiles.GetAllTileIds())
         {
             if (adjacencyTiles.Contains(tileId))
@@ -335,6 +287,46 @@ public class WfcMapGenerator
         }
 
         return tiles;
+    }
+
+    /// <summary>
+    /// Determines tiles for multi-biome generation.
+    /// Returns union of all tiles across biomes that have adjacency support.
+    /// </summary>
+    private (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineMultiBiomeTiles(BiomeRegistry registry)
+    {
+        var allTiles = new HashSet<string>();
+        var passableTiles = new HashSet<string>();
+
+        foreach (var biome in registry.GetAllBiomes())
+        {
+            foreach (var tileId in biome.PassableTiles.GetAllTileIds())
+            {
+                if (_adjacencyRules.AllTileIds.Contains(tileId))
+                {
+                    allTiles.Add(tileId);
+                    passableTiles.Add(tileId);
+                }
+            }
+        }
+
+        return (allTiles, passableTiles);
+    }
+
+    /// <summary>
+    /// Builds a biome ID map for the given size.
+    /// </summary>
+    private static string[,] BuildBiomeMap(Vector2I size, Func<Vector2I, BiomeDefinition> getBiomeAt)
+    {
+        var biomeMap = new string[size.Y, size.X];
+        for (var y = 0; y < size.Y; y++)
+        {
+            for (var x = 0; x < size.X; x++)
+            {
+                biomeMap[y, x] = getBiomeAt(new Vector2I(x, y)).Id;
+            }
+        }
+        return biomeMap;
     }
 }
 
