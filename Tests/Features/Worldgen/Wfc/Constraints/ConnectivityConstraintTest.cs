@@ -152,26 +152,27 @@ public class ConnectivityConstraintTest
     public void ImpassableTile_ArticulationPoint_ReturnsZero_BridgeNode()
     {
         // Setup: Two clusters connected only through a bridge position
-        //   A       C
-        //    \     /
-        //     ?  (bridge position)
-        //    /     \
-        //   B       D
-        CollapseAndAddToGraph(new Vector2I(0, 0), "grass"); // A
-        CollapseAndAddToGraph(new Vector2I(0, 2), "grass"); // B
-        CollapseAndAddToGraph(new Vector2I(4, 0), "grass"); // C
-        CollapseAndAddToGraph(new Vector2I(4, 2), "grass"); // D
+        //
+        //   A2 - A   ?   C - C2
+        //       (1,1) (2,1) (3,1)
+        //
+        // Position (2,1) has neighbors (1,1)=A and (3,1)=C
+        // A and C are not directly connected - only through position (2,1)
+        CollapseAndAddToGraph(new Vector2I(1, 1), "grass"); // A
+        CollapseAndAddToGraph(new Vector2I(0, 1), "grass"); // A2 (extends cluster 1)
+        CollapseAndAddToGraph(new Vector2I(3, 1), "grass"); // C
+        CollapseAndAddToGraph(new Vector2I(4, 1), "grass"); // C2 (extends cluster 2)
 
-        // Connect A-B and C-D within their clusters
-        _graph.AddEdge(new Vector2I(0, 0), new Vector2I(0, 2));
-        _graph.AddEdge(new Vector2I(4, 0), new Vector2I(4, 2));
+        // Connect within clusters (A-A2 and C-C2)
+        _graph.AddEdge(new Vector2I(1, 1), new Vector2I(0, 1));
+        _graph.AddEdge(new Vector2I(3, 1), new Vector2I(4, 1));
 
-        // Bridge position (2,1) would connect the two clusters
+        // Bridge position (2,1) - neighbors include A at (1,1) and C at (3,1)
         var context = CreateContext(new Vector2I(2, 1), "wall");
 
         var result = _constraint.GetProbabilityModifier(context);
 
-        // This position is the only way to connect the two clusters
+        // Position (2,1) connects the two clusters
         // Making it impassable would disconnect them
         AssertFloat(result).IsEqual(0.0f);
     }

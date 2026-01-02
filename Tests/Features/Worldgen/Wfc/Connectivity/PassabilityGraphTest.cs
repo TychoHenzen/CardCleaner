@@ -126,16 +126,19 @@ public class PassabilityGraphTest
     // ========== Simple Graph Structure Tests (ST008) ==========
 
     [TestCase]
-    public void TwoNodes_EitherIsArticulationPoint()
+    public void TwoNodes_NeitherIsArticulationPoint()
     {
         // Graph: A -- B
-        // Removing either node disconnects (leaves other isolated)
+        // By Tarjan's algorithm, neither is an articulation point:
+        // - Removing A leaves B (single node = still connected)
+        // - Removing B leaves A (single node = still connected)
+        // This is correct behavior - a lone node is a valid connected component.
         var a = new Vector2I(0, 0);
         var b = new Vector2I(1, 0);
         _graph.AddEdge(a, b);
 
-        AssertBool(_graph.IsArticulationPoint(a)).IsTrue();
-        AssertBool(_graph.IsArticulationPoint(b)).IsTrue();
+        AssertBool(_graph.IsArticulationPoint(a)).IsFalse();
+        AssertBool(_graph.IsArticulationPoint(b)).IsFalse();
     }
 
     [TestCase]
