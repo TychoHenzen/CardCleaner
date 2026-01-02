@@ -199,3 +199,56 @@ This document captures discoveries and integration notes during implementation o
 - The `Modifiers/Soft/` namespace still contains the soft modifier classes, but they now only implement `IWfcConstraint`
 - The `Modifiers/Hard/` directory is now empty (IHardConstraint.cs deleted) - can be removed if needed
 - Phase 3 is now complete - the unified constraint interface is fully operational
+
+---
+
+## Phase 4.1: Create Biome Strength Grid
+**Date:** 2026-01-01
+**Status:** Complete
+
+### Discoveries
+- CardSignature.DistanceTo() returns Euclidean distance in 8D space. Theoretical max is ~5.66, but biomes typically differ in 1-2 dimensions, so effective MaxDistance = 2.83 (2*sqrt(2)) is used
+- Nested test classes extending Godot types (like BaselineGradient → Resource → GodotObject) require `partial` modifier on both the containing class and the nested class
+- BiomeDefinition constructor takes id, signature, passableTiles, blockedTiles in that order
+- TilePool.GetAllTileIds() provides enumeration of tiles for building reverse lookup maps
+
+### API Changes Made
+- Created `BiomeStrengthGrid` class in `Scripts/Features/Worldgen/Biomes/`
+  - Constructor: `BiomeStrengthGrid(Vector2I mapSize, BaselineGradient gradient, BiomeRegistry registry)`
+  - `float GetStrength(Vector2I position, string biomeId)` - returns strength in [-1, 1] range
+  - `int BiomeCount` - number of biomes in grid
+  - `Vector2I Size` - grid dimensions
+  - Uses `float[y, x, biomeCount]` internal storage with O(1) lookup
+  - Distance-to-strength formula: `1 - 2 * (distance / MaxDistance)` where MaxDistance = 2.83 (ensures opposite signatures in one dimension yield negative strength)
+- Created `BiomeAffinityConstraint` class in `Scripts/Features/Worldgen/Wfc/Constraints/`
+  - Implements `IWfcConstraint`
+  - Constructor: `BiomeAffinityConstraint(BiomeStrengthGrid grid, BiomeRegistry registry)`
+  - Properties: `BoostFactor` (default 0.5), `MinModifier` (default 0.1)
+  - Looks up tile's biome memberships via PassableTiles and BlockedTiles
+  - Modifier formula: `1.0 + (averageStrength * BoostFactor)`
+  - Pre-builds tile-to-biome lookup map in constructor for O(1) access
+
+### Test Coverage Added
+- Tests/Features/Worldgen/Biomes/BiomeStrengthGridTest.cs
+  - 6 test cases:
+    - `GetStrength_ValidPosition_ReturnsValueInRange`
+    - `GetStrength_UnknownBiome_ReturnsZero`
+    - `GetStrength_OutOfBoundsPosition_ReturnsZero`
+    - `Computation_75x75Grid_CompletesUnder100ms`
+    - `GetStrength_IdenticalSignatures_ReturnsPositiveOne`
+    - `GetStrength_MaxDistantSignatures_ReturnsNegative`
+- Tests/Features/Worldgen/Biomes/BiomeAffinityConstraintTest.cs
+  - 6 test cases:
+    - `BiomeAffinityConstraint_PositiveBiome_ReturnsBoost`
+    - `BiomeAffinityConstraint_NegativeBiome_ReturnsPenalty`
+    - `BiomeAffinityConstraint_NeutralBiome_ReturnsOne`
+    - `BiomeAffinityConstraint_TileNotInAnyBiome_ReturnsOne`
+    - `BiomeAffinityConstraint_ModifierNeverBelowMinimum`
+    - `BiomeAffinityConstraint_ImplementsIWfcConstraint`
+
+### Integration Notes for Later Phases
+- BiomeStrengthGrid constructor requires `BaselineGradient`, not specifically `CardBasedGradient`
+- BiomeAffinityConstraint builds tile-to-biome map once at construction; if biomes change, create new constraint
+- Tiles in multiple biomes have their strengths averaged (not summed)
+- Phase 4.2 will integrate BiomeStrengthGrid creation into WfcMapGenerator.GenerateMultiBiome()
+- The constraint uses MinModifier = 0.1 to prevent tiles from being completely eliminated by negative strength
