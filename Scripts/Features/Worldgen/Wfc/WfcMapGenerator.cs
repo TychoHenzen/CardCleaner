@@ -177,11 +177,17 @@ public class WfcMapGenerator
     /// <summary>
     /// Generates with multiple biomes using a biome map.
     /// </summary>
+    /// <param name="biomeRegistry">Registry of all available biomes</param>
+    /// <param name="getBiomeAt">Function to get biome at each position</param>
+    /// <param name="size">Map dimensions (width, height)</param>
+    /// <param name="seed">Random seed for reproducibility</param>
+    /// <param name="gradient">Optional gradient for biome strength calculation. If provided, BiomeAffinityConstraint is registered.</param>
     public WfcGenerationResult GenerateMultiBiome(
         BiomeRegistry biomeRegistry,
         Func<Vector2I, BiomeDefinition> getBiomeAt,
         Vector2I size,
-        ulong seed)
+        ulong seed,
+        BaselineGradient? gradient = null)
     {
         // For multi-biome, we need the union of all tiles that might appear
         var allTiles = new HashSet<string>();
@@ -204,11 +210,16 @@ public class WfcMapGenerator
             return WfcGenerationResult.Failed("No valid tiles across all biomes");
         }
 
-        // Configure constraints
+        // Configure base constraints (diminishing returns, novelty, compactness)
         ConfigureConstraints();
 
-        // For multi-biome, we use a position-aware selector
-        // For now, we'll use a simpler approach: solve with all tiles, apply biome after
+        // If gradient is provided, create BiomeStrengthGrid and register BiomeAffinityConstraint
+        if (gradient != null)
+        {
+            var biomeStrengthGrid = new BiomeStrengthGrid(size, gradient, biomeRegistry);
+            var affinityConstraint = new BiomeAffinityConstraint(biomeStrengthGrid, biomeRegistry);
+            _selector.AddConstraint(affinityConstraint);
+        }
         var propagator = new WfcPropagator(_adjacencyRules);
         var solver = new WfcSolver(propagator, _selector, _blobTracker);
 

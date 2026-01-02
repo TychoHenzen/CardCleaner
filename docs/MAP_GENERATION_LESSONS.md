@@ -252,3 +252,42 @@ This document captures discoveries and integration notes during implementation o
 - Tiles in multiple biomes have their strengths averaged (not summed)
 - Phase 4.2 will integrate BiomeStrengthGrid creation into WfcMapGenerator.GenerateMultiBiome()
 - The constraint uses MinModifier = 0.1 to prevent tiles from being completely eliminated by negative strength
+
+---
+
+## Phase 4.2: Integrate Biome Grid into WFC Pipeline
+**Date:** 2026-01-02
+**Status:** Complete
+
+### Discoveries
+- GenerateMultiBiome already has access to BiomeRegistry - adding gradient parameter was straightforward
+- SimpleMapGenerator constructor already accepts many optional dependencies - adding gradient follows same pattern
+- The gradient parameter is optional (null default) - when null, BiomeAffinityConstraint is not registered (backwards compatible)
+- ConfigureConstraints() is called before the gradient-based constraint, so base constraints (diminishing returns, novelty, compactness) are registered first
+
+### API Changes Made
+- **WfcMapGenerator.GenerateMultiBiome():**
+  - Added optional `BaselineGradient? gradient = null` parameter
+  - When gradient is provided: creates BiomeStrengthGrid and registers BiomeAffinityConstraint
+  - Constraint is added after ConfigureConstraints() so it applies after base shape constraints
+- **SimpleMapGenerator:**
+  - Added `BaselineGradient? gradient = null` constructor parameter
+  - Stored as `_gradient` field
+  - Passed to GenerateMultiBiome() in GenerateTerrainViaWfc()
+
+### Test Coverage Added
+- Tests/Features/Worldgen/Wfc/BiomeGridIntegrationTest.cs
+  - 6 test cases:
+    - `GenerateMultiBiome_WithGradient_CreatesBiomeGrid`
+    - `GenerateMultiBiome_WithoutGradient_StillWorks`
+    - `TileAffinity_DefaultsToPositiveForBiomeTiles`
+    - `TileAffinity_DefaultsToNeutralForOtherTiles`
+    - `MapGeneration_ShowsBiomeInfluence`
+    - `BiomeAffinityEnum_HasThreeValues` (verifies constraint modifier behavior)
+
+### Integration Notes for Later Phases
+- To use biome-based tile selection, callers of SimpleMapGenerator must provide a BaselineGradient
+- RadialGradient can be created with center and edge CardSignatures for geographic variation
+- NoiseGradient adds randomness to an otherwise uniform signature
+- The BiomeAffinityConstraint is applied after shape constraints (diminishing returns, novelty, compactness), so it influences selection within the shape context
+- Future: CardBasedGradient (Phase 4.3) will derive gradient from player's card selection

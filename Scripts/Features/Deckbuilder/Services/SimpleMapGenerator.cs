@@ -9,6 +9,7 @@ using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Structures;
 using CardCleaner.Scripts.Features.Worldgen.VariantModifiers;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Scripts.Features.Worldgen;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -49,11 +50,13 @@ public class SimpleMapGenerator
     private readonly StructurePlacer? _structurePlacer;
     private readonly WfcMapGenerator? _wfcGenerator;
     private readonly BiomeRegistry? _biomeRegistry;
+    private readonly BaselineGradient? _gradient;
     private readonly List<StructureStamp> _structureStamps = [];
 
     public SimpleMapGenerator(RandomNumberGenerator rng, IBiomeProvider biomeProvider, ITileRegistry tileRegistry,
         WfcMapGenerator? wfcGenerator = null, StructurePlacer? structurePlacer = null,
-        WeightedVariantSelector? variantSelector = null, BiomeRegistry? biomeRegistry = null)
+        WeightedVariantSelector? variantSelector = null, BiomeRegistry? biomeRegistry = null,
+        BaselineGradient? gradient = null)
     {
         ArgumentNullException.ThrowIfNull(rng);
         ArgumentNullException.ThrowIfNull(biomeProvider);
@@ -65,6 +68,7 @@ public class SimpleMapGenerator
         _variantSelector = variantSelector;
         _structurePlacer = structurePlacer;
         _biomeRegistry = biomeRegistry;
+        _gradient = gradient;
     }
 
     /// <summary>
@@ -184,7 +188,8 @@ public class SimpleMapGenerator
                 _biomeRegistry,
                 pos => _biomeProvider.GetBiomeAt(pos),
                 size,
-                _rng.Randi());
+                _rng.Randi(),
+                _gradient);
 
             if (result.Success && result.MapData != null)
             {
