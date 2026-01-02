@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
@@ -98,6 +99,12 @@ public class WfcMapGenerator
     }
 
     /// <summary>
+    /// Enable or disable the connectivity constraint (prevents disconnected passable regions).
+    /// Default is true for WFC-native connectivity enforcement.
+    /// </summary>
+    public bool EnableConnectivity { get; set; } = true;
+
+    /// <summary>
     /// Creates a WFC map generator using the given transition resolver.
     /// </summary>
     public WfcMapGenerator(CompiledTransitionResolver transitionResolver)
@@ -154,7 +161,21 @@ public class WfcMapGenerator
 
         // Create WFC components
         var propagator = new WfcPropagator(_adjacencyRules);
-        var solver = new WfcSolver(propagator, _selector, _blobTracker);
+        var passableSet = new HashSet<string>(biome.PassableTiles.GetAllTileIds());
+
+        // Create solver with or without connectivity constraint
+        WfcSolver solver;
+        if (EnableConnectivity)
+        {
+            var passabilityGraph = new PassabilityGraph();
+            var connectivityConstraint = new ConnectivityConstraint(passabilityGraph, tileId => passableSet.Contains(tileId));
+            _selector.AddConstraint(connectivityConstraint);
+            solver = new WfcSolver(propagator, _selector, _blobTracker, passabilityGraph, tileId => passableSet.Contains(tileId));
+        }
+        else
+        {
+            solver = new WfcSolver(propagator, _selector, _blobTracker);
+        }
 
         // Grid factory for retry support
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, initialTiles);
@@ -167,8 +188,7 @@ public class WfcMapGenerator
             return WfcGenerationResult.Failed(solveResult.ErrorMessage ?? "Unknown error");
         }
 
-        // Convert to SimpleMapData
-        var passableSet = new HashSet<string>(biome.PassableTiles.GetAllTileIds());
+        // Convert to SimpleMapData (reuse passableSet from above)
         var mapData = _adapter.ToSimpleMapData(grid, biome, passableSet);
 
         return WfcGenerationResult.Succeeded(mapData, solveResult.Iterations);
@@ -220,8 +240,22 @@ public class WfcMapGenerator
             var affinityConstraint = new BiomeAffinityConstraint(biomeStrengthGrid, biomeRegistry);
             _selector.AddConstraint(affinityConstraint);
         }
+
         var propagator = new WfcPropagator(_adjacencyRules);
-        var solver = new WfcSolver(propagator, _selector, _blobTracker);
+
+        // Create solver with or without connectivity constraint
+        WfcSolver solver;
+        if (EnableConnectivity)
+        {
+            var passabilityGraph = new PassabilityGraph();
+            var connectivityConstraint = new ConnectivityConstraint(passabilityGraph, tileId => passableTiles.Contains(tileId));
+            _selector.AddConstraint(connectivityConstraint);
+            solver = new WfcSolver(propagator, _selector, _blobTracker, passabilityGraph, tileId => passableTiles.Contains(tileId));
+        }
+        else
+        {
+            solver = new WfcSolver(propagator, _selector, _blobTracker);
+        }
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, allTiles);
 

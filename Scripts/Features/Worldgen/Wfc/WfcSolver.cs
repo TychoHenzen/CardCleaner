@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 using Godot;
 
@@ -36,6 +38,8 @@ public class WfcSolver
     private readonly WfcPropagator _propagator;
     private readonly WfcTileSelector _selector;
     private readonly BlobSizeTracker? _blobTracker;
+    private readonly PassabilityGraph? _passabilityGraph;
+    private readonly Func<string, bool>? _isPassable;
 
     /// <summary>
     /// Maximum iterations before giving up (prevents infinite loops).
@@ -48,6 +52,28 @@ public class WfcSolver
         _propagator = propagator;
         _selector = selector;
         _blobTracker = blobTracker;
+    }
+
+    /// <summary>
+    /// Creates a WFC solver with connectivity tracking.
+    /// </summary>
+    /// <param name="propagator">Constraint propagator for adjacency rules.</param>
+    /// <param name="selector">Tile selector with registered constraints.</param>
+    /// <param name="blobTracker">Optional blob tracker for shape constraints.</param>
+    /// <param name="passabilityGraph">Graph for tracking passable tile connectivity.</param>
+    /// <param name="isPassable">Function to determine if a tile ID is passable.</param>
+    public WfcSolver(
+        WfcPropagator propagator,
+        WfcTileSelector selector,
+        BlobSizeTracker? blobTracker,
+        PassabilityGraph passabilityGraph,
+        Func<string, bool> isPassable)
+    {
+        _propagator = propagator;
+        _selector = selector;
+        _blobTracker = blobTracker;
+        _passabilityGraph = passabilityGraph;
+        _isPassable = isPassable;
     }
 
     /// <summary>
@@ -131,6 +157,9 @@ public class WfcSolver
             // Update blob tracker for soft modifiers
             _blobTracker?.RegisterCollapse(targetPos.Value, selectedTile, grid);
 
+            // Update passability graph for connectivity constraints
+            UpdatePassabilityGraph(targetPos.Value, selectedTile, grid);
+
             // Propagate constraints to neighbors
             var propResult = _propagator.Propagate(grid, targetPos.Value);
             if (!propResult.Success)
@@ -204,5 +233,31 @@ public class WfcSolver
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Updates the passability graph after a cell collapse.
+    /// If the collapsed tile is passable, adds it to the graph and connects to passable neighbors.
+    /// </summary>
+    private void UpdatePassabilityGraph(Vector2I position, string tileId, WfcGrid grid)
+    {
+        if (_passabilityGraph == null || _isPassable == null)
+            return;
+
+        if (!_isPassable(tileId))
+            return;
+
+        // Add this passable tile to the graph
+        _passabilityGraph.AddNode(position);
+
+        // Connect to adjacent collapsed passable tiles
+        foreach (var neighborPos in grid.GetNeighbors(position))
+        {
+            var neighborTile = grid.GetCollapsedTileAt(neighborPos);
+            if (neighborTile != null && _isPassable(neighborTile))
+            {
+                _passabilityGraph.AddEdge(position, neighborPos);
+            }
+        }
     }
 }
