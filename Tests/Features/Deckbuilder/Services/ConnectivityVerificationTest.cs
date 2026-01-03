@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -14,8 +15,8 @@ using static GdUnit4.Assertions;
 namespace CardCleaner.Tests.Features.Deckbuilder.Services;
 
 /// <summary>
-/// Phase 5.3 gate tests: Verify WFC-native connectivity works without corridor fallback.
-/// GATE CONDITION: If >= 99% success rate, Phase 6 can proceed to remove corridor code.
+/// Phase 5.3/6.1 connectivity tests: Verify WFC-native connectivity works reliably.
+/// Includes reflection tests to confirm corridor system has been removed.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -144,7 +145,6 @@ public class ConnectivityVerificationTest
             rng.Seed = (ulong)(i * 12345 + 7);
 
             var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
-            generator.EnableCorridorFallback = false;
 
             var mapData = generator.GenerateMap(mapSize);
 
@@ -170,45 +170,43 @@ public class ConnectivityVerificationTest
     // ========== Test Case 2: GenerateMap_WithFlagDisabled_SkipsEnsureConnectivity ==========
 
     [TestCase]
-    public void GenerateMap_WithFlagDisabled_SkipsEnsureConnectivity()
+    public void EnsureConnectivity_MethodDoesNotExist()
     {
-        // Verify the flag correctly controls corridor generation behavior
-        // When disabled, no corridors should be carved (no L-shaped paths)
+        // Reflection test: Verify EnsureConnectivity method has been removed
+        var type = typeof(SimpleMapGenerator);
+        var method = type.GetMethod("EnsureConnectivity", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        var mapSize = new Vector2I(15, 15);
-        var rng = new RandomNumberGenerator();
-        rng.Seed = 42;
-
-        var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
-        generator.EnableCorridorFallback = false;
-
-        // Generate map - should rely solely on WFC connectivity
-        var mapData = generator.GenerateMap(mapSize);
-
-        // Verify map was generated (basic sanity check)
-        AssertThat(mapData).IsNotNull();
-        AssertThat(mapData.PassableTiles.Count).IsGreater(0);
-
-        // The test passes if we get here without exception
-        // The flag being respected is tested by the Generate100Maps test
-        AssertBool(true).IsTrue();
+        AssertThat(method).IsNull();
     }
 
     [TestCase]
-    public void GenerateMap_WithFlagEnabled_StillWorks()
+    public void FloodFill_MethodDoesNotExist()
     {
-        // Verify default behavior (corridor fallback enabled) still works
-        var mapSize = new Vector2I(15, 15);
-        var rng = new RandomNumberGenerator();
-        rng.Seed = 42;
+        // Reflection test: Verify FloodFill method has been removed
+        var type = typeof(SimpleMapGenerator);
+        var method = type.GetMethod("FloodFill", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
-        generator.EnableCorridorFallback = true; // Default
+        AssertThat(method).IsNull();
+    }
 
-        var mapData = generator.GenerateMap(mapSize);
+    [TestCase]
+    public void CreateCorridor_MethodDoesNotExist()
+    {
+        // Reflection test: Verify CreateCorridor method has been removed
+        var type = typeof(SimpleMapGenerator);
+        var method = type.GetMethod("CreateCorridor", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        // With corridor fallback, map should definitely be connected
-        AssertBool(IsFullyConnected(mapData)).IsTrue();
+        AssertThat(method).IsNull();
+    }
+
+    [TestCase]
+    public void EnableCorridorFallback_PropertyDoesNotExist()
+    {
+        // Reflection test: Verify EnableCorridorFallback property has been removed
+        var type = typeof(SimpleMapGenerator);
+        var property = type.GetProperty("EnableCorridorFallback");
+
+        AssertThat(property).IsNull();
     }
 
     // ========== Test Case 3: ConnectivityRate_Above99Percent ==========
@@ -227,7 +225,6 @@ public class ConnectivityVerificationTest
             rng.Seed = (ulong)(i * 54321 + 13); // Different seed series than main test
 
             var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
-            generator.EnableCorridorFallback = false;
 
             var mapData = generator.GenerateMap(mapSize);
 

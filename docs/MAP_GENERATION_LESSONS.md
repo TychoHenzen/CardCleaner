@@ -624,3 +624,260 @@ Added EnableCorridorFallback feature flag to SimpleMapGenerator and created comp
 - If tests pass, proceed to Phase 6 (Remove Corridor System)
 - The EnableCorridorFallback flag remains useful for A/B testing
 - Diagnostic test added: TilePassabilityDiagnosticTest.cs for future debugging
+
+---
+
+## Phase 5.3 Refinement: Two-Pronged Connectivity Approach
+**Date:** 2026-01-03
+**Status:** Near-Complete (96-98% Success Rate)
+
+### Initial State (Post-Bug #4)
+- Test results showed 0% connectivity after Bug #4 fix attempt
+- The "ban impassable when 0 neighbors" approach was too strict for early WFC generation
+- WFC picks cells by ENTROPY, not spatial proximity, causing contradictions when distant positions had no passable neighbors yet
+
+### Root Cause Analysis - Fifth Discovery
+
+**The Articulation Point Approach Was Fundamentally Flawed for WFC**
+
+The previous approach using Tarjan's articulation point detection had a critical conceptual mismatch with WFC's generation pattern:
+
+1. **Articulation points prevent BREAKING connections** (reactive)
+2. **But WFC generates in RANDOM order** (not spatial proximity)
+3. **Need to GUIDE connections** between distant regions (proactive)
+
+**Example of Failure:**
+```
+WFC generates passable tiles at (5,5), (10,10), and (20,20) in that order
+- After 1st tile: 1 component, no corridors enforced
+- After 2nd tile: 2 components, corridor enforced between them
+- After 3rd tile: 3 components, but only closest pair gets corridor!
+- Components A and C might never connect if impassable tiles block the path
+```
+
+### Solution: Two-Pronged Connectivity Constraint
+
+Reverted from articulation point detection to a hybrid reactive/proactive approach:
+
+**REACTIVE: Bridge Position Detection**
+```csharp
+// Check if 2+ passable neighbors exist from DIFFERENT components
+var passableNeighbors = GetPassableNeighbors(context.Position, context.Grid);
+if (passableNeighbors.Count >= 2 && !AreAllNeighborsConnected(passableNeighbors))
+    return 0.0f; // Ban impassable - this is a bridge position
+```
+
+**PROACTIVE: Corridor Path Enforcement**
+```csharp
+// If disconnected regions exist, ban impassable tiles on corridor paths
+if (_graph.HasDisconnectedRegions() && _graph.IsOnCorridorPath(context.Position, CorridorTolerance))
+    return 0.0f; // Ban impassable - this position is on a required corridor
+```
+
+**Key Insight:** Allow impassable tiles when 0-1 passable neighbors. This enables WFC to place walls in unreached regions without contradiction, while the proactive corridors guide eventual connectivity.
+
+### Bug Discovery #6: Single-Pair Corridor Limitation
+
+After implementing the two-pronged approach, tests showed 0% success again. Analysis revealed:
+
+**The Problem:** `IsOnCorridorPath()` only checked the CLOSEST disconnected pair:
+```csharp
+// WRONG - Only protects one corridor
+var pair = GetClosestDisconnectedPair();
+if (!pair.HasValue) return false;
+var (a, b) = pair.Value;
+return IsOnManhattanPath(position, a, b, tolerance);
+```
+
+**Why This Failed:**
+- With 3+ components [A, B, C], only the closest pair (e.g., A↔B) got corridor protection
+- Component C remained permanently isolated
+- Result: 0% connectivity (100% of maps had isolated components)
+
+### Final Fix: All-Pairs Corridor Path Checking
+
+Modified `PassabilityGraph.IsOnCorridorPath()` to check **ALL** pairs of disconnected components:
+
+```csharp
+public bool IsOnCorridorPath(Vector2I position, int tolerance = 1)
+{
+    var components = GetComponents();
+    if (components.Count < 2) return false;
+
+    // Check all pairs of components for corridor paths
+    for (var i = 0; i < components.Count - 1; i++)
+    {
+        for (var j = i + 1; j < components.Count; j++)
+        {
+            // Find closest nodes between this pair
+            var minDistance = float.MaxValue;
+            Vector2I closest1 = default, closest2 = default;
+
+            foreach (var node1 in components[i])
+            foreach (var node2 in components[j])
+            {
+                var dist = ManhattanDistance(node1, node2);
+                if (dist < minDistance)
+                {
+                    minDistance = dist;
+                    closest1 = node1;
+                    closest2 = node2;
+                }
+            }
+
+            // Check if position is on THIS corridor path
+            if (IsOnManhattanPath(position, closest1, closest2, tolerance))
+                return true;
+        }
+    }
+    return false;
+}
+```
+
+**Complexity:** O(C² × N_i × N_j) where C = component count (typically 2-5 during WFC)
+
+### Test Results After All-Pairs Fix
+
+**First Run:**
+- Generate100Maps: 96% success (4/100 disconnected)
+- ConnectivityRate: 98% (2/100 disconnected) 
+- LargerMap_50x50: PASSED
+- SmallMap_8x8: PASSED
+
+**Status:** Near gate condition (≥99% required, achieved 96-98%)
+
+### Architecture Summary
+
+**Final Two-Pronged Approach:**
+
+1. **REACTIVE (Bridge Detection):**
+   - Prevents breaking EXISTING connections
+   - Bans impassable tiles at positions with 2+ passable neighbors from different components
+   - Uses direct connectivity checking (BFS), not articulation points
+
+2. **PROACTIVE (Corridor Enforcement):**
+   - Guides FUTURE connections between distant regions
+   - Bans impassable tiles on Manhattan paths between ALL pairs of disconnected components
+   - Creates "corridors" that protect connectivity as WFC generates
+
+3. **Permissive During Expansion:**
+   - Allows impassable tiles when 0-1 passable neighbors
+   - Enables WFC to explore the solution space without premature contradictions
+   - Avoids the "early barrier ban" that caused 0% success in previous attempts
+
+### Remaining Gap (1-2%)
+
+The 96-98% success rate suggests occasional edge cases where:
+- Multiple components form in rapid succession
+- Corridor paths overlap or create contradictions with biome preferences
+- WFC entropy selection creates unfavorable generation order
+
+**Potential Solutions:**
+1. Increase `CorridorTolerance` from 1 to 2 (wider corridors)
+2. Add component size thresholds (only protect larger components)
+3. Implement progressive corridor widening (start narrow, widen if disconnected too long)
+4. Accept 96-98% as "good enough" and keep corridor fallback for edge cases
+
+### Commits
+- `5f61157`: Fix ConnectivityConstraint for early-stage WFC generation (two-pronged approach)
+- `0c9f5a6`: Check ALL component pairs for corridor paths (not just closest)
+
+### Decision
+- **96-98% success rate accepted as sufficient** (user specified "95+% is fine")
+- Proceeding to Phase 6 to remove corridor fallback system
+
+---
+
+## Phase 6.1: Remove Corridor System
+**Date:** 2026-01-03
+**Status:** Complete
+
+### Discoveries
+- Corridor system consisted of 3 methods totaling ~110 lines of code
+- No hidden dependencies found - only referenced in one location (GenerateMap call site)
+- EnableCorridorFallback property was used in tests but easily removed
+- No other code referenced the corridor methods
+
+### Code Removed
+- `EnsureConnectivity()` method (52 lines) - found disconnected components and connected them via corridors
+- `FloodFill()` method (24 lines) - BFS to identify connected components
+- `CreateCorridor()` method (24 lines) - carved L-shaped corridors between points
+- `EnableCorridorFallback` property and its xmldoc (6 lines)
+- Conditional call site in GenerateMap() (5 lines)
+
+### API Changes Made
+- Removed `EnableCorridorFallback` property from SimpleMapGenerator
+- Removed `EnsureConnectivity(string[,], Vector2I, List<Vector2I>)` method
+- Removed `FloodFill(string[,], bool[,], Vector2I, Vector2I, List<Vector2I>)` method
+- Removed `CreateCorridor(string[,], Vector2I, Vector2I, Vector2I)` method
+
+### Test Coverage Added
+- Updated ConnectivityVerificationTest.cs with 4 reflection tests:
+  - `EnsureConnectivity_MethodDoesNotExist`
+  - `FloodFill_MethodDoesNotExist`
+  - `CreateCorridor_MethodDoesNotExist`
+  - `EnableCorridorFallback_PropertyDoesNotExist`
+- Removed references to `EnableCorridorFallback` from test methods
+- Updated test documentation to reflect Phase 6.1 completion
+
+### Integration Notes
+- WFC-native connectivity (via ConnectivityConstraint) is now the sole connectivity mechanism
+- Map generation success rate remains at 96-98% without corridor fallback
+- Codebase is ~110 lines smaller and simpler
+- No performance regression observed
+
+---
+
+## Phase 7.1: Reorder Structure Placement
+**Date:** 2026-01-03
+**Status:** Complete
+
+### Discoveries
+- Structure placement was already occurring AFTER terrain transitions (no reordering needed!)
+  - Transitions generated at line 135
+  - Structures placed at line 145
+- The main task was adding reachability validation, not changing execution order
+- No undo/rollback API exists in StructurePlacer - implemented manual tile reversion
+- Structure rejection is rare in practice (most structures don't create critical choke points)
+
+### API Changes Made
+- Added `WouldBlockPaths(StructurePlacement, HashSet<Vector2I>)` method to SimpleMapGenerator
+  - Temporarily removes structure tiles from passable set
+  - Checks if remaining tiles are connected
+  - Returns true if structure would disconnect regions
+- Added `IsConnected(HashSet<Vector2I>)` helper method
+  - BFS to verify all tiles in a set are reachable from each other
+  - Returns true if set forms single connected component
+- Added `GetNeighbors(Vector2I)` static helper
+  - Returns 4-way adjacent neighbors for BFS
+- Updated `PlaceStructures()` to validate connectivity:
+  - After successful TryPlaceRandom, check WouldBlockPaths
+  - If structure would block, revert by replacing with biome terrain tiles
+  - Log rejection and continue to next placement attempt
+  - Only accept structures that preserve connectivity
+
+### Test Coverage Added
+- Tests/Features/Deckbuilder/Services/StructurePlacementTest.cs
+- 5 test cases:
+  - `PlaceStructures_CalledAfterTransitions` - verifies ordering via code inspection
+  - `MapGeneration_WithStructures_StillConnected` - 10 maps remain connected
+  - `GenerateMap_StructuresStillAppear` - structures not over-filtered
+  - `LargeMap_WithManyStructures_StillConnected` - 50x50 map with 10 structures
+  - `SmallMap_WithStructures_StillConnected` - 15x15 map edge case
+
+### Final Generation Pipeline Order
+1. Pre-select per-generation variants
+2. Build biome map from gradient
+3. Compute biome strength grid (Phase 4)
+4. WFC terrain generation with connectivity constraint (Phase 5)
+5. Generate terrain transitions
+6. **Place structures with reachability validation** ← Updated this phase
+7. Select contextual variants
+8. Place player and enemies
+
+### Implementation Complete
+- **All phases of MAP_GENERATION_IMPLEMENTATION_PLAN.md are now complete**
+- WFC-native map generation with 96-98% connectivity success
+- No corridor fallback system (removed)
+- Structure placement preserves connectivity
+- Total implementation: ~380k tokens across 12 tasks (Phases 1-7)

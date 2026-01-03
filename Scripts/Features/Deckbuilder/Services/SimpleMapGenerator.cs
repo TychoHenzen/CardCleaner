@@ -43,13 +43,6 @@ public class SimpleMapGenerator
     /// </summary>
     public int MaxWfcRetries { get; set; } = 5;
 
-    /// <summary>
-    /// Enable or disable corridor fallback for connectivity.
-    /// When true (default), EnsureConnectivity creates corridors between disconnected regions.
-    /// When false, relies solely on WFC-native connectivity constraint.
-    /// </summary>
-    public bool EnableCorridorFallback { get; set; } = true;
-
     private readonly IBiomeProvider _biomeProvider;
     private readonly RandomNumberGenerator _rng;
     private readonly ITileRegistry _tileRegistry;
@@ -146,12 +139,6 @@ public class SimpleMapGenerator
         {
             _structurePlacer.Clear();
             structurePlacements = PlaceStructures(finalTileIds, size, passableTiles);
-        }
-
-        // Ensure all passable tiles are connected via corridors (if fallback enabled)
-        if (EnableCorridorFallback)
-        {
-            EnsureConnectivity(finalTileIds, size, passableTiles);
         }
 
         // Select contextual variants
@@ -258,8 +245,29 @@ public class SimpleMapGenerator
 
             if (placed)
             {
-                placedCount++;
                 var lastPlacement = _structurePlacer.PlacedStructures[^1];
+
+                // Check if structure would disconnect passable regions
+                if (WouldBlockPaths(lastPlacement, passableSet))
+                {
+                    // Revert the structure placement to terrain tiles
+                    for (var dy = 0; dy < lastPlacement.Result.Size.Y; dy++)
+                    for (var dx = 0; dx < lastPlacement.Result.Size.X; dx++)
+                    {
+                        var structurePos = lastPlacement.Position + new Vector2I(dx, dy);
+                        if (IsValidPosition(structurePos, size))
+                        {
+                            // Restore to appropriate terrain tile from biome
+                            var biome = _biomeProvider.GetBiomeAt(structurePos);
+                            tileIds[structurePos.Y, structurePos.X] = biome.SelectPassableTile(_rng) ?? FloorTileId;
+                        }
+                    }
+                    ILog.Print($"Structure placement rejected: would disconnect passable regions");
+                    continue;
+                }
+
+                // Structure is valid - update tracking
+                placedCount++;
                 for (var dy = 0; dy < lastPlacement.Result.Size.Y; dy++)
                 for (var dx = 0; dx < lastPlacement.Result.Size.X; dx++)
                 {
@@ -296,111 +304,6 @@ public class SimpleMapGenerator
         return stamps[^1];
     }
 
-    /// <summary>
-    /// Ensure all passable tiles are connected by creating corridors between disconnected components.
-    /// </summary>
-    private void EnsureConnectivity(string[,] tileIds, Vector2I size, List<Vector2I> passableTiles)
-    {
-        if (passableTiles.Count <= 1) return;
-
-        var visited = new bool[size.Y, size.X];
-        var components = new List<List<Vector2I>>();
-
-        foreach (var tile in passableTiles)
-        {
-            if (visited[tile.Y, tile.X]) continue;
-
-            var component = new List<Vector2I>();
-            FloodFill(tileIds, visited, size, tile, component);
-            if (component.Count > 0) components.Add(component);
-        }
-
-        while (components.Count > 1)
-        {
-            var component1 = components[0];
-            var component2 = components[1];
-
-            var closest1 = component1[0];
-            var closest2 = component2[0];
-            var minDistance = float.MaxValue;
-
-            foreach (var tile1 in component1)
-            foreach (var tile2 in component2)
-            {
-                var distance = tile1.DistanceTo(tile2);
-                if (distance < minDistance)
-                {
-                    minDistance = distance;
-                    closest1 = tile1;
-                    closest2 = tile2;
-                }
-            }
-
-            CreateCorridor(tileIds, size, closest1, closest2);
-
-            component1.AddRange(component2);
-            components.RemoveAt(1);
-
-            passableTiles.Clear();
-            for (var y = 0; y < size.Y; y++)
-            for (var x = 0; x < size.X; x++)
-                if (IsPassableTile(tileIds[y, x]))
-                    passableTiles.Add(new Vector2I(x, y));
-        }
-
-        ILog.Print($"Connectivity ensured: {components.Count} connected component(s)");
-    }
-
-    private void FloodFill(string[,] tileIds, bool[,] visited, Vector2I size, Vector2I start, List<Vector2I> component)
-    {
-        var stack = new Stack<Vector2I>();
-        stack.Push(start);
-
-        while (stack.Count > 0)
-        {
-            var current = stack.Pop();
-
-            if (current.X < 0 || current.X >= size.X ||
-                current.Y < 0 || current.Y >= size.Y ||
-                visited[current.Y, current.X] ||
-                !IsPassableTile(tileIds[current.Y, current.X]))
-                continue;
-
-            visited[current.Y, current.X] = true;
-            component.Add(current);
-
-            stack.Push(new Vector2I(current.X + 1, current.Y));
-            stack.Push(new Vector2I(current.X - 1, current.Y));
-            stack.Push(new Vector2I(current.X, current.Y + 1));
-            stack.Push(new Vector2I(current.X, current.Y - 1));
-        }
-    }
-
-    private void CreateCorridor(string[,] tileIds, Vector2I size, Vector2I from, Vector2I to)
-    {
-        var current = from;
-
-        while (current.X != to.X)
-        {
-            current.X += current.X < to.X ? 1 : -1;
-            if (IsValidPosition(current, size))
-            {
-                var biome = _biomeProvider.GetBiomeAt(current);
-                tileIds[current.Y, current.X] = biome.SelectPassableTile(_rng) ?? FloorTileId;
-            }
-        }
-
-        while (current.Y != to.Y)
-        {
-            current.Y += current.Y < to.Y ? 1 : -1;
-            if (IsValidPosition(current, size))
-            {
-                var biome = _biomeProvider.GetBiomeAt(current);
-                tileIds[current.Y, current.X] = biome.SelectPassableTile(_rng) ?? FloorTileId;
-            }
-        }
-    }
-
     private static bool IsValidPosition(Vector2I pos, Vector2I size)
     {
         return pos.X >= 0 && pos.X < size.X && pos.Y >= 0 && pos.Y < size.Y;
@@ -410,6 +313,63 @@ public class SimpleMapGenerator
     {
         var tile = _tileRegistry.GetTile(tileId);
         return tile?.IsPassable ?? false;
+    }
+
+    /// <summary>
+    /// Check if placing a structure would disconnect passable regions.
+    /// </summary>
+    private bool WouldBlockPaths(StructurePlacement placement, HashSet<Vector2I> passableSet)
+    {
+        // Build temporary set without structure tiles
+        var testSet = new HashSet<Vector2I>(passableSet);
+        for (var dy = 0; dy < placement.Result.Size.Y; dy++)
+        for (var dx = 0; dx < placement.Result.Size.X; dx++)
+        {
+            var structurePos = placement.Position + new Vector2I(dx, dy);
+            testSet.Remove(structurePos);
+        }
+
+        // Check if remaining tiles are connected
+        return !IsConnected(testSet);
+    }
+
+    /// <summary>
+    /// Check if all tiles in a set are connected via BFS.
+    /// </summary>
+    private static bool IsConnected(HashSet<Vector2I> tiles)
+    {
+        if (tiles.Count <= 1) return true;
+
+        var visited = new HashSet<Vector2I>();
+        var queue = new Queue<Vector2I>();
+        queue.Enqueue(tiles.First());
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            if (!visited.Add(current)) continue;
+
+            foreach (var neighbor in GetNeighbors(current))
+            {
+                if (tiles.Contains(neighbor) && !visited.Contains(neighbor))
+                {
+                    queue.Enqueue(neighbor);
+                }
+            }
+        }
+
+        return visited.Count == tiles.Count;
+    }
+
+    /// <summary>
+    /// Get 4-way adjacent neighbors for a position.
+    /// </summary>
+    private static IEnumerable<Vector2I> GetNeighbors(Vector2I pos)
+    {
+        yield return new Vector2I(pos.X + 1, pos.Y);
+        yield return new Vector2I(pos.X - 1, pos.Y);
+        yield return new Vector2I(pos.X, pos.Y + 1);
+        yield return new Vector2I(pos.X, pos.Y - 1);
     }
 
     private Dictionary<string, int> SelectPerGenerationVariants()
