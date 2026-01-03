@@ -6,8 +6,6 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using CardCleaner.Scripts.Features.Worldgen.Structures;
-using CardCleaner.Scripts.Features.Worldgen.VariantModifiers;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Features.Worldgen;
 using Godot;
@@ -29,16 +27,6 @@ public class SimpleMapGenerator
     public const string WaterTileId = "water";
 
     /// <summary>
-    /// Enable or disable structure placement during map generation.
-    /// </summary>
-    public bool StructuresEnabled { get; set; } = true;
-
-    /// <summary>
-    /// Maximum number of structures to place per map.
-    /// </summary>
-    public int MaxStructures { get; set; } = 5;
-
-    /// <summary>
     /// Maximum WFC retry attempts on contradiction (default 5).
     /// </summary>
     public int MaxWfcRetries { get; set; } = 5;
@@ -46,16 +34,12 @@ public class SimpleMapGenerator
     private readonly IBiomeProvider _biomeProvider;
     private readonly RandomNumberGenerator _rng;
     private readonly ITileRegistry _tileRegistry;
-    private readonly WeightedVariantSelector? _variantSelector;
-    private readonly StructurePlacer? _structurePlacer;
     private readonly WfcMapGenerator? _wfcGenerator;
     private readonly BiomeRegistry? _biomeRegistry;
     private readonly BaselineGradient? _gradient;
-    private readonly List<StructureStamp> _structureStamps = [];
 
     public SimpleMapGenerator(RandomNumberGenerator rng, IBiomeProvider biomeProvider, ITileRegistry tileRegistry,
-        WfcMapGenerator? wfcGenerator = null, StructurePlacer? structurePlacer = null,
-        WeightedVariantSelector? variantSelector = null, BiomeRegistry? biomeRegistry = null,
+        WfcMapGenerator? wfcGenerator = null, BiomeRegistry? biomeRegistry = null,
         BaselineGradient? gradient = null)
     {
         ArgumentNullException.ThrowIfNull(rng);
@@ -65,25 +49,9 @@ public class SimpleMapGenerator
         _biomeProvider = biomeProvider;
         _tileRegistry = tileRegistry;
         _wfcGenerator = wfcGenerator;
-        _variantSelector = variantSelector;
-        _structurePlacer = structurePlacer;
         _biomeRegistry = biomeRegistry;
         _gradient = gradient;
     }
-
-    /// <summary>
-    /// Add a structure stamp to be placed during map generation.
-    /// </summary>
-    public void AddStructureStamp(StructureStamp stamp)
-    {
-        ArgumentNullException.ThrowIfNull(stamp);
-        _structureStamps.Add(stamp);
-    }
-
-    /// <summary>
-    /// Clear all registered structure stamps.
-    /// </summary>
-    public void ClearStructureStamps() => _structureStamps.Clear();
 
     public SimpleMapData GenerateMap(Vector2I size)
     {
@@ -129,20 +97,12 @@ public class SimpleMapGenerator
         var transitionCount = decorationOverlays.Count(kvp => kvp.Value.Bitmask > 0 && kvp.Value.Bitmask < 15);
         ILog.Print($"Dual-grid terrain: {decorationOverlays.Count} visual tiles, {transitionCount} transitions");
 
-        // Copy terrain to final grid for structure placement
+        // Copy terrain to final grid
         var finalTileIds = new string[size.Y, size.X];
         Array.Copy(terrainGrid, finalTileIds, terrainGrid.Length);
 
-        // Place structures (on TOP of terrain, don't affect transitions)
-        var structurePlacements = new List<StructurePlacement>();
-        if (StructuresEnabled && _structurePlacer != null && _structureStamps.Count > 0)
-        {
-            _structurePlacer.Clear();
-            structurePlacements = PlaceStructures(finalTileIds, size, passableTiles);
-        }
-
-        // Select contextual variants
-        var contextualVariants = SelectContextualVariants(finalTileIds, size, placedTiles, biomeMap);
+        // Select contextual variants (empty - variant system removed)
+        var contextualVariants = new Dictionary<Vector2I, int>();
 
         // Choose random positions for player and enemies
         var shuffledTiles = passableTiles.OrderBy(_ => _rng.Randf()).ToList();
@@ -164,8 +124,7 @@ public class SimpleMapGenerator
             PassableTiles = passableTiles,
             PerGenerationVariants = perGenerationVariants,
             ContextualVariants = contextualVariants,
-            DecorationOverlays = decorationOverlays,
-            StructurePlacements = structurePlacements
+            DecorationOverlays = decorationOverlays
         };
     }
 
@@ -208,168 +167,10 @@ public class SimpleMapGenerator
         return terrainGrid;
     }
 
-    /// <summary>
-    /// Place structures on the map using registered stamps.
-    /// </summary>
-    private List<StructurePlacement> PlaceStructures(string[,] tileIds, Vector2I size, List<Vector2I> passableTiles)
-    {
-        var placements = new List<StructurePlacement>();
-
-        if (_structurePlacer == null || _structureStamps.Count == 0)
-            return placements;
-
-        var passableSet = new HashSet<Vector2I>(passableTiles);
-        var weightedStamps = _structureStamps
-            .Where(s => s.SpawnWeight > 0)
-            .OrderByDescending(s => s.SpawnWeight)
-            .ToList();
-
-        var placedCount = 0;
-        var attempts = 0;
-        const int maxAttempts = 100;
-
-        while (placedCount < MaxStructures && attempts < maxAttempts && weightedStamps.Count > 0)
-        {
-            attempts++;
-
-            var stamp = SelectWeightedStamp(weightedStamps);
-            if (stamp == null) break;
-
-            var placed = _structurePlacer.TryPlaceRandom(
-                stamp,
-                size,
-                pos => _biomeProvider.GetBiomeAt(pos),
-                pos => passableSet.Contains(pos),
-                tileIds,
-                _rng);
-
-            if (placed)
-            {
-                var lastPlacement = _structurePlacer.PlacedStructures[^1];
-
-                // Check if structure would disconnect passable regions
-                if (WouldBlockPaths(lastPlacement, passableSet))
-                {
-                    // Revert the structure placement to terrain tiles
-                    for (var dy = 0; dy < lastPlacement.Result.Size.Y; dy++)
-                    for (var dx = 0; dx < lastPlacement.Result.Size.X; dx++)
-                    {
-                        var structurePos = lastPlacement.Position + new Vector2I(dx, dy);
-                        if (IsValidPosition(structurePos, size))
-                        {
-                            // Restore to appropriate terrain tile from biome
-                            var biome = _biomeProvider.GetBiomeAt(structurePos);
-                            tileIds[structurePos.Y, structurePos.X] = biome.SelectPassableTile(_rng) ?? FloorTileId;
-                        }
-                    }
-                    ILog.Print($"Structure placement rejected: would disconnect passable regions");
-                    continue;
-                }
-
-                // Structure is valid - update tracking
-                placedCount++;
-                for (var dy = 0; dy < lastPlacement.Result.Size.Y; dy++)
-                for (var dx = 0; dx < lastPlacement.Result.Size.X; dx++)
-                {
-                    var structurePos = lastPlacement.Position + new Vector2I(dx, dy);
-                    passableSet.Remove(structurePos);
-                    passableTiles.Remove(structurePos);
-                }
-                placements.Add(lastPlacement);
-            }
-        }
-
-        if (placedCount > 0)
-            ILog.Print($"Structures placed: {placedCount} of {MaxStructures} max");
-
-        return placements;
-    }
-
-    private StructureStamp? SelectWeightedStamp(List<StructureStamp> stamps)
-    {
-        if (stamps.Count == 0) return null;
-
-        var totalWeight = stamps.Sum(s => s.SpawnWeight);
-        if (totalWeight <= 0) return stamps[0];
-
-        var roll = _rng.Randf() * totalWeight;
-        var cumulative = 0f;
-
-        foreach (var stamp in stamps)
-        {
-            cumulative += stamp.SpawnWeight;
-            if (roll <= cumulative) return stamp;
-        }
-
-        return stamps[^1];
-    }
-
-    private static bool IsValidPosition(Vector2I pos, Vector2I size)
-    {
-        return pos.X >= 0 && pos.X < size.X && pos.Y >= 0 && pos.Y < size.Y;
-    }
-
     private bool IsPassableTile(string tileId)
     {
         var tile = _tileRegistry.GetTile(tileId);
         return tile?.IsPassable ?? false;
-    }
-
-    /// <summary>
-    /// Check if placing a structure would disconnect passable regions.
-    /// </summary>
-    private bool WouldBlockPaths(StructurePlacement placement, HashSet<Vector2I> passableSet)
-    {
-        // Build temporary set without structure tiles
-        var testSet = new HashSet<Vector2I>(passableSet);
-        for (var dy = 0; dy < placement.Result.Size.Y; dy++)
-        for (var dx = 0; dx < placement.Result.Size.X; dx++)
-        {
-            var structurePos = placement.Position + new Vector2I(dx, dy);
-            testSet.Remove(structurePos);
-        }
-
-        // Check if remaining tiles are connected
-        return !IsConnected(testSet);
-    }
-
-    /// <summary>
-    /// Check if all tiles in a set are connected via BFS.
-    /// </summary>
-    private static bool IsConnected(HashSet<Vector2I> tiles)
-    {
-        if (tiles.Count <= 1) return true;
-
-        var visited = new HashSet<Vector2I>();
-        var queue = new Queue<Vector2I>();
-        queue.Enqueue(tiles.First());
-
-        while (queue.Count > 0)
-        {
-            var current = queue.Dequeue();
-            if (!visited.Add(current)) continue;
-
-            foreach (var neighbor in GetNeighbors(current))
-            {
-                if (tiles.Contains(neighbor) && !visited.Contains(neighbor))
-                {
-                    queue.Enqueue(neighbor);
-                }
-            }
-        }
-
-        return visited.Count == tiles.Count;
-    }
-
-    /// <summary>
-    /// Get 4-way adjacent neighbors for a position.
-    /// </summary>
-    private static IEnumerable<Vector2I> GetNeighbors(Vector2I pos)
-    {
-        yield return new Vector2I(pos.X + 1, pos.Y);
-        yield return new Vector2I(pos.X - 1, pos.Y);
-        yield return new Vector2I(pos.X, pos.Y + 1);
-        yield return new Vector2I(pos.X, pos.Y - 1);
     }
 
     private Dictionary<string, int> SelectPerGenerationVariants()
@@ -387,42 +188,6 @@ public class SimpleMapGenerator
 
         if (variants.Count > 0)
             ILog.Print($"Selected per-generation variants for {variants.Count} tile types");
-
-        return variants;
-    }
-
-    private Dictionary<Vector2I, int> SelectContextualVariants(
-        string[,] tileIds, Vector2I size, Dictionary<Vector2I, string> placedTiles, string[,] biomeMap)
-    {
-        var variants = new Dictionary<Vector2I, int>();
-
-        if (_variantSelector == null)
-            return variants;
-
-        for (var y = 0; y < size.Y; y++)
-        for (var x = 0; x < size.X; x++)
-        {
-            var position = new Vector2I(x, y);
-            var tileId = tileIds[y, x];
-
-            if (string.IsNullOrEmpty(tileId))
-                continue;
-
-            var tile = _tileRegistry.GetTile(tileId);
-            if (tile == null)
-                continue;
-
-            if (tile.VariationMode != VariationMode.Contextual || !tile.HasVariations)
-                continue;
-
-            var biome = _biomeProvider.GetBiomeAt(position);
-            var variantIndex = _variantSelector.SelectVariant(position, placedTiles, biome, tile, _rng);
-            if (variantIndex >= 0)
-                variants[position] = variantIndex;
-        }
-
-        if (variants.Count > 0)
-            ILog.Print($"Selected contextual variants for {variants.Count} tile positions");
 
         return variants;
     }

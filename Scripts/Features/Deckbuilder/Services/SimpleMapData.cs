@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Worldgen.Structures;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -48,12 +47,6 @@ public class SimpleMapData
     /// rendered at (-0.5, -0.5) tile offset from the terrain grid.
     /// </summary>
     public bool UsesDualGridOverlays { get; set; } = true;
-
-    /// <summary>
-    /// Structures placed during map generation.
-    /// Contains position, structure ID, and result data for each placed structure.
-    /// </summary>
-    public List<StructurePlacement> StructurePlacements { get; set; } = [];
 
     public string GetBiomeAt(Vector2I pos)
     {

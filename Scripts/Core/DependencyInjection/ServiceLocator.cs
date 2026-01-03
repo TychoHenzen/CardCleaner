@@ -81,7 +81,6 @@ public partial class ServiceLocator : Node
         AddChild(inputService);
         _container.RegisterSingleton<IInputService>(inputService);
 
-        _container.RegisterSingleton<ICompatibilityTagRegistry, CompatibilityTagRegistry>();
         _container.RegisterSingleton<ITileRegistry, TileRegistry>();
         _container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
         _container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();
