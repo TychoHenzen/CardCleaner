@@ -499,55 +499,40 @@ public class SimpleMapGenerator
 
             foreach (var (terrain, (dominance, hasAutoTile)) in terrainInfo)
             {
-                var shouldBeTop = false;
-                if (topTerrain == null)
+                // Only consider terrains WITH auto-tiles for topTerrain
+                if (hasAutoTile)
                 {
-                    shouldBeTop = true;
-                }
-                else if (hasAutoTile && !topHasAutoTile)
-                {
-                    shouldBeTop = true;
-                }
-                else if (hasAutoTile == topHasAutoTile)
-                {
-                    if (dominance > topDominance ||
+                    if (topTerrain == null ||
+                        dominance > topDominance ||
                         (dominance == topDominance && string.CompareOrdinal(terrain, topTerrain) < 0))
                     {
-                        shouldBeTop = true;
+                        topTerrain = terrain;
+                        topDominance = dominance;
+                        topHasAutoTile = true;
                     }
                 }
 
-                var shouldBeBase = false;
-                if (baseTerrain == null)
+                // baseTerrain prefers tiles WITHOUT auto-tiles (fill terrains)
+                if (!hasAutoTile)
                 {
-                    shouldBeBase = true;
-                }
-                else if (!hasAutoTile && baseHasAutoTile)
-                {
-                    shouldBeBase = true;
-                }
-                else if (hasAutoTile == baseHasAutoTile)
-                {
-                    if (dominance < baseDominance ||
+                    if (baseTerrain == null ||
+                        dominance < baseDominance ||
                         (dominance == baseDominance && string.CompareOrdinal(terrain, baseTerrain) < 0))
                     {
-                        shouldBeBase = true;
+                        baseTerrain = terrain;
+                        baseDominance = dominance;
                     }
                 }
-
-                if (shouldBeTop)
-                {
-                    topTerrain = terrain;
-                    topDominance = dominance;
-                    topHasAutoTile = hasAutoTile;
-                }
-                if (shouldBeBase)
-                {
-                    baseTerrain = terrain;
-                    baseDominance = dominance;
-                    baseHasAutoTile = hasAutoTile;
-                }
             }
+
+// If no auto-tile terrain found, use the base (fill) terrain for both
+// This renders as solid fill with bitmask 15
+            if (topTerrain == null)
+            {
+                topTerrain = baseTerrain ?? FloorTileId;
+            }
+            baseTerrain ??= topTerrain;
+
 
             if (topTerrain == null)
             {

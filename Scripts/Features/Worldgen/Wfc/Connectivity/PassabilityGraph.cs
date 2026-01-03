@@ -7,12 +7,16 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 
 /// <summary>
 /// Graph representation of passable tiles for connectivity analysis.
-/// Supports incremental updates and articulation point detection using Tarjan's algorithm.
+/// Supports incremental updates, articulation point detection, and disconnected component tracking.
 /// </summary>
 public class PassabilityGraph
 {
     private readonly HashSet<Vector2I> _nodes = new();
     private readonly Dictionary<Vector2I, HashSet<Vector2I>> _adjacency = new();
+
+    // Cached component data - invalidated on structural changes
+    private List<HashSet<Vector2I>>? _cachedComponents;
+    private (Vector2I, Vector2I)? _cachedClosestPair;
 
     /// <summary>
     /// Number of nodes in the graph.
@@ -40,6 +44,7 @@ public class PassabilityGraph
         if (_nodes.Add(position))
         {
             _adjacency[position] = new HashSet<Vector2I>();
+            InvalidateCache();
         }
     }
 
@@ -59,6 +64,7 @@ public class PassabilityGraph
             }
         }
         _adjacency.Remove(position);
+        InvalidateCache();
     }
 
     /// <summary>
@@ -71,6 +77,172 @@ public class PassabilityGraph
         AddNode(b);
         _adjacency[a].Add(b);
         _adjacency[b].Add(a);
+        InvalidateCache();
+    }
+
+    private void InvalidateCache()
+    {
+        _cachedComponents = null;
+        _cachedClosestPair = null;
+    }
+
+    /// <summary>
+    /// Gets all connected components in the graph.
+    /// Results are cached until the graph structure changes.
+    /// </summary>
+    public List<HashSet<Vector2I>> GetComponents()
+    {
+        if (_cachedComponents != null)
+            return _cachedComponents;
+
+        _cachedComponents = new List<HashSet<Vector2I>>();
+        var visited = new HashSet<Vector2I>();
+
+        foreach (var node in _nodes)
+        {
+            if (visited.Contains(node))
+                continue;
+
+            var component = new HashSet<Vector2I>();
+            var queue = new Queue<Vector2I>();
+            queue.Enqueue(node);
+            visited.Add(node);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                component.Add(current);
+
+                foreach (var neighbor in _adjacency[current])
+                {
+                    if (visited.Add(neighbor))
+                        queue.Enqueue(neighbor);
+                }
+            }
+
+            _cachedComponents.Add(component);
+        }
+
+        return _cachedComponents;
+    }
+
+    /// <summary>
+    /// Returns true if the graph has multiple disconnected components.
+    /// </summary>
+    public bool HasDisconnectedRegions()
+    {
+        var components = GetComponents();
+        return components.Count > 1;
+    }
+
+    /// <summary>
+    /// Gets the two closest nodes from different components.
+    /// Returns null if graph has fewer than 2 components.
+    /// Results are cached until the graph structure changes.
+    /// </summary>
+    public (Vector2I, Vector2I)? GetClosestDisconnectedPair()
+    {
+        if (_cachedClosestPair.HasValue)
+            return _cachedClosestPair;
+
+        var components = GetComponents();
+        if (components.Count < 2)
+            return null;
+
+        // Find the two closest nodes across all component pairs
+        var minDistance = float.MaxValue;
+        Vector2I closest1 = default, closest2 = default;
+
+        for (var i = 0; i < components.Count - 1; i++)
+        {
+            for (var j = i + 1; j < components.Count; j++)
+            {
+                foreach (var node1 in components[i])
+                {
+                    foreach (var node2 in components[j])
+                    {
+                        var dist = ManhattanDistance(node1, node2);
+                        if (dist < minDistance)
+                        {
+                            minDistance = dist;
+                            closest1 = node1;
+                            closest2 = node2;
+                        }
+                    }
+                }
+            }
+        }
+
+        _cachedClosestPair = (closest1, closest2);
+        return _cachedClosestPair;
+    }
+
+    /// <summary>
+    /// Checks if a position is on or near the Manhattan path between two closest disconnected nodes.
+    /// Used to identify "corridor" positions that should prefer passable tiles.
+    /// </summary>
+    /// <param name="position">Position to check</param>
+    /// <param name="tolerance">Maximum perpendicular distance from the path (default 1 = adjacent to path)</param>
+    public bool IsOnCorridorPath(Vector2I position, int tolerance = 1)
+    {
+        var pair = GetClosestDisconnectedPair();
+        if (!pair.HasValue)
+            return false;
+
+        var (a, b) = pair.Value;
+        return IsOnManhattanPath(position, a, b, tolerance);
+    }
+
+    /// <summary>
+    /// Checks if a position is on or near the L-shaped Manhattan path between two points.
+    /// The path goes horizontal first, then vertical (or the reverse).
+    /// </summary>
+    private static bool IsOnManhattanPath(Vector2I pos, Vector2I from, Vector2I to, int tolerance)
+    {
+        // Path 1: horizontal then vertical
+        // From (from.X, from.Y) to (to.X, from.Y) to (to.X, to.Y)
+        if (IsNearLineSegment(pos, from, new Vector2I(to.X, from.Y), tolerance) ||
+            IsNearLineSegment(pos, new Vector2I(to.X, from.Y), to, tolerance))
+            return true;
+
+        // Path 2: vertical then horizontal
+        // From (from.X, from.Y) to (from.X, to.Y) to (to.X, to.Y)
+        if (IsNearLineSegment(pos, from, new Vector2I(from.X, to.Y), tolerance) ||
+            IsNearLineSegment(pos, new Vector2I(from.X, to.Y), to, tolerance))
+            return true;
+
+        return false;
+    }
+
+    /// <summary>
+    /// Checks if a position is within tolerance of an axis-aligned line segment.
+    /// </summary>
+    private static bool IsNearLineSegment(Vector2I pos, Vector2I a, Vector2I b, int tolerance)
+    {
+        // Horizontal segment
+        if (a.Y == b.Y)
+        {
+            var minX = Math.Min(a.X, b.X);
+            var maxX = Math.Max(a.X, b.X);
+            return pos.X >= minX - tolerance && pos.X <= maxX + tolerance &&
+                   Math.Abs(pos.Y - a.Y) <= tolerance;
+        }
+
+        // Vertical segment
+        if (a.X == b.X)
+        {
+            var minY = Math.Min(a.Y, b.Y);
+            var maxY = Math.Max(a.Y, b.Y);
+            return pos.Y >= minY - tolerance && pos.Y <= maxY + tolerance &&
+                   Math.Abs(pos.X - a.X) <= tolerance;
+        }
+
+        return false;
+    }
+
+    private static int ManhattanDistance(Vector2I a, Vector2I b)
+    {
+        return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
     }
 
     /// <summary>

@@ -1082,7 +1082,7 @@ public partial class SimpleWorldMapScreen : Node3D
         if (Viewport == null) return;
 
         // Size viewport to match map dimensions
-        Viewport.Size = new Vector2I(mapSize.X * TILE_SIZE, mapSize.Y * TILE_SIZE);
+        Viewport.Size = new Vector2I((mapSize.X + 1) * TILE_SIZE, (mapSize.Y + 1) * TILE_SIZE);
         Viewport.RenderTargetUpdateMode = SubViewport.UpdateMode.WhenParentVisible;
 
         // Get camera reference
@@ -1160,7 +1160,7 @@ public partial class SimpleWorldMapScreen : Node3D
         var vertices = new Vector3[]
         {
             new(-2.6665f, -1.5f, 0), // Bottom-left
-            new(2.6665f, -1.5f, 0), // Bottom-right  
+            new(2.6665f, -1.5f, 0), // Bottom-right
             new(2.6665f, 1.5f, 0), // Top-right
             new(-2.6665f, 1.5f, 0) // Top-left
         };
@@ -1170,7 +1170,7 @@ public partial class SimpleWorldMapScreen : Node3D
         {
             new(0, 1), // Bottom-left maps to (0,1) - bottom of texture
             new(1, 1), // Bottom-right maps to (1,1) - bottom-right of texture
-            new(1, 0), // Top-right maps to (1,0) - top-right of texture  
+            new(1, 0), // Top-right maps to (1,0) - top-right of texture
             new(0, 0) // Top-left maps to (0,0) - top-left of texture
         };
 

@@ -1,38 +1,28 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
 /// <summary>
-/// Constraint that prevents tile placements which would disconnect passable regions.
-/// Uses articulation point detection to identify positions that, if made impassable,
-/// would split the passable region into disconnected components.
+/// Constraint that ensures passable tile connectivity during WFC generation.
+/// Two-pronged approach:
+/// 1. REACTIVE: Bans impassable tiles at bridge positions between disconnected passable regions
+/// 2. PROACTIVE: When disconnected regions exist, bans impassable tiles on the corridor path between them
+/// Movement is cardinal-only (no diagonals).
 /// </summary>
-/// <remarks>
-/// Return value semantics:
-/// <list type="bullet">
-///   <item><description>1.0: Tile can be placed (passable tile, or impassable at non-critical position)</description></item>
-///   <item><description>0.0: Hard ban (impassable tile at position critical for connectivity)</description></item>
-/// </list>
-///
-/// The constraint works by temporarily adding the candidate position to the passability graph,
-/// connecting it to any collapsed passable neighbors, checking if it would be an articulation point,
-/// then cleaning up. If the position IS an articulation point when treated as passable, making it
-/// impassable would disconnect the graph - so we ban impassable tiles at such positions.
-/// </remarks>
 public class ConnectivityConstraint : IWfcConstraint
 {
     private readonly PassabilityGraph _graph;
     private readonly Func<string, bool> _isPassable;
 
     /// <summary>
-    /// Creates a connectivity constraint.
+    /// Tolerance for corridor path detection. Higher values create wider corridors.
+    /// Default 1 means positions adjacent to the path are also considered.
     /// </summary>
-    /// <param name="graph">The passability graph tracking collapsed passable tiles.</param>
-    /// <param name="isPassable">Function that returns true if a tile ID is passable.</param>
+    public int CorridorTolerance { get; set; } = 1;
+
     public ConnectivityConstraint(PassabilityGraph graph, Func<string, bool> isPassable)
     {
         _graph = graph;
@@ -46,44 +36,59 @@ public class ConnectivityConstraint : IWfcConstraint
         if (_isPassable(context.TileId))
             return 1.0f;
 
-        // Impassable tile being considered at this position
-        // Check if this position would be critical for connectivity if it were passable
+        // === PROACTIVE: Ensure corridor between disconnected regions ===
+        // If there are disconnected passable regions, ban impassable tiles on the corridor path
+        if (_graph.HasDisconnectedRegions() && _graph.IsOnCorridorPath(context.Position, CorridorTolerance))
+        {
+            // This position is on the path between disconnected regions - must be passable
+            return 0.0f;
+        }
 
-        // First, find collapsed passable neighbors
+        // === REACTIVE: Prevent disconnection at bridge positions ===
         var passableNeighbors = GetPassableNeighbors(context.Position, context.Grid);
 
-        // CRITICAL: No passable neighbors means this position is isolated from the passable region.
-        // We MUST ban impassable tiles here, otherwise they create barriers that fragment the map
-        // into disconnected islands. Impassable tiles ONLY allowed at the edge of passable region.
-        if (passableNeighbors.Count == 0)
-            return 0.0f;
+        // 0-1 passable neighbors: can't be a bridge
+        if (passableNeighbors.Count <= 1)
+            return 1.0f;
 
-        // Temporarily add this position as passable to check if it's an articulation point
-        var wasInGraph = _graph.ContainsNode(context.Position);
-        if (!wasInGraph)
+        // 2+ passable neighbors: check if they're already connected
+        if (AreAllNeighborsConnected(passableNeighbors))
+            return 1.0f;
+
+        // Passable neighbors are from different components - this is a bridge position
+        return 0.0f;
+    }
+
+    private bool AreAllNeighborsConnected(List<Vector2I> neighbors)
+    {
+        if (neighbors.Count <= 1)
+            return true;
+
+        var first = neighbors[0];
+        var targets = new HashSet<Vector2I>(neighbors);
+        targets.Remove(first);
+
+        var visited = new HashSet<Vector2I> { first };
+        var queue = new Queue<Vector2I>();
+        queue.Enqueue(first);
+
+        while (queue.Count > 0 && targets.Count > 0)
         {
-            _graph.AddNode(context.Position);
-            foreach (var neighbor in passableNeighbors)
+            var current = queue.Dequeue();
+
+            foreach (var adjacent in _graph.GetNeighbors(current))
             {
-                _graph.AddEdge(context.Position, neighbor);
+                if (visited.Add(adjacent))
+                {
+                    targets.Remove(adjacent);
+                    queue.Enqueue(adjacent);
+                }
             }
         }
 
-        var isArticulation = _graph.IsArticulationPoint(context.Position);
-
-        // Clean up temporary addition
-        if (!wasInGraph)
-        {
-            _graph.RemoveNode(context.Position);
-        }
-
-        // If this position is an articulation point when passable, ban impassable tiles here
-        return isArticulation ? 0.0f : 1.0f;
+        return targets.Count == 0;
     }
 
-    /// <summary>
-    /// Gets all collapsed passable neighbors of a position.
-    /// </summary>
     private List<Vector2I> GetPassableNeighbors(Vector2I position, WfcGrid grid)
     {
         var result = new List<Vector2I>();
