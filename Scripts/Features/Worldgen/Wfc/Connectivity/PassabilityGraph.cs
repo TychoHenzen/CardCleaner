@@ -178,19 +178,48 @@ public class PassabilityGraph
     }
 
     /// <summary>
-    /// Checks if a position is on or near the Manhattan path between two closest disconnected nodes.
+    /// Checks if a position is on or near the Manhattan path between ANY pair of disconnected nodes.
     /// Used to identify "corridor" positions that should prefer passable tiles.
+    /// This ensures ALL disconnected components eventually connect, not just the closest pair.
     /// </summary>
     /// <param name="position">Position to check</param>
     /// <param name="tolerance">Maximum perpendicular distance from the path (default 1 = adjacent to path)</param>
     public bool IsOnCorridorPath(Vector2I position, int tolerance = 1)
     {
-        var pair = GetClosestDisconnectedPair();
-        if (!pair.HasValue)
+        var components = GetComponents();
+        if (components.Count < 2)
             return false;
 
-        var (a, b) = pair.Value;
-        return IsOnManhattanPath(position, a, b, tolerance);
+        // Check all pairs of components for corridor paths
+        for (var i = 0; i < components.Count - 1; i++)
+        {
+            for (var j = i + 1; j < components.Count; j++)
+            {
+                // Find closest nodes between this pair of components
+                var minDistance = float.MaxValue;
+                Vector2I closest1 = default, closest2 = default;
+
+                foreach (var node1 in components[i])
+                {
+                    foreach (var node2 in components[j])
+                    {
+                        var dist = ManhattanDistance(node1, node2);
+                        if (dist < minDistance)
+                        {
+                            minDistance = dist;
+                            closest1 = node1;
+                            closest2 = node2;
+                        }
+                    }
+                }
+
+                // Check if position is on the corridor path between this pair
+                if (IsOnManhattanPath(position, closest1, closest2, tolerance))
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
