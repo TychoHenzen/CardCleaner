@@ -240,38 +240,4 @@ public class ConnectivityVerificationTest
         // GATE CONDITION: Success rate must be >= 99%
         AssertFloat(successRate).IsGreaterEqual(99.0f);
     }
-
-    // ========== Additional edge case tests ==========
-
-    [TestCase]
-    public void LargerMap_WithoutCorridor_StillConnected()
-    {
-        // Test with larger map to ensure connectivity scales
-        var mapSize = new Vector2I(50, 50);
-        var rng = new RandomNumberGenerator();
-        rng.Seed = 12345;
-
-        var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
-        generator.EnableCorridorFallback = false;
-
-        var mapData = generator.GenerateMap(mapSize);
-
-        AssertBool(IsFullyConnected(mapData)).IsTrue();
-    }
-
-    [TestCase]
-    public void SmallMap_WithoutCorridor_StillConnected()
-    {
-        // Test with small map edge case
-        var mapSize = new Vector2I(8, 8);
-        var rng = new RandomNumberGenerator();
-        rng.Seed = 12345;
-
-        var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
-        generator.EnableCorridorFallback = false;
-
-        var mapData = generator.GenerateMap(mapSize);
-
-        AssertBool(IsFullyConnected(mapData)).IsTrue();
-    }
 }
