@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -116,9 +118,8 @@ public class ConnectivityVerificationTest
             {
                 var neighbor = current + dir;
 
-                if (passablePositions.Contains(neighbor) && !visited.Contains(neighbor))
+                if (passablePositions.Contains(neighbor) && visited.Add(neighbor))
                 {
-                    visited.Add(neighbor);
                     queue.Enqueue(neighbor);
                 }
             }
@@ -131,10 +132,12 @@ public class ConnectivityVerificationTest
     // ========== Test Case 1: Generate100Maps_WithoutCorridor_AllConnected ==========
 
     [TestCase]
-    public void Generate100Maps_WithoutCorridor_AllConnected()
+    public async Task Generate100Maps_WithoutCorridor_AllConnected()
     {
         // GATE TEST: Generate 100 maps with corridor fallback disabled
         // Verify WFC-native connectivity maintains connection
+
+        var profiler = new MapGenerationProfiler();
 
         var mapSize = new Vector2I(25, 25); // Smaller size for faster test execution
         var disconnectedMaps = new List<int>();
@@ -145,8 +148,11 @@ public class ConnectivityVerificationTest
             rng.Seed = (ulong)(i * 12345 + 7);
 
             var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
+            generator.SetProfiler(profiler);
 
-            var mapData = generator.GenerateMap(mapSize);
+            // Wrap in async adapter and await generation
+            var asyncGenerator = new AsyncMapGeneratorAdapter(generator);
+            var mapData = await asyncGenerator.GenerateMapAsync(mapSize);
 
             if (!IsFullyConnected(mapData))
             {
@@ -162,6 +168,8 @@ public class ConnectivityVerificationTest
         {
             GD.Print($"Disconnected maps: {string.Join(", ", disconnectedMaps)}");
         }
+
+        profiler.PrintReport();
 
         // GATE CONDITION: Less than 2 disconnected maps (>= 99% success rate)
         AssertInt(disconnectedMaps.Count).IsLess(5);
@@ -212,7 +220,7 @@ public class ConnectivityVerificationTest
     // ========== Test Case 3: ConnectivityRate_Above99Percent ==========
 
     [TestCase]
-    public void ConnectivityRate_Above99Percent()
+    public async Task ConnectivityRate_Above99Percent()
     {
         // Statistical verification test - calculate exact success rate
         var mapSize = new Vector2I(25, 25);
@@ -226,7 +234,9 @@ public class ConnectivityVerificationTest
 
             var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
 
-            var mapData = generator.GenerateMap(mapSize);
+            // Wrap in async adapter and await generation
+            var asyncGenerator = new AsyncMapGeneratorAdapter(generator);
+            var mapData = await asyncGenerator.GenerateMapAsync(mapSize);
 
             if (IsFullyConnected(mapData))
             {
@@ -239,5 +249,37 @@ public class ConnectivityVerificationTest
 
         // GATE CONDITION: Success rate must be >= 95%
         AssertFloat(successRate).IsGreaterEqual(95.0f);
+    }
+
+    // ========== Test Case 4: Performance Regression Test ==========
+
+    /// <summary>
+    /// Performance regression test to prevent future slowdowns.
+    /// Fails if a single 25x25 map takes longer than 5 seconds to generate.
+    /// </summary>
+    [TestCase]
+    public async Task MapGeneration_25x25_CompletesUnder5Seconds()
+    {
+        // REGRESSION TEST: Ensure map generation performance doesn't degrade
+        var mapSize = new Vector2I(25, 25);
+        var rng = new RandomNumberGenerator();
+        rng.Seed = 42; // Fixed seed for reproducibility
+
+        var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
+        var asyncGenerator = new AsyncMapGeneratorAdapter(generator);
+
+        var stopwatch = Stopwatch.StartNew();
+        var mapData = await asyncGenerator.GenerateMapAsync(mapSize);
+        stopwatch.Stop();
+
+        var elapsedSeconds = stopwatch.ElapsedMilliseconds / 1000.0;
+        GD.Print($"Map generation completed in {elapsedSeconds:F2} seconds");
+
+        // GATE CONDITION: Generation must complete in under 5 seconds
+        // After ST003 optimization (622x speedup), expect ~0.5 seconds
+        AssertThat(stopwatch.ElapsedMilliseconds).IsLess(5000);
+
+        // Verify the map is still valid and connected
+        AssertThat(IsFullyConnected(mapData)).IsTrue();
     }
 }

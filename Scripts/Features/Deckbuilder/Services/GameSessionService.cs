@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
@@ -9,6 +11,7 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
+using Timer = Godot.Timer;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
@@ -34,6 +37,7 @@ public partial class GameSessionService : Node, IGameSessionService
     private Vector2I? _playerPosition;
     private RandomNumberGenerator _rng = new();
     private ITileRegistry _tileRegistry = null!;
+    private CancellationTokenSource? _generationCts;
 
     public SessionState CurrentState
     {
@@ -56,6 +60,7 @@ public partial class GameSessionService : Node, IGameSessionService
     public event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
     public event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>>? VisibilityUpdated;
     public event Action<IReadOnlyList<Vector2I>, Vector2I?>? PathUpdated;
+    public event Action<float>? ProgressUpdated;
 
     public void StartSession(List<CardSignature>? mapSeeds, List<CardSignature>? abilityCards)
     {
@@ -140,48 +145,91 @@ public partial class GameSessionService : Node, IGameSessionService
         ILog.Print("GameSessionService ready and initialized");
     }
 
-    private void GenerateMap()
+    private async void GenerateMap()
     {
-        ILog.Print($"Generating biome-based map from {_mapSeeds.Count} seed signature(s)");
+        ILog.Print($"Starting async map generation from {_mapSeeds.Count} seed signature(s)...");
 
-        // Compute deterministic seed from card signatures
-        var seed = ComputeSeedFromCards(_mapSeeds);
-        _rng.Seed = seed;
-        ILog.Print($"Map seed: {seed}");
+        // Cancel any previous generation in progress
+        _generationCts?.Cancel();
+        _generationCts?.Dispose();
+        _generationCts = new CancellationTokenSource();
 
-        // Ensure tile registry is available (fallback if async callback hasn't run yet)
-        _tileRegistry ??= new TileRegistry();
+        // Create progress reporter for loading UI
+        var progress = new GodotProgress();
+        AddChild(progress);
+        progress.ProgressUpdated += OnMapGenerationProgress;
 
-        // Use first signature to influence map size (could blend in future)
-        var mapSize = CalculateMapSize(_mapSeeds[0]);
+        try
+        {
+            // Compute deterministic seed from card signatures
+            var seed = ComputeSeedFromCards(_mapSeeds);
+            _rng.Seed = seed;
+            ILog.Print($"Map seed: {seed}");
 
-        // Create gradient from all map seeds for biome placement
-        var gradient = new CardBasedGradient(_mapSeeds.ToArray(), _rng);
+            // Ensure tile registry is available (fallback if async callback hasn't run yet)
+            _tileRegistry ??= new TileRegistry();
 
-        // Create biome provider that maps gradient signatures to biomes
-        var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, mapSize);
+            // Use first signature to influence map size (could blend in future)
+            var mapSize = CalculateMapSize(_mapSeeds[0]);
 
-        // Create WFC generator with hard constraints (2x2 window, adjacency rules)
-        // Pass tile registry so WfcMapGenerator uses TileDefinition.IsPassable for connectivity
-        var transitionResolver = new CompiledTransitionResolver();
-        var wfcGenerator = new WfcMapGenerator(transitionResolver, _tileRegistry);
+            // Create gradient from all map seeds for biome placement
+            var gradient = new CardBasedGradient(_mapSeeds.ToArray(), _rng);
 
-        // Create map generator with WFC for terrain generation
-        var mapGenerator = new SimpleMapGenerator(
-            _rng, biomeProvider, _tileRegistry, wfcGenerator,
-             _biomeRegistry);
-        _currentMap = mapGenerator.GenerateMap(mapSize);
+            // Create biome provider that maps gradient signatures to biomes
+            var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, mapSize);
 
-        // Log biome distribution for debugging
-        biomeProvider.LogBiomeStats();
+            // Create WFC generator with hard constraints (2x2 window, adjacency rules)
+            // Pass tile registry so WfcMapGenerator uses TileDefinition.IsPassable for connectivity
+            var transitionResolver = new CompiledTransitionResolver();
+            var wfcGenerator = new WfcMapGenerator(transitionResolver, _tileRegistry);
 
-        ILog.Print($"Map generated: {mapSize.X}x{mapSize.Y}, {_currentMap.EnemyPositions.Count} enemies");
+            // Create map generator with WFC for terrain generation
+            var mapGenerator = new SimpleMapGenerator(
+                _rng, biomeProvider, _tileRegistry, wfcGenerator, _biomeRegistry);
 
-        // Notify listeners about the generated map
-        MapGenerated?.Invoke(_currentMap);
+            // Wrap in async adapter and generate on background thread
+            var asyncGenerator = new AsyncMapGeneratorAdapter(mapGenerator);
+            _currentMap = await asyncGenerator.GenerateMapAsync(mapSize, progress, _generationCts.Token);
 
-        CurrentState = SessionState.Exploring;
-        CallDeferred(MethodName.AdvanceSession);
+            // Log biome distribution for debugging
+            biomeProvider.LogBiomeStats();
+
+            ILog.Print($"Map generated: {mapSize.X}x{mapSize.Y}, {_currentMap.EnemyPositions.Count} enemies");
+
+            // Notify listeners about the generated map
+            MapGenerated?.Invoke(_currentMap);
+
+            CurrentState = SessionState.Exploring;
+            CallDeferred(MethodName.AdvanceSession);
+        }
+        catch (MapGenerationCancelledException ex)
+        {
+            ILog.Warning($"Map generation cancelled: {ex.Message}");
+            CurrentState = SessionState.WaitingForCards;
+        }
+        catch (OperationCanceledException ex)
+        {
+            ILog.Warning($"Map generation cancelled: {ex.Message}");
+            CurrentState = SessionState.WaitingForCards;
+        }
+        catch (Exception ex)
+        {
+            ILog.Error($"Map generation failed: {ex.Message}");
+            ILog.Error($"Stack trace: {ex.StackTrace}");
+            CurrentState = SessionState.WaitingForCards;
+        }
+        finally
+        {
+            progress.QueueFree();
+            _generationCts?.Dispose();
+            _generationCts = null;
+        }
+    }
+
+    private void OnMapGenerationProgress(float value)
+    {
+        ProgressUpdated?.Invoke(value);
+        ILog.Print($"Map generation: {value * 100:F0}%");
     }
 
     private void StartExploration()

@@ -17,6 +17,7 @@ public class PassabilityGraph
     // Cached component data - invalidated on structural changes
     private List<HashSet<Vector2I>>? _cachedComponents;
     private (Vector2I, Vector2I)? _cachedClosestPair;
+    private List<(Vector2I, Vector2I)>? _cachedAllClosestPairs;
 
     /// <summary>
     /// Number of nodes in the graph.
@@ -84,6 +85,7 @@ public class PassabilityGraph
     {
         _cachedComponents = null;
         _cachedClosestPair = null;
+        _cachedAllClosestPairs = null;
     }
 
     /// <summary>
@@ -178,24 +180,24 @@ public class PassabilityGraph
     }
 
     /// <summary>
-    /// Checks if a position is on or near the Manhattan path between ANY pair of disconnected nodes.
-    /// Used to identify "corridor" positions that should prefer passable tiles.
-    /// This ensures ALL disconnected components eventually connect, not just the closest pair.
+    /// Gets all closest pairs between disconnected components.
+    /// Results are cached until the graph structure changes.
     /// </summary>
-    /// <param name="position">Position to check</param>
-    /// <param name="tolerance">Maximum perpendicular distance from the path (default 1 = adjacent to path)</param>
-    public bool IsOnCorridorPath(Vector2I position, int tolerance = 1)
+    private List<(Vector2I, Vector2I)> GetAllClosestPairs()
     {
+        if (_cachedAllClosestPairs != null)
+            return _cachedAllClosestPairs;
+
+        _cachedAllClosestPairs = new List<(Vector2I, Vector2I)>();
+
         var components = GetComponents();
         if (components.Count < 2)
-            return false;
+            return _cachedAllClosestPairs;
 
-        // Check all pairs of components for corridor paths
         for (var i = 0; i < components.Count - 1; i++)
         {
             for (var j = i + 1; j < components.Count; j++)
             {
-                // Find closest nodes between this pair of components
                 var minDistance = float.MaxValue;
                 Vector2I closest1 = default, closest2 = default;
 
@@ -213,10 +215,28 @@ public class PassabilityGraph
                     }
                 }
 
-                // Check if position is on the corridor path between this pair
-                if (IsOnManhattanPath(position, closest1, closest2, tolerance))
-                    return true;
+                _cachedAllClosestPairs.Add((closest1, closest2));
             }
+        }
+
+        return _cachedAllClosestPairs;
+    }
+
+    /// <summary>
+    /// Checks if a position is on or near the Manhattan path between ANY pair of disconnected nodes.
+    /// Used to identify "corridor" positions that should prefer passable tiles.
+    /// This ensures ALL disconnected components eventually connect, not just the closest pair.
+    /// </summary>
+    /// <param name="position">Position to check</param>
+    /// <param name="tolerance">Maximum perpendicular distance from the path (default 1 = adjacent to path)</param>
+    public bool IsOnCorridorPath(Vector2I position, int tolerance = 1)
+    {
+        var closestPairs = GetAllClosestPairs();
+
+        foreach (var (closest1, closest2) in closestPairs)
+        {
+            if (IsOnManhattanPath(position, closest1, closest2, tolerance))
+                return true;
         }
 
         return false;

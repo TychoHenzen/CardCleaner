@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
@@ -40,6 +42,7 @@ public class WfcSolver
     private readonly BlobSizeTracker? _blobTracker;
     private readonly PassabilityGraph? _passabilityGraph;
     private readonly Func<string, bool>? _isPassable;
+    private IProfiler _profiler = new NoOpProfiler();
 
     /// <summary>
     /// Maximum iterations before giving up (prevents infinite loops).
@@ -74,6 +77,11 @@ public class WfcSolver
         _blobTracker = blobTracker;
         _passabilityGraph = passabilityGraph;
         _isPassable = isPassable;
+    }
+
+    public void SetProfiler(IProfiler profiler)
+    {
+        _profiler = profiler;
     }
 
     /// <summary>
@@ -135,13 +143,17 @@ public class WfcSolver
             var continuityTiles = GetContinuityMatchingTiles(grid, targetPos.Value);
 
             // Select tile using weighted probabilities
-            var selectedTile = _selector.SelectTile(
-                targetCell.GetPossibleTiles(),
-                biome,
-                rng,
-                continuityTiles,
-                targetPos.Value,
-                grid);
+            string? selectedTile;
+            using (_profiler.BeginScope("TileSelection"))
+            {
+                selectedTile = _selector.SelectTile(
+                    targetCell.GetPossibleTiles(),
+                    biome,
+                    rng,
+                    continuityTiles,
+                    targetPos.Value,
+                    grid);
+            }
 
             if (selectedTile == null)
             {
@@ -152,16 +164,23 @@ public class WfcSolver
             }
 
             // Collapse the cell
-            targetCell.CollapseTo(selectedTile);
+            using (_profiler.BeginScope("CellCollapse"))
+            {
+                targetCell.CollapseTo(selectedTile);
 
-            // Update blob tracker for soft modifiers
-            _blobTracker?.RegisterCollapse(targetPos.Value, selectedTile, grid);
+                // Update blob tracker for soft modifiers
+                _blobTracker?.RegisterCollapse(targetPos.Value, selectedTile, grid);
 
-            // Update passability graph for connectivity constraints
-            UpdatePassabilityGraph(targetPos.Value, selectedTile, grid);
+                // Update passability graph for connectivity constraints
+                UpdatePassabilityGraph(targetPos.Value, selectedTile, grid);
+            }
 
             // Propagate constraints to neighbors
-            var propResult = _propagator.Propagate(grid, targetPos.Value);
+            PropagationResult propResult;
+            using (_profiler.BeginScope("Propagation"))
+            {
+                propResult = _propagator.Propagate(grid, targetPos.Value);
+            }
             if (!propResult.Success)
             {
                 return WfcSolveResult.Failed(

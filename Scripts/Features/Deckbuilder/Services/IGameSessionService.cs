@@ -28,6 +28,7 @@ public interface IGameSessionService
     event Action<IReadOnlySet<Vector2I>> VisitedTilesUpdated;
     event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>> VisibilityUpdated;
     event Action<IReadOnlyList<Vector2I>, Vector2I?> PathUpdated;
+    event Action<float>? ProgressUpdated;
 
     void StartSession(List<CardSignature> mapSeeds, List<CardSignature> abilityCards);
     void AdvanceSession();

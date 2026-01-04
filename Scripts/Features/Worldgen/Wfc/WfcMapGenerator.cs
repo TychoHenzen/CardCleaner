@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
@@ -28,6 +29,7 @@ public class WfcMapGenerator
     private readonly NoveltySoftModifier _novelty;
     private readonly CompactnessSoftModifier _compactness;
     private readonly ITileRegistry? _tileRegistry;
+    private IProfiler _profiler = new NoOpProfiler();
 
     /// <summary>
     /// Number of retry attempts when contradiction occurs (default 3).
@@ -105,6 +107,11 @@ public class WfcMapGenerator
     /// </summary>
     public bool EnableConnectivity { get; set; } = true;
 
+    public void SetProfiler(IProfiler profiler)
+    {
+        _profiler = profiler;
+    }
+
     /// <summary>
     /// Creates a WFC map generator using the given transition resolver.
     /// </summary>
@@ -164,14 +171,24 @@ public class WfcMapGenerator
         var solver = CreateSolver();
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, initialTiles);
-        var (solveResult, grid) = solver.SolveWithRetry(CreateGrid, biome, seed, MaxRetries);
+
+        WfcSolveResult solveResult;
+        WfcGrid grid;
+        using (_profiler.BeginScope("WfcSolve"))
+        {
+            (solveResult, grid) = solver.SolveWithRetry(CreateGrid, biome, seed, MaxRetries);
+        }
 
         if (!solveResult.Success)
         {
             return WfcGenerationResult.Failed(solveResult.ErrorMessage ?? "Unknown error");
         }
 
-        var mapData = _adapter.ToSimpleMapData(grid, biome, passableSet);
+        SimpleMapData mapData;
+        using (_profiler.BeginScope("MapDataConversion"))
+        {
+            mapData = _adapter.ToSimpleMapData(grid, biome, passableSet);
+        }
         return WfcGenerationResult.Succeeded(mapData, solveResult.Iterations);
     }
 
@@ -216,15 +233,24 @@ public class WfcMapGenerator
             break;
         }
 
-        var (solveResult, grid) = solver.SolveWithRetry(CreateGrid, defaultBiome, seed, MaxRetries);
+        WfcSolveResult solveResult;
+        WfcGrid grid;
+        using (_profiler.BeginScope("MultiBiomeWfcSolve"))
+        {
+            (solveResult, grid) = solver.SolveWithRetry(CreateGrid, defaultBiome, seed, MaxRetries);
+        }
 
         if (!solveResult.Success)
         {
             return WfcGenerationResult.Failed(solveResult.ErrorMessage ?? "Unknown error");
         }
 
-        var biomeMap = BuildBiomeMap(size, getBiomeAt);
-        var mapData = _adapter.ToSimpleMapData(grid, biomeMap, passableTiles);
+        SimpleMapData mapData;
+        using (_profiler.BeginScope("MultiBiomeMapDataConversion"))
+        {
+            var biomeMap = BuildBiomeMap(size, getBiomeAt);
+            mapData = _adapter.ToSimpleMapData(grid, biomeMap, passableTiles);
+        }
         return WfcGenerationResult.Succeeded(mapData, solveResult.Iterations);
     }
 
@@ -241,17 +267,23 @@ public class WfcMapGenerator
 
         var propagator = new WfcPropagator(_adjacencyRules, _tileRegistry);
 
+        WfcSolver solver;
         if (!EnableConnectivity || _tileRegistry == null)
         {
-            return new WfcSolver(propagator, _selector, _blobTracker);
+            solver = new WfcSolver(propagator, _selector, _blobTracker);
+        }
+        else
+        {
+            var passabilityGraph = new PassabilityGraph();
+            // Use TileRegistry as single source of truth for passability
+            bool IsPassable(string tileId) => _tileRegistry.GetTile(tileId)?.IsPassable ?? false;
+
+            _selector.AddConstraint(new ConnectivityConstraint(passabilityGraph, IsPassable));
+            solver = new WfcSolver(propagator, _selector, _blobTracker, passabilityGraph, IsPassable);
         }
 
-        var passabilityGraph = new PassabilityGraph();
-        // Use TileRegistry as single source of truth for passability
-        bool IsPassable(string tileId) => _tileRegistry.GetTile(tileId)?.IsPassable ?? false;
-
-        _selector.AddConstraint(new ConnectivityConstraint(passabilityGraph, IsPassable));
-        return new WfcSolver(propagator, _selector, _blobTracker, passabilityGraph, IsPassable);
+        solver.SetProfiler(_profiler);
+        return solver;
     }
 
     /// <summary>

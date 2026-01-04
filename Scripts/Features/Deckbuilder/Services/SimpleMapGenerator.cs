@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -37,6 +38,7 @@ public class SimpleMapGenerator
     private readonly WfcMapGenerator? _wfcGenerator;
     private readonly BiomeRegistry? _biomeRegistry;
     private readonly BaselineGradient? _gradient;
+    private IProfiler _profiler = new NoOpProfiler();
 
     public SimpleMapGenerator(RandomNumberGenerator rng, IBiomeProvider biomeProvider, ITileRegistry tileRegistry,
         WfcMapGenerator? wfcGenerator = null, BiomeRegistry? biomeRegistry = null,
@@ -53,49 +55,75 @@ public class SimpleMapGenerator
         _gradient = gradient;
     }
 
+    public void SetProfiler(IProfiler profiler)
+    {
+        _profiler = profiler;
+        _wfcGenerator?.SetProfiler(profiler);
+    }
+
     public SimpleMapData GenerateMap(Vector2I size)
     {
         ILog.Print($"Generating WFC-based map {size.X}x{size.Y}");
 
         // Pre-select per-generation variants
-        var perGenerationVariants = SelectPerGenerationVariants();
+        Dictionary<string, int> perGenerationVariants;
+        using (_profiler.BeginScope("VariantSelection"))
+        {
+            perGenerationVariants = SelectPerGenerationVariants();
+        }
 
         // Build biome map
-        var biomeMap = new string[size.Y, size.X];
-        for (var y = 0; y < size.Y; y++)
-        for (var x = 0; x < size.X; x++)
+        string[,] biomeMap;
+        using (_profiler.BeginScope("BiomeMapBuild"))
         {
-            biomeMap[y, x] = _biomeProvider.GetBiomeAt(new Vector2I(x, y)).Id;
+            biomeMap = new string[size.Y, size.X];
+            for (var y = 0; y < size.Y; y++)
+            for (var x = 0; x < size.X; x++)
+            {
+                biomeMap[y, x] = _biomeProvider.GetBiomeAt(new Vector2I(x, y)).Id;
+            }
         }
 
         // Generate terrain using WFC (with 2x2 window constraint built-in)
-        var terrainGrid = GenerateTerrainViaWfc(size, biomeMap);
-
-        // Build passable tiles list from WFC output
-        var passableTiles = new List<Vector2I>();
-        var placedTiles = new Dictionary<Vector2I, string>();
-        for (var y = 0; y < size.Y; y++)
-        for (var x = 0; x < size.X; x++)
+        string[,] terrainGrid;
+        using (_profiler.BeginScope("WfcTerrainGeneration"))
         {
-            var pos = new Vector2I(x, y);
-            var tileId = terrainGrid[y, x];
-            placedTiles[pos] = tileId;
-            if (IsPassableTile(tileId))
-                passableTiles.Add(pos);
+            terrainGrid = GenerateTerrainViaWfc(size, biomeMap);
         }
 
-        // Ensure we have at least some passable tiles
-        if (passableTiles.Count == 0)
+        // Build passable tiles list from WFC output
+        List<Vector2I> passableTiles;
+        using (_profiler.BeginScope("PassableTileCollection"))
         {
-            var center = new Vector2I(size.X / 2, size.Y / 2);
-            terrainGrid[center.Y, center.X] = FloorTileId;
-            passableTiles.Add(center);
+            passableTiles = new List<Vector2I>();
+            var placedTiles = new Dictionary<Vector2I, string>();
+            for (var y = 0; y < size.Y; y++)
+            for (var x = 0; x < size.X; x++)
+            {
+                var pos = new Vector2I(x, y);
+                var tileId = terrainGrid[y, x];
+                placedTiles[pos] = tileId;
+                if (IsPassableTile(tileId))
+                    passableTiles.Add(pos);
+            }
+
+            // Ensure we have at least some passable tiles
+            if (passableTiles.Count == 0)
+            {
+                var center = new Vector2I(size.X / 2, size.Y / 2);
+                terrainGrid[center.Y, center.X] = FloorTileId;
+                passableTiles.Add(center);
+            }
         }
 
         // Generate terrain transitions BEFORE placing structures
-        var decorationOverlays = GenerateTerrainTransitions(terrainGrid, size);
-        var transitionCount = decorationOverlays.Count(kvp => kvp.Value.Bitmask > 0 && kvp.Value.Bitmask < 15);
-        ILog.Print($"Dual-grid terrain: {decorationOverlays.Count} visual tiles, {transitionCount} transitions");
+        Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> decorationOverlays;
+        using (_profiler.BeginScope("TerrainTransitions"))
+        {
+            decorationOverlays = GenerateTerrainTransitions(terrainGrid, size);
+            var transitionCount = decorationOverlays.Count(kvp => kvp.Value.Bitmask > 0 && kvp.Value.Bitmask < 15);
+            ILog.Print($"Dual-grid terrain: {decorationOverlays.Count} visual tiles, {transitionCount} transitions");
+        }
 
         // Copy terrain to final grid
         var finalTileIds = new string[size.Y, size.X];
