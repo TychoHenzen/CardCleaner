@@ -12,11 +12,14 @@ namespace CardCleaner.Addons.TileEditor;
 [Tool]
 public partial class TransitionCoveragePanel : ScrollContainer
 {
-    private readonly TileEditorService _service;
+    private readonly TileEditorService? _service;
     private VBoxContainer? _container;
     private Label? _summaryLabel;
     private GridContainer? _matrixGrid;
     private TransitionCoverageMatrix? _coverageMatrix;
+
+    // Required by Godot for [Tool] classes
+    public TransitionCoveragePanel() { }
 
     public TransitionCoveragePanel(TileEditorService service)
     {
@@ -29,6 +32,9 @@ public partial class TransitionCoveragePanel : ScrollContainer
 
     public override void _Ready()
     {
+        // Guard for Godot's parameterless constructor case
+        if (_service == null) return;
+
         SizeFlagsVertical = SizeFlags.ExpandFill;
         SizeFlagsHorizontal = SizeFlags.ExpandFill;
         HorizontalScrollMode = ScrollMode.Auto;
@@ -92,7 +98,7 @@ public partial class TransitionCoveragePanel : ScrollContainer
 
     private void RefreshDisplay()
     {
-        if (_container == null || _summaryLabel == null || _matrixGrid == null) return;
+        if (_service == null || _container == null || _summaryLabel == null || _matrixGrid == null) return;
 
         // Calculate coverage matrix
         _coverageMatrix = CalculateCoverageMatrix();

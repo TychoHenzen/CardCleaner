@@ -1,6 +1,5 @@
 ﻿// Tests/Core/Data/InputActionTest.cs
 
-using System;
 using CardCleaner.Scripts.Core.Data;
 using GdUnit4;
 using Godot;

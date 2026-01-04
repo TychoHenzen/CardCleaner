@@ -203,7 +203,7 @@ public class ExplorationAI
     private void CheckForVisibleEnemies()
     {
         Vector2I? closestVisibleEnemy = null;
-        var closestDistance = float.MaxValue;
+        var closestDistanceSquared = float.MaxValue;
 
         foreach (var enemyPos in _mapData.EnemyPositions)
         {
@@ -211,10 +211,10 @@ public class ExplorationAI
             // (respects both vision range AND line-of-sight)
             if (_frontierBehavior.CurrentlyVisibleTiles.Contains(enemyPos))
             {
-                var distance = CurrentPosition.DistanceTo(enemyPos);
-                if (distance < closestDistance)
+                var distanceSquared = CurrentPosition.DistanceSquaredTo(enemyPos);
+                if (distanceSquared < closestDistanceSquared)
                 {
-                    closestDistance = distance;
+                    closestDistanceSquared = distanceSquared;
                     closestVisibleEnemy = enemyPos;
                 }
             }

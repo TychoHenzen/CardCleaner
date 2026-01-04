@@ -19,6 +19,8 @@ public partial class InputService : Node, IInputService
 
     // Registered actions
     private readonly List<InputAction> _registeredActions = new();
+    private readonly Dictionary<Key, List<InputAction>> _keyActions = new();
+    private readonly Dictionary<MouseButton, List<InputAction>> _mouseActions = new();
 
     // Raw input events
     public event Action<Vector2>? MouseMoved;
@@ -41,6 +43,10 @@ public partial class InputService : Node, IInputService
         _registeredActions.Add(action);
         _actionStates[actionName] = false;
 
+        if (!_keyActions.TryGetValue(key, out var actions))
+            _keyActions[key] = actions = new List<InputAction>();
+        actions.Add(action);
+
         ILog.Print($"Registered action '{actionName}' -> {key}");
     }
 
@@ -57,12 +63,27 @@ public partial class InputService : Node, IInputService
         _registeredActions.Add(action);
         _actionStates[actionName] = false;
 
+        if (!_mouseActions.TryGetValue(button, out var actions))
+            _mouseActions[button] = actions = new List<InputAction>();
+        actions.Add(action);
+
         ILog.Print($"Registered action '{actionName}' -> {button}");
     }
 
     public void UnregisterAction(object owner, string actionName)
     {
-        _registeredActions.RemoveAll(a => a.Name == actionName && a.Owner.Equals(owner));
+        var removed = _registeredActions.Where(a => a.Name == actionName && a.Owner.Equals(owner)).ToList();
+        foreach (var action in removed)
+        {
+            _registeredActions.Remove(action);
+
+            if (action.Key.HasValue && _keyActions.TryGetValue(action.Key.Value, out var keyList))
+                keyList.Remove(action);
+
+            if (action.MouseButton.HasValue && _mouseActions.TryGetValue(action.MouseButton.Value, out var mouseList))
+                mouseList.Remove(action);
+        }
+
         _actionStates.Remove(actionName);
     }
 
@@ -72,6 +93,13 @@ public partial class InputService : Node, IInputService
         foreach (var action in actionsToRemove)
         {
             _registeredActions.Remove(action);
+
+            if (action.Key.HasValue && _keyActions.TryGetValue(action.Key.Value, out var keyList))
+                keyList.Remove(action);
+
+            if (action.MouseButton.HasValue && _mouseActions.TryGetValue(action.MouseButton.Value, out var mouseList))
+                mouseList.Remove(action);
+
             _actionStates.Remove(action.Name);
         }
     }
@@ -82,8 +110,22 @@ public partial class InputService : Node, IInputService
         if (action == null)
             return;
 
+        // Remove from old dictionary
+        if (action.Key.HasValue && _keyActions.TryGetValue(action.Key.Value, out var oldKeyList))
+            oldKeyList.Remove(action);
+
+        if (action.MouseButton.HasValue && _mouseActions.TryGetValue(action.MouseButton.Value, out var oldMouseList))
+            oldMouseList.Remove(action);
+
+        // Update action
         action.Key = newKey;
-        action.MouseButton = null; // Clear mouse button if it was set
+        action.MouseButton = null;
+
+        // Add to new dictionary
+        if (!_keyActions.TryGetValue(newKey, out var newKeyList))
+            _keyActions[newKey] = newKeyList = new List<InputAction>();
+        newKeyList.Add(action);
+
         ILog.Print($"Remapped '{actionName}' to {newKey}");
     }
 
@@ -93,8 +135,22 @@ public partial class InputService : Node, IInputService
         if (action == null)
             return;
 
+        // Remove from old dictionary
+        if (action.Key.HasValue && _keyActions.TryGetValue(action.Key.Value, out var oldKeyList))
+            oldKeyList.Remove(action);
+
+        if (action.MouseButton.HasValue && _mouseActions.TryGetValue(action.MouseButton.Value, out var oldMouseList))
+            oldMouseList.Remove(action);
+
+        // Update action
         action.MouseButton = newButton;
-        action.Key = null; // Clear key if it was set
+        action.Key = null;
+
+        // Add to new dictionary
+        if (!_mouseActions.TryGetValue(newButton, out var newMouseList))
+            _mouseActions[newButton] = newMouseList = new List<InputAction>();
+        newMouseList.Add(action);
+
         ILog.Print($"Remapped '{actionName}' to {newButton}");
     }
 
@@ -166,12 +222,14 @@ public partial class InputService : Node, IInputService
     {
         MouseButtonChanged?.Invoke(mouse.ButtonIndex, mouse.Pressed);
 
-        // Check registered actions
-        var matchingActions = _registeredActions.Where(a => a.Matches(mouse.ButtonIndex));
-        foreach (var action in matchingActions)
+        // Check registered actions - O(1) dictionary lookup instead of LINQ
+        if (_mouseActions.TryGetValue(mouse.ButtonIndex, out var actions))
         {
-            UpdateActionState(action.Name, mouse.Pressed);
-            action.MouseCallback?.Invoke(mouse.Pressed);
+            foreach (var action in actions)
+            {
+                UpdateActionState(action.Name, mouse.Pressed);
+                action.MouseCallback?.Invoke(mouse.Pressed);
+            }
         }
     }
 
@@ -179,18 +237,22 @@ public partial class InputService : Node, IInputService
     {
         KeyChanged?.Invoke(key.Keycode, key.Pressed);
 
-        // Check registered actions
-        var matchingActions = _registeredActions.Where(a => a.Matches(key.Keycode));
-        foreach (var action in matchingActions)
-            if (key.Pressed)
+        // Check registered actions - O(1) dictionary lookup instead of LINQ
+        if (_keyActions.TryGetValue(key.Keycode, out var actions))
+        {
+            foreach (var action in actions)
             {
-                UpdateActionState(action.Name, true);
-                action.Callback?.Invoke();
+                if (key.Pressed)
+                {
+                    UpdateActionState(action.Name, true);
+                    action.Callback?.Invoke();
+                }
+                else
+                {
+                    UpdateActionState(action.Name, false);
+                }
             }
-            else
-            {
-                UpdateActionState(action.Name, false);
-            }
+        }
     }
 
     private void UpdateActionState(string actionName, bool pressed)

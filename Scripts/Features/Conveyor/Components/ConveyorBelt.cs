@@ -22,11 +22,9 @@ public partial class ConveyorBelt : Node3D
 
     public override void _Ready()
     {
-        if (DetectionArea == null || DestinationMarker == null)
-        {
-            ILog.Error("Assign DetectionArea and DestinationMarker.");
+        if (ILog.ExportCheck(DetectionArea, nameof(DetectionArea), this) ||
+            ILog.ExportCheck(DestinationMarker, nameof(DestinationMarker), this))
             return;
-        }
 
         var collision = DetectionArea.GetNodeOrNull<CollisionShape3D>("CollisionShape3D");
         _areaBox = collision?.Shape as BoxShape3D;
@@ -63,14 +61,19 @@ public partial class ConveyorBelt : Node3D
     {
         if (DestinationMarker == null)
             return;
-        for (var i = _onBelt.Count - 1; i >= 0; i--)
+
+        var writeIndex = 0;
+        for (var i = 0; i < _onBelt.Count; i++)
         {
             var card = _onBelt[i];
             if (!IsInstanceValid(card))
-            {
-                _onBelt.RemoveAt(i);
                 continue;
-            }
+
+            // Compact valid cards to front of list
+            if (writeIndex != i)
+                _onBelt[writeIndex] = card;
+
+            writeIndex++;
 
             if (card.Sleeping)
                 card.SetSleeping(false);
@@ -83,5 +86,9 @@ public partial class ConveyorBelt : Node3D
             // Drive the card straight toward the marker
             card.LinearVelocity = dir.Normalized() * Speed;
         }
+
+        // Remove all invalid cards at once (single O(k) operation)
+        if (writeIndex < _onBelt.Count)
+            _onBelt.RemoveRange(writeIndex, _onBelt.Count - writeIndex);
     }
 }

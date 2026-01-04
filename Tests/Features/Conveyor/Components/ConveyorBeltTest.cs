@@ -1,6 +1,5 @@
 ﻿using CardCleaner.Scripts.Features.Conveyor.Components;
 using GdUnit4;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Conveyor.Components;
 

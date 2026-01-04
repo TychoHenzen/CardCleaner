@@ -16,6 +16,7 @@ public partial class PlayerController : CharacterBody3D, ISaveable
     private readonly Color BlacklightColor = new(0.4f, 0.2f, 1.0f); // UV purple
     private readonly Color FlashlightColor = new(1.0f, 0.95f, 0.8f); // Warm white
     private float _cumulativeMovement;
+    private float _gravity;
     private Node3D? _head;
     private IInputService? _inputService;
 
@@ -73,6 +74,8 @@ public partial class PlayerController : CharacterBody3D, ISaveable
     {
         _head = GetNode<Node3D>("Head");
         _spotlight = GetNode<SpotLight3D>("Head/Camera3D/SpotLight3D");
+
+        _gravity = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 
         ServiceLocator.Get<IGameSettings>(settings =>
         {
@@ -247,8 +250,7 @@ public partial class PlayerController : CharacterBody3D, ISaveable
             vel.Y = _settings.JumpVelocity;
 
         // Gravity
-        var gravity = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
-        vel.Y -= gravity * (float)delta;
+        vel.Y -= _gravity * (float)delta;
 
         Velocity = vel;
         MoveAndSlide();

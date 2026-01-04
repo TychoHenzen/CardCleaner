@@ -1,5 +1,4 @@
-﻿using System;
-using CardCleaner.Scripts.Core.Services;
+﻿using CardCleaner.Scripts.Core.Services;
 using GdUnit4;
 
 namespace CardCleaner.Tests.Core.Services;

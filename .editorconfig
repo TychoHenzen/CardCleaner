@@ -107,7 +107,7 @@ dotnet_diagnostic.CA2000.severity = suggestion
 dotnet_diagnostic.CA1031.severity = suggestion
 
 # Performance - helpful but not errors
-dotnet_diagnostic.CA1822.severity = suggestion
+dotnet_diagnostic.CA1822.severity = warning
 dotnet_diagnostic.CA1859.severity = suggestion
 
 # Globalization - games often don't need full globalization

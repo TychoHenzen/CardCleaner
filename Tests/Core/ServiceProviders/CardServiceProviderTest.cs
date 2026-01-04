@@ -3,9 +3,7 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Card.Services;
 using GdUnit4;
-using Godot;
 
 namespace CardCleaner.Tests.Core.ServiceProviders;
 

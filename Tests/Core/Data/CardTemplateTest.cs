@@ -2,7 +2,6 @@
 
 using CardCleaner.Scripts.Core.Data;
 using GdUnit4;
-using Godot;
 
 namespace CardCleaner.Tests.Core.Data;
 

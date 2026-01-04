@@ -2,7 +2,6 @@
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
-using CardCleaner.Tests.Mocking;
 using GdUnit4;
 using Godot;
 using NSubstitute;

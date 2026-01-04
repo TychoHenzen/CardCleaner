@@ -1,4 +1,3 @@
-using System;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
@@ -19,11 +18,11 @@ public partial class CardHighlighter : Node3D
     public override void _Ready()
     {
         // Get reference to the generic interaction system
-        if (CardDropper == null! || CardHolder == null! || Preview == null! || InteractionSystem == null!)
-        {
-            ILog.Error($"Missing required Export field references");
+        if (ILog.ExportCheck(CardDropper, nameof(CardDropper), this) ||
+            ILog.ExportCheck(CardHolder, nameof(CardHolder), this) ||
+            ILog.ExportCheck(Preview, nameof(Preview), this) ||
+            ILog.ExportCheck(InteractionSystem, nameof(InteractionSystem), this))
             return;
-        }
 
         // Initialize card systems
         var camera = InteractionSystem.Camera;

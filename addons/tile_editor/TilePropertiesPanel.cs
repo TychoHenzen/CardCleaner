@@ -12,7 +12,7 @@ namespace CardCleaner.Addons.TileEditor;
 [Tool]
 public partial class TilePropertiesPanel : ScrollContainer
 {
-    private readonly TileEditorService _service;
+    private readonly TileEditorService? _service;
     private string? _selectedTileId;
     private EditableTile? _currentTile;
 
@@ -122,6 +122,9 @@ public partial class TilePropertiesPanel : ScrollContainer
 
     private bool _isUpdating;
 
+    // Required by Godot for [Tool] classes
+    public TilePropertiesPanel() { }
+
     public TilePropertiesPanel(TileEditorService service)
     {
         _service = service;
@@ -129,6 +132,9 @@ public partial class TilePropertiesPanel : ScrollContainer
 
     public override void _Ready()
     {
+        // Guard for Godot's parameterless constructor case
+        if (_service == null) return;
+
         SizeFlagsVertical = SizeFlags.ExpandFill;
         SizeFlagsHorizontal = SizeFlags.ExpandFill;
         HorizontalScrollMode = ScrollMode.Disabled;
@@ -670,6 +676,8 @@ public partial class TilePropertiesPanel : ScrollContainer
 
     public void SelectTile(string tileId)
     {
+        if (_service == null) return;
+
         _selectedTileId = tileId;
         _currentTile = _service.GetTile(tileId)?.Clone();
 

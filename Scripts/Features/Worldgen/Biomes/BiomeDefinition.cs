@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 

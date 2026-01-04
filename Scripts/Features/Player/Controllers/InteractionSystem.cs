@@ -14,8 +14,10 @@ public partial class InteractionSystem : Node3D
     // Default values as constants
     private const float DefaultRayLength = 100f;
     private const uint DefaultInteractableCollisionMask = 6; // Layer 2 (cards) + Layer 3 (buttons)
+    private const float RaycastInterval = 0.05f; // 20Hz = 50ms interval
 
     private IInputService? _inputService;
+    private float _timeSinceLastRaycast = 0f;
 
     [Export] public Camera3D? Camera { get; set; }
     [Export] public float RayLength { get; set; } = DefaultRayLength;
@@ -44,6 +46,9 @@ public partial class InteractionSystem : Node3D
 
     public override void _Ready()
     {
+        if (ILog.ExportCheck(Camera, nameof(Camera), this))
+            return;
+
         ILog.Print("Starting up...");
         ILog.Print("Starting up...");
         ILog.Print("Starting up...");
@@ -65,7 +70,12 @@ public partial class InteractionSystem : Node3D
 
     public override void _PhysicsProcess(double delta)
     {
-        DetectInteractable();
+        _timeSinceLastRaycast += (float)delta;
+        if (_timeSinceLastRaycast >= RaycastInterval)
+        {
+            DetectInteractable();
+            _timeSinceLastRaycast -= RaycastInterval; // Preserve fractional remainder to prevent drift
+        }
     }
 
     private void DetectInteractable()
@@ -135,10 +145,11 @@ public partial class InteractionSystem : Node3D
     {
         if (Camera == null)
             return false;
-        var distance = Camera.GlobalPosition.DistanceTo(target.InteractionBody.GlobalPosition);
-        ILog.Print($"Target distance: {distance}, Range: {target.InteractionRange}");
+        var distanceSquared = Camera.GlobalPosition.DistanceSquaredTo(target.InteractionBody.GlobalPosition);
+        var rangeSquared = target.InteractionRange * target.InteractionRange;
+        ILog.Print($"Target distance²: {distanceSquared}, Range²: {rangeSquared}");
 
-        return distance <= target.InteractionRange;
+        return distanceSquared <= rangeSquared;
     }
 
     private void OnInteractPressed(bool pressed)
@@ -147,15 +158,16 @@ public partial class InteractionSystem : Node3D
 
         ILog.Print($"Interact pressed on: {CurrentTarget.InteractionBody.Name}");
 
-        var distance = Camera.GlobalPosition.DistanceTo(CurrentTarget.InteractionBody.GlobalPosition);
-        if (distance <= CurrentTarget.InteractionRange)
+        var distanceSquared = Camera.GlobalPosition.DistanceSquaredTo(CurrentTarget.InteractionBody.GlobalPosition);
+        var rangeSquared = CurrentTarget.InteractionRange * CurrentTarget.InteractionRange;
+        if (distanceSquared <= rangeSquared)
         {
             ILog.Print("Calling Interact()");
             CurrentTarget.Interact();
         }
         else
         {
-            ILog.Print($"Too far to interact: {distance} > {CurrentTarget.InteractionRange}");
+            ILog.Print($"Too far to interact: √{distanceSquared:F2} > {CurrentTarget.InteractionRange}");
         }
     }
 }

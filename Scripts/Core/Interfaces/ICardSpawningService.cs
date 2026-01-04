@@ -1,5 +1,4 @@
-﻿using CardCleaner.Scripts.Core.DependencyInjection;
-using Godot;
+﻿using Godot;
 using CardCleaner.Scripts.Features.Card.Models;
 
 namespace CardCleaner.Scripts.Core.Interfaces;

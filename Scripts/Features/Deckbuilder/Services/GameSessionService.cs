@@ -85,6 +85,7 @@ public partial class GameSessionService : Node, IGameSessionService
 
         _mapSeeds = new List<CardSignature>(mapSeeds);
         _abilityCards = new List<CardSignature>(abilityCards);
+        _currentGenerationTask = null; // Clear any stale task from previous session
         CurrentState = SessionState.GeneratingMap;
 
         ILog.Print($"Started session with {_mapSeeds.Count} map seed(s) and {_abilityCards.Count} ability cards");
@@ -128,6 +129,7 @@ public partial class GameSessionService : Node, IGameSessionService
         _combatSystem = null!;
         _playerPosition = null;
         _currentEnemyPosition = null;
+        _currentGenerationTask = null;
         CurrentState = SessionState.WaitingForCards;
         ILog.Print("Session reset");
     }
@@ -155,9 +157,9 @@ public partial class GameSessionService : Node, IGameSessionService
     private async void GenerateMap()
     {
         // Capture the task synchronously to avoid race conditions in tests
+        // Task remains set after completion so tests can await it and check status
         _currentGenerationTask = GenerateMapAsync();
         await _currentGenerationTask;
-        _currentGenerationTask = null;
     }
 
     private async Task GenerateMapAsync()
