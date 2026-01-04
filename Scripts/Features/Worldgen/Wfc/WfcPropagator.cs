@@ -315,6 +315,14 @@ public class WfcPropagator
     /// <summary>
     /// Checks if a tile ID represents an auto-tile type.
     /// Auto-tiles have variants for different neighbor configurations.
+    /// When no tile registry is available, conservatively treats all tiles as auto-tiles
+    /// to ensure the transition spacing constraint is applied.
     /// </summary>
-    private bool IsAutoTile(string tileId) => _tileRegistry?.GetTile(tileId)?.HasAutoTileVariants ?? false;
+    private bool IsAutoTile(string tileId)
+    {
+        if (_tileRegistry == null)
+            return true; // Conservative: treat all tiles as auto-tiles when no registry
+
+        return _tileRegistry.GetTile(tileId)?.HasAutoTileVariants ?? false;
+    }
 }

@@ -169,7 +169,7 @@ public partial class GameSessionService : Node, IGameSessionService
         // Create map generator with WFC for terrain generation
         var mapGenerator = new SimpleMapGenerator(
             _rng, biomeProvider, _tileRegistry, wfcGenerator,
-            null, null, _biomeRegistry);
+             _biomeRegistry);
         _currentMap = mapGenerator.GenerateMap(mapSize);
 
         // Log biome distribution for debugging
