@@ -16,7 +16,7 @@ public partial class TileAtlasPanel : Control
     private const int TileDisplayPadding = 4;
     private const int TilesPerRow = 8;
 
-    private readonly TileEditorService _service;
+    private readonly TileEditorService? _service;
     private ScrollContainer? _scrollContainer;
     private GridContainer? _tileGrid;
     private LineEdit? _searchBox;
@@ -39,6 +39,9 @@ public partial class TileAtlasPanel : Control
 
     [Signal] public delegate void TileSelectedEventHandler(string tileId);
 
+    // Required by Godot for [Tool] classes
+    public TileAtlasPanel() { }
+
     public TileAtlasPanel(TileEditorService service)
     {
         _service = service;
@@ -50,6 +53,9 @@ public partial class TileAtlasPanel : Control
 
     public override void _Ready()
     {
+        // Guard for Godot's parameterless constructor case
+        if (_service == null) return;
+
         SizeFlagsVertical = SizeFlags.ExpandFill;
         SizeFlagsHorizontal = SizeFlags.ExpandFill;
 
@@ -442,13 +448,16 @@ public partial class TileButton : Button
 {
     private readonly int _baseSize;
     private readonly int _padding;
-    private readonly TileEditorService _service;
-    private readonly EditableTile _tile;
+    private readonly TileEditorService? _service;
+    private readonly EditableTile? _tile;
     private readonly Texture2D? _texture;
     private readonly Rect2I _region;
     private readonly Color _bgColor;
     private readonly Vector2I _tileSize; // Tile dimensions (1x1, 2x2, 1x2, etc.)
     private bool _isSelected;
+
+    // Required by Godot for [Tool] classes
+    public TileButton() { }
 
     public TileButton(EditableTile tile, int baseSize, int padding, TileEditorService service)
     {
@@ -484,6 +493,9 @@ public partial class TileButton : Button
 
     public override void _Draw()
     {
+        // Guard for Godot's parameterless constructor case
+        if (_tile == null || _service == null) return;
+
         // Calculate display size preserving aspect ratio
         var maxDim = Mathf.Max(_tileSize.X, _tileSize.Y);
         var displayWidth = _baseSize * _tileSize.X / maxDim;

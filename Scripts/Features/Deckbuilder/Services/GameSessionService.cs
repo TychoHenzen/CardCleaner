@@ -38,6 +38,7 @@ public partial class GameSessionService : Node, IGameSessionService
     private RandomNumberGenerator _rng = new();
     private ITileRegistry _tileRegistry = null!;
     private CancellationTokenSource? _generationCts;
+    private Task? _currentGenerationTask;
 
     public SessionState CurrentState
     {
@@ -61,6 +62,12 @@ public partial class GameSessionService : Node, IGameSessionService
     public event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>>? VisibilityUpdated;
     public event Action<IReadOnlyList<Vector2I>, Vector2I?>? PathUpdated;
     public event Action<float>? ProgressUpdated;
+
+    /// <summary>
+    /// Exposes the current map generation task for testing purposes.
+    /// Tests can await this to wait for actual async completion instead of polling with timeouts.
+    /// </summary>
+    public Task? CurrentGenerationTask => _currentGenerationTask;
 
     public void StartSession(List<CardSignature>? mapSeeds, List<CardSignature>? abilityCards)
     {
@@ -146,6 +153,14 @@ public partial class GameSessionService : Node, IGameSessionService
     }
 
     private async void GenerateMap()
+    {
+        // Capture the task synchronously to avoid race conditions in tests
+        _currentGenerationTask = GenerateMapAsync();
+        await _currentGenerationTask;
+        _currentGenerationTask = null;
+    }
+
+    private async Task GenerateMapAsync()
     {
         ILog.Print($"Starting async map generation from {_mapSeeds.Count} seed signature(s)...");
 

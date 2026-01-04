@@ -12,12 +12,15 @@ namespace CardCleaner.Addons.TileEditor;
 [Tool]
 public partial class UnusedSourcesPanel : ScrollContainer
 {
-    private readonly TileEditorService _service;
+    private readonly TileEditorService? _service;
     private VBoxContainer? _container;
     private Label? _summaryLabel;
     private Button? _compactIdsButton;
     private Button? _removeDuplicatesButton;
     private List<AtlasSourceInfo> _currentUnusedSources = new();
+
+    // Required by Godot for [Tool] classes
+    public UnusedSourcesPanel() { }
 
     public UnusedSourcesPanel(TileEditorService service)
     {
@@ -30,6 +33,9 @@ public partial class UnusedSourcesPanel : ScrollContainer
 
     public override void _Ready()
     {
+        // Guard for Godot's parameterless constructor case
+        if (_service == null) return;
+
         SizeFlagsVertical = SizeFlags.ExpandFill;
         SizeFlagsHorizontal = SizeFlags.ExpandFill;
         HorizontalScrollMode = ScrollMode.Disabled;

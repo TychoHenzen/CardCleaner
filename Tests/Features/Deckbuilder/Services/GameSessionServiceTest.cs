@@ -155,8 +155,12 @@ public class GameSessionServiceTest
         _service.StartSession(mapSeeds, abilityCards);
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.GeneratingMap);
 
-        // Wait for deferred call to process
-        await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
+        // Wait for actual async map generation completion
+        var generationTask = _service.CurrentGenerationTask;
+        Assertions.AssertThat(generationTask).IsNotNull();
+        await generationTask!;
+
+        // Wait for deferred state transition to process
         await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
 
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.Exploring);
@@ -173,15 +177,13 @@ public class GameSessionServiceTest
 
         _service.StartSession(mapSeeds, abilityCards);
 
-        // Wait for session to progress beyond initial state
-        var frameCount = 0;
-        var maxFrames = 100;
+        // Wait for actual async map generation completion
+        var generationTask = _service.CurrentGenerationTask;
+        Assertions.AssertThat(generationTask).IsNotNull();
+        await generationTask!;
 
-        while (_service.CurrentState == SessionState.GeneratingMap && frameCount < maxFrames)
-        {
-            await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
-            frameCount++;
-        }
+        // Wait for deferred state transition to process
+        await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
 
         // Session should have progressed to at least Exploring
         // Full completion is too slow for unit tests (requires exploration + combat)
@@ -327,14 +329,10 @@ public class GameSessionServiceTest
 
         _service.StartSession(mapSeeds, abilityCards);
 
-        // Wait for map generation
-        var timeout = 5.0f;
-        var elapsed = 0.0f;
-        while (generatedMap == null && elapsed < timeout)
-        {
-            await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
-            elapsed += 0.016f;
-        }
+        // Wait for actual async map generation completion
+        var generationTask = _service.CurrentGenerationTask;
+        Assertions.AssertThat(generationTask).IsNotNull();
+        await generationTask!;
 
         Assertions.AssertThat(generatedMap).IsNotNull();
         Assertions.AssertThat(generatedMap!.PassableTiles.Count).IsGreater(0);
@@ -351,9 +349,13 @@ public class GameSessionServiceTest
 
         _service.StartSession(mapSeeds, abilityCards);
 
-        // Wait a bit for state transitions
-        for (var i = 0; i < 10; i++)
-            await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
+        // Wait for actual async map generation completion
+        var generationTask = _service.CurrentGenerationTask;
+        Assertions.AssertThat(generationTask).IsNotNull();
+        await generationTask!;
+
+        // Wait for deferred state transition to process
+        await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
 
         // Should have at least GeneratingMap and Exploring in history
         Assertions.AssertThat(stateHistory.Count).IsGreaterEqual(2);
@@ -378,14 +380,10 @@ public class GameSessionServiceTest
 
         _service.StartSession(mapSeeds, abilityCards);
 
-        // Wait for map generation
-        var timeout = 5.0f;
-        var elapsed = 0.0f;
-        while (generatedMap == null && elapsed < timeout)
-        {
-            await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
-            elapsed += 0.016f;
-        }
+        // Wait for actual async map generation completion
+        var generationTask = _service.CurrentGenerationTask;
+        Assertions.AssertThat(generationTask).IsNotNull();
+        await generationTask!;
 
         Assertions.AssertThat(generatedMap).IsNotNull();
         Assertions.AssertThat(generatedMap!.PassableTiles.Count).IsGreater(0);
@@ -408,14 +406,10 @@ public class GameSessionServiceTest
 
         _service.StartSession(mapSeeds, abilityCards);
 
-        // Wait for map generation
-        var timeout = 5.0f;
-        var elapsed = 0.0f;
-        while (generatedMap == null && elapsed < timeout)
-        {
-            await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
-            elapsed += 0.016f;
-        }
+        // Wait for actual async map generation completion
+        var generationTask = _service.CurrentGenerationTask;
+        Assertions.AssertThat(generationTask).IsNotNull();
+        await generationTask!;
 
         Assertions.AssertThat(generatedMap).IsNotNull();
         Assertions.AssertThat(generatedMap!.PassableTiles.Count).IsGreater(0);
@@ -494,14 +488,10 @@ public class GameSessionServiceTest
 
         _service.StartSession(mapSeeds, abilityCards);
 
-        // Wait for first map generation
-        var timeout = 5.0f;
-        var elapsed = 0.0f;
-        while (firstMap == null && elapsed < timeout)
-        {
-            await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
-            elapsed += 0.016f;
-        }
+        // Wait for actual async map generation completion
+        var generationTask = _service.CurrentGenerationTask;
+        Assertions.AssertThat(generationTask).IsNotNull();
+        await generationTask!;
 
         Assertions.AssertThat(firstMap).IsNotNull();
 
@@ -513,13 +503,10 @@ public class GameSessionServiceTest
 
         _service.StartSession(mapSeeds, abilityCards);
 
-        // Wait for second map generation
-        elapsed = 0.0f;
-        while (secondMap == null && elapsed < timeout)
-        {
-            await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
-            elapsed += 0.016f;
-        }
+        // Wait for actual async map generation completion
+        generationTask = _service.CurrentGenerationTask;
+        Assertions.AssertThat(generationTask).IsNotNull();
+        await generationTask!;
 
         Assertions.AssertThat(secondMap).IsNotNull();
 

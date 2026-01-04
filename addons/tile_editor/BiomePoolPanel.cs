@@ -13,7 +13,7 @@ namespace CardCleaner.Addons.TileEditor;
 [Tool]
 public partial class BiomePoolPanel : VBoxContainer
 {
-    private readonly TileEditorService _service;
+    private readonly TileEditorService? _service;
     private ScrollContainer? _scrollContainer;
     private VBoxContainer? _biomesContainer;
     private readonly Dictionary<string, BiomeSection> _biomeSections = new();
@@ -23,6 +23,9 @@ public partial class BiomePoolPanel : VBoxContainer
     private LineEdit? _biomeIdField;
     private LineEdit? _biomeDisplayNameField;
     private Label? _biomeValidationLabel;
+
+    // Required by Godot for [Tool] classes
+    public BiomePoolPanel() { }
 
     public BiomePoolPanel(TileEditorService service)
     {
@@ -36,6 +39,9 @@ public partial class BiomePoolPanel : VBoxContainer
 
     public override void _Ready()
     {
+        // Guard for Godot's parameterless constructor case
+        if (_service == null) return;
+
         SizeFlagsVertical = SizeFlags.ExpandFill;
         SizeFlagsHorizontal = SizeFlags.ExpandFill;
 
@@ -93,7 +99,7 @@ public partial class BiomePoolPanel : VBoxContainer
 
     private void RebuildBiomeSections()
     {
-        if (_biomesContainer == null) return;
+        if (_service == null || _biomesContainer == null) return;
 
         // Clear existing sections
         foreach (var child in _biomesContainer.GetChildren())
@@ -235,17 +241,19 @@ public partial class BiomePoolPanel : VBoxContainer
 /// <summary>
 /// Expandable section for a single biome's tile pool - shows passable and blocked tiles with weights
 /// </summary>
-[Tool]
 public partial class BiomeSection : VBoxContainer
 {
-    private readonly string _biomeId;
-    private readonly TileEditorService _service;
+    private readonly string? _biomeId;
+    private readonly TileEditorService? _service;
     private readonly bool _isUniversal;
     private Button? _headerButton;
     private VBoxContainer? _contentContainer;
     private VBoxContainer? _passableContainer;
     private VBoxContainer? _blockedContainer;
     private bool _isExpanded = true;
+
+    // Required by Godot for [Tool] classes
+    public BiomeSection() { }
 
     public BiomeSection(string biomeId, TileEditorService service, bool isUniversal = false)
     {
@@ -256,6 +264,9 @@ public partial class BiomeSection : VBoxContainer
 
     public override void _Ready()
     {
+        // Guard for Godot's parameterless constructor case
+        if (_service == null || _biomeId == null) return;
+
         SizeFlagsHorizontal = SizeFlags.ExpandFill;
 
         // Get display name from biome data
@@ -457,7 +468,6 @@ public partial class BiomeSection : VBoxContainer
 /// <summary>
 /// Entry for a tile within a biome pool - includes weight editing
 /// </summary>
-[Tool]
 public partial class BiomeTileEntry : HBoxContainer
 {
     private readonly EditableTile? _tile;
@@ -483,7 +493,7 @@ public partial class BiomeTileEntry : HBoxContainer
     public override void _Ready()
     {
         // Guard for Godot's parameterless constructor case
-        if (_tile == null || _service == null) return;
+        if (_tile == null || _service == null || _biomeId == null) return;
 
         CustomMinimumSize = new Vector2(280, 30);
 
@@ -541,8 +551,6 @@ public partial class BiomeTileEntry : HBoxContainer
 
     private void OnWeightChanged(double newValue)
     {
-        if (_service == null || _biomeId == null || _tile == null) return;
-
         var biome = _service.GetBiome(_biomeId);
         if (biome == null) return;
 
@@ -556,8 +564,6 @@ public partial class BiomeTileEntry : HBoxContainer
 
     private void RemoveFromBiome()
     {
-        if (_service == null || _biomeId == null || _tile == null) return;
-
         var biome = _service.GetBiome(_biomeId);
         if (biome == null) return;
 

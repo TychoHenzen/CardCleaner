@@ -13,7 +13,7 @@ namespace CardCleaner.Addons.TileEditor;
 [Tool]
 public partial class AutoTilePreviewPanel : ScrollContainer
 {
-    private readonly TileEditorService _service;
+    private readonly TileEditorService? _service;
     private OptionButton? _tileSelector;
     private OptionButton? _baseTileSelector;
     private HSlider? _scaleSlider;
@@ -24,6 +24,9 @@ public partial class AutoTilePreviewPanel : ScrollContainer
     private string? _selectedTileId;
     private string? _selectedBaseTileId;
 
+    // Required by Godot for [Tool] classes
+    public AutoTilePreviewPanel() { }
+
     public AutoTilePreviewPanel(TileEditorService service)
     {
         _service = service;
@@ -31,6 +34,9 @@ public partial class AutoTilePreviewPanel : ScrollContainer
 
     public override void _Ready()
     {
+        // Guard for Godot's parameterless constructor case
+        if (_service == null) return;
+
         SizeFlagsVertical = SizeFlags.ExpandFill;
         SizeFlagsHorizontal = SizeFlags.ExpandFill;
         HorizontalScrollMode = ScrollMode.Disabled;
@@ -268,7 +274,7 @@ public partial class DualGridAutoTilePreview : Control
     [Signal]
     public delegate void InfoChangedEventHandler(string info);
 
-    private readonly TileEditorService _service;
+    private readonly TileEditorService? _service;
     private EditableTile? _overlayTile;
     private EditableTile? _baseTile;
     private float _scale = 2f;
@@ -280,6 +286,9 @@ public partial class DualGridAutoTilePreview : Control
 
     // Cached bitmasks for visual grid (recomputed when data grid changes)
     private int[,] _visualBitmasks = new int[VisualGridRows, VisualGridCols];
+
+    // Required by Godot for [Tool] classes
+    public DualGridAutoTilePreview() { }
 
     public DualGridAutoTilePreview(TileEditorService service)
     {
@@ -440,7 +449,8 @@ public partial class DualGridAutoTilePreview : Control
 
     public override void _Draw()
     {
-        if (_overlayTile == null)
+        // Guard for Godot's parameterless constructor case
+        if (_service == null || _overlayTile == null)
             return;
 
         var scaledTileSize = new Vector2(_tileSize.X, _tileSize.Y) * _scale;
