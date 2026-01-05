@@ -122,6 +122,9 @@ public class SimpleMapGenerator
             decorationOverlays = GenerateTerrainTransitions(terrainGrid, size);
             var transitionCount = decorationOverlays.Count(kvp => kvp.Value.Bitmask > 0 && kvp.Value.Bitmask < 15);
             ILog.Print($"Dual-grid terrain: {decorationOverlays.Count} visual tiles, {transitionCount} transitions");
+
+            // Validate bitmask consistency and log any remaining issues
+            ValidateBitmaskConsistency(decorationOverlays, size.X + 1, size.Y + 1);
         }
 
         // Copy terrain to final grid
@@ -225,88 +228,100 @@ public class SimpleMapGenerator
     /// <summary>
     /// Generate dual-grid terrain transition data.
     /// Visual grid is (size+1) x (size+1), offset by half a tile from data grid.
+    /// Each visual tile samples 4 data corners, selects a topTerrain (highest-dominance
+    /// auto-tile), and computes a bitmask indicating which corners contain that terrain.
     /// </summary>
     private Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> GenerateTerrainTransitions(
         string[,] terrainGrid, Vector2I size)
     {
-        var overlays = new Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)>();
-
         var visualWidth = size.X + 1;
         var visualHeight = size.Y + 1;
+        var overlays = new Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)>();
 
         for (var vy = 0; vy < visualHeight; vy++)
         for (var vx = 0; vx < visualWidth; vx++)
         {
-            var terrainTypes = new Dictionary<string, int>();
+            var visualPosition = new Vector2I(vx, vy);
             var terrainInfo = new Dictionary<string, (int Dominance, bool HasAutoTile)>();
 
-            SampleTerrainCell(terrainGrid, size, vx - 1, vy - 1, terrainTypes, terrainInfo);
-            SampleTerrainCell(terrainGrid, size, vx, vy - 1, terrainTypes, terrainInfo);
-            SampleTerrainCell(terrainGrid, size, vx - 1, vy, terrainTypes, terrainInfo);
-            SampleTerrainCell(terrainGrid, size, vx, vy, terrainTypes, terrainInfo);
+            SampleTerrainCell(terrainGrid, size, vx - 1, vy - 1, terrainInfo);
+            SampleTerrainCell(terrainGrid, size, vx, vy - 1, terrainInfo);
+            SampleTerrainCell(terrainGrid, size, vx - 1, vy, terrainInfo);
+            SampleTerrainCell(terrainGrid, size, vx, vy, terrainInfo);
 
-            string? baseTerrain = null;
-            string? topTerrain = null;
-            var baseHasAutoTile = false;
-            var topHasAutoTile = false;
-            var baseDominance = int.MaxValue;
-            var topDominance = -1;
+            var (baseTerrain, topTerrain) = SelectTerrains(terrainInfo);
+            var bitmask = ComputeBitmask(terrainGrid, size, vx, vy, topTerrain);
 
-            foreach (var (terrain, (dominance, hasAutoTile)) in terrainInfo)
-            {
-                // Only consider terrains WITH auto-tiles for topTerrain
-                if (hasAutoTile)
-                {
-                    if (topTerrain == null ||
-                        dominance > topDominance ||
-                        (dominance == topDominance && string.CompareOrdinal(terrain, topTerrain) < 0))
-                    {
-                        topTerrain = terrain;
-                        topDominance = dominance;
-                        topHasAutoTile = true;
-                    }
-                }
-
-                // baseTerrain prefers tiles WITHOUT auto-tiles (fill terrains)
-                if (!hasAutoTile)
-                {
-                    if (baseTerrain == null ||
-                        dominance < baseDominance ||
-                        (dominance == baseDominance && string.CompareOrdinal(terrain, baseTerrain) < 0))
-                    {
-                        baseTerrain = terrain;
-                        baseDominance = dominance;
-                    }
-                }
-            }
-
-// If no auto-tile terrain found, use the base (fill) terrain for both
-// This renders as solid fill with bitmask 15
-            if (topTerrain == null)
-            {
-                topTerrain = baseTerrain ?? FloorTileId;
-            }
-            baseTerrain ??= topTerrain;
-
-            var bitmask = 0;
-            if (IsTerrainAtPosition(terrainGrid, size, vx - 1, vy - 1, topTerrain))
-                bitmask |= NeighborBitmaskCorner.NorthWest;
-            if (IsTerrainAtPosition(terrainGrid, size, vx, vy - 1, topTerrain))
-                bitmask |= NeighborBitmaskCorner.NorthEast;
-            if (IsTerrainAtPosition(terrainGrid, size, vx - 1, vy, topTerrain))
-                bitmask |= NeighborBitmaskCorner.SouthWest;
-            if (IsTerrainAtPosition(terrainGrid, size, vx, vy, topTerrain))
-                bitmask |= NeighborBitmaskCorner.SouthEast;
-
-            var visualPosition = new Vector2I(vx, vy);
             overlays[visualPosition] = (baseTerrain, topTerrain, bitmask);
         }
 
         return overlays;
     }
 
+    /// <summary>
+    /// Selects base and top terrains from the terrain info for a visual tile.
+    /// </summary>
+    private (string BaseTerrain, string TopTerrain) SelectTerrains(
+        Dictionary<string, (int Dominance, bool HasAutoTile)> terrainInfo)
+    {
+        string? baseTerrain = null;
+        string? topTerrain = null;
+        var baseDominance = int.MaxValue;
+        var topDominance = -1;
+
+        foreach (var (terrain, (dominance, hasAutoTile)) in terrainInfo)
+        {
+            if (hasAutoTile)
+            {
+                if (topTerrain == null ||
+                    dominance > topDominance ||
+                    (dominance == topDominance && string.CompareOrdinal(terrain, topTerrain) < 0))
+                {
+                    topTerrain = terrain;
+                    topDominance = dominance;
+                }
+            }
+
+            if (!hasAutoTile)
+            {
+                if (baseTerrain == null ||
+                    dominance < baseDominance ||
+                    (dominance == baseDominance && string.CompareOrdinal(terrain, baseTerrain) < 0))
+                {
+                    baseTerrain = terrain;
+                    baseDominance = dominance;
+                }
+            }
+        }
+
+        if (topTerrain == null)
+        {
+            topTerrain = baseTerrain ?? FloorTileId;
+        }
+        baseTerrain ??= topTerrain;
+
+        return (baseTerrain, topTerrain);
+    }
+
+    /// <summary>
+    /// Computes the Corner16 bitmask for a visual tile given the selected topTerrain.
+    /// </summary>
+    private static int ComputeBitmask(string[,] terrainGrid, Vector2I size, int vx, int vy, string topTerrain)
+    {
+        var bitmask = 0;
+        if (IsTerrainAtPosition(terrainGrid, size, vx - 1, vy - 1, topTerrain))
+            bitmask |= NeighborBitmaskCorner.NorthWest;
+        if (IsTerrainAtPosition(terrainGrid, size, vx, vy - 1, topTerrain))
+            bitmask |= NeighborBitmaskCorner.NorthEast;
+        if (IsTerrainAtPosition(terrainGrid, size, vx - 1, vy, topTerrain))
+            bitmask |= NeighborBitmaskCorner.SouthWest;
+        if (IsTerrainAtPosition(terrainGrid, size, vx, vy, topTerrain))
+            bitmask |= NeighborBitmaskCorner.SouthEast;
+        return bitmask;
+    }
+
     private void SampleTerrainCell(string[,] terrainGrid, Vector2I size, int x, int y,
-        Dictionary<string, int> terrainTypes, Dictionary<string, (int Dominance, bool HasAutoTile)> terrainInfo)
+        Dictionary<string, (int Dominance, bool HasAutoTile)> terrainInfo)
     {
         x = Math.Clamp(x, 0, size.X - 1);
         y = Math.Clamp(y, 0, size.Y - 1);
@@ -317,11 +332,8 @@ public class SimpleMapGenerator
         if (tile == null || tile.Layer != TileLayer.Terrain)
             return;
 
-        if (terrainTypes.TryGetValue(tileId, out var count))
-            terrainTypes[tileId] = count + 1;
-        else
+        if (!terrainInfo.ContainsKey(tileId))
         {
-            terrainTypes[tileId] = 1;
             terrainInfo[tileId] = (tile.Dominance, tile.HasAutoTileVariants);
         }
     }
@@ -348,6 +360,45 @@ public class SimpleMapGenerator
         if (metrics.PercentInLargeRegions < 70.0f)
         {
             ILog.Print($"[SpatialCoherence] WARNING: Low coherence - only {metrics.PercentInLargeRegions:F1}% of tiles in large regions (target: 70%+)");
+        }
+    }
+
+    /// <summary>
+    /// Validates that adjacent visual tiles have consistent bitmasks.
+    /// Logs warnings for any remaining inconsistencies after conflict resolution.
+    /// </summary>
+    private static void ValidateBitmaskConsistency(
+        Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> overlays,
+        int visualWidth, int visualHeight)
+    {
+        var (totalTiles, uniqueTerrains, terrainConflicts, bitmaskViolations) =
+            BitmaskConsistencyValidator.Analyze(overlays, visualWidth, visualHeight);
+
+        ILog.Print($"[BitmaskConsistency] {totalTiles} tiles, {uniqueTerrains} unique topTerrains");
+
+        if (terrainConflicts > 0)
+        {
+            ILog.Print($"[BitmaskConsistency] {terrainConflicts} adjacent tiles with different topTerrains (3-way boundaries)");
+        }
+
+        if (bitmaskViolations > 0)
+        {
+            ILog.Print($"[BitmaskConsistency] WARNING: {bitmaskViolations} bitmask violations detected!");
+
+            // Log first few violations for debugging
+            var violations = BitmaskConsistencyValidator.ValidateConsistency(overlays, visualWidth, visualHeight);
+            foreach (var v in violations.Take(3))
+            {
+                ILog.Print($"[BitmaskConsistency]   {v}");
+            }
+            if (violations.Count > 3)
+            {
+                ILog.Print($"[BitmaskConsistency]   ... and {violations.Count - 3} more");
+            }
+        }
+        else
+        {
+            ILog.Print($"[BitmaskConsistency] All bitmasks consistent (same-terrain adjacencies match)");
         }
     }
 }

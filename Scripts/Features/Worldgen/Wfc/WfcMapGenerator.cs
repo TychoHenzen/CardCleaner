@@ -28,6 +28,7 @@ public class WfcMapGenerator
     private readonly NoveltySoftModifier _novelty;
     private readonly CompactnessSoftModifier _compactness;
     private readonly SpatialCoherenceConstraint _spatialCoherence;
+    private readonly AutoTileGapConstraint? _autoTileGap;
     private readonly ITileRegistry? _tileRegistry;
     private IProfiler _profiler = new NoOpProfiler();
 
@@ -126,6 +127,7 @@ public class WfcMapGenerator
         _novelty = new NoveltySoftModifier();
         _compactness = new CompactnessSoftModifier();
         _spatialCoherence = new SpatialCoherenceConstraint();
+        _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
     }
@@ -145,6 +147,7 @@ public class WfcMapGenerator
         _novelty = new NoveltySoftModifier();
         _compactness = new CompactnessSoftModifier();
         _spatialCoherence = new SpatialCoherenceConstraint();
+        _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
     }
@@ -271,7 +274,7 @@ public class WfcMapGenerator
             ConfigureConstraints();
         }
 
-        var propagator = new WfcPropagator(_adjacencyRules, _tileRegistry);
+        var propagator = new WfcPropagator(_adjacencyRules);
 
         WfcSolver solver;
         if (!EnableConnectivity || _tileRegistry == null)
@@ -317,6 +320,12 @@ public class WfcMapGenerator
 
         // Always enable spatial coherence for region formation
         _selector.AddConstraint(_spatialCoherence);
+
+        // DISABLED: AutoTileGapConstraint is too restrictive for current tile definitions.
+        // Many biomes have multiple auto-tile types (e.g., desert: sand, dune, cracked, gravel)
+        // that need to coexist adjacent to each other. The 1-tile gap requirement breaks WFC.
+        // if (_autoTileGap != null)
+        //     _selector.AddConstraint(_autoTileGap);
     }
 
     /// <summary>
