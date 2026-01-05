@@ -141,6 +141,9 @@ public class SimpleMapGenerator
 
         ILog.Print($"Map generated: {passableTiles.Count} passable tiles, player at {playerStart}, {enemyCount} enemies");
 
+        // Optional: Validate spatial coherence (diagnostic)
+        ValidateSpatialCoherence(finalTileIds, size);
+
         return new SimpleMapData
         {
             TileIds = finalTileIds,
@@ -285,17 +288,6 @@ public class SimpleMapGenerator
             }
             baseTerrain ??= topTerrain;
 
-
-            if (topTerrain == null)
-            {
-                topTerrain = FloorTileId;
-                baseTerrain = FloorTileId;
-            }
-            else
-            {
-                baseTerrain ??= topTerrain;
-            }
-
             var bitmask = 0;
             if (IsTerrainAtPosition(terrainGrid, size, vx - 1, vy - 1, topTerrain))
                 bitmask |= NeighborBitmaskCorner.NorthWest;
@@ -339,5 +331,23 @@ public class SimpleMapGenerator
         x = Math.Clamp(x, 0, size.X - 1);
         y = Math.Clamp(y, 0, size.Y - 1);
         return terrainGrid[y, x] == terrainTileId;
+    }
+
+    /// <summary>
+    /// Diagnostic: Analyzes spatial coherence by measuring contiguous region sizes.
+    /// Reports region statistics for evaluating map quality.
+    /// </summary>
+    private void ValidateSpatialCoherence(string[,] tileMap, Vector2I size)
+    {
+        var metrics = RegionAnalyzer.Analyze(tileMap);
+
+        ILog.Print($"[SpatialCoherence] {metrics.RegionCount} regions found (avg size: {metrics.AverageSize:F1} tiles)");
+        ILog.Print($"[SpatialCoherence] Region sizes: min={metrics.MinSize}, max={metrics.MaxSize}");
+        ILog.Print($"[SpatialCoherence] {metrics.PercentInLargeRegions:F1}% of tiles in regions >= 30 tiles ({metrics.TilesInLargeRegions}/{metrics.TotalTiles})");
+
+        if (metrics.PercentInLargeRegions < 70.0f)
+        {
+            ILog.Print($"[SpatialCoherence] WARNING: Low coherence - only {metrics.PercentInLargeRegions:F1}% of tiles in large regions (target: 70%+)");
+        }
     }
 }

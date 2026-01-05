@@ -11,7 +11,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// <remarks>
 /// For each biome the tile belongs to (via PassableTiles or BlockedTiles),
 /// the constraint calculates: 1.0 + (biomeStrength * boostFactor).
-/// Multiple biome contributions are summed.
+/// For tiles in multiple biomes, uses the maximum strength to prevent dilution.
 /// </remarks>
 public class BiomeAffinityConstraint : IWfcConstraint
 {
@@ -21,9 +21,10 @@ public class BiomeAffinityConstraint : IWfcConstraint
 
     /// <summary>
     /// Factor controlling how much biome strength affects probability.
-    /// Default 0.5 means: +1 strength → 1.5x probability, -1 strength → 0.5x probability.
+    /// Default 2.0 means: +1 strength → 3.0x probability, -1 strength → 0.1x penalty (MinModifier clamp).
+    /// Increased from 0.5 to overcome continuity bias and create coherent biome regions.
     /// </summary>
-    public float BoostFactor { get; set; } = 0.5f;
+    public float BoostFactor { get; set; } = 2.0f;
 
     /// <summary>
     /// Minimum probability modifier to prevent tiles from being completely eliminated.
@@ -43,28 +44,25 @@ public class BiomeAffinityConstraint : IWfcConstraint
         if (!_tileToBiomes.TryGetValue(context.TileId, out var biomeIds) || biomeIds.Count == 0)
             return 1.0f;
 
-        // Sum contributions from all biomes this tile belongs to
-        var totalModifier = 0f;
-        var contributingBiomes = 0;
+        // Find maximum strength across all biomes this tile belongs to
+        // Using max instead of average prevents dilution for tiles in multiple biomes
+        var maxStrength = float.MinValue;
 
         foreach (var biomeId in biomeIds)
         {
             var strength = _grid.GetStrength(context.Position, biomeId);
-            totalModifier += strength;
-            contributingBiomes++;
+            if (strength > maxStrength)
+                maxStrength = strength;
         }
 
-        if (contributingBiomes == 0)
+        if (maxStrength == float.MinValue)
             return 1.0f;
 
-        // Average the strength contributions
-        var averageStrength = totalModifier / contributingBiomes;
-
         // Convert strength to probability modifier
-        // strength +1 → modifier = 1 + BoostFactor = 1.5 (boost)
+        // strength +1 → modifier = 1 + BoostFactor = 3.0 (strong boost)
         // strength 0  → modifier = 1.0 (neutral)
-        // strength -1 → modifier = 1 - BoostFactor = 0.5 (penalty)
-        var modifier = 1.0f + averageStrength * BoostFactor;
+        // strength -1 → modifier = 1 - BoostFactor = -1.0, clamped to MinModifier = 0.1 (strong penalty)
+        var modifier = 1.0f + maxStrength * BoostFactor;
 
         return Mathf.Max(MinModifier, modifier);
     }

@@ -202,7 +202,7 @@ public partial class GameSessionService : Node, IGameSessionService
 
             // Create map generator with WFC for terrain generation
             var mapGenerator = new SimpleMapGenerator(
-                _rng, biomeProvider, _tileRegistry, wfcGenerator, _biomeRegistry);
+                _rng, biomeProvider, _tileRegistry, wfcGenerator, _biomeRegistry, gradient);
 
             // Wrap in async adapter and generate on background thread
             var asyncGenerator = new AsyncMapGeneratorAdapter(mapGenerator);

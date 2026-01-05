@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 using Godot;
 
@@ -39,6 +40,7 @@ public class WfcSolver
     private readonly WfcPropagator _propagator;
     private readonly WfcTileSelector _selector;
     private readonly BlobSizeTracker? _blobTracker;
+    private readonly SpatialCoherenceConstraint? _spatialCoherence;
     private readonly PassabilityGraph? _passabilityGraph;
     private readonly Func<string, bool>? _isPassable;
     private IProfiler _profiler = new NoOpProfiler();
@@ -49,11 +51,12 @@ public class WfcSolver
     /// </summary>
     public int MaxIterations { get; set; } = 10000;
 
-    public WfcSolver(WfcPropagator propagator, WfcTileSelector selector, BlobSizeTracker? blobTracker = null)
+    public WfcSolver(WfcPropagator propagator, WfcTileSelector selector, BlobSizeTracker? blobTracker = null, SpatialCoherenceConstraint? spatialCoherence = null)
     {
         _propagator = propagator;
         _selector = selector;
         _blobTracker = blobTracker;
+        _spatialCoherence = spatialCoherence;
     }
 
     /// <summary>
@@ -64,18 +67,21 @@ public class WfcSolver
     /// <param name="blobTracker">Optional blob tracker for shape constraints.</param>
     /// <param name="passabilityGraph">Graph for tracking passable tile connectivity.</param>
     /// <param name="isPassable">Function to determine if a tile ID is passable.</param>
+    /// <param name="spatialCoherence">Optional spatial coherence constraint for region tracking.</param>
     public WfcSolver(
         WfcPropagator propagator,
         WfcTileSelector selector,
         BlobSizeTracker? blobTracker,
         PassabilityGraph passabilityGraph,
-        Func<string, bool> isPassable)
+        Func<string, bool> isPassable,
+        SpatialCoherenceConstraint? spatialCoherence = null)
     {
         _propagator = propagator;
         _selector = selector;
         _blobTracker = blobTracker;
         _passabilityGraph = passabilityGraph;
         _isPassable = isPassable;
+        _spatialCoherence = spatialCoherence;
     }
 
     public void SetProfiler(IProfiler profiler)
@@ -169,6 +175,9 @@ public class WfcSolver
 
                 // Update blob tracker for soft modifiers
                 _blobTracker?.RegisterCollapse(targetPos.Value, selectedTile, grid);
+
+                // Update spatial coherence for region tracking
+                _spatialCoherence?.OnTileCollapsed(targetPos.Value, selectedTile, grid);
 
                 // Update passability graph for connectivity constraints
                 UpdatePassabilityGraph(targetPos.Value, selectedTile, grid);

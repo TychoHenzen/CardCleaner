@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -315,6 +316,50 @@ public class SimpleMapGeneratorTest
             if (map.TileIds[y, x] == tileId)
                 count++;
         return count;
+    }
+
+    [TestCase]
+    public void TestBiomeCoherence_TilesMatchAssignedBiomes()
+    {
+        var size = new Vector2I(25, 25);
+        _rng.Seed = 12345;
+
+        // Use desert signature to get clear biome assignment
+        var desertSignature = new CardSignature(new[] { 0.3f, 0.7f, 0.3f, 0.4f, 0f, -0.2f, -0.2f, 0.3f });
+        var gradient = new CardBasedGradient(new[] { desertSignature }, _rng);
+        var biomeProvider = new BiomeMapGenerator(_registry, gradient, size);
+        var generator = new SimpleMapGenerator(_rng, biomeProvider, _tileRegistry);
+
+        var mapData = generator.GenerateMap(size);
+
+        // Validate that tiles match their assigned biome regions
+        var orphanTiles = 0;
+        var totalTiles = 0;
+
+        for (var y = 0; y < size.Y; y++)
+        for (var x = 0; x < size.X; x++)
+        {
+            var position = new Vector2I(x, y);
+            var expectedBiome = biomeProvider.GetBiomeAt(position);
+            var placedTileId = mapData.TileIds[y, x];
+            totalTiles++;
+
+            // Check if tile belongs to expected biome
+            var tileInPassable = expectedBiome.PassableTiles.GetAllTileIds().Contains(placedTileId);
+            var tileInBlocked = expectedBiome.BlockedTiles.GetAllTileIds().Contains(placedTileId);
+
+            if (!tileInPassable && !tileInBlocked)
+            {
+                orphanTiles++;
+            }
+        }
+
+        var coherencePercentage = (totalTiles - orphanTiles) * 100.0f / totalTiles;
+
+        // After fix: BiomeAffinityConstraint (3.0x) should dominate continuity (2.0x)
+        // Expect >90% coherence (allowing some edge case orphans at biome boundaries)
+        AssertThat(coherencePercentage).IsGreaterEqual(90.0f);
+        AssertThat(orphanTiles).IsLessEqual(totalTiles / 10); // Max 10% orphans
     }
 }
 

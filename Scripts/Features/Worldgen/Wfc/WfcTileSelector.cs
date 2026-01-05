@@ -41,10 +41,11 @@ public class WfcTileSelector
 
     /// <summary>
     /// Weight multiplier for tiles matching collapsed neighbors.
-    /// Default 5.0 means matching tiles are 5x more likely to be selected.
+    /// Default 2.0 means matching tiles are 2x more likely to be selected.
+    /// Reduced from 5.0 to allow biome affinity to dominate over neighbor continuity.
     /// Set to 1.0 to disable continuity bias.
     /// </summary>
-    public float ContinuityBiasMultiplier { get; set; } = 5.0f;
+    public float ContinuityBiasMultiplier { get; set; } = 2.0f;
 
     /// <summary>
     /// Selects a tile from the valid options using biome-weighted probabilities.

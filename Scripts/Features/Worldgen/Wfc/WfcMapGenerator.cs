@@ -27,6 +27,7 @@ public class WfcMapGenerator
     private readonly DiminishingReturnsSoftModifier _diminishingReturns;
     private readonly NoveltySoftModifier _novelty;
     private readonly CompactnessSoftModifier _compactness;
+    private readonly SpatialCoherenceConstraint _spatialCoherence;
     private readonly ITileRegistry? _tileRegistry;
     private IProfiler _profiler = new NoOpProfiler();
 
@@ -124,6 +125,7 @@ public class WfcMapGenerator
         _diminishingReturns = new DiminishingReturnsSoftModifier(_blobTracker);
         _novelty = new NoveltySoftModifier();
         _compactness = new CompactnessSoftModifier();
+        _spatialCoherence = new SpatialCoherenceConstraint();
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
     }
@@ -142,6 +144,7 @@ public class WfcMapGenerator
         _diminishingReturns = new DiminishingReturnsSoftModifier(_blobTracker);
         _novelty = new NoveltySoftModifier();
         _compactness = new CompactnessSoftModifier();
+        _spatialCoherence = new SpatialCoherenceConstraint();
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
     }
@@ -212,6 +215,9 @@ public class WfcMapGenerator
             return WfcGenerationResult.Failed("No valid tiles across all biomes");
         }
 
+        // Initialize spatial coherence for this map size
+        _spatialCoherence.Reset(size.X, size.Y);
+
         // Register biome affinity constraint if gradient provided
         if (gradient != null)
         {
@@ -220,7 +226,7 @@ public class WfcMapGenerator
             _selector.AddConstraint(new BiomeAffinityConstraint(biomeStrengthGrid, biomeRegistry));
         }
 
-        var solver = CreateSolver(skipBaseConstraints: gradient != null);
+        var solver = CreateSolver(skipBaseConstraints: gradient != null, size);
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, allTiles);
 
@@ -257,7 +263,8 @@ public class WfcMapGenerator
     /// Creates a configured WfcSolver with all enabled constraints.
     /// </summary>
     /// <param name="skipBaseConstraints">If true, assumes ConfigureConstraints was already called.</param>
-    private WfcSolver CreateSolver(bool skipBaseConstraints = false)
+    /// <param name="size">Map size for spatial coherence initialization (optional for single-biome generation).</param>
+    private WfcSolver CreateSolver(bool skipBaseConstraints = false, Vector2I? size = null)
     {
         if (!skipBaseConstraints)
         {
@@ -269,7 +276,7 @@ public class WfcMapGenerator
         WfcSolver solver;
         if (!EnableConnectivity || _tileRegistry == null)
         {
-            solver = new WfcSolver(propagator, _selector, _blobTracker);
+            solver = new WfcSolver(propagator, _selector, _blobTracker, _spatialCoherence);
         }
         else
         {
@@ -278,7 +285,7 @@ public class WfcMapGenerator
             bool IsPassable(string tileId) => _tileRegistry.GetTile(tileId)?.IsPassable ?? false;
 
             _selector.AddConstraint(new ConnectivityConstraint(passabilityGraph, IsPassable));
-            solver = new WfcSolver(propagator, _selector, _blobTracker, passabilityGraph, IsPassable);
+            solver = new WfcSolver(propagator, _selector, _blobTracker, passabilityGraph, IsPassable, _spatialCoherence);
         }
 
         solver.SetProfiler(_profiler);
@@ -286,7 +293,7 @@ public class WfcMapGenerator
     }
 
     /// <summary>
-    /// Configures base constraints (diminishing returns, novelty, compactness) based on enable flags.
+    /// Configures base constraints (diminishing returns, novelty, compactness, spatial coherence) based on enable flags.
     /// </summary>
     private void ConfigureConstraints()
     {
@@ -300,6 +307,9 @@ public class WfcMapGenerator
 
         if (EnableCompactness)
             _selector.AddConstraint(_compactness);
+
+        // Always enable spatial coherence for region formation
+        _selector.AddConstraint(_spatialCoherence);
     }
 
     /// <summary>
