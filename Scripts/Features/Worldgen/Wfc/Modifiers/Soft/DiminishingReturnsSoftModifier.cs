@@ -8,13 +8,13 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 ///
 /// Formula: multiplier = 1 / (1 + potentialBlobSize * DecayFactor)
 ///
-/// With default DecayFactor=0.5:
-/// - Blob size 1:   1 / (1 + 1 * 0.5)   = 0.667 (net with 5x continuity: 3.33x)
-/// - Blob size 5:   1 / (1 + 5 * 0.5)   = 0.286 (net: 1.43x)
-/// - Blob size 10:  1 / (1 + 10 * 0.5)  = 0.167 (net: 0.83x - now a penalty!)
-/// - Blob size 20:  1 / (1 + 20 * 0.5)  = 0.091 (net: 0.45x)
+/// With DecayFactor=0.05 (balanced with SpatialCoherenceConstraint):
+/// - Blob size 10:  1 / (1 + 10 * 0.05) = 0.667 (allows coherent growth)
+/// - Blob size 40:  1 / (1 + 40 * 0.05) = 0.333 (target size, still growing)
+/// - Blob size 80:  1 / (1 + 80 * 0.05) = 0.200 (decay begins)
+/// - Blob size 100: 1 / (1 + 100 * 0.05) = 0.167 (prevents domination)
 ///
-/// Crossover point where continuity becomes penalty: ~8 tiles (5 * 0.2 = 1.0)
+/// With SpatialCoherence BoostFactor=5.0, net effect at size 40: 6.0x * 0.333 = 2.0x boost
 /// </summary>
 public class DiminishingReturnsSoftModifier : IWfcConstraint
 {
@@ -23,9 +23,11 @@ public class DiminishingReturnsSoftModifier : IWfcConstraint
     /// <summary>
     /// Decay factor controlling how quickly weights diminish.
     /// Higher values = faster decay, smaller blobs.
-    /// Default 0.5 targets ~8-10 tile blobs before continuity becomes a penalty.
+    /// Reduced from 0.5 to 0.05 to work with SpatialCoherenceConstraint (target: 40 tiles).
+    /// With 0.05: Decay becomes significant at 60-80 tiles, preventing single-type domination
+    /// while allowing spatial coherence to form 40-tile regions.
     /// </summary>
-    public float DecayFactor { get; set; } = 0.5f;
+    public float DecayFactor { get; set; } = 0.05f;
 
     /// <summary>
     /// Minimum blob size before decay applies.

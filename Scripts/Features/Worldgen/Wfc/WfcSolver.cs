@@ -99,6 +99,7 @@ public class WfcSolver
     public WfcSolveResult Solve(WfcGrid grid, BiomeDefinition? biome, RandomNumberGenerator rng)
     {
         var iterations = 0;
+        var totalCells = grid.Width * grid.Height;
 
         // Clear blob tracker for fresh solve
         _blobTracker?.Clear();
@@ -119,9 +120,16 @@ public class WfcSolver
 
             if (iterations > MaxIterations)
             {
+                GD.Print($"[WFC] Exceeded MaxIterations at {iterations}, collapsed ~{iterations}/{totalCells}");
                 return WfcSolveResult.Failed(
                     $"Exceeded maximum iterations ({MaxIterations})",
                     iterations);
+            }
+
+            // Progress logging every 100 iterations (iterations ≈ collapsed cells)
+            if (iterations % 100 == 0)
+            {
+                GD.Print($"[WFC] Progress: {iterations}/{totalCells} cells ({100*iterations/totalCells}%)");
             }
 
             // Find cell with lowest entropy (with random tie-breaking)
@@ -138,6 +146,7 @@ public class WfcSolver
             // Check for contradiction before collapse
             if (targetCell.IsContradiction())
             {
+                GD.Print($"[WFC] Contradiction at {targetPos} after {iterations}/{totalCells} cells");
                 return WfcSolveResult.Failed(
                     "Found cell with no valid options",
                     iterations,
@@ -162,6 +171,7 @@ public class WfcSolver
 
             if (selectedTile == null)
             {
+                GD.Print($"[WFC] Selector returned null at {targetPos} after {iterations}/{totalCells} cells, validTiles={targetCell.GetPossibleTiles().Count}");
                 return WfcSolveResult.Failed(
                     "Tile selector returned null",
                     iterations,
@@ -191,6 +201,7 @@ public class WfcSolver
             }
             if (!propResult.Success)
             {
+                GD.Print($"[WFC] Propagation failed at {propResult.ContradictionPosition} after placing {selectedTile} at {targetPos}, {iterations}/{totalCells} cells");
                 return WfcSolveResult.Failed(
                     $"Propagation failed at {propResult.ContradictionPosition}",
                     iterations,
@@ -198,6 +209,7 @@ public class WfcSolver
             }
         }
 
+        GD.Print($"[WFC] Success! Completed {iterations} iterations for {totalCells} cells");
         return WfcSolveResult.Succeeded(iterations);
     }
 

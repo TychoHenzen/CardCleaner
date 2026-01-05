@@ -81,7 +81,15 @@ public class WfcTileSelector
         foreach (var tileId in validTiles)
         {
             float weight;
-            if (biomeWeights.TryGetValue(tileId, out var biomeWeight))
+
+            // Use uniform base weight (1.0) when position provided to prevent base weight
+            // differences from causing fragmentation during spatial coherence growth
+            if (position.HasValue && grid != null)
+            {
+                // Uniform weight to let spatial coherence dominate
+                weight = 1.0f;
+            }
+            else if (biomeWeights.TryGetValue(tileId, out var biomeWeight))
             {
                 // Tile is in biome's preferred set - use its defined weight
                 weight = biomeWeight;
@@ -156,6 +164,85 @@ public class WfcTileSelector
 
         var index = rng.RandiRange(0, validTiles.Count - 1);
         return validTiles.ElementAt(index);
+    }
+
+    /// <summary>
+    /// Computes weights for all valid tiles at a position.
+    /// Used for weighted entropy calculation during cell selection.
+    /// </summary>
+    /// <param name="validTiles">Tiles that satisfy hard constraints</param>
+    /// <param name="biome">Current biome for soft rule weights</param>
+    /// <param name="rng">Random number generator for constraint context</param>
+    /// <param name="continuityTiles">Optional set of tiles matching collapsed neighbors</param>
+    /// <param name="position">Grid position for constraint evaluation</param>
+    /// <param name="grid">WFC grid for constraint evaluation</param>
+    /// <returns>Dictionary mapping tile IDs to their final weights</returns>
+    public IReadOnlyDictionary<string, float> ComputeWeights(
+        IReadOnlyCollection<string> validTiles,
+        BiomeDefinition? biome,
+        RandomNumberGenerator rng,
+        IReadOnlySet<string>? continuityTiles = null,
+        Vector2I? position = null,
+        WfcGrid? grid = null)
+    {
+        var weights = new Dictionary<string, float>();
+
+        if (validTiles.Count == 0)
+            return weights;
+
+        var biomeWeights = BuildBiomeWeightLookup(biome);
+
+        foreach (var tileId in validTiles)
+        {
+            float weight;
+
+            // Use uniform base weight (1.0) when position provided
+            if (position.HasValue && grid != null)
+            {
+                weight = 1.0f;
+            }
+            else if (biomeWeights.TryGetValue(tileId, out var biomeWeight))
+            {
+                weight = biomeWeight;
+            }
+            else
+            {
+                weight = DefaultTileWeight * NonBiomeTilePenalty;
+            }
+
+            // Apply continuity bias
+            if (continuityTiles != null && continuityTiles.Contains(tileId))
+            {
+                weight *= ContinuityBiasMultiplier;
+            }
+
+            // Apply constraints
+            if (position.HasValue && grid != null && _constraints.Count > 0)
+            {
+                var constraintContext = new WfcConstraintContext
+                {
+                    Position = position.Value,
+                    TileId = tileId,
+                    Grid = grid,
+                    Rng = rng
+                };
+
+                foreach (var constraint in _constraints)
+                {
+                    var modifier = constraint.GetProbabilityModifier(constraintContext);
+                    if (modifier == 0f)
+                    {
+                        weight = 0f;
+                        break;
+                    }
+                    weight *= modifier;
+                }
+            }
+
+            weights[tileId] = weight;
+        }
+
+        return weights;
     }
 
     private Dictionary<string, float> BuildBiomeWeightLookup(BiomeDefinition? biome)

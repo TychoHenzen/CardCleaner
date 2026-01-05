@@ -302,11 +302,18 @@ public class WfcMapGenerator
         if (EnableDiminishingReturns)
             _selector.AddConstraint(_diminishingReturns);
 
-        if (EnableNovelty)
-            _selector.AddConstraint(_novelty);
+        // DISABLED: Novelty (3.0x boost for new tiles) prevents small regions from growing
+        // Novel tiles get 2.86x net weight, extending 2-tile regions only get 0.78x
+        // This causes catastrophic fragmentation (614 regions on 625-tile map)
+        // if (EnableNovelty)
+        //     _selector.AddConstraint(_novelty);
 
-        if (EnableCompactness)
-            _selector.AddConstraint(_compactness);
+        // DISABLED: Compactness snake penalty (0.3x) prevents small regions from growing
+        // Small regions (2-6 tiles) have NO interior positions, all growth is at edges
+        // Edge growth gets 0.3x penalty, making net weight ~0.85x (still a penalty)
+        // Result: regions stuck at 3-6 tiles max (593 regions on 625-tile map)
+        // if (EnableCompactness)
+        //     _selector.AddConstraint(_compactness);
 
         // Always enable spatial coherence for region formation
         _selector.AddConstraint(_spatialCoherence);
