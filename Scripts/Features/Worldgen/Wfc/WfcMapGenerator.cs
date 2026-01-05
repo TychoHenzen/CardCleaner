@@ -32,80 +32,43 @@ public class WfcMapGenerator
     private readonly ITileRegistry? _tileRegistry;
     private IProfiler _profiler = new NoOpProfiler();
 
-    /// <summary>
-    /// Number of retry attempts when contradiction occurs (default 3).
-    /// </summary>
     public int MaxRetries { get; set; } = 3;
 
-    /// <summary>
-    /// Penalty multiplier for tiles not in the biome's preferred set (default 0.1).
-    /// </summary>
     public float NonBiomeTilePenalty
     {
         get => _selector.NonBiomeTilePenalty;
         set => _selector.NonBiomeTilePenalty = value;
     }
 
-    /// <summary>
-    /// Decay factor for diminishing returns modifier.
-    /// Higher values = faster decay, smaller blobs.
-    /// Default 0.5 targets ~8-10 tile blobs before continuity becomes penalty.
-    /// </summary>
     public float DiminishingReturnsDecay
     {
         get => _diminishingReturns.DecayFactor;
         set => _diminishingReturns.DecayFactor = value;
     }
 
-    /// <summary>
-    /// Enable or disable the diminishing returns modifier.
-    /// </summary>
     public bool EnableDiminishingReturns { get; set; } = true;
-
-    /// <summary>
-    /// Enable or disable the novelty modifier (boosts tiles starting new blobs).
-    /// </summary>
     public bool EnableNovelty { get; set; } = true;
 
-    /// <summary>
-    /// Boost multiplier for tiles with no same-type neighbors.
-    /// Default 3.0 helps new terrain types establish against dominant blobs.
-    /// </summary>
     public float NoveltyBoost
     {
         get => _novelty.NoveltyBoost;
         set => _novelty.NoveltyBoost = value;
     }
 
-    /// <summary>
-    /// Enable or disable the compactness modifier (penalizes snake shapes).
-    /// </summary>
     public bool EnableCompactness { get; set; } = true;
 
-    /// <summary>
-    /// Penalty for snake-like extensions (1 same-type neighbor).
-    /// Default 0.3 means snakes are 70% less likely.
-    /// </summary>
     public float SnakePenalty
     {
         get => _compactness.SnakePenalty;
         set => _compactness.SnakePenalty = value;
     }
 
-    /// <summary>
-    /// Boost for compact fills (3-4 same-type neighbors).
-    /// Default 1.5 means filling gaps is 50% more likely.
-    /// </summary>
     public float CompactBoost
     {
         get => _compactness.CompactBoost;
         set => _compactness.CompactBoost = value;
     }
 
-    /// <summary>
-    /// Enable or disable the connectivity constraint (prevents disconnected passable regions).
-    /// Default is true for WFC-native connectivity enforcement.
-    /// </summary>
     public bool EnableConnectivity { get; set; } = true;
 
     public void SetProfiler(IProfiler profiler)
@@ -113,11 +76,6 @@ public class WfcMapGenerator
         _profiler = profiler;
     }
 
-    /// <summary>
-    /// Creates a WFC map generator using the given transition resolver.
-    /// </summary>
-    /// <param name="transitionResolver">Transition resolver for adjacency rules.</param>
-    /// <param name="tileRegistry">Tile registry for passability lookups. Required for connectivity constraint.</param>
     public WfcMapGenerator(CompiledTransitionResolver transitionResolver, ITileRegistry? tileRegistry = null)
     {
         _adjacencyRules = new WfcAdjacencyRules(transitionResolver);
@@ -132,12 +90,6 @@ public class WfcMapGenerator
         _adapter = new WfcMapDataAdapter();
     }
 
-    /// <summary>
-    /// Creates a WFC map generator with custom adjacency rules.
-    /// Useful for testing or custom rule sets.
-    /// </summary>
-    /// <param name="adjacencyRules">Custom adjacency rules.</param>
-    /// <param name="tileRegistry">Tile registry for passability lookups. Required for connectivity constraint.</param>
     public WfcMapGenerator(WfcAdjacencyRules adjacencyRules, ITileRegistry? tileRegistry = null)
     {
         _adjacencyRules = adjacencyRules;
@@ -152,14 +104,6 @@ public class WfcMapGenerator
         _adapter = new WfcMapDataAdapter();
     }
 
-    /// <summary>
-    /// Generates a terrain map using WFC algorithm with a single biome.
-    /// </summary>
-    /// <param name="biome">Biome definition for tile selection weights</param>
-    /// <param name="size">Map dimensions (width, height)</param>
-    /// <param name="seed">Random seed for reproducibility</param>
-    /// <param name="signature">Optional card signature (reserved for future gradient support)</param>
-    /// <returns>Result containing the generated map or error details</returns>
     public WfcGenerationResult Generate(
         BiomeDefinition biome,
         Vector2I size,
@@ -197,14 +141,6 @@ public class WfcMapGenerator
         return WfcGenerationResult.Succeeded(mapData, solveResult.Iterations);
     }
 
-    /// <summary>
-    /// Generates a terrain map with multiple biomes based on a gradient.
-    /// </summary>
-    /// <param name="biomeRegistry">Registry of all available biomes</param>
-    /// <param name="getBiomeAt">Function to get biome at each position</param>
-    /// <param name="size">Map dimensions (width, height)</param>
-    /// <param name="seed">Random seed for reproducibility</param>
-    /// <param name="gradient">Optional gradient for biome strength calculation. If provided, BiomeAffinityConstraint is registered.</param>
     public WfcGenerationResult GenerateMultiBiome(
         BiomeRegistry biomeRegistry,
         Func<Vector2I, BiomeDefinition> getBiomeAt,
@@ -218,13 +154,11 @@ public class WfcMapGenerator
             return WfcGenerationResult.Failed("No valid tiles across all biomes");
         }
 
-        // Initialize spatial coherence for this map size
         _spatialCoherence.Reset(size.X, size.Y);
 
-        // Register biome affinity constraint if gradient provided
         if (gradient != null)
         {
-            ConfigureConstraints(); // Must call before adding affinity constraint
+            ConfigureConstraints();
             var biomeStrengthGrid = new BiomeStrengthGrid(size, gradient, biomeRegistry);
             _selector.AddConstraint(new BiomeAffinityConstraint(biomeStrengthGrid, biomeRegistry));
         }
@@ -233,7 +167,6 @@ public class WfcMapGenerator
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, allTiles);
 
-        // Use first biome as default for solve weighting
         BiomeDefinition? defaultBiome = null;
         foreach (var b in biomeRegistry.GetAllBiomes())
         {
@@ -262,11 +195,6 @@ public class WfcMapGenerator
         return WfcGenerationResult.Succeeded(mapData, solveResult.Iterations);
     }
 
-    /// <summary>
-    /// Creates a configured WfcSolver with all enabled constraints.
-    /// </summary>
-    /// <param name="skipBaseConstraints">If true, assumes ConfigureConstraints was already called.</param>
-    /// <param name="size">Map size for spatial coherence initialization (optional for single-biome generation).</param>
     private WfcSolver CreateSolver(bool skipBaseConstraints = false, Vector2I? size = null)
     {
         if (!skipBaseConstraints)
@@ -284,7 +212,6 @@ public class WfcMapGenerator
         else
         {
             var passabilityGraph = new PassabilityGraph();
-            // Use TileRegistry as single source of truth for passability
             bool IsPassable(string tileId) => _tileRegistry.GetTile(tileId)?.IsPassable ?? false;
 
             _selector.AddConstraint(new ConnectivityConstraint(passabilityGraph, IsPassable));
@@ -295,9 +222,6 @@ public class WfcMapGenerator
         return solver;
     }
 
-    /// <summary>
-    /// Configures base constraints (diminishing returns, novelty, compactness, spatial coherence) based on enable flags.
-    /// </summary>
     private void ConfigureConstraints()
     {
         _selector.ClearConstraints();
@@ -305,41 +229,19 @@ public class WfcMapGenerator
         if (EnableDiminishingReturns)
             _selector.AddConstraint(_diminishingReturns);
 
-        // DISABLED: Novelty (3.0x boost for new tiles) prevents small regions from growing
-        // Novel tiles get 2.86x net weight, extending 2-tile regions only get 0.78x
-        // This causes catastrophic fragmentation (614 regions on 625-tile map)
-        // if (EnableNovelty)
-        //     _selector.AddConstraint(_novelty);
-
-        // DISABLED: Compactness snake penalty (0.3x) prevents small regions from growing
-        // Small regions (2-6 tiles) have NO interior positions, all growth is at edges
-        // Edge growth gets 0.3x penalty, making net weight ~0.85x (still a penalty)
-        // Result: regions stuck at 3-6 tiles max (593 regions on 625-tile map)
-        // if (EnableCompactness)
-        //     _selector.AddConstraint(_compactness);
-
-        // Always enable spatial coherence for region formation
         _selector.AddConstraint(_spatialCoherence);
 
-        // DISABLED: AutoTileGapConstraint is too restrictive for current tile definitions.
-        // Many biomes have multiple auto-tile types (e.g., desert: sand, dune, cracked, gravel)
-        // that need to coexist adjacent to each other. The 1-tile gap requirement breaks WFC.
-        // if (_autoTileGap != null)
-        //     _selector.AddConstraint(_autoTileGap);
+        // Enforce 1-tile gap between different auto-tile types (8-neighbor check)
+        if (_autoTileGap != null)
+            _selector.AddConstraint(_autoTileGap);
     }
 
-    /// <summary>
-    /// Determines which tiles to include for a single biome.
-    /// Uses PassableTiles from biome pools for candidates (controls obstacle density).
-    /// Uses TileRegistry.IsPassable as the source of truth for ConnectivityConstraint.
-    /// </summary>
     private (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineInitialTiles(BiomeDefinition biome)
     {
         var allTiles = new HashSet<string>();
         var passableTiles = new HashSet<string>();
         var adjacencyTiles = _adjacencyRules.AllTileIds;
 
-        // Only use PassableTiles from biome pool as candidates (blocked tiles handled separately)
         foreach (var tileId in biome.PassableTiles.GetAllTileIds())
         {
             if (!adjacencyTiles.Contains(tileId))
@@ -350,7 +252,6 @@ public class WfcMapGenerator
 
             allTiles.Add(tileId);
 
-            // Use TileRegistry as source of truth for passability (detects miscategorized tiles)
             if (_tileRegistry != null)
             {
                 var tile = _tileRegistry.GetTile(tileId);
@@ -360,13 +261,11 @@ public class WfcMapGenerator
                 }
                 else
                 {
-                    // Log warning: tile is in PassableTiles pool but IsPassable=false
                     ILog.Print($"[WfcMapGenerator] WARNING: Tile '{tileId}' is in PassableTiles but has IsPassable=false");
                 }
             }
             else
             {
-                // Fallback: assume tiles in PassableTiles pool are passable
                 passableTiles.Add(tileId);
             }
         }
@@ -374,11 +273,6 @@ public class WfcMapGenerator
         return (allTiles, passableTiles);
     }
 
-    /// <summary>
-    /// Determines tiles for multi-biome generation.
-    /// Uses biome pools for tile candidates (until data migration to tile-declared biomes).
-    /// Uses TileRegistry.IsPassable as the source of truth for passability.
-    /// </summary>
     private (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineMultiBiomeTiles(BiomeRegistry registry)
     {
         var allTiles = new HashSet<string>();
@@ -386,7 +280,6 @@ public class WfcMapGenerator
 
         foreach (var biome in registry.GetAllBiomes())
         {
-            // Collect all tiles from biome pools (both passable and blocked)
             var biomeTileIds = new HashSet<string>();
             foreach (var tileId in biome.PassableTiles.GetAllTileIds())
                 biomeTileIds.Add(tileId);
@@ -400,7 +293,6 @@ public class WfcMapGenerator
 
                 allTiles.Add(tileId);
 
-                // Use TileRegistry as source of truth for passability
                 if (_tileRegistry != null)
                 {
                     var tile = _tileRegistry.GetTile(tileId);
@@ -411,7 +303,6 @@ public class WfcMapGenerator
                 }
                 else
                 {
-                    // Fallback: assume tiles in PassableTiles pool are passable
                     var passablePool = new HashSet<string>(biome.PassableTiles.GetAllTileIds());
                     if (passablePool.Contains(tileId))
                     {
@@ -424,9 +315,6 @@ public class WfcMapGenerator
         return (allTiles, passableTiles);
     }
 
-    /// <summary>
-    /// Builds a biome ID map for the given size.
-    /// </summary>
     private static string[,] BuildBiomeMap(Vector2I size, Func<Vector2I, BiomeDefinition> getBiomeAt)
     {
         var biomeMap = new string[size.Y, size.X];
@@ -441,9 +329,6 @@ public class WfcMapGenerator
     }
 }
 
-/// <summary>
-/// Result of WFC map generation.
-/// </summary>
 public readonly struct WfcGenerationResult
 {
     public bool Success { get; }

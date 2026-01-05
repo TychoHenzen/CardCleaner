@@ -83,11 +83,13 @@ public class SimpleMapGenerator
             }
         }
 
-        // Generate terrain using WFC (with 2x2 window constraint built-in)
+        // Generate terrain using two-phase WFC
+        string[,] backgroundLayer;
+        string[,] foregroundLayer;
         string[,] terrainGrid;
-        using (_profiler.BeginScope("WfcTerrainGeneration"))
+        using (_profiler.BeginScope("TwoPhaseWfcGeneration"))
         {
-            terrainGrid = GenerateTerrainViaWfc(size, biomeMap);
+            (backgroundLayer, foregroundLayer, terrainGrid) = GenerateTwoPhaseWfc(size, biomeMap);
         }
 
         // Build passable tiles list from WFC output
@@ -119,7 +121,7 @@ public class SimpleMapGenerator
         Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> decorationOverlays;
         using (_profiler.BeginScope("TerrainTransitions"))
         {
-            decorationOverlays = GenerateTerrainTransitions(terrainGrid, size);
+            decorationOverlays = GenerateTerrainTransitions(backgroundLayer, foregroundLayer, size);
             var transitionCount = decorationOverlays.Count(kvp => kvp.Value.Bitmask > 0 && kvp.Value.Bitmask < 15);
             ILog.Print($"Dual-grid terrain: {decorationOverlays.Count} visual tiles, {transitionCount} transitions");
 
@@ -150,6 +152,8 @@ public class SimpleMapGenerator
         return new SimpleMapData
         {
             TileIds = finalTileIds,
+            BackgroundLayer = backgroundLayer,
+            ForegroundLayer = foregroundLayer,
             BiomeMap = biomeMap,
             Size = size,
             PlayerStart = playerStart,
@@ -162,42 +166,78 @@ public class SimpleMapGenerator
     }
 
     /// <summary>
-    /// Generates terrain grid using WFC with hard constraints (adjacency + 2x2 window).
-    /// Falls back to simple random selection if WFC is not configured.
+    /// Generates terrain using single-pass WFC with post-processing to classify tiles into layers.
     /// </summary>
-    private string[,] GenerateTerrainViaWfc(Vector2I size, string[,] biomeMap)
+    private (string[,] backgroundLayer, string[,] foregroundLayer, string[,] mergedGrid) GenerateTwoPhaseWfc(
+        Vector2I size, string[,] biomeMap)
     {
-        var terrainGrid = new string[size.Y, size.X];
+        var backgroundLayer = new string[size.Y, size.X];
+        var foregroundLayer = new string[size.Y, size.X];
+        var mergedGrid = new string[size.Y, size.X];
 
-        if (_wfcGenerator != null && _biomeRegistry != null)
+        if (_wfcGenerator == null || _biomeRegistry == null)
         {
-            _wfcGenerator.MaxRetries = MaxWfcRetries;
-
-            var result = _wfcGenerator.GenerateMultiBiome(
-                _biomeRegistry,
-                pos => _biomeProvider.GetBiomeAt(pos),
-                size,
-                _rng.Randi(),
-                _gradient);
-
-            if (result.Success && result.MapData != null)
+            ILog.Print("[WFC] No WFC generator, using random fallback");
+            for (var y = 0; y < size.Y; y++)
+            for (var x = 0; x < size.X; x++)
             {
-                ILog.Print($"WFC generation succeeded in {result.Iterations} iterations");
-                return result.MapData.TileIds;
+                var biome = _biomeProvider.GetBiomeAt(new Vector2I(x, y));
+                var tile = biome.SelectPassableTile(_rng) ?? FloorTileId;
+                backgroundLayer[y, x] = tile;
+                foregroundLayer[y, x] = "";
+                mergedGrid[y, x] = tile;
             }
-
-            ILog.Print($"WFC generation failed: {result.ErrorMessage}, falling back to simple generation");
+            return (backgroundLayer, foregroundLayer, mergedGrid);
         }
 
-        // Fallback: simple random selection from biome pools
-        for (var y = 0; y < size.Y; y++)
-        for (var x = 0; x < size.X; x++)
+        _wfcGenerator.MaxRetries = MaxWfcRetries;
+
+        // Use original single-pass WFC with all tiles
+        var result = _wfcGenerator.GenerateMultiBiome(
+            _biomeRegistry,
+            pos => _biomeProvider.GetBiomeAt(pos),
+            size,
+            _rng.Randi(),
+            _gradient);
+
+        if (result.Success && result.MapData != null)
         {
-            var biome = _biomeProvider.GetBiomeAt(new Vector2I(x, y));
-            terrainGrid[y, x] = biome.SelectPassableTile(_rng) ?? FloorTileId;
+            ILog.Print($"[WFC] Succeeded in {result.Iterations} iterations");
+
+            // Post-process: classify tiles into layers for visual rendering
+            for (var y = 0; y < size.Y; y++)
+            for (var x = 0; x < size.X; x++)
+            {
+                var tileId = result.MapData.TileIds[y, x];
+                var tile = _tileRegistry.GetTile(tileId);
+                mergedGrid[y, x] = tileId;
+
+                // Auto-tiles go to foreground for bitmask rendering
+                if (tile?.HasAutoTileVariants == true)
+                {
+                    foregroundLayer[y, x] = tileId;
+                    backgroundLayer[y, x] = FloorTileId;
+                }
+                else
+                {
+                    foregroundLayer[y, x] = "";
+                    backgroundLayer[y, x] = tileId;
+                }
+            }
+        }
+        else
+        {
+            ILog.Print($"[WFC] Failed: {result.ErrorMessage}, using floor fallback");
+            for (var y = 0; y < size.Y; y++)
+            for (var x = 0; x < size.X; x++)
+            {
+                backgroundLayer[y, x] = FloorTileId;
+                foregroundLayer[y, x] = "";
+                mergedGrid[y, x] = FloorTileId;
+            }
         }
 
-        return terrainGrid;
+        return (backgroundLayer, foregroundLayer, mergedGrid);
     }
 
     private bool IsPassableTile(string tileId)
@@ -232,7 +272,7 @@ public class SimpleMapGenerator
     /// auto-tile), and computes a bitmask indicating which corners contain that terrain.
     /// </summary>
     private Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> GenerateTerrainTransitions(
-        string[,] terrainGrid, Vector2I size)
+        string[,] backgroundLayer, string[,] foregroundLayer, Vector2I size)
     {
         var visualWidth = size.X + 1;
         var visualHeight = size.Y + 1;
@@ -242,20 +282,75 @@ public class SimpleMapGenerator
         for (var vx = 0; vx < visualWidth; vx++)
         {
             var visualPosition = new Vector2I(vx, vy);
-            var terrainInfo = new Dictionary<string, (int Dominance, bool HasAutoTile)>();
 
-            SampleTerrainCell(terrainGrid, size, vx - 1, vy - 1, terrainInfo);
-            SampleTerrainCell(terrainGrid, size, vx, vy - 1, terrainInfo);
-            SampleTerrainCell(terrainGrid, size, vx - 1, vy, terrainInfo);
-            SampleTerrainCell(terrainGrid, size, vx, vy, terrainInfo);
+            // Sample the 4 corners from foreground (auto-tiles only)
+            var fgNW = GetCellSafe(foregroundLayer, size, vx - 1, vy - 1);
+            var fgNE = GetCellSafe(foregroundLayer, size, vx, vy - 1);
+            var fgSW = GetCellSafe(foregroundLayer, size, vx - 1, vy);
+            var fgSE = GetCellSafe(foregroundLayer, size, vx, vy);
 
-            var (baseTerrain, topTerrain) = SelectTerrains(terrainInfo);
-            var bitmask = ComputeBitmask(terrainGrid, size, vx, vy, topTerrain);
+            // Sample the 4 corners from background (simple tiles)
+            var bgNW = GetCellSafe(backgroundLayer, size, vx - 1, vy - 1);
+            var bgNE = GetCellSafe(backgroundLayer, size, vx, vy - 1);
+            var bgSW = GetCellSafe(backgroundLayer, size, vx - 1, vy);
+            var bgSE = GetCellSafe(backgroundLayer, size, vx, vy);
+
+            // Find the auto-tile in this window (should be at most one type due to gap constraint)
+            string? topTerrain = null;
+            int topDominance = -1;
+            foreach (var fg in new[] { fgNW, fgNE, fgSW, fgSE })
+            {
+                if (string.IsNullOrEmpty(fg)) continue;
+                var tile = _tileRegistry.GetTile(fg);
+                if (tile?.HasAutoTileVariants == true)
+                {
+                    if (tile.Dominance > topDominance)
+                    {
+                        topTerrain = fg;
+                        topDominance = tile.Dominance;
+                    }
+                }
+            }
+
+            // Find the base terrain from background layer
+            string? baseTerrain = null;
+            int baseDominance = int.MaxValue;
+            foreach (var bg in new[] { bgNW, bgNE, bgSW, bgSE })
+            {
+                if (string.IsNullOrEmpty(bg)) continue;
+                var tile = _tileRegistry.GetTile(bg);
+                if (tile != null && !tile.HasAutoTileVariants)
+                {
+                    if (tile.Dominance < baseDominance)
+                    {
+                        baseTerrain = bg;
+                        baseDominance = tile.Dominance;
+                    }
+                }
+            }
+
+            // Fallback to floor if no base terrain found
+            baseTerrain ??= FloorTileId;
+            topTerrain ??= baseTerrain;
+
+            // Compute bitmask based on which corners have the topTerrain
+            var bitmask = 0;
+            if (fgNW == topTerrain) bitmask |= NeighborBitmaskCorner.NorthWest;
+            if (fgNE == topTerrain) bitmask |= NeighborBitmaskCorner.NorthEast;
+            if (fgSW == topTerrain) bitmask |= NeighborBitmaskCorner.SouthWest;
+            if (fgSE == topTerrain) bitmask |= NeighborBitmaskCorner.SouthEast;
 
             overlays[visualPosition] = (baseTerrain, topTerrain, bitmask);
         }
 
         return overlays;
+    }
+
+    private static string GetCellSafe(string[,] grid, Vector2I size, int x, int y)
+    {
+        x = Math.Clamp(x, 0, size.X - 1);
+        y = Math.Clamp(y, 0, size.Y - 1);
+        return grid[y, x];
     }
 
     /// <summary>

@@ -5,16 +5,20 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
 /// <summary>
 /// Enforces 1-tile gaps between different auto-tile terrain types.
-/// Auto-tiles cannot be directly adjacent to different auto-tiles;
+/// Auto-tiles cannot be adjacent (including diagonally) to different auto-tiles;
 /// they must have a gap tile (non-auto-tile) between them.
+///
+/// Uses 8-neighbor check (cardinal + diagonal) because dual-grid rendering
+/// samples 4 data corners for each visual tile. Diagonal adjacency would
+/// place two different auto-tiles in the same 2x2 visual window.
 ///
 /// This eliminates bitmask conflicts in dual-grid rendering by ensuring
 /// any visual tile (which samples 4 data corners) sees at most ONE
 /// auto-tile type. The other corners will be gap tiles.
 ///
 /// Rules:
-/// - Auto-tile A adjacent to same Auto-tile A: ALLOWED (region growth)
-/// - Auto-tile A adjacent to different Auto-tile B: BANNED
+/// - Auto-tile A adjacent (8-way) to same Auto-tile A: ALLOWED (region growth)
+/// - Auto-tile A adjacent (8-way) to different Auto-tile B: BANNED
 /// - Gap tile adjacent to any tile: ALLOWED
 /// </summary>
 public class AutoTileGapConstraint : IWfcConstraint
@@ -36,8 +40,9 @@ public class AutoTileGapConstraint : IWfcConstraint
         if (!candidateTile.HasAutoTileVariants)
             return 1.0f;
 
-        // Candidate IS an auto-tile - check all 4 cardinal neighbors
-        foreach (var neighborPos in context.Grid.GetNeighbors(context.Position))
+        // Candidate IS an auto-tile - check all 8 neighbors (including diagonals)
+        // This ensures no 2x2 visual window contains more than one auto-tile type
+        foreach (var neighborPos in context.Grid.GetNeighbors8(context.Position))
         {
             var neighborCell = context.Grid.GetCell(neighborPos);
 
