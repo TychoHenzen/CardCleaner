@@ -41,6 +41,10 @@ public partial class TileEditorService : RefCounted
     [Signal]
     public delegate void BiomeRemovedEventHandler(string biomeId);
 
+    // Auto-tile format signals
+    [Signal]
+    public delegate void AutoTileFormatsLoadedEventHandler();
+
     private const string TilesPath = "res://Data/Tiles/tiles.json";
     private const string DefaultTilesetPath = "res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres";
     private static readonly Regex TileIdPattern = new(@"^[a-z][a-z0-9_]*$", RegexOptions.Compiled);
@@ -67,6 +71,7 @@ public partial class TileEditorService : RefCounted
 
     private readonly Dictionary<string, EditableTile> _tiles = new();
     private readonly Dictionary<string, EditableBiome> _biomes = new();
+    private readonly List<EditableAutoTileFormat> _customAutoTileFormats = new();
     private TileSet? _tileSet;
     private string _version = "1.0";
 
@@ -74,13 +79,25 @@ public partial class TileEditorService : RefCounted
     public IEnumerable<EditableTile> AllTiles => _tiles.Values;
     public int BiomeCount => _biomes.Count;
     public IEnumerable<EditableBiome> AllBiomes => _biomes.Values;
+    public IEnumerable<EditableAutoTileFormat> CustomAutoTileFormats => _customAutoTileFormats;
     public string TilesetPath { get; private set; } = DefaultTilesetPath;
     public TileSet? TileSet => _tileSet;
+
+    /// <summary>
+    /// Updates the custom auto-tile formats from the format editor panel.
+    /// </summary>
+    public void UpdateCustomAutoTileFormats(IEnumerable<EditableAutoTileFormat> formats)
+    {
+        _customAutoTileFormats.Clear();
+        _customAutoTileFormats.AddRange(formats);
+    }
 
     public void LoadTiles()
     {
         _tiles.Clear();
         _biomes.Clear();
+        _customAutoTileFormats.Clear();
+        Features.Worldgen.AutoTiling.AutoTileFormatRegistry.ClearCustomFormats();
 
         var absolutePath = ProjectSettings.GlobalizePath(TilesPath);
         if (!File.Exists(absolutePath))
@@ -227,14 +244,60 @@ public partial class TileEditorService : RefCounted
                 GD.Print($"[TileEditorService] Loaded {_biomes.Count} biomes");
             }
 
+            // Load custom auto-tile formats
+            if (data.AutoTileFormats != null)
+            {
+                foreach (var formatData in data.AutoTileFormats)
+                {
+                    if (string.IsNullOrEmpty(formatData.Name)) continue;
+
+                    var bitmaskType = formatData.BitmaskType?.ToLowerInvariant() switch
+                    {
+                        "edge4" => Features.Worldgen.AutoTiling.BitmaskType.Edge4,
+                        "full8" => Features.Worldgen.AutoTiling.BitmaskType.Full8,
+                        _ => Features.Worldgen.AutoTiling.BitmaskType.Corner4
+                    };
+
+                    var allowedBitmasks = formatData.AllowedBitmasks?.ToHashSet()
+                        ?? Features.Worldgen.AutoTiling.AutoTileFormatDefinition.AllBitmasksFor(bitmaskType);
+
+                    var editableFormat = new EditableAutoTileFormat
+                    {
+                        Name = formatData.Name,
+                        BitmaskType = bitmaskType,
+                        AllowedBitmasks = allowedBitmasks
+                    };
+                    _customAutoTileFormats.Add(editableFormat);
+
+                    // Register with the global registry
+                    var variantMappings = new Dictionary<int, Features.Worldgen.AutoTiling.VariantDefinition>();
+                    foreach (var bitmask in allowedBitmasks)
+                    {
+                        variantMappings[bitmask] = new Features.Worldgen.AutoTiling.VariantDefinition(Godot.Vector2I.Zero);
+                    }
+
+                    var definition = new Features.Worldgen.AutoTiling.AutoTileFormatDefinition(
+                        formatData.Name,
+                        bitmaskType,
+                        allowedBitmasks,
+                        variantMappings,
+                        isBuiltIn: false
+                    );
+                    Features.Worldgen.AutoTiling.AutoTileFormatRegistry.Register(definition);
+                }
+                GD.Print($"[TileEditorService] Loaded {_customAutoTileFormats.Count} custom auto-tile formats");
+            }
+
             EmitSignal(SignalName.TilesLoaded);
             EmitSignal(SignalName.BiomesLoaded);
+            EmitSignal(SignalName.AutoTileFormatsLoaded);
         }
         catch (Exception ex)
         {
             GD.PrintErr($"[TileEditorService] Error loading tiles: {ex.Message}");
             EmitSignal(SignalName.TilesLoaded);
             EmitSignal(SignalName.BiomesLoaded);
+            EmitSignal(SignalName.AutoTileFormatsLoaded);
         }
     }
 
@@ -878,6 +941,17 @@ public partial class TileEditorService : RefCounted
                         PassableTiles = NormalizeWeights(kvp.Value.PassableTiles),
                         BlockedTiles = NormalizeWeights(kvp.Value.BlockedTiles)
                     }) : null,
+                AutoTileFormats = _customAutoTileFormats.Count > 0 ? _customAutoTileFormats.Select(f => new AutoTileFormatDataJson
+                    {
+                        Name = f.Name,
+                        BitmaskType = f.BitmaskType switch
+                        {
+                            Features.Worldgen.AutoTiling.BitmaskType.Edge4 => "edge4",
+                            Features.Worldgen.AutoTiling.BitmaskType.Full8 => "full8",
+                            _ => "corner4"
+                        },
+                        AllowedBitmasks = f.AllowedBitmasks.OrderBy(b => b).ToArray()
+                    }).ToList() : null,
                 Tiles = _tiles.Values.Select(t => new TileData
                 {
                     Id = t.Id,
@@ -965,7 +1039,18 @@ public partial class TileEditorService : RefCounted
 
         [JsonPropertyName("biomes")] public Dictionary<string, BiomeDataJson>? Biomes { get; set; }
 
+        [JsonPropertyName("autoTileFormats")] public List<AutoTileFormatDataJson>? AutoTileFormats { get; set; }
+
         [JsonPropertyName("tiles")] public List<TileData>? Tiles { get; set; }
+    }
+
+    private sealed class AutoTileFormatDataJson
+    {
+        [JsonPropertyName("name")] public string? Name { get; set; }
+
+        [JsonPropertyName("bitmaskType")] public string? BitmaskType { get; set; }
+
+        [JsonPropertyName("allowedBitmasks")] public int[]? AllowedBitmasks { get; set; }
     }
 
     private sealed class BiomeDataJson

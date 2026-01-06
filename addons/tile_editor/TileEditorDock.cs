@@ -10,6 +10,7 @@ public partial class TileEditorDock : Control
     private TileAtlasPanel? _atlasPanel;
     private BiomePoolPanel? _biomePoolPanel;
     private AutoTilePreviewPanel? _autoTilePreviewPanel;
+    private AutoTileFormatEditorPanel? _autoTileFormatEditorPanel;
     private UnusedSourcesPanel? _unusedSourcesPanel;
     private TransitionCoveragePanel? _transitionCoveragePanel;
     private bool _initialized;
@@ -145,6 +146,14 @@ public partial class TileEditorDock : Control
         _autoTilePreviewPanel.Name = "Auto-Tile Preview";
         _tabContainer.AddChild(_autoTilePreviewPanel);
 
+        // Auto-Tile Formats tab
+        _autoTileFormatEditorPanel = new AutoTileFormatEditorPanel(_service!);
+        _autoTileFormatEditorPanel.Name = "Formats";
+        _autoTileFormatEditorPanel.FormatModified += OnFormatModified;
+        _autoTileFormatEditorPanel.FormatCreated += OnFormatCreated;
+        _autoTileFormatEditorPanel.FormatDeleted += OnFormatDeleted;
+        _tabContainer.AddChild(_autoTileFormatEditorPanel);
+
         // Unused Sources tab
         _unusedSourcesPanel = new UnusedSourcesPanel(_service!);
         _unusedSourcesPanel.Name = "Unused Sources";
@@ -175,6 +184,36 @@ public partial class TileEditorDock : Control
     {
         _propertiesPanel?.SelectTile(tileId);
         _tabContainer!.CurrentTab = 1; // Switch to Properties tab
+    }
+
+    private void OnFormatModified(string formatName)
+    {
+        SyncCustomFormatsToService();
+        _isDirty = true;
+        _saveButton!.Disabled = false;
+        UpdateTitle();
+    }
+
+    private void OnFormatCreated(string formatName)
+    {
+        SyncCustomFormatsToService();
+        _isDirty = true;
+        _saveButton!.Disabled = false;
+        UpdateTitle();
+    }
+
+    private void OnFormatDeleted(string formatName)
+    {
+        SyncCustomFormatsToService();
+        _isDirty = true;
+        _saveButton!.Disabled = false;
+        UpdateTitle();
+    }
+
+    private void SyncCustomFormatsToService()
+    {
+        if (_autoTileFormatEditorPanel == null || _service == null) return;
+        _service.UpdateCustomAutoTileFormats(_autoTileFormatEditorPanel.GetCustomFormats());
     }
 
     private void OnSavePressed()
