@@ -115,6 +115,32 @@ public sealed class AutoTileFormatDefinition
     }
 
     /// <summary>
+    /// Gets the maximum multi-cell bounds across all variants in this format.
+    /// Returns null if no variants are multi-cell.
+    /// </summary>
+    /// <returns>Tuple of (maxSize, offset) for reservation, or null if all variants are 1x1.</returns>
+    public (Vector2I Size, Vector2I Offset)? GetMaxMultiCellBounds()
+    {
+        Vector2I? maxSize = null;
+        Vector2I? maxOffset = null;
+
+        foreach (var variant in _variantMappings.Values)
+        {
+            if (variant.IsMultiCell)
+            {
+                if (maxSize == null ||
+                    variant.Size.X * variant.Size.Y > maxSize.Value.X * maxSize.Value.Y)
+                {
+                    maxSize = variant.Size;
+                    maxOffset = variant.Offset;
+                }
+            }
+        }
+
+        return maxSize.HasValue ? (maxSize.Value, maxOffset!.Value) : null;
+    }
+
+    /// <summary>
     /// Creates a simple variant definition using just atlas coordinates.
     /// Useful for building variant mappings in factory methods.
     /// </summary>

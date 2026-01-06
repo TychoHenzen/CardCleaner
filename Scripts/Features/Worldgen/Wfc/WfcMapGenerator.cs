@@ -246,7 +246,7 @@ public class WfcMapGenerator
         WfcSolver solver;
         if (!EnableConnectivity || _tileRegistry == null)
         {
-            solver = new WfcSolver(propagator, _selector, _blobTracker, _spatialCoherence);
+            solver = new WfcSolver(propagator, _selector, _blobTracker, _spatialCoherence, _tileRegistry);
         }
         else
         {
@@ -254,7 +254,7 @@ public class WfcMapGenerator
             bool IsPassable(string tileId) => _tileRegistry.GetTile(tileId)?.IsPassable ?? false;
 
             _selector.AddConstraint(new ConnectivityConstraint(passabilityGraph, IsPassable));
-            solver = new WfcSolver(propagator, _selector, _blobTracker, passabilityGraph, IsPassable, _spatialCoherence);
+            solver = new WfcSolver(propagator, _selector, _blobTracker, passabilityGraph, IsPassable, _spatialCoherence, _tileRegistry);
         }
 
         solver.SetProfiler(_profiler);

@@ -236,7 +236,7 @@ public class WfcGrid
             for (var x = 0; x < _width; x++)
             {
                 var cell = _cells[y, x];
-                if (cell.IsCollapsed())
+                if (cell.IsExcludedFromSelection())
                     continue;
 
                 var count = cell.GetPossibleTiles().Count;
@@ -289,7 +289,7 @@ public class WfcGrid
             for (var x = 0; x < _width; x++)
             {
                 var cell = _cells[y, x];
-                if (cell.IsCollapsed()) continue;
+                if (cell.IsExcludedFromSelection()) continue;
 
                 var pos = new Vector2I(x, y);
                 anyUncollapsed ??= pos;

@@ -65,8 +65,8 @@ public class WfcPropagator
 
             var currentCell = grid.GetCell(currentPos);
 
-            // Skip already collapsed cells
-            if (currentCell.IsCollapsed())
+            // Skip already collapsed or reserved cells
+            if (currentCell.IsCollapsed() || currentCell.IsReserved)
                 continue;
 
             // Compute valid tiles for this cell based on all collapsed neighbors
@@ -89,7 +89,7 @@ public class WfcPropagator
                 foreach (var neighbor in grid.GetNeighbors8(currentPos))
                 {
                     var neighborCell = grid.GetCell(neighbor);
-                    if (!neighborCell.IsCollapsed() && !inQueue.Contains(neighbor))
+                    if (!neighborCell.IsCollapsed() && !neighborCell.IsReserved && !inQueue.Contains(neighbor))
                     {
                         workQueue.Enqueue(neighbor);
                         inQueue.Add(neighbor);
@@ -111,10 +111,11 @@ public class WfcPropagator
         var inQueue = new HashSet<Vector2I>();
         var cellsUpdated = 0;
 
-        // Add all uncollapsed cells to work queue
+        // Add all uncollapsed and unreserved cells to work queue
         foreach (var pos in grid.GetAllPositions())
         {
-            if (!grid.GetCell(pos).IsCollapsed())
+            var cell = grid.GetCell(pos);
+            if (!cell.IsCollapsed() && !cell.IsReserved)
             {
                 workQueue.Enqueue(pos);
                 inQueue.Add(pos);
@@ -128,7 +129,8 @@ public class WfcPropagator
 
             var currentCell = grid.GetCell(currentPos);
 
-            if (currentCell.IsCollapsed())
+            // Skip collapsed or reserved cells
+            if (currentCell.IsCollapsed() || currentCell.IsReserved)
                 continue;
 
             var validTiles = ComputeValidTiles(grid, currentPos);
@@ -147,7 +149,7 @@ public class WfcPropagator
                 foreach (var neighbor in grid.GetNeighbors8(currentPos))
                 {
                     var neighborCell = grid.GetCell(neighbor);
-                    if (!neighborCell.IsCollapsed() && !inQueue.Contains(neighbor))
+                    if (!neighborCell.IsCollapsed() && !neighborCell.IsReserved && !inQueue.Contains(neighbor))
                     {
                         workQueue.Enqueue(neighbor);
                         inQueue.Add(neighbor);

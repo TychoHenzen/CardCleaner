@@ -13,6 +13,18 @@ public class WfcCellState
     private readonly HashSet<string> _possibleTiles;
 
     /// <summary>
+    /// Position of the anchor cell that reserved this cell (for multi-cell variants).
+    /// Null if this cell is not reserved.
+    /// </summary>
+    public Vector2I? ReservedBy { get; private set; }
+
+    /// <summary>
+    /// Returns true if this cell has been reserved by a multi-cell variant.
+    /// Reserved cells should not be selected for collapse or have their possibilities modified.
+    /// </summary>
+    public bool IsReserved => ReservedBy.HasValue;
+
+    /// <summary>
     /// Creates a cell with the given set of possible tiles.
     /// </summary>
     public WfcCellState(IEnumerable<string> possibleTiles)
@@ -26,6 +38,7 @@ public class WfcCellState
     public WfcCellState(WfcCellState other)
     {
         _possibleTiles = new HashSet<string>(other._possibleTiles);
+        ReservedBy = other.ReservedBy;
     }
 
     /// <summary>
@@ -65,6 +78,12 @@ public class WfcCellState
     /// Returns true if this cell has collapsed to a single tile.
     /// </summary>
     public bool IsCollapsed() => _possibleTiles.Count == 1;
+
+    /// <summary>
+    /// Returns true if this cell should be excluded from WFC cell selection.
+    /// This includes collapsed cells (already decided) and reserved cells (occupied by multi-cell variants).
+    /// </summary>
+    public bool IsExcludedFromSelection() => IsCollapsed() || IsReserved;
 
     /// <summary>
     /// Returns true if this cell has no valid options (contradiction state).
@@ -125,5 +144,23 @@ public class WfcCellState
         var originalCount = _possibleTiles.Count;
         _possibleTiles.IntersectWith(validSet);
         return _possibleTiles.Count < originalCount;
+    }
+
+    /// <summary>
+    /// Reserves this cell for a multi-cell variant anchored at the given position.
+    /// Reserved cells are excluded from WFC collapse and constraint propagation.
+    /// </summary>
+    /// <param name="anchorPosition">The grid position of the cell that placed the multi-cell variant.</param>
+    public void Reserve(Vector2I anchorPosition)
+    {
+        ReservedBy = anchorPosition;
+    }
+
+    /// <summary>
+    /// Clears the reservation on this cell, making it available for WFC processing again.
+    /// </summary>
+    public void ClearReservation()
+    {
+        ReservedBy = null;
     }
 }

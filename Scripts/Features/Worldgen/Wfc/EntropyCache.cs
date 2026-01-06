@@ -101,7 +101,7 @@ public class EntropyCache
             var entropy = kvp.Value;
 
             var cell = grid.GetCell(pos);
-            if (cell.IsCollapsed())
+            if (cell.IsExcludedFromSelection())
                 continue;
 
             // Only consider frontier cells (adjacent to collapsed)
@@ -125,7 +125,7 @@ public class EntropyCache
         {
             foreach (var kvp in _entropy)
             {
-                if (!grid.GetCell(kvp.Key).IsCollapsed())
+                if (!grid.GetCell(kvp.Key).IsExcludedFromSelection())
                 {
                     candidates.Add(kvp.Key);
                     break;
@@ -150,7 +150,7 @@ public class EntropyCache
             {
                 var pos = new Vector2I(x, y);
                 var cell = grid.GetCell(pos);
-                if (!cell.IsCollapsed())
+                if (!cell.IsExcludedFromSelection())
                 {
                     _entropy[pos] = computeEntropy(pos);
                 }
@@ -163,7 +163,7 @@ public class EntropyCache
         foreach (var pos in _dirty)
         {
             var cell = grid.GetCell(pos);
-            if (cell.IsCollapsed())
+            if (cell.IsExcludedFromSelection())
             {
                 _entropy.Remove(pos);
             }

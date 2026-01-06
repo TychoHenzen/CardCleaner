@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
@@ -39,6 +40,7 @@ public class WfcSolver
 {
     private readonly WfcPropagator _propagator;
     private readonly WfcTileSelector _selector;
+    private readonly ITileRegistry? _tileRegistry;
     private readonly BlobSizeTracker? _blobTracker;
     private readonly SpatialCoherenceConstraint? _spatialCoherence;
     private readonly PassabilityGraph? _passabilityGraph;
@@ -52,10 +54,11 @@ public class WfcSolver
     /// </summary>
     public int MaxIterations { get; set; } = 10000;
 
-    public WfcSolver(WfcPropagator propagator, WfcTileSelector selector, BlobSizeTracker? blobTracker = null, SpatialCoherenceConstraint? spatialCoherence = null)
+    public WfcSolver(WfcPropagator propagator, WfcTileSelector selector, BlobSizeTracker? blobTracker = null, SpatialCoherenceConstraint? spatialCoherence = null, ITileRegistry? tileRegistry = null)
     {
         _propagator = propagator;
         _selector = selector;
+        _tileRegistry = tileRegistry;
         _blobTracker = blobTracker;
         _spatialCoherence = spatialCoherence;
     }
@@ -69,16 +72,19 @@ public class WfcSolver
     /// <param name="passabilityGraph">Graph for tracking passable tile connectivity.</param>
     /// <param name="isPassable">Function to determine if a tile ID is passable.</param>
     /// <param name="spatialCoherence">Optional spatial coherence constraint for region tracking.</param>
+    /// <param name="tileRegistry">Optional tile registry for multi-cell variant reservation.</param>
     public WfcSolver(
         WfcPropagator propagator,
         WfcTileSelector selector,
         BlobSizeTracker? blobTracker,
         PassabilityGraph passabilityGraph,
         Func<string, bool> isPassable,
-        SpatialCoherenceConstraint? spatialCoherence = null)
+        SpatialCoherenceConstraint? spatialCoherence = null,
+        ITileRegistry? tileRegistry = null)
     {
         _propagator = propagator;
         _selector = selector;
+        _tileRegistry = tileRegistry;
         _blobTracker = blobTracker;
         _passabilityGraph = passabilityGraph;
         _isPassable = isPassable;
@@ -216,6 +222,9 @@ public class WfcSolver
                 // Update passability graph for connectivity constraints
                 UpdatePassabilityGraph(targetPos.Value, selectedTile, grid);
 
+                // Reserve cells for multi-cell variants
+                ReserveMultiCellVariant(targetPos.Value, selectedTile, grid);
+
                 // Mark affected cells dirty for entropy recalculation
                 _entropyCache.OnCellCollapsed(targetPos.Value, selectedTile, grid);
             }
@@ -323,6 +332,64 @@ public class WfcSolver
             if (neighborTile != null && _isPassable(neighborTile))
             {
                 _passabilityGraph.AddEdge(position, neighborPos);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Reserves cells occupied by multi-cell variants after a cell collapse.
+    /// Uses the tile's auto-tile format to determine if any variants span multiple cells,
+    /// and reserves the maximum bounding box across all variants.
+    /// </summary>
+    /// <param name="anchorPos">Position of the collapsed cell (anchor for the variant).</param>
+    /// <param name="tileId">ID of the tile that was placed.</param>
+    /// <param name="grid">The WFC grid to mark reservations on.</param>
+    private void ReserveMultiCellVariant(Vector2I anchorPos, string tileId, WfcGrid grid)
+    {
+        if (_tileRegistry == null)
+            return;
+
+        var tileDef = _tileRegistry.GetTile(tileId);
+        if (tileDef == null || !tileDef.HasAutoTileVariants)
+            return;
+
+        var format = tileDef.GetAutoTileFormat();
+        if (format == null)
+            return;
+
+        // Get the maximum multi-cell bounds across all variants
+        var bounds = format.GetMaxMultiCellBounds();
+        if (bounds == null)
+            return; // All variants are 1x1, nothing to reserve
+
+        var (size, offset) = bounds.Value;
+
+        // Reserve all cells covered by this multi-cell variant (except the anchor itself)
+        for (var dy = 0; dy < size.Y; dy++)
+        {
+            for (var dx = 0; dx < size.X; dx++)
+            {
+                // Skip the anchor cell (it's already collapsed, not reserved)
+                if (dx == 0 && dy == 0 && offset == Vector2I.Zero)
+                    continue;
+
+                var reservedPos = anchorPos + offset + new Vector2I(dx, dy);
+
+                // Skip if outside grid bounds
+                if (!grid.IsInBounds(reservedPos))
+                    continue;
+
+                // Skip the anchor position if offset moved us there
+                if (reservedPos == anchorPos)
+                    continue;
+
+                var cell = grid.GetCell(reservedPos);
+
+                // Only reserve if not already collapsed or reserved
+                if (!cell.IsCollapsed() && !cell.IsReserved)
+                {
+                    cell.Reserve(anchorPos);
+                }
             }
         }
     }

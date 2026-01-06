@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
@@ -22,6 +23,11 @@ public interface ITileRegistry
     /// when UsingCompiledAtlas is true.
     /// </summary>
     TileSet? CompiledTileSet { get; }
+
+    /// <summary>
+    /// Configuration for tileset-level spatial properties (tile size, grid offset).
+    /// </summary>
+    TilesetConfig TilesetConfig { get; }
 
     void RegisterTile(TileDefinition tile);
     TileDefinition? GetTile(string id);

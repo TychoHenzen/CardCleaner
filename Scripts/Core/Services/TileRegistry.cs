@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
@@ -27,6 +28,11 @@ public class TileRegistry : ITileRegistry
     /// The compiled TileSet if using atlas mode, null otherwise.
     /// </summary>
     public TileSet? CompiledTileSet { get; private set; }
+
+    /// <summary>
+    /// Configuration for tileset-level spatial properties (tile size, grid offset).
+    /// </summary>
+    public TilesetConfig TilesetConfig { get; private set; } = TilesetConfig.Default;
 
     /// <summary>
     /// Atlas coordinate mapping for translating original coords to compiled coords.
@@ -79,6 +85,7 @@ public class TileRegistry : ITileRegistry
                 // Even if some base tiles can't be translated, auto-tiles will work
                 UsingCompiledAtlas = true;
                 TilesetPath = _atlasMapping.Atlas?.Path ?? result.TilesetPath;
+                TilesetConfig = result.TilesetConfig;
 
                 // Register tiles WITH translation - tiles not in atlas_mapping keep original coords
                 // but auto-tiles use transition_map.json which IS complete
@@ -101,6 +108,7 @@ public class TileRegistry : ITileRegistry
         UsingCompiledAtlas = false;
         CompiledTileSet = null;
         TilesetPath = result.TilesetPath;
+        TilesetConfig = result.TilesetConfig;
 
         foreach (var tile in result.Tiles)
             RegisterTile(tile);

@@ -19,8 +19,9 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 [GlobalClass]
 public partial class SimpleWorldMapScreen : Node3D
 {
-    // Visual constants
-    private const int TILE_SIZE = 16;
+    // Visual constants - default, overridden by TilesetConfig when available
+    private const int DefaultTileSize = 16;
+    private int _tileSize = DefaultTileSize;
 
     // Default values as constants
     private const bool DefaultShowBiomeOverlay = true;
@@ -126,9 +127,13 @@ public partial class SimpleWorldMapScreen : Node3D
             _tileRegistry = registry;
             _usingCompiledAtlas = registry.UsingCompiledAtlas && registry.CompiledTileSet != null;
 
+            // Use TilesetConfig for sprite positioning
+            _tileSize = registry.TilesetConfig.BaseTileSize.X;
+
             ILog.Print($"[SimpleWorldMapScreen] TileRegistry: UsingCompiledAtlas={registry.UsingCompiledAtlas}, " +
                        $"CompiledTileSet={(registry.CompiledTileSet != null ? "present" : "NULL")}, " +
-                       $"TilesetPath={registry.TilesetPath}, _usingCompiledAtlas={_usingCompiledAtlas}");
+                       $"TilesetPath={registry.TilesetPath}, _usingCompiledAtlas={_usingCompiledAtlas}, " +
+                       $"TileSize={_tileSize}");
 
             // Use compiled TileSet directly if available, otherwise load from path
             if (_usingCompiledAtlas)
@@ -275,6 +280,8 @@ public partial class SimpleWorldMapScreen : Node3D
         if (layer == null || tileSet == null) return;
         layer.TileSet = tileSet;
         layer.TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
+        // Enable Y-sorting for proper rendering of tall variants
+        layer.YSortEnabled = true;
     }
 
     private void SetupBiomePreview()
@@ -438,7 +445,7 @@ public partial class SimpleWorldMapScreen : Node3D
         _fogSprites.Clear();
 
         // Create black fog texture if not already created
-        _fogTexture ??= CreateColorTexture(new Color(0, 0, 0, 1), TILE_SIZE);
+        _fogTexture ??= CreateColorTexture(new Color(0, 0, 0, 1), _tileSize);
 
         // Create fog sprites for all tiles (90% opacity so map is barely visible)
         for (var y = 0; y < mapData.Size.Y; y++)
@@ -448,7 +455,7 @@ public partial class SimpleWorldMapScreen : Node3D
             var sprite = new Sprite2D
             {
                 Texture = _fogTexture,
-                Position = new Vector2(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2),
+                Position = new Vector2(x * _tileSize + _tileSize / 2, y * _tileSize + _tileSize / 2),
                 ZIndex = 50, // Below UI (which uses CanvasLayer)
                 Modulate = new Color(1, 1, 1, 0.9f) // 90% opacity - map barely visible through fog
             };
@@ -486,8 +493,8 @@ public partial class SimpleWorldMapScreen : Node3D
         var spriteToRemove = _enemySprites.FirstOrDefault(sprite =>
         {
             var spriteGridPos = new Vector2I(
-                Mathf.RoundToInt((sprite.Position.X - TILE_SIZE / 2) / TILE_SIZE),
-                Mathf.RoundToInt((sprite.Position.Y - TILE_SIZE / 2) / TILE_SIZE)
+                Mathf.RoundToInt((sprite.Position.X - _tileSize / 2f) / _tileSize),
+                Mathf.RoundToInt((sprite.Position.Y - _tileSize / 2f) / _tileSize)
             );
             return spriteGridPos == position;
         });
@@ -769,7 +776,7 @@ public partial class SimpleWorldMapScreen : Node3D
         // Create textures for each biome type if not cached
         foreach (var (biomeId, color) in BiomeColors)
             if (!_biomeTextures.ContainsKey(biomeId))
-                _biomeTextures[biomeId] = CreateColorTexture(color, TILE_SIZE);
+                _biomeTextures[biomeId] = CreateColorTexture(color, _tileSize);
 
         // Create sprites for each tile position showing biome color
         for (var y = 0; y < mapData.Size.Y; y++)
@@ -784,14 +791,14 @@ public partial class SimpleWorldMapScreen : Node3D
             // Get or create texture for this biome
             if (!_biomeTextures.TryGetValue(biomeId, out var texture))
             {
-                texture = CreateColorTexture(new Color(1, 0, 1, 0.5f), TILE_SIZE); // Magenta fallback
+                texture = CreateColorTexture(new Color(1, 0, 1, 0.5f), _tileSize); // Magenta fallback
                 _biomeTextures[biomeId] = texture;
             }
 
             var sprite = new Sprite2D
             {
                 Texture = texture,
-                Position = new Vector2(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2),
+                Position = new Vector2(x * _tileSize + _tileSize / 2, y * _tileSize + _tileSize / 2),
                 ZIndex = 10 // Above tiles but below player/enemies
             };
 
@@ -916,7 +923,23 @@ public partial class SimpleWorldMapScreen : Node3D
                     transitionsResolved++;
             }
 
-            TerrainLayer.SetCell(position, sourceId, atlasCoords);
+            // Get variant definition for offset and multi-cell support
+            var variantTile = topTile ?? baseTile;
+            var variant = variantTile.GetVariantDefinition(bitmask);
+
+            if (variant.HasValue && variant.Value.HasOffset)
+            {
+                // Apply offset for multi-cell variants (e.g., tall trees)
+                // With Y-sorting enabled, rendering at offset position ensures correct Z-order:
+                // A variant at anchor Y=5 with offset (0,-2) renders at Y=3, sorting BEHIND tiles at Y=4,5
+                var renderPos = position + variant.Value.Offset;
+                TerrainLayer.SetCell(renderPos, sourceId, atlasCoords);
+            }
+            else
+            {
+                // Standard single-cell rendering
+                TerrainLayer.SetCell(position, sourceId, atlasCoords);
+            }
             tilesRendered++;
         }
 
@@ -1089,7 +1112,7 @@ public partial class SimpleWorldMapScreen : Node3D
         if (Viewport == null) return;
 
         // Size viewport to match map dimensions
-        Viewport.Size = new Vector2I((mapSize.X + 1) * TILE_SIZE, (mapSize.Y + 1) * TILE_SIZE);
+        Viewport.Size = new Vector2I((mapSize.X + 1) * _tileSize, (mapSize.Y + 1) * _tileSize);
         Viewport.RenderTargetUpdateMode = SubViewport.UpdateMode.WhenParentVisible;
 
         // Get camera reference
@@ -1106,13 +1129,13 @@ public partial class SimpleWorldMapScreen : Node3D
 
         // Calculate the center of the map area in pixel coordinates
         var mapCenter = new Vector2(
-            (usedRect.Position.X * TILE_SIZE) + (usedRect.Size.X * TILE_SIZE / 2f),
-            (usedRect.Position.Y * TILE_SIZE) + (usedRect.Size.Y * TILE_SIZE / 2f)
+            (usedRect.Position.X * _tileSize) + (usedRect.Size.X * _tileSize / 2f),
+            (usedRect.Position.Y * _tileSize) + (usedRect.Size.Y * _tileSize / 2f)
         );
         _camera2D.GlobalPosition = mapCenter;
 
         // Calculate zoom to fit map in viewport
-        var mapPixelSize = new Vector2(usedRect.Size.X * TILE_SIZE, usedRect.Size.Y * TILE_SIZE);
+        var mapPixelSize = new Vector2(usedRect.Size.X * _tileSize, usedRect.Size.Y * _tileSize);
         var viewportSize = Viewport.Size;
 
         var zoomX = viewportSize.X / mapPixelSize.X;
@@ -1129,8 +1152,8 @@ public partial class SimpleWorldMapScreen : Node3D
         foreach (var pos in enemyPositions)
         {
             var enemySprite = new Sprite2D();
-            enemySprite.Texture = CreateColorTexture(Colors.Red, 16);
-            enemySprite.Position = new Vector2(pos.X * TILE_SIZE + TILE_SIZE / 2, pos.Y * TILE_SIZE + TILE_SIZE / 2);
+            enemySprite.Texture = CreateColorTexture(Colors.Red, _tileSize);
+            enemySprite.Position = new Vector2(pos.X * _tileSize + _tileSize / 2, pos.Y * _tileSize + _tileSize / 2);
             enemySprite.ZIndex = 200; // Above fog of war
 
             if (Viewport != null) Viewport.AddChild(enemySprite);
@@ -1142,8 +1165,8 @@ public partial class SimpleWorldMapScreen : Node3D
     {
         if (PlayerSprite != null)
             PlayerSprite.Position = new Vector2(
-                gridPosition.X * TILE_SIZE + TILE_SIZE / 2,
-                gridPosition.Y * TILE_SIZE + TILE_SIZE / 2
+                gridPosition.X * _tileSize + _tileSize / 2,
+                gridPosition.Y * _tileSize + _tileSize / 2
             );
     }
 
