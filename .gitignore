@@ -115,3 +115,6 @@ fabric.properties
 
 # Claude Code solve session
 .solve-session/
+# Test artifacts
+test_output.txt
+addons/gdUnit4/GdUnitRunner.cfg

@@ -14,6 +14,15 @@
       "pattern": "^res://.*\\.tres$",
       "description": "Path to the TileSet resource (e.g., res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres)"
     },
+    "tilesetConfig": {
+      "$ref": "#/definitions/tilesetConfig",
+      "description": "Optional tileset-level configuration (defaults to 16x16 tiles with no offset)"
+    },
+    "autoTileFormats": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/autoTileFormat" },
+      "description": "Custom auto-tile format definitions. Built-in formats (corner16, edge16, blob47) are always available."
+    },
     "biomes": {
       "type": "object",
       "additionalProperties": { "$ref": "#/definitions/biomeDefinition" },
@@ -25,6 +34,70 @@
     }
   },
   "definitions": {
+    "tilesetConfig": {
+      "type": "object",
+      "description": "Tileset-level spatial configuration",
+      "properties": {
+        "baseTileSize": {
+          "$ref": "#/definitions/vector2i",
+          "description": "Base tile size in pixels (default 16x16). Common values: 16x16, 24x24, 32x32."
+        },
+        "gridOffset": {
+          "$ref": "#/definitions/vector2",
+          "description": "Grid offset for half-tile shifted tilesets (default 0,0). Use 0.5,0.5 for half-tile shift."
+        }
+      }
+    },
+    "autoTileFormat": {
+      "type": "object",
+      "required": ["name", "bitmaskType", "variants"],
+      "description": "Custom auto-tile format definition",
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "Unique format name (snake_case). Must not conflict with built-in formats."
+        },
+        "bitmaskType": {
+          "type": "string",
+          "enum": ["corner4", "edge4", "full8"],
+          "description": "Neighbor computation algorithm: corner4 (diagonals), edge4 (cardinals), full8 (all 8)"
+        },
+        "variants": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/formatVariant" },
+          "description": "Variant definitions for allowed bitmask values. Omitted bitmasks are forbidden."
+        }
+      }
+    },
+    "formatVariant": {
+      "type": "object",
+      "required": ["bitmask", "atlasCoords"],
+      "description": "A single variant in a custom auto-tile format",
+      "properties": {
+        "bitmask": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The bitmask value this variant represents (0-15 for 4-bit, 0-255 for 8-bit)"
+        },
+        "atlasCoords": {
+          "$ref": "#/definitions/vector2i",
+          "description": "Position of this variant in the atlas (tile coordinates)"
+        },
+        "size": {
+          "$ref": "#/definitions/vector2i",
+          "description": "Cells occupied by this variant (default 1x1). For tall variants like 3-tile walls: {x:1, y:3}"
+        },
+        "offset": {
+          "$ref": "#/definitions/vector2i",
+          "description": "Anchor offset from logical cell (default 0,0). For tall variants: {x:0, y:-2}"
+        },
+        "atlasRegionSize": {
+          "$ref": "#/definitions/vector2i",
+          "description": "Override source region size if non-standard (default uses tileset baseTileSize)"
+        }
+      }
+    },
     "tile": {
       "type": "object",
       "required": ["id", "name", "passability", "atlasCoords"],
@@ -74,7 +147,7 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["plains", "forest", "desert", "tundra", "swamp", "mountains"]
+                "enum": ["plains", "forest", "desert", "tundra", "swamp", "mountains", "water", "cave", "volcanic", "magical"]
               }
             }
           ],
@@ -102,9 +175,8 @@
         },
         "autoTileFormat": {
           "type": "string",
-          "enum": ["corner16", "edge16", "blob47"],
           "default": "corner16",
-          "description": "Auto-tile format determining variant count (corner16=16, edge16=16, blob47=47)"
+          "description": "Auto-tile format name (built-in: corner16, edge16, blob47; or custom format name)"
         },
         "variations": {
           "type": "array",
@@ -168,6 +240,14 @@
       "properties": {
         "x": { "type": "integer" },
         "y": { "type": "integer" }
+      }
+    },
+    "vector2": {
+      "type": "object",
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" }
       }
     },
     "biomeDefinition": {

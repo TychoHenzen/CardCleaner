@@ -4,20 +4,21 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using CardCleaner.Features.Deckbuilder.Tiles;
+using CardCleaner.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
-using VariationMode = CardCleaner.Scripts.Features.Deckbuilder.Tiles.VariationMode;
 
 namespace CardCleaner.Scripts.Core.Services;
 
 /// <summary>
 /// Result of loading tile registry data
 /// </summary>
-public record TileRegistryResult(string TilesetPath, List<TileDefinition> Tiles);
+public record TileRegistryResult(string TilesetPath, List<TileDefinition> Tiles, TilesetConfig TilesetConfig);
 
 /// <summary>
 /// Loads tile definitions from JSON data files
@@ -49,7 +50,7 @@ public static class TileDataLoader
         if (!File.Exists(absolutePath))
         {
             ILog.Print($"[TileDataLoader] File not found: {absolutePath}");
-            return new TileRegistryResult(DefaultTilesetPath, []);
+            return new TileRegistryResult(DefaultTilesetPath, [], TilesetConfig.Default);
         }
 
         try
@@ -59,8 +60,14 @@ public static class TileDataLoader
             if (data?.Tiles == null)
             {
                 ILog.Print("[TileDataLoader] Invalid JSON structure");
-                return new TileRegistryResult(DefaultTilesetPath, []);
+                return new TileRegistryResult(DefaultTilesetPath, [], TilesetConfig.Default);
             }
+
+            // Parse tileset config (with defaults if not present)
+            var tilesetConfig = ParseTilesetConfig(data.TilesetConfig);
+
+            // Register custom auto-tile formats before processing tiles
+            RegisterCustomAutoTileFormats(data.AutoTileFormats);
 
             var tilesetPath = data.Tileset ?? DefaultTilesetPath;
             var tiles = new List<TileDefinition>();
@@ -74,12 +81,12 @@ public static class TileDataLoader
             }
 
             ILog.Print($"[TileDataLoader] Loaded {tiles.Count} tiles from {path} using tileset {tilesetPath}");
-            return new TileRegistryResult(tilesetPath, tiles);
+            return new TileRegistryResult(tilesetPath, tiles, tilesetConfig);
         }
         catch (Exception ex)
         {
             ILog.Print($"[TileDataLoader] Error loading tiles: {ex.Message}");
-            return new TileRegistryResult(DefaultTilesetPath, []);
+            return new TileRegistryResult(DefaultTilesetPath, [], TilesetConfig.Default);
         }
     }
 
@@ -115,6 +122,108 @@ public static class TileDataLoader
             ILog.Print($"[TileDataLoader] Error loading biomes: {ex.Message}");
             return new Dictionary<string, BiomeData>();
         }
+    }
+
+    /// <summary>
+    /// Parse tileset configuration from JSON data, with defaults for missing values.
+    /// </summary>
+    private static TilesetConfig ParseTilesetConfig(TilesetConfigData? data)
+    {
+        if (data == null)
+            return TilesetConfig.Default;
+
+        return new TilesetConfig
+        {
+            BaseTileSize = data.BaseTileSize != null
+                ? new Vector2I(data.BaseTileSize.X, data.BaseTileSize.Y)
+                : new Vector2I(16, 16),
+            GridOffset = data.GridOffset != null
+                ? new Vector2((float)data.GridOffset.X, (float)data.GridOffset.Y)
+                : Vector2.Zero
+        };
+    }
+
+    /// <summary>
+    /// Register custom auto-tile formats from JSON data.
+    /// </summary>
+    private static void RegisterCustomAutoTileFormats(List<AutoTileFormatData>? formats)
+    {
+        // Ensure built-in formats are registered first
+        AutoTileFormatRegistry.EnsureBuiltInsRegistered();
+
+        if (formats == null || formats.Count == 0)
+            return;
+
+        foreach (var formatData in formats)
+        {
+            if (string.IsNullOrWhiteSpace(formatData.Name))
+            {
+                ILog.Print("[TileDataLoader] Skipping custom format with missing name");
+                continue;
+            }
+
+            // Don't allow overriding built-in formats
+            if (AutoTileFormatRegistry.Contains(formatData.Name))
+            {
+                ILog.Print($"[TileDataLoader] Skipping custom format '{formatData.Name}' - name already registered");
+                continue;
+            }
+
+            var format = ParseCustomAutoTileFormat(formatData);
+            if (format != null)
+            {
+                AutoTileFormatRegistry.Register(format);
+                ILog.Print($"[TileDataLoader] Registered custom auto-tile format: {formatData.Name}");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Parse a single custom auto-tile format from JSON data.
+    /// </summary>
+    private static AutoTileFormatDefinition? ParseCustomAutoTileFormat(AutoTileFormatData data)
+    {
+        if (string.IsNullOrWhiteSpace(data.Name) || data.Variants == null || data.Variants.Count == 0)
+            return null;
+
+        var bitmaskType = data.BitmaskType?.ToLowerInvariant() switch
+        {
+            "edge4" => BitmaskType.Edge4,
+            "full8" => BitmaskType.Full8,
+            _ => BitmaskType.Corner4
+        };
+
+        var allowedBitmasks = new HashSet<int>();
+        var variantMappings = new Dictionary<int, VariantDefinition>();
+
+        foreach (var variant in data.Variants)
+        {
+            if (variant.AtlasCoords == null)
+                continue;
+
+            var bitmask = variant.Bitmask;
+            allowedBitmasks.Add(bitmask);
+
+            var atlasCoords = new Vector2I(variant.AtlasCoords.X, variant.AtlasCoords.Y);
+            var size = variant.Size != null
+                ? new Vector2I(variant.Size.X, variant.Size.Y)
+                : Vector2I.One;
+            var offset = variant.Offset != null
+                ? new Vector2I(variant.Offset.X, variant.Offset.Y)
+                : Vector2I.Zero;
+            var atlasRegionSize = variant.AtlasRegionSize != null
+                ? new Vector2I(variant.AtlasRegionSize.X, variant.AtlasRegionSize.Y)
+                : (Vector2I?)null;
+
+            variantMappings[bitmask] = new VariantDefinition(atlasCoords, size, offset, atlasRegionSize);
+        }
+
+        return new AutoTileFormatDefinition(
+            name: data.Name,
+            bitmaskType: bitmaskType,
+            allowedBitmasks: allowedBitmasks,
+            variantMappings: variantMappings,
+            isBuiltIn: false);
     }
 
     private static TileDefinition? ConvertToTileDefinition(TileData data, int fileIndex)
@@ -267,16 +376,50 @@ public static class TileDataLoader
         return result.Any(v => v.HasValue) ? result : null;
     }
 
-    // JSON data model classes
+    #region JSON Data Model Classes
+
     private sealed class TileRegistryData
     {
         [JsonPropertyName("version")] public string? Version { get; set; }
 
         [JsonPropertyName("tileset")] public string? Tileset { get; set; }
 
+        [JsonPropertyName("tilesetConfig")] public TilesetConfigData? TilesetConfig { get; set; }
+
+        [JsonPropertyName("autoTileFormats")] public List<AutoTileFormatData>? AutoTileFormats { get; set; }
+
         [JsonPropertyName("biomes")] public Dictionary<string, BiomeData>? Biomes { get; set; }
 
         [JsonPropertyName("tiles")] public List<TileData>? Tiles { get; set; }
+    }
+
+    private sealed class TilesetConfigData
+    {
+        [JsonPropertyName("baseTileSize")] public Vector2IData? BaseTileSize { get; set; }
+
+        [JsonPropertyName("gridOffset")] public Vector2Data? GridOffset { get; set; }
+    }
+
+    private sealed class AutoTileFormatData
+    {
+        [JsonPropertyName("name")] public string? Name { get; set; }
+
+        [JsonPropertyName("bitmaskType")] public string? BitmaskType { get; set; }
+
+        [JsonPropertyName("variants")] public List<FormatVariantData>? Variants { get; set; }
+    }
+
+    private sealed class FormatVariantData
+    {
+        [JsonPropertyName("bitmask")] public int Bitmask { get; set; }
+
+        [JsonPropertyName("atlasCoords")] public Vector2IData? AtlasCoords { get; set; }
+
+        [JsonPropertyName("size")] public Vector2IData? Size { get; set; }
+
+        [JsonPropertyName("offset")] public Vector2IData? Offset { get; set; }
+
+        [JsonPropertyName("atlasRegionSize")] public Vector2IData? AtlasRegionSize { get; set; }
     }
 
     private sealed class TileData
@@ -335,4 +478,13 @@ public static class TileDataLoader
 
         [JsonPropertyName("y")] public int Y { get; set; }
     }
+
+    private sealed class Vector2Data
+    {
+        [JsonPropertyName("x")] public double X { get; set; }
+
+        [JsonPropertyName("y")] public double Y { get; set; }
+    }
+
+    #endregion
 }

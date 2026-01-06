@@ -305,10 +305,10 @@
       "name": "Floor",
       "passability": "passable",
       "atlasCoords": {
-        "x": 6,
-        "y": 8
+        "x": 7,
+        "y": 9
       },
-      "sourceId": 2,
+      "sourceId": 16,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
@@ -1790,10 +1790,10 @@
       "name": "Slate",
       "passability": "passable",
       "atlasCoords": {
-        "x": 12,
-        "y": 5
+        "x": 7,
+        "y": 3
       },
-      "sourceId": 17,
+      "sourceId": 63,
       "layer": "terrain",
       "elevation": 0.2,
       "isTransparent": true,
@@ -1807,10 +1807,10 @@
       "name": "Scree",
       "passability": "passable",
       "atlasCoords": {
-        "x": 24,
-        "y": 5
+        "x": 3,
+        "y": 10
       },
-      "sourceId": 17,
+      "sourceId": 63,
       "layer": "terrain",
       "elevation": 0.1,
       "isTransparent": true,
@@ -2345,10 +2345,10 @@
       "name": "Cave Wall",
       "passability": "solid",
       "atlasCoords": {
-        "x": 12,
-        "y": 8
+        "x": 4,
+        "y": 22
       },
-      "sourceId": 14,
+      "sourceId": 6,
       "layer": "terrain",
       "elevation": 1,
       "isTransparent": false,
@@ -2612,16 +2612,82 @@
       "name": "Lava Pool",
       "passability": "solid",
       "atlasCoords": {
-        "x": 0,
-        "y": 12
+        "x": 12,
+        "y": 19
       },
-      "sourceId": 370,
+      "sourceId": 315,
       "layer": "terrain",
       "elevation": -0.3,
       "isTransparent": false,
-      "biomes": [
-        "volcanic"
+      "size": {
+        "x": 3,
+        "y": 3
+      },
+      "autoTileVariants": [
+        null,
+        {
+          "x": 12,
+          "y": 21
+        },
+        {
+          "x": 12,
+          "y": 19
+        },
+        {
+          "x": 12,
+          "y": 20
+        },
+        {
+          "x": 14,
+          "y": 19
+        },
+        {
+          "x": 14,
+          "y": 22
+        },
+        {
+          "x": 13,
+          "y": 19
+        },
+        {
+          "x": 14,
+          "y": 18
+        },
+        {
+          "x": 14,
+          "y": 21
+        },
+        {
+          "x": 13,
+          "y": 21
+        },
+        {
+          "x": 12,
+          "y": 22
+        },
+        {
+          "x": 14,
+          "y": 16
+        },
+        {
+          "x": 14,
+          "y": 20
+        },
+        {
+          "x": 12,
+          "y": 16
+        },
+        {
+          "x": 12,
+          "y": 18
+        },
+        {
+          "x": 13,
+          "y": 20
+        }
       ],
+      "tileMode": "autotile",
+      "outerTerrain": "*",
       "description": "Molten rock pool glowing bright orange-red. Rippling liquid surface with darker cooling crust patches, intense heat shimmer."
     },
     {
@@ -2643,19 +2709,85 @@
     },
     {
       "id": "volcanic_cooled_lava",
-      "name": "Cooled Lava",
-      "passability": "passable",
+      "name": "Lava",
+      "passability": "solid",
       "atlasCoords": {
-        "x": 2,
-        "y": 12
+        "x": 0,
+        "y": 6
       },
-      "sourceId": 370,
+      "sourceId": 119,
       "layer": "terrain",
       "elevation": 0,
-      "isTransparent": true,
-      "biomes": [
-        "volcanic"
+      "isTransparent": false,
+      "size": {
+        "x": 3,
+        "y": 3
+      },
+      "autoTileVariants": [
+        null,
+        {
+          "x": 0,
+          "y": 8
+        },
+        {
+          "x": 0,
+          "y": 6
+        },
+        {
+          "x": 0,
+          "y": 7
+        },
+        {
+          "x": 2,
+          "y": 6
+        },
+        {
+          "x": 3,
+          "y": 8
+        },
+        {
+          "x": 1,
+          "y": 6
+        },
+        {
+          "x": 3,
+          "y": 6
+        },
+        {
+          "x": 2,
+          "y": 8
+        },
+        {
+          "x": 1,
+          "y": 8
+        },
+        {
+          "x": 4,
+          "y": 8
+        },
+        {
+          "x": 3,
+          "y": 7
+        },
+        {
+          "x": 2,
+          "y": 7
+        },
+        {
+          "x": 4,
+          "y": 7
+        },
+        {
+          "x": 4,
+          "y": 6
+        },
+        {
+          "x": 1,
+          "y": 7
+        }
       ],
+      "tileMode": "autotile",
+      "outerTerrain": "*",
       "description": "Hardened black lava with rough cracked surface. Dark gray to charcoal coloring, rope-like patterns, porous texture."
     },
     {
@@ -2731,16 +2863,82 @@
       "name": "Enchanted Grass",
       "passability": "passable",
       "atlasCoords": {
-        "x": 0,
-        "y": 0
+        "x": 12,
+        "y": 4
       },
-      "sourceId": 330,
+      "sourceId": 2,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
-      "biomes": [
-        "magical"
+      "size": {
+        "x": 3,
+        "y": 3
+      },
+      "autoTileVariants": [
+        null,
+        {
+          "x": 12,
+          "y": 6
+        },
+        {
+          "x": 12,
+          "y": 4
+        },
+        {
+          "x": 17,
+          "y": 5
+        },
+        {
+          "x": 14,
+          "y": 4
+        },
+        {
+          "x": 15,
+          "y": 7
+        },
+        {
+          "x": 16,
+          "y": 6
+        },
+        {
+          "x": 17,
+          "y": 6
+        },
+        {
+          "x": 14,
+          "y": 6
+        },
+        {
+          "x": 16,
+          "y": 4
+        },
+        {
+          "x": 17,
+          "y": 7
+        },
+        {
+          "x": 17,
+          "y": 4
+        },
+        {
+          "x": 15,
+          "y": 5
+        },
+        {
+          "x": 15,
+          "y": 4
+        },
+        {
+          "x": 15,
+          "y": 6
+        },
+        {
+          "x": 13,
+          "y": 5
+        }
       ],
+      "tileMode": "autotile",
+      "outerTerrain": "*",
       "description": "Luminescent grass blades in shifting purple and teal hues. Magical glow at tips, ethereal shimmer, otherworldly coloring."
     },
     {
@@ -2782,16 +2980,83 @@
       "name": "Void Rift",
       "passability": "solid",
       "atlasCoords": {
-        "x": 4,
-        "y": 4
+        "x": 0,
+        "y": 12
       },
-      "sourceId": 330,
+      "sourceId": 91,
       "layer": "terrain",
       "elevation": -0.5,
       "isTransparent": false,
-      "biomes": [
-        "magical"
+      "size": {
+        "x": 3,
+        "y": 3
+      },
+      "autoTileVariants": [
+        null,
+        {
+          "x": 0,
+          "y": 14
+        },
+        {
+          "x": 0,
+          "y": 12
+        },
+        {
+          "x": 0,
+          "y": 13
+        },
+        {
+          "x": 2,
+          "y": 12
+        },
+        {
+          "x": 3,
+          "y": 14
+        },
+        {
+          "x": 1,
+          "y": 12
+        },
+        {
+          "x": 3,
+          "y": 12
+        },
+        {
+          "x": 2,
+          "y": 14
+        },
+        {
+          "x": 1,
+          "y": 14
+        },
+        {
+          "x": 4,
+          "y": 14
+        },
+        {
+          "x": 3,
+          "y": 13
+        },
+        {
+          "x": 2,
+          "y": 13
+        },
+        {
+          "x": 4,
+          "y": 13
+        },
+        {
+          "x": 4,
+          "y": 12
+        },
+        {
+          "x": 1,
+          "y": 13
+        }
       ],
+      "tileMode": "autotile",
+      "sourceScale": 0.5,
+      "outerTerrain": "*",
       "description": "Tear in reality showing swirling darkness. Deep purple-black void with scattered stars, unstable edges crackling with energy."
     },
     {
@@ -2799,16 +3064,18 @@
       "name": "Mana Pool",
       "passability": "passable",
       "atlasCoords": {
-        "x": 8,
-        "y": 6
+        "x": 15,
+        "y": 18
       },
-      "sourceId": 330,
+      "sourceId": 356,
       "layer": "terrain",
       "elevation": -0.2,
       "isTransparent": true,
-      "biomes": [
-        "magical"
-      ],
+      "size": {
+        "x": 3,
+        "y": 3
+      },
+      "tileMode": "autotile",
       "description": "Shimmering liquid pool of pure magical essence. Brilliant cyan-blue glow, perfectly still surface, radiant light from within."
     },
     {
