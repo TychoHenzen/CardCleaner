@@ -43,7 +43,6 @@ public class WfcSolver
     private readonly SpatialCoherenceConstraint? _spatialCoherence;
     private readonly PassabilityGraph? _passabilityGraph;
     private readonly Func<string, bool>? _isPassable;
-    private readonly EntropyCache _entropyCache = new();
     private IProfiler _profiler = new NoOpProfiler();
 
     /// <summary>
@@ -102,9 +101,8 @@ public class WfcSolver
         var iterations = 0;
         var totalCells = grid.Width * grid.Height;
 
-        // Clear blob tracker and entropy cache for fresh solve
+        // Clear blob tracker for fresh solve
         _blobTracker?.Clear();
-        _entropyCache.Reset();
 
         // Initial propagation to apply any pre-existing constraints
         var initialResult = _propagator.PropagateAll(grid);
@@ -134,10 +132,16 @@ public class WfcSolver
                 GD.Print($"[WFC] Progress: {iterations}/{totalCells} cells ({100*iterations/totalCells}%)");
             }
 
-            // Find cell with lowest simple entropy (fewest possible tiles)
-            // This is O(cells) per iteration instead of O(cells × tiles × constraints)
-            // Full constraint weights are computed only for the selected cell during tile selection
-            var targetPos = _entropyCache.GetLowestEntropyCell(grid, rng);
+            // Find cell with lowest weighted entropy (prefers frontier cells)
+            var targetPos = grid.GetLowestEntropyCellWeighted(
+                pos => _selector.ComputeWeights(
+                    grid.GetCell(pos).GetPossibleTiles(),
+                    biome,
+                    rng,
+                    GetContinuityMatchingTiles(grid, pos),
+                    pos,
+                    grid),
+                rng);
 
             if (targetPos == null)
             {
@@ -186,9 +190,6 @@ public class WfcSolver
             using (_profiler.BeginScope("CellCollapse"))
             {
                 targetCell.CollapseTo(selectedTile);
-
-                // Mark neighbors as needing entropy recalculation
-                _entropyCache.MarkNeighborsDirty(targetPos.Value, grid);
 
                 // Update blob tracker for soft modifiers
                 _blobTracker?.RegisterCollapse(targetPos.Value, selectedTile, grid);
