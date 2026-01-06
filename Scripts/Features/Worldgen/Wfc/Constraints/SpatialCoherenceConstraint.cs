@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
@@ -18,7 +19,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// - If tile matches oversized region: modifier tapers toward 1.0
 /// - If no neighbors collapsed: modifier = 1.0 (neutral)
 /// </remarks>
-public class SpatialCoherenceConstraint : IWfcConstraint
+public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
 {
     /// <summary>
     /// Target size for coherent regions (in tiles).
@@ -156,5 +157,37 @@ public class SpatialCoherenceConstraint : IWfcConstraint
 
         _totalBoostApplied += modifier;
         return Mathf.Max(MinModifier, modifier);
+    }
+
+    /// <summary>
+    /// Returns cells affected by region growth beyond immediate neighbors.
+    /// When a cell is collapsed, cells bordering the same region have their entropy affected.
+    /// </summary>
+    public IEnumerable<Vector2I> GetInvalidatedCells(Vector2I collapsedPos, string collapsedTile, WfcGrid grid)
+    {
+        // When cell P is collapsed with tile T, the region it joins grows.
+        // All uncollapsed cells bordering that region are affected.
+        // Approximation: return 2-hop neighbors (neighbors of same-type neighbors)
+
+        var invalidated = new HashSet<Vector2I>();
+
+        // Check each 4-way neighbor
+        foreach (var neighbor in grid.GetNeighbors(collapsedPos))
+        {
+            var neighborTile = grid.GetCollapsedTileAt(neighbor);
+            if (neighborTile == collapsedTile)
+            {
+                // This neighbor is in the same region - its neighbors are affected
+                foreach (var twoHop in grid.GetNeighbors(neighbor))
+                {
+                    if (twoHop != collapsedPos && !grid.GetCell(twoHop).IsCollapsed())
+                    {
+                        invalidated.Add(twoHop);
+                    }
+                }
+            }
+        }
+
+        return invalidated;
     }
 }

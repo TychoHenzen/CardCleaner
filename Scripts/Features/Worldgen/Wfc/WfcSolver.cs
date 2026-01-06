@@ -43,6 +43,7 @@ public class WfcSolver
     private readonly SpatialCoherenceConstraint? _spatialCoherence;
     private readonly PassabilityGraph? _passabilityGraph;
     private readonly Func<string, bool>? _isPassable;
+    private readonly EntropyCache _entropyCache = new();
     private IProfiler _profiler = new NoOpProfiler();
 
     /// <summary>
@@ -101,8 +102,17 @@ public class WfcSolver
         var iterations = 0;
         var totalCells = grid.Width * grid.Height;
 
-        // Clear blob tracker for fresh solve
+        // Clear state for fresh solve
         _blobTracker?.Clear();
+        _entropyCache.Reset();
+
+        // Register constraints that need to invalidate cells beyond neighbors
+        _entropyCache.ClearInvalidators();
+        foreach (var constraint in _selector.GetConstraints())
+        {
+            if (constraint is Constraints.IEntropyInvalidator invalidator)
+                _entropyCache.RegisterInvalidator(invalidator);
+        }
 
         // Initial propagation to apply any pre-existing constraints
         var initialResult = _propagator.PropagateAll(grid);
@@ -132,15 +142,21 @@ public class WfcSolver
                 GD.Print($"[WFC] Progress: {iterations}/{totalCells} cells ({100*iterations/totalCells}%)");
             }
 
-            // Find cell with lowest weighted entropy (prefers frontier cells)
-            var targetPos = grid.GetLowestEntropyCellWeighted(
-                pos => _selector.ComputeWeights(
-                    grid.GetCell(pos).GetPossibleTiles(),
-                    biome,
-                    rng,
-                    GetContinuityMatchingTiles(grid, pos),
-                    pos,
-                    grid),
+            // Find cell with lowest weighted entropy using incremental cache
+            // Only recomputes entropy for cells that were marked dirty
+            var targetPos = _entropyCache.GetLowestEntropyCell(
+                grid,
+                pos =>
+                {
+                    var weights = _selector.ComputeWeights(
+                        grid.GetCell(pos).GetPossibleTiles(),
+                        biome,
+                        rng,
+                        GetContinuityMatchingTiles(grid, pos),
+                        pos,
+                        grid);
+                    return grid.GetCell(pos).GetWeightedEntropy(weights);
+                },
                 rng);
 
             if (targetPos == null)
@@ -199,6 +215,9 @@ public class WfcSolver
 
                 // Update passability graph for connectivity constraints
                 UpdatePassabilityGraph(targetPos.Value, selectedTile, grid);
+
+                // Mark affected cells dirty for entropy recalculation
+                _entropyCache.OnCellCollapsed(targetPos.Value, selectedTile, grid);
             }
 
             // Propagate constraints to neighbors

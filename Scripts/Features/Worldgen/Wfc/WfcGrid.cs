@@ -208,7 +208,10 @@ public class WfcGrid
     /// <summary>
     /// Checks if a position has at least one collapsed neighbor.
     /// </summary>
-    private bool HasCollapsedNeighbor(Vector2I pos)
+    /// <summary>
+    /// Checks if a position has at least one collapsed neighbor.
+    /// </summary>
+    public bool HasCollapsedNeighbor(Vector2I pos)
     {
         foreach (var neighbor in GetNeighbors(pos))
         {

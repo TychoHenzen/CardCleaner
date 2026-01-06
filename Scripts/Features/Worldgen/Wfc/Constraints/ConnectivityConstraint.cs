@@ -12,7 +12,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// 2. PROACTIVE: When disconnected regions exist, bans impassable tiles on the corridor path between them
 /// Movement is cardinal-only (no diagonals).
 /// </summary>
-public class ConnectivityConstraint : IWfcConstraint
+public class ConnectivityConstraint : IWfcConstraint, IEntropyInvalidator
 {
     private readonly PassabilityGraph _graph;
     private readonly Func<string, bool> _isPassable;
@@ -111,5 +111,37 @@ public class ConnectivityConstraint : IWfcConstraint
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Returns cells affected by connectivity changes beyond immediate neighbors.
+    /// When a passable tile is collapsed, the graph changes, potentially affecting
+    /// bridge detection at cells adjacent to the connected region.
+    /// </summary>
+    public IEnumerable<Vector2I> GetInvalidatedCells(Vector2I collapsedPos, string collapsedTile, WfcGrid grid)
+    {
+        // Only passable tiles affect the connectivity graph
+        if (!_isPassable(collapsedTile))
+            return Array.Empty<Vector2I>();
+
+        // When a passable tile is placed, cells adjacent to the expanded region
+        // might no longer be bridges. Mark a wider area as dirty.
+        var invalidated = new HashSet<Vector2I>();
+
+        // Mark all cells within 2 steps of the collapsed position
+        // This captures cells that might have been bridges that are now resolved
+        foreach (var neighbor in grid.GetNeighbors(collapsedPos))
+        {
+            if (!grid.GetCell(neighbor).IsCollapsed())
+                invalidated.Add(neighbor);
+
+            foreach (var twoHop in grid.GetNeighbors(neighbor))
+            {
+                if (twoHop != collapsedPos && !grid.GetCell(twoHop).IsCollapsed())
+                    invalidated.Add(twoHop);
+            }
+        }
+
+        return invalidated;
     }
 }

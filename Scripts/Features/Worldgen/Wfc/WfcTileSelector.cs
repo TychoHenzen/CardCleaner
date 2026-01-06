@@ -29,6 +29,11 @@ public class WfcTileSelector
     }
 
     /// <summary>
+    /// Gets all registered constraints for entropy invalidation queries.
+    /// </summary>
+    public IEnumerable<IWfcConstraint> GetConstraints() => _constraints;
+
+    /// <summary>
     /// Clears all registered constraints.
     /// </summary>
     public void ClearConstraints()
