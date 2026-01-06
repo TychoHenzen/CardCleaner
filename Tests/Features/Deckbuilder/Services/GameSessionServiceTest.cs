@@ -155,7 +155,10 @@ public class GameSessionServiceTest
         _service.StartSession(mapSeeds, abilityCards);
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.GeneratingMap);
 
-        // Wait for actual async map generation completion
+        // Wait for deferred AdvanceSession call to execute and set the task
+        await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
+
+        // Now the generation task should be set
         var generationTask = _service.CurrentGenerationTask;
         Assertions.AssertThat(generationTask).IsNotNull();
         await generationTask!;
@@ -177,7 +180,10 @@ public class GameSessionServiceTest
 
         _service.StartSession(mapSeeds, abilityCards);
 
-        // Wait for actual async map generation completion
+        // Wait for deferred AdvanceSession call to execute and set the task
+        await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
+
+        // Now the generation task should be set
         var generationTask = _service.CurrentGenerationTask;
         Assertions.AssertThat(generationTask).IsNotNull();
         await generationTask!;
@@ -329,7 +335,10 @@ public class GameSessionServiceTest
 
         _service.StartSession(mapSeeds, abilityCards);
 
-        // Wait for actual async map generation completion
+        // Wait for deferred AdvanceSession call to execute and set the task
+        await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
+
+        // Now the generation task should be set
         var generationTask = _service.CurrentGenerationTask;
         Assertions.AssertThat(generationTask).IsNotNull();
         await generationTask!;
@@ -349,7 +358,10 @@ public class GameSessionServiceTest
 
         _service.StartSession(mapSeeds, abilityCards);
 
-        // Wait for actual async map generation completion
+        // Wait for deferred AdvanceSession call to execute and set the task
+        await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
+
+        // Now the generation task should be set
         var generationTask = _service.CurrentGenerationTask;
         Assertions.AssertThat(generationTask).IsNotNull();
         await generationTask!;
@@ -380,7 +392,10 @@ public class GameSessionServiceTest
 
         _service.StartSession(mapSeeds, abilityCards);
 
-        // Wait for actual async map generation completion
+        // Wait for deferred AdvanceSession call to execute and set the task
+        await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
+
+        // Now the generation task should be set
         var generationTask = _service.CurrentGenerationTask;
         Assertions.AssertThat(generationTask).IsNotNull();
         await generationTask!;
@@ -406,7 +421,10 @@ public class GameSessionServiceTest
 
         _service.StartSession(mapSeeds, abilityCards);
 
-        // Wait for actual async map generation completion
+        // Wait for deferred AdvanceSession call to execute and set the task
+        await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
+
+        // Now the generation task should be set
         var generationTask = _service.CurrentGenerationTask;
         Assertions.AssertThat(generationTask).IsNotNull();
         await generationTask!;
@@ -488,7 +506,10 @@ public class GameSessionServiceTest
 
         _service.StartSession(mapSeeds, abilityCards);
 
-        // Wait for actual async map generation completion
+        // Wait for deferred AdvanceSession call to execute and set the task
+        await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
+
+        // Now the generation task should be set
         var generationTask = _service.CurrentGenerationTask;
         Assertions.AssertThat(generationTask).IsNotNull();
         await generationTask!;
@@ -503,7 +524,10 @@ public class GameSessionServiceTest
 
         _service.StartSession(mapSeeds, abilityCards);
 
-        // Wait for actual async map generation completion
+        // Wait for deferred AdvanceSession call to execute and set the task
+        await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
+
+        // Now the generation task should be set
         generationTask = _service.CurrentGenerationTask;
         Assertions.AssertThat(generationTask).IsNotNull();
         await generationTask!;

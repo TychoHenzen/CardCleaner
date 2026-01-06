@@ -28,6 +28,7 @@ public class DiminishingReturnsSoftModifierTest
     public void TestSingleTileGetsMinimalDecay()
     {
         // With no neighbors, potential blob size = 1
+        // Since 1 < MinimumBlobSize (default 30), no decay applied
         var context = new WfcConstraintContext
         {
             Position = new Vector2I(5, 5),
@@ -37,8 +38,8 @@ public class DiminishingReturnsSoftModifierTest
 
         var multiplier = _modifier.GetProbabilityModifier(context);
 
-        // 1 / (1 + 1 * 0.5) = 0.667
-        AssertFloat(multiplier).IsBetween(0.65f, 0.68f);
+        // Size 1 < MinimumBlobSize (30), so multiplier = 1.0 (no decay)
+        AssertFloat(multiplier).IsEqual(1.0f);
     }
 
     [TestCase]
@@ -62,8 +63,8 @@ public class DiminishingReturnsSoftModifierTest
 
         var multiplier = _modifier.GetProbabilityModifier(context);
 
-        // 1 / (1 + 100 * 0.5) = 0.0196
-        AssertFloat(multiplier).IsBetween(0.015f, 0.025f);
+        // New formula: 1 / (1 + (100 - 30) * 0.05) = 1 / (1 + 70 * 0.05) = 1 / 4.5 ≈ 0.222
+        AssertFloat(multiplier).IsBetween(0.20f, 0.25f);
     }
 
     [TestCase]
@@ -85,8 +86,8 @@ public class DiminishingReturnsSoftModifierTest
         var multiplier = _modifier.GetProbabilityModifier(context);
 
         // Water has no water neighbors, so potential size = 1
-        // 1 / (1 + 1 * 0.5) = 0.667
-        AssertFloat(multiplier).IsBetween(0.65f, 0.68f);
+        // Size 1 < MinimumBlobSize (30), so multiplier = 1.0 (no decay)
+        AssertFloat(multiplier).IsEqual(1.0f);
     }
 
     [TestCase]
@@ -143,6 +144,7 @@ public class DiminishingReturnsSoftModifierTest
     public void TestCustomDecayFactor()
     {
         _modifier.DecayFactor = 0.5f;
+        _modifier.MinimumBlobSize = 5; // Set low threshold so decay kicks in
 
         // Create blob of 9 tiles
         for (var x = 0; x < 3; x++)
@@ -163,15 +165,16 @@ public class DiminishingReturnsSoftModifierTest
 
         var multiplier = _modifier.GetProbabilityModifier(context);
 
-        // 1 / (1 + 10 * 0.5) = 0.167
-        AssertFloat(multiplier).IsBetween(0.15f, 0.18f);
+        // New formula: 1 / (1 + (10 - 5) * 0.5) = 1 / (1 + 5 * 0.5) = 1 / 3.5 ≈ 0.286
+        AssertFloat(multiplier).IsBetween(0.25f, 0.32f);
     }
 
     [TestCase]
     public void TestDecayFormulaIsCorrect()
     {
-        // Verify the formula: 1 / (1 + size * decay)
-        // With size=50 and decay=0.5: 1 / (1 + 50 * 0.5) = 1 / 26 = 0.0385
+        // Verify the formula: 1 / (1 + (size - MinimumBlobSize) * DecayFactor)
+        // With size=50, MinimumBlobSize=30, DecayFactor=0.05:
+        // 1 / (1 + (50 - 30) * 0.05) = 1 / (1 + 20 * 0.05) = 1 / 2 = 0.5
 
         // Build 49-tile blob
         for (var i = 0; i < 49; i++)
@@ -191,8 +194,8 @@ public class DiminishingReturnsSoftModifierTest
 
         var multiplier = _modifier.GetProbabilityModifier(context);
 
-        // 1 / (1 + 50 * 0.5) = 1 / 26 ≈ 0.0385
-        AssertFloat(multiplier).IsBetween(0.035f, 0.045f);
+        // 1 / (1 + (50 - 30) * 0.05) = 1 / 2 = 0.5
+        AssertFloat(multiplier).IsBetween(0.45f, 0.55f);
     }
 
     [TestCase]
@@ -215,10 +218,10 @@ public class DiminishingReturnsSoftModifierTest
 
         var multiplier = _modifier.GetProbabilityModifier(context);
 
-        // At size 100: 1 / (1 + 100 * 0.5) = 0.0196
-        // Combined with 5x continuity bias: 5.0 * 0.0196 ≈ 0.098
-        // At this size, continuity is a strong penalty, preventing massive blobs
+        // New formula: At size 100: 1 / (1 + (100 - 30) * 0.05) = 1 / (1 + 70 * 0.05) = 1 / 4.5 ≈ 0.222
+        // Combined with 5x continuity bias: 5.0 * 0.222 ≈ 1.11
+        // At this size, continuity bias slightly outweighs decay (allowing large blobs with gentle penalty)
         var combinedEffect = 5.0f * multiplier;
-        AssertFloat(combinedEffect).IsBetween(0.08f, 0.12f);
+        AssertFloat(combinedEffect).IsBetween(1.0f, 1.2f);
     }
 }

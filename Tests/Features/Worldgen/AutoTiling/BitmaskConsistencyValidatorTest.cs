@@ -206,10 +206,14 @@ public class BitmaskConsistencyValidatorTest
         // [0,0] grass vs [0,1] grass = no conflict (same terrain)
         // [1,0] stone vs [1,1] grass = conflict
         AssertThat(conflicts).IsEqual(2);
-        // [0,0] (mask 15) vs [0,1] (mask 2): same terrain, shared SW/SE must match
-        // [0,0].SW = 1, [0,1].NW = 0 -> violation
-        // [0,0].SE = 1, [0,1].NE = 0 -> violation
-        AssertThat(violations).IsEqual(2);
+        // Violations between same-terrain tiles:
+        // [0,0] (mask 15) vs [0,1] (mask 2) - vertical neighbor:
+        //   - Check SW/NW: (0,0).SW=1 vs (0,1).NW=0 -> VIOLATION
+        //   - Check SE/NE: (0,0).SE=1 vs (0,1).NE=0 -> VIOLATION
+        // [0,1] (mask 2) vs [1,1] (mask 15) - horizontal neighbor:
+        //   - Check NE/NW: (0,1).NE=0 vs (1,1).NW=1 -> VIOLATION
+        //   - Check SE/SW: (0,1).SE=1 vs (1,1).SW=1 -> match
+        AssertThat(violations).IsEqual(3);
     }
 
     // ==================== User-Reported Bug Pattern ====================
