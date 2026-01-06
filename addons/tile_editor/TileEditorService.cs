@@ -258,21 +258,56 @@ public partial class TileEditorService : RefCounted
     }
 
     /// <summary>
-    /// Check if the TileSet reference is still valid (not freed after a rebuild)
+    /// Check if the TileSet reference is still valid (not freed after a rebuild).
+    /// If invalid, automatically attempts to reload the TileSet to restore functionality
+    /// after C# assembly reloads.
     /// </summary>
     private bool IsTileSetValid()
     {
-        if (_tileSet == null) return false;
+        if (_tileSet == null) return TryReloadTileSet();
+
         try
         {
             // Try to access a property to verify the object is still valid
-            return GodotObject.IsInstanceValid(_tileSet);
+            if (GodotObject.IsInstanceValid(_tileSet))
+                return true;
         }
         catch
         {
-            _tileSet = null;
-            return false;
+            // Object became invalid (assembly reload)
         }
+
+        // Reference is stale - attempt to reload
+        _tileSet = null;
+        return TryReloadTileSet();
+    }
+
+    /// <summary>
+    /// Attempts to reload the TileSet resource after it becomes invalid.
+    /// This happens after C# assembly reloads when cached references become stale.
+    /// </summary>
+    private bool TryReloadTileSet()
+    {
+        if (string.IsNullOrEmpty(TilesetPath)) return false;
+
+        try
+        {
+            if (ResourceLoader.Exists(TilesetPath))
+            {
+                _tileSet = ResourceLoader.Load<TileSet>(TilesetPath);
+                if (_tileSet != null)
+                {
+                    GD.Print($"[TileEditorService] Reloaded TileSet after assembly reload from {TilesetPath}");
+                    return true;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[TileEditorService] Failed to reload TileSet: {ex.Message}");
+        }
+
+        return false;
     }
 
     /// <summary>

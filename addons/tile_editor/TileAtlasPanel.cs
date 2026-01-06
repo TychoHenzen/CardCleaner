@@ -441,7 +441,8 @@ public partial class TileAtlasPanel : Control
 }
 
 /// <summary>
-/// Button representing a single tile in the grid - uses direct drawing for proper scaling
+/// Button representing a single tile in the grid - uses direct drawing for proper scaling.
+/// Fetches texture on demand to handle C# assembly reloads gracefully.
 /// </summary>
 [Tool]
 public partial class TileButton : Button
@@ -450,8 +451,6 @@ public partial class TileButton : Button
     private readonly int _padding;
     private readonly TileEditorService? _service;
     private readonly EditableTile? _tile;
-    private readonly Texture2D? _texture;
-    private readonly Rect2I _region;
     private readonly Color _bgColor;
     private readonly Vector2I _tileSize; // Tile dimensions (1x1, 2x2, 1x2, etc.)
     private bool _isSelected;
@@ -479,9 +478,6 @@ public partial class TileButton : Button
         TooltipText = $"{tile.Name}{sizeLabel}\n{tile.Id}\n{tile.Passability}\nSource: {tile.SourceId}, Atlas: ({tile.AtlasX},{tile.AtlasY})";
         Flat = true;
         TextureFilter = TextureFilterEnum.Nearest;
-
-        _texture = service.GetTileTexture(tile);
-        _region = service.GetTileTextureRegion(tile);
 
         _bgColor = tile.Passability.ToLowerInvariant() switch
         {
@@ -520,12 +516,16 @@ public partial class TileButton : Button
                 HorizontalAlignment.Right, 24, 10, new Color(1, 1, 0, 0.9f));
         }
 
+        // Fetch texture on demand - handles assembly reloads by auto-reloading TileSet
+        var texture = _service.GetTileTexture(_tile);
+        var region = _service.GetTileTextureRegion(_tile);
+
         // Tile texture scaled to fit
-        if (_texture != null)
+        if (texture != null)
         {
-            var srcRect = new Rect2(_region.Position.X, _region.Position.Y, _region.Size.X, _region.Size.Y);
+            var srcRect = new Rect2(region.Position.X, region.Position.Y, region.Size.X, region.Size.Y);
             var destRect = new Rect2(_padding, _padding, displayWidth, displayHeight);
-            DrawTextureRectRegion(_texture, destRect, srcRect);
+            DrawTextureRectRegion(texture, destRect, srcRect);
         }
         else
         {
