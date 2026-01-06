@@ -23,6 +23,13 @@ public class ConnectivityConstraint : IWfcConstraint
     /// </summary>
     public int CorridorTolerance { get; set; } = 1;
 
+    /// <summary>
+    /// Whether to enable proactive corridor forcing between disconnected regions.
+    /// When false, only reactive bridge detection is used (much faster).
+    /// Default false for performance - reactive detection is usually sufficient.
+    /// </summary>
+    public bool EnableProactiveCorridors { get; set; } = false;
+
     public ConnectivityConstraint(PassabilityGraph graph, Func<string, bool> isPassable)
     {
         _graph = graph;
@@ -37,11 +44,11 @@ public class ConnectivityConstraint : IWfcConstraint
             return 1.0f;
 
         // === PROACTIVE: Ensure corridor between disconnected regions ===
-        // If there are disconnected passable regions, ban impassable tiles on the corridor path
-        // HasDisconnectedRegions() is now O(1) using union-find component count
-        if (_graph.HasDisconnectedRegions() && _graph.IsOnCorridorPath(context.Position, CorridorTolerance))
+        // This is expensive (O(V²) closest pair calculation) so disabled by default.
+        // Reactive bridge detection below is usually sufficient for connectivity.
+        if (EnableProactiveCorridors && _graph.HasDisconnectedRegions() &&
+            _graph.IsOnCorridorPath(context.Position, CorridorTolerance))
         {
-            // This position is on the path between disconnected regions - must be passable
             return 0.0f;
         }
 

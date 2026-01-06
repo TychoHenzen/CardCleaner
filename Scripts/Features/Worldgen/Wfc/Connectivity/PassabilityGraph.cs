@@ -57,9 +57,11 @@ public class PassabilityGraph
             _parent[position] = position;
             _rank[position] = 0;
             _componentCount++;
-            // Only invalidate expensive caches, not component count
+            // Only invalidate component list cache, NOT closest pairs
+            // Adding a node doesn't change which existing nodes are closest
             _cachedComponents = null;
-            _closestPairDirty = true;
+            // Note: closest pairs cache remains valid - new isolated node
+            // doesn't affect existing closest pairs between other components
         }
     }
 
