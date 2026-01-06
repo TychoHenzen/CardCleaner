@@ -50,12 +50,16 @@ public class CompiledTransitionMap
     /// <summary>
     /// Adds a transition entry for the given border and outer terrain.
     /// </summary>
-    public void AddTransition(string borderId, string outerTerrain, AutoTileFormat format, Vector2I[] variants)
+    /// <param name="borderId">The border tile ID.</param>
+    /// <param name="outerTerrain">The outer terrain tile ID.</param>
+    /// <param name="formatName">The auto-tile format name (e.g., "corner16", "edge16", "blob47").</param>
+    /// <param name="variants">Atlas coordinates for each variant.</param>
+    public void AddTransition(string borderId, string outerTerrain, string formatName, Vector2I[] variants)
     {
         var key = CreateKey(borderId, outerTerrain);
         Transitions[key] = new TransitionEntry
         {
-            Format = format.ToString().ToLowerInvariant(),
+            Format = formatName.ToLowerInvariant(),
             Variants = ConvertToVariantData(variants)
         };
     }

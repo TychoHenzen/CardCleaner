@@ -123,7 +123,7 @@ public class TileAtlasCompiler
 
             var borderSourceImage = borderSource.Texture.GetImage();
             var variantCount = borderTile.ExpectedVariantCount;
-            var format = ParseAutoTileFormat(borderTile.AutoTileFormat);
+            var formatName = borderTile.AutoTileFormat;
 
             foreach (var baseTerrain in baseTerrains)
             {
@@ -216,7 +216,7 @@ public class TileAtlasCompiler
                 }
 
                 // Add to transition map
-                transitionMap.AddTransition(borderTile.Id, baseTerrain.Id, format, variantCoords);
+                transitionMap.AddTransition(borderTile.Id, baseTerrain.Id, formatName, variantCoords);
             }
         }
 
@@ -226,7 +226,7 @@ public class TileAtlasCompiler
             if (string.IsNullOrEmpty(fixedTile.OuterTerrainId))
                 continue; // No outer terrain specified, skip
 
-            var format = ParseAutoTileFormat(fixedTile.AutoTileFormat);
+            var fixedFormatName = fixedTile.AutoTileFormat;
             var variantCount = fixedTile.ExpectedVariantCount;
             var variantCoords = new Vector2I[variantCount];
 
@@ -256,7 +256,7 @@ public class TileAtlasCompiler
                 }
             }
 
-            transitionMap.AddTransition(fixedTile.Id, fixedTile.OuterTerrainId, format, variantCoords);
+            transitionMap.AddTransition(fixedTile.Id, fixedTile.OuterTerrainId, fixedFormatName, variantCoords);
         }
 
         GD.Print($"[TileAtlasCompiler] Generated {compositesGenerated} composite tiles");
@@ -381,18 +381,6 @@ public class TileAtlasCompiler
         }
     }
 
-    /// <summary>
-    /// Parses auto-tile format string to enum.
-    /// </summary>
-    private static AutoTileFormat ParseAutoTileFormat(string? format)
-    {
-        return format?.ToLowerInvariant() switch
-        {
-            "blob47" => AutoTileFormat.Blob47,
-            "edge16" => AutoTileFormat.Edge16,
-            _ => AutoTileFormat.Corner16
-        };
-    }
 
     /// <summary>
     /// Validates that auto-tile transition references point to valid tiles.

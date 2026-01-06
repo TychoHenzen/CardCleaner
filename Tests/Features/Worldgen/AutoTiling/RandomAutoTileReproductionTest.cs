@@ -414,7 +414,7 @@ public class RandomAutoTileReproductionTest
 
         foreach (var tile in _registry.GetAllTiles().Where(t => t.IsCompositable))
         {
-            var tileFormat = tile.AutoTileFormat.ToString().ToLowerInvariant();
+            var tileFormat = tile.AutoTileFormatName.ToLowerInvariant();
 
             // Find transitions for this tile
             foreach (var (key, entry) in _transitionMap!.Transitions)

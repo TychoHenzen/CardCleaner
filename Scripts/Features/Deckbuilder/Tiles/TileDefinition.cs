@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
@@ -46,7 +47,7 @@ public class TileDefinition
         Vector2I? size = null,
         float decorationDensity = 1.0f,
         Vector2I?[]? autoTileVariants = null,
-        AutoTileFormat autoTileFormat = AutoTileFormat.Corner16,
+        string autoTileFormatName = "corner16",
         Vector2I[]? variations = null,
         VariationMode variationMode = VariationMode.PerInstance,
         TileAnimation? animation = null,
@@ -66,7 +67,7 @@ public class TileDefinition
         Size = size ?? Vector2I.One;
         DecorationDensity = decorationDensity;
         AutoTileVariants = autoTileVariants;
-        AutoTileFormat = autoTileFormat;
+        AutoTileFormatName = autoTileFormatName;
         Variations = variations;
         VariationMode = variationMode;
         Animation = animation;
@@ -106,12 +107,31 @@ public class TileDefinition
     public Vector2I?[]? AutoTileVariants { get; }
 
     /// <summary>
-    /// The auto-tile format used by this tile.
-    /// Corner16 = 4-bit diagonal corners (16 variants).
-    /// Edge16 = 4-bit cardinal edges (16 variants).
-    /// Blob47 = 8-bit edges+corners with constraint (47 variants).
+    /// The name of the auto-tile format used by this tile (e.g., "corner16", "edge16", "blob47").
+    /// Resolved via <see cref="AutoTileFormatRegistry"/> at runtime.
     /// </summary>
-    public AutoTileFormat AutoTileFormat { get; }
+    public string AutoTileFormatName { get; }
+
+    /// <summary>
+    /// Gets the auto-tile format definition from the registry.
+    /// Returns null if the format is not registered.
+    /// </summary>
+    public AutoTileFormatDefinition? GetAutoTileFormat()
+    {
+        return AutoTileFormatRegistry.TryGet(AutoTileFormatName, out var format) ? format : null;
+    }
+
+    /// <summary>
+    /// Gets the variant definition for a specific bitmask value.
+    /// Returns null if the format is not found or the bitmask is not allowed.
+    /// </summary>
+    /// <param name="bitmask">The bitmask value (0-15 for 4-bit formats, 0-255 for 8-bit).</param>
+    /// <returns>The variant definition, or null if not found.</returns>
+    public VariantDefinition? GetVariantDefinition(int bitmask)
+    {
+        var format = GetAutoTileFormat();
+        return format?.GetVariant(bitmask);
+    }
 
     /// <summary>
     /// Visual variations for this tile (different atlas coordinates for the same tile type).
@@ -176,14 +196,9 @@ public class TileDefinition
 
     /// <summary>
     /// Expected number of auto-tile variants based on format.
+    /// Delegates to the format definition from the registry.
     /// </summary>
-    public int ExpectedVariantCount => AutoTileFormat switch
-    {
-        AutoTileFormat.Corner16 => 16,
-        AutoTileFormat.Edge16 => 16,
-        AutoTileFormat.Blob47 => 47,
-        _ => 16
-    };
+    public int ExpectedVariantCount => GetAutoTileFormat()?.GetExpectedVariantCount() ?? 16;
 
     public bool IsPassable => Passability == TilePassability.Passable;
     public bool HasAutoTileVariants => AutoTileVariants != null;
@@ -215,7 +230,8 @@ public class TileDefinition
         int index;
         int maxIndex;
 
-        if (AutoTileFormat == AutoTileFormat.Blob47)
+        var format = GetAutoTileFormat();
+        if (format?.BitmaskType == BitmaskType.Full8)
         {
             // For blob format, convert 8-bit mask to 0-46 index
             index = NeighborBitmask8.GetBlobIndex(bitmask);

@@ -9,7 +9,6 @@ using CardCleaner.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 
@@ -236,7 +235,7 @@ public static class TileDataLoader
         var biomes = ParseBiomes(data.Biomes);
         var atlasCoords = new Vector2I(data.AtlasCoords?.X ?? 0, data.AtlasCoords?.Y ?? 0);
         var size = data.Size != null ? new Vector2I(data.Size.X, data.Size.Y) : (Vector2I?)null;
-        var autoTileFormat = ParseAutoTileFormat(data.AutoTileFormat);
+        var autoTileFormatName = NormalizeAutoTileFormatName(data.AutoTileFormat);
         var variations = ParseVariations(data.Variations);
         var variationMode = ParseVariationMode(data.VariationMode);
         var animation = ParseAnimation(data.Animation);
@@ -255,8 +254,8 @@ public static class TileDataLoader
             allowedBiomes: biomes,
             size: size,
             decorationDensity: data.DecorationDensity ?? 1.0f,
-            autoTileVariants: ParseAutoTileVariants(data.AutoTileVariants, autoTileFormat),
-            autoTileFormat: autoTileFormat,
+            autoTileVariants: ParseAutoTileVariants(data.AutoTileVariants, autoTileFormatName),
+            autoTileFormatName: autoTileFormatName,
             variations: variations,
             variationMode: variationMode,
             animation: animation,
@@ -265,14 +264,12 @@ public static class TileDataLoader
             outerTerrainId: data.OuterTerrain);
     }
 
-    private static AutoTileFormat ParseAutoTileFormat(string? value)
+    /// <summary>
+    /// Normalizes the auto-tile format name to lowercase, defaulting to "corner16".
+    /// </summary>
+    private static string NormalizeAutoTileFormatName(string? value)
     {
-        return value?.ToLowerInvariant() switch
-        {
-            "blob47" => AutoTileFormat.Blob47,
-            "edge16" => AutoTileFormat.Edge16,
-            _ => AutoTileFormat.Corner16
-        };
+        return string.IsNullOrWhiteSpace(value) ? "corner16" : value.ToLowerInvariant();
     }
 
     private static VariationMode ParseVariationMode(string? value)
@@ -352,18 +349,18 @@ public static class TileDataLoader
         return result.Count > 0 ? result : null;
     }
 
-    private static Vector2I?[]? ParseAutoTileVariants(Vector2IData?[]? variants, AutoTileFormat format)
+    private static Vector2I?[]? ParseAutoTileVariants(Vector2IData?[]? variants, string formatName)
     {
         if (variants == null || variants.Length == 0)
             return null;
 
-        var expectedCount = format switch
+        // Get expected count from registry, defaulting to 16
+        var expectedCount = 16;
+        if (AutoTileFormatRegistry.TryGet(formatName, out var format) && format != null)
         {
-            AutoTileFormat.Blob47 => 47,
-            AutoTileFormat.Edge16 => 16,
-            AutoTileFormat.Corner16 => 16,
-            _ => 16
-        };
+            expectedCount = format.GetExpectedVariantCount();
+        }
+
         var result = new Vector2I?[expectedCount];
 
         for (var i = 0; i < Math.Min(expectedCount, variants.Length); i++)

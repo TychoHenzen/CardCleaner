@@ -1,4 +1,5 @@
 using System;
+using CardCleaner.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
@@ -25,12 +26,31 @@ public static class AutoTileHelper
             return neighborId == tileDef.Id;
         };
 
-        return tileDef.AutoTileFormat switch
+        var format = tileDef.GetAutoTileFormat();
+        var bitmaskType = format?.BitmaskType ?? BitmaskType.Corner4;
+
+        return bitmaskType switch
         {
-            AutoTileFormat.Blob47 => NeighborBitmask8.Compute(position, isSameTerrain),
-            AutoTileFormat.Edge16 => NeighborBitmask.Compute(position, isSameTerrain),
+            BitmaskType.Full8 => NeighborBitmask8.Compute(position, isSameTerrain),
+            BitmaskType.Edge4 => NeighborBitmask.Compute(position, isSameTerrain),
             _ => NeighborBitmaskCorner.Compute(position, isSameTerrain)
         };
+    }
+
+    /// <summary>
+    ///     Get the variant definition for a tile at a specific position.
+    /// </summary>
+    /// <param name="position">The tile position</param>
+    /// <param name="tileDef">The tile definition</param>
+    /// <param name="getTileId">Function to get tile ID at a position</param>
+    /// <returns>The variant definition, or null if not found</returns>
+    public static VariantDefinition? GetAutoTileVariant(Vector2I position, TileDefinition tileDef, Func<Vector2I, string?> getTileId)
+    {
+        if (!tileDef.HasAutoTileVariants)
+            return null;
+
+        var bitmask = ComputeBitmask(position, tileDef, getTileId);
+        return tileDef.GetVariantDefinition(bitmask);
     }
 
     /// <summary>

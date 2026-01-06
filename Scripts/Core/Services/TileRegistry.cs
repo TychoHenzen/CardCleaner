@@ -185,7 +185,7 @@ public class TileRegistry : ITileRegistry
             size: original.Size,
             decorationDensity: original.DecorationDensity,
             autoTileVariants: translatedVariants,
-            autoTileFormat: original.AutoTileFormat,
+            autoTileFormatName: original.AutoTileFormatName,
             variations: translatedVars,
             variationMode: original.VariationMode,
             animation: translatedAnimation,

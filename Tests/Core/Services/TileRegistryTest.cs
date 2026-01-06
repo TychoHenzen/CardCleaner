@@ -2,7 +2,6 @@ using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using GdUnit4;
 using Godot;
 using static GdUnit4.Assertions;
@@ -263,7 +262,7 @@ public class TileRegistryTest
             var actual = tile.AutoTileVariants!.Length;
 
             if (actual != expected)
-                incorrectCounts.Add($"{tile.Id}: {tile.AutoTileFormat} expects {expected}, has {actual}");
+                incorrectCounts.Add($"{tile.Id}: {tile.AutoTileFormatName} expects {expected}, has {actual}");
         }
 
         if (incorrectCounts.Count > 0)
@@ -504,7 +503,7 @@ public class TileRegistryTest
             "Test Corner16",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            autoTileFormat: AutoTileFormat.Corner16);
+            autoTileFormatName: "corner16");
 
         AssertThat(tile.ExpectedVariantCount).IsEqual(16);
     }
@@ -517,7 +516,7 @@ public class TileRegistryTest
             "Test Edge16",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            autoTileFormat: AutoTileFormat.Edge16);
+            autoTileFormatName: "edge16");
 
         AssertThat(tile.ExpectedVariantCount).IsEqual(16);
     }
@@ -530,7 +529,7 @@ public class TileRegistryTest
             "Test Blob47",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            autoTileFormat: AutoTileFormat.Blob47);
+            autoTileFormatName: "blob47");
 
         AssertThat(tile.ExpectedVariantCount).IsEqual(47);
     }
