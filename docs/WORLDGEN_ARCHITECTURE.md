@@ -302,57 +302,125 @@ var selector = new WeightedTileSelector(tileRegistry, pipeline);
 
 ## Generation Pipeline
 
-### Current 5-Phase Pipeline
+### Two-Phase WFC with Dual-Layer Terrain
+
+The current system uses a **two-phase Wave Function Collapse** approach that separates background and foreground terrain, solving the dual-grid bitmask conflict problem through a gap constraint.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    GENERATION PIPELINE                          │
+│              TWO-PHASE WFC GENERATION PIPELINE                  │
 ├─────────────────────────────────────────────────────────────────┤
-│  Phase 1: BIOME-BASED PASSABILITY                               │
-│    • Query biome at each position via gradient                  │
-│    • Randomly assign passable/blocked based on BlockedPercentage│
-│    • Output: biomeMap[y,x] and isPassable[y,x]                 │
+│  Phase 1: BACKGROUND LAYER (Simple Tiles Only)                  │
+│    • WFC generates ONLY non-auto-tile terrain (gap tiles)       │
+│    • Biome-influenced probability via BiomeAffinityConstraint   │
+│    • SpatialCoherenceConstraint encourages contiguous regions   │
+│    • Creates base visual layer seen through foreground gaps     │
 ├─────────────────────────────────────────────────────────────────┤
-│  Phase 2: CELLULAR AUTOMATA SMOOTHING                           │
-│    • Count passable neighbors (4-directional)                   │
-│    • Apply threshold: passable if N >= SmoothingThreshold       │
-│    • Respects biome boundaries (different biome = blocked)      │
-│    • Creates larger contiguous regions                          │
+│  Phase 2: FOREGROUND LAYER (Auto-Tiles with Gap Constraint)     │
+│    • WFC generates ALL tiles (auto-tiles + gap tiles)           │
+│    • AutoTileGapConstraint enforces 8-way gap between           │
+│      different auto-tile types                                  │
+│    • Non-auto-tiles become empty (show background through)      │
+│    • Gap tiles enable regions of different auto-tiles           │
+│      to coexist without bitmask conflicts                       │
 ├─────────────────────────────────────────────────────────────────┤
-│  Phase 3: TILE PLACEMENT                                        │
-│    • For each position, select tile using Soft WFC:             │
-│      1. WeightedTileSelector with modifier pipeline             │
-│      2. Fallback: biome.SelectPassableTile()                    │
-│    • Handle multi-tile placements with space validation         │
+│  Phase 3: MERGE + AUTO-TILING                                   │
+│    • Foreground takes precedence where present                  │
+│    • GenerateTerrainTransitions: dual-grid bitmask computation  │
+│    • Each visual tile samples 4 data corners → 4-bit bitmask    │
+│    • Dominance property selects "top terrain" per visual tile   │
 ├─────────────────────────────────────────────────────────────────┤
-│  Phase 4: CONNECTIVITY GUARANTEE                                │
-│    • Flood-fill to identify connected components                │
-│    • Create corridors between disconnected regions              │
-│    • Ensure single connected component                          │
-├─────────────────────────────────────────────────────────────────┤
-│  Phase 5: POST-PROCESSING                                       │
-│    • Generate terrain transition overlays (edge decorations)    │
-│    • Apply auto-tiling (select edge variants)                   │
+│  Phase 4: VALIDATION + POST-PROCESSING                          │
+│    • BitmaskConsistencyValidator checks adjacent tile agreement │
+│    • RegionAnalyzer measures spatial coherence metrics          │
 │    • Select per-generation tile variants                        │
 │    • Place player spawn and enemies                             │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Future: Entropy-Based Cell Selection
+### The Gap Constraint
 
-The current implementation processes cells sequentially. A future enhancement would use WFC-style entropy-based ordering:
+The `AutoTileGapConstraint` is the key to eliminating dual-grid bitmask conflicts:
 
 ```
-Instead of: for y in 0..height, for x in 0..width: place_tile(x, y)
-
-Use: while uncollapsed_cells remain:
-       1. Find cell with lowest entropy (fewest high-probability options)
-       2. Collapse that cell (weighted random selection)
-       3. Recompute neighbor entropies
-       4. Repeat
+┌─────────────────────────────────────────────────────────────────┐
+│                    GAP CONSTRAINT RULES                          │
+├─────────────────────────────────────────────────────────────────┤
+│  8-NEIGHBOR CHECK (cardinal + diagonal):                        │
+│                                                                 │
+│  • Auto-tile A adjacent to same Auto-tile A → ALLOWED           │
+│    (regions can grow)                                           │
+│                                                                 │
+│  • Auto-tile A adjacent to different Auto-tile B → BANNED       │
+│    (hard constraint, weight = 0.0)                              │
+│                                                                 │
+│  • Gap tile adjacent to any tile → ALLOWED                      │
+│    (gap tiles separate auto-tile regions)                       │
+├─────────────────────────────────────────────────────────────────┤
+│  WHY 8-WAY CHECK:                                                │
+│                                                                 │
+│  Dual-grid rendering samples 4 data corners for each visual     │
+│  tile. Diagonal adjacency would place two different auto-tiles  │
+│  in the same 2x2 visual window, causing bitmask conflicts.      │
+│                                                                 │
+│  Example of what the constraint prevents:                       │
+│                                                                 │
+│     Data Grid:          Visual Grid:                            │
+│     ┌───┬───┐           ┌─────┐                                 │
+│     │ A │ B │  →  X     │ ??? │  ← Both A and B contribute      │
+│     ├───┼───┤           └─────┘    to this visual tile          │
+│     │ B │ A │           CONFLICT: bitmask undefined             │
+│     └───┴───┘                                                   │
+│                                                                 │
+│  With gap constraint (G = gap tile):                            │
+│     ┌───┬───┐           ┌─────┐                                 │
+│     │ A │ G │  →        │  A  │  ← Only A present               │
+│     ├───┼───┤           └─────┘    bitmask well-defined         │
+│     │ G │ B │                                                   │
+│     └───┴───┘                                                   │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-This would create more coherent patterns because high-certainty cells (cells where the context strongly suggests one tile) are placed first, propagating their influence outward.
+### Dual-Grid Auto-Tiling
+
+Visual tiles are offset by half a cell from the data grid:
+
+```
+Data Grid (NxN):              Visual Grid ((N+1)x(N+1)):
+┌───┬───┬───┐                 ┌───┬───┬───┬───┐
+│D00│D01│D02│                 │V00│V01│V02│V03│
+├───┼───┼───┤                 ├───┼───┼───┼───┤
+│D10│D11│D12│                 │V10│V11│V12│V13│
+├───┼───┼───┤                 ├───┼───┼───┼───┤
+│D20│D21│D22│                 │V20│V21│V22│V23│
+└───┴───┴───┘                 ├───┼───┼───┼───┤
+                              │V30│V31│V32│V33│
+                              └───┴───┴───┴───┘
+
+Each visual tile V[vy,vx] samples 4 data corners:
+  NW = D[vy-1, vx-1]    NE = D[vy-1, vx]
+  SW = D[vy,   vx-1]    SE = D[vy,   vx]
+
+Bitmask bits (Corner16 format):
+  NE=1, SE=2, SW=4, NW=8
+
+If corner has the "top terrain" → bit is set
+```
+
+### Spatial Coherence
+
+The `SpatialCoherenceConstraint` encourages tiles to form contiguous regions rather than a scattered pattern:
+
+- Boosts probability of tiles matching nearby collapsed cells
+- `RegionAnalyzer` measures quality via flood-fill region detection
+- Target: 70%+ of tiles in regions >= 30 tiles
+
+Metrics logged after generation:
+```
+[SpatialCoherence] 15 regions found (avg size: 42.3 tiles)
+[SpatialCoherence] Region sizes: min=12, max=156
+[SpatialCoherence] 78.5% of tiles in regions >= 30 tiles
+```
 
 ---
 
@@ -754,6 +822,7 @@ Scripts/Features/Worldgen/
 ├── AutoTiling/                      # ✅ IMPLEMENTED
 │   ├── AutoTileFormat.cs
 │   ├── AutoTileHelper.cs
+│   ├── BitmaskConsistencyValidator.cs # Validates dual-grid bitmask agreement
 │   ├── DualGridAutoTile.cs          # Dual-grid visual tile computation
 │   ├── NeighborBitmask.cs           # Edge16 (NESW cardinal)
 │   ├── NeighborBitmaskCorner.cs     # Corner16 (diagonal)
@@ -779,16 +848,36 @@ Scripts/Features/Worldgen/
 │   ├── IMapQuery.cs
 │   ├── StructureResult.cs
 │   └── StructurePlacer.cs
-└── VariantModifiers/                # ✅ IMPLEMENTED
-    ├── IVariantWeightModifier.cs
-    ├── VariantSelectionContext.cs
-    ├── BiomeVariantModifier.cs
-    ├── ProximityVariantModifier.cs
-    ├── VariantWeightPipeline.cs
-    └── WeightedVariantSelector.cs
+├── VariantModifiers/                # ✅ IMPLEMENTED
+│   ├── IVariantWeightModifier.cs
+│   ├── VariantSelectionContext.cs
+│   ├── BiomeVariantModifier.cs
+│   ├── ProximityVariantModifier.cs
+│   ├── VariantWeightPipeline.cs
+│   └── WeightedVariantSelector.cs
+└── Wfc/                             # ✅ IMPLEMENTED (Two-Phase WFC)
+    ├── WfcMapGenerator.cs           # High-level WFC orchestrator
+    ├── WfcSolver.cs                 # Core WFC collapse algorithm
+    ├── WfcGrid.cs                   # Grid of superposition cells
+    ├── WfcPropagator.cs             # Constraint propagation
+    ├── WfcTileSelector.cs           # Weighted tile selection with constraints
+    ├── WfcAdjacencyRules.cs         # Hard adjacency constraint rules
+    ├── RegionAnalyzer.cs            # Spatial coherence measurement
+    ├── Constraints/                 # Soft probability modifiers
+    │   ├── IWfcConstraint.cs
+    │   ├── AutoTileGapConstraint.cs # 8-way gap between different auto-tiles
+    │   ├── SpatialCoherenceConstraint.cs # Encourages contiguous regions
+    │   ├── BiomeAffinityConstraint.cs    # Biome-based tile probability
+    │   └── ConnectivityConstraint.cs     # Passable tile reachability
+    ├── Connectivity/                # Passability graph for reachability
+    │   └── PassabilityGraph.cs
+    └── Modifiers/Soft/              # Soft weight adjustment modifiers
+        ├── DiminishingReturnsSoftModifier.cs
+        ├── NoveltySoftModifier.cs
+        └── CompactnessSoftModifier.cs
 
 Scripts/Features/Deckbuilder/Services/
-└── SimpleMapGenerator.cs            # ✅ IMPLEMENTED (5-phase pipeline)
+└── SimpleMapGenerator.cs            # ✅ IMPLEMENTED (Two-Phase WFC pipeline)
 
 addons/tile_editor/
 ├── BiomePoolPanel.cs                # Data-driven biome pool editing
@@ -834,6 +923,6 @@ Data/Tiles/
 
 ---
 
-*Document Version: 4.0*
-*Last Updated: 2025-12-31*
-*Status: Data-driven biome system complete - 10 biomes, tile consolidation done*
+*Document Version: 5.0*
+*Last Updated: 2026-01-06*
+*Status: Two-Phase WFC with dual-layer terrain and gap constraint complete*

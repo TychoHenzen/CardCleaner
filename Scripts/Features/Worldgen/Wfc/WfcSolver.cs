@@ -132,8 +132,16 @@ public class WfcSolver
                 GD.Print($"[WFC] Progress: {iterations}/{totalCells} cells ({100*iterations/totalCells}%)");
             }
 
-            // Find cell with lowest entropy (with random tie-breaking)
-            var targetPos = grid.GetLowestEntropyCellWithTieBreak(rng);
+            // Find cell with lowest weighted entropy (prefers frontier cells)
+            var targetPos = grid.GetLowestEntropyCellWeighted(
+                pos => _selector.ComputeWeights(
+                    grid.GetCell(pos).GetPossibleTiles(),
+                    biome,
+                    rng,
+                    GetContinuityMatchingTiles(grid, pos),
+                    pos,
+                    grid),
+                rng);
 
             if (targetPos == null)
             {

@@ -84,7 +84,7 @@ public class WfcPropagatorTest
 
         // Right cell can be A, B, or C still (middle isn't collapsed yet)
         var rightCell = grid.GetCell(2, 0);
-        AssertThat(rightCell.GetEntropy()).IsEqual(3);
+        AssertThat(rightCell.GetPossibleTiles().Count).IsEqual(3);
     }
 
     [TestCase]
@@ -108,7 +108,7 @@ public class WfcPropagatorTest
         {
             for (var x = 0; x < 2; x++)
             {
-                AssertThat(grid.GetCell(x, y).GetEntropy()).IsEqual(3);
+                AssertThat(grid.GetCell(x, y).GetPossibleTiles().Count).IsEqual(3);
             }
         }
     }
@@ -154,8 +154,8 @@ public class WfcPropagatorTest
         AssertBool(result.Success).IsTrue();
 
         // Neighbors should still have all tiles (B can neighbor A, B, C)
-        AssertThat(grid.GetCell(0, 0).GetEntropy()).IsEqual(3);
-        AssertThat(grid.GetCell(2, 0).GetEntropy()).IsEqual(3);
+        AssertThat(grid.GetCell(0, 0).GetPossibleTiles().Count).IsEqual(3);
+        AssertThat(grid.GetCell(2, 0).GetPossibleTiles().Count).IsEqual(3);
     }
 
     [TestCase]

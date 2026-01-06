@@ -15,18 +15,28 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 public class WfcTileSelector
 {
     private readonly List<IWfcConstraint> _constraints = new();
+    private bool _loggedConstraintCount;
 
     /// <summary>
     /// Registers a constraint to be applied during tile selection.
     /// Constraints are applied multiplicatively: final_weight = base_weight × Π(modifiers)
     /// Return 0.0 to ban a tile, 1.0 for neutral, >1.0 for boost.
     /// </summary>
-    public void AddConstraint(IWfcConstraint constraint) => _constraints.Add(constraint);
+    public void AddConstraint(IWfcConstraint constraint)
+    {
+        _constraints.Add(constraint);
+        GD.Print($"[WfcTileSelector] Added constraint: {constraint.GetType().Name}, total: {_constraints.Count}");
+    }
 
     /// <summary>
     /// Clears all registered constraints.
     /// </summary>
-    public void ClearConstraints() => _constraints.Clear();
+    public void ClearConstraints()
+    {
+        GD.Print($"[WfcTileSelector] ClearConstraints called, had {_constraints.Count} constraints");
+        _constraints.Clear();
+        _loggedConstraintCount = false;
+    }
 
     /// <summary>
     /// Penalty multiplier for tiles not in the biome's preferred set.
@@ -70,6 +80,13 @@ public class WfcTileSelector
 
         if (validTiles.Count == 1)
             return validTiles.First();
+
+        // One-time log to verify constraint count
+        if (!_loggedConstraintCount && position.HasValue)
+        {
+            _loggedConstraintCount = true;
+            GD.Print($"[WfcTileSelector] SelectTile called with position, constraints: {_constraints.Count}");
+        }
 
         // Build weight lookup from biome
         var biomeWeights = BuildBiomeWeightLookup(biome);

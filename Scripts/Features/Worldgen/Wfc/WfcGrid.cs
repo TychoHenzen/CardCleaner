@@ -145,44 +145,27 @@ public class WfcGrid
     }
 
     /// <summary>
-    /// Finds the uncollapsed cell with the lowest entropy.
-    /// Returns null if all cells are collapsed.
-    /// When multiple cells have the same entropy, returns the first one found
-    /// (for deterministic behavior, use GetLowestEntropyCellWithTieBreak).
+    /// Checks if a position has at least one collapsed neighbor.
     /// </summary>
-    public Vector2I? GetLowestEntropyCell()
+    private bool HasCollapsedNeighbor(Vector2I pos)
     {
-        Vector2I? best = null;
-        var lowestEntropy = int.MaxValue;
-
-        for (var y = 0; y < _height; y++)
+        foreach (var neighbor in GetNeighbors(pos))
         {
-            for (var x = 0; x < _width; x++)
-            {
-                var cell = _cells[y, x];
-                if (cell.IsCollapsed())
-                    continue;
-
-                var entropy = cell.GetEntropy();
-                if (entropy < lowestEntropy)
-                {
-                    lowestEntropy = entropy;
-                    best = new Vector2I(x, y);
-                }
-            }
+            if (GetCell(neighbor).IsCollapsed())
+                return true;
         }
-
-        return best;
+        return false;
     }
 
     /// <summary>
-    /// Finds uncollapsed cells with the lowest entropy, then randomly selects one.
-    /// This adds randomness to the collapse order for more varied results.
+    /// Finds uncollapsed cell with fewest remaining options, preferring frontier cells.
+    /// Fast O(cells) scan - use this for cell selection, then apply weighted tile selection.
     /// </summary>
-    public Vector2I? GetLowestEntropyCellWithTieBreak(RandomNumberGenerator rng)
+    public Vector2I? GetLowestOptionCountCell(RandomNumberGenerator rng)
     {
-        var lowestEntropy = int.MaxValue;
+        var lowestCount = int.MaxValue;
         var candidates = new List<Vector2I>();
+        var frontierCandidates = new List<Vector2I>();
 
         for (var y = 0; y < _height; y++)
         {
@@ -192,16 +175,23 @@ public class WfcGrid
                 if (cell.IsCollapsed())
                     continue;
 
-                var entropy = cell.GetEntropy();
-                if (entropy < lowestEntropy)
+                var count = cell.GetPossibleTiles().Count;
+                var pos = new Vector2I(x, y);
+
+                if (count < lowestCount)
                 {
-                    lowestEntropy = entropy;
+                    lowestCount = count;
                     candidates.Clear();
-                    candidates.Add(new Vector2I(x, y));
+                    frontierCandidates.Clear();
+                    candidates.Add(pos);
+                    if (HasCollapsedNeighbor(pos))
+                        frontierCandidates.Add(pos);
                 }
-                else if (entropy == lowestEntropy)
+                else if (count == lowestCount)
                 {
-                    candidates.Add(new Vector2I(x, y));
+                    candidates.Add(pos);
+                    if (HasCollapsedNeighbor(pos))
+                        frontierCandidates.Add(pos);
                 }
             }
         }
@@ -209,13 +199,15 @@ public class WfcGrid
         if (candidates.Count == 0)
             return null;
 
-        var index = rng.RandiRange(0, candidates.Count - 1);
-        return candidates[index];
+        // Prefer frontier cells for contiguous region growth
+        var selection = frontierCandidates.Count > 0 ? frontierCandidates : candidates;
+        return selection[rng.RandiRange(0, selection.Count - 1)];
     }
 
     /// <summary>
-    /// Finds lowest weighted-entropy cell with random tiebreak.
-    /// Uses provided weight calculator for position-aware weights.
+    /// Finds lowest weighted-entropy cell among frontier cells (adjacent to collapsed).
+    /// Only computes expensive entropy for frontier cells, dramatically reducing work.
+    /// Falls back to any uncollapsed cell only when no frontier exists (start of generation).
     /// </summary>
     /// <param name="getWeightsAt">Function that returns tile weights for a position</param>
     /// <param name="rng">Random number generator for tiebreaking</param>
@@ -224,8 +216,9 @@ public class WfcGrid
         Func<Vector2I, IReadOnlyDictionary<string, float>> getWeightsAt,
         RandomNumberGenerator rng)
     {
-        var lowestEntropy = float.MaxValue;
-        var candidates = new List<Vector2I>();
+        // First pass: find frontier cells (adjacent to collapsed)
+        var frontierCells = new List<Vector2I>();
+        Vector2I? anyUncollapsed = null;
 
         for (var y = 0; y < _height; y++)
         {
@@ -235,23 +228,39 @@ public class WfcGrid
                 if (cell.IsCollapsed()) continue;
 
                 var pos = new Vector2I(x, y);
-                var weights = getWeightsAt(pos);
-                var entropy = cell.GetWeightedEntropy(weights);
+                anyUncollapsed ??= pos;
 
-                if (entropy < lowestEntropy)
-                {
-                    lowestEntropy = entropy;
-                    candidates.Clear();
-                    candidates.Add(pos);
-                }
-                else if (Mathf.IsEqualApprox(entropy, lowestEntropy))
-                {
-                    candidates.Add(pos);
-                }
+                if (HasCollapsedNeighbor(pos))
+                    frontierCells.Add(pos);
             }
         }
 
-        if (candidates.Count == 0) return null;
+        // If no frontier (start of generation), pick any uncollapsed cell randomly
+        if (frontierCells.Count == 0)
+            return anyUncollapsed;
+
+        // Second pass: compute entropy ONLY for frontier cells
+        var lowestEntropy = float.MaxValue;
+        var candidates = new List<Vector2I>();
+
+        foreach (var pos in frontierCells)
+        {
+            var cell = _cells[pos.Y, pos.X];
+            var weights = getWeightsAt(pos);
+            var entropy = cell.GetWeightedEntropy(weights);
+
+            if (entropy < lowestEntropy)
+            {
+                lowestEntropy = entropy;
+                candidates.Clear();
+                candidates.Add(pos);
+            }
+            else if (Mathf.IsEqualApprox(entropy, lowestEntropy))
+            {
+                candidates.Add(pos);
+            }
+        }
+
         return candidates[rng.RandiRange(0, candidates.Count - 1)];
     }
 

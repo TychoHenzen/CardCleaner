@@ -3,31 +3,31 @@ using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 
 /// <summary>
-/// Encourages compact blob shapes by adjusting weights based on same-type neighbor count.
-/// Penalizes "snake" extensions (1 neighbor) and rewards "fill" extensions (3-4 neighbors).
+/// Encourages compact blob shapes by boosting tiles that fill in gaps between existing tiles.
+/// Does NOT penalize normal edge growth (1 neighbor) - only rewards compact fills.
 ///
 /// Neighbor count effects:
-/// - 0 neighbors: Handled by NoveltySoftModifier, this returns 1.0x
-/// - 1 neighbor: Snake/thin extension - apply penalty (default 0.3x)
-/// - 2 neighbors: Corner or line continuation - neutral (1.0x)
-/// - 3-4 neighbors: Compact fill - apply boost (default 1.5x)
+/// - 0 neighbors: No match - neutral (1.0x)
+/// - 1 neighbor: Normal edge extension - neutral (1.0x)
+/// - 2 neighbors: Corner fill - small boost (default 1.3x)
+/// - 3-4 neighbors: Gap fill - larger boost (default 2.0x)
 ///
 /// This shapes blobs toward rounder, more natural-looking formations
-/// rather than long thin snakes or tendrils.
+/// without preventing normal region growth from edges.
 /// </summary>
 public class CompactnessSoftModifier : IWfcConstraint
 {
     /// <summary>
-    /// Penalty multiplier for snake-like extensions (1 same-type neighbor).
-    /// Default 0.3 means snake extensions are 70% less likely.
+    /// Boost multiplier for corner fills (2 same-type neighbors).
+    /// Default 1.3 means corner fills are 30% more likely.
     /// </summary>
-    public float SnakePenalty { get; set; } = 0.3f;
+    public float CornerBoost { get; set; } = 1.3f;
 
     /// <summary>
-    /// Boost multiplier for compact fills (3-4 same-type neighbors).
-    /// Default 1.5 means filling in gaps is 50% more likely.
+    /// Boost multiplier for gap fills (3-4 same-type neighbors).
+    /// Default 2.0 means filling in gaps is 100% more likely.
     /// </summary>
-    public float CompactBoost { get; set; } = 1.5f;
+    public float GapFillBoost { get; set; } = 2.0f;
 
     /// <inheritdoc />
     public float GetProbabilityModifier(WfcConstraintContext context)
@@ -36,10 +36,10 @@ public class CompactnessSoftModifier : IWfcConstraint
 
         return sameTypeNeighborCount switch
         {
-            0 => 1.0f,           // No neighbors - handled by NoveltySoftModifier
-            1 => SnakePenalty,   // Snake extension - penalize
-            2 => 1.0f,           // Corner/line - neutral
-            _ => CompactBoost    // 3-4 neighbors - filling in - boost
+            0 => 1.0f,           // No match - neutral
+            1 => 1.0f,           // Normal edge extension - neutral (don't penalize growth!)
+            2 => CornerBoost,    // Corner fill - small boost
+            _ => GapFillBoost    // 3-4 neighbors - gap fill - larger boost
         };
     }
 

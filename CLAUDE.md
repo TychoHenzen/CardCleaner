@@ -124,25 +124,41 @@ Signatures influence card generation, combat calculations, map generation parame
 
 ### World Generation
 
-> **Architecture Document**: See `docs/WORLDGEN_ARCHITECTURE.md` for the complete worldgen redesign plan, including implementation phases, data definition guides, and technical reference.
+> **Architecture Document**: See `docs/WORLDGEN_ARCHITECTURE.md` for the complete worldgen architecture, including the Soft WFC approach, weight modifier system, and data definition guides.
 
-**Active System**: **SimpleMapGenerator** (`Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs`)
-- Lightweight random placement with connectivity guarantees
-- Signature-influenced tile selection (Febris→terrain, Ordinem→structure)
-- Biome system with tile pools and weighted selection
-- Auto-tiling support (Corner16 and Blob47 formats)
+**Active System**: Two-Phase WFC via **SimpleMapGenerator** (`Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs`)
+
+The map generator uses a **two-phase Wave Function Collapse** approach with dual-layer terrain:
+
+1. **Background Layer (Phase 1)**: WFC generates simple (non-auto-tile) terrain tiles
+   - Gap tiles fill the entire map with biome-influenced probability
+   - Creates the base visual layer seen through gaps in foreground terrain
+
+2. **Foreground Layer (Phase 2)**: WFC generates auto-tile terrain with gap constraints
+   - `AutoTileGapConstraint` enforces 1-tile gaps between different auto-tile types (8-way check)
+   - Gap tiles (non-auto-tiles) separate auto-tile regions, eliminating bitmask conflicts
+   - Dual-grid rendering samples 4 data corners per visual tile; gap constraint ensures at most one auto-tile type per 2x2 window
+
+3. **Merge**: Foreground takes precedence where present; background shows through gaps
+
+**Key Files**:
+- `WfcMapGenerator.cs`: Core WFC solver with soft constraints
+- `AutoTileGapConstraint.cs`: Prevents adjacent different auto-tiles (hard constraint)
+- `SpatialCoherenceConstraint.cs`: Encourages contiguous tile regions
+- `BitmaskConsistencyValidator.cs`: Validates dual-grid bitmask agreement
+- `RegionAnalyzer.cs`: Measures spatial coherence metrics
+
+**Dual-Grid Auto-Tiling**:
+- Visual tiles offset by half a cell from data grid
+- Each visual tile samples 4 data corners → 4-bit bitmask (Corner16 format)
+- The gap constraint ensures each visual tile sees at most ONE auto-tile type
+- `Dominance` property on tiles determines which terrain renders "on top"
 
 **Gradient Systems**:
 - `CardBasedGradient`: Creates gradients from input cards (sphere/capsule/Bezier)
 - `RadialGradient`: Center-to-edge signature blending
 - `NoiseGradient`: FastNoiseLite-based variation
-
-**Target Architecture** (see docs for details):
-- Stage 1: Biome Placement (card gradient → biome grid)
-- Stage 2: Terrain Generation (per-biome tile selection)
-- Stage 3: Transitions (auto-tiling at biome edges)
-- Stage 4: Structures (stamps + procedural generators)
-- Stage 5: Entities (player, enemies, items)
+- Gradients influence biome selection via `BiomeAffinityConstraint`
 
 ### Game Session Flow
 

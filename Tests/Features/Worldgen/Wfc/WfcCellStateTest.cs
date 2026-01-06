@@ -14,7 +14,7 @@ public class WfcCellStateTest
         var tiles = new[] { "grass", "dirt", "sand" };
         var cell = new WfcCellState(tiles);
 
-        AssertThat(cell.GetEntropy()).IsEqual(3);
+        AssertThat(cell.GetPossibleTiles().Count).IsEqual(3);
     }
 
     [TestCase]
@@ -41,7 +41,7 @@ public class WfcCellStateTest
         cell.RemoveTile("grass");
 
         AssertBool(cell.IsContradiction()).IsTrue();
-        AssertThat(cell.GetEntropy()).IsEqual(0);
+        AssertThat(cell.GetPossibleTiles().Count).IsEqual(0);
     }
 
     [TestCase]
@@ -52,7 +52,7 @@ public class WfcCellStateTest
         var removed = cell.RemoveTile("dirt");
 
         AssertBool(removed).IsTrue();
-        AssertThat(cell.GetEntropy()).IsEqual(2);
+        AssertThat(cell.GetPossibleTiles().Count).IsEqual(2);
     }
 
     [TestCase]
@@ -63,7 +63,7 @@ public class WfcCellStateTest
         var removed = cell.RemoveTile("water");
 
         AssertBool(removed).IsFalse();
-        AssertThat(cell.GetEntropy()).IsEqual(2);
+        AssertThat(cell.GetPossibleTiles().Count).IsEqual(2);
     }
 
     [TestCase]
@@ -84,7 +84,7 @@ public class WfcCellStateTest
 
         AssertBool(cell.IsCollapsed()).IsTrue();
         AssertString(cell.GetCollapsedTile()).IsEqual("dirt");
-        AssertThat(cell.GetEntropy()).IsEqual(1);
+        AssertThat(cell.GetPossibleTiles().Count).IsEqual(1);
     }
 
     [TestCase]
@@ -113,7 +113,7 @@ public class WfcCellStateTest
         var changed = cell.IntersectWith(new[] { "grass", "water", "stone" });
 
         AssertBool(changed).IsTrue();
-        AssertThat(cell.GetEntropy()).IsEqual(2);
+        AssertThat(cell.GetPossibleTiles().Count).IsEqual(2);
         AssertBool(cell.ContainsTile("grass")).IsTrue();
         AssertBool(cell.ContainsTile("water")).IsTrue();
         AssertBool(cell.ContainsTile("dirt")).IsFalse();
@@ -127,7 +127,7 @@ public class WfcCellStateTest
         var changed = cell.IntersectWith(new[] { "grass", "dirt", "sand" });
 
         AssertBool(changed).IsFalse();
-        AssertThat(cell.GetEntropy()).IsEqual(2);
+        AssertThat(cell.GetPossibleTiles().Count).IsEqual(2);
     }
 
     [TestCase]
@@ -138,7 +138,7 @@ public class WfcCellStateTest
 
         var copy = new WfcCellState(original);
 
-        AssertThat(copy.GetEntropy()).IsEqual(2);
+        AssertThat(copy.GetPossibleTiles().Count).IsEqual(2);
         AssertBool(copy.ContainsTile("grass")).IsTrue();
         AssertBool(copy.ContainsTile("dirt")).IsFalse();
 

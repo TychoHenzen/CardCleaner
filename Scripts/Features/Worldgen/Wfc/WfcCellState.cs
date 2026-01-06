@@ -29,12 +29,6 @@ public class WfcCellState
     }
 
     /// <summary>
-    /// Gets the entropy (number of possible tiles remaining).
-    /// Lower entropy means fewer choices, making this cell a priority for collapse.
-    /// </summary>
-    public int GetEntropy() => _possibleTiles.Count;
-
-    /// <summary>
     /// Calculates weighted Shannon entropy based on tile probabilities.
     /// Lower entropy = clearer winner (more certainty about which tile to pick).
     /// </summary>

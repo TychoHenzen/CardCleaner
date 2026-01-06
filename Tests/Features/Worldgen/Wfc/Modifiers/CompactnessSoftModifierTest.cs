@@ -24,7 +24,7 @@ public class CompactnessSoftModifierTest
     [TestCase]
     public void TestNoNeighborsIsNeutral()
     {
-        // No neighbors - handled by NoveltySoftModifier, this should be neutral
+        // No neighbors - neutral (no match)
         var context = new WfcConstraintContext
         {
             Position = new Vector2I(5, 5),
@@ -38,9 +38,9 @@ public class CompactnessSoftModifierTest
     }
 
     [TestCase]
-    public void TestOneNeighborGetsSnakePenalty()
+    public void TestOneNeighborIsNeutral()
     {
-        // One same-type neighbor - this is a snake extension
+        // One same-type neighbor - normal edge extension, neutral (no penalty!)
         _grid.GetCell(new Vector2I(5, 4)).CollapseTo("grass");
 
         var context = new WfcConstraintContext
@@ -52,14 +52,14 @@ public class CompactnessSoftModifierTest
 
         var multiplier = _modifier.GetProbabilityModifier(context);
 
-        // Default snake penalty is 0.3x
-        AssertFloat(multiplier).IsEqual(0.3f);
+        // One neighbor = neutral (don't penalize normal region growth)
+        AssertFloat(multiplier).IsEqual(1.0f);
     }
 
     [TestCase]
-    public void TestTwoNeighborsIsNeutral()
+    public void TestTwoNeighborsGetsCornerBoost()
     {
-        // Two same-type neighbors - corner or line, neutral
+        // Two same-type neighbors - corner fill, small boost
         _grid.GetCell(new Vector2I(5, 4)).CollapseTo("grass");
         _grid.GetCell(new Vector2I(4, 5)).CollapseTo("grass");
 
@@ -72,13 +72,14 @@ public class CompactnessSoftModifierTest
 
         var multiplier = _modifier.GetProbabilityModifier(context);
 
-        AssertFloat(multiplier).IsEqual(1.0f);
+        // Default corner boost is 1.3x
+        AssertFloat(multiplier).IsEqual(1.3f);
     }
 
     [TestCase]
-    public void TestThreeNeighborsGetsCompactBoost()
+    public void TestThreeNeighborsGetsGapFillBoost()
     {
-        // Three same-type neighbors - filling in a compact area
+        // Three same-type neighbors - filling in a gap
         _grid.GetCell(new Vector2I(5, 4)).CollapseTo("grass");
         _grid.GetCell(new Vector2I(4, 5)).CollapseTo("grass");
         _grid.GetCell(new Vector2I(6, 5)).CollapseTo("grass");
@@ -92,12 +93,12 @@ public class CompactnessSoftModifierTest
 
         var multiplier = _modifier.GetProbabilityModifier(context);
 
-        // Default compact boost is 1.5x
-        AssertFloat(multiplier).IsEqual(1.5f);
+        // Default gap fill boost is 2.0x
+        AssertFloat(multiplier).IsEqual(2.0f);
     }
 
     [TestCase]
-    public void TestFourNeighborsGetsCompactBoost()
+    public void TestFourNeighborsGetsGapFillBoost()
     {
         // Four same-type neighbors - completely surrounded, filling last gap
         _grid.GetCell(new Vector2I(5, 4)).CollapseTo("grass");
@@ -114,8 +115,8 @@ public class CompactnessSoftModifierTest
 
         var multiplier = _modifier.GetProbabilityModifier(context);
 
-        // Default compact boost is 1.5x
-        AssertFloat(multiplier).IsEqual(1.5f);
+        // Default gap fill boost is 2.0x
+        AssertFloat(multiplier).IsEqual(2.0f);
     }
 
     [TestCase]
@@ -135,16 +136,17 @@ public class CompactnessSoftModifierTest
 
         var multiplier = _modifier.GetProbabilityModifier(context);
 
-        // Only 1 grass neighbor = snake penalty
-        AssertFloat(multiplier).IsEqual(0.3f);
+        // Only 1 grass neighbor = neutral (normal edge growth)
+        AssertFloat(multiplier).IsEqual(1.0f);
     }
 
     [TestCase]
-    public void TestCustomSnakePenalty()
+    public void TestCustomCornerBoost()
     {
-        _modifier.SnakePenalty = 0.1f;
+        _modifier.CornerBoost = 1.5f;
 
         _grid.GetCell(new Vector2I(5, 4)).CollapseTo("grass");
+        _grid.GetCell(new Vector2I(4, 5)).CollapseTo("grass");
 
         var context = new WfcConstraintContext
         {
@@ -155,13 +157,13 @@ public class CompactnessSoftModifierTest
 
         var multiplier = _modifier.GetProbabilityModifier(context);
 
-        AssertFloat(multiplier).IsEqual(0.1f);
+        AssertFloat(multiplier).IsEqual(1.5f);
     }
 
     [TestCase]
-    public void TestCustomCompactBoost()
+    public void TestCustomGapFillBoost()
     {
-        _modifier.CompactBoost = 2.0f;
+        _modifier.GapFillBoost = 3.0f;
 
         _grid.GetCell(new Vector2I(5, 4)).CollapseTo("grass");
         _grid.GetCell(new Vector2I(4, 5)).CollapseTo("grass");
@@ -176,6 +178,6 @@ public class CompactnessSoftModifierTest
 
         var multiplier = _modifier.GetProbabilityModifier(context);
 
-        AssertFloat(multiplier).IsEqual(2.0f);
+        AssertFloat(multiplier).IsEqual(3.0f);
     }
 }

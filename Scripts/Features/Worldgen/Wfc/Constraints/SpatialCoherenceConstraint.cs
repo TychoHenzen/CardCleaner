@@ -3,18 +3,18 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
 /// <summary>
-/// Encourages spatial coherence by boosting tiles that form larger contiguous regions.
+/// Encourages spatial coherence by boosting tiles that extend existing regions.
 /// During WFC collapse, tracks regions of identical tiles and applies probability modifiers
-/// to encourage or discourage region growth based on target size.
+/// to encourage region growth up to target size.
 /// </summary>
 /// <remarks>
 /// Region tracking strategy:
 /// - Scans collapsed neighbors (4-directional) to detect existing regions
-/// - Boost scales gradually with region size up to maxThreshold (1.25 × target)
+/// - Full boost given for ANY matching neighbor (encourages region growth from size 1)
 /// - Boost tapers off for oversized regions to encourage tile diversity
 ///
 /// Probability calculation:
-/// - If tile matches neighbor region: modifier = 1.0 + (size/target) × BoostFactor
+/// - If tile matches any neighbor region below target: modifier = 1.0 + BoostFactor
 /// - If tile matches oversized region: modifier tapers toward 1.0
 /// - If no neighbors collapsed: modifier = 1.0 (neutral)
 /// </remarks>
@@ -22,20 +22,17 @@ public class SpatialCoherenceConstraint : IWfcConstraint
 {
     /// <summary>
     /// Target size for coherent regions (in tiles).
-    /// Regions approaching this size receive maximum boost.
-    /// For 89-tile maps, 20 tiles = ~22% per region, allowing 3-5 regions.
+    /// Regions below this receive full boost; regions above start tapering.
+    /// For ~3600-tile maps, 50 tiles = ~1.4% per region, allowing 20-70 regions.
     /// </summary>
-    public int TargetRegionSize { get; set; } = 20;
+    public int TargetRegionSize { get; set; } = 50;
 
     /// <summary>
     /// Factor controlling how much regional coherence affects probability.
-    /// With BoostFactor=8.0, matching tiles get meaningful boost for region growth.
-    /// Works with DiminishingReturns (decay 0.2) to balance growth:
-    /// - Size 5:  9.0x coherence × 0.5 diminishing = 4.5x net boost
-    /// - Size 15: 9.0x coherence × 0.25 diminishing = 2.25x net boost (target region)
-    /// - Size 25: Taper begins, reducing coherence boost to encourage new regions
+    /// With BoostFactor=10.0, matching tiles get 11x weight boost.
+    /// This ensures extending a region strongly dominates over starting new ones.
     /// </summary>
-    public float BoostFactor { get; set; } = 8.0f;
+    public float BoostFactor { get; set; } = 500.0f;
 
     /// <summary>
     /// Minimum probability modifier to prevent complete tile elimination.
@@ -44,14 +41,34 @@ public class SpatialCoherenceConstraint : IWfcConstraint
 
     private RegionTracker? _regionTracker;
 
+    // Diagnostic counters
+    private int _totalCalls;
+    private int _callsWithMatch;
+    private int _callsNoCollapsedNeighbor;
+    private float _totalBoostApplied;
+
     /// <summary>
     /// Initializes region tracking for a new WFC generation.
     /// Must be called before WFC collapse begins.
     /// </summary>
     public void Reset(int width, int height)
     {
+        // Print stats from previous run
+        if (_totalCalls > 0)
+        {
+            var matchRate = _callsWithMatch * 100f / _totalCalls;
+            var avgBoost = _callsWithMatch > 0 ? _totalBoostApplied / _callsWithMatch : 0;
+            GD.Print($"[SpatialCoherence] Stats: {_totalCalls} calls, {_callsWithMatch} with match ({matchRate:F1}%), {_callsNoCollapsedNeighbor} no collapsed neighbor, avg boost {avgBoost:F2}x");
+        }
+
         _regionTracker ??= new RegionTracker(width, height);
         _regionTracker.Reset();
+
+        // Reset counters
+        _totalCalls = 0;
+        _callsWithMatch = 0;
+        _callsNoCollapsedNeighbor = 0;
+        _totalBoostApplied = 0;
     }
 
     /// <summary>
@@ -65,45 +82,60 @@ public class SpatialCoherenceConstraint : IWfcConstraint
 
     public float GetProbabilityModifier(WfcConstraintContext context)
     {
+        _totalCalls++;
+
         if (_regionTracker == null)
+        {
+            GD.Print("[SpatialCoherence] RegionTracker is null!");
             return 1.0f;
+        }
 
         var neighbors = context.Grid.GetNeighbors(context.Position);
         var largestMatchingRegion = 0;
+        var hasAnyCollapsedNeighbor = false;
 
         foreach (var neighbor in neighbors)
         {
             var neighborTile = context.Grid.GetCollapsedTileAt(neighbor);
-            if (neighborTile == context.TileId)
+            if (neighborTile != null)
             {
-                var regionSize = _regionTracker.GetRegionSize(neighbor);
-                if (regionSize > largestMatchingRegion)
-                    largestMatchingRegion = regionSize;
+                hasAnyCollapsedNeighbor = true;
+                if (neighborTile == context.TileId)
+                {
+                    var regionSize = _regionTracker.GetRegionSize(neighbor);
+                    if (regionSize > largestMatchingRegion)
+                        largestMatchingRegion = regionSize;
+                }
             }
         }
+
+        if (!hasAnyCollapsedNeighbor)
+            _callsNoCollapsedNeighbor++;
 
         if (largestMatchingRegion == 0)
             return 1.0f;
 
-        // Regions above maxThreshold start tapering off to encourage diversity
-        var maxThreshold = TargetRegionSize * 1.25f;  // 20 * 1.25 = 25
+        _callsWithMatch++;
 
         float modifier;
-        if (largestMatchingRegion > maxThreshold)
+        if (largestMatchingRegion >= TargetRegionSize)
         {
-            // Taper off for oversized regions - stronger taper to encourage new regions
-            var oversize = largestMatchingRegion / maxThreshold;
+            // Taper off for oversized regions to encourage new regions
+            // At 2x target size, boost drops to ~50%
+            var oversize = (float)largestMatchingRegion / TargetRegionSize;
             var taperStrength = Mathf.Max(0.0f, 1.0f - (oversize - 1.0f) * 0.5f);
             modifier = 1.0f + taperStrength * BoostFactor;
         }
         else
         {
-            // Gradual boost based on region size - no minimum floor
-            // Small regions get small boost, larger regions get stronger boost up to target
-            var growthProgress = (float)largestMatchingRegion / TargetRegionSize;
-            modifier = 1.0f + growthProgress * BoostFactor;
+            // Square root scaling: small regions get meaningful boost, larger regions get more
+            // 1-tile: 2.4x, 10-tile: 5.5x, 25-tile: 8.1x, 50-tile: 11x
+            // This allows regions to seed while giving larger regions competitive advantage
+            var regionProgress = Mathf.Sqrt((float)largestMatchingRegion / TargetRegionSize);
+            modifier = 1.0f + regionProgress * BoostFactor;
         }
 
+        _totalBoostApplied += modifier;
         return Mathf.Max(MinModifier, modifier);
     }
 }

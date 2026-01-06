@@ -58,16 +58,16 @@ public class WfcMapGenerator
 
     public bool EnableCompactness { get; set; } = true;
 
-    public float SnakePenalty
+    public float CornerBoost
     {
-        get => _compactness.SnakePenalty;
-        set => _compactness.SnakePenalty = value;
+        get => _compactness.CornerBoost;
+        set => _compactness.CornerBoost = value;
     }
 
-    public float CompactBoost
+    public float GapFillBoost
     {
-        get => _compactness.CompactBoost;
-        set => _compactness.CompactBoost = value;
+        get => _compactness.GapFillBoost;
+        set => _compactness.GapFillBoost = value;
     }
 
     public bool EnableConnectivity { get; set; } = true;
@@ -269,6 +269,10 @@ public class WfcMapGenerator
             _selector.AddConstraint(_diminishingReturns);
 
         _selector.AddConstraint(_spatialCoherence);
+
+        // Encourage compact blob shapes (boosts corner/gap fills)
+        if (EnableCompactness)
+            _selector.AddConstraint(_compactness);
 
         // Enforce 1-tile gap between different auto-tile types (8-neighbor check)
         if (_autoTileGap != null)

@@ -39,7 +39,7 @@ public class WfcGridTest
             for (var x = 0; x < 3; x++)
             {
                 var cell = grid.GetCell(x, y);
-                AssertThat(cell.GetEntropy()).IsEqual(3);
+                AssertThat(cell.GetPossibleTiles().Count).IsEqual(3);
             }
         }
     }
@@ -109,61 +109,6 @@ public class WfcGridTest
         var grid = new WfcGrid(2, 2, new[] { "grass", "dirt" });
 
         AssertBool(grid.IsFullyCollapsed()).IsFalse();
-    }
-
-    [TestCase]
-    public void TestGetLowestEntropyCell()
-    {
-        var grid = new WfcGrid(3, 3, new[] { "grass", "dirt", "sand" });
-
-        // Remove one tile from cell (1,1) to make it lowest entropy but not collapsed
-        // Cell (1,1) will have entropy 2, all others have entropy 3
-        var cell = grid.GetCell(1, 1);
-        cell.RemoveTile("grass");
-
-        var lowestPos = grid.GetLowestEntropyCell();
-
-        AssertThat(lowestPos).IsEqual(new Vector2I(1, 1));
-    }
-
-    [TestCase]
-    public void TestGetLowestEntropyCellSkipsCollapsed()
-    {
-        var grid = new WfcGrid(2, 2, new[] { "grass", "dirt" });
-
-        // Collapse one cell
-        grid.GetCell(0, 0).CollapseTo("grass");
-
-        var lowestPos = grid.GetLowestEntropyCell();
-
-        // Should return one of the uncollapsed cells, not (0,0)
-        AssertThat(lowestPos).IsNotEqual(new Vector2I(0, 0));
-    }
-
-    [TestCase]
-    public void TestGetLowestEntropyCellReturnsNullWhenAllCollapsed()
-    {
-        var grid = new WfcGrid(2, 2, new[] { "grass" });
-
-        var lowestPos = grid.GetLowestEntropyCell();
-
-        AssertThat(lowestPos).IsNull();
-    }
-
-    [TestCase]
-    public void TestGetLowestEntropyCellWithTieBreak()
-    {
-        var grid = new WfcGrid(3, 3, new[] { "grass", "dirt" });
-
-        // All cells have same entropy, tie-breaker should pick randomly
-        _rng.Seed = 42;
-        var pos1 = grid.GetLowestEntropyCellWithTieBreak(_rng);
-
-        _rng.Seed = 42;
-        var pos2 = grid.GetLowestEntropyCellWithTieBreak(_rng);
-
-        // Same seed should give same result
-        AssertThat(pos1).IsEqual(pos2);
     }
 
     [TestCase]
