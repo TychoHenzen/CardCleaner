@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
@@ -88,6 +89,12 @@ public class WfcMapGenerator
         _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
+
+        // Allow all non-auto-tiles to be adjacent to each other (for background layer WFC)
+        if (tileRegistry != null)
+        {
+            ConfigureGapTileAdjacencies(tileRegistry);
+        }
     }
 
     public WfcMapGenerator(WfcAdjacencyRules adjacencyRules, ITileRegistry? tileRegistry = null)
@@ -102,6 +109,37 @@ public class WfcMapGenerator
         _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
+
+        // Allow all non-auto-tiles to be adjacent to each other (for background layer WFC)
+        if (tileRegistry != null)
+        {
+            ConfigureGapTileAdjacencies(tileRegistry);
+        }
+    }
+
+    /// <summary>
+    /// Configures adjacency rules so that all non-auto-tiles (gap tiles) can be adjacent to each other.
+    /// This is necessary for the background layer of two-phase WFC where only gap tiles are used.
+    /// Without this, gap tiles can only be adjacent to auto-tiles (from transition definitions),
+    /// causing WFC to collapse everything to a single tile type.
+    /// </summary>
+    private void ConfigureGapTileAdjacencies(ITileRegistry tileRegistry)
+    {
+        var gapTiles = new List<string>();
+        foreach (var tile in tileRegistry.GetAllTiles())
+        {
+            // Gap tiles are non-auto-tiles that appear in the adjacency rules
+            if (!tile.HasAutoTileVariants && _adjacencyRules.AllTileIds.Contains(tile.Id))
+            {
+                gapTiles.Add(tile.Id);
+            }
+        }
+
+        if (gapTiles.Count > 0)
+        {
+            _adjacencyRules.AddMutualAdjacencies(gapTiles);
+            GD.Print($"[WFC] Configured {gapTiles.Count} gap tiles for mutual adjacency");
+        }
     }
 
     public WfcGenerationResult Generate(
@@ -146,9 +184,10 @@ public class WfcMapGenerator
         Func<Vector2I, BiomeDefinition> getBiomeAt,
         Vector2I size,
         ulong seed,
-        BaselineGradient? gradient = null)
+        BaselineGradient? gradient = null,
+        Func<TileDefinition, bool>? tileFilter = null)
     {
-        var (allTiles, passableTiles) = DetermineMultiBiomeTiles(biomeRegistry);
+        var (allTiles, passableTiles) = DetermineMultiBiomeTiles(biomeRegistry, tileFilter);
         if (allTiles.Count == 0)
         {
             return WfcGenerationResult.Failed("No valid tiles across all biomes");
@@ -273,7 +312,9 @@ public class WfcMapGenerator
         return (allTiles, passableTiles);
     }
 
-    private (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineMultiBiomeTiles(BiomeRegistry registry)
+    private (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineMultiBiomeTiles(
+        BiomeRegistry registry,
+        Func<TileDefinition, bool>? tileFilter = null)
     {
         var allTiles = new HashSet<string>();
         var passableTiles = new HashSet<string>();
@@ -290,6 +331,14 @@ public class WfcMapGenerator
             {
                 if (!_adjacencyRules.AllTileIds.Contains(tileId))
                     continue;
+
+                // Apply tile filter if provided
+                if (tileFilter != null && _tileRegistry != null)
+                {
+                    var tileDef = _tileRegistry.GetTile(tileId);
+                    if (tileDef == null || !tileFilter(tileDef))
+                        continue;
+                }
 
                 allTiles.Add(tileId);
 

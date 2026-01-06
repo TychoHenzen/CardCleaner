@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -71,6 +72,65 @@ public static class RegionAnalyzer
         );
     }
 
+    /// <summary>
+    /// Analyzes tile type distribution across the map.
+    /// Returns percentage of each tile type and region counts.
+    /// </summary>
+    public static DistributionMetrics AnalyzeDistribution(string[,] tileMap)
+    {
+        if (tileMap == null)
+            throw new ArgumentNullException(nameof(tileMap));
+
+        var height = tileMap.GetLength(0);
+        var width = tileMap.GetLength(1);
+
+        if (height == 0 || width == 0)
+            return new DistributionMetrics(0, 0, []);
+
+        // Count tiles per type and track regions
+        var tileCounts = new Dictionary<string, int>();
+        var tileRegions = new Dictionary<string, int>();
+        var visited = new bool[height, width];
+        var totalTiles = 0;
+
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                var tile = tileMap[y, x];
+                if (string.IsNullOrEmpty(tile))
+                    continue;
+
+                totalTiles++;
+
+                if (!tileCounts.TryAdd(tile, 1))
+                    tileCounts[tile]++;
+
+                // Count regions via flood fill
+                if (!visited[y, x])
+                {
+                    FloodFill(tileMap, visited, x, y, tile);
+                    if (!tileRegions.TryAdd(tile, 1))
+                        tileRegions[tile]++;
+                }
+            }
+        }
+
+        if (totalTiles == 0)
+            return new DistributionMetrics(0, 0, []);
+
+        var distributions = tileCounts
+            .Select(kvp => new TileTypeDistribution(
+                kvp.Key,
+                kvp.Value,
+                kvp.Value * 100f / totalTiles,
+                tileRegions.GetValueOrDefault(kvp.Key, 0)))
+            .OrderByDescending(d => d.Percentage)
+            .ToArray();
+
+        return new DistributionMetrics(totalTiles, tileCounts.Count, distributions);
+    }
+
     private static int FloodFill(string[,] tileMap, bool[,] visited, int startX, int startY, string targetTile)
     {
         var height = tileMap.GetLength(0);
@@ -127,3 +187,50 @@ public record RegionMetrics(
     int TilesInLargeRegions,
     int TotalTiles
 );
+
+/// <summary>
+/// Distribution statistics for a specific tile type.
+/// </summary>
+public record TileTypeDistribution(
+    string TileId,
+    int TileCount,
+    float Percentage,
+    int RegionCount
+);
+
+/// <summary>
+/// Complete distribution analysis of all tile types in a map.
+/// </summary>
+public record DistributionMetrics(
+    int TotalTiles,
+    int UniqueTileTypes,
+    TileTypeDistribution[] Distributions
+)
+{
+    /// <summary>
+    /// Returns true if all tile types are within the target percentage range.
+    /// </summary>
+    public bool IsWithinRange(float minPercent, float maxPercent)
+    {
+        foreach (var dist in Distributions)
+        {
+            if (dist.Percentage < minPercent || dist.Percentage > maxPercent)
+                return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Returns the maximum percentage of any single tile type.
+    /// </summary>
+    public float MaxPercentage => Distributions.Length > 0
+        ? Distributions.Max(d => d.Percentage)
+        : 0f;
+
+    /// <summary>
+    /// Returns the minimum percentage of any tile type.
+    /// </summary>
+    public float MinPercentage => Distributions.Length > 0
+        ? Distributions.Min(d => d.Percentage)
+        : 0f;
+}

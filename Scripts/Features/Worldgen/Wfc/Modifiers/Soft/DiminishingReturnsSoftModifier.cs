@@ -8,13 +8,13 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 ///
 /// Formula: multiplier = 1 / (1 + potentialBlobSize * DecayFactor)
 ///
-/// With DecayFactor=0.05 (balanced with SpatialCoherenceConstraint):
-/// - Blob size 10:  1 / (1 + 10 * 0.05) = 0.667 (allows coherent growth)
-/// - Blob size 40:  1 / (1 + 40 * 0.05) = 0.333 (target size, still growing)
-/// - Blob size 80:  1 / (1 + 80 * 0.05) = 0.200 (decay begins)
-/// - Blob size 100: 1 / (1 + 100 * 0.05) = 0.167 (prevents domination)
+/// With DecayFactor=0.2 (balanced with SpatialCoherenceConstraint):
+/// - Blob size 5:   1 / (1 + 5 * 0.2) = 0.5 (allows coherent growth)
+/// - Blob size 10:  1 / (1 + 10 * 0.2) = 0.33 (moderate decay)
+/// - Blob size 20:  1 / (1 + 20 * 0.2) = 0.2 (target size, significant decay)
+/// - Blob size 30:  1 / (1 + 30 * 0.2) = 0.14 (prevents domination)
 ///
-/// With SpatialCoherence BoostFactor=5.0, net effect at size 40: 6.0x * 0.333 = 2.0x boost
+/// Net effect with SpatialCoherence (BoostFactor=8.0) at size 20: ~5x × 0.2 = 1x (balanced)
 /// </summary>
 public class DiminishingReturnsSoftModifier : IWfcConstraint
 {
@@ -23,11 +23,11 @@ public class DiminishingReturnsSoftModifier : IWfcConstraint
     /// <summary>
     /// Decay factor controlling how quickly weights diminish.
     /// Higher values = faster decay, smaller blobs.
-    /// Reduced from 0.5 to 0.05 to work with SpatialCoherenceConstraint (target: 40 tiles).
-    /// With 0.05: Decay becomes significant at 60-80 tiles, preventing single-type domination
-    /// while allowing spatial coherence to form 40-tile regions.
+    /// With 0.2: Meaningful decay at 10-20 tiles, preventing single-type domination
+    /// while allowing spatial coherence to form coherent regions.
+    /// Formula results: size 5 = 0.5x, size 10 = 0.33x, size 20 = 0.2x
     /// </summary>
-    public float DecayFactor { get; set; } = 0.05f;
+    public float DecayFactor { get; set; } = 0.2f;
 
     /// <summary>
     /// Minimum blob size before decay applies.

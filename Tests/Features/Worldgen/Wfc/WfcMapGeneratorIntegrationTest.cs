@@ -419,6 +419,73 @@ public class WfcMapGeneratorIntegrationTest
     }
 
     [TestCase]
+    public void TestTileDistributionDiversity()
+    {
+        // Validates that tile distribution is diverse (no single type dominates)
+        // Target: each tile type should be 10-30% of the map
+        var rules = new WfcAdjacencyRules(new[]
+        {
+            ("A", "B"),
+            ("B", "C"),
+            ("A", "C"),
+            ("C", "D"),
+            ("A", "D"),
+            ("B", "D")
+        });
+
+        var generator = new WfcMapGenerator(rules);
+
+        var passable = new TilePool();
+        passable.Add("A", 1.0f);
+        passable.Add("B", 1.0f);
+        passable.Add("C", 1.0f);
+        passable.Add("D", 1.0f);
+
+        var biome = new BiomeDefinition(
+            "test",
+            new CardSignature(),
+            passable,
+            new TilePool(),
+            0.0f);
+
+        var totalRuns = 10;
+        var goodDistributions = 0;
+
+        for (var seed = 1; seed <= totalRuns; seed++)
+        {
+            var result = generator.Generate(biome, new Vector2I(10, 10), (ulong)seed * 500);
+
+            if (!result.Success)
+            {
+                GD.Print($"Seed {seed}: Generation failed - {result.ErrorMessage}");
+                continue;
+            }
+
+            var mapData = result.MapData!;
+            var distribution = RegionAnalyzer.AnalyzeDistribution(mapData.TileIds);
+
+            GD.Print($"Seed {seed}: {distribution.UniqueTileTypes} types, " +
+                     $"max={distribution.MaxPercentage:F1}%, min={distribution.MinPercentage:F1}%");
+
+            foreach (var dist in distribution.Distributions)
+            {
+                GD.Print($"  {dist.TileId}: {dist.Percentage:F1}% ({dist.TileCount} tiles, {dist.RegionCount} regions)");
+            }
+
+            // Check if no tile type exceeds 50% (less strict than 30% initially)
+            if (distribution.MaxPercentage <= 50.0f && distribution.MinPercentage >= 5.0f)
+            {
+                goodDistributions++;
+            }
+        }
+
+        GD.Print($"Good distributions: {goodDistributions}/{totalRuns}");
+
+        // At least 50% of runs should have reasonable diversity
+        AssertThat(goodDistributions).IsGreaterEqual(totalRuns / 2);
+    }
+
+    [TestCase]
     public void TestTransitionSpacingReducesContradictions()
     {
         // The transition spacing constraint should reduce contradictions by

@@ -196,12 +196,8 @@ public class WfcTileSelector
         {
             float weight;
 
-            // Use uniform base weight (1.0) when position provided
-            if (position.HasValue && grid != null)
-            {
-                weight = 1.0f;
-            }
-            else if (biomeWeights.TryGetValue(tileId, out var biomeWeight))
+            // Always start with biome weights to preserve intended tile distribution
+            if (biomeWeights.TryGetValue(tileId, out var biomeWeight))
             {
                 weight = biomeWeight;
             }

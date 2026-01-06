@@ -10,12 +10,12 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// <remarks>
 /// Region tracking strategy:
 /// - Scans collapsed neighbors (4-directional) to detect existing regions
-/// - Tiles matching ANY region receive full boost up to maxThreshold (1.25 × target)
-/// - Boost tapers off for oversized regions to prevent single-tile-type domination
+/// - Boost scales gradually with region size up to maxThreshold (1.25 × target)
+/// - Boost tapers off for oversized regions to encourage tile diversity
 ///
 /// Probability calculation:
-/// - If tile matches neighbor region (size ≤ maxThreshold): modifier = 1.0 + BoostFactor
-/// - If tile matches oversized region (size > maxThreshold): modifier tapers down
+/// - If tile matches neighbor region: modifier = 1.0 + (size/target) × BoostFactor
+/// - If tile matches oversized region: modifier tapers toward 1.0
 /// - If no neighbors collapsed: modifier = 1.0 (neutral)
 /// </remarks>
 public class SpatialCoherenceConstraint : IWfcConstraint
@@ -23,20 +23,19 @@ public class SpatialCoherenceConstraint : IWfcConstraint
     /// <summary>
     /// Target size for coherent regions (in tiles).
     /// Regions approaching this size receive maximum boost.
+    /// For 89-tile maps, 20 tiles = ~22% per region, allowing 3-5 regions.
     /// </summary>
-    public int TargetRegionSize { get; set; } = 40;
+    public int TargetRegionSize { get; set; } = 20;
 
     /// <summary>
     /// Factor controlling how much regional coherence affects probability.
-    /// Increased to 20.0 to overcome base weight differences between competing tile types.
-    /// With BoostFactor=20.0, matching tiles get 21.0x boost (1.0 + 20.0).
-    /// Works with DiminishingReturns (decay 0.05) to balance growth:
-    /// - Size 10: 21.0x coherence × 0.67 diminishing = 14.1x net boost
-    /// - Size 40: 21.0x coherence × 0.33 diminishing = 7.0x net boost
-    /// - Size 50: Taper begins, reducing coherence boost to prevent domination
-    /// This strong boost ensures extending existing regions wins over fragmenting with different tiles.
+    /// With BoostFactor=8.0, matching tiles get meaningful boost for region growth.
+    /// Works with DiminishingReturns (decay 0.2) to balance growth:
+    /// - Size 5:  9.0x coherence × 0.5 diminishing = 4.5x net boost
+    /// - Size 15: 9.0x coherence × 0.25 diminishing = 2.25x net boost (target region)
+    /// - Size 25: Taper begins, reducing coherence boost to encourage new regions
     /// </summary>
-    public float BoostFactor { get; set; } = 20.0f;
+    public float BoostFactor { get; set; } = 8.0f;
 
     /// <summary>
     /// Minimum probability modifier to prevent complete tile elimination.
@@ -86,24 +85,23 @@ public class SpatialCoherenceConstraint : IWfcConstraint
         if (largestMatchingRegion == 0)
             return 1.0f;
 
-        // Strong minimum boost to overcome tile variety (89 tiles need ~50x boost minimum)
-        // Then scale up slightly for larger regions to favor growing big regions
-        var maxThreshold = TargetRegionSize * 1.25f;  // 40 * 1.25 = 50
+        // Regions above maxThreshold start tapering off to encourage diversity
+        var maxThreshold = TargetRegionSize * 1.25f;  // 20 * 1.25 = 25
 
         float modifier;
         if (largestMatchingRegion > maxThreshold)
         {
-            // Taper off for oversized regions
-            var taperStrength = Mathf.Max(0.0f, 2.0f - (largestMatchingRegion / maxThreshold));
+            // Taper off for oversized regions - stronger taper to encourage new regions
+            var oversize = largestMatchingRegion / maxThreshold;
+            var taperStrength = Mathf.Max(0.0f, 1.0f - (oversize - 1.0f) * 0.5f);
             modifier = 1.0f + taperStrength * BoostFactor;
         }
         else
         {
-            // Strong MINIMUM boost (50x) plus scaling bonus up to BoostFactor (20x more)
-            // This ensures even size-1 regions have enough boost to grow
-            const float minBoost = 50.0f;
-            var scalingBonus = (largestMatchingRegion / TargetRegionSize) * BoostFactor;
-            modifier = minBoost + scalingBonus;
+            // Gradual boost based on region size - no minimum floor
+            // Small regions get small boost, larger regions get stronger boost up to target
+            var growthProgress = (float)largestMatchingRegion / TargetRegionSize;
+            modifier = 1.0f + growthProgress * BoostFactor;
         }
 
         return Mathf.Max(MinModifier, modifier);

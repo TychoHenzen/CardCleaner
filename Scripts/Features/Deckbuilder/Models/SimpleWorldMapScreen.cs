@@ -864,6 +864,13 @@ public partial class SimpleWorldMapScreen : Node3D
                     : effectiveTile.AtlasCoords;
                 sourceId = effectiveTile.SourceId;
             }
+            // For bitmask 0 (no foreground corners), just render the base tile
+            // This happens when no auto-tile is in the visual window
+            else if (bitmask == 0)
+            {
+                atlasCoords = baseTile.AtlasCoords;
+                sourceId = baseTile.SourceId;
+            }
             // For uniform terrain (top == base, bitmask 15), we need the solid fill
             // Self-transitions don't exist in the map, so find ANY transition with this tile
             else if (topTileId == baseTileId && bitmask == 15)

@@ -124,4 +124,28 @@ public class WfcAdjacencyRules
         _adjacencyMap[tileA].Add(tileB);
         _adjacencyMap[tileB].Add(tileA);
     }
+
+    /// <summary>
+    /// Makes a group of tiles mutually adjacent to each other.
+    /// Used for gap tiles (non-auto-tiles) which should be able to border any other gap tile
+    /// in the background layer of two-phase WFC.
+    /// </summary>
+    public void AddMutualAdjacencies(IEnumerable<string> tileIds)
+    {
+        var tiles = new List<string>(tileIds);
+        foreach (var tileA in tiles)
+        {
+            // Ensure entry exists
+            if (!_adjacencyMap.ContainsKey(tileA))
+            {
+                _adjacencyMap[tileA] = new HashSet<string>();
+                _allTileIds.Add(tileA);
+            }
+
+            foreach (var tileB in tiles)
+            {
+                _adjacencyMap[tileA].Add(tileB);
+            }
+        }
+    }
 }

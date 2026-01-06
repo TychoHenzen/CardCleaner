@@ -166,7 +166,10 @@ public class SimpleMapGenerator
     }
 
     /// <summary>
-    /// Generates terrain using single-pass WFC with post-processing to classify tiles into layers.
+    /// Generates terrain using two-phase WFC:
+    /// Phase 1: Background layer (simple/non-auto tiles)
+    /// Phase 2: Foreground layer (auto-tiles with gap constraint)
+    /// Both layers are WFC-generated and used together for transitions.
     /// </summary>
     private (string[,] backgroundLayer, string[,] foregroundLayer, string[,] mergedGrid) GenerateTwoPhaseWfc(
         Vector2I size, string[,] biomeMap)
@@ -192,49 +195,83 @@ public class SimpleMapGenerator
 
         _wfcGenerator.MaxRetries = MaxWfcRetries;
 
-        // Use original single-pass WFC with all tiles
-        var result = _wfcGenerator.GenerateMultiBiome(
+        // Phase 1: Generate background layer with simple (non-auto) tiles only
+        var bgResult = _wfcGenerator.GenerateMultiBiome(
             _biomeRegistry,
             pos => _biomeProvider.GetBiomeAt(pos),
             size,
             _rng.Randi(),
-            _gradient);
+            _gradient,
+            tile => !tile.HasAutoTileVariants);  // Only simple tiles
 
-        if (result.Success && result.MapData != null)
+        if (bgResult.Success && bgResult.MapData != null)
         {
-            ILog.Print($"[WFC] Succeeded in {result.Iterations} iterations");
-
-            // Post-process: classify tiles into layers for visual rendering
+            ILog.Print($"[WFC] Background phase succeeded in {bgResult.Iterations} iterations");
             for (var y = 0; y < size.Y; y++)
             for (var x = 0; x < size.X; x++)
             {
-                var tileId = result.MapData.TileIds[y, x];
-                var tile = _tileRegistry.GetTile(tileId);
-                mergedGrid[y, x] = tileId;
-
-                // Auto-tiles go to foreground for bitmask rendering
-                if (tile?.HasAutoTileVariants == true)
-                {
-                    foregroundLayer[y, x] = tileId;
-                    backgroundLayer[y, x] = FloorTileId;
-                }
-                else
-                {
-                    foregroundLayer[y, x] = "";
-                    backgroundLayer[y, x] = tileId;
-                }
+                backgroundLayer[y, x] = bgResult.MapData.TileIds[y, x];
             }
         }
         else
         {
-            ILog.Print($"[WFC] Failed: {result.ErrorMessage}, using floor fallback");
+            ILog.Print($"[WFC] Background phase failed: {bgResult.ErrorMessage}, using grass fallback");
             for (var y = 0; y < size.Y; y++)
             for (var x = 0; x < size.X; x++)
             {
-                backgroundLayer[y, x] = FloorTileId;
-                foregroundLayer[y, x] = "";
-                mergedGrid[y, x] = FloorTileId;
+                backgroundLayer[y, x] = GrassTileId;
             }
+        }
+
+        // Phase 2: Generate foreground layer - include ALL tiles but mark non-auto-tiles as empty
+        // WFC needs gap tiles (simple tiles) to fill spaces between auto-tile regions
+        // The gap constraint ensures different auto-tiles don't touch directly
+        var fgResult = _wfcGenerator.GenerateMultiBiome(
+            _biomeRegistry,
+            pos => _biomeProvider.GetBiomeAt(pos),
+            size,
+            _rng.Randi(),
+            _gradient);  // No filter - include both auto-tiles and gap tiles
+
+        if (fgResult.Success && fgResult.MapData != null)
+        {
+            ILog.Print($"[WFC] Foreground phase succeeded in {fgResult.Iterations} iterations");
+            var autoTileCount = 0;
+            for (var y = 0; y < size.Y; y++)
+            for (var x = 0; x < size.X; x++)
+            {
+                var tileId = fgResult.MapData.TileIds[y, x];
+                var tile = _tileRegistry.GetTile(tileId);
+                // Only keep auto-tiles in foreground; gap tiles become empty (show background)
+                if (tile?.HasAutoTileVariants == true)
+                {
+                    foregroundLayer[y, x] = tileId;
+                    autoTileCount++;
+                }
+                else
+                {
+                    foregroundLayer[y, x] = "";
+                }
+            }
+            ILog.Print($"[WFC] Foreground contains {autoTileCount} auto-tile cells");
+        }
+        else
+        {
+            ILog.Print($"[WFC] Foreground phase failed: {fgResult.ErrorMessage}, using empty foreground");
+            for (var y = 0; y < size.Y; y++)
+            for (var x = 0; x < size.X; x++)
+            {
+                foregroundLayer[y, x] = "";
+            }
+        }
+
+        // Merge: foreground takes precedence where present
+        for (var y = 0; y < size.Y; y++)
+        for (var x = 0; x < size.X; x++)
+        {
+            mergedGrid[y, x] = !string.IsNullOrEmpty(foregroundLayer[y, x])
+                ? foregroundLayer[y, x]
+                : backgroundLayer[y, x];
         }
 
         return (backgroundLayer, foregroundLayer, mergedGrid);
@@ -283,7 +320,7 @@ public class SimpleMapGenerator
         {
             var visualPosition = new Vector2I(vx, vy);
 
-            // Sample the 4 corners from foreground (auto-tiles only)
+            // Sample the 4 corners from foreground (auto-tiles)
             var fgNW = GetCellSafe(foregroundLayer, size, vx - 1, vy - 1);
             var fgNE = GetCellSafe(foregroundLayer, size, vx, vy - 1);
             var fgSW = GetCellSafe(foregroundLayer, size, vx - 1, vy);
@@ -319,7 +356,7 @@ public class SimpleMapGenerator
             {
                 if (string.IsNullOrEmpty(bg)) continue;
                 var tile = _tileRegistry.GetTile(bg);
-                if (tile != null && !tile.HasAutoTileVariants)
+                if (tile != null)
                 {
                     if (tile.Dominance < baseDominance)
                     {
@@ -329,8 +366,8 @@ public class SimpleMapGenerator
                 }
             }
 
-            // Fallback to floor if no base terrain found
-            baseTerrain ??= FloorTileId;
+            // Fallback to grass if no base terrain found
+            baseTerrain ??= GrassTileId;
             topTerrain ??= baseTerrain;
 
             // Compute bitmask based on which corners have the topTerrain
@@ -351,6 +388,26 @@ public class SimpleMapGenerator
         x = Math.Clamp(x, 0, size.X - 1);
         y = Math.Clamp(y, 0, size.Y - 1);
         return grid[y, x];
+    }
+
+    /// <summary>
+    /// Selects a simple (non-auto-tile) passable tile from the biome.
+    /// Used as background for auto-tiles.
+    /// </summary>
+    private string? SelectSimpleTileFromBiome(BiomeDefinition biome)
+    {
+        if (biome.PassableTiles == null || biome.PassableTiles.IsEmpty)
+            return null;
+
+        // Find tiles without auto-tile variants
+        foreach (var tileId in biome.PassableTiles.GetAllTileIds())
+        {
+            var tile = _tileRegistry.GetTile(tileId);
+            if (tile != null && !tile.HasAutoTileVariants)
+                return tileId;
+        }
+
+        return null;
     }
 
     /// <summary>
