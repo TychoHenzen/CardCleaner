@@ -148,6 +148,13 @@ The map generator uses a **two-phase Wave Function Collapse** approach with dual
 - `BitmaskConsistencyValidator.cs`: Validates dual-grid bitmask agreement
 - `RegionAnalyzer.cs`: Measures spatial coherence metrics
 
+**CRITICAL - WFC Soft Constraints and Entropy**:
+- **Tiles are NOT removed from possibility sets** - constraints set weights to 0 instead
+- `cell.GetPossibleTiles().Count` is MEANINGLESS for entropy - it includes 0-weight tiles
+- Entropy MUST be calculated using weighted probabilities from constraint evaluation
+- **DO NOT** try to optimize cell selection by counting tiles - this breaks WFC completely
+- Any entropy optimization must preserve full constraint weight calculation
+
 **Dual-Grid Auto-Tiling**:
 - Visual tiles offset by half a cell from data grid
 - Each visual tile samples 4 data corners → 4-bit bitmask (Corner16 format)
