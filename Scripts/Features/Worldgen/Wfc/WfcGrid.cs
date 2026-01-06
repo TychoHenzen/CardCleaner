@@ -266,6 +266,38 @@ public class WfcGrid
     }
 
     /// <summary>
+    /// Finds a random frontier cell (uncollapsed cell adjacent to collapsed).
+    /// Much faster than entropy-based selection - O(cells) vs O(cells × tiles × constraints).
+    /// </summary>
+    /// <param name="rng">Random number generator for selection</param>
+    /// <returns>Position of a random frontier cell, or null if all collapsed</returns>
+    public Vector2I? GetRandomFrontierCell(RandomNumberGenerator rng)
+    {
+        var frontierCells = new List<Vector2I>();
+        Vector2I? anyUncollapsed = null;
+
+        for (var y = 0; y < _height; y++)
+        {
+            for (var x = 0; x < _width; x++)
+            {
+                var cell = _cells[y, x];
+                if (cell.IsCollapsed()) continue;
+
+                var pos = new Vector2I(x, y);
+                anyUncollapsed ??= pos;
+
+                if (HasCollapsedNeighbor(pos))
+                    frontierCells.Add(pos);
+            }
+        }
+
+        if (frontierCells.Count == 0)
+            return anyUncollapsed;
+
+        return frontierCells[rng.RandiRange(0, frontierCells.Count - 1)];
+    }
+
+    /// <summary>
     /// Finds lowest weighted-entropy cell among frontier cells (adjacent to collapsed).
     /// Only computes expensive entropy for frontier cells, dramatically reducing work.
     /// Falls back to any uncollapsed cell only when no frontier exists (start of generation).

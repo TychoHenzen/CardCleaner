@@ -51,6 +51,13 @@ public class WfcSolver
     /// </summary>
     public int MaxIterations { get; set; } = 10000;
 
+    /// <summary>
+    /// When true, uses fast random frontier selection instead of weighted entropy.
+    /// Much faster but may produce slightly different map characteristics.
+    /// Default true for performance.
+    /// </summary>
+    public bool UseFastCellSelection { get; set; } = true;
+
     public WfcSolver(WfcPropagator propagator, WfcTileSelector selector, BlobSizeTracker? blobTracker = null, SpatialCoherenceConstraint? spatialCoherence = null)
     {
         _propagator = propagator;
@@ -132,16 +139,26 @@ public class WfcSolver
                 GD.Print($"[WFC] Progress: {iterations}/{totalCells} cells ({100*iterations/totalCells}%)");
             }
 
-            // Find cell with lowest weighted entropy (prefers frontier cells)
-            var targetPos = grid.GetLowestEntropyCellWeighted(
-                pos => _selector.ComputeWeights(
-                    grid.GetCell(pos).GetPossibleTiles(),
-                    biome,
-                    rng,
-                    GetContinuityMatchingTiles(grid, pos),
-                    pos,
-                    grid),
-                rng);
+            // Find next cell to collapse
+            Vector2I? targetPos;
+            if (UseFastCellSelection)
+            {
+                // Fast path: random frontier cell selection - O(cells) per iteration
+                targetPos = grid.GetRandomFrontierCell(rng);
+            }
+            else
+            {
+                // Slow path: weighted entropy selection - O(cells × tiles × constraints) per iteration
+                targetPos = grid.GetLowestEntropyCellWeighted(
+                    pos => _selector.ComputeWeights(
+                        grid.GetCell(pos).GetPossibleTiles(),
+                        biome,
+                        rng,
+                        GetContinuityMatchingTiles(grid, pos),
+                        pos,
+                        grid),
+                    rng);
+            }
 
             if (targetPos == null)
             {
