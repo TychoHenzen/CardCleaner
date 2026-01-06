@@ -7,17 +7,24 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 
 /// <summary>
 /// Graph representation of passable tiles for connectivity analysis.
-/// Supports incremental updates, articulation point detection, and disconnected component tracking.
+/// Uses union-find for O(α(n)) amortized component queries instead of O(V) BFS.
+/// Supports incremental updates and disconnected component tracking.
 /// </summary>
 public class PassabilityGraph
 {
     private readonly HashSet<Vector2I> _nodes = new();
     private readonly Dictionary<Vector2I, HashSet<Vector2I>> _adjacency = new();
 
-    // Cached component data - invalidated on structural changes
+    // Union-find data structures for O(1) amortized component queries
+    private readonly Dictionary<Vector2I, Vector2I> _parent = new();
+    private readonly Dictionary<Vector2I, int> _rank = new();
+    private int _componentCount;
+
+    // Cached data - only invalidated when truly needed
     private List<HashSet<Vector2I>>? _cachedComponents;
     private (Vector2I, Vector2I)? _cachedClosestPair;
     private List<(Vector2I, Vector2I)>? _cachedAllClosestPairs;
+    private bool _closestPairDirty = true;
 
     /// <summary>
     /// Number of nodes in the graph.
@@ -39,18 +46,26 @@ public class PassabilityGraph
 
     /// <summary>
     /// Adds a node to the graph at the given position.
+    /// O(1) operation using union-find.
     /// </summary>
     public void AddNode(Vector2I position)
     {
         if (_nodes.Add(position))
         {
             _adjacency[position] = new HashSet<Vector2I>();
-            InvalidateCache();
+            // Initialize union-find: node is its own parent
+            _parent[position] = position;
+            _rank[position] = 0;
+            _componentCount++;
+            // Only invalidate expensive caches, not component count
+            _cachedComponents = null;
+            _closestPairDirty = true;
         }
     }
 
     /// <summary>
     /// Removes a node from the graph and all edges connected to it.
+    /// Note: This invalidates union-find and requires rebuild.
     /// </summary>
     public void RemoveNode(Vector2I position)
     {
@@ -65,20 +80,118 @@ public class PassabilityGraph
             }
         }
         _adjacency.Remove(position);
+        _parent.Remove(position);
+        _rank.Remove(position);
+
+        // Node removal can split components - need full rebuild
+        RebuildUnionFind();
         InvalidateCache();
     }
 
     /// <summary>
     /// Adds a bidirectional edge between two nodes.
     /// Implicitly adds nodes if they don't exist.
+    /// O(α(n)) amortized using union-find.
     /// </summary>
     public void AddEdge(Vector2I a, Vector2I b)
     {
         AddNode(a);
         AddNode(b);
-        _adjacency[a].Add(b);
-        _adjacency[b].Add(a);
-        InvalidateCache();
+
+        // Only add edge if not already present
+        if (_adjacency[a].Add(b))
+        {
+            _adjacency[b].Add(a);
+
+            // Union the components - this may reduce component count
+            Union(a, b);
+
+            _cachedComponents = null;
+            _closestPairDirty = true;
+        }
+    }
+
+    /// <summary>
+    /// Find with path compression - O(α(n)) amortized.
+    /// </summary>
+    private Vector2I Find(Vector2I x)
+    {
+        if (!_parent.TryGetValue(x, out var p))
+            return x;
+
+        if (p != x)
+        {
+            _parent[x] = Find(p); // Path compression
+        }
+        return _parent[x];
+    }
+
+    /// <summary>
+    /// Union by rank - O(α(n)) amortized.
+    /// </summary>
+    private void Union(Vector2I a, Vector2I b)
+    {
+        var rootA = Find(a);
+        var rootB = Find(b);
+
+        if (rootA == rootB)
+            return; // Already in same component
+
+        // Union by rank
+        if (_rank[rootA] < _rank[rootB])
+        {
+            _parent[rootA] = rootB;
+        }
+        else if (_rank[rootA] > _rank[rootB])
+        {
+            _parent[rootB] = rootA;
+        }
+        else
+        {
+            _parent[rootB] = rootA;
+            _rank[rootA]++;
+        }
+
+        _componentCount--;
+    }
+
+    /// <summary>
+    /// Checks if two nodes are in the same component.
+    /// O(α(n)) amortized.
+    /// </summary>
+    public bool AreConnected(Vector2I a, Vector2I b)
+    {
+        if (!_nodes.Contains(a) || !_nodes.Contains(b))
+            return false;
+        return Find(a) == Find(b);
+    }
+
+    /// <summary>
+    /// Rebuilds union-find from adjacency list.
+    /// Called after node removal which can split components.
+    /// </summary>
+    private void RebuildUnionFind()
+    {
+        _parent.Clear();
+        _rank.Clear();
+        _componentCount = 0;
+
+        // Re-initialize all nodes
+        foreach (var node in _nodes)
+        {
+            _parent[node] = node;
+            _rank[node] = 0;
+            _componentCount++;
+        }
+
+        // Re-union based on edges
+        foreach (var node in _nodes)
+        {
+            foreach (var neighbor in _adjacency[node])
+            {
+                Union(node, neighbor);
+            }
+        }
     }
 
     private void InvalidateCache()
@@ -86,6 +199,7 @@ public class PassabilityGraph
         _cachedComponents = null;
         _cachedClosestPair = null;
         _cachedAllClosestPairs = null;
+        _closestPairDirty = true;
     }
 
     /// <summary>
@@ -130,11 +244,11 @@ public class PassabilityGraph
 
     /// <summary>
     /// Returns true if the graph has multiple disconnected components.
+    /// O(1) using union-find component count.
     /// </summary>
     public bool HasDisconnectedRegions()
     {
-        var components = GetComponents();
-        return components.Count > 1;
+        return _componentCount > 1;
     }
 
     /// <summary>

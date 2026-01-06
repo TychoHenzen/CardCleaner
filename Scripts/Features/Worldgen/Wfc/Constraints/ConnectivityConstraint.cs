@@ -38,6 +38,7 @@ public class ConnectivityConstraint : IWfcConstraint
 
         // === PROACTIVE: Ensure corridor between disconnected regions ===
         // If there are disconnected passable regions, ban impassable tiles on the corridor path
+        // HasDisconnectedRegions() is now O(1) using union-find component count
         if (_graph.HasDisconnectedRegions() && _graph.IsOnCorridorPath(context.Position, CorridorTolerance))
         {
             // This position is on the path between disconnected regions - must be passable
@@ -45,13 +46,13 @@ public class ConnectivityConstraint : IWfcConstraint
         }
 
         // === REACTIVE: Prevent disconnection at bridge positions ===
-        var passableNeighbors = GetPassableNeighbors(context.Position, context.Grid);
+        var passableNeighbors = GetPassableNeighbors(context);
 
         // 0-1 passable neighbors: can't be a bridge
         if (passableNeighbors.Count <= 1)
             return 1.0f;
 
-        // 2+ passable neighbors: check if they're already connected
+        // 2+ passable neighbors: check if they're already connected (O(α(n)) using union-find)
         if (AreAllNeighborsConnected(passableNeighbors))
             return 1.0f;
 
@@ -64,38 +65,38 @@ public class ConnectivityConstraint : IWfcConstraint
         if (neighbors.Count <= 1)
             return true;
 
+        // Use O(α(n)) union-find instead of O(V) BFS
         var first = neighbors[0];
-        var targets = new HashSet<Vector2I>(neighbors);
-        targets.Remove(first);
-
-        var visited = new HashSet<Vector2I> { first };
-        var queue = new Queue<Vector2I>();
-        queue.Enqueue(first);
-
-        while (queue.Count > 0 && targets.Count > 0)
+        for (var i = 1; i < neighbors.Count; i++)
         {
-            var current = queue.Dequeue();
-
-            foreach (var adjacent in _graph.GetNeighbors(current))
-            {
-                if (visited.Add(adjacent))
-                {
-                    targets.Remove(adjacent);
-                    queue.Enqueue(adjacent);
-                }
-            }
+            if (!_graph.AreConnected(first, neighbors[i]))
+                return false;
         }
 
-        return targets.Count == 0;
+        return true;
     }
 
-    private List<Vector2I> GetPassableNeighbors(Vector2I position, WfcGrid grid)
+    private List<Vector2I> GetPassableNeighbors(WfcConstraintContext context)
     {
-        var result = new List<Vector2I>();
+        var result = new List<Vector2I>(4);
 
-        foreach (var neighborPos in grid.GetNeighbors(position))
+        // Use precomputed neighbor info if available
+        if (context.NeighborInfo.HasValue)
         {
-            var neighborTile = grid.GetCollapsedTileAt(neighborPos);
+            foreach (var kvp in context.NeighborInfo.Value.Neighbors4)
+            {
+                if (_isPassable(kvp.Value))
+                {
+                    result.Add(kvp.Key);
+                }
+            }
+            return result;
+        }
+
+        // Fallback: iterate neighbors directly
+        foreach (var neighborPos in context.Grid.GetNeighbors(context.Position))
+        {
+            var neighborTile = context.Grid.GetCollapsedTileAt(neighborPos);
             if (neighborTile != null && _isPassable(neighborTile))
             {
                 result.Add(neighborPos);
