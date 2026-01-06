@@ -39,7 +39,10 @@ public class NoveltySoftModifier : IWfcConstraint
     /// <inheritdoc />
     public float GetProbabilityModifier(WfcConstraintContext context)
     {
-        var sameTypeNeighborCount = CountSameTypeNeighbors(context);
+        // Use precomputed neighbor info if available (optimization)
+        var sameTypeNeighborCount = context.NeighborInfo.HasValue
+            ? context.NeighborInfo.Value.SameType4Count
+            : CountSameTypeNeighbors(context);
 
         // Only boost tiles that would start a new isolated blob
         return sameTypeNeighborCount == 0 ? NoveltyBoost : 1.0f;

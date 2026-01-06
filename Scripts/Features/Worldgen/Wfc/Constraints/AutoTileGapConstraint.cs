@@ -42,6 +42,31 @@ public class AutoTileGapConstraint : IWfcConstraint
 
         // Candidate IS an auto-tile - check all 8 neighbors (including diagonals)
         // This ensures no 2x2 visual window contains more than one auto-tile type
+
+        // Use precomputed neighbor info if available (optimization)
+        if (context.NeighborInfo.HasValue)
+        {
+            foreach (var kvp in context.NeighborInfo.Value.Neighbors8)
+            {
+                var neighborTileId = kvp.Value;
+                var neighborTile = _tileRegistry.GetTile(neighborTileId);
+                if (neighborTile == null)
+                    continue;
+
+                // If neighbor is not an auto-tile, no problem
+                if (!neighborTile.HasAutoTileVariants)
+                    continue;
+
+                // Both are auto-tiles - must be SAME type
+                if (context.TileId != neighborTileId)
+                {
+                    return 0.0f; // Hard ban - different auto-tiles cannot be adjacent
+                }
+            }
+            return 1.0f;
+        }
+
+        // Fallback: iterate neighbors directly (for backward compatibility)
         foreach (var neighborPos in context.Grid.GetNeighbors8(context.Position))
         {
             var neighborCell = context.Grid.GetCell(neighborPos);

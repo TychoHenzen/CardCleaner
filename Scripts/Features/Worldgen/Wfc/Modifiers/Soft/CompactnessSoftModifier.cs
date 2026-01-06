@@ -32,7 +32,10 @@ public class CompactnessSoftModifier : IWfcConstraint
     /// <inheritdoc />
     public float GetProbabilityModifier(WfcConstraintContext context)
     {
-        var sameTypeNeighborCount = CountSameTypeNeighbors(context);
+        // Use precomputed neighbor info if available (optimization)
+        var sameTypeNeighborCount = context.NeighborInfo.HasValue
+            ? context.NeighborInfo.Value.SameType4Count
+            : CountSameTypeNeighbors(context);
 
         return sameTypeNeighborCount switch
         {

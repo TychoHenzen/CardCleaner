@@ -9,6 +9,27 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 /// </summary>
 public class WfcGrid
 {
+    // Pre-allocated neighbor offsets for avoiding repeated allocation in hot paths
+    private static readonly Vector2I[] Neighbors4Offsets =
+    {
+        new(0, -1),  // North
+        new(1, 0),   // East
+        new(0, 1),   // South
+        new(-1, 0)   // West
+    };
+
+    private static readonly Vector2I[] Neighbors8Offsets =
+    {
+        new(0, -1),   // North
+        new(1, -1),   // North-East
+        new(1, 0),    // East
+        new(1, 1),    // South-East
+        new(0, 1),    // South
+        new(-1, 1),   // South-West
+        new(-1, 0),   // West
+        new(-1, -1)   // North-West
+    };
+
     private readonly WfcCellState[,] _cells;
     private readonly int _width;
     private readonly int _height;
@@ -68,14 +89,13 @@ public class WfcGrid
     /// </summary>
     public IEnumerable<Vector2I> GetNeighbors(int x, int y)
     {
-        // North
-        if (y > 0) yield return new Vector2I(x, y - 1);
-        // East
-        if (x < _width - 1) yield return new Vector2I(x + 1, y);
-        // South
-        if (y < _height - 1) yield return new Vector2I(x, y + 1);
-        // West
-        if (x > 0) yield return new Vector2I(x - 1, y);
+        foreach (var offset in Neighbors4Offsets)
+        {
+            var nx = x + offset.X;
+            var ny = y + offset.Y;
+            if (nx >= 0 && nx < _width && ny >= 0 && ny < _height)
+                yield return new Vector2I(nx, ny);
+        }
     }
 
     /// <summary>
@@ -89,28 +109,69 @@ public class WfcGrid
     /// </summary>
     public IEnumerable<Vector2I> GetNeighbors8(int x, int y)
     {
-        // North
-        if (y > 0) yield return new Vector2I(x, y - 1);
-        // North-East
-        if (y > 0 && x < _width - 1) yield return new Vector2I(x + 1, y - 1);
-        // East
-        if (x < _width - 1) yield return new Vector2I(x + 1, y);
-        // South-East
-        if (y < _height - 1 && x < _width - 1) yield return new Vector2I(x + 1, y + 1);
-        // South
-        if (y < _height - 1) yield return new Vector2I(x, y + 1);
-        // South-West
-        if (y < _height - 1 && x > 0) yield return new Vector2I(x - 1, y + 1);
-        // West
-        if (x > 0) yield return new Vector2I(x - 1, y);
-        // North-West
-        if (y > 0 && x > 0) yield return new Vector2I(x - 1, y - 1);
+        foreach (var offset in Neighbors8Offsets)
+        {
+            var nx = x + offset.X;
+            var ny = y + offset.Y;
+            if (nx >= 0 && nx < _width && ny >= 0 && ny < _height)
+                yield return new Vector2I(nx, ny);
+        }
     }
 
     /// <summary>
     /// Enumerates all 8 neighbors of a position.
     /// </summary>
     public IEnumerable<Vector2I> GetNeighbors8(Vector2I pos) => GetNeighbors8(pos.X, pos.Y);
+
+    /// <summary>
+    /// Gets 4-directional neighbors into a pre-allocated span.
+    /// Returns the number of valid neighbors written.
+    /// Use this in hot paths to avoid iterator allocations.
+    /// </summary>
+    public int GetNeighborsNonAlloc(Vector2I pos, Span<Vector2I> output)
+    {
+        var count = 0;
+        var x = pos.X;
+        var y = pos.Y;
+
+        foreach (var offset in Neighbors4Offsets)
+        {
+            var nx = x + offset.X;
+            var ny = y + offset.Y;
+            if (nx >= 0 && nx < _width && ny >= 0 && ny < _height)
+            {
+                if (count < output.Length)
+                    output[count++] = new Vector2I(nx, ny);
+            }
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Gets 8-directional neighbors into a pre-allocated span.
+    /// Returns the number of valid neighbors written.
+    /// Use this in hot paths to avoid iterator allocations.
+    /// </summary>
+    public int GetNeighbors8NonAlloc(Vector2I pos, Span<Vector2I> output)
+    {
+        var count = 0;
+        var x = pos.X;
+        var y = pos.Y;
+
+        foreach (var offset in Neighbors8Offsets)
+        {
+            var nx = x + offset.X;
+            var ny = y + offset.Y;
+            if (nx >= 0 && nx < _width && ny >= 0 && ny < _height)
+            {
+                if (count < output.Length)
+                    output[count++] = new Vector2I(nx, ny);
+            }
+        }
+
+        return count;
+    }
 
     /// <summary>
     /// Checks if all cells have collapsed to a single tile.

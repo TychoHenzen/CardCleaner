@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using Godot;
@@ -78,8 +78,13 @@ public class WfcTileSelector
         if (validTiles.Count == 0)
             return null;
 
+        // Fast path: single tile, no constraint evaluation needed
         if (validTiles.Count == 1)
-            return validTiles.First();
+        {
+            // Direct access without LINQ for single-element case
+            foreach (var tile in validTiles)
+                return tile;
+        }
 
         // One-time log to verify constraint count
         if (!_loggedConstraintCount && position.HasValue)
@@ -91,8 +96,43 @@ public class WfcTileSelector
         // Build weight lookup from biome
         var biomeWeights = BuildBiomeWeightLookup(biome);
 
+        // Precompute collapsed neighbors ONCE for this position using stack-allocated arrays
+        Dictionary<Vector2I, string>? neighbors4 = null;
+        Dictionary<Vector2I, string>? neighbors8 = null;
+
+        if (position.HasValue && grid != null && _constraints.Count > 0)
+        {
+            neighbors4 = new Dictionary<Vector2I, string>(4);
+            neighbors8 = new Dictionary<Vector2I, string>(8);
+
+            // Use stack-allocated span for non-allocating neighbor iteration
+            Span<Vector2I> neighborBuffer4 = stackalloc Vector2I[4];
+            var count4 = grid.GetNeighborsNonAlloc(position.Value, neighborBuffer4);
+            for (var i = 0; i < count4; i++)
+            {
+                var neighborPos = neighborBuffer4[i];
+                var neighborCell = grid.GetCell(neighborPos);
+                if (neighborCell.IsCollapsed())
+                {
+                    neighbors4[neighborPos] = neighborCell.GetCollapsedTile();
+                }
+            }
+
+            Span<Vector2I> neighborBuffer8 = stackalloc Vector2I[8];
+            var count8 = grid.GetNeighbors8NonAlloc(position.Value, neighborBuffer8);
+            for (var i = 0; i < count8; i++)
+            {
+                var neighborPos = neighborBuffer8[i];
+                var neighborCell = grid.GetCell(neighborPos);
+                if (neighborCell.IsCollapsed())
+                {
+                    neighbors8[neighborPos] = neighborCell.GetCollapsedTile();
+                }
+            }
+        }
+
         // Calculate weighted probabilities
-        var weights = new List<(string tileId, float weight)>();
+        var weights = new List<(string tileId, float weight)>(validTiles.Count);
         var totalWeight = 0f;
 
         foreach (var tileId in validTiles)
@@ -123,16 +163,16 @@ public class WfcTileSelector
                 weight *= ContinuityBiasMultiplier;
             }
 
-            // Apply registered constraints
+            // Apply registered constraints with precomputed neighbor info
             if (position.HasValue && grid != null && _constraints.Count > 0)
             {
-                var constraintContext = new WfcConstraintContext
-                {
-                    Position = position.Value,
-                    TileId = tileId,
-                    Grid = grid,
-                    Rng = rng
-                };
+                var constraintContext = WfcConstraintContext.CreateWithNeighborInfo(
+                    position.Value,
+                    tileId,
+                    grid,
+                    rng,
+                    neighbors4!,
+                    neighbors8!);
 
                 foreach (var constraint in _constraints)
                 {
@@ -180,7 +220,21 @@ public class WfcTileSelector
             return null;
 
         var index = rng.RandiRange(0, validTiles.Count - 1);
-        return validTiles.ElementAt(index);
+
+        // Direct indexing for List, skip enumeration for small index values
+        if (validTiles is IList<string> list)
+            return list[index];
+
+        // Fallback: iterate to index (avoids LINQ allocations)
+        var i = 0;
+        foreach (var tile in validTiles)
+        {
+            if (i == index)
+                return tile;
+            i++;
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -202,12 +256,47 @@ public class WfcTileSelector
         Vector2I? position = null,
         WfcGrid? grid = null)
     {
-        var weights = new Dictionary<string, float>();
+        var weights = new Dictionary<string, float>(validTiles.Count);
 
         if (validTiles.Count == 0)
             return weights;
 
         var biomeWeights = BuildBiomeWeightLookup(biome);
+
+        // Precompute collapsed neighbors ONCE for this position using stack-allocated arrays
+        Dictionary<Vector2I, string>? neighbors4 = null;
+        Dictionary<Vector2I, string>? neighbors8 = null;
+
+        if (position.HasValue && grid != null && _constraints.Count > 0)
+        {
+            neighbors4 = new Dictionary<Vector2I, string>(4);
+            neighbors8 = new Dictionary<Vector2I, string>(8);
+
+            // Use stack-allocated span for non-allocating neighbor iteration
+            Span<Vector2I> neighborBuffer4 = stackalloc Vector2I[4];
+            var count4 = grid.GetNeighborsNonAlloc(position.Value, neighborBuffer4);
+            for (var i = 0; i < count4; i++)
+            {
+                var neighborPos = neighborBuffer4[i];
+                var neighborCell = grid.GetCell(neighborPos);
+                if (neighborCell.IsCollapsed())
+                {
+                    neighbors4[neighborPos] = neighborCell.GetCollapsedTile();
+                }
+            }
+
+            Span<Vector2I> neighborBuffer8 = stackalloc Vector2I[8];
+            var count8 = grid.GetNeighbors8NonAlloc(position.Value, neighborBuffer8);
+            for (var i = 0; i < count8; i++)
+            {
+                var neighborPos = neighborBuffer8[i];
+                var neighborCell = grid.GetCell(neighborPos);
+                if (neighborCell.IsCollapsed())
+                {
+                    neighbors8[neighborPos] = neighborCell.GetCollapsedTile();
+                }
+            }
+        }
 
         foreach (var tileId in validTiles)
         {
@@ -229,16 +318,16 @@ public class WfcTileSelector
                 weight *= ContinuityBiasMultiplier;
             }
 
-            // Apply constraints
+            // Apply constraints with precomputed neighbor info
             if (position.HasValue && grid != null && _constraints.Count > 0)
             {
-                var constraintContext = new WfcConstraintContext
-                {
-                    Position = position.Value,
-                    TileId = tileId,
-                    Grid = grid,
-                    Rng = rng
-                };
+                var constraintContext = WfcConstraintContext.CreateWithNeighborInfo(
+                    position.Value,
+                    tileId,
+                    grid,
+                    rng,
+                    neighbors4!,
+                    neighbors8!);
 
                 foreach (var constraint in _constraints)
                 {

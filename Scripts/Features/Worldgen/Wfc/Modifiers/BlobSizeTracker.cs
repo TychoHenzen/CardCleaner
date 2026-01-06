@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Godot;
 
@@ -5,14 +6,58 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 
 /// <summary>
 /// Tracks connected blob sizes during WFC generation.
-/// Uses union-find (disjoint set) for efficient blob size queries.
+/// Uses array-based union-find (disjoint set) for efficient blob size queries.
 /// </summary>
+/// <remarks>
+/// Optimized version using flat arrays instead of Dictionary&lt;Vector2I, _&gt;.
+/// Array indexing is O(1) vs Dictionary hash lookup, which matters in hot paths.
+/// </remarks>
 public class BlobSizeTracker
 {
-    private readonly Dictionary<Vector2I, Vector2I> _parent = new();
-    private readonly Dictionary<Vector2I, int> _rank = new();
-    private readonly Dictionary<Vector2I, int> _size = new();
-    private readonly Dictionary<Vector2I, string> _tileType = new();
+    private int[]? _parent;
+    private int[]? _size;
+    private string?[]? _tileType;
+    private int _width;
+    private int _height;
+    private bool _initialized;
+
+    /// <summary>
+    /// Initializes the tracker for a grid of the given size.
+    /// Must be called before RegisterCollapse.
+    /// </summary>
+    public void Initialize(int width, int height)
+    {
+        if (width <= 0) throw new ArgumentOutOfRangeException(nameof(width));
+        if (height <= 0) throw new ArgumentOutOfRangeException(nameof(height));
+
+        _width = width;
+        _height = height;
+        var totalCells = width * height;
+
+        _parent = new int[totalCells];
+        _size = new int[totalCells];
+        _tileType = new string?[totalCells];
+
+        Reset();
+        _initialized = true;
+    }
+
+    /// <summary>
+    /// Resets tracking state without reallocating arrays.
+    /// Call this when starting a new generation with the same grid size.
+    /// </summary>
+    public void Reset()
+    {
+        if (_parent == null || _size == null || _tileType == null)
+            return;
+
+        for (var i = 0; i < _parent.Length; i++)
+        {
+            _parent[i] = i;
+            _size[i] = 1;
+            _tileType[i] = null;
+        }
+    }
 
     /// <summary>
     /// Registers a collapsed tile at the given position.
@@ -20,18 +65,23 @@ public class BlobSizeTracker
     /// </summary>
     public void RegisterCollapse(Vector2I position, string tileId, WfcGrid grid)
     {
-        // Initialize this position as its own set
-        _parent[position] = position;
-        _rank[position] = 0;
-        _size[position] = 1;
-        _tileType[position] = tileId;
+        // Auto-initialize if needed (for backward compatibility)
+        if (!_initialized)
+        {
+            Initialize(grid.Width, grid.Height);
+        }
+
+        var index = ToIndex(position);
+        _tileType![index] = tileId;
+        // parent and size already initialized to self/1 in Reset()
 
         // Merge with adjacent collapsed tiles of same type (4-directional)
         foreach (var neighborPos in grid.GetNeighbors(position))
         {
-            if (_tileType.TryGetValue(neighborPos, out var neighborType) && neighborType == tileId)
+            var neighborIndex = ToIndex(neighborPos);
+            if (_tileType[neighborIndex] == tileId)
             {
-                Union(position, neighborPos);
+                Union(index, neighborIndex);
             }
         }
     }
@@ -42,11 +92,15 @@ public class BlobSizeTracker
     /// </summary>
     public int GetBlobSize(Vector2I position)
     {
-        if (!_parent.ContainsKey(position))
+        if (!_initialized)
             return 0;
 
-        var root = Find(position);
-        return _size[root];
+        var index = ToIndex(position);
+        if (_tileType![index] == null)
+            return 0;
+
+        var root = Find(index);
+        return _size![root];
     }
 
     /// <summary>
@@ -55,17 +109,21 @@ public class BlobSizeTracker
     /// </summary>
     public int GetPotentialBlobSize(Vector2I position, string tileId, WfcGrid grid)
     {
+        if (!_initialized)
+            return 1;
+
         var size = 1; // Start with this tile itself
-        var counted = new HashSet<Vector2I>();
+        var counted = new HashSet<int>(); // Track counted roots by index
 
         foreach (var neighborPos in grid.GetNeighbors(position))
         {
-            if (_tileType.TryGetValue(neighborPos, out var neighborType) && neighborType == tileId)
+            var neighborIndex = ToIndex(neighborPos);
+            if (_tileType![neighborIndex] == tileId)
             {
-                var root = Find(neighborPos);
+                var root = Find(neighborIndex);
                 if (counted.Add(root))
                 {
-                    size += _size[root];
+                    size += _size![root];
                 }
             }
         }
@@ -78,22 +136,24 @@ public class BlobSizeTracker
     /// </summary>
     public void Clear()
     {
-        _parent.Clear();
-        _rank.Clear();
-        _size.Clear();
-        _tileType.Clear();
+        Reset();
     }
 
-    private Vector2I Find(Vector2I pos)
+    private int ToIndex(Vector2I pos)
     {
-        if (_parent[pos] != pos)
-        {
-            _parent[pos] = Find(_parent[pos]); // Path compression
-        }
-        return _parent[pos];
+        return pos.Y * _width + pos.X;
     }
 
-    private void Union(Vector2I a, Vector2I b)
+    private int Find(int x)
+    {
+        if (_parent![x] != x)
+        {
+            _parent[x] = Find(_parent[x]); // Path compression
+        }
+        return _parent[x];
+    }
+
+    private void Union(int a, int b)
     {
         var rootA = Find(a);
         var rootB = Find(b);
@@ -101,22 +161,16 @@ public class BlobSizeTracker
         if (rootA == rootB)
             return;
 
-        // Union by rank
-        if (_rank[rootA] < _rank[rootB])
+        // Union by size for better tree balance
+        if (_size![rootA] < _size[rootB])
         {
-            _parent[rootA] = rootB;
+            _parent![rootA] = rootB;
             _size[rootB] += _size[rootA];
-        }
-        else if (_rank[rootA] > _rank[rootB])
-        {
-            _parent[rootB] = rootA;
-            _size[rootA] += _size[rootB];
         }
         else
         {
-            _parent[rootB] = rootA;
+            _parent![rootB] = rootA;
             _size[rootA] += _size[rootB];
-            _rank[rootA]++;
         }
     }
 }

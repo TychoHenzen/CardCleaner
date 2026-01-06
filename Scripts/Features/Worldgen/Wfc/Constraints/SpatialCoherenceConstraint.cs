@@ -90,21 +90,40 @@ public class SpatialCoherenceConstraint : IWfcConstraint
             return 1.0f;
         }
 
-        var neighbors = context.Grid.GetNeighbors(context.Position);
         var largestMatchingRegion = 0;
         var hasAnyCollapsedNeighbor = false;
 
-        foreach (var neighbor in neighbors)
+        // Use precomputed neighbor info if available (optimization)
+        if (context.NeighborInfo.HasValue)
         {
-            var neighborTile = context.Grid.GetCollapsedTileAt(neighbor);
-            if (neighborTile != null)
+            var neighborInfo = context.NeighborInfo.Value;
+            hasAnyCollapsedNeighbor = neighborInfo.HasCollapsedNeighbor4;
+
+            foreach (var kvp in neighborInfo.Neighbors4)
             {
-                hasAnyCollapsedNeighbor = true;
-                if (neighborTile == context.TileId)
+                if (kvp.Value == context.TileId)
                 {
-                    var regionSize = _regionTracker.GetRegionSize(neighbor);
+                    var regionSize = _regionTracker.GetRegionSize(kvp.Key);
                     if (regionSize > largestMatchingRegion)
                         largestMatchingRegion = regionSize;
+                }
+            }
+        }
+        else
+        {
+            // Fallback: iterate neighbors directly (for backward compatibility)
+            foreach (var neighbor in context.Grid.GetNeighbors(context.Position))
+            {
+                var neighborTile = context.Grid.GetCollapsedTileAt(neighbor);
+                if (neighborTile != null)
+                {
+                    hasAnyCollapsedNeighbor = true;
+                    if (neighborTile == context.TileId)
+                    {
+                        var regionSize = _regionTracker.GetRegionSize(neighbor);
+                        if (regionSize > largestMatchingRegion)
+                            largestMatchingRegion = regionSize;
+                    }
                 }
             }
         }
