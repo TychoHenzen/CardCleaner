@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
@@ -17,6 +18,7 @@ public class MockTileRegistry : ITileRegistry
     public string TilesetPath => "res://test.tres";
     public bool UsingCompiledAtlas => false;
     public TileSet? CompiledTileSet => null;
+    public TilesetConfig TilesetConfig => TilesetConfig.Default;
 
     public void RegisterTile(TileDefinition tile) => _tiles[tile.Id] = tile;
 

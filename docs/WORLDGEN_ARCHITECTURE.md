@@ -135,11 +135,107 @@ var selectedBiome = biomes
 ### Auto-Tiling System
 
 **Files:**
-- `AutoTileFormat.cs` - Format enumeration (Corner16, Edge16, Blob47)
+- `BitmaskType.cs` - Enum specifying neighbor computation algorithm (Corner4, Edge4, Full8)
+- `VariantDefinition.cs` - Immutable record for variant spatial properties (size, offset)
+- `AutoTileFormatDefinition.cs` - Complete format specification with allowed bitmasks and variant mappings
+- `AutoTileFormatRegistry.cs` - Thread-safe registry for format definitions
+- `BuiltInAutoTileFormats.cs` - Factory methods for Corner16, Edge16, Blob47
 - `NeighborBitmaskCorner.cs` - 4-bit corner bitmask utility (NE=1, SE=2, SW=4, NW=8)
+- `NeighborBitmask.cs` - 4-bit edge bitmask utility (N=1, E=2, S=4, W=8)
 - `NeighborBitmask8.cs` - 8-bit blob bitmask utility for Blob47 format
 - `DualGridAutoTile.cs` - Dual-grid technique for terrain transitions
 - `AutoTileHelper.cs` - Convenience methods for auto-tile coordinate lookup
+
+#### Flexible Auto-Tile Format System
+
+The auto-tile system uses a **data-driven format registry** that supports both built-in and custom formats:
+
+```csharp
+// BitmaskType determines which neighbor computation algorithm is used
+enum BitmaskType {
+    Corner4,  // Diagonal corners only (NE, SE, SW, NW) → 0-15
+    Edge4,    // Cardinal edges only (N, E, S, W) → 0-15
+    Full8     // All 8 neighbors → 0-255 (47 valid blob combinations)
+}
+
+// VariantDefinition specifies atlas location and spatial properties
+record struct VariantDefinition(
+    Vector2I AtlasCoords,           // Position in atlas
+    Vector2I Size = (1, 1),         // Cells occupied (for multi-cell variants)
+    Vector2I Offset = (0, 0),       // Anchor offset (negative Y = extends upward)
+    Vector2I? AtlasRegionSize = null // Non-standard source region size
+);
+
+// AutoTileFormatDefinition is a complete format specification
+class AutoTileFormatDefinition {
+    string Name;                     // "corner16", "hedge4", etc.
+    BitmaskType BitmaskType;         // Algorithm to use
+    HashSet<int> AllowedBitmasks;    // Which values are valid (omitted = forbidden)
+    Dictionary<int, VariantDefinition> VariantMappings;
+    bool IsBuiltIn;                  // True for built-in formats
+}
+```
+
+**Built-in Formats:**
+
+| Format | BitmaskType | Variants | Use Case |
+|--------|-------------|----------|----------|
+| corner16 | Corner4 | 16 | Standard diagonal terrain transitions |
+| edge16 | Edge4 | 16 | Cardinal-only patterns (fences, roads) |
+| blob47 | Full8 | 47 | Smooth blob terrain with corner rules |
+
+**Custom Format Examples:**
+
+```json
+{
+  "autoTileFormats": [
+    {
+      "name": "hedge4",
+      "bitmaskType": "edge4",
+      "variants": [
+        { "bitmask": 0, "atlasCoords": {"x": 0, "y": 0} },
+        { "bitmask": 1, "atlasCoords": {"x": 1, "y": 0} },
+        // ... bitmask 15 (interior) intentionally omitted = forbidden
+        // Creates 1-tile-wide hedges that never fill in
+      ]
+    },
+    {
+      "name": "wall_south",
+      "bitmaskType": "edge4",
+      "variants": [
+        {
+          "bitmask": 4,
+          "atlasCoords": {"x": 0, "y": 5},
+          "size": {"x": 1, "y": 3},
+          "offset": {"x": 0, "y": -2}
+        }
+        // 3-tile-tall wall variant extending 2 cells above anchor
+      ]
+    }
+  ]
+}
+```
+
+#### Cell Reservation for Multi-Cell Variants
+
+Variants with `Size` > (1,1) reserve additional cells during WFC collapse:
+
+```
+Variant with Size=(1,3), Offset=(0,-2):
+
+  ┌─────────────┐
+  │  Reserved   │ Y-2 (reserved by anchor)
+  ├─────────────┤
+  │  Reserved   │ Y-1 (reserved by anchor)
+  ├─────────────┤
+  │   Anchor    │ Y   (collapsed cell, stores tile)
+  └─────────────┘
+
+WfcCellState properties:
+- ReservedBy: Vector2I? → anchor position of reserving variant
+- IsReserved: bool → true if reserved by another cell
+- IsExcludedFromSelection() → true if collapsed OR reserved
+```
 
 **How auto-tiling works:**
 
@@ -150,9 +246,11 @@ Per-tile `autoTileVariants` array stores atlas coordinates indexed by bitmask:
 
 ```
 For each tile with auto-tile variants:
-  1. Compute neighbor bitmask based on format
-  2. Look up atlas coords in tile's autoTileVariants array
-  3. Render using variant coords (or base coords if null)
+  1. Compute neighbor bitmask based on format's BitmaskType
+  2. Check if bitmask is allowed (format.AllowedBitmasks)
+  3. Look up atlas coords in tile's autoTileVariants array
+  4. If variant is multi-cell, reserve additional cells
+  5. Render using variant coords with size/offset applied
 
 Example: dirt tile with NE+SE corners → bitmask 3 → autoTileVariants[3] coords
 ```
@@ -682,7 +780,65 @@ new BiomeTileAffinity("forest")
 
 ### Defining Auto-Tile Configurations
 
-**Bitmask Reference (NESW):**
+#### Custom Auto-Tile Formats
+
+Define custom formats in `tiles.json` under `autoTileFormats`:
+
+```json
+{
+  "autoTileFormats": [
+    {
+      "name": "hedge4",
+      "bitmaskType": "edge4",
+      "variants": [
+        { "bitmask": 0, "atlasCoords": {"x": 0, "y": 0} },
+        { "bitmask": 1, "atlasCoords": {"x": 1, "y": 0} },
+        { "bitmask": 2, "atlasCoords": {"x": 2, "y": 0} },
+        { "bitmask": 3, "atlasCoords": {"x": 3, "y": 0} },
+        { "bitmask": 4, "atlasCoords": {"x": 4, "y": 0} },
+        { "bitmask": 5, "atlasCoords": {"x": 5, "y": 0} },
+        { "bitmask": 6, "atlasCoords": {"x": 6, "y": 0} },
+        { "bitmask": 7, "atlasCoords": {"x": 7, "y": 0} },
+        { "bitmask": 8, "atlasCoords": {"x": 8, "y": 0} },
+        { "bitmask": 9, "atlasCoords": {"x": 9, "y": 0} },
+        { "bitmask": 10, "atlasCoords": {"x": 10, "y": 0} },
+        { "bitmask": 11, "atlasCoords": {"x": 11, "y": 0} },
+        { "bitmask": 12, "atlasCoords": {"x": 12, "y": 0} },
+        { "bitmask": 13, "atlasCoords": {"x": 13, "y": 0} },
+        { "bitmask": 14, "atlasCoords": {"x": 14, "y": 0} }
+      ]
+    }
+  ]
+}
+```
+
+**Format Properties:**
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | string | Yes | Unique format name (case-insensitive) |
+| `bitmaskType` | string | No | `"corner4"`, `"edge4"`, or `"full8"` (default: corner4) |
+| `variants` | array | Yes | Variant definitions for each bitmask |
+
+**Variant Properties:**
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `bitmask` | int | Yes | Bitmask value this variant handles |
+| `atlasCoords` | {x, y} | Yes | Atlas position for this variant |
+| `size` | {x, y} | No | Cells occupied (default: 1x1) |
+| `offset` | {x, y} | No | Anchor offset (default: 0,0) |
+| `atlasRegionSize` | {x, y} | No | Non-standard source region |
+
+**BitmaskType Values:**
+
+| Type | Neighbors Checked | Max Bitmask | Use Case |
+|------|-------------------|-------------|----------|
+| `corner4` | NE, SE, SW, NW (diagonal) | 15 | Standard terrain transitions |
+| `edge4` | N, E, S, W (cardinal) | 15 | Fences, roads, pipes |
+| `full8` | All 8 directions | 255 | Blob terrain (47 valid) |
+
+**Bitmask Reference (Edge4 - NESW):**
 
 | Bitmask | Neighbors | Typical Use |
 |---------|-----------|-------------|
@@ -703,12 +859,24 @@ new BiomeTileAffinity("forest")
 | 14 | E+S+W | North edge (peninsula) |
 | 15 | All | Interior (fully surrounded) |
 
+**Bitmask Reference (Corner4 - Diagonal):**
+
+| Bitmask | Neighbors | Description |
+|---------|-----------|-------------|
+| 0 | None | Isolated |
+| 1 | NE | NE corner only |
+| 2 | SE | SE corner only |
+| 3 | NE+SE | East edge |
+| ... | ... | ... |
+| 15 | All | Interior (all corners) |
+
 **Configuration via Tile Editor UI:**
 
-1. Open Tile Editor dock → "Auto-Tiling" tab
-2. Create new config for a base terrain tile
-3. Assign variant tiles to each bitmask slot
-4. Leave slots empty to use base tile
+1. Open Tile Editor dock → "Formats" tab
+2. Create new format with name and bitmask type
+3. Configure allowed bitmasks in the grid
+4. Set variant atlas coords, size, and offset
+5. Use format in tile definitions via `autoTileFormat` property
 
 ### Defining Stamps (Fixed Structures)
 
@@ -820,8 +988,12 @@ Scripts/Features/Worldgen/
 │   ├── TilePool.cs
 │   └── BiomeDistributionCalculator.cs
 ├── AutoTiling/                      # ✅ IMPLEMENTED
-│   ├── AutoTileFormat.cs
-│   ├── AutoTileHelper.cs
+│   ├── BitmaskType.cs               # Enum: Corner4, Edge4, Full8
+│   ├── VariantDefinition.cs         # Immutable record for variant properties
+│   ├── AutoTileFormatDefinition.cs  # Complete format specification
+│   ├── AutoTileFormatRegistry.cs    # Thread-safe format registry
+│   ├── BuiltInAutoTileFormats.cs    # Factory for Corner16, Edge16, Blob47
+│   ├── AutoTileHelper.cs            # Bitmask computation and variant lookup
 │   ├── BitmaskConsistencyValidator.cs # Validates dual-grid bitmask agreement
 │   ├── DualGridAutoTile.cs          # Dual-grid visual tile computation
 │   ├── NeighborBitmask.cs           # Edge16 (NESW cardinal)
@@ -923,6 +1095,6 @@ Data/Tiles/
 
 ---
 
-*Document Version: 5.0*
-*Last Updated: 2026-01-06*
-*Status: Two-Phase WFC with dual-layer terrain and gap constraint complete*
+*Document Version: 6.0*
+*Last Updated: 2026-01-07*
+*Status: Flexible auto-tile format system with data-driven definitions and multi-cell variant support*
