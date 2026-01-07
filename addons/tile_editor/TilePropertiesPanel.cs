@@ -58,6 +58,7 @@ public partial class TilePropertiesPanel : ScrollContainer
     // Auto-tile foldout controls
     private FoldoutContainer? _autoTileFoldout;
     private OptionButton? _autoTileFormatDropdown;
+    private Label? _formatDescriptionLabel;
     private OptionButton? _innerTerrainDropdown;
     private OptionButton? _outerTerrainDropdown;
     private VBoxContainer? _variantGridContainer;
@@ -68,6 +69,11 @@ public partial class TilePropertiesPanel : ScrollContainer
     private TilesetAtlasPicker? _variantPicker;
     private int _editingVariantIndex = -1;
     private int _currentVariantCount = 16;
+
+    // Advanced variant editor (for custom variant definitions with size/offset)
+    private FoldoutContainer? _advancedVariantsFoldout;
+    private VariantMappingEditor? _variantMappingEditor;
+    private CheckBox? _useAdvancedVariantsCheckbox;
 
     // Decoration density control
     private HBoxContainer? _decorationDensityRow;
@@ -409,15 +415,23 @@ public partial class TilePropertiesPanel : ScrollContainer
         _autoTileFoldout = new FoldoutContainer("Auto-Tiling", false);
         vbox.AddChild(_autoTileFoldout);
 
-        // Format selector
+        // Format selector - populated from registry
         var formatRow = CreateRow("Format:");
         _autoTileFormatDropdown = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
-        _autoTileFormatDropdown.AddItem("4-bit Corner (16 tiles)", 0);
-        _autoTileFormatDropdown.AddItem("8-bit Blob (47 tiles)", 1);
-        _autoTileFormatDropdown.AddItem("4-bit Edge (16 tiles)", 2);
+        PopulateFormatDropdown();
         _autoTileFormatDropdown.ItemSelected += OnAutoTileFormatChanged;
         formatRow.AddChild(_autoTileFormatDropdown);
         _autoTileFoldout.Content.AddChild(formatRow);
+
+        // Format description label
+        _formatDescriptionLabel = new Label
+        {
+            Text = "",
+            AutowrapMode = TextServer.AutowrapMode.Word,
+            Modulate = new Color(0.7f, 0.7f, 0.7f)
+        };
+        _formatDescriptionLabel.AddThemeFontSizeOverride("font_size", 10);
+        _autoTileFoldout.Content.AddChild(_formatDescriptionLabel);
 
         _autoTileFoldout.Content.AddChild(new HSeparator());
 
@@ -495,6 +509,38 @@ public partial class TilePropertiesPanel : ScrollContainer
         };
         clearAllBtn.Pressed += ClearAllVariants;
         _autoTileFoldout.Content.AddChild(clearAllBtn);
+
+        _autoTileFoldout.Content.AddChild(new HSeparator());
+
+        // Advanced Variants section (for multi-cell variants with size/offset)
+        _advancedVariantsFoldout = new FoldoutContainer("Advanced Variant Configuration", true); // Collapsed by default
+        _autoTileFoldout.Content.AddChild(_advancedVariantsFoldout);
+
+        var advancedInfo = new Label
+        {
+            Text = "Configure multi-cell variants with custom sizes and offsets (e.g., 3-tile-tall walls):",
+            AutowrapMode = TextServer.AutowrapMode.Word,
+            Modulate = new Color(0.7f, 0.7f, 0.7f)
+        };
+        advancedInfo.AddThemeFontSizeOverride("font_size", 10);
+        _advancedVariantsFoldout.Content.AddChild(advancedInfo);
+
+        // Checkbox to enable advanced variants
+        var advancedRow = new HBoxContainer();
+        _useAdvancedVariantsCheckbox = new CheckBox
+        {
+            Text = "Enable advanced variant definitions",
+            TooltipText = "When enabled, allows configuring size and offset for each variant"
+        };
+        _useAdvancedVariantsCheckbox.Toggled += OnAdvancedVariantsToggled;
+        advancedRow.AddChild(_useAdvancedVariantsCheckbox);
+        _advancedVariantsFoldout.Content.AddChild(advancedRow);
+
+        // Variant mapping editor (hidden until checkbox is checked)
+        _variantMappingEditor = new VariantMappingEditor(_service!);
+        _variantMappingEditor.Visible = false;
+        _variantMappingEditor.VariantsModified += OnVariantMappingsModified;
+        _advancedVariantsFoldout.Content.AddChild(_variantMappingEditor);
 
         vbox.AddChild(new HSeparator());
 
@@ -651,6 +697,66 @@ public partial class TilePropertiesPanel : ScrollContainer
         }
     }
 
+    private void PopulateFormatDropdown()
+    {
+        if (_autoTileFormatDropdown == null) return;
+
+        _autoTileFormatDropdown.Clear();
+
+        var formatNames = _service.GetAvailableFormatNames();
+        var index = 0;
+        foreach (var formatName in formatNames)
+        {
+            var displayName = _service.GetFormatDisplayName(formatName);
+            var format = _service.GetFormatDefinition(formatName);
+            var variantCount = format?.AllowedBitmasks.Count ?? 16;
+
+            // Show format name with variant count
+            _autoTileFormatDropdown.AddItem($"{displayName} ({variantCount} variants)", index);
+            _autoTileFormatDropdown.SetItemMetadata(index, formatName);
+            index++;
+        }
+    }
+
+    private void UpdateFormatDescription(string formatName)
+    {
+        if (_formatDescriptionLabel == null) return;
+
+        var format = _service.GetFormatDefinition(formatName);
+        if (format == null)
+        {
+            _formatDescriptionLabel.Text = "";
+            return;
+        }
+
+        var typeDesc = format.BitmaskType switch
+        {
+            CardCleaner.Features.Worldgen.AutoTiling.BitmaskType.Corner4 => "4-bit corner bitmask (NE, SE, SW, NW)",
+            CardCleaner.Features.Worldgen.AutoTiling.BitmaskType.Edge4 => "4-bit edge bitmask (N, E, S, W)",
+            CardCleaner.Features.Worldgen.AutoTiling.BitmaskType.Full8 => "8-bit full bitmask (8 neighbors)",
+            _ => "Unknown bitmask type"
+        };
+
+        _formatDescriptionLabel.Text = format.IsBuiltIn
+            ? $"Built-in format: {typeDesc}"
+            : $"Custom format: {typeDesc}";
+    }
+
+    private int GetFormatDropdownIndex(string formatName)
+    {
+        if (_autoTileFormatDropdown == null) return 0;
+
+        for (int i = 0; i < _autoTileFormatDropdown.ItemCount; i++)
+        {
+            var metadata = _autoTileFormatDropdown.GetItemMetadata(i).AsString();
+            if (string.Equals(metadata, formatName, StringComparison.OrdinalIgnoreCase))
+            {
+                return i;
+            }
+        }
+        return 0; // Default to first format
+    }
+
     private void OnSourceDropdownChanged(long index)
     {
         if (_isUpdating || _sourceDropdown == null || _currentTile == null) return;
@@ -764,15 +870,12 @@ public partial class TilePropertiesPanel : ScrollContainer
         }
 
         // Update auto-tile format dropdown and rebuild grid
-        var formatIndex = _currentTile.AutoTileFormat?.ToLowerInvariant() switch
-        {
-            "blob47" => 1,
-            "edge16" => 2,
-            _ => 0
-        };
-        _autoTileFormatDropdown!.Selected = formatIndex;
-        var variantCount = _currentTile.AutoTileFormat == "blob47" ? 47 : 16;
-        RebuildVariantGrid(variantCount, _currentTile.AutoTileFormat ?? "corner16");
+        var currentFormat = _currentTile.AutoTileFormat ?? "corner16";
+        _autoTileFormatDropdown!.Selected = GetFormatDropdownIndex(currentFormat);
+        UpdateFormatDescription(currentFormat);
+        var format = _service.GetFormatDefinition(currentFormat);
+        var variantCount = format?.AllowedBitmasks.Count ?? 16;
+        RebuildVariantGrid(variantCount, currentFormat);
 
         // Populate and select terrain transition dropdowns
         PopulateTerrainDropdowns();
@@ -828,6 +931,9 @@ public partial class TilePropertiesPanel : ScrollContainer
         // Populate animation settings
         _animationFrameDurationField!.Value = _currentTile.AnimationFrameDuration;
         RebuildAnimationFramesList();
+
+        // Update advanced variants UI
+        UpdateAdvancedVariantsUI();
 
         _validationLabel!.Text = "";
         _isUpdating = false;
@@ -1542,18 +1648,20 @@ public partial class TilePropertiesPanel : ScrollContainer
 
     private void OnAutoTileFormatChanged(long index)
     {
-        if (_isUpdating || _currentTile == null) return;
+        if (_isUpdating || _currentTile == null || _autoTileFormatDropdown == null) return;
 
-        var newFormat = index switch
-        {
-            1 => "blob47",
-            2 => "edge16",
-            _ => "corner16"
-        };
-        if (_currentTile.AutoTileFormat == newFormat) return;
+        // Get format name from dropdown metadata
+        var newFormat = _autoTileFormatDropdown.GetItemMetadata((int)index).AsString();
+        if (string.IsNullOrEmpty(newFormat)) newFormat = "corner16";
+
+        if (string.Equals(_currentTile.AutoTileFormat, newFormat, StringComparison.OrdinalIgnoreCase)) return;
 
         _currentTile.AutoTileFormat = newFormat;
-        var variantCount = newFormat == "blob47" ? 47 : 16;
+        UpdateFormatDescription(newFormat);
+
+        // Get variant count from format definition
+        var format = _service.GetFormatDefinition(newFormat);
+        var variantCount = format?.AllowedBitmasks.Count ?? 16;
 
         // Resize the variants array
         if (_currentTile.AutoTileVariants != null)
@@ -1563,6 +1671,9 @@ public partial class TilePropertiesPanel : ScrollContainer
             // Copy what we can (format change may lose data)
             Array.Copy(oldVariants, _currentTile.AutoTileVariants, Math.Min(oldVariants.Length, variantCount));
         }
+
+        // Clear custom variant definitions when format changes
+        _currentTile.CustomVariantDefinitions?.Clear();
 
         RebuildVariantGrid(variantCount, newFormat);
         _service.UpdateTile(_currentTile);
@@ -2168,6 +2279,75 @@ public partial class TilePropertiesPanel : ScrollContainer
 
         RebuildAnimationFramesList();
         _service.UpdateTile(_currentTile);
+    }
+
+    private void OnAdvancedVariantsToggled(bool pressed)
+    {
+        if (_isUpdating || _currentTile == null) return;
+
+        _variantMappingEditor!.Visible = pressed;
+
+        if (pressed)
+        {
+            // Configure the variant mapping editor with current tile and format
+            var formatName = _currentTile.AutoTileFormat ?? "corner16";
+            var format = _service.GetFormatDefinition(formatName);
+            _variantMappingEditor.Configure(_currentTile, format, false);
+        }
+        else
+        {
+            // Clear custom variant definitions when disabling
+            _currentTile.CustomVariantDefinitions?.Clear();
+            _service.UpdateTile(_currentTile);
+        }
+    }
+
+    private void OnVariantMappingsModified()
+    {
+        if (_isUpdating || _currentTile == null || _variantMappingEditor == null) return;
+
+        // Copy variant definitions from the editor to the current tile
+        var definitions = _variantMappingEditor.GetVariantDefinitions();
+        _currentTile.CustomVariantDefinitions = definitions;
+
+        // Also update AutoTileVariants for backward compatibility
+        SyncVariantDefinitionsToAutoTileVariants();
+
+        _service.UpdateTile(_currentTile);
+    }
+
+    private void SyncVariantDefinitionsToAutoTileVariants()
+    {
+        if (_currentTile?.CustomVariantDefinitions == null) return;
+
+        // Ensure AutoTileVariants array exists
+        _currentTile.AutoTileVariants ??= new Vector2I?[_currentVariantCount];
+
+        foreach (var (bitmask, definition) in _currentTile.CustomVariantDefinitions)
+        {
+            if (bitmask < _currentTile.AutoTileVariants.Length)
+            {
+                _currentTile.AutoTileVariants[bitmask] = definition.AtlasCoords;
+            }
+        }
+    }
+
+    private void UpdateAdvancedVariantsUI()
+    {
+        if (_currentTile == null || _useAdvancedVariantsCheckbox == null || _variantMappingEditor == null)
+            return;
+
+        // Check if tile has custom variant definitions
+        var hasAdvancedVariants = _currentTile.HasCustomVariantDefinitions;
+        _useAdvancedVariantsCheckbox.ButtonPressed = hasAdvancedVariants;
+        _variantMappingEditor.Visible = hasAdvancedVariants;
+
+        if (hasAdvancedVariants)
+        {
+            var formatName = _currentTile.AutoTileFormat ?? "corner16";
+            var format = _service.GetFormatDefinition(formatName);
+            _variantMappingEditor.Configure(_currentTile, format, false);
+        }
     }
 }
 #endif

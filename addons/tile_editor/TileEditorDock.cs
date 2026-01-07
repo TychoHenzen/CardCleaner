@@ -21,6 +21,14 @@ public partial class TileEditorDock : Control
     private Label? _statusLabel;
     private TabContainer? _tabContainer;
 
+    // TilesetConfig UI controls
+    private FoldoutContainer? _tilesetConfigFoldout;
+    private SpinBox? _baseTileSizeX;
+    private SpinBox? _baseTileSizeY;
+    private SpinBox? _gridOffsetX;
+    private SpinBox? _gridOffsetY;
+    private OptionButton? _tileSizePresetDropdown;
+
     public override void _Ready()
     {
         try
@@ -118,6 +126,9 @@ public partial class TileEditorDock : Control
         _statusLabel = new Label { Text = "Loading..." };
         toolbar.AddChild(_statusLabel);
 
+        // Tileset Config section (collapsed by default)
+        SetupTilesetConfigUI(mainVBox);
+
         // Tab container
         _tabContainer = new TabContainer
         {
@@ -163,6 +174,130 @@ public partial class TileEditorDock : Control
         _transitionCoveragePanel = new TransitionCoveragePanel(_service!);
         _transitionCoveragePanel.Name = "Transitions";
         _tabContainer.AddChild(_transitionCoveragePanel);
+    }
+
+    private void SetupTilesetConfigUI(VBoxContainer parent)
+    {
+        _tilesetConfigFoldout = new FoldoutContainer("Tileset Configuration", true); // Collapsed by default
+        parent.AddChild(_tilesetConfigFoldout);
+
+        // Base Tile Size section
+        var sizeHeader = new Label { Text = "Base Tile Size" };
+        sizeHeader.AddThemeFontSizeOverride("font_size", 12);
+        _tilesetConfigFoldout.Content.AddChild(sizeHeader);
+
+        // Preset dropdown
+        var presetRow = new HBoxContainer();
+        presetRow.AddChild(new Label { Text = "Preset:", CustomMinimumSize = new Vector2(80, 0) });
+        _tileSizePresetDropdown = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        _tileSizePresetDropdown.AddItem("16x16 (Standard)", 0);
+        _tileSizePresetDropdown.AddItem("24x24", 1);
+        _tileSizePresetDropdown.AddItem("32x32", 2);
+        _tileSizePresetDropdown.AddItem("Custom", 3);
+        _tileSizePresetDropdown.Selected = 0;
+        _tileSizePresetDropdown.ItemSelected += OnTileSizePresetChanged;
+        presetRow.AddChild(_tileSizePresetDropdown);
+        _tilesetConfigFoldout.Content.AddChild(presetRow);
+
+        // Custom size inputs
+        var customSizeRow = new HBoxContainer();
+        customSizeRow.AddChild(new Label { Text = "Size:", CustomMinimumSize = new Vector2(80, 0) });
+        _baseTileSizeX = new SpinBox { MinValue = 8, MaxValue = 128, Step = 1, Value = 16, CustomMinimumSize = new Vector2(60, 0) };
+        _baseTileSizeX.ValueChanged += OnBaseTileSizeChanged;
+        customSizeRow.AddChild(_baseTileSizeX);
+        customSizeRow.AddChild(new Label { Text = " x " });
+        _baseTileSizeY = new SpinBox { MinValue = 8, MaxValue = 128, Step = 1, Value = 16, CustomMinimumSize = new Vector2(60, 0) };
+        _baseTileSizeY.ValueChanged += OnBaseTileSizeChanged;
+        customSizeRow.AddChild(_baseTileSizeY);
+        customSizeRow.AddChild(new Label { Text = " px" });
+        _tilesetConfigFoldout.Content.AddChild(customSizeRow);
+
+        _tilesetConfigFoldout.Content.AddChild(new HSeparator());
+
+        // Grid Offset section
+        var offsetHeader = new Label { Text = "Grid Offset" };
+        offsetHeader.AddThemeFontSizeOverride("font_size", 12);
+        _tilesetConfigFoldout.Content.AddChild(offsetHeader);
+
+        var offsetInfo = new Label
+        {
+            Text = "Offset for half-tile shifted grids (0.5 = half tile)",
+            AutowrapMode = TextServer.AutowrapMode.Word,
+            Modulate = new Color(0.7f, 0.7f, 0.7f)
+        };
+        offsetInfo.AddThemeFontSizeOverride("font_size", 10);
+        _tilesetConfigFoldout.Content.AddChild(offsetInfo);
+
+        var offsetRow = new HBoxContainer();
+        offsetRow.AddChild(new Label { Text = "Offset:", CustomMinimumSize = new Vector2(80, 0) });
+        _gridOffsetX = new SpinBox { MinValue = 0, MaxValue = 1, Step = 0.1, Value = 0, CustomMinimumSize = new Vector2(60, 0) };
+        _gridOffsetX.ValueChanged += OnGridOffsetChanged;
+        offsetRow.AddChild(_gridOffsetX);
+        offsetRow.AddChild(new Label { Text = " , " });
+        _gridOffsetY = new SpinBox { MinValue = 0, MaxValue = 1, Step = 0.1, Value = 0, CustomMinimumSize = new Vector2(60, 0) };
+        _gridOffsetY.ValueChanged += OnGridOffsetChanged;
+        offsetRow.AddChild(_gridOffsetY);
+        _tilesetConfigFoldout.Content.AddChild(offsetRow);
+
+        var note = new Label
+        {
+            Text = "Note: Changes here affect preview rendering only. Actual tileset config is saved separately.",
+            AutowrapMode = TextServer.AutowrapMode.Word,
+            Modulate = new Color(0.6f, 0.6f, 0.6f)
+        };
+        note.AddThemeFontSizeOverride("font_size", 9);
+        _tilesetConfigFoldout.Content.AddChild(note);
+    }
+
+    private void OnTileSizePresetChanged(long index)
+    {
+        var (width, height) = index switch
+        {
+            1 => (24, 24),
+            2 => (32, 32),
+            _ => (16, 16)
+        };
+
+        if (index != 3) // Not custom
+        {
+            _baseTileSizeX!.Value = width;
+            _baseTileSizeY!.Value = height;
+        }
+
+        RefreshPreviewPanels();
+    }
+
+    private void OnBaseTileSizeChanged(double value)
+    {
+        // Update preset dropdown if current values match a preset
+        var currentX = (int)_baseTileSizeX!.Value;
+        var currentY = (int)_baseTileSizeY!.Value;
+
+        var presetIndex = (currentX, currentY) switch
+        {
+            (16, 16) => 0,
+            (24, 24) => 1,
+            (32, 32) => 2,
+            _ => 3 // Custom
+        };
+
+        if (_tileSizePresetDropdown!.Selected != presetIndex)
+        {
+            _tileSizePresetDropdown.Selected = presetIndex;
+        }
+
+        RefreshPreviewPanels();
+    }
+
+    private void OnGridOffsetChanged(double value)
+    {
+        RefreshPreviewPanels();
+    }
+
+    private void RefreshPreviewPanels()
+    {
+        // Refresh the auto-tile preview panel with updated config
+        _autoTilePreviewPanel?.Refresh();
     }
 
     private void OnTilesLoaded()

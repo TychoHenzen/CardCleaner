@@ -92,6 +92,65 @@ public partial class TileEditorService : RefCounted
         _customAutoTileFormats.AddRange(formats);
     }
 
+    /// <summary>
+    /// Gets all available auto-tile format names from the registry.
+    /// Returns names in order: built-in formats first, then custom formats alphabetically.
+    /// </summary>
+    public IReadOnlyList<string> GetAvailableFormatNames()
+    {
+        return Features.Worldgen.AutoTiling.AutoTileFormatRegistry.GetAll()
+            .OrderBy(f => f.IsBuiltIn ? 0 : 1)
+            .ThenBy(f => f.Name)
+            .Select(f => f.Name)
+            .ToList();
+    }
+
+    /// <summary>
+    /// Gets a format definition by name from the registry.
+    /// Returns null if the format is not found.
+    /// </summary>
+    public Features.Worldgen.AutoTiling.AutoTileFormatDefinition? GetFormatDefinition(string formatName)
+    {
+        if (string.IsNullOrEmpty(formatName)) return null;
+        return Features.Worldgen.AutoTiling.AutoTileFormatRegistry.TryGet(formatName, out var format)
+            ? format
+            : null;
+    }
+
+    /// <summary>
+    /// Checks if a format name refers to a built-in (non-editable) format.
+    /// </summary>
+    public bool IsBuiltInFormat(string formatName)
+    {
+        var format = GetFormatDefinition(formatName);
+        return format?.IsBuiltIn ?? false;
+    }
+
+    /// <summary>
+    /// Gets the expected variant count for a format.
+    /// Returns 16 for corner/edge formats, 47 for blob format.
+    /// </summary>
+    public int GetExpectedVariantCount(string formatName)
+    {
+        var format = GetFormatDefinition(formatName);
+        if (format == null)
+        {
+            // Default to corner16 behavior
+            return 16;
+        }
+        return format.AllowedBitmasks.Count;
+    }
+
+    /// <summary>
+    /// Gets the display name for a format (name with built-in indicator).
+    /// </summary>
+    public string GetFormatDisplayName(string formatName)
+    {
+        var format = GetFormatDefinition(formatName);
+        if (format == null) return formatName;
+        return format.IsBuiltIn ? $"{format.Name} (built-in)" : format.Name;
+    }
+
     public void LoadTiles()
     {
         _tiles.Clear();
@@ -1176,10 +1235,18 @@ public class EditableTile
     public Vector2I?[]? AutoTileVariants { get; set; }
 
     /// <summary>
-    /// The auto-tile format: "corner16" (16 variants) or "blob47" (47 variants).
+    /// The auto-tile format name. Can be a built-in format ("corner16", "blob47", "edge16")
+    /// or a custom format name registered in AutoTileFormatRegistry.
     /// Default is corner16 for backward compatibility.
     /// </summary>
     public string AutoTileFormat { get; set; } = "corner16";
+
+    /// <summary>
+    /// Custom variant definitions for this tile, keyed by bitmask index.
+    /// Used when the tile needs per-variant size/offset configuration (e.g., tall variants).
+    /// If null or empty, standard 1x1 variants are assumed.
+    /// </summary>
+    public Dictionary<int, EditableVariantDefinition>? CustomVariantDefinitions { get; set; }
 
     /// <summary>
     /// Returns true if this tile has any auto-tile variants defined.
@@ -1275,6 +1342,68 @@ public class EditableTile
     /// </summary>
     public bool IsFixedTransition => !string.IsNullOrEmpty(OuterTerrainId) && OuterTerrainId != "*";
 
+    /// <summary>
+    /// Returns true if this tile has custom variant definitions with non-standard sizes or offsets.
+    /// </summary>
+    public bool HasCustomVariantDefinitions => CustomVariantDefinitions?.Count > 0;
+
+    /// <summary>
+    /// Gets the variant definition for a specific bitmask index.
+    /// Returns a default definition with the atlas coords if no custom definition exists.
+    /// </summary>
+    public EditableVariantDefinition GetVariantDefinition(int bitmaskIndex)
+    {
+        // Check for custom definition first
+        if (CustomVariantDefinitions != null &&
+            CustomVariantDefinitions.TryGetValue(bitmaskIndex, out var customDef))
+        {
+            return customDef;
+        }
+
+        // Fall back to simple atlas coords from AutoTileVariants
+        if (AutoTileVariants != null && bitmaskIndex < AutoTileVariants.Length &&
+            AutoTileVariants[bitmaskIndex].HasValue)
+        {
+            var coords = AutoTileVariants[bitmaskIndex]!.Value;
+            return new EditableVariantDefinition
+            {
+                AtlasX = coords.X,
+                AtlasY = coords.Y,
+                SizeX = 1,
+                SizeY = 1,
+                OffsetX = 0,
+                OffsetY = 0
+            };
+        }
+
+        // Default to base tile coords
+        return new EditableVariantDefinition
+        {
+            AtlasX = AtlasX,
+            AtlasY = AtlasY,
+            SizeX = 1,
+            SizeY = 1,
+            OffsetX = 0,
+            OffsetY = 0
+        };
+    }
+
+    /// <summary>
+    /// Sets a custom variant definition for a specific bitmask index.
+    /// </summary>
+    public void SetVariantDefinition(int bitmaskIndex, EditableVariantDefinition definition)
+    {
+        CustomVariantDefinitions ??= new Dictionary<int, EditableVariantDefinition>();
+        CustomVariantDefinitions[bitmaskIndex] = definition;
+
+        // Also update AutoTileVariants for backward compatibility
+        AutoTileVariants ??= new Vector2I?[ExpectedVariantCount];
+        if (bitmaskIndex < AutoTileVariants.Length)
+        {
+            AutoTileVariants[bitmaskIndex] = new Vector2I(definition.AtlasX, definition.AtlasY);
+        }
+    }
+
     public EditableTile Clone()
     {
         var clone = new EditableTile
@@ -1321,6 +1450,15 @@ public class EditableTile
             Array.Copy(AnimationFrames, clone.AnimationFrames, AnimationFrames.Length);
         }
 
+        if (CustomVariantDefinitions != null)
+        {
+            clone.CustomVariantDefinitions = new Dictionary<int, EditableVariantDefinition>();
+            foreach (var (key, value) in CustomVariantDefinitions)
+            {
+                clone.CustomVariantDefinitions[key] = value.Clone();
+            }
+        }
+
         return clone;
     }
 }
@@ -1357,6 +1495,105 @@ public class EditableBiome
             BlockedPercentage = BlockedPercentage,
             PassableTiles = new Dictionary<string, float>(PassableTiles),
             BlockedTiles = new Dictionary<string, float>(BlockedTiles)
+        };
+    }
+}
+
+/// <summary>
+/// Mutable variant definition for editing auto-tile variants.
+/// Corresponds to the immutable VariantDefinition record in the runtime.
+/// </summary>
+public class EditableVariantDefinition
+{
+    /// <summary>Atlas X coordinate for this variant.</summary>
+    public int AtlasX { get; set; }
+
+    /// <summary>Atlas Y coordinate for this variant.</summary>
+    public int AtlasY { get; set; }
+
+    /// <summary>Width in cells (default 1).</summary>
+    public int SizeX { get; set; } = 1;
+
+    /// <summary>Height in cells (default 1).</summary>
+    public int SizeY { get; set; } = 1;
+
+    /// <summary>X anchor offset from logical cell position.</summary>
+    public int OffsetX { get; set; }
+
+    /// <summary>Y anchor offset from logical cell position (negative = above).</summary>
+    public int OffsetY { get; set; }
+
+    /// <summary>Override atlas region width (null = use tileset default).</summary>
+    public int? AtlasRegionWidth { get; set; }
+
+    /// <summary>Override atlas region height (null = use tileset default).</summary>
+    public int? AtlasRegionHeight { get; set; }
+
+    /// <summary>Returns true if this is a multi-cell variant.</summary>
+    public bool IsMultiCell => SizeX > 1 || SizeY > 1;
+
+    /// <summary>Returns true if this variant has a non-zero offset.</summary>
+    public bool HasOffset => OffsetX != 0 || OffsetY != 0;
+
+    /// <summary>Gets the atlas coordinates as a Vector2I.</summary>
+    public Vector2I AtlasCoords => new(AtlasX, AtlasY);
+
+    /// <summary>Gets the size as a Vector2I.</summary>
+    public Vector2I Size => new(SizeX, SizeY);
+
+    /// <summary>Gets the offset as a Vector2I.</summary>
+    public Vector2I Offset => new(OffsetX, OffsetY);
+
+    /// <summary>
+    /// Converts to the immutable runtime VariantDefinition.
+    /// </summary>
+    public Features.Worldgen.AutoTiling.VariantDefinition ToVariantDefinition()
+    {
+        Vector2I? atlasRegionSize = (AtlasRegionWidth.HasValue || AtlasRegionHeight.HasValue)
+            ? new Vector2I(AtlasRegionWidth ?? 0, AtlasRegionHeight ?? 0)
+            : null;
+
+        return new Features.Worldgen.AutoTiling.VariantDefinition(
+            AtlasCoords,
+            Size,
+            Offset,
+            atlasRegionSize
+        );
+    }
+
+    /// <summary>
+    /// Creates from an immutable runtime VariantDefinition.
+    /// </summary>
+    public static EditableVariantDefinition FromVariantDefinition(Features.Worldgen.AutoTiling.VariantDefinition def)
+    {
+        return new EditableVariantDefinition
+        {
+            AtlasX = def.AtlasCoords.X,
+            AtlasY = def.AtlasCoords.Y,
+            SizeX = def.Size.X,
+            SizeY = def.Size.Y,
+            OffsetX = def.Offset.X,
+            OffsetY = def.Offset.Y,
+            AtlasRegionWidth = def.AtlasRegionSize?.X,
+            AtlasRegionHeight = def.AtlasRegionSize?.Y
+        };
+    }
+
+    /// <summary>
+    /// Creates a deep copy of this variant definition.
+    /// </summary>
+    public EditableVariantDefinition Clone()
+    {
+        return new EditableVariantDefinition
+        {
+            AtlasX = AtlasX,
+            AtlasY = AtlasY,
+            SizeX = SizeX,
+            SizeY = SizeY,
+            OffsetX = OffsetX,
+            OffsetY = OffsetY,
+            AtlasRegionWidth = AtlasRegionWidth,
+            AtlasRegionHeight = AtlasRegionHeight
         };
     }
 }

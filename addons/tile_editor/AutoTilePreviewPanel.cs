@@ -16,6 +16,7 @@ public partial class AutoTilePreviewPanel : ScrollContainer
     private readonly TileEditorService? _service;
     private OptionButton? _tileSelector;
     private OptionButton? _baseTileSelector;
+    private OptionButton? _formatOverrideDropdown;
     private HSlider? _scaleSlider;
     private Label? _scaleLabel;
     private Label? _infoLabel;
@@ -23,6 +24,7 @@ public partial class AutoTilePreviewPanel : ScrollContainer
     private DualGridAutoTilePreview? _mapPreview;
     private string? _selectedTileId;
     private string? _selectedBaseTileId;
+    private string? _formatOverride; // null = use tile's format
 
     // Required by Godot for [Tool] classes
     public AutoTilePreviewPanel() { }
@@ -74,6 +76,19 @@ public partial class AutoTilePreviewPanel : ScrollContainer
         _baseTileSelector.ItemSelected += OnBaseTileSelected;
         baseRow.AddChild(_baseTileSelector);
         mainVBox.AddChild(baseRow);
+
+        // Format override selector row
+        var formatRow = new HBoxContainer();
+        formatRow.AddChild(new Label { Text = "Format:", CustomMinimumSize = new Vector2(100, 0) });
+        _formatOverrideDropdown = new OptionButton
+        {
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            TooltipText = "Override format for preview (uses tile's format if not set)"
+        };
+        PopulateFormatDropdown();
+        _formatOverrideDropdown.ItemSelected += OnFormatOverrideSelected;
+        formatRow.AddChild(_formatOverrideDropdown);
+        mainVBox.AddChild(formatRow);
 
         // Scale slider row
         var scaleRow = new HBoxContainer();
@@ -144,6 +159,38 @@ public partial class AutoTilePreviewPanel : ScrollContainer
     {
         PopulateTileSelector();
         PopulateBaseTileSelector();
+        PopulateFormatDropdown();
+    }
+
+    private void PopulateFormatDropdown()
+    {
+        if (_formatOverrideDropdown == null || _service == null) return;
+
+        _formatOverrideDropdown.Clear();
+
+        // First option: use tile's configured format
+        _formatOverrideDropdown.AddItem("(Use tile's format)", 0);
+        _formatOverrideDropdown.SetItemMetadata(0, "");
+
+        // Add all available formats from registry
+        var formatNames = _service.GetAvailableFormatNames();
+        var index = 1;
+        foreach (var formatName in formatNames)
+        {
+            var displayName = _service.GetFormatDisplayName(formatName);
+            _formatOverrideDropdown.AddItem(displayName, index);
+            _formatOverrideDropdown.SetItemMetadata(index, formatName);
+            index++;
+        }
+    }
+
+    private void OnFormatOverrideSelected(long index)
+    {
+        if (_formatOverrideDropdown == null) return;
+
+        var metadata = _formatOverrideDropdown.GetItemMetadata((int)index).AsString();
+        _formatOverride = string.IsNullOrEmpty(metadata) ? null : metadata;
+        RefreshPreview();
     }
 
     private void PopulateTileSelector()
@@ -234,8 +281,15 @@ public partial class AutoTilePreviewPanel : ScrollContainer
             return;
         }
 
-        var formatName = tile.AutoTileFormat?.ToLowerInvariant() ?? "corner16";
-        _infoLabel!.Text = $"Click cells to toggle ({formatName}). Visual grid shows correct transitions.";
+        // Use format override if set, otherwise use tile's configured format
+        var formatName = _formatOverride ?? tile.AutoTileFormat?.ToLowerInvariant() ?? "corner16";
+        var format = _service.GetFormatDefinition(formatName);
+        var formatDisplayName = format != null ? _service.GetFormatDisplayName(formatName) : formatName;
+
+        var isOverridden = _formatOverride != null;
+        _infoLabel!.Text = isOverridden
+            ? $"Click cells to toggle ({formatDisplayName} - overridden). Visual grid shows correct transitions."
+            : $"Click cells to toggle ({formatDisplayName}). Visual grid shows correct transitions.";
 
         EditableTile? baseTile = null;
         if (!string.IsNullOrEmpty(_selectedBaseTileId))
@@ -243,7 +297,7 @@ public partial class AutoTilePreviewPanel : ScrollContainer
             baseTile = _service.GetTile(_selectedBaseTileId);
         }
 
-        _mapPreview?.SetTiles(tile, baseTile, (float)_scaleSlider!.Value);
+        _mapPreview?.SetTiles(tile, baseTile, (float)_scaleSlider!.Value, _formatOverride);
     }
 
     public void Refresh()
@@ -280,6 +334,7 @@ public partial class DualGridAutoTilePreview : Control
     private float _scale = 2f;
     private Vector2I _tileSize = new(16, 16);
     private bool _showDataGrid = true;
+    private string? _formatOverride; // null = use tile's format
 
     // Data grid: what the user toggles (true = filled with overlay tile)
     private readonly bool[,] _dataGrid = new bool[DataGridRows, DataGridCols];
@@ -329,16 +384,27 @@ public partial class DualGridAutoTilePreview : Control
         QueueRedraw();
     }
 
-    public void SetTiles(EditableTile? overlayTile, EditableTile? baseTile, float scale)
+    public void SetTiles(EditableTile? overlayTile, EditableTile? baseTile, float scale, string? formatOverride = null)
     {
         _overlayTile = overlayTile;
         _baseTile = baseTile;
         _scale = scale;
+        _formatOverride = formatOverride;
         _tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
         UpdateSize();
         RecomputeVisualBitmasks();
         QueueRedraw();
         EmitInfo();
+    }
+
+    /// <summary>
+    /// Gets the effective format name being used (override or tile's format).
+    /// </summary>
+    private string GetEffectiveFormat()
+    {
+        if (!string.IsNullOrEmpty(_formatOverride))
+            return _formatOverride;
+        return _overlayTile?.AutoTileFormat?.ToLowerInvariant() ?? "corner16";
     }
 
     public void ClearPreview()
@@ -392,11 +458,16 @@ public partial class DualGridAutoTilePreview : Control
                 EmitInfo();
             }
         }
+        // Show tooltip on hover with variant info
+        else if (@event is InputEventMouseMotion mouseMotion)
+        {
+            UpdateTooltip(mouseMotion.Position);
+        }
     }
 
     private void RecomputeVisualBitmasks()
     {
-        var format = _overlayTile?.AutoTileFormat?.ToLowerInvariant() ?? "corner16";
+        var format = GetEffectiveFormat();
 
         if (format == "blob47")
         {
@@ -441,9 +512,11 @@ public partial class DualGridAutoTilePreview : Control
             if (_dataGrid[r, c])
                 filledCount++;
 
-        var format = _overlayTile.AutoTileFormat?.ToLowerInvariant() ?? "corner16";
+        var format = GetEffectiveFormat();
+        var isOverridden = !string.IsNullOrEmpty(_formatOverride);
+        var formatText = isOverridden ? $"{format} (overridden)" : format;
         var info = $"Data grid: {filledCount}/{DataGridRows * DataGridCols} cells filled. " +
-                   $"Format: {format}. Click to toggle cells.";
+                   $"Format: {formatText}. Click to toggle cells.";
         EmitSignal(SignalName.InfoChanged, info);
     }
 
@@ -498,7 +571,7 @@ public partial class DualGridAutoTilePreview : Control
                 (int)(_tileSize.Y / _overlayTile.SourceScale)
             );
 
-            var format = _overlayTile.AutoTileFormat?.ToLowerInvariant() ?? "corner16";
+            var format = GetEffectiveFormat();
 
             if (format == "blob47")
             {
@@ -599,33 +672,160 @@ public partial class DualGridAutoTilePreview : Control
 
     private Vector2I GetVariantCoords(int bitmask)
     {
-        if (_overlayTile?.AutoTileVariants == null)
+        var info = GetVariantInfo(bitmask);
+        return info.AtlasCoords;
+    }
+
+    /// <summary>
+    /// Gets complete variant information including size and offset for a bitmask.
+    /// Checks tile's custom definitions first, then format registry.
+    /// </summary>
+    private (Vector2I AtlasCoords, Vector2I Size, Vector2I Offset, bool IsValid) GetVariantInfo(int bitmask)
+    {
+        var defaultCoords = new Vector2I(_overlayTile?.AtlasX ?? 0, _overlayTile?.AtlasY ?? 0);
+        var defaultSize = new Vector2I(1, 1);
+        var defaultOffset = Vector2I.Zero;
+
+        if (_overlayTile == null)
         {
-            return new Vector2I(_overlayTile?.AtlasX ?? 0, _overlayTile?.AtlasY ?? 0);
+            return (defaultCoords, defaultSize, defaultOffset, false);
         }
 
-        var format = _overlayTile.AutoTileFormat?.ToLowerInvariant();
+        var format = GetEffectiveFormat();
         int variantIndex;
 
         if (format == "blob47")
         {
-            // Blob47 uses index lookup - GetBlobIndex returns 0-46 or -1 if invalid
             variantIndex = NeighborBitmask8.GetBlobIndex(bitmask);
-            if (variantIndex < 0) variantIndex = 0;
+            if (variantIndex < 0) return (defaultCoords, defaultSize, defaultOffset, false);
         }
         else
         {
-            // Corner16 and Edge16 use bitmask directly as index (0-15)
             variantIndex = bitmask;
         }
 
-        if (variantIndex >= 0 && variantIndex < _overlayTile.AutoTileVariants.Length &&
-            _overlayTile.AutoTileVariants[variantIndex].HasValue)
+        // Check for custom variant definition on the tile first
+        if (_overlayTile.CustomVariantDefinitions != null &&
+            _overlayTile.CustomVariantDefinitions.TryGetValue(variantIndex, out var customDef))
         {
-            return _overlayTile.AutoTileVariants[variantIndex]!.Value;
+            return (customDef.AtlasCoords, customDef.Size, customDef.Offset, true);
         }
 
-        return new Vector2I(_overlayTile.AtlasX, _overlayTile.AtlasY);
+        // Check format registry for variant definition
+        var formatDef = _service.GetFormatDefinition(format);
+        if (formatDef != null)
+        {
+            // Check if this bitmask is allowed by the format
+            if (!formatDef.AllowedBitmasks.Contains(variantIndex))
+            {
+                return (defaultCoords, defaultSize, defaultOffset, false);
+            }
+
+            // Get variant definition from format
+            var registryVariant = formatDef.GetVariant(variantIndex);
+            if (registryVariant.HasValue)
+            {
+                var v = registryVariant.Value;
+                return (v.AtlasCoords, v.Size, v.Offset, true);
+            }
+        }
+
+        // Fall back to tile's AutoTileVariants array
+        if (_overlayTile.AutoTileVariants != null &&
+            variantIndex >= 0 && variantIndex < _overlayTile.AutoTileVariants.Length &&
+            _overlayTile.AutoTileVariants[variantIndex].HasValue)
+        {
+            return (_overlayTile.AutoTileVariants[variantIndex]!.Value, defaultSize, defaultOffset, true);
+        }
+
+        return (defaultCoords, defaultSize, defaultOffset, false);
+    }
+
+    /// <summary>
+    /// Checks if a bitmask is valid/allowed for the current format.
+    /// </summary>
+    private bool IsBitmaskAllowed(int bitmask)
+    {
+        var format = GetEffectiveFormat();
+        var formatDef = _service.GetFormatDefinition(format);
+
+        if (formatDef == null)
+        {
+            // Default: allow all bitmasks 0-15 for corner/edge, or valid blob indices
+            if (format == "blob47")
+            {
+                var index = NeighborBitmask8.GetBlobIndex(bitmask);
+                return index >= 0 && index < 47;
+            }
+            return bitmask >= 0 && bitmask < 16;
+        }
+
+        // Check against format's allowed bitmasks
+        int variantIndex = format == "blob47"
+            ? NeighborBitmask8.GetBlobIndex(bitmask)
+            : bitmask;
+
+        return formatDef.AllowedBitmasks.Contains(variantIndex);
+    }
+
+    private void UpdateTooltip(Vector2 localPos)
+    {
+        if (_overlayTile == null)
+        {
+            TooltipText = "";
+            return;
+        }
+
+        var scaledTileSize = new Vector2(_tileSize.X, _tileSize.Y) * _scale;
+        var halfTile = scaledTileSize / 2;
+
+        // Determine which visual cell we're hovering over
+        var format = GetEffectiveFormat();
+        int bitmask = -1;
+
+        if (format == "blob47")
+        {
+            // Blob format: data grid cells
+            var dataCol = (int)((localPos.X - halfTile.X) / scaledTileSize.X);
+            var dataRow = (int)((localPos.Y - halfTile.Y) / scaledTileSize.Y);
+
+            if (dataRow >= 0 && dataRow < DataGridRows && dataCol >= 0 && dataCol < DataGridCols)
+            {
+                bitmask = _visualBitmasks[dataRow, dataCol];
+            }
+        }
+        else
+        {
+            // Dual-grid formats: visual grid cells
+            var vx = (int)(localPos.X / scaledTileSize.X);
+            var vy = (int)(localPos.Y / scaledTileSize.Y);
+
+            if (vy >= 0 && vy < VisualGridRows && vx >= 0 && vx < VisualGridCols)
+            {
+                bitmask = _visualBitmasks[vy, vx];
+            }
+        }
+
+        if (bitmask >= 0)
+        {
+            var info = GetVariantInfo(bitmask);
+            var tooltip = $"Bitmask: {bitmask}\n";
+            tooltip += $"Atlas: ({info.AtlasCoords.X}, {info.AtlasCoords.Y})\n";
+            if (info.Size.X > 1 || info.Size.Y > 1)
+            {
+                tooltip += $"Size: {info.Size.X}x{info.Size.Y}\n";
+            }
+            if (info.Offset.X != 0 || info.Offset.Y != 0)
+            {
+                tooltip += $"Offset: ({info.Offset.X}, {info.Offset.Y})\n";
+            }
+            tooltip += info.IsValid ? "Status: Valid" : "Status: Using default";
+            TooltipText = tooltip;
+        }
+        else
+        {
+            TooltipText = "";
+        }
     }
 }
 #endif
