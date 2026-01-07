@@ -320,19 +320,51 @@ public partial class TileEditorService : RefCounted
                     var allowedBitmasks = formatData.AllowedBitmasks?.ToHashSet()
                         ?? Features.Worldgen.AutoTiling.AutoTileFormatDefinition.AllBitmasksFor(bitmaskType);
 
+                    // Parse variant sizes from JSON
+                    var variantSizes = new Dictionary<int, Godot.Vector2I>();
+                    if (formatData.VariantSizes != null)
+                    {
+                        foreach (var (bitmaskStr, sizeData) in formatData.VariantSizes)
+                        {
+                            if (int.TryParse(bitmaskStr, out var bitmask))
+                            {
+                                variantSizes[bitmask] = new Godot.Vector2I(sizeData.X, sizeData.Y);
+                            }
+                        }
+                    }
+
                     var editableFormat = new EditableAutoTileFormat
                     {
                         Name = formatData.Name,
                         BitmaskType = bitmaskType,
                         AllowedBitmasks = allowedBitmasks
                     };
+
+                    // Populate editable format's variant mappings with sizes
+                    foreach (var bitmask in allowedBitmasks)
+                    {
+                        var size = variantSizes.TryGetValue(bitmask, out var s) ? s : new Godot.Vector2I(1, 1);
+                        editableFormat.VariantMappings[bitmask] = new EditableFormatVariant
+                        {
+                            SizeX = size.X,
+                            SizeY = size.Y,
+                            OffsetX = 0,
+                            OffsetY = 0
+                        };
+                    }
+
                     _customAutoTileFormats.Add(editableFormat);
 
                     // Register with the global registry
                     var variantMappings = new Dictionary<int, Features.Worldgen.AutoTiling.VariantDefinition>();
                     foreach (var bitmask in allowedBitmasks)
                     {
-                        variantMappings[bitmask] = new Features.Worldgen.AutoTiling.VariantDefinition(Godot.Vector2I.Zero);
+                        var size = variantSizes.TryGetValue(bitmask, out var s) ? s : new Godot.Vector2I(1, 1);
+                        variantMappings[bitmask] = new Features.Worldgen.AutoTiling.VariantDefinition(
+                            Godot.Vector2I.Zero,
+                            size,
+                            Godot.Vector2I.Zero
+                        );
                     }
 
                     var definition = new Features.Worldgen.AutoTiling.AutoTileFormatDefinition(
@@ -1000,16 +1032,28 @@ public partial class TileEditorService : RefCounted
                         PassableTiles = NormalizeWeights(kvp.Value.PassableTiles),
                         BlockedTiles = NormalizeWeights(kvp.Value.BlockedTiles)
                     }) : null,
-                AutoTileFormats = _customAutoTileFormats.Count > 0 ? _customAutoTileFormats.Select(f => new AutoTileFormatDataJson
+                AutoTileFormats = _customAutoTileFormats.Count > 0 ? _customAutoTileFormats.Select(f =>
                     {
-                        Name = f.Name,
-                        BitmaskType = f.BitmaskType switch
+                        // Only serialize non-1x1 variant sizes
+                        var nonDefaultSizes = f.VariantMappings
+                            .Where(vm => vm.Value.SizeX != 1 || vm.Value.SizeY != 1)
+                            .ToDictionary(
+                                vm => vm.Key.ToString(),
+                                vm => new Vector2IData { X = vm.Value.SizeX, Y = vm.Value.SizeY }
+                            );
+
+                        return new AutoTileFormatDataJson
                         {
-                            Features.Worldgen.AutoTiling.BitmaskType.Edge4 => "edge4",
-                            Features.Worldgen.AutoTiling.BitmaskType.Full8 => "full8",
-                            _ => "corner4"
-                        },
-                        AllowedBitmasks = f.AllowedBitmasks.OrderBy(b => b).ToArray()
+                            Name = f.Name,
+                            BitmaskType = f.BitmaskType switch
+                            {
+                                Features.Worldgen.AutoTiling.BitmaskType.Edge4 => "edge4",
+                                Features.Worldgen.AutoTiling.BitmaskType.Full8 => "full8",
+                                _ => "corner4"
+                            },
+                            AllowedBitmasks = f.AllowedBitmasks.OrderBy(b => b).ToArray(),
+                            VariantSizes = nonDefaultSizes.Count > 0 ? nonDefaultSizes : null
+                        };
                     }).ToList() : null,
                 Tiles = _tiles.Values.Select(t => new TileData
                 {
@@ -1110,6 +1154,11 @@ public partial class TileEditorService : RefCounted
         [JsonPropertyName("bitmaskType")] public string? BitmaskType { get; set; }
 
         [JsonPropertyName("allowedBitmasks")] public int[]? AllowedBitmasks { get; set; }
+
+        /// <summary>
+        /// Variant size mappings keyed by bitmask. Only non-1x1 sizes are serialized.
+        /// </summary>
+        [JsonPropertyName("variantSizes")] public Dictionary<string, Vector2IData>? VariantSizes { get; set; }
     }
 
     private sealed class BiomeDataJson

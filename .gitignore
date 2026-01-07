@@ -118,3 +118,6 @@ fabric.properties
 # Test artifacts
 test_output.txt
 addons/gdUnit4/GdUnitRunner.cfg
+
+# Tiled editor session files
+*.tiled-session

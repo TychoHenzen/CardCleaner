@@ -37,6 +37,11 @@ public partial class AutoTileFormatEditorPanel : HSplitContainer
     private Button? _deleteButton;
     private ScrollContainer? _bitmaskScrollContainer;
 
+    // Variant configuration controls
+    private FoldoutContainer? _variantConfigFoldout;
+    private VBoxContainer? _variantConfigContainer;
+    private readonly Dictionary<int, VariantConfigRow> _variantConfigRows = new();
+
     // Current state
     private string? _selectedFormatName;
     private AutoTileFormatDefinition? _selectedFormat;
@@ -241,6 +246,37 @@ public partial class AutoTileFormatEditorPanel : HSplitContainer
         _bitmaskGrid.AllowedBitmasksChanged += OnAllowedBitmasksChanged;
         _bitmaskScrollContainer.AddChild(_bitmaskGrid);
         _formatDetailsContainer.AddChild(_bitmaskScrollContainer);
+
+        // Variant configuration section (for multi-cell variants)
+        _formatDetailsContainer.AddChild(new HSeparator());
+
+        _variantConfigFoldout = new FoldoutContainer("Default Variant Size", true);
+        _formatDetailsContainer.AddChild(_variantConfigFoldout);
+
+        var variantInfo = new Label
+        {
+            Text = "Configure default size for each variant (for multi-cell tiles like tall platforms).\nOffset and atlas coords are configured per-tile in the tile properties panel.",
+            AutowrapMode = TextServer.AutowrapMode.Word,
+            Modulate = new Color(0.8f, 0.8f, 0.8f)
+        };
+        variantInfo.AddThemeFontSizeOverride("font_size", 10);
+        _variantConfigFoldout.Content.AddChild(variantInfo);
+
+        // Scroll container for variant config rows
+        var variantScrollContainer = new ScrollContainer
+        {
+            SizeFlagsVertical = SizeFlags.ExpandFill,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            CustomMinimumSize = new Vector2(0, 200),
+            HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled
+        };
+        _variantConfigFoldout.Content.AddChild(variantScrollContainer);
+
+        _variantConfigContainer = new VBoxContainer
+        {
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        variantScrollContainer.AddChild(_variantConfigContainer);
     }
 
     private void OnTilesLoaded()
@@ -261,12 +297,20 @@ public partial class AutoTileFormatEditorPanel : HSplitContainer
         _customFormats.Clear();
         foreach (var format in _service.CustomAutoTileFormats)
         {
-            _customFormats[format.Name] = new EditableAutoTileFormat
+            var editable = new EditableAutoTileFormat
             {
                 Name = format.Name,
                 BitmaskType = format.BitmaskType,
                 AllowedBitmasks = new HashSet<int>(format.AllowedBitmasks)
             };
+
+            // Load variant mappings (Size/Offset) from the format definition
+            foreach (var (bitmask, variant) in format.VariantMappings)
+            {
+                editable.VariantMappings[bitmask] = variant.Clone();
+            }
+
+            _customFormats[format.Name] = editable;
         }
     }
 
@@ -370,7 +414,65 @@ public partial class AutoTileFormatEditorPanel : HSplitContainer
         // Enable/disable delete button
         _deleteButton!.Disabled = _selectedFormat.IsBuiltIn;
 
+        // Populate variant configuration rows
+        RebuildVariantConfigRows();
+
+        // Show/hide variant config based on whether format is editable
+        if (_variantConfigFoldout != null)
+        {
+            _variantConfigFoldout.Visible = !_selectedFormat.IsBuiltIn;
+        }
+
         _isUpdating = false;
+    }
+
+    private void RebuildVariantConfigRows()
+    {
+        if (_variantConfigContainer == null || _selectedFormat == null) return;
+
+        // Clear existing rows
+        foreach (var child in _variantConfigContainer.GetChildren())
+        {
+            child.QueueFree();
+        }
+        _variantConfigRows.Clear();
+
+        // Get the editable format if this is a custom format
+        EditableAutoTileFormat? editableFormat = null;
+        if (!_selectedFormat.IsBuiltIn && _selectedFormatName != null)
+        {
+            _customFormats.TryGetValue(_selectedFormatName, out editableFormat);
+        }
+
+        // Create rows for each allowed bitmask
+        var sortedBitmasks = _selectedFormat.AllowedBitmasks.OrderBy(b => b).ToList();
+
+        foreach (var bitmask in sortedBitmasks)
+        {
+            var row = new VariantConfigRow(bitmask, _selectedFormat.BitmaskType, editableFormat, _selectedFormat.IsBuiltIn);
+            row.VariantChanged += OnVariantConfigChanged;
+            _variantConfigContainer.AddChild(row);
+            _variantConfigRows[bitmask] = row;
+        }
+    }
+
+    private void OnVariantConfigChanged(int bitmask)
+    {
+        if (_isUpdating || _selectedFormat == null || _selectedFormat.IsBuiltIn) return;
+        if (_selectedFormatName == null) return;
+
+        if (!_customFormats.TryGetValue(_selectedFormatName, out var editableFormat)) return;
+
+        // Get the updated values from the row
+        if (_variantConfigRows.TryGetValue(bitmask, out var row))
+        {
+            var variant = row.GetVariant();
+            editableFormat.VariantMappings[bitmask] = variant;
+        }
+
+        // Update the registry
+        ReregisterCustomFormat(editableFormat);
+        EmitSignal(SignalName.FormatModified, _selectedFormatName);
     }
 
     private void OnNameChanged(string newName)
@@ -407,6 +509,9 @@ public partial class AutoTileFormatEditorPanel : HSplitContainer
 
         // Update variant count display
         _variantCountLabel!.Text = _bitmaskGrid.AllowedBitmasks.Count.ToString();
+
+        // Rebuild variant config rows for new set of allowed bitmasks
+        RebuildVariantConfigRows();
     }
 
     private void UpdateCustomFormat(string name, BitmaskType? newType, HashSet<int>? newAllowedBitmasks)
@@ -441,12 +546,15 @@ public partial class AutoTileFormatEditorPanel : HSplitContainer
         // Unregister old version
         AutoTileFormatRegistry.Unregister(editableFormat.Name);
 
+        // Convert editable variant mappings to immutable VariantDefinitions
+        var variantMappings = ConvertToVariantMappings(editableFormat);
+
         // Create new definition
         var newDefinition = new AutoTileFormatDefinition(
             editableFormat.Name,
             editableFormat.BitmaskType,
             editableFormat.AllowedBitmasks,
-            CreateDefaultVariantMappings(editableFormat.BitmaskType, editableFormat.AllowedBitmasks),
+            variantMappings,
             isBuiltIn: false
         );
 
@@ -458,6 +566,31 @@ public partial class AutoTileFormatEditorPanel : HSplitContainer
         {
             AutoTileFormatRegistry.TryGet(editableFormat.Name, out _selectedFormat);
         }
+    }
+
+    private static Dictionary<int, VariantDefinition> ConvertToVariantMappings(EditableAutoTileFormat editableFormat)
+    {
+        var mappings = new Dictionary<int, VariantDefinition>();
+
+        foreach (var bitmask in editableFormat.AllowedBitmasks)
+        {
+            if (editableFormat.VariantMappings.TryGetValue(bitmask, out var editable))
+            {
+                // Use the editable variant's size/offset
+                mappings[bitmask] = new VariantDefinition(
+                    Vector2I.Zero, // Atlas coords are per-tile, not per-format
+                    new Vector2I(editable.SizeX, editable.SizeY),
+                    new Vector2I(editable.OffsetX, editable.OffsetY)
+                );
+            }
+            else
+            {
+                // Default to 1x1 with no offset
+                mappings[bitmask] = new VariantDefinition(Vector2I.Zero);
+            }
+        }
+
+        return mappings;
     }
 
     private void OnAddPressed()
@@ -723,5 +856,161 @@ public class EditableAutoTileFormat
     public string Name { get; set; } = "";
     public BitmaskType BitmaskType { get; set; } = BitmaskType.Corner4;
     public HashSet<int> AllowedBitmasks { get; set; } = new();
+
+    /// <summary>
+    /// Per-variant Size and Offset configuration.
+    /// Key is bitmask value, value is the variant settings.
+    /// </summary>
+    public Dictionary<int, EditableFormatVariant> VariantMappings { get; set; } = new();
+}
+
+/// <summary>
+/// Mutable variant configuration for a format definition.
+/// Contains default Size/Offset for variants of this format.
+/// </summary>
+public class EditableFormatVariant
+{
+    /// <summary>Size in cells (default 1x1).</summary>
+    public int SizeX { get; set; } = 1;
+    public int SizeY { get; set; } = 1;
+
+    /// <summary>Offset from anchor cell (default 0,0).</summary>
+    public int OffsetX { get; set; } = 0;
+    public int OffsetY { get; set; } = 0;
+
+    public EditableFormatVariant Clone()
+    {
+        return new EditableFormatVariant
+        {
+            SizeX = SizeX,
+            SizeY = SizeY,
+            OffsetX = OffsetX,
+            OffsetY = OffsetY
+        };
+    }
+}
+
+/// <summary>
+/// UI row for configuring a single variant's default Size in the format editor.
+/// Only Size is configured at the format level (for tall tiles like platforms).
+/// Offset and atlas coords are per-tile, configured in the tile properties panel.
+/// </summary>
+[Tool]
+public partial class VariantConfigRow : HBoxContainer
+{
+    [Signal]
+    public delegate void VariantChangedEventHandler(int bitmask);
+
+    private readonly int _bitmask;
+    private readonly EditableAutoTileFormat? _editableFormat;
+    private readonly bool _isReadOnly;
+
+    private TileShapePreview? _shapePreview;
+    private Label? _bitmaskLabel;
+    private SpinBox? _sizeXSpin;
+    private SpinBox? _sizeYSpin;
+    private bool _isUpdating;
+
+    // Required by Godot
+    public VariantConfigRow() { }
+
+    public VariantConfigRow(int bitmask, BitmaskType bitmaskType, EditableAutoTileFormat? editableFormat, bool isReadOnly)
+    {
+        _bitmask = bitmask;
+        _editableFormat = editableFormat;
+        _isReadOnly = isReadOnly;
+
+        SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        CustomMinimumSize = new Vector2(0, 36);
+
+        // Shape preview
+        _shapePreview = new TileShapePreview
+        {
+            CustomMinimumSize = new Vector2(28, 28)
+        };
+        var previewFormat = bitmaskType switch
+        {
+            BitmaskType.Corner4 => TileShapePreview.Format.Corner16,
+            BitmaskType.Edge4 => TileShapePreview.Format.Edge16,
+            BitmaskType.Full8 => TileShapePreview.Format.Blob47,
+            _ => TileShapePreview.Format.Corner16
+        };
+        _shapePreview.SetMask(bitmask, previewFormat);
+        AddChild(_shapePreview);
+
+        // Bitmask label
+        _bitmaskLabel = new Label
+        {
+            Text = $"#{bitmask}",
+            CustomMinimumSize = new Vector2(40, 0),
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        _bitmaskLabel.AddThemeFontSizeOverride("font_size", 11);
+        AddChild(_bitmaskLabel);
+
+        // Size label
+        AddChild(new Label { Text = "Size:", CustomMinimumSize = new Vector2(35, 0), VerticalAlignment = VerticalAlignment.Center });
+
+        // Size X
+        _sizeXSpin = new SpinBox
+        {
+            MinValue = 1,
+            MaxValue = 8,
+            Value = 1,
+            CustomMinimumSize = new Vector2(55, 0),
+            Editable = !isReadOnly
+        };
+        _sizeXSpin.ValueChanged += OnValueChanged;
+        AddChild(_sizeXSpin);
+
+        AddChild(new Label { Text = "x", VerticalAlignment = VerticalAlignment.Center });
+
+        // Size Y
+        _sizeYSpin = new SpinBox
+        {
+            MinValue = 1,
+            MaxValue = 8,
+            Value = 1,
+            CustomMinimumSize = new Vector2(55, 0),
+            Editable = !isReadOnly
+        };
+        _sizeYSpin.ValueChanged += OnValueChanged;
+        AddChild(_sizeYSpin);
+
+        // Load existing values
+        LoadFromFormat();
+    }
+
+    private void LoadFromFormat()
+    {
+        if (_editableFormat == null) return;
+
+        _isUpdating = true;
+
+        if (_editableFormat.VariantMappings.TryGetValue(_bitmask, out var variant))
+        {
+            _sizeXSpin!.Value = variant.SizeX;
+            _sizeYSpin!.Value = variant.SizeY;
+        }
+
+        _isUpdating = false;
+    }
+
+    private void OnValueChanged(double value)
+    {
+        if (_isUpdating || _isReadOnly) return;
+        EmitSignal(SignalName.VariantChanged, _bitmask);
+    }
+
+    public EditableFormatVariant GetVariant()
+    {
+        return new EditableFormatVariant
+        {
+            SizeX = (int)(_sizeXSpin?.Value ?? 1),
+            SizeY = (int)(_sizeYSpin?.Value ?? 1),
+            OffsetX = 0, // Offset is per-tile, not per-format
+            OffsetY = 0
+        };
+    }
 }
 #endif

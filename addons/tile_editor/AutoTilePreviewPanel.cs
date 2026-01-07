@@ -583,20 +583,21 @@ public partial class DualGridAutoTilePreview : Control
                     var bitmask = _visualBitmasks[row, col];
                     if (bitmask < 0) continue; // Empty cell (not filled)
 
-                    var variantCoords = GetVariantCoords(bitmask);
+                    var variantInfo = GetVariantInfo(bitmask);
                     var srcRect = new Rect2(
-                        variantCoords.X * overlayActualTileSize.X,
-                        variantCoords.Y * overlayActualTileSize.Y,
-                        overlayActualTileSize.X,
-                        overlayActualTileSize.Y
+                        variantInfo.AtlasCoords.X * overlayActualTileSize.X,
+                        variantInfo.AtlasCoords.Y * overlayActualTileSize.Y,
+                        overlayActualTileSize.X * variantInfo.Size.X,
+                        overlayActualTileSize.Y * variantInfo.Size.Y
                     );
 
                     // Data cell position: offset by half tile from origin
+                    // Scale destination by variant size from format
                     var destRect = new Rect2(
                         col * scaledTileSize.X + halfTile.X,
                         row * scaledTileSize.Y + halfTile.Y,
-                        scaledTileSize.X,
-                        scaledTileSize.Y
+                        scaledTileSize.X * variantInfo.Size.X,
+                        scaledTileSize.Y * variantInfo.Size.Y
                     );
 
                     DrawTextureRectRegion(overlayTexture, destRect, srcRect);
@@ -611,12 +612,12 @@ public partial class DualGridAutoTilePreview : Control
                     var bitmask = _visualBitmasks[vy, vx];
                     if (bitmask == 0) continue; // No corners filled, skip
 
-                    var variantCoords = GetVariantCoords(bitmask);
+                    var variantInfo = GetVariantInfo(bitmask);
                     var srcRect = new Rect2(
-                        variantCoords.X * overlayActualTileSize.X,
-                        variantCoords.Y * overlayActualTileSize.Y,
-                        overlayActualTileSize.X,
-                        overlayActualTileSize.Y
+                        variantInfo.AtlasCoords.X * overlayActualTileSize.X,
+                        variantInfo.AtlasCoords.Y * overlayActualTileSize.Y,
+                        overlayActualTileSize.X * variantInfo.Size.X,
+                        overlayActualTileSize.Y * variantInfo.Size.Y
                     );
 
                     // Visual tile position: offset by -half tile from data grid
@@ -624,11 +625,12 @@ public partial class DualGridAutoTilePreview : Control
                     // We render at (vx * tileSize - halfTile, vy * tileSize - halfTile)
                     // But since our control starts at 0,0, we shift everything by +halfTile
                     // So visual (0,0) renders at (0,0) and data grid renders at (halfTile, halfTile)
+                    // Scale destination by variant size from format
                     var destRect = new Rect2(
                         vx * scaledTileSize.X,
                         vy * scaledTileSize.Y,
-                        scaledTileSize.X,
-                        scaledTileSize.Y
+                        scaledTileSize.X * variantInfo.Size.X,
+                        scaledTileSize.Y * variantInfo.Size.Y
                     );
 
                     DrawTextureRectRegion(overlayTexture, destRect, srcRect);
@@ -670,15 +672,11 @@ public partial class DualGridAutoTilePreview : Control
         DrawRect(new Rect2(Vector2.Zero, totalSize), new Color(0.7f, 0.7f, 0.7f, 0.5f), false, 2.0f);
     }
 
-    private Vector2I GetVariantCoords(int bitmask)
-    {
-        var info = GetVariantInfo(bitmask);
-        return info.AtlasCoords;
-    }
-
     /// <summary>
     /// Gets complete variant information including size and offset for a bitmask.
-    /// Checks tile's custom definitions first, then format registry.
+    /// Atlas coordinates come from the tile's AutoTileVariants array.
+    /// Size comes from the format's VariantMappings (defines variant dimensions like 1x3 for tall platforms).
+    /// Offset is per-tile only (from CustomVariantDefinitions), defaults to 0,0.
     /// </summary>
     private (Vector2I AtlasCoords, Vector2I Size, Vector2I Offset, bool IsValid) GetVariantInfo(int bitmask)
     {
@@ -704,38 +702,38 @@ public partial class DualGridAutoTilePreview : Control
             variantIndex = bitmask;
         }
 
-        // Check for custom variant definition on the tile first
+        // Check format registry to see if this bitmask is allowed and get format-level size
+        var formatDef = _service.GetFormatDefinition(format);
+        if (formatDef != null && !formatDef.AllowedBitmasks.Contains(variantIndex))
+        {
+            return (defaultCoords, defaultSize, defaultOffset, false);
+        }
+
+        // Get size from format's variant mappings (format defines variant dimensions)
+        var variantSize = defaultSize;
+        if (formatDef != null)
+        {
+            var formatVariant = formatDef.GetVariant(variantIndex);
+            if (formatVariant.HasValue && (formatVariant.Value.Size.X > 0 || formatVariant.Value.Size.Y > 0))
+            {
+                variantSize = formatVariant.Value.Size;
+            }
+        }
+
+        // Check for custom variant definition on the tile (can override atlas coords and offset)
         if (_overlayTile.CustomVariantDefinitions != null &&
             _overlayTile.CustomVariantDefinitions.TryGetValue(variantIndex, out var customDef))
         {
-            return (customDef.AtlasCoords, customDef.Size, customDef.Offset, true);
+            // Custom definition provides atlas coords and offset; size comes from format
+            return (customDef.AtlasCoords, variantSize, customDef.Offset, true);
         }
 
-        // Check format registry for variant definition
-        var formatDef = _service.GetFormatDefinition(format);
-        if (formatDef != null)
-        {
-            // Check if this bitmask is allowed by the format
-            if (!formatDef.AllowedBitmasks.Contains(variantIndex))
-            {
-                return (defaultCoords, defaultSize, defaultOffset, false);
-            }
-
-            // Get variant definition from format
-            var registryVariant = formatDef.GetVariant(variantIndex);
-            if (registryVariant.HasValue)
-            {
-                var v = registryVariant.Value;
-                return (v.AtlasCoords, v.Size, v.Offset, true);
-            }
-        }
-
-        // Fall back to tile's AutoTileVariants array
+        // Get atlas coords from tile's AutoTileVariants array; size from format
         if (_overlayTile.AutoTileVariants != null &&
             variantIndex >= 0 && variantIndex < _overlayTile.AutoTileVariants.Length &&
             _overlayTile.AutoTileVariants[variantIndex].HasValue)
         {
-            return (_overlayTile.AutoTileVariants[variantIndex]!.Value, defaultSize, defaultOffset, true);
+            return (_overlayTile.AutoTileVariants[variantIndex]!.Value, variantSize, defaultOffset, true);
         }
 
         return (defaultCoords, defaultSize, defaultOffset, false);

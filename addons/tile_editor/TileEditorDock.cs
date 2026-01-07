@@ -1,5 +1,6 @@
 #if TOOLS
 using System;
+using System.Linq;
 using Godot;
 
 namespace CardCleaner.Addons.TileEditor;
@@ -10,6 +11,7 @@ public partial class TileEditorDock : Control
     private TileAtlasPanel? _atlasPanel;
     private BiomePoolPanel? _biomePoolPanel;
     private AutoTilePreviewPanel? _autoTilePreviewPanel;
+    private TmxPreviewPanel? _tmxPreviewPanel;
     private AutoTileFormatEditorPanel? _autoTileFormatEditorPanel;
     private UnusedSourcesPanel? _unusedSourcesPanel;
     private TransitionCoveragePanel? _transitionCoveragePanel;
@@ -20,14 +22,6 @@ public partial class TileEditorDock : Control
     private TileEditorService? _service;
     private Label? _statusLabel;
     private TabContainer? _tabContainer;
-
-    // TilesetConfig UI controls
-    private FoldoutContainer? _tilesetConfigFoldout;
-    private SpinBox? _baseTileSizeX;
-    private SpinBox? _baseTileSizeY;
-    private SpinBox? _gridOffsetX;
-    private SpinBox? _gridOffsetY;
-    private OptionButton? _tileSizePresetDropdown;
 
     public override void _Ready()
     {
@@ -121,13 +115,21 @@ public partial class TileEditorDock : Control
         reloadButton.Pressed += OnReloadPressed;
         toolbar.AddChild(reloadButton);
 
+        toolbar.AddChild(new VSeparator());
+
+        // TMX tools
+        var compileTmxButton = new Button { Text = "Compile from TMX", TooltipText = "Compile atlas from TMX/TSX files" };
+        compileTmxButton.Pressed += OnCompileTmxPressed;
+        toolbar.AddChild(compileTmxButton);
+
+        var insertPropsButton = new Button { Text = "Insert TSX Props", TooltipText = "Insert default properties into TSX files" };
+        insertPropsButton.Pressed += OnInsertTsxPropsPressed;
+        toolbar.AddChild(insertPropsButton);
+
         toolbar.AddChild(new HSeparator { SizeFlagsHorizontal = SizeFlags.Expand });
 
         _statusLabel = new Label { Text = "Loading..." };
         toolbar.AddChild(_statusLabel);
-
-        // Tileset Config section (collapsed by default)
-        SetupTilesetConfigUI(mainVBox);
 
         // Tab container
         _tabContainer = new TabContainer
@@ -157,6 +159,11 @@ public partial class TileEditorDock : Control
         _autoTilePreviewPanel.Name = "Auto-Tile Preview";
         _tabContainer.AddChild(_autoTilePreviewPanel);
 
+        // TMX Preview tab
+        _tmxPreviewPanel = new TmxPreviewPanel(_service!);
+        _tmxPreviewPanel.Name = "TMX Preview";
+        _tabContainer.AddChild(_tmxPreviewPanel);
+
         // Auto-Tile Formats tab
         _autoTileFormatEditorPanel = new AutoTileFormatEditorPanel(_service!);
         _autoTileFormatEditorPanel.Name = "Formats";
@@ -174,130 +181,6 @@ public partial class TileEditorDock : Control
         _transitionCoveragePanel = new TransitionCoveragePanel(_service!);
         _transitionCoveragePanel.Name = "Transitions";
         _tabContainer.AddChild(_transitionCoveragePanel);
-    }
-
-    private void SetupTilesetConfigUI(VBoxContainer parent)
-    {
-        _tilesetConfigFoldout = new FoldoutContainer("Tileset Configuration", true); // Collapsed by default
-        parent.AddChild(_tilesetConfigFoldout);
-
-        // Base Tile Size section
-        var sizeHeader = new Label { Text = "Base Tile Size" };
-        sizeHeader.AddThemeFontSizeOverride("font_size", 12);
-        _tilesetConfigFoldout.Content.AddChild(sizeHeader);
-
-        // Preset dropdown
-        var presetRow = new HBoxContainer();
-        presetRow.AddChild(new Label { Text = "Preset:", CustomMinimumSize = new Vector2(80, 0) });
-        _tileSizePresetDropdown = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
-        _tileSizePresetDropdown.AddItem("16x16 (Standard)", 0);
-        _tileSizePresetDropdown.AddItem("24x24", 1);
-        _tileSizePresetDropdown.AddItem("32x32", 2);
-        _tileSizePresetDropdown.AddItem("Custom", 3);
-        _tileSizePresetDropdown.Selected = 0;
-        _tileSizePresetDropdown.ItemSelected += OnTileSizePresetChanged;
-        presetRow.AddChild(_tileSizePresetDropdown);
-        _tilesetConfigFoldout.Content.AddChild(presetRow);
-
-        // Custom size inputs
-        var customSizeRow = new HBoxContainer();
-        customSizeRow.AddChild(new Label { Text = "Size:", CustomMinimumSize = new Vector2(80, 0) });
-        _baseTileSizeX = new SpinBox { MinValue = 8, MaxValue = 128, Step = 1, Value = 16, CustomMinimumSize = new Vector2(60, 0) };
-        _baseTileSizeX.ValueChanged += OnBaseTileSizeChanged;
-        customSizeRow.AddChild(_baseTileSizeX);
-        customSizeRow.AddChild(new Label { Text = " x " });
-        _baseTileSizeY = new SpinBox { MinValue = 8, MaxValue = 128, Step = 1, Value = 16, CustomMinimumSize = new Vector2(60, 0) };
-        _baseTileSizeY.ValueChanged += OnBaseTileSizeChanged;
-        customSizeRow.AddChild(_baseTileSizeY);
-        customSizeRow.AddChild(new Label { Text = " px" });
-        _tilesetConfigFoldout.Content.AddChild(customSizeRow);
-
-        _tilesetConfigFoldout.Content.AddChild(new HSeparator());
-
-        // Grid Offset section
-        var offsetHeader = new Label { Text = "Grid Offset" };
-        offsetHeader.AddThemeFontSizeOverride("font_size", 12);
-        _tilesetConfigFoldout.Content.AddChild(offsetHeader);
-
-        var offsetInfo = new Label
-        {
-            Text = "Offset for half-tile shifted grids (0.5 = half tile)",
-            AutowrapMode = TextServer.AutowrapMode.Word,
-            Modulate = new Color(0.7f, 0.7f, 0.7f)
-        };
-        offsetInfo.AddThemeFontSizeOverride("font_size", 10);
-        _tilesetConfigFoldout.Content.AddChild(offsetInfo);
-
-        var offsetRow = new HBoxContainer();
-        offsetRow.AddChild(new Label { Text = "Offset:", CustomMinimumSize = new Vector2(80, 0) });
-        _gridOffsetX = new SpinBox { MinValue = 0, MaxValue = 1, Step = 0.1, Value = 0, CustomMinimumSize = new Vector2(60, 0) };
-        _gridOffsetX.ValueChanged += OnGridOffsetChanged;
-        offsetRow.AddChild(_gridOffsetX);
-        offsetRow.AddChild(new Label { Text = " , " });
-        _gridOffsetY = new SpinBox { MinValue = 0, MaxValue = 1, Step = 0.1, Value = 0, CustomMinimumSize = new Vector2(60, 0) };
-        _gridOffsetY.ValueChanged += OnGridOffsetChanged;
-        offsetRow.AddChild(_gridOffsetY);
-        _tilesetConfigFoldout.Content.AddChild(offsetRow);
-
-        var note = new Label
-        {
-            Text = "Note: Changes here affect preview rendering only. Actual tileset config is saved separately.",
-            AutowrapMode = TextServer.AutowrapMode.Word,
-            Modulate = new Color(0.6f, 0.6f, 0.6f)
-        };
-        note.AddThemeFontSizeOverride("font_size", 9);
-        _tilesetConfigFoldout.Content.AddChild(note);
-    }
-
-    private void OnTileSizePresetChanged(long index)
-    {
-        var (width, height) = index switch
-        {
-            1 => (24, 24),
-            2 => (32, 32),
-            _ => (16, 16)
-        };
-
-        if (index != 3) // Not custom
-        {
-            _baseTileSizeX!.Value = width;
-            _baseTileSizeY!.Value = height;
-        }
-
-        RefreshPreviewPanels();
-    }
-
-    private void OnBaseTileSizeChanged(double value)
-    {
-        // Update preset dropdown if current values match a preset
-        var currentX = (int)_baseTileSizeX!.Value;
-        var currentY = (int)_baseTileSizeY!.Value;
-
-        var presetIndex = (currentX, currentY) switch
-        {
-            (16, 16) => 0,
-            (24, 24) => 1,
-            (32, 32) => 2,
-            _ => 3 // Custom
-        };
-
-        if (_tileSizePresetDropdown!.Selected != presetIndex)
-        {
-            _tileSizePresetDropdown.Selected = presetIndex;
-        }
-
-        RefreshPreviewPanels();
-    }
-
-    private void OnGridOffsetChanged(double value)
-    {
-        RefreshPreviewPanels();
-    }
-
-    private void RefreshPreviewPanels()
-    {
-        // Refresh the auto-tile preview panel with updated config
-        _autoTilePreviewPanel?.Refresh();
     }
 
     private void OnTilesLoaded()
@@ -324,6 +207,7 @@ public partial class TileEditorDock : Control
     private void OnFormatModified(string formatName)
     {
         SyncCustomFormatsToService();
+        _propertiesPanel?.RefreshFormatDropdown();
         _isDirty = true;
         _saveButton!.Disabled = false;
         UpdateTitle();
@@ -332,6 +216,7 @@ public partial class TileEditorDock : Control
     private void OnFormatCreated(string formatName)
     {
         SyncCustomFormatsToService();
+        _propertiesPanel?.RefreshFormatDropdown();
         _isDirty = true;
         _saveButton!.Disabled = false;
         UpdateTitle();
@@ -340,6 +225,7 @@ public partial class TileEditorDock : Control
     private void OnFormatDeleted(string formatName)
     {
         SyncCustomFormatsToService();
+        _propertiesPanel?.RefreshFormatDropdown();
         _isDirty = true;
         _saveButton!.Disabled = false;
         UpdateTitle();
@@ -399,6 +285,113 @@ public partial class TileEditorDock : Control
         else
         {
             _service!.LoadTiles();
+        }
+    }
+
+    private void OnCompileTmxPressed()
+    {
+        const string tiledDir = "res://Data/Tiled";
+        _statusLabel!.Text = "Compiling from TMX...";
+
+        // Run compilation asynchronously to avoid blocking UI
+        CallDeferred(MethodName.DoCompileTmx, tiledDir);
+    }
+
+    private void DoCompileTmx(string tiledDir)
+    {
+        var compiler = new TmxAtlasCompiler();
+        var (success, message) = compiler.CompileFromTmx(tiledDir);
+
+        if (success)
+        {
+            _statusLabel!.Text = "TMX compilation complete!";
+            GD.Print($"[TileEditorDock] {message}");
+
+            // Show success dialog
+            var dialog = new AcceptDialog { DialogText = message, Title = "TMX Compilation Complete" };
+            dialog.Confirmed += () => dialog.QueueFree();
+            AddChild(dialog);
+            dialog.PopupCentered();
+        }
+        else
+        {
+            _statusLabel!.Text = $"TMX compilation failed: {message}";
+            GD.PrintErr($"[TileEditorDock] TMX compilation failed: {message}");
+
+            // Show error dialog
+            var dialog = new AcceptDialog { DialogText = $"Compilation failed:\n{message}", Title = "TMX Compilation Error" };
+            dialog.Confirmed += () => dialog.QueueFree();
+            AddChild(dialog);
+            dialog.PopupCentered();
+        }
+    }
+
+    private void OnInsertTsxPropsPressed()
+    {
+        const string tiledDir = "res://Data/Tiled";
+
+        // First analyze what would be changed
+        var reports = TsxPropertyInserter.AnalyzePropertiesInDirectory(tiledDir);
+        var filesWithMissing = reports.Count(r => r.HasMissingProperties);
+
+        if (filesWithMissing == 0)
+        {
+            var noChangesDialog = new AcceptDialog
+            {
+                DialogText = "All TSX files already have the required properties.",
+                Title = "No Changes Needed"
+            };
+            noChangesDialog.Confirmed += () => noChangesDialog.QueueFree();
+            AddChild(noChangesDialog);
+            noChangesDialog.PopupCentered();
+            return;
+        }
+
+        // Confirm with user
+        var dialog = new ConfirmationDialog
+        {
+            DialogText = $"Insert default properties into {filesWithMissing} TSX file(s)?\n\nBackups will be created before modification.",
+            Title = "Insert TSX Properties"
+        };
+        dialog.Confirmed += () =>
+        {
+            DoInsertTsxProps(tiledDir);
+            dialog.QueueFree();
+        };
+        dialog.Canceled += () => dialog.QueueFree();
+        AddChild(dialog);
+        dialog.PopupCentered();
+    }
+
+    private void DoInsertTsxProps(string tiledDir)
+    {
+        _statusLabel!.Text = "Inserting TSX properties...";
+
+        var (success, message, filesModified, totalTiles, totalWangSets) =
+            TsxPropertyInserter.InsertPropertiesInDirectory(tiledDir);
+
+        if (success)
+        {
+            var resultMessage = $"Updated {filesModified} file(s):\n" +
+                               $"- {totalTiles} tile(s) modified\n" +
+                               $"- {totalWangSets} wang set(s) modified";
+            _statusLabel!.Text = $"Inserted properties into {filesModified} files";
+            GD.Print($"[TileEditorDock] TSX properties inserted: {resultMessage}");
+
+            var successDialog = new AcceptDialog { DialogText = resultMessage, Title = "Properties Inserted" };
+            successDialog.Confirmed += () => successDialog.QueueFree();
+            AddChild(successDialog);
+            successDialog.PopupCentered();
+        }
+        else
+        {
+            _statusLabel!.Text = $"Property insertion failed: {message}";
+            GD.PrintErr($"[TileEditorDock] TSX property insertion failed: {message}");
+
+            var errorDialog = new AcceptDialog { DialogText = $"Failed:\n{message}", Title = "Error" };
+            errorDialog.Confirmed += () => errorDialog.QueueFree();
+            AddChild(errorDialog);
+            errorDialog.PopupCentered();
         }
     }
 

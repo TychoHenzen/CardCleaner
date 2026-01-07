@@ -41,11 +41,18 @@ public partial class VariantMappingEditor : VBoxContainer
     public VariantMappingEditor(TileEditorService service)
     {
         _service = service;
+        InitializeUI();
     }
 
     public override void _Ready()
     {
+        // UI is already initialized in constructor for cases where Configure() is called before _Ready()
+    }
+
+    private void InitializeUI()
+    {
         if (_service == null) return;
+        if (_variantGrid != null) return; // Already initialized
 
         SizeFlagsHorizontal = SizeFlags.ExpandFill;
         SizeFlagsVertical = SizeFlags.ExpandFill;
@@ -348,7 +355,20 @@ public partial class VariantCell : VBoxContainer
     {
         if (_tile == null) return;
 
+        // Start with tile's definition (atlas coords, possibly custom size/offset)
         _currentDefinition = _tile.GetVariantDefinition(_bitmask);
+
+        // If tile has no custom variant definition for this bitmask,
+        // check the format's VariantMappings for Size defaults (format only stores size, not offset)
+        var hasCustomDefinition = _tile.CustomVariantDefinitions?.ContainsKey(_bitmask) ?? false;
+        if (!hasCustomDefinition && _format != null && _format.VariantMappings.TryGetValue(_bitmask, out var formatVariant))
+        {
+            // Use format's Size as default, but keep tile's atlas coords and offset defaults
+            _currentDefinition.SizeX = formatVariant.Size.X > 0 ? formatVariant.Size.X : 1;
+            _currentDefinition.SizeY = formatVariant.Size.Y > 0 ? formatVariant.Size.Y : 1;
+            // Offset is tile-level only, default to 0,0
+        }
+
         UpdateUIFromDefinition();
     }
 

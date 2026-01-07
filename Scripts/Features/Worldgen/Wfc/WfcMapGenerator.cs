@@ -30,6 +30,7 @@ public class WfcMapGenerator
     private readonly CompactnessSoftModifier _compactness;
     private readonly SpatialCoherenceConstraint _spatialCoherence;
     private readonly AutoTileGapConstraint? _autoTileGap;
+    private readonly BitmaskValidityConstraint? _bitmaskValidity;
     private readonly ITileRegistry? _tileRegistry;
     private IProfiler _profiler = new NoOpProfiler();
 
@@ -87,6 +88,7 @@ public class WfcMapGenerator
         _compactness = new CompactnessSoftModifier();
         _spatialCoherence = new SpatialCoherenceConstraint();
         _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
+        _bitmaskValidity = tileRegistry != null ? new BitmaskValidityConstraint(tileRegistry) : null;
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
 
@@ -107,6 +109,7 @@ public class WfcMapGenerator
         _compactness = new CompactnessSoftModifier();
         _spatialCoherence = new SpatialCoherenceConstraint();
         _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
+        _bitmaskValidity = tileRegistry != null ? new BitmaskValidityConstraint(tileRegistry) : null;
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
 
@@ -277,6 +280,10 @@ public class WfcMapGenerator
         // Enforce 1-tile gap between different auto-tile types (8-neighbor check)
         if (_autoTileGap != null)
             _selector.AddConstraint(_autoTileGap);
+
+        // Prevent tile configurations that would create disallowed bitmask patterns
+        if (_bitmaskValidity != null)
+            _selector.AddConstraint(_bitmaskValidity);
     }
 
     private (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineInitialTiles(BiomeDefinition biome)

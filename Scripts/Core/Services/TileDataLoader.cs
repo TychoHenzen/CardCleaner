@@ -20,11 +20,12 @@ namespace CardCleaner.Scripts.Core.Services;
 public record TileRegistryResult(string TilesetPath, List<TileDefinition> Tiles, TilesetConfig TilesetConfig);
 
 /// <summary>
-/// Loads tile definitions from JSON data files
+/// Loads tile definitions from JSON data files or Tiled TSX files.
 /// </summary>
 public static class TileDataLoader
 {
     private const string DefaultTilesPath = "res://Data/Tiles/tiles.json";
+    private const string DefaultTiledPath = "res://Data/Tiled/tileset.tmx";
     private const string DefaultTilesetPath = "res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres";
 
     /// <summary>
@@ -39,9 +40,54 @@ public static class TileDataLoader
     };
 
     /// <summary>
-    /// Load tiles and tileset path from JSON
+    /// Load tiles from TSX/TMX file, JSON file, or auto-detect based on available files.
+    /// Prefers Tiled format (TMX/TSX) if DefaultTiledPath exists, otherwise falls back to JSON.
     /// </summary>
     public static TileRegistryResult LoadTileRegistry(string? path = null)
+    {
+        // Auto-detect: prefer Tiled format if available and no explicit path given
+        if (path == null)
+        {
+            var tiledAbsolutePath = ProjectSettings.GlobalizePath(DefaultTiledPath);
+            if (File.Exists(tiledAbsolutePath))
+            {
+                ILog.Print($"[TileDataLoader] Tiled file found, loading from {DefaultTiledPath}");
+                return DefaultTiledPath.EndsWith(".tmx", StringComparison.OrdinalIgnoreCase)
+                    ? LoadFromTmx(DefaultTiledPath)
+                    : LoadFromTsx(DefaultTiledPath);
+            }
+            path = DefaultTilesPath;
+        }
+
+        // Dispatch based on file extension
+        if (path.EndsWith(".tsx", StringComparison.OrdinalIgnoreCase))
+            return LoadFromTsx(path);
+        if (path.EndsWith(".tmx", StringComparison.OrdinalIgnoreCase))
+            return LoadFromTmx(path);
+
+        return LoadFromJson(path);
+    }
+
+    /// <summary>
+    /// Load tiles from Tiled TSX tileset file.
+    /// </summary>
+    public static TileRegistryResult LoadFromTsx(string tsxPath, int sourceId = 0)
+    {
+        return TiledTilesetLoader.LoadFromTsx(tsxPath, sourceId);
+    }
+
+    /// <summary>
+    /// Load tiles from Tiled TMX map file (loads all referenced tilesets).
+    /// </summary>
+    public static TileRegistryResult LoadFromTmx(string tmxPath)
+    {
+        return TiledTilesetLoader.LoadFromTmx(tmxPath);
+    }
+
+    /// <summary>
+    /// Load tiles and tileset path from JSON (original format).
+    /// </summary>
+    public static TileRegistryResult LoadFromJson(string? path = null)
     {
         path ??= DefaultTilesPath;
 

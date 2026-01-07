@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
 namespace CardCleaner.Addons.TileEditor;
@@ -69,6 +70,9 @@ public partial class TilePropertiesPanel : ScrollContainer
     private TilesetAtlasPicker? _variantPicker;
     private int _editingVariantIndex = -1;
     private int _currentVariantCount = 16;
+
+    // Mapping between UI slot indices and actual bitmask values (for formats with non-sequential allowed bitmasks)
+    private IReadOnlyList<int>? _slotIndexToBitmask;
 
     // Advanced variant editor (for custom variant definitions with size/offset)
     private FoldoutContainer? _advancedVariantsFoldout;
@@ -140,6 +144,9 @@ public partial class TilePropertiesPanel : ScrollContainer
     {
         // Guard for Godot's parameterless constructor case
         if (_service == null) return;
+
+        // Subscribe to format changes so dropdown updates when custom formats are loaded
+        _service.AutoTileFormatsLoaded += OnAutoTileFormatsLoaded;
 
         SizeFlagsVertical = SizeFlags.ExpandFill;
         SizeFlagsHorizontal = SizeFlags.ExpandFill;
@@ -716,6 +723,33 @@ public partial class TilePropertiesPanel : ScrollContainer
             _autoTileFormatDropdown.SetItemMetadata(index, formatName);
             index++;
         }
+    }
+
+    /// <summary>
+    /// Called when custom auto-tile formats are loaded from tiles.json.
+    /// Refreshes the format dropdown to include the newly loaded formats.
+    /// </summary>
+    private void OnAutoTileFormatsLoaded()
+    {
+        RefreshFormatDropdown();
+    }
+
+    /// <summary>
+    /// Refreshes the format dropdown to reflect changes in the format registry.
+    /// Preserves the current selection if possible.
+    /// </summary>
+    public void RefreshFormatDropdown()
+    {
+        if (_autoTileFormatDropdown == null) return;
+
+        // Save current selection
+        var currentFormat = _currentTile?.AutoTileFormat ?? "corner16";
+
+        // Repopulate
+        PopulateFormatDropdown();
+
+        // Restore selection
+        _autoTileFormatDropdown.Selected = GetFormatDropdownIndex(currentFormat);
     }
 
     private void UpdateFormatDescription(string formatName)
@@ -1444,22 +1478,15 @@ public partial class TilePropertiesPanel : ScrollContainer
         }
     }
 
-    private void OpenVariantPickerDialog(int variantIndex)
+    private void OpenVariantPickerDialog(int slotIndex)
     {
         if (_currentTile == null) return;
 
-        _editingVariantIndex = variantIndex;
+        _editingVariantIndex = slotIndex;
 
-        // Ensure AutoTileVariants is properly sized for the current variant count
-        if (_currentTile.AutoTileVariants == null || _currentTile.AutoTileVariants.Length < _currentVariantCount)
-        {
-            var newArray = new Vector2I?[_currentVariantCount];
-            if (_currentTile.AutoTileVariants != null)
-            {
-                Array.Copy(_currentTile.AutoTileVariants, newArray, _currentTile.AutoTileVariants.Length);
-            }
-            _currentTile.AutoTileVariants = newArray;
-        }
+        // Convert slot index to actual bitmask value for array access
+        var bitmask = GetBitmaskForSlot(slotIndex);
+        EnsureVariantArraySize(bitmask);
 
         // Create dialog lazily
         if (_variantPickerDialog == null)
@@ -1505,10 +1532,24 @@ public partial class TilePropertiesPanel : ScrollContainer
             var tileSize = _service.TileSet?.TileSize ?? new Vector2I(16, 16);
             _variantPicker.SetSource(source, tileSize, _currentTile.SourceId, _currentTile.SourceScale);
 
-            // Pre-select current variant or base tile coords
-            if (_currentTile.AutoTileVariants[variantIndex].HasValue)
+            // Set selection size based on format's variant size (format is the source of truth for auto-tile sizes)
+            var variantSize = Vector2I.One;
+            var formatName = _currentTile.AutoTileFormat ?? "corner16";
+            var formatDef = _service.GetFormatDefinition(formatName);
+            if (formatDef != null)
             {
-                _variantPicker.SelectedCoords = _currentTile.AutoTileVariants[variantIndex]!.Value;
+                var formatVariant = formatDef.GetVariant(bitmask);
+                if (formatVariant.HasValue && (formatVariant.Value.Size.X > 0 || formatVariant.Value.Size.Y > 0))
+                {
+                    variantSize = formatVariant.Value.Size;
+                }
+            }
+            _variantPicker.SelectedSize = variantSize;
+
+            // Pre-select current variant (using actual bitmask) or base tile coords
+            if (_currentTile.AutoTileVariants![bitmask].HasValue)
+            {
+                _variantPicker.SelectedCoords = _currentTile.AutoTileVariants[bitmask]!.Value;
             }
             else
             {
@@ -1516,18 +1557,23 @@ public partial class TilePropertiesPanel : ScrollContainer
             }
         }
 
-        // Generate title based on format
+        // Generate title based on format - use actual bitmask value
+        int actualBitmask = bitmask;
+
         string maskLabel;
         if (_currentVariantCount == 47)
         {
-            var blobMasks = CardCleaner.Scripts.Features.Worldgen.AutoTiling.NeighborBitmask8.GetValid47Masks();
-            maskLabel = GetBlobMaskLabel(variantIndex, blobMasks[variantIndex]);
+            maskLabel = GetBlobMaskLabel(slotIndex, actualBitmask);
+        }
+        else if (actualBitmask < CornerBitmaskLabels.Length)
+        {
+            maskLabel = CornerBitmaskLabels[actualBitmask];
         }
         else
         {
-            maskLabel = CornerBitmaskLabels[variantIndex];
+            maskLabel = actualBitmask.ToString();
         }
-        _variantPickerDialog.Title = $"Select Variant for Bitmask {variantIndex}: {maskLabel}";
+        _variantPickerDialog.Title = $"Select Variant for Bitmask {actualBitmask}: {maskLabel}";
         _variantPickerDialog.Popup();
     }
 
@@ -1535,8 +1581,10 @@ public partial class TilePropertiesPanel : ScrollContainer
     {
         if (_editingVariantIndex < 0 || _currentTile == null || _variantPicker == null) return;
 
-        _currentTile.AutoTileVariants ??= new Vector2I?[_currentVariantCount];
-        _currentTile.AutoTileVariants[_editingVariantIndex] = _variantPicker.SelectedCoords;
+        // Convert slot index to actual bitmask value
+        var bitmask = GetBitmaskForSlot(_editingVariantIndex);
+        EnsureVariantArraySize(bitmask);
+        _currentTile.AutoTileVariants![bitmask] = _variantPicker.SelectedCoords;
         UpdateVariantThumbnail(_editingVariantIndex);
         _service.UpdateTile(_currentTile);
 
@@ -1548,12 +1596,17 @@ public partial class TilePropertiesPanel : ScrollContainer
         _editingVariantIndex = -1;
     }
 
-    private void ClearVariant(int index)
+    private void ClearVariant(int slotIndex)
     {
         if (_currentTile?.AutoTileVariants == null) return;
 
-        _currentTile.AutoTileVariants[index] = null;
-        UpdateVariantThumbnail(index);
+        // Convert slot index to actual bitmask value
+        var bitmask = GetBitmaskForSlot(slotIndex);
+        if (bitmask < _currentTile.AutoTileVariants.Length)
+        {
+            _currentTile.AutoTileVariants[bitmask] = null;
+        }
+        UpdateVariantThumbnail(slotIndex);
         _service.UpdateTile(_currentTile);
     }
 
@@ -1569,23 +1622,26 @@ public partial class TilePropertiesPanel : ScrollContainer
         _service.UpdateTile(_currentTile);
     }
 
-    private void UpdateVariantThumbnail(int index)
+    private void UpdateVariantThumbnail(int slotIndex)
     {
         if (_currentTile == null || _variantThumbnails == null ||
-            index >= _variantThumbnails.Length || _variantThumbnails[index] == null) return;
+            slotIndex >= _variantThumbnails.Length || _variantThumbnails[slotIndex] == null) return;
 
-        var thumbnail = _variantThumbnails[index]!;
+        var thumbnail = _variantThumbnails[slotIndex]!;
+
+        // Convert slot index to actual bitmask value
+        var bitmask = GetBitmaskForSlot(slotIndex);
 
         // Check if variant is defined
         if (_currentTile.AutoTileVariants == null ||
-            index >= _currentTile.AutoTileVariants.Length ||
-            !_currentTile.AutoTileVariants[index].HasValue)
+            bitmask >= _currentTile.AutoTileVariants.Length ||
+            !_currentTile.AutoTileVariants[bitmask].HasValue)
         {
             thumbnail.Texture = null;
             return;
         }
 
-        var coords = _currentTile.AutoTileVariants[index]!.Value;
+        var coords = _currentTile.AutoTileVariants[bitmask]!.Value;
         var texture = _service.GetTileTexture(_currentTile);
         if (texture == null)
         {
@@ -1599,7 +1655,25 @@ public partial class TilePropertiesPanel : ScrollContainer
             (int)(baseTileSize.X / _currentTile.SourceScale),
             (int)(baseTileSize.Y / _currentTile.SourceScale)
         );
-        var region = new Rect2I(coords * actualTileSize, actualTileSize);
+
+        // Get variant size from format (format is the source of truth for auto-tile sizes)
+        var variantSize = Vector2I.One;
+        var formatName = _currentTile.AutoTileFormat ?? "corner16";
+        var formatDef = _service.GetFormatDefinition(formatName);
+        if (formatDef != null)
+        {
+            var formatVariant = formatDef.GetVariant(bitmask);
+            if (formatVariant.HasValue && (formatVariant.Value.Size.X > 0 || formatVariant.Value.Size.Y > 0))
+            {
+                variantSize = formatVariant.Value.Size;
+            }
+        }
+
+        // Scale region by variant size from format
+        var region = new Rect2I(
+            coords * actualTileSize,
+            new Vector2I(actualTileSize.X * variantSize.X, actualTileSize.Y * variantSize.Y)
+        );
 
         var atlasTex = new AtlasTexture
         {
@@ -1607,6 +1681,40 @@ public partial class TilePropertiesPanel : ScrollContainer
             Region = region
         };
         thumbnail.Texture = atlasTex;
+    }
+
+    /// <summary>
+    /// Converts a UI slot index to the actual bitmask value for array indexing.
+    /// For formats with non-sequential allowed bitmasks (e.g., a custom format with
+    /// only bitmasks {0, 1, 4, 5, 15}), slot 2 maps to bitmask 4.
+    /// </summary>
+    private int GetBitmaskForSlot(int slotIndex)
+    {
+        if (_slotIndexToBitmask != null && slotIndex >= 0 && slotIndex < _slotIndexToBitmask.Count)
+        {
+            return _slotIndexToBitmask[slotIndex];
+        }
+        // Fallback: assume sequential (corner16/edge16 default behavior)
+        return slotIndex;
+    }
+
+    /// <summary>
+    /// Ensures the AutoTileVariants array is large enough to hold a variant at the given bitmask index.
+    /// </summary>
+    private void EnsureVariantArraySize(int bitmask)
+    {
+        if (_currentTile == null) return;
+
+        var requiredSize = bitmask + 1;
+        if (_currentTile.AutoTileVariants == null || _currentTile.AutoTileVariants.Length < requiredSize)
+        {
+            var newArray = new Vector2I?[requiredSize];
+            if (_currentTile.AutoTileVariants != null)
+            {
+                Array.Copy(_currentTile.AutoTileVariants, newArray, _currentTile.AutoTileVariants.Length);
+            }
+            _currentTile.AutoTileVariants = newArray;
+        }
     }
 
     private static HBoxContainer CreateRow(string label)
@@ -1765,7 +1873,7 @@ public partial class TilePropertiesPanel : ScrollContainer
         _service.UpdateTile(_currentTile);
     }
 
-    private void RebuildVariantGrid(int variantCount, string format)
+    private void RebuildVariantGrid(int variantCount, string formatName)
     {
         if (_variantGridContainer == null) return;
 
@@ -1779,10 +1887,29 @@ public partial class TilePropertiesPanel : ScrollContainer
         _variantThumbnails = new TextureRect?[variantCount];
         _variantShapePreviews = new TileShapePreview?[variantCount];
 
-        // Get the 47 valid blob masks if needed
-        var blobMasks = format == "blob47"
-            ? CardCleaner.Scripts.Features.Worldgen.AutoTiling.NeighborBitmask8.GetValid47Masks()
-            : null;
+        // Get the format definition to access AllowedBitmasks
+        var formatDef = _service.GetFormatDefinition(formatName);
+
+        // Build ordered list of actual bitmask values
+        // For custom formats with disabled bitmasks, this gives us the correct mask values
+        IReadOnlyList<int> bitmaskValues;
+        if (formatDef != null)
+        {
+            bitmaskValues = formatDef.AllowedBitmasks.OrderBy(b => b).ToArray();
+        }
+        else if (formatName == "blob47")
+        {
+            // Fallback for blob47 without format definition
+            bitmaskValues = NeighborBitmask8.GetValid47Masks();
+        }
+        else
+        {
+            // Fallback for corner16/edge16: sequential 0-15
+            bitmaskValues = Enumerable.Range(0, variantCount).ToArray();
+        }
+
+        // Store mapping for use in other methods
+        _slotIndexToBitmask = bitmaskValues;
 
         _variantGrid = new GridContainer
         {
@@ -1801,23 +1928,28 @@ public partial class TilePropertiesPanel : ScrollContainer
                 SizeFlagsHorizontal = SizeFlags.ExpandFill
             };
 
-            // Label with bitmask info
+            // Get the actual bitmask value for this slot
+            int maskValue = bitmaskValues[i];
+
+            // Label with bitmask info - show actual mask value
             string labelText;
-            int maskValue;
-            if (format == "blob47" && blobMasks != null)
+            var bitmaskType = formatDef?.BitmaskType ?? CardCleaner.Features.Worldgen.AutoTiling.BitmaskType.Corner4;
+            if (bitmaskType == CardCleaner.Features.Worldgen.AutoTiling.BitmaskType.Full8)
             {
-                maskValue = blobMasks[i];
-                labelText = $"{i}: {GetBlobMaskLabel(i, maskValue)}";
+                labelText = $"{maskValue}: {GetBlobMaskLabel(i, maskValue)}";
             }
-            else if (format == "edge16")
+            else if (bitmaskType == CardCleaner.Features.Worldgen.AutoTiling.BitmaskType.Edge4)
             {
-                maskValue = i;
-                labelText = $"{i}: {EdgeBitmaskLabels[i]}";
+                labelText = maskValue < EdgeBitmaskLabels.Length
+                    ? $"{maskValue}: {EdgeBitmaskLabels[maskValue]}"
+                    : $"{maskValue}";
             }
             else
             {
-                maskValue = i;
-                labelText = $"{i}: {CornerBitmaskLabels[i]}";
+                // Corner4 or unknown
+                labelText = maskValue < CornerBitmaskLabels.Length
+                    ? $"{maskValue}: {CornerBitmaskLabels[maskValue]}"
+                    : $"{maskValue}";
             }
 
             var label = new Label
@@ -1829,31 +1961,44 @@ public partial class TilePropertiesPanel : ScrollContainer
             label.AddThemeFontSizeOverride("font_size", 8);
             slotContainer.AddChild(label);
 
-            // Shape preview
+            // Shape preview - use actual mask value
             var shapePreview = new TileShapePreview
             {
                 CustomMinimumSize = new Vector2(24, 24),
                 SizeFlagsHorizontal = SizeFlags.ShrinkCenter
             };
-            var shapeFormat = format switch
+            var shapeFormat = bitmaskType switch
             {
-                "blob47" => TileShapePreview.Format.Blob47,
-                "edge16" => TileShapePreview.Format.Edge16,
+                CardCleaner.Features.Worldgen.AutoTiling.BitmaskType.Full8 => TileShapePreview.Format.Blob47,
+                CardCleaner.Features.Worldgen.AutoTiling.BitmaskType.Edge4 => TileShapePreview.Format.Edge16,
                 _ => TileShapePreview.Format.Corner16
             };
             shapePreview.SetMask(maskValue, shapeFormat);
             slotContainer.AddChild(shapePreview);
             _variantShapePreviews[i] = shapePreview;
 
-            // Thumbnail
+            // Get variant size from format (format is the source of truth for auto-tile sizes)
+            var variantSize = Vector2I.One;
+            if (formatDef != null)
+            {
+                var formatVariant = formatDef.GetVariant(maskValue);
+                if (formatVariant.HasValue && (formatVariant.Value.Size.X > 0 || formatVariant.Value.Size.Y > 0))
+                {
+                    variantSize = formatVariant.Value.Size;
+                }
+            }
+
+            // Thumbnail - scale by format's variant size
+            var baseThumbnailSize = 64f;
+            var thumbnailSize = new Vector2(baseThumbnailSize * variantSize.X, baseThumbnailSize * variantSize.Y);
             var thumbnailPanel = new PanelContainer
             {
-                CustomMinimumSize = new Vector2(64, 64),
+                CustomMinimumSize = thumbnailSize,
                 SizeFlagsHorizontal = SizeFlags.ShrinkCenter
             };
             var thumbnail = new TextureRect
             {
-                CustomMinimumSize = new Vector2(64, 64),
+                CustomMinimumSize = thumbnailSize,
                 ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
                 StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
                 TextureFilter = TextureFilterEnum.Nearest
@@ -1861,6 +2006,12 @@ public partial class TilePropertiesPanel : ScrollContainer
             thumbnailPanel.AddChild(thumbnail);
             slotContainer.AddChild(thumbnailPanel);
             _variantThumbnails[i] = thumbnail;
+
+            // Update slot container size based on variant size (label:20 + shape:24 + thumbnail + buttons:22)
+            slotContainer.CustomMinimumSize = new Vector2(
+                Math.Max(80, thumbnailSize.X + 16),
+                66 + thumbnailSize.Y
+            );
 
             // Buttons
             var buttonRow = new HBoxContainer { SizeFlagsHorizontal = SizeFlags.ShrinkCenter };

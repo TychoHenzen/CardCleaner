@@ -271,6 +271,101 @@
       }
     }
   },
+  "autoTileFormats": [
+    {
+      "name": "walled",
+      "bitmaskType": "corner4",
+      "allowedBitmasks": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        9,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "variantSizes": {
+        "1": {
+          "x": 1,
+          "y": 3
+        },
+        "8": {
+          "x": 1,
+          "y": 3
+        },
+        "9": {
+          "x": 1,
+          "y": 3
+        },
+        "11": {
+          "x": 1,
+          "y": 3
+        },
+        "13": {
+          "x": 1,
+          "y": 3
+        }
+      }
+    },
+    {
+      "name": "rpg",
+      "bitmaskType": "full8",
+      "allowedBitmasks": [
+        0,
+        1,
+        4,
+        5,
+        7,
+        16,
+        17,
+        20,
+        21,
+        28,
+        31,
+        64,
+        65,
+        68,
+        69,
+        80,
+        81,
+        84,
+        85,
+        112,
+        124,
+        193,
+        199,
+        241,
+        255
+      ]
+    },
+    {
+      "name": "simplistic",
+      "bitmaskType": "corner4",
+      "allowedBitmasks": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        9,
+        11,
+        12,
+        13,
+        14,
+        15
+      ]
+    }
+  ],
   "tiles": [
     {
       "id": "debug_path",
@@ -1639,13 +1734,73 @@
         "x": 8,
         "y": 18
       },
-      "sourceId": 14,
+      "sourceId": 224,
       "layer": "terrain",
       "elevation": 0,
       "isTransparent": true,
       "biomes": [
         "swamp"
       ],
+      "autoTileVariants": [
+        null,
+        {
+          "x": 20,
+          "y": 19
+        },
+        {
+          "x": 20,
+          "y": 18
+        },
+        {
+          "x": 20,
+          "y": 21
+        },
+        {
+          "x": 21,
+          "y": 18
+        },
+        null,
+        {
+          "x": 21,
+          "y": 20
+        },
+        {
+          "x": 22,
+          "y": 18
+        },
+        {
+          "x": 21,
+          "y": 19
+        },
+        {
+          "x": 21,
+          "y": 23
+        },
+        null,
+        {
+          "x": 22,
+          "y": 19
+        },
+        {
+          "x": 23,
+          "y": 21
+        },
+        {
+          "x": 23,
+          "y": 19
+        },
+        {
+          "x": 23,
+          "y": 18
+        },
+        {
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "autoTileFormat": "simplistic",
+      "tileMode": "autotile",
+      "outerTerrain": "*",
       "description": "Tall brown and green cattails and reeds in shallow water. Thin vertical stalks with fluffy seed heads."
     },
     {
@@ -1687,16 +1842,56 @@
       "name": "Murky Pool",
       "passability": "solid",
       "atlasCoords": {
-        "x": 9,
-        "y": 10
+        "x": 4,
+        "y": 28
       },
-      "sourceId": 16,
+      "sourceId": 485,
       "layer": "terrain",
       "elevation": -0.5,
       "isTransparent": true,
       "biomes": [
         "swamp"
       ],
+      "size": {
+        "x": 3,
+        "y": 3
+      },
+      "autoTileVariants": [
+        {
+          "x": 3,
+          "y": 31
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        null,
+        null,
+        {
+          "x": 0,
+          "y": 31
+        },
+        {
+          "x": 1,
+          "y": 30
+        },
+        null,
+        {
+          "x": 4,
+          "y": 30
+        },
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "autoTileFormat": "rpg",
+      "tileMode": "autotile",
+      "outerTerrain": "*",
       "description": "Dark stagnant pool with opaque black-green water. Oily surface sheen, unknowable depth."
     },
     {
@@ -2266,13 +2461,17 @@
       "name": "Wet Cave Floor",
       "passability": "solid",
       "atlasCoords": {
-        "x": 7,
-        "y": 5
+        "x": 6,
+        "y": 4
       },
       "sourceId": 311,
       "layer": "terrain",
       "elevation": -0.1,
       "isTransparent": true,
+      "size": {
+        "x": 3,
+        "y": 3
+      },
       "autoTileVariants": [
         null,
         {
@@ -2345,16 +2544,83 @@
       "name": "Cave Wall",
       "passability": "solid",
       "atlasCoords": {
-        "x": 4,
-        "y": 22
+        "x": 0,
+        "y": 0
       },
-      "sourceId": 6,
+      "sourceId": 97,
       "layer": "terrain",
       "elevation": 1,
       "isTransparent": false,
-      "biomes": [
-        "cave"
+      "size": {
+        "x": 3,
+        "y": 3
+      },
+      "autoTileVariants": [
+        null,
+        {
+          "x": 0,
+          "y": 2
+        },
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": 2,
+          "y": 0
+        },
+        {
+          "x": 6,
+          "y": 2
+        },
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 7,
+          "y": 1
+        },
+        {
+          "x": 2,
+          "y": 2
+        },
+        {
+          "x": 1,
+          "y": 2
+        },
+        {
+          "x": 7,
+          "y": 2
+        },
+        {
+          "x": 7,
+          "y": 0
+        },
+        {
+          "x": 2,
+          "y": 1
+        },
+        {
+          "x": 6,
+          "y": 0
+        },
+        {
+          "x": 6,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 1
+        }
       ],
+      "tileMode": "autotile",
+      "sourceScale": 0.5,
+      "outerTerrain": "*",
       "description": "Solid dark gray rock wall with rough, uneven surface. Dense stone with mineral veins, impenetrable barrier."
     },
     {
