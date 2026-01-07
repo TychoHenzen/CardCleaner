@@ -152,7 +152,9 @@ public static class TiledTilesetLoader
         foreach (var wangset in wangsets.Elements("wangset"))
         {
             var wangType = wangset.Attribute("type")?.Value ?? "corner";
-            var setName = wangset.Attribute("name")?.Value ?? "unnamed";
+            // Use 'class' attribute as the tile ID, fall back to 'name' for compatibility
+            var setId = wangset.Attribute("class")?.Value ?? wangset.Attribute("name")?.Value ?? "unnamed";
+            var setName = wangset.Attribute("name")?.Value ?? setId;
 
             // Parse which color index represents "terrain present"
             // Typically color 1 = foreground/terrain, color 2 = background
@@ -173,7 +175,8 @@ public static class TiledTilesetLoader
             };
 
             // Store Wang set metadata for later TileDefinition creation
-            result.WangSetInfo[setName] = new WangSetInfo(setName, bitmaskType, setProps);
+            // setId is the tile ID (from class attr), setName is the display name
+            result.WangSetInfo[setId] = new WangSetInfo(setName, bitmaskType, setProps);
 
             foreach (var wangtile in wangset.Elements("wangtile"))
             {
@@ -185,16 +188,16 @@ public static class TiledTilesetLoader
 
                 var bitmask = WangIdToBitmask(wangidStr, wangType, terrainColorIndex);
 
-                // Track which tiles belong to this wang set
+                // Track which tiles belong to this wang set (use setId for lookups)
                 if (!result.TileToWangSet.ContainsKey(tileId))
-                    result.TileToWangSet[tileId] = setName;
+                    result.TileToWangSet[tileId] = setId;
 
                 // Track bitmask type per tile
                 if (!result.TileBitmaskType.ContainsKey(tileId))
                     result.TileBitmaskType[tileId] = bitmaskType;
 
-                // Build bitmask → tiles mapping (grouped by wang set)
-                var key = (setName, bitmask);
+                // Build bitmask → tiles mapping (grouped by wang set ID)
+                var key = (setId, bitmask);
                 if (!result.BitmaskToTiles.ContainsKey(key))
                     result.BitmaskToTiles[key] = [];
 
@@ -265,6 +268,7 @@ public static class TiledTilesetLoader
 
     /// <summary>
     /// Parse custom properties for all tiles that have them.
+    /// Also captures the 'type' attribute which serves as the tile's ID.
     /// </summary>
     private static Dictionary<int, TilePropertyData> ParseAllTileProperties(XElement tileset)
     {
@@ -275,10 +279,11 @@ public static class TiledTilesetLoader
             var tileId = ParseInt(tile.Attribute("id")?.Value, -1);
             if (tileId < 0) continue;
 
+            var tileType = tile.Attribute("type")?.Value; // 'type' attr serves as the tile ID
             var props = ParseProperties(tile.Element("properties"));
             var animation = ParseAnimation(tile.Element("animation"));
 
-            result[tileId] = new TilePropertyData(props, animation);
+            result[tileId] = new TilePropertyData(tileType, props, animation);
         }
 
         return result;
@@ -343,21 +348,25 @@ public static class TiledTilesetLoader
         var processedWangSets = new HashSet<string>();
 
         // First pass: create TileDefinitions from Wang sets
-        // Each Wang set becomes a tile with the set name as its ID
-        foreach (var (setName, setInfo) in wangData.WangSetInfo)
+        // Each Wang set becomes a tile with its 'class' attribute as the ID
+        foreach (var (setId, setInfo) in wangData.WangSetInfo)
         {
-            var tile = BuildTileDefinitionFromWangSet(setName, setInfo, wangData, tileProperties, columns, sourceId);
+            var tile = BuildTileDefinitionFromWangSet(setId, setInfo, wangData, tileProperties, columns, sourceId);
             if (tile != null)
             {
                 tiles.Add(tile);
-                processedWangSets.Add(setName);
+                processedWangSets.Add(ToSnakeCase(setId));
             }
         }
 
-        // Second pass: create tiles from explicit "id" properties (for non-Wang tiles)
+        // Second pass: create tiles from "type" attribute or explicit "id" property (for non-Wang tiles)
         foreach (var (tileId, propData) in tileProperties)
         {
-            if (!propData.Properties.TryGetValue("id", out var id) || string.IsNullOrEmpty(id))
+            // Prefer 'type' attribute (set in propData.Type), fall back to 'id' property for compatibility
+            var id = propData.Type;
+            if (string.IsNullOrEmpty(id) && !propData.Properties.TryGetValue("id", out id))
+                continue;
+            if (string.IsNullOrEmpty(id))
                 continue;
 
             // Skip if this tile's ID matches a Wang set we already processed
@@ -374,10 +383,10 @@ public static class TiledTilesetLoader
 
     /// <summary>
     /// Build a TileDefinition from a Wang set.
-    /// Uses the Wang set name as the tile ID and builds auto-tile variants from the Wang tiles.
+    /// Uses the Wang set 'class' attribute (setId) as the tile ID and 'name' for display.
     /// </summary>
     private static TileDefinition? BuildTileDefinitionFromWangSet(
-        string setName,
+        string setId,
         WangSetInfo setInfo,
         WangSetData wangData,
         Dictionary<int, TilePropertyData> tileProperties,
@@ -385,10 +394,10 @@ public static class TiledTilesetLoader
         int sourceId)
     {
         // Find a representative tile for base atlas coords (prefer bitmask 15 = all corners)
-        var baseTileId = FindRepresentativeTile(setName, wangData);
+        var baseTileId = FindRepresentativeTile(setId, wangData);
         if (baseTileId < 0)
         {
-            ILog.Print($"[TiledTilesetLoader] Wang set '{setName}' has no tiles, skipping");
+            ILog.Print($"[TiledTilesetLoader] Wang set '{setId}' has no tiles, skipping");
             return null;
         }
 
@@ -406,9 +415,9 @@ public static class TiledTilesetLoader
             }
         }
 
-        // Use Wang set name as ID (convert to snake_case)
-        var id = ToSnakeCase(setName);
-        var name = GetString(props, "name", setName);
+        // Use setId as the tile ID (from 'class' attribute), setInfo.Name for display
+        var id = ToSnakeCase(setId);
+        var name = GetString(props, "name", setInfo.Name);
 
         // Auto-tile format based on Wang type
         var autoTileFormat = setInfo.BitmaskType switch
@@ -420,7 +429,7 @@ public static class TiledTilesetLoader
         };
 
         // Build auto-tile variants
-        var autoTileVariants = BuildAutoTileVariants(setName, wangData, columns, setInfo.BitmaskType);
+        var autoTileVariants = BuildAutoTileVariants(setId, wangData, columns, setInfo.BitmaskType);
 
         // Parse other properties
         var passability = ParsePassability(GetString(props, "passability", "passable"));
@@ -809,7 +818,7 @@ public static class TiledTilesetLoader
 
     private record WangTileInfo(int TileId, float Probability);
 
-    private record TilePropertyData(Dictionary<string, string> Properties, List<AnimationFrame>? Animation);
+    private record TilePropertyData(string? Type, Dictionary<string, string> Properties, List<AnimationFrame>? Animation);
 
     private record AnimationFrame(int TileId, float Duration);
 

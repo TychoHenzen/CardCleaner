@@ -36,13 +36,6 @@ public static class TsxPropertyInserter
 
         try
         {
-            // Create backup
-            var (backupSuccess, backupPath) = TsxPropertyWriter.CreateBackup(tsxPath);
-            if (!backupSuccess)
-            {
-                GD.PrintErr($"[TsxPropertyInserter] Warning: Could not create backup for {tsxPath}");
-            }
-
             var doc = XDocument.Load(absolutePath);
             var tileset = doc.Root;
             if (tileset == null || tileset.Name != "tileset")
@@ -83,9 +76,16 @@ public static class TsxPropertyInserter
                 }
             }
 
-            // Save if any modifications were made
+            // Only create backup and save if modifications were made
             if (tilesModified > 0 || wangSetsModified > 0)
             {
+                // Create backup before saving
+                var (backupSuccess, _) = TsxPropertyWriter.CreateBackup(tsxPath);
+                if (!backupSuccess)
+                {
+                    GD.PrintErr($"[TsxPropertyInserter] Warning: Could not create backup for {tsxPath}");
+                }
+
                 using var writer = new StreamWriter(absolutePath, false, new System.Text.UTF8Encoding(false));
                 doc.Save(writer, SaveOptions.None);
 
@@ -154,6 +154,14 @@ public static class TsxPropertyInserter
     /// </summary>
     private static bool InsertMissingTileProperties(XElement tileElement, int tileId, int columns)
     {
+        // Only add properties to tiles that have a 'class' attribute (which serves as the tile ID)
+        // Tiles without a class are not named tiles and don't need properties
+        var tileClass = tileElement.Attribute("class")?.Value;
+        if (string.IsNullOrEmpty(tileClass))
+        {
+            return false;
+        }
+
         var propsElement = tileElement.Element("properties");
         var existingProps = new Dictionary<string, XElement>(StringComparer.OrdinalIgnoreCase);
 
@@ -169,13 +177,6 @@ public static class TsxPropertyInserter
             }
         }
 
-        // Don't add properties to tiles that don't already have an id property
-        // (they're probably not meant to be used as named tiles)
-        if (!existingProps.ContainsKey("id"))
-        {
-            return false;
-        }
-
         var modified = false;
 
         // Create properties element if it doesn't exist
@@ -189,16 +190,24 @@ public static class TsxPropertyInserter
         // Insert missing core properties
         foreach (var schemaProp in TsxPropertySchema.TileProperties)
         {
-            // Skip id and name - they should be set explicitly
-            if (schemaProp.Name == "id" || schemaProp.Name == "name")
+            // Skip name - it should be set explicitly per tile
+            if (schemaProp.Name == "name")
                 continue;
 
             if (!existingProps.ContainsKey(schemaProp.Name))
             {
-                propsElement.Add(new XElement("property",
+                var propElement = new XElement("property",
                     new XAttribute("name", schemaProp.Name),
-                    new XAttribute("type", schemaProp.Type),
-                    new XAttribute("value", schemaProp.Value)));
+                    new XAttribute("type", schemaProp.Type));
+
+                // Add propertytype for custom enum types
+                if (!string.IsNullOrEmpty(schemaProp.PropertyType))
+                {
+                    propElement.Add(new XAttribute("propertytype", schemaProp.PropertyType));
+                }
+
+                propElement.Add(new XAttribute("value", schemaProp.Value));
+                propsElement.Add(propElement);
                 modified = true;
             }
         }
@@ -251,10 +260,18 @@ public static class TsxPropertyInserter
         {
             if (!existingProps.ContainsKey(schemaProp.Name))
             {
-                propsElement.Add(new XElement("property",
+                var propElement = new XElement("property",
                     new XAttribute("name", schemaProp.Name),
-                    new XAttribute("type", schemaProp.Type),
-                    new XAttribute("value", schemaProp.Value)));
+                    new XAttribute("type", schemaProp.Type));
+
+                // Add propertytype for custom enum types
+                if (!string.IsNullOrEmpty(schemaProp.PropertyType))
+                {
+                    propElement.Add(new XAttribute("propertytype", schemaProp.PropertyType));
+                }
+
+                propElement.Add(new XAttribute("value", schemaProp.Value));
+                propsElement.Add(propElement);
                 modified = true;
             }
         }
@@ -303,29 +320,26 @@ public static class TsxPropertyInserter
                 FileName = Path.GetFileName(tsxPath)
             };
 
-            // Count tiles with id property
+            // Count tiles with class attribute (which serves as the tile ID)
             foreach (var tileElement in tileset.Elements("tile"))
             {
+                var tileClass = tileElement.Attribute("class")?.Value;
+                if (string.IsNullOrEmpty(tileClass))
+                    continue;
+
+                report.TilesWithId++;
                 var props = tileElement.Element("properties");
-                var hasId = props?.Elements("property")
-                    .Any(p => p.Attribute("name")?.Value?.Equals("id", StringComparison.OrdinalIgnoreCase) == true) ?? false;
+                var existingNames = new HashSet<string>(
+                    props?.Elements("property")
+                        .Select(p => p.Attribute("name")?.Value ?? "")
+                        .Where(n => !string.IsNullOrEmpty(n)) ?? Array.Empty<string>(),
+                    StringComparer.OrdinalIgnoreCase);
 
-                if (hasId)
+                foreach (var schemaProp in TsxPropertySchema.TileProperties)
                 {
-                    report.TilesWithId++;
-                    var existingNames = new HashSet<string>(
-                        props?.Elements("property")
-                            .Select(p => p.Attribute("name")?.Value ?? "")
-                            .Where(n => !string.IsNullOrEmpty(n)) ?? Array.Empty<string>(),
-                        StringComparer.OrdinalIgnoreCase);
-
-                    foreach (var schemaProp in TsxPropertySchema.TileProperties)
+                    if (schemaProp.Name != "name" && !existingNames.Contains(schemaProp.Name))
                     {
-                        if (schemaProp.Name != "id" && schemaProp.Name != "name" &&
-                            !existingNames.Contains(schemaProp.Name))
-                        {
-                            report.MissingTileProperties.Add(schemaProp.Name);
-                        }
+                        report.MissingTileProperties.Add(schemaProp.Name);
                     }
                 }
             }

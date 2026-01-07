@@ -13,61 +13,73 @@ public static class TsxPropertySchema
     /// <summary>
     /// Properties required for individual tiles in the TSX tileset.
     /// These are applied to tile elements based on their position in the tileset.
+    ///
+    /// NOTE: The tile ID is set via the 'class' attribute on the tile element,
+    /// e.g., &lt;tile id="507" class="dirt"/&gt;. The 'class' attribute serves as the tile ID.
+    /// (Wang sets use the 'type' attribute instead.)
+    ///
+    /// Custom enum types are defined in Data/Tiled/Tiles.tiled-project:
+    /// - Passability: passable, solid, partially_passable
+    /// - Layer: terrain, decoration, structure, effects
+    /// - Biome: flags enum (plains, forest, desert, tundra, swamp, mountains, water, cave, volcanic, magical)
     /// </summary>
     public static readonly List<TsxProperty> TileProperties = new()
     {
-        // Core identification
-        TsxProperty.String("id", ""),           // Tile ID (snake_case), typically set per-tile
-        TsxProperty.String("name", ""),         // Display name, typically set per-tile
+        // Display name - shown in UI (the 'class' attribute is the tile ID)
+        TsxProperty.String("name", ""),
 
-        // Gameplay properties
-        TsxProperty.String("passability", "passable"),  // passable|solid|partially_passable
-        TsxProperty.String("layer", "terrain"),         // terrain|decoration|structure|effects
-        TsxProperty.Float("elevation", 0f),             // Height for 3D effects
-        TsxProperty.Bool("istransparent", true),        // Whether tile has transparency
+        // Gameplay properties (use Tiled custom enum types from Tiles.tiled-project)
+        TsxProperty.StringEnum("passability", "Passability", "passable"),
+        TsxProperty.StringEnum("layer", "Layer", "terrain"),
+        TsxProperty.IntEnum("biome", "Biome", 0),  // Flags enum (bitfield, 0 = no biomes)
 
-        // Rendering
-        TsxProperty.Int("dominance", 0),                // Visual priority for terrain transitions (higher = on top)
-
-        // Decoration-specific
-        TsxProperty.Float("decorationdensity", 1f),     // 0.0-1.0 probability for decoration placement
-
-        // Auto-tile terrain references (optional, for auto-tiles only)
-        // TsxProperty.String("innerterrain", ""),      // ID of inner terrain (what the border shows)
-        // TsxProperty.String("outerterrain", ""),      // ID of outer terrain ("*" = compositable)
+        TsxProperty.Float("elevation", 0f),
+        TsxProperty.Bool("istransparent", true),
     };
 
     /// <summary>
     /// Properties required for wang sets (auto-tile configurations).
     /// These are applied to wangset elements.
+    /// Note: The tile ID is set via the 'type' attribute on the wangset element.
     /// </summary>
     public static readonly List<TsxProperty> WangSetProperties = new()
     {
+        // Gameplay properties (use Tiled custom enum types from Tiles.tiled-project)
+        TsxProperty.StringEnum("passability", "Passability", "passable"),
+        TsxProperty.StringEnum("layer", "Layer", "terrain"),
+        TsxProperty.IntEnum("biome", "Biome", 0),  // Flags enum (bitfield, 0 = no biomes)
+        TsxProperty.Float("elevation", 0f),
+
         // Whether the auto-tile has transparent background (border-only)
         // If true, the border is composited onto base terrains at atlas compile time
         TsxProperty.Bool("TransparentBackground", false),
 
         // Terrain references for auto-tile transitions
-        TsxProperty.String("OuterTerrain", ""),   // "*" = compositable, or specific tile ID
-        TsxProperty.String("InnerTerrain", ""),   // Tile ID that fills the interior
+        // "$self" = use this tile's ID as inner terrain (default)
+        // "*" = compositable with any outer terrain (default)
+        TsxProperty.String("InnerTerrain", "$self"),
+        TsxProperty.String("OuterTerrain", "*"),
     };
 
     /// <summary>
-    /// Common biome affinity properties. These are optional and define
-    /// how strongly a tile is associated with each biome (0.0-1.0).
-    /// Only non-zero values need to be set.
+    /// Biome flag values for the Biome flags enum.
+    /// These match the order in Data/Tiled/Tiles.tiled-project.
+    /// Use bitwise OR to combine multiple biomes.
     /// </summary>
-    public static readonly List<TsxProperty> BiomeAffinityProperties = new()
+    public static class BiomeFlags
     {
-        TsxProperty.Float("biome_grassland", 0f),
-        TsxProperty.Float("biome_forest", 0f),
-        TsxProperty.Float("biome_desert", 0f),
-        TsxProperty.Float("biome_tundra", 0f),
-        TsxProperty.Float("biome_swamp", 0f),
-        TsxProperty.Float("biome_mountain", 0f),
-        TsxProperty.Float("biome_water", 0f),
-        TsxProperty.Float("biome_volcanic", 0f),
-    };
+        public const int None = 0;
+        public const int Plains = 1 << 0;      // 1
+        public const int Forest = 1 << 1;      // 2
+        public const int Desert = 1 << 2;      // 4
+        public const int Tundra = 1 << 3;      // 8
+        public const int Swamp = 1 << 4;       // 16
+        public const int Mountains = 1 << 5;   // 32
+        public const int Water = 1 << 6;       // 64
+        public const int Cave = 1 << 7;        // 128
+        public const int Volcanic = 1 << 8;    // 256
+        public const int Magical = 1 << 9;     // 512
+    }
 
     /// <summary>
     /// Gets the default value for a tile property by name.
@@ -76,12 +88,6 @@ public static class TsxPropertySchema
     public static TsxProperty? GetTilePropertyDefault(string name)
     {
         foreach (var prop in TileProperties)
-        {
-            if (string.Equals(prop.Name, name, System.StringComparison.OrdinalIgnoreCase))
-                return prop;
-        }
-
-        foreach (var prop in BiomeAffinityProperties)
         {
             if (string.Equals(prop.Name, name, System.StringComparison.OrdinalIgnoreCase))
                 return prop;
@@ -107,22 +113,21 @@ public static class TsxPropertySchema
 
     /// <summary>
     /// Creates a complete set of tile properties with defaults for a new tile.
-    /// Only includes core properties, not biome affinities (those should be set explicitly).
+    ///
+    /// NOTE: The tile ID is set via the 'class' attribute on the tile element, not as a property.
     /// </summary>
-    /// <param name="id">The tile ID to set</param>
     /// <param name="name">The tile display name</param>
-    public static List<TsxProperty> CreateDefaultTileProperties(string id, string name)
+    /// <param name="biomeFlags">Biome flags (use BiomeFlags constants, combine with |)</param>
+    public static List<TsxProperty> CreateDefaultTileProperties(string name, int biomeFlags = 0)
     {
         return new List<TsxProperty>
         {
-            TsxProperty.String("id", id),
             TsxProperty.String("name", name),
-            TsxProperty.String("passability", "passable"),
-            TsxProperty.String("layer", "terrain"),
+            TsxProperty.StringEnum("passability", "Passability", "passable"),
+            TsxProperty.StringEnum("layer", "Layer", "terrain"),
+            TsxProperty.IntEnum("biome", "Biome", biomeFlags),
             TsxProperty.Float("elevation", 0f),
             TsxProperty.Bool("istransparent", true),
-            TsxProperty.Int("dominance", 0),
-            TsxProperty.Float("decorationdensity", 1f),
         };
     }
 
@@ -130,38 +135,52 @@ public static class TsxPropertySchema
     /// Creates a complete set of wang set properties with defaults.
     /// </summary>
     /// <param name="isTransparent">Whether the auto-tile has transparent borders</param>
-    public static List<TsxProperty> CreateDefaultWangSetProperties(bool isTransparent = false)
+    /// <param name="biomeFlags">Biome flags (use BiomeFlags constants, combine with |)</param>
+    public static List<TsxProperty> CreateDefaultWangSetProperties(bool isTransparent = false, int biomeFlags = 0)
     {
         return new List<TsxProperty>
         {
+            TsxProperty.StringEnum("passability", "Passability", "passable"),
+            TsxProperty.StringEnum("layer", "Layer", "terrain"),
+            TsxProperty.IntEnum("biome", "Biome", biomeFlags),
+            TsxProperty.Float("elevation", 0f),
             TsxProperty.Bool("TransparentBackground", isTransparent),
-            TsxProperty.String("OuterTerrain", isTransparent ? "*" : ""),
-            TsxProperty.String("InnerTerrain", ""),
+            TsxProperty.String("InnerTerrain", "$self"),
+            TsxProperty.String("OuterTerrain", "*"),
         };
     }
 
     /// <summary>
-    /// Validates a passability value.
+    /// Known biome IDs that match tiles.json and Tiled project definitions.
+    /// Order matches BiomeFlags bit positions.
     /// </summary>
-    public static bool IsValidPassability(string value)
+    public static readonly string[] KnownBiomeIds = new[]
     {
-        return value.ToLowerInvariant() switch
-        {
-            "passable" or "solid" or "partially_passable" => true,
-            _ => false
-        };
-    }
+        "plains", "forest", "desert", "tundra", "swamp",
+        "mountains", "water", "cave", "volcanic", "magical"
+    };
 
     /// <summary>
-    /// Validates a layer value.
+    /// Gets the biome flag for a biome ID string.
     /// </summary>
-    public static bool IsValidLayer(string value)
+    public static int GetBiomeFlag(string biomeId) => biomeId.ToLowerInvariant() switch
     {
-        return value.ToLowerInvariant() switch
-        {
-            "terrain" or "decoration" or "structure" or "effects" => true,
-            _ => false
-        };
-    }
+        "plains" => BiomeFlags.Plains,
+        "forest" => BiomeFlags.Forest,
+        "desert" => BiomeFlags.Desert,
+        "tundra" => BiomeFlags.Tundra,
+        "swamp" => BiomeFlags.Swamp,
+        "mountains" => BiomeFlags.Mountains,
+        "water" => BiomeFlags.Water,
+        "cave" => BiomeFlags.Cave,
+        "volcanic" => BiomeFlags.Volcanic,
+        "magical" => BiomeFlags.Magical,
+        _ => BiomeFlags.None
+    };
+
+    /// <summary>
+    /// Checks if a biome flag is set in the biome flags value.
+    /// </summary>
+    public static bool HasBiome(int biomeFlags, int biomeFlag) => (biomeFlags & biomeFlag) != 0;
 }
 #endif

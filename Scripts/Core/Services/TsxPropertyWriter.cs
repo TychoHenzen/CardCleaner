@@ -16,14 +16,20 @@ public class TsxProperty
     public string Name { get; set; } = "";
     public string Type { get; set; } = "string";
     public string Value { get; set; } = "";
+    /// <summary>
+    /// Custom property type name (for enums defined in .tiled-project).
+    /// When set, the property will include propertytype="X" attribute.
+    /// </summary>
+    public string? PropertyType { get; set; }
 
     public TsxProperty() { }
 
-    public TsxProperty(string name, string type, string value)
+    public TsxProperty(string name, string type, string value, string? propertyType = null)
     {
         Name = name;
         Type = type;
         Value = value;
+        PropertyType = propertyType;
     }
 
     // Factory methods for type-safe property creation
@@ -32,6 +38,18 @@ public class TsxProperty
     public static TsxProperty Float(string name, float value) =>
         new(name, "float", value.ToString(System.Globalization.CultureInfo.InvariantCulture));
     public static TsxProperty Bool(string name, bool value) => new(name, "bool", value.ToString().ToLowerInvariant());
+
+    /// <summary>
+    /// Creates a property with a custom enum type (string storage).
+    /// </summary>
+    public static TsxProperty StringEnum(string name, string propertyType, string value) =>
+        new(name, "string", value, propertyType);
+
+    /// <summary>
+    /// Creates a property with a custom enum type (int storage, for flags).
+    /// </summary>
+    public static TsxProperty IntEnum(string name, string propertyType, int value) =>
+        new(name, "int", value.ToString(), propertyType);
 
     // Value accessors
     public string AsString() => Value;
@@ -189,6 +207,120 @@ public static class TsxPropertyWriter
         {
             ILog.Print($"[TsxPropertyWriter] Error reading TSX properties: {ex.Message}");
             return (tileProps, wangSetProps);
+        }
+    }
+
+    /// <summary>
+    /// Sets the 'type' attribute on a tile element (used as the tile's ID).
+    /// The 'type' attribute serves as the tile ID for TiledTilesetLoader.
+    /// </summary>
+    /// <param name="tsxPath">Path to the TSX file</param>
+    /// <param name="tileId">The numeric tile ID in the tileset</param>
+    /// <param name="typeValue">The tile type/ID to set (e.g., "dirt", "wall")</param>
+    public static (bool success, string message) SetTileType(string tsxPath, int tileId, string typeValue)
+    {
+        return ModifyTileAttribute(tsxPath, tileId, "type", typeValue);
+    }
+
+    /// <summary>
+    /// Sets the 'class' attribute on a wang set element (used as the tile's ID).
+    /// The 'class' attribute serves as the tile ID for TiledTilesetLoader.
+    /// </summary>
+    /// <param name="tsxPath">Path to the TSX file</param>
+    /// <param name="wangSetName">The wang set name to find</param>
+    /// <param name="classValue">The class/ID to set (e.g., "grass", "stone")</param>
+    public static (bool success, string message) SetWangSetClass(string tsxPath, string wangSetName, string classValue)
+    {
+        return ModifyWangSetAttribute(tsxPath, wangSetName, "class", classValue);
+    }
+
+    /// <summary>
+    /// Modifies an attribute on a tile element.
+    /// </summary>
+    private static (bool success, string message) ModifyTileAttribute(string tsxPath, int tileId, string attrName, string attrValue)
+    {
+        var absolutePath = ProjectSettings.GlobalizePath(tsxPath);
+        if (!File.Exists(absolutePath))
+        {
+            return (false, $"TSX file not found: {absolutePath}");
+        }
+
+        try
+        {
+            var doc = XDocument.Load(absolutePath);
+            var tileset = doc.Root;
+            if (tileset == null || tileset.Name != "tileset")
+            {
+                return (false, "Invalid TSX: missing tileset root element");
+            }
+
+            var tileElement = tileset.Elements("tile")
+                .FirstOrDefault(t => ParseInt(t.Attribute("id")?.Value, -1) == tileId);
+
+            if (tileElement == null)
+            {
+                // Create new tile element
+                tileElement = new XElement("tile", new XAttribute("id", tileId));
+                InsertTileInOrder(tileset, tileElement, tileId);
+            }
+
+            tileElement.SetAttributeValue(attrName, attrValue);
+
+            using var writer = new StreamWriter(absolutePath, false, new System.Text.UTF8Encoding(false));
+            doc.Save(writer, SaveOptions.None);
+
+            return (true, $"Set {attrName}=\"{attrValue}\" on tile {tileId}");
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Error: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Modifies an attribute on a wang set element.
+    /// </summary>
+    private static (bool success, string message) ModifyWangSetAttribute(string tsxPath, string wangSetName, string attrName, string attrValue)
+    {
+        var absolutePath = ProjectSettings.GlobalizePath(tsxPath);
+        if (!File.Exists(absolutePath))
+        {
+            return (false, $"TSX file not found: {absolutePath}");
+        }
+
+        try
+        {
+            var doc = XDocument.Load(absolutePath);
+            var tileset = doc.Root;
+            if (tileset == null || tileset.Name != "tileset")
+            {
+                return (false, "Invalid TSX: missing tileset root element");
+            }
+
+            var wangsets = tileset.Element("wangsets");
+            if (wangsets == null)
+            {
+                return (false, "No wangsets element found");
+            }
+
+            var wangset = wangsets.Elements("wangset")
+                .FirstOrDefault(w => w.Attribute("name")?.Value == wangSetName);
+
+            if (wangset == null)
+            {
+                return (false, $"Wang set '{wangSetName}' not found");
+            }
+
+            wangset.SetAttributeValue(attrName, attrValue);
+
+            using var writer = new StreamWriter(absolutePath, false, new System.Text.UTF8Encoding(false));
+            doc.Save(writer, SaveOptions.None);
+
+            return (true, $"Set {attrName}=\"{attrValue}\" on wang set '{wangSetName}'");
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Error: {ex.Message}");
         }
     }
 

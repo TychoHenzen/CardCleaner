@@ -5,8 +5,9 @@
  </editorsettings>
  <image source="../../Graphics/Terrain/7souls/A2_autotile_sheet.png" width="256" height="240"/>
  <wangsets>
-  <wangset name="Grass3" type="corner" tile="-1">
+  <wangset name="Grass3" class="Grass3" type="corner" tile="-1">
    <wangcolor name="Foreground" color="#ff0000" tile="-1" probability="1"/>
+   <wangtile tileid="466" wangid="0,1,0,0,0,0,0,0"/>
    <wangtile tileid="584" wangid="0,0,0,1,0,0,0,0"/>
    <wangtile tileid="585" wangid="0,0,0,0,0,1,0,0"/>
    <wangtile tileid="586" wangid="0,1,0,1,0,1,0,0"/>
@@ -32,7 +33,13 @@
    <wangtile tileid="746" wangid="0,1,0,0,0,0,0,1"/>
    <wangtile tileid="747" wangid="0,0,0,0,0,0,0,1"/>
    <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
     <property name="TransparentBackground" type="bool" value="true"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="solid"/>
    </properties>
   </wangset>
   <wangset name="Grass2" type="corner" tile="-1">
@@ -61,9 +68,19 @@
    <wangtile tileid="741" wangid="0,1,0,0,0,0,0,1"/>
    <wangtile tileid="742" wangid="0,1,0,0,0,0,0,1"/>
    <wangtile tileid="743" wangid="0,0,0,0,0,0,0,1"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
   </wangset>
-  <wangset name="Grass1" type="corner" tile="-1">
-   <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
+  <wangset name="Grass1" type="corner" tile="497">
+   <wangcolor name="Background" color="#ff0000" tile="-1" probability="1"/>
+   <wangtile tileid="195" wangid="0,1,0,0,0,0,0,0"/>
    <wangtile tileid="576" wangid="0,0,0,1,0,0,0,0"/>
    <wangtile tileid="577" wangid="0,0,0,0,0,1,0,0"/>
    <wangtile tileid="578" wangid="0,1,0,1,0,1,0,0"/>
@@ -88,6 +105,15 @@
    <wangtile tileid="737" wangid="0,1,0,0,0,0,0,1"/>
    <wangtile tileid="738" wangid="0,1,0,0,0,0,0,1"/>
    <wangtile tileid="739" wangid="0,0,0,0,0,0,0,1"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
   </wangset>
  </wangsets>
 </tileset>

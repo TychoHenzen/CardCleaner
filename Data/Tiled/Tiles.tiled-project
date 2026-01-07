@@ -10,5 +10,49 @@
     "properties": [
     ],
     "propertyTypes": [
+        {
+            "id": 1,
+            "name": "Passability",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "passable",
+                "solid",
+                "partially_passable"
+            ],
+            "valuesAsFlags": false
+        },
+        {
+            "id": 2,
+            "name": "Layer",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "terrain",
+                "decoration",
+                "structure",
+                "effects"
+            ],
+            "valuesAsFlags": false
+        },
+        {
+            "id": 3,
+            "name": "Biome",
+            "storageType": "int",
+            "type": "enum",
+            "values": [
+                "plains",
+                "forest",
+                "desert",
+                "tundra",
+                "swamp",
+                "mountains",
+                "water",
+                "cave",
+                "volcanic",
+                "magical"
+            ],
+            "valuesAsFlags": true
+        }
     ]
 }
