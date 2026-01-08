@@ -87,7 +87,14 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
                 // Even if some base tiles can't be translated, auto-tiles will work
                 UsingCompiledAtlas = true;
                 TilesetPath = _atlasMapping.Atlas?.Path ?? result.TilesetPath;
-                TilesetConfig = result.TilesetConfig;
+
+                // CRITICAL: Use compiled atlas tile size, NOT the TSX source tile size
+                // TSX may have smaller source tiles (e.g., 8x8) that get composited to larger tiles (e.g., 16x16)
+                var atlasTileSize = _atlasMapping.Atlas?.TileSize ?? 16;
+                TilesetConfig = new TilesetConfig
+                {
+                    BaseTileSize = new Vector2I(atlasTileSize, atlasTileSize)
+                };
 
                 // Register tiles WITH translation - tiles not in atlas_mapping keep original coords
                 // but auto-tiles use transition_map.json which IS complete

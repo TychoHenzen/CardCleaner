@@ -228,7 +228,7 @@ public class SimpleMapGenerator
             }
         }
 
-        // Phase 2: Generate foreground layer - include ALL tiles but mark non-auto-tiles as empty
+        // Phase 2: Generate foreground layer - all tiles, then keep only auto-tiles
         // WFC needs gap tiles (simple tiles) to fill spaces between auto-tile regions
         // The gap constraint ensures different auto-tiles don't touch directly
         var fgResult = _wfcGenerator.GenerateMultiBiome(
@@ -247,7 +247,7 @@ public class SimpleMapGenerator
             {
                 var tileId = fgResult.MapData.TileIds[y, x];
                 var tile = _tileRegistry.GetTile(tileId);
-                // Only keep auto-tiles in foreground; gap tiles become empty (show background)
+                // Only keep auto-tiles in foreground; non-auto tiles become empty (show background)
                 if (tile?.HasAutoTileVariants == true)
                 {
                     foregroundLayer[y, x] = tileId;
@@ -396,20 +396,16 @@ public class SimpleMapGenerator
     }
 
     /// <summary>
-    /// Selects a simple (non-auto-tile) passable tile from the biome.
+    /// Selects a simple (non-auto-tile) passable tile allowed in the biome.
     /// Used as background for auto-tiles.
     /// </summary>
     private string? SelectSimpleTileFromBiome(BiomeDefinition biome)
     {
-        if (biome.PassableTiles == null || biome.PassableTiles.IsEmpty)
-            return null;
-
-        // Find tiles without auto-tile variants
-        foreach (var tileId in biome.PassableTiles.GetAllTileIds())
+        // Find tiles without auto-tile variants that are allowed in this biome
+        foreach (var tile in _tileRegistry.GetAllTiles())
         {
-            var tile = _tileRegistry.GetTile(tileId);
-            if (tile != null && !tile.HasAutoTileVariants)
-                return tileId;
+            if (tile.IsPassable && !tile.HasAutoTileVariants && tile.IsAllowedInBiome(biome.Id))
+                return tile.Id;
         }
 
         return null;

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 
@@ -6,17 +8,19 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
 /// <summary>
 /// Adjusts tile probability based on biome strength at position.
-/// Tiles belonging to biomes with higher strength at a position get boosted.
+/// Tiles allowed in biomes with higher strength at a position get boosted.
 /// </summary>
 /// <remarks>
-/// For each biome the tile belongs to (via PassableTiles or BlockedTiles),
+/// For each biome the tile is allowed in (via TileDefinition.AllowedBiomes),
 /// the constraint calculates: 1.0 + (biomeStrength * boostFactor).
 /// For tiles in multiple biomes, uses the maximum strength to prevent dilution.
+/// Universal tiles (AllowedBiomes == null) get neutral weighting.
 /// </remarks>
 public class BiomeAffinityConstraint : IWfcConstraint
 {
     private readonly BiomeStrengthGrid _grid;
     private readonly BiomeRegistry _registry;
+    private readonly ITileRegistry? _tileRegistry;
     private readonly Dictionary<string, List<string>> _tileToBiomes;
 
     /// <summary>
@@ -31,10 +35,11 @@ public class BiomeAffinityConstraint : IWfcConstraint
     /// </summary>
     public float MinModifier { get; set; } = 0.1f;
 
-    public BiomeAffinityConstraint(BiomeStrengthGrid grid, BiomeRegistry registry)
+    public BiomeAffinityConstraint(BiomeStrengthGrid grid, BiomeRegistry registry, ITileRegistry? tileRegistry = null)
     {
         _grid = grid;
         _registry = registry;
+        _tileRegistry = tileRegistry;
         _tileToBiomes = BuildTileToBiomesMap();
     }
 
@@ -68,37 +73,35 @@ public class BiomeAffinityConstraint : IWfcConstraint
     }
 
     /// <summary>
-    /// Builds a lookup from tile ID to list of biome IDs that contain it.
+    /// Builds a lookup from tile ID to list of biome IDs that the tile is allowed in.
+    /// Uses TileDefinition.AllowedBiomes instead of explicit biome tile pools.
     /// </summary>
     private Dictionary<string, List<string>> BuildTileToBiomesMap()
     {
         var map = new Dictionary<string, List<string>>();
+        var allBiomeIds = _registry.GetAllBiomeIds().ToList();
 
-        foreach (var biome in _registry.GetAllBiomes())
+        if (_tileRegistry == null)
+            return map;
+
+        // For each tile, check which biomes it's allowed in
+        foreach (var tileDef in _tileRegistry.GetAllTiles())
         {
-            // Add passable tiles
-            foreach (var tileId in biome.PassableTiles.GetAllTileIds())
+            var biomeList = new List<string>();
+
+            // If AllowedBiomes is null, tile is universal - don't add to map (gets neutral weighting)
+            // If AllowedBiomes has specific biomes, add those
+            if (tileDef.AllowedBiomes != null)
             {
-                if (!map.TryGetValue(tileId, out var biomeList))
+                foreach (var biomeId in allBiomeIds)
                 {
-                    biomeList = new List<string>();
-                    map[tileId] = biomeList;
+                    if (tileDef.IsAllowedInBiome(biomeId))
+                        biomeList.Add(biomeId);
                 }
-                if (!biomeList.Contains(biome.Id))
-                    biomeList.Add(biome.Id);
             }
 
-            // Add blocked tiles
-            foreach (var tileId in biome.BlockedTiles.GetAllTileIds())
-            {
-                if (!map.TryGetValue(tileId, out var biomeList))
-                {
-                    biomeList = new List<string>();
-                    map[tileId] = biomeList;
-                }
-                if (!biomeList.Contains(biome.Id))
-                    biomeList.Add(biome.Id);
-            }
+            if (biomeList.Count > 0)
+                map[tileDef.Id] = biomeList;
         }
 
         return map;

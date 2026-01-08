@@ -130,14 +130,17 @@ public class TransitionMapValidationTest
         {
             for (var i = 0; i < entry.Variants.Length; i++)
             {
-                var variant = entry.Variants[i];
-                if (variant == null)
+                var variants = entry.Variants[i];
+                if (variants == null)
                     continue;
 
-                if (variant.X < 0 || variant.X >= maxTileX)
-                    outOfBounds.Add($"{key}[{i}]: x={variant.X} out of bounds [0, {maxTileX - 1}]");
-                if (variant.Y < 0 || variant.Y >= maxTileY)
-                    outOfBounds.Add($"{key}[{i}]: y={variant.Y} out of bounds [0, {maxTileY - 1}]");
+                foreach (var variant in variants)
+                {
+                    if (variant.X < 0 || variant.X >= maxTileX)
+                        outOfBounds.Add($"{key}[{i}]: x={variant.X} out of bounds [0, {maxTileX - 1}]");
+                    if (variant.Y < 0 || variant.Y >= maxTileY)
+                        outOfBounds.Add($"{key}[{i}]: y={variant.Y} out of bounds [0, {maxTileY - 1}]");
+                }
             }
         }
 
@@ -158,12 +161,15 @@ public class TransitionMapValidationTest
         {
             for (var i = 0; i < entry.Variants.Length; i++)
             {
-                var variant = entry.Variants[i];
-                if (variant == null)
+                var variants = entry.Variants[i];
+                if (variants == null)
                     continue;
 
-                if (variant.X < 0 || variant.Y < 0)
-                    negativeCoords.Add($"{key}[{i}]: ({variant.X}, {variant.Y}) has negative value");
+                foreach (var variant in variants)
+                {
+                    if (variant.X < 0 || variant.Y < 0)
+                        negativeCoords.Add($"{key}[{i}]: ({variant.X}, {variant.Y}) has negative value");
+                }
             }
         }
 
@@ -306,8 +312,8 @@ public class TransitionMapValidationTest
             if (entry.Format != "corner16")
                 continue;
 
-            if (entry.Variants.Length > 0 && entry.Variants[0] == null)
-                nullVariant0.Add($"{key}: variant[0] is null (solid fill should be defined)");
+            if (entry.Variants.Length > 0 && (entry.Variants[0] == null || entry.Variants[0]!.Length == 0))
+                nullVariant0.Add($"{key}: variant[0] is null or empty (solid fill should be defined)");
         }
 
         if (nullVariant0.Count > 0)
@@ -329,8 +335,8 @@ public class TransitionMapValidationTest
             if (entry.Format != "corner16")
                 continue;
 
-            if (entry.Variants.Length > 15 && entry.Variants[15] == null)
-                nullVariant15.Add($"{key}: variant[15] is null (solid fill should be defined)");
+            if (entry.Variants.Length > 15 && (entry.Variants[15] == null || entry.Variants[15]!.Length == 0))
+                nullVariant15.Add($"{key}: variant[15] is null or empty (solid fill should be defined)");
         }
 
         if (nullVariant15.Count > 0)
@@ -383,14 +389,17 @@ public class TransitionMapValidationTest
             var coords = new System.Collections.Generic.HashSet<(int, int)>();
             for (var i = 0; i < entry.Variants.Length; i++)
             {
-                var variant = entry.Variants[i];
-                if (variant == null)
+                var variants = entry.Variants[i];
+                if (variants == null)
                     continue;
 
-                var coord = (variant.X, variant.Y);
-                if (!coords.Add(coord))
+                foreach (var variant in variants)
                 {
-                    duplicates.Add($"{key}[{i}]: ({variant.X}, {variant.Y}) is duplicate");
+                    var coord = (variant.X, variant.Y);
+                    if (!coords.Add(coord))
+                    {
+                        duplicates.Add($"{key}[{i}]: ({variant.X}, {variant.Y}) is duplicate");
+                    }
                 }
             }
         }
@@ -414,7 +423,7 @@ public class TransitionMapValidationTest
         var edge16Count = _transitionMap.Transitions.Values.Count(e => e.Format == "edge16");
 
         var totalVariants = _transitionMap.Transitions.Values
-            .Sum(e => e.Variants.Count(v => v != null));
+            .Sum(e => e.Variants.Where(v => v != null).Sum(v => v!.Length));
 
         var uniqueBorders = _transitionMap.GetAllBorderIds().Count();
 
@@ -461,10 +470,10 @@ public class TransitionMapValidationTest
 
         AssertThat(coords).IsNotNull();
 
-        if (entry.Variants.Length > 1 && entry.Variants[1] != null)
+        if (entry.Variants.Length > 1 && entry.Variants[1] != null && entry.Variants[1]!.Length > 0)
         {
-            AssertThat(coords!.Value.X).IsEqual(entry.Variants[1]!.X);
-            AssertThat(coords!.Value.Y).IsEqual(entry.Variants[1]!.Y);
+            AssertThat(coords!.Value.X).IsEqual(entry.Variants[1]![0].X);
+            AssertThat(coords!.Value.Y).IsEqual(entry.Variants[1]![0].Y);
         }
     }
 }

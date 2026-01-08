@@ -294,12 +294,15 @@ public class BlackTileReproductionTest
         {
             for (var i = 0; i < entry.Variants.Length; i++)
             {
-                var variant = entry.Variants[i];
-                if (variant == null) continue;
+                var variants = entry.Variants[i];
+                if (variants == null) continue;
 
-                if (variant.X < 0 || variant.Y < 0)
+                foreach (var variant in variants)
                 {
-                    negativeCoords.Add($"{key}[{i}]: ({variant.X},{variant.Y})");
+                    if (variant.X < 0 || variant.Y < 0)
+                    {
+                        negativeCoords.Add($"{key}[{i}]: ({variant.X},{variant.Y})");
+                    }
                 }
             }
         }

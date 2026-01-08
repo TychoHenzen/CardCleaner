@@ -306,28 +306,33 @@ public static class CompiledAtlasLoader
                 if (entry.Variants == null)
                     continue;
 
-                foreach (var variant in entry.Variants)
+                // Outer array: each bitmask index
+                foreach (var variantOptions in entry.Variants)
                 {
-                    if (variant == null)
+                    if (variantOptions == null)
                         continue;
 
-                    var atlasCoords = new Vector2I(variant.X, variant.Y);
+                    // Inner array: variant options for this bitmask
+                    foreach (var variant in variantOptions)
+                    {
+                        var atlasCoords = new Vector2I(variant.X, variant.Y);
 
-                    if (!atlasSource.HasTile(atlasCoords))
-                    {
-                        try
+                        if (!atlasSource.HasTile(atlasCoords))
                         {
-                            atlasSource.CreateTile(atlasCoords);
-                            tilesCreated++;
+                            try
+                            {
+                                atlasSource.CreateTile(atlasCoords);
+                                tilesCreated++;
+                            }
+                            catch (Exception ex)
+                            {
+                                ILog.Print($"[CompiledAtlasLoader] Failed to create transition tile at {atlasCoords}: {ex.Message}");
+                            }
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            ILog.Print($"[CompiledAtlasLoader] Failed to create transition tile at {atlasCoords}: {ex.Message}");
+                            tilesSkipped++;
                         }
-                    }
-                    else
-                    {
-                        tilesSkipped++;
                     }
                 }
             }
@@ -387,7 +392,10 @@ public static class CompiledAtlasLoader
     public class TransitionEntry
     {
         [JsonPropertyName("format")] public string? Format { get; set; }
-        [JsonPropertyName("variants")] public VariantCoord?[]? Variants { get; set; }
+        /// <summary>
+        /// Nested array: outer index is bitmask, inner array contains variant options for that bitmask.
+        /// </summary>
+        [JsonPropertyName("variants")] public VariantCoord[]?[]? Variants { get; set; }
     }
 
     public class VariantCoord

@@ -62,7 +62,7 @@ public class CompiledTransitionResolverTest
         var bitmask = -1;
         for (var i = 0; i < entry.Variants.Length; i++)
         {
-            if (entry.Variants[i] != null)
+            if (entry.Variants[i] != null && entry.Variants[i]!.Length > 0)
             {
                 bitmask = i;
                 break;
@@ -78,8 +78,8 @@ public class CompiledTransitionResolverTest
         var coords = _resolver.ResolveTransition(borderId, outerTerrain, bitmask);
 
         AssertThat(coords).IsNotNull();
-        AssertThat(coords!.Value.X).IsEqual(entry.Variants[bitmask]!.X);
-        AssertThat(coords!.Value.Y).IsEqual(entry.Variants[bitmask]!.Y);
+        AssertThat(coords!.Value.X).IsEqual(entry.Variants[bitmask]![0].X);
+        AssertThat(coords!.Value.Y).IsEqual(entry.Variants[bitmask]![0].Y);
     }
 
     [TestCase]
@@ -128,12 +128,13 @@ public class CompiledTransitionResolverTest
             var coords = _resolver.ResolveTransition(borderId, outerTerrain, bitmask);
             var expectedVariant = bitmask < entry.Variants.Length ? entry.Variants[bitmask] : null;
 
-            if (expectedVariant != null)
+            if (expectedVariant != null && expectedVariant.Length > 0)
             {
+                var firstVariant = expectedVariant[0];
                 if (coords == null)
-                    results.Add($"bitmask {bitmask}: expected ({expectedVariant.X},{expectedVariant.Y}), got null");
-                else if (coords.Value.X != expectedVariant.X || coords.Value.Y != expectedVariant.Y)
-                    results.Add($"bitmask {bitmask}: expected ({expectedVariant.X},{expectedVariant.Y}), got ({coords.Value.X},{coords.Value.Y})");
+                    results.Add($"bitmask {bitmask}: expected ({firstVariant.X},{firstVariant.Y}), got null");
+                else if (coords.Value.X != firstVariant.X || coords.Value.Y != firstVariant.Y)
+                    results.Add($"bitmask {bitmask}: expected ({firstVariant.X},{firstVariant.Y}), got ({coords.Value.X},{coords.Value.Y})");
             }
             else
             {
@@ -179,7 +180,7 @@ public class CompiledTransitionResolverTest
 
         // Find first non-null variant
         var bitmask = Enumerable.Range(0, entry.Variants.Length)
-            .FirstOrDefault(i => entry.Variants[i] != null);
+            .FirstOrDefault(i => entry.Variants[i] != null && entry.Variants[i]!.Length > 0);
 
         var result = _resolver.ResolveWithFallback(
             borderId, outerTerrain, bitmask,
@@ -187,9 +188,9 @@ public class CompiledTransitionResolverTest
 
         // Should return compiled atlas source ID
         AssertThat(result.SourceId).IsEqual(0);
-        // Should return correct coords
-        AssertThat(result.AtlasCoords.X).IsEqual(entry.Variants[bitmask]!.X);
-        AssertThat(result.AtlasCoords.Y).IsEqual(entry.Variants[bitmask]!.Y);
+        // Should return correct coords (first variant)
+        AssertThat(result.AtlasCoords.X).IsEqual(entry.Variants[bitmask]![0].X);
+        AssertThat(result.AtlasCoords.Y).IsEqual(entry.Variants[bitmask]![0].Y);
     }
 
     [TestCase]
@@ -368,7 +369,7 @@ public class CompiledTransitionResolverTest
         var edge16Count = _transitionMap.Transitions.Count(kvp => kvp.Value.Format == "edge16");
 
         var totalNonNullVariants = _transitionMap.Transitions.Values
-            .Sum(e => e.Variants.Count(v => v != null));
+            .Sum(e => e.Variants.Where(v => v != null).Sum(v => v!.Length));
 
         GD.Print("CompiledTransitionResolver Statistics:");
         GD.Print($"  Total transitions: {totalTransitions}");
@@ -413,9 +414,9 @@ public class CompiledTransitionResolverTest
             if (entry.Format != "corner16")
                 continue;
 
-            if (entry.Variants.Length < 16 || entry.Variants[15] == null)
+            if (entry.Variants.Length < 16 || entry.Variants[15] == null || entry.Variants[15]!.Length == 0)
             {
-                missingVariant15.Add($"{key}: variant[15] is {(entry.Variants.Length < 16 ? "missing (length=" + entry.Variants.Length + ")" : "null")}");
+                missingVariant15.Add($"{key}: variant[15] is {(entry.Variants.Length < 16 ? "missing (length=" + entry.Variants.Length + ")" : entry.Variants[15] == null ? "null" : "empty")}");
             }
         }
 

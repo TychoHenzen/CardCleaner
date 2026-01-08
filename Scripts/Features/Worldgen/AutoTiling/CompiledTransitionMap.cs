@@ -49,11 +49,12 @@ public class CompiledTransitionMap
 
     /// <summary>
     /// Adds a transition entry for the given border and outer terrain.
+    /// Each bitmask has a single variant (backward compatible).
     /// </summary>
     /// <param name="borderId">The border tile ID.</param>
     /// <param name="outerTerrain">The outer terrain tile ID.</param>
     /// <param name="formatName">The auto-tile format name (e.g., "corner16", "edge16", "blob47").</param>
-    /// <param name="variants">Atlas coordinates for each variant.</param>
+    /// <param name="variants">Atlas coordinates for each bitmask (single variant per bitmask).</param>
     public void AddTransition(string borderId, string outerTerrain, string formatName, Vector2I[] variants)
     {
         var key = CreateKey(borderId, outerTerrain);
@@ -65,7 +66,26 @@ public class CompiledTransitionMap
     }
 
     /// <summary>
+    /// Adds a transition entry with multiple variants per bitmask for random selection.
+    /// </summary>
+    /// <param name="borderId">The border tile ID.</param>
+    /// <param name="outerTerrain">The outer terrain tile ID.</param>
+    /// <param name="formatName">The auto-tile format name (e.g., "corner16", "edge16", "blob47").</param>
+    /// <param name="variantArrays">Atlas coordinates for each bitmask, where each bitmask can have multiple variants.</param>
+    public void AddTransitionWithVariants(string borderId, string outerTerrain, string formatName, Vector2I[][] variantArrays)
+    {
+        var key = CreateKey(borderId, outerTerrain);
+        Transitions[key] = new TransitionEntry
+        {
+            Format = formatName.ToLowerInvariant(),
+            Variants = ConvertToVariantData(variantArrays)
+        };
+    }
+
+    /// <summary>
     /// Looks up the atlas coordinates for a specific transition and bitmask.
+    /// When multiple variants exist, returns the first one.
+    /// Use GetVariantCoordsWithRandom for random variant selection.
     /// Returns null if the transition is not found.
     /// </summary>
     public Vector2I? GetVariantCoords(string borderId, string outerTerrain, int bitmask)
@@ -82,8 +102,40 @@ public class CompiledTransitionMap
         if (index < 0 || index >= entry.Variants.Length)
             return null;
 
-        var variant = entry.Variants[index];
-        return variant != null ? new Vector2I(variant.X, variant.Y) : null;
+        var variants = entry.Variants[index];
+        if (variants == null || variants.Length == 0)
+            return null;
+
+        // Return first variant (for deterministic behavior)
+        return new Vector2I(variants[0].X, variants[0].Y);
+    }
+
+    /// <summary>
+    /// Looks up the atlas coordinates for a specific transition and bitmask with random variant selection.
+    /// Uses position-based seed for consistent re-renders of the same tile.
+    /// Returns null if the transition is not found.
+    /// </summary>
+    public Vector2I? GetVariantCoordsWithRandom(string borderId, string outerTerrain, int bitmask, int positionSeed)
+    {
+        var key = CreateKey(borderId, outerTerrain);
+        if (!Transitions.TryGetValue(key, out var entry))
+            return null;
+
+        // Convert bitmask to variant index based on format
+        var index = entry.Format == "blob47"
+            ? NeighborBitmask8.GetBlobIndex(bitmask)
+            : bitmask; // Corner16/Edge16 use bitmask directly as index
+
+        if (index < 0 || index >= entry.Variants.Length)
+            return null;
+
+        var variants = entry.Variants[index];
+        if (variants == null || variants.Length == 0)
+            return null;
+
+        // Use position seed to select variant deterministically
+        var variantIndex = ((positionSeed % variants.Length) + variants.Length) % variants.Length;
+        return new Vector2I(variants[variantIndex].X, variants[variantIndex].Y);
     }
 
     /// <summary>
@@ -116,12 +168,33 @@ public class CompiledTransitionMap
         }
     }
 
-    private static VariantCoord?[] ConvertToVariantData(Vector2I[] variants)
+    private static VariantCoord[]?[] ConvertToVariantData(Vector2I[] variants)
     {
-        var result = new VariantCoord?[variants.Length];
+        var result = new VariantCoord[]?[variants.Length];
         for (var i = 0; i < variants.Length; i++)
         {
-            result[i] = new VariantCoord { X = variants[i].X, Y = variants[i].Y };
+            // Wrap each single coordinate in an array (for backward compatibility)
+            result[i] = new[] { new VariantCoord { X = variants[i].X, Y = variants[i].Y } };
+        }
+        return result;
+    }
+
+    private static VariantCoord[]?[] ConvertToVariantData(Vector2I[][] variantArrays)
+    {
+        var result = new VariantCoord[]?[variantArrays.Length];
+        for (var i = 0; i < variantArrays.Length; i++)
+        {
+            if (variantArrays[i] == null || variantArrays[i].Length == 0)
+            {
+                result[i] = null;
+                continue;
+            }
+
+            result[i] = new VariantCoord[variantArrays[i].Length];
+            for (var j = 0; j < variantArrays[i].Length; j++)
+            {
+                result[i]![j] = new VariantCoord { X = variantArrays[i][j].X, Y = variantArrays[i][j].Y };
+            }
         }
         return result;
     }
@@ -142,10 +215,11 @@ public class TransitionEntry
     /// Atlas coordinates for each variant index.
     /// For Corner16/Edge16: 16 entries (index = bitmask 0-15)
     /// For Blob47: 47 entries (index = blob index 0-46)
+    /// Each entry is an array of possible tile variants for random selection.
     /// Null entries mean "use base tile coords" (shouldn't happen for compiled tiles).
     /// </summary>
     [JsonPropertyName("variants")]
-    public VariantCoord?[] Variants { get; set; } = [];
+    public VariantCoord[]?[] Variants { get; set; } = [];
 }
 
 /// <summary>
@@ -159,3 +233,4 @@ public class VariantCoord
     [JsonPropertyName("y")]
     public int Y { get; set; }
 }
+

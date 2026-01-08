@@ -223,17 +223,17 @@ public static class TiledTilesetLoader
 
         if (wangType == "corner")
         {
-            // Corner mode: indices 1,3,5,7 = TL,TR,BR,BL
-            var tl = ParseInt(parts[1], 0);
-            var tr = ParseInt(parts[3], 0);
-            var br = ParseInt(parts[5], 0);
-            var bl = ParseInt(parts[7], 0);
+            // Tiled wangid corner format: "0,TR,0,BR,0,BL,0,TL" (indices 1,3,5,7)
+            var tr = ParseInt(parts[1], 0);  // Top-Right = NE
+            var br = ParseInt(parts[3], 0);  // Bottom-Right = SE
+            var bl = ParseInt(parts[5], 0);  // Bottom-Left = SW
+            var tl = ParseInt(parts[7], 0);  // Top-Left = NW
 
-            // Bit order: 0=TL, 1=TR, 2=BR, 3=BL
-            if (tl == terrainColorIndex) bitmask |= 1;
-            if (tr == terrainColorIndex) bitmask |= 2;
-            if (br == terrainColorIndex) bitmask |= 4;
-            if (bl == terrainColorIndex) bitmask |= 8;
+            // Match NeighborBitmaskCorner: NE=1, SE=2, SW=4, NW=8
+            if (tr == terrainColorIndex) bitmask |= 1;  // TR = NE
+            if (br == terrainColorIndex) bitmask |= 2;  // BR = SE
+            if (bl == terrainColorIndex) bitmask |= 4;  // BL = SW
+            if (tl == terrainColorIndex) bitmask |= 8;  // TL = NW
         }
         else if (wangType == "edge")
         {
@@ -540,7 +540,9 @@ public static class TiledTilesetLoader
         var decorationDensity = GetFloat(props, "decorationdensity", 1f);
         var outerTerrain = GetStringOrNull(props, "outerterrain");
         var innerTerrain = GetStringOrNull(props, "innerterrain");
-        var isGapTile = GetBool(props, "isgaptile", false);
+        // Tiles without Wang set membership are gap tiles by default (base tiles for background layer)
+        var hasWangSet = wangData.TileToWangSet.ContainsKey(baseTileId);
+        var isGapTile = GetBool(props, "isgaptile", !hasWangSet);
 
         // Size (for multi-cell tiles)
         Vector2I? size = null;
@@ -658,11 +660,44 @@ public static class TiledTilesetLoader
     }
 
     /// <summary>
-    /// Parse biome boolean properties (biome_forest: true, etc.)
+    /// Known biome IDs in bit position order (matches Tiled project enum).
+    /// </summary>
+    private static readonly string[] KnownBiomeIds =
+    {
+        "plains", "forest", "desert", "tundra", "swamp",
+        "mountains", "water", "cave", "volcanic", "magical"
+    };
+
+    /// <summary>
+    /// Parse biome properties. Supports both:
+    /// - Integer "biome" property (flags enum/bitfield from Tiled): 0 = all biomes, non-zero = selected biomes
+    /// - Boolean "biome_*" properties (biome_forest: true, etc.): fallback for manual property editing
     /// </summary>
     private static HashSet<string>? ParseBiomeBooleans(Dictionary<string, string> props)
     {
-        var biomes = new HashSet<string>();
+        // First, check for integer biome flags property (from Tiled enum)
+        if (props.TryGetValue("biome", out var biomeValue))
+        {
+            if (int.TryParse(biomeValue, out var biomeFlags))
+            {
+                // biome=0 means "all biomes" (universal tile) - return null
+                if (biomeFlags == 0)
+                    return null;
+
+                // Decode flags to biome IDs
+                var biomes = new HashSet<string>();
+                for (var i = 0; i < KnownBiomeIds.Length; i++)
+                {
+                    if ((biomeFlags & (1 << i)) != 0)
+                        biomes.Add(KnownBiomeIds[i]);
+                }
+
+                return biomes.Count > 0 ? biomes : null;
+            }
+        }
+
+        // Fallback: check for boolean biome_* properties
+        var boolBiomes = new HashSet<string>();
 
         foreach (var (key, value) in props)
         {
@@ -672,11 +707,11 @@ public static class TiledTilesetLoader
             if (ParseBool(value, false))
             {
                 var biomeName = key.Substring(6).ToLowerInvariant(); // Remove "biome_" prefix
-                biomes.Add(biomeName);
+                boolBiomes.Add(biomeName);
             }
         }
 
-        return biomes.Count > 0 ? biomes : null;
+        return boolBiomes.Count > 0 ? boolBiomes : null;
     }
 
     /// <summary>

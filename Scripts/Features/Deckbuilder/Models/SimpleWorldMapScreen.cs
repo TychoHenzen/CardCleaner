@@ -3,6 +3,7 @@ using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -871,12 +872,22 @@ public partial class SimpleWorldMapScreen : Node3D
                     : effectiveTile.AtlasCoords;
                 sourceId = effectiveTile.SourceId;
             }
-            // For bitmask 0 (no foreground corners), just render the base tile
-            // This happens when no auto-tile is in the visual window
+            // For bitmask 0 (no foreground corners), render the base tile from compiled atlas
+            // Try transition map first (for base tiles used with auto-tiles), then direct coord mapping
             else if (bitmask == 0)
             {
-                atlasCoords = baseTile.AtlasCoords;
-                sourceId = baseTile.SourceId;
+                var solidFillCoords = _transitionResolver.ResolveSolidFill(baseTileId);
+                if (solidFillCoords.HasValue)
+                {
+                    atlasCoords = solidFillCoords.Value;
+                    sourceId = _transitionResolver.CompiledAtlasSourceId;
+                }
+                else
+                {
+                    // Base tile not in any transition - translate original coords to compiled atlas
+                    (sourceId, atlasCoords) = CompiledAtlasLoader.TranslateCoordinates(
+                        baseTile.SourceId, baseTile.AtlasCoords);
+                }
             }
             // For uniform terrain (top == base, bitmask 15), we need the solid fill
             // Self-transitions don't exist in the map, so find ANY transition with this tile

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -129,19 +130,42 @@ public class WfcMapGenerator
     private void ConfigureGapTileAdjacencies(ITileRegistry tileRegistry)
     {
         var gapTiles = new List<string>();
+        var autoTiles = new List<string>();
+
         foreach (var tile in tileRegistry.GetAllTiles())
         {
-            // Gap tiles are non-auto-tiles that appear in the adjacency rules
-            if (!tile.HasAutoTileVariants && _adjacencyRules.AllTileIds.Contains(tile.Id))
+            if (!tile.HasAutoTileVariants)
             {
                 gapTiles.Add(tile.Id);
             }
+            else
+            {
+                autoTiles.Add(tile.Id);
+            }
         }
 
+        // Add all gap tiles to adjacency rules with mutual adjacency
+        // (they can all be adjacent to each other and to any auto-tile)
         if (gapTiles.Count > 0)
         {
             _adjacencyRules.AddMutualAdjacencies(gapTiles);
-            GD.Print($"[WFC] Configured {gapTiles.Count} gap tiles for mutual adjacency");
+
+            // Gap tiles can be adjacent to any auto-tile
+            foreach (var gapTile in gapTiles)
+            {
+                foreach (var autoTile in autoTiles)
+                {
+                    _adjacencyRules.AddAdjacency(gapTile, autoTile);
+                }
+            }
+
+            GD.Print($"[WFC] Configured {gapTiles.Count} gap tiles for adjacency (can be next to {autoTiles.Count} auto-tiles)");
+        }
+
+        // Add auto-tiles with self-adjacency if not already in rules
+        foreach (var autoTile in autoTiles)
+        {
+            _adjacencyRules.EnsureSelfAdjacency(autoTile);
         }
     }
 
@@ -202,7 +226,7 @@ public class WfcMapGenerator
         {
             ConfigureConstraints();
             var biomeStrengthGrid = new BiomeStrengthGrid(size, gradient, biomeRegistry);
-            _selector.AddConstraint(new BiomeAffinityConstraint(biomeStrengthGrid, biomeRegistry));
+            _selector.AddConstraint(new BiomeAffinityConstraint(biomeStrengthGrid, biomeRegistry, _tileRegistry));
         }
 
         var solver = CreateSolver(skipBaseConstraints: gradient != null, size);
@@ -290,34 +314,22 @@ public class WfcMapGenerator
     {
         var allTiles = new HashSet<string>();
         var passableTiles = new HashSet<string>();
-        var adjacencyTiles = _adjacencyRules.AllTileIds;
 
-        foreach (var tileId in biome.PassableTiles.GetAllTileIds())
+        // Check each tile in adjacency rules for biome compatibility
+        foreach (var tileId in _adjacencyRules.AllTileIds)
         {
-            if (!adjacencyTiles.Contains(tileId))
-            {
-                ILog.Print($"[WfcMapGenerator] Skipping tile '{tileId}': no adjacency rules defined");
+            var tileDef = _tileRegistry?.GetTile(tileId);
+            if (tileDef == null)
                 continue;
-            }
+
+            // Check if tile is allowed in this biome using TileDefinition.IsAllowedInBiome
+            if (!tileDef.IsAllowedInBiome(biome.Id))
+                continue;
 
             allTiles.Add(tileId);
 
-            if (_tileRegistry != null)
-            {
-                var tile = _tileRegistry.GetTile(tileId);
-                if (tile?.IsPassable == true)
-                {
-                    passableTiles.Add(tileId);
-                }
-                else
-                {
-                    ILog.Print($"[WfcMapGenerator] WARNING: Tile '{tileId}' is in PassableTiles but has IsPassable=false");
-                }
-            }
-            else
-            {
+            if (tileDef.IsPassable)
                 passableTiles.Add(tileId);
-            }
         }
 
         return (allTiles, passableTiles);
@@ -330,46 +342,30 @@ public class WfcMapGenerator
         var allTiles = new HashSet<string>();
         var passableTiles = new HashSet<string>();
 
-        foreach (var biome in registry.GetAllBiomes())
+        // Get all biome IDs for checking tile compatibility
+        var biomeIds = registry.GetAllBiomeIds().ToList();
+
+        // Check each tile in the adjacency rules against biome compatibility
+        foreach (var tileId in _adjacencyRules.AllTileIds)
         {
-            var biomeTileIds = new HashSet<string>();
-            foreach (var tileId in biome.PassableTiles.GetAllTileIds())
-                biomeTileIds.Add(tileId);
-            foreach (var tileId in biome.BlockedTiles.GetAllTileIds())
-                biomeTileIds.Add(tileId);
+            var tileDef = _tileRegistry?.GetTile(tileId);
+            if (tileDef == null)
+                continue;
 
-            foreach (var tileId in biomeTileIds)
-            {
-                if (!_adjacencyRules.AllTileIds.Contains(tileId))
-                    continue;
+            // Apply tile filter if provided
+            if (tileFilter != null && !tileFilter(tileDef))
+                continue;
 
-                // Apply tile filter if provided
-                if (tileFilter != null && _tileRegistry != null)
-                {
-                    var tileDef = _tileRegistry.GetTile(tileId);
-                    if (tileDef == null || !tileFilter(tileDef))
-                        continue;
-                }
+            // Check if tile is allowed in ANY of the biomes
+            // IsAllowedInBiome returns true if AllowedBiomes is null (universal) or contains the biome
+            var isAllowedInAnyBiome = biomeIds.Any(biomeId => tileDef.IsAllowedInBiome(biomeId));
+            if (!isAllowedInAnyBiome)
+                continue;
 
-                allTiles.Add(tileId);
+            allTiles.Add(tileId);
 
-                if (_tileRegistry != null)
-                {
-                    var tile = _tileRegistry.GetTile(tileId);
-                    if (tile?.IsPassable == true)
-                    {
-                        passableTiles.Add(tileId);
-                    }
-                }
-                else
-                {
-                    var passablePool = new HashSet<string>(biome.PassableTiles.GetAllTileIds());
-                    if (passablePool.Contains(tileId))
-                    {
-                        passableTiles.Add(tileId);
-                    }
-                }
-            }
+            if (tileDef.IsPassable)
+                passableTiles.Add(tileId);
         }
 
         return (allTiles, passableTiles);

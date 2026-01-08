@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -15,7 +16,7 @@ public class WfcMapDataAdapter
     /// </summary>
     /// <param name="grid">Fully collapsed WFC grid</param>
     /// <param name="biome">Biome to apply to all cells</param>
-    /// <param name="passableTileIds">Set of tile IDs that are passable (optional)</param>
+    /// <param name="passableTileIds">Set of tile IDs that are passable (required)</param>
     /// <param name="defaultTileId">Default tile ID for uncollapsed cells (optional, uses first available if null)</param>
     /// <returns>SimpleMapData ready for rendering</returns>
     public SimpleMapData ToSimpleMapData(
@@ -24,6 +25,10 @@ public class WfcMapDataAdapter
         HashSet<string>? passableTileIds = null,
         string? defaultTileId = null)
     {
+        if (passableTileIds == null)
+            throw new ArgumentNullException(nameof(passableTileIds),
+                "passableTileIds must be provided. Use TileDefinition.IsPassable to build the set from a tile registry.");
+
         var width = grid.Width;
         var height = grid.Height;
 
@@ -35,9 +40,6 @@ public class WfcMapDataAdapter
         };
 
         var passablePositions = new List<Vector2I>();
-
-        // Build passable set from biome if not provided
-        passableTileIds ??= BuildPassableSet(biome);
 
         // Extract tile IDs from collapsed grid
         for (var y = 0; y < height; y++)
@@ -127,21 +129,6 @@ public class WfcMapDataAdapter
             : new Vector2I(width / 2, height / 2);
 
         return mapData;
-    }
-
-    private static HashSet<string> BuildPassableSet(BiomeDefinition biome)
-    {
-        var set = new HashSet<string>();
-
-        if (biome.PassableTiles != null)
-        {
-            foreach (var tileId in biome.PassableTiles.GetAllTileIds())
-            {
-                set.Add(tileId);
-            }
-        }
-
-        return set;
     }
 
     private static string? GetFirstTile(WfcCellState cell)

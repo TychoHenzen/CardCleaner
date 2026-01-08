@@ -50,6 +50,7 @@ public class CompiledTransitionResolver : ITransitionResolver
 
     /// <summary>
     /// Resolves the atlas coordinates for a terrain transition.
+    /// Returns the first variant (deterministic behavior).
     /// </summary>
     public Vector2I? ResolveTransition(string innerTerrainId, string outerTerrainId, int bitmask)
     {
@@ -69,7 +70,53 @@ public class CompiledTransitionResolver : ITransitionResolver
     }
 
     /// <summary>
+    /// Resolves the atlas coordinates for a terrain transition with random variant selection.
+    /// Uses position-based seeding for consistent re-renders.
+    /// </summary>
+    /// <param name="innerTerrainId">Inner terrain ID.</param>
+    /// <param name="outerTerrainId">Outer terrain ID.</param>
+    /// <param name="bitmask">Corner/edge bitmask value.</param>
+    /// <param name="x">X position for seed generation.</param>
+    /// <param name="y">Y position for seed generation.</param>
+    /// <returns>Atlas coordinates for a randomly selected variant, or null if not found.</returns>
+    public Vector2I? ResolveTransitionWithVariant(string innerTerrainId, string outerTerrainId, int bitmask, int x, int y)
+    {
+        // Create position-based seed for deterministic random selection
+        var positionSeed = HashPosition(x, y);
+
+        // Try direct lookup first (for fixed transitions and composited tiles)
+        var coords = _transitionMap.GetVariantCoordsWithRandom(innerTerrainId, outerTerrainId, bitmask, positionSeed);
+        if (coords.HasValue)
+            return coords;
+
+        // Try with border tile ID format: "{inner}_border"
+        var borderId = $"{innerTerrainId}_border";
+        coords = _transitionMap.GetVariantCoordsWithRandom(borderId, outerTerrainId, bitmask, positionSeed);
+        if (coords.HasValue)
+            return coords;
+
+        // No transition found
+        return null;
+    }
+
+    /// <summary>
+    /// Creates a stable hash from x,y coordinates for variant selection seeding.
+    /// </summary>
+    private static int HashPosition(int x, int y)
+    {
+        // Simple hash combining x and y that produces good distribution
+        unchecked
+        {
+            var hash = 17;
+            hash = hash * 31 + x;
+            hash = hash * 31 + y;
+            return hash;
+        }
+    }
+
+    /// <summary>
     /// Resolves a transition with full render info, including fallback to provided coordinates.
+    /// Uses first variant (deterministic behavior).
     /// When using compiled atlas, ensures fallback always uses sourceId 0.
     /// </summary>
     public TransitionResolveResult ResolveWithFallback(
@@ -81,6 +128,39 @@ public class CompiledTransitionResolver : ITransitionResolver
     {
         // Try compiled transition map first
         var coords = ResolveTransition(innerTerrainId, outerTerrainId, bitmask);
+        if (coords.HasValue)
+            return new TransitionResolveResult(_compiledAtlasSourceId, coords.Value);
+
+        // Try to find ANY transition with this inner terrain to get valid compiled atlas coords
+        var anyVariant = ResolveAnyVariant(innerTerrainId, bitmask);
+        if (anyVariant.HasValue)
+            return new TransitionResolveResult(_compiledAtlasSourceId, anyVariant.Value);
+
+        // Ultimate fallback: if fallbackSourceId matches compiled atlas, use it
+        // Otherwise return a known-safe position (first tile at 0,0)
+        if (fallbackSourceId == _compiledAtlasSourceId)
+            return new TransitionResolveResult(fallbackSourceId, fallbackCoords);
+
+        // Can't find valid coords - return error marker position (atlas 0,0 is typically valid)
+        return new TransitionResolveResult(_compiledAtlasSourceId, Vector2I.Zero);
+    }
+
+    /// <summary>
+    /// Resolves a transition with full render info and random variant selection.
+    /// Uses position-based seeding for consistent re-renders.
+    /// When using compiled atlas, ensures fallback always uses sourceId 0.
+    /// </summary>
+    public TransitionResolveResult ResolveWithFallbackAndVariant(
+        string innerTerrainId,
+        string outerTerrainId,
+        int bitmask,
+        int fallbackSourceId,
+        Vector2I fallbackCoords,
+        int tileX,
+        int tileY)
+    {
+        // Try compiled transition map first with variant selection
+        var coords = ResolveTransitionWithVariant(innerTerrainId, outerTerrainId, bitmask, tileX, tileY);
         if (coords.HasValue)
             return new TransitionResolveResult(_compiledAtlasSourceId, coords.Value);
 
@@ -115,12 +195,52 @@ public class CompiledTransitionResolver : ITransitionResolver
     }
 
     /// <summary>
-    /// Finds the solid fill (bitmask 15) for a terrain by looking up ANY transition with it.
-    /// Used for uniform terrain where self-transitions don't exist.
+    /// Finds the solid fill for a terrain by looking up ANY transition with it.
+    /// For inner terrains (auto-tiles), returns bitmask 15 (all corners filled).
+    /// For outer terrains (base tiles), returns bitmask 0 (pure background).
     /// </summary>
     public Vector2I? ResolveSolidFill(string terrainId)
     {
-        return ResolveAnyVariant(terrainId, 15);
+        // First try as inner terrain (foreground auto-tile solid fill - bitmask 15)
+        var result = ResolveAnyVariant(terrainId, 15);
+        if (result.HasValue)
+        {
+            return result;
+        }
+
+        // Also try as outer terrain with bitmask 0 (base tile solid fill)
+        // This handles base tiles like base_grass1 which are only used as outer terrains
+        result = ResolveAsOuterTerrain(terrainId, 0);
+        if (result.HasValue)
+        {
+            return result;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Finds coords by looking up the terrain as the OUTER terrain in any transition.
+    /// Used to find base tile solid fills (bitmask 0) when the tile is only used as background.
+    /// </summary>
+    public Vector2I? ResolveAsOuterTerrain(string terrainId, int bitmask)
+    {
+        if (bitmask < 0 || bitmask >= 16)
+            return null;
+
+        // Find any transition that uses this terrain as the outer (background) terrain
+        foreach (var (key, entry) in _transitionMap.Transitions)
+        {
+            var (_, outerTerrain) = CompiledTransitionMap.ParseKey(key);
+            if (outerTerrain == terrainId && entry.Variants.Length > bitmask)
+            {
+                var variants = entry.Variants[bitmask];
+                if (variants != null && variants.Length > 0)
+                    return new Vector2I(variants[0].X, variants[0].Y);
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -150,10 +270,11 @@ public class CompiledTransitionResolver : ITransitionResolver
         foreach (var (key, entry) in _transitionMap.Transitions)
         {
             var (borderId, _) = CompiledTransitionMap.ParseKey(key);
-            if (borderId == terrainId && entry.Variants.Length > bitmask && entry.Variants[bitmask] != null)
+            if (borderId == terrainId && entry.Variants.Length > bitmask)
             {
-                var v = entry.Variants[bitmask];
-                return new Vector2I(v.X, v.Y);
+                var variants = entry.Variants[bitmask];
+                if (variants != null && variants.Length > 0)
+                    return new Vector2I(variants[0].X, variants[0].Y);
             }
         }
 

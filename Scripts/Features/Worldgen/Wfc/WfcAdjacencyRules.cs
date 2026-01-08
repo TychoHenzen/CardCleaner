@@ -148,4 +148,35 @@ public class WfcAdjacencyRules
             }
         }
     }
+
+    /// <summary>
+    /// Adds bidirectional adjacency between two tiles.
+    /// </summary>
+    public void AddAdjacency(string tileA, string tileB)
+    {
+        _allTileIds.Add(tileA);
+        _allTileIds.Add(tileB);
+
+        if (!_adjacencyMap.ContainsKey(tileA))
+            _adjacencyMap[tileA] = new HashSet<string>();
+        if (!_adjacencyMap.ContainsKey(tileB))
+            _adjacencyMap[tileB] = new HashSet<string>();
+
+        _adjacencyMap[tileA].Add(tileB);
+        _adjacencyMap[tileB].Add(tileA);
+    }
+
+    /// <summary>
+    /// Ensures a tile can be adjacent to itself (required for WFC).
+    /// Adds tile to the rules if not already present.
+    /// </summary>
+    public void EnsureSelfAdjacency(string tileId)
+    {
+        _allTileIds.Add(tileId);
+
+        if (!_adjacencyMap.ContainsKey(tileId))
+            _adjacencyMap[tileId] = new HashSet<string>();
+
+        _adjacencyMap[tileId].Add(tileId);
+    }
 }

@@ -323,17 +323,21 @@ public class RandomAutoTileReproductionTest
 
             for (var i = 0; i < entry.Variants.Length; i++)
             {
-                var v = entry.Variants[i];
-                if (v == null) continue;
+                var variants = entry.Variants[i];
+                if (variants == null) continue;
 
-                if (!coords.Add((v.X, v.Y)))
-                    duplicateCount++;
+                foreach (var v in variants)
+                {
+                    if (!coords.Add((v.X, v.Y)))
+                        duplicateCount++;
+                }
             }
 
             // Some duplication is okay, but if ALL are the same, that's suspicious
-            if (duplicateCount > entry.Variants.Length / 2)
+            var totalVariants = entry.Variants.Where(v => v != null).Sum(v => v!.Length);
+            if (duplicateCount > totalVariants / 2)
             {
-                suspiciousEntries.Add($"{key}: {duplicateCount}/{entry.Variants.Length} variants share coordinates");
+                suspiciousEntries.Add($"{key}: {duplicateCount}/{totalVariants} variants share coordinates");
             }
         }
 
