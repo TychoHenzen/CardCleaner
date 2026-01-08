@@ -32,11 +32,14 @@ public partial class TmxPreviewPanel : VBoxContainer
     private Label? _infoLabel;
     private TmxPreviewControl? _previewControl;
     private string? _currentTmxPath;
-    private string? _selectedBaseTileId;
+    private TileDefinition? _selectedBaseTile;
+    private TiledTilesetLoader.TmxTilesetReference? _selectedBaseTileTileset;
     private TileDefinition? _selectedAutoTile;
+    private TiledTilesetLoader.TmxTilesetReference? _selectedAutoTileTileset;
     private string? _formatOverride;
     private TiledTilesetLoader.TmxMapData? _currentMapData;
-    private List<TileDefinition> _availableAutoTiles = new();
+    private List<(TileDefinition Tile, TiledTilesetLoader.TmxTilesetReference Tileset)> _availableAutoTiles = new();
+    private List<(TileDefinition Tile, TiledTilesetLoader.TmxTilesetReference Tileset)> _availableBaseTiles = new();
 
     // Required by Godot for [Tool] classes
     public TmxPreviewPanel() { }
@@ -245,10 +248,15 @@ public partial class TmxPreviewPanel : VBoxContainer
 
         _currentMapData = mapData;
         PopulateAutoTileSelector();
+        PopulateBaseTileSelector();
 
-        // Clear auto-tile selection when loading new TMX
+        // Clear selections when loading new TMX
         _selectedAutoTile = null;
+        _selectedAutoTileTileset = null;
+        _selectedBaseTile = null;
+        _selectedBaseTileTileset = null;
         _autoTileSelector!.Select(0);
+        _baseTileSelector!.Select(0);
 
         _previewControl?.LoadTmxMap(mapData, (float)_scaleSlider!.Value);
     }
@@ -272,21 +280,29 @@ public partial class TmxPreviewPanel : VBoxContainer
 
     private void PopulateBaseTileSelector()
     {
-        if (_baseTileSelector == null || _service == null) return;
+        if (_baseTileSelector == null) return;
 
         _baseTileSelector.Clear();
+        _availableBaseTiles.Clear();
         _baseTileSelector.AddItem("-- None (checkerboard) --", 0);
 
+        if (_currentMapData == null) return;
+
         var index = 1;
-        foreach (var tile in _service.AllTiles)
+        foreach (var tilesetRef in _currentMapData.Tilesets)
         {
-            // Only terrain tiles can be base tiles
-            if (tile.Layer.Equals("terrain", StringComparison.OrdinalIgnoreCase) &&
-                !tile.HasAutoTileVariants) // Simple terrains only, not auto-tiles
+            var tilesetName = Path.GetFileNameWithoutExtension(tilesetRef.TsxPath);
+            foreach (var tileDef in tilesetRef.TilesetData.Tiles)
             {
-                _baseTileSelector.AddItem($"{tile.Name} ({tile.Id})", index);
-                _baseTileSelector.SetItemMetadata(index, tile.Id);
-                index++;
+                // Simple terrains only (no auto-tile variants)
+                if (!tileDef.HasAutoTileVariants)
+                {
+                    _availableBaseTiles.Add((tileDef, tilesetRef));
+                    var displayText = $"{tileDef.Name} ({tileDef.Id}) [{tilesetName}]";
+                    _baseTileSelector.AddItem(displayText, index);
+                    _baseTileSelector.SetItemMetadata(index, index - 1); // Store list index
+                    index++;
+                }
             }
         }
     }
@@ -295,20 +311,21 @@ public partial class TmxPreviewPanel : VBoxContainer
     {
         if (index == 0)
         {
-            _selectedBaseTileId = null;
+            _selectedBaseTile = null;
+            _selectedBaseTileTileset = null;
         }
         else
         {
-            _selectedBaseTileId = _baseTileSelector!.GetItemMetadata((int)index).AsString();
+            var listIndex = _baseTileSelector!.GetItemMetadata((int)index).AsInt32();
+            if (listIndex >= 0 && listIndex < _availableBaseTiles.Count)
+            {
+                var (tile, tileset) = _availableBaseTiles[listIndex];
+                _selectedBaseTile = tile;
+                _selectedBaseTileTileset = tileset;
+            }
         }
 
-        // Update preview with new base tile
-        EditableTile? baseTile = null;
-        if (!string.IsNullOrEmpty(_selectedBaseTileId))
-        {
-            baseTile = _service?.GetTile(_selectedBaseTileId);
-        }
-        _previewControl?.SetBaseTile(baseTile);
+        _previewControl?.SetBaseTile(_selectedBaseTile, _selectedBaseTileTileset);
     }
 
     private void PopulateFormatDropdown()
@@ -341,9 +358,9 @@ public partial class TmxPreviewPanel : VBoxContainer
 
     private void RefreshAutoTilePreview()
     {
-        if (_selectedAutoTile != null)
+        if (_selectedAutoTile != null && _selectedAutoTileTileset != null)
         {
-            _previewControl?.SetAutoTilePreview(_selectedAutoTile, (float)_scaleSlider!.Value, _formatOverride);
+            _previewControl?.SetAutoTilePreview(_selectedAutoTile, _selectedAutoTileTileset, (float)_scaleSlider!.Value, _formatOverride);
         }
     }
 
@@ -365,7 +382,7 @@ public partial class TmxPreviewPanel : VBoxContainer
             {
                 if (tileDef.HasAutoTileVariants)
                 {
-                    _availableAutoTiles.Add(tileDef);
+                    _availableAutoTiles.Add((tileDef, tilesetRef));
                     var displayText = $"{tileDef.Name} ({tileDef.Id}) [{tilesetName}]";
                     _autoTileSelector.AddItem(displayText, index);
                     _autoTileSelector.SetItemMetadata(index, index - 1); // Store list index
@@ -380,6 +397,7 @@ public partial class TmxPreviewPanel : VBoxContainer
         if (index == 0)
         {
             _selectedAutoTile = null;
+            _selectedAutoTileTileset = null;
             // Switch back to TMX map view
             if (_currentMapData != null)
             {
@@ -391,8 +409,10 @@ public partial class TmxPreviewPanel : VBoxContainer
         var listIndex = _autoTileSelector!.GetItemMetadata((int)index).AsInt32();
         if (listIndex >= 0 && listIndex < _availableAutoTiles.Count)
         {
-            _selectedAutoTile = _availableAutoTiles[listIndex];
-            _previewControl?.SetAutoTilePreview(_selectedAutoTile, (float)_scaleSlider!.Value, _formatOverride);
+            var (tile, tileset) = _availableAutoTiles[listIndex];
+            _selectedAutoTile = tile;
+            _selectedAutoTileTileset = tileset;
+            _previewControl?.SetAutoTilePreview(tile, tileset, (float)_scaleSlider!.Value, _formatOverride);
         }
     }
 
@@ -426,15 +446,22 @@ public partial class TmxPreviewControl : Control
     private TiledTilesetLoader.TmxMapData? _mapData;
     private float _scale = 2f;
     private Vector2I _tileSize = new(16, 16);
-    private EditableTile? _baseTile;
+
+    // Base tile for compositing (from TSX)
+    private TileDefinition? _baseTileDef;
+    private TiledTilesetLoader.TmxTilesetReference? _baseTilesetRef;
 
     // Auto-tile preview mode fields
     private TileDefinition? _autoTileDef;
+    private TiledTilesetLoader.TmxTilesetReference? _currentTilesetRef;
     private bool _isAutoTileMode;
     private bool _showDataGrid = true;
     private string? _formatOverride;
     private readonly bool[,] _dataGrid = new bool[DataGridRows, DataGridCols];
     private int[,] _visualBitmasks = new int[VisualGridRows, VisualGridCols];
+
+    // Texture cache for TSX-referenced textures (keyed by resolved texture path)
+    private readonly Dictionary<string, Texture2D?> _textureCache = new();
 
     // Required by Godot for [Tool] classes
     public TmxPreviewControl() { }
@@ -446,9 +473,10 @@ public partial class TmxPreviewControl : Control
         MouseFilter = MouseFilterEnum.Stop;
     }
 
-    public void SetBaseTile(EditableTile? baseTile)
+    public void SetBaseTile(TileDefinition? baseTile, TiledTilesetLoader.TmxTilesetReference? tilesetRef)
     {
-        _baseTile = baseTile;
+        _baseTileDef = baseTile;
+        _baseTilesetRef = tilesetRef;
         QueueRedraw();
     }
 
@@ -456,9 +484,20 @@ public partial class TmxPreviewControl : Control
     {
         _mapData = mapData;
         _scale = scale;
-        _tileSize = _service?.TileSet?.TileSize ?? new Vector2I(16, 16);
+        // Get tile size from the first tileset's config (TSX tile dimensions)
+        _tileSize = mapData.Tilesets.Count > 0
+            ? mapData.Tilesets[0].TilesetData.TilesetConfig.BaseTileSize
+            : new Vector2I(16, 16);
         _isAutoTileMode = false;
         _autoTileDef = null;
+        _currentTilesetRef = null;
+
+        GD.Print($"[TmxPreviewControl] LoadTmxMap: {mapData.Tilesets.Count} tilesets, tileSize={_tileSize}");
+        foreach (var ts in mapData.Tilesets)
+        {
+            GD.Print($"[TmxPreviewControl]   Tileset: {ts.TsxPath}, TilesetPath='{ts.TilesetData.TilesetPath}', Tiles={ts.TilesetData.Tiles.Count}");
+        }
+
         UpdateSize();
         QueueRedraw();
         EmitInfo();
@@ -484,13 +523,15 @@ public partial class TmxPreviewControl : Control
     /// <summary>
     /// Switch to interactive auto-tile preview mode for the given tile definition.
     /// </summary>
-    public void SetAutoTilePreview(TileDefinition tileDef, float scale, string? formatOverride = null)
+    public void SetAutoTilePreview(TileDefinition tileDef, TiledTilesetLoader.TmxTilesetReference tilesetRef, float scale, string? formatOverride = null)
     {
         _autoTileDef = tileDef;
+        _currentTilesetRef = tilesetRef;
         _isAutoTileMode = true;
         _scale = scale;
         _formatOverride = formatOverride;
-        _tileSize = _service?.TileSet?.TileSize ?? new Vector2I(16, 16);
+        // Get tile size from the tileset's config (TSX tile dimensions)
+        _tileSize = tilesetRef.TilesetData.TilesetConfig.BaseTileSize;
         InitializeDataGrid();
         RecomputeVisualBitmasks();
         UpdateSize();
@@ -828,21 +869,17 @@ public partial class TmxPreviewControl : Control
         // Get texture for auto-tile
         var texture = GetAutoTileTexture();
 
-        // Draw base tiles if available
-        if (_baseTile != null)
+        // Draw base tiles if available (from TSX)
+        if (_baseTileDef != null && _baseTilesetRef != null)
         {
-            var baseTexture = _service!.GetTileTexture(_baseTile);
+            var baseTexture = GetTextureForTileset(_baseTilesetRef);
             if (baseTexture != null)
             {
-                var baseActualTileSize = new Vector2I(
-                    (int)(_tileSize.X / _baseTile.SourceScale),
-                    (int)(_tileSize.Y / _baseTile.SourceScale)
-                );
                 var baseSrcRect = new Rect2(
-                    _baseTile.AtlasX * baseActualTileSize.X,
-                    _baseTile.AtlasY * baseActualTileSize.Y,
-                    baseActualTileSize.X,
-                    baseActualTileSize.Y
+                    _baseTileDef.AtlasCoords.X * _tileSize.X,
+                    _baseTileDef.AtlasCoords.Y * _tileSize.Y,
+                    _tileSize.X,
+                    _tileSize.Y
                 );
 
                 for (var row = 0; row < DataGridRows + 1; row++)
@@ -945,10 +982,59 @@ public partial class TmxPreviewControl : Control
 
     private Texture2D? GetAutoTileTexture()
     {
-        if (_autoTileDef == null || _service == null) return null;
+        if (_autoTileDef == null || _currentTilesetRef == null) return null;
+        return GetTextureForTileset(_currentTilesetRef);
+    }
 
-        // Try to get texture via SourceId
-        return _service.GetTileTexture(new EditableTile { SourceId = _autoTileDef.SourceId });
+    /// <summary>
+    /// Load and cache the texture for a tileset from its TilesetPath (TSX image source).
+    /// TilesetPath is already resolved to an absolute path by TiledTilesetLoader.LoadFromTsx.
+    /// </summary>
+    private Texture2D? GetTextureForTileset(TiledTilesetLoader.TmxTilesetReference tilesetRef)
+    {
+        var absoluteTexturePath = tilesetRef.TilesetData.TilesetPath;
+        GD.Print($"[TmxPreviewControl] GetTextureForTileset: TilesetPath='{absoluteTexturePath}'");
+        if (string.IsNullOrEmpty(absoluteTexturePath))
+        {
+            GD.PrintErr("[TmxPreviewControl] TilesetPath is empty!");
+            return null;
+        }
+
+        // Check cache first
+        if (_textureCache.TryGetValue(absoluteTexturePath, out var cached))
+            return cached;
+
+        // Load texture from file
+        Texture2D? texture = null;
+        try
+        {
+            GD.Print($"[TmxPreviewControl] Checking if file exists: {absoluteTexturePath}");
+            if (File.Exists(absoluteTexturePath))
+            {
+                GD.Print($"[TmxPreviewControl] File exists, loading image...");
+                var image = Image.LoadFromFile(absoluteTexturePath);
+                if (image != null)
+                {
+                    texture = ImageTexture.CreateFromImage(image);
+                    GD.Print($"[TmxPreviewControl] Texture loaded successfully: {texture.GetWidth()}x{texture.GetHeight()}");
+                }
+                else
+                {
+                    GD.PrintErr("[TmxPreviewControl] Image.LoadFromFile returned null");
+                }
+            }
+            else
+            {
+                GD.PrintErr($"[TmxPreviewControl] Texture file not found: {absoluteTexturePath}");
+            }
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[TmxPreviewControl] Failed to load texture: {ex.Message}\n{ex.StackTrace}");
+        }
+
+        _textureCache[absoluteTexturePath] = texture;
+        return texture;
     }
 
     private void DrawTmxMapMode()
@@ -962,23 +1048,19 @@ public partial class TmxPreviewControl : Control
         var totalSize = CustomMinimumSize;
         DrawRect(new Rect2(Vector2.Zero, totalSize), new Color(0.15f, 0.15f, 0.15f, 1f));
 
-        // Get base tile texture if available
+        // Get base tile texture if available (from TSX)
         Texture2D? baseTexture = null;
         Rect2? baseSrcRect = null;
-        if (_baseTile != null)
+        if (_baseTileDef != null && _baseTilesetRef != null)
         {
-            baseTexture = _service.GetTileTexture(_baseTile);
+            baseTexture = GetTextureForTileset(_baseTilesetRef);
             if (baseTexture != null)
             {
-                var baseActualTileSize = new Vector2I(
-                    (int)(_tileSize.X / _baseTile.SourceScale),
-                    (int)(_tileSize.Y / _baseTile.SourceScale)
-                );
                 baseSrcRect = new Rect2(
-                    _baseTile.AtlasX * baseActualTileSize.X,
-                    _baseTile.AtlasY * baseActualTileSize.Y,
-                    baseActualTileSize.X,
-                    baseActualTileSize.Y
+                    _baseTileDef.AtlasCoords.X * _tileSize.X,
+                    _baseTileDef.AtlasCoords.Y * _tileSize.Y,
+                    _tileSize.X,
+                    _tileSize.Y
                 );
             }
         }
@@ -986,24 +1068,9 @@ public partial class TmxPreviewControl : Control
         // Draw all tiles from the TMX
         foreach (var (coord, resolution) in _mapData.GetAllTiles())
         {
-            // Get the tileset's texture
+            // Get the tileset's texture from its TSX-referenced image path
             var tileset = resolution.Tileset;
-            if (tileset.TilesetData.Tiles.Count == 0)
-                continue;
-
-            // Try to get texture from the first tile in the tileset
-            var firstTile = tileset.TilesetData.Tiles[0];
-            var texture = _service.GetTileTexture(new EditableTile { SourceId = firstTile.SourceId });
-            if (texture == null)
-            {
-                // Fallback: try to get any texture from the service
-                foreach (var tile in _service.AllTiles)
-                {
-                    texture = _service.GetTileTexture(tile);
-                    if (texture != null) break;
-                }
-            }
-
+            var texture = GetTextureForTileset(tileset);
             if (texture == null) continue;
 
             // Calculate positions
