@@ -20,11 +20,13 @@ public partial class TmxPreviewPanel : VBoxContainer
     private LineEdit? _tmxPathEdit;
     private Button? _browseButton;
     private Button? _reloadButton;
+    private OptionButton? _baseTileSelector;
     private HSlider? _scaleSlider;
     private Label? _scaleLabel;
     private Label? _infoLabel;
     private TmxPreviewControl? _previewControl;
     private string? _currentTmxPath;
+    private string? _selectedBaseTileId;
 
     // Required by Godot for [Tool] classes
     public TmxPreviewPanel() { }
@@ -73,6 +75,19 @@ public partial class TmxPreviewPanel : VBoxContainer
         pathRow.AddChild(_reloadButton);
 
         AddChild(pathRow);
+
+        // Base tile selector row (for compositing transparent tiles)
+        var baseRow = new HBoxContainer();
+        baseRow.AddChild(new Label { Text = "Base tile:", CustomMinimumSize = new Vector2(60, 0) });
+        _baseTileSelector = new OptionButton
+        {
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            TooltipText = "Base terrain for compositing transparent Wang tiles"
+        };
+        _baseTileSelector.ItemSelected += OnBaseTileSelected;
+        baseRow.AddChild(_baseTileSelector);
+        AddChild(baseRow);
+        PopulateBaseTileSelector();
 
         // Scale slider row
         var scaleRow = new HBoxContainer();
@@ -199,12 +214,54 @@ public partial class TmxPreviewPanel : VBoxContainer
             _infoLabel.Text = info;
     }
 
+    private void PopulateBaseTileSelector()
+    {
+        if (_baseTileSelector == null || _service == null) return;
+
+        _baseTileSelector.Clear();
+        _baseTileSelector.AddItem("-- None (checkerboard) --", 0);
+
+        var index = 1;
+        foreach (var tile in _service.AllTiles)
+        {
+            // Only terrain tiles can be base tiles
+            if (tile.Layer.Equals("terrain", StringComparison.OrdinalIgnoreCase) &&
+                !tile.HasAutoTileVariants) // Simple terrains only, not auto-tiles
+            {
+                _baseTileSelector.AddItem($"{tile.Name} ({tile.Id})", index);
+                _baseTileSelector.SetItemMetadata(index, tile.Id);
+                index++;
+            }
+        }
+    }
+
+    private void OnBaseTileSelected(long index)
+    {
+        if (index == 0)
+        {
+            _selectedBaseTileId = null;
+        }
+        else
+        {
+            _selectedBaseTileId = _baseTileSelector!.GetItemMetadata((int)index).AsString();
+        }
+
+        // Update preview with new base tile
+        EditableTile? baseTile = null;
+        if (!string.IsNullOrEmpty(_selectedBaseTileId))
+        {
+            baseTile = _service?.GetTile(_selectedBaseTileId);
+        }
+        _previewControl?.SetBaseTile(baseTile);
+    }
+
     public void Refresh()
     {
         if (!string.IsNullOrEmpty(_currentTmxPath))
         {
             LoadTmxFile(_currentTmxPath);
         }
+        PopulateBaseTileSelector();
     }
 }
 
@@ -222,6 +279,7 @@ public partial class TmxPreviewControl : Control
     private TiledTilesetLoader.TmxMapData? _mapData;
     private float _scale = 2f;
     private Vector2I _tileSize = new(16, 16);
+    private EditableTile? _baseTile;
 
     // Required by Godot for [Tool] classes
     public TmxPreviewControl() { }
@@ -231,6 +289,12 @@ public partial class TmxPreviewControl : Control
         _service = service;
         TextureFilter = TextureFilterEnum.Nearest;
         MouseFilter = MouseFilterEnum.Stop;
+    }
+
+    public void SetBaseTile(EditableTile? baseTile)
+    {
+        _baseTile = baseTile;
+        QueueRedraw();
     }
 
     public void LoadTmxMap(TiledTilesetLoader.TmxMapData mapData, float scale)
@@ -358,6 +422,27 @@ public partial class TmxPreviewControl : Control
         var totalSize = CustomMinimumSize;
         DrawRect(new Rect2(Vector2.Zero, totalSize), new Color(0.15f, 0.15f, 0.15f, 1f));
 
+        // Get base tile texture if available
+        Texture2D? baseTexture = null;
+        Rect2? baseSrcRect = null;
+        if (_baseTile != null)
+        {
+            baseTexture = _service.GetTileTexture(_baseTile);
+            if (baseTexture != null)
+            {
+                var baseActualTileSize = new Vector2I(
+                    (int)(_tileSize.X / _baseTile.SourceScale),
+                    (int)(_tileSize.Y / _baseTile.SourceScale)
+                );
+                baseSrcRect = new Rect2(
+                    _baseTile.AtlasX * baseActualTileSize.X,
+                    _baseTile.AtlasY * baseActualTileSize.Y,
+                    baseActualTileSize.X,
+                    baseActualTileSize.Y
+                );
+            }
+        }
+
         // Draw all tiles from the TMX
         foreach (var (coord, resolution) in _mapData.GetAllTiles())
         {
@@ -384,12 +469,31 @@ public partial class TmxPreviewControl : Control
             // Calculate positions
             var screenX = (coord.X - bounds.Min.X) * scaledTileSize.X;
             var screenY = (coord.Y - bounds.Min.Y) * scaledTileSize.Y;
+            var destRect = new Rect2(screenX, screenY, scaledTileSize.X, scaledTileSize.Y);
+
+            // Check if this tile is a transparent/compositable tile that needs a base underneath
+            var tileDef = resolution.TileDefinition;
+            var isTransparentTile = tileDef?.IsTransparent == true ||
+                                    tileDef?.IsCompositable == true ||
+                                    tileDef?.HasAutoTileVariants == true;
+
+            // Draw base tile first for transparent tiles
+            if (isTransparentTile)
+            {
+                if (baseTexture != null && baseSrcRect.HasValue)
+                {
+                    // Draw base terrain
+                    DrawTextureRectRegion(baseTexture, destRect, baseSrcRect.Value);
+                }
+                else
+                {
+                    // Draw checkerboard pattern for transparent tiles without base
+                    DrawCheckerboard(destRect, coord);
+                }
+            }
 
             // Calculate source rect from atlas coords
-            // Note: TMX uses flat tile IDs, we need to convert to atlas coords
             var atlasCoords = resolution.AtlasCoords;
-            // Source scale comes from TSX tile width vs our target tile size
-            // For now, use 1.0 as we assume TSX tiles match our runtime size
             var actualTileSize = _tileSize;
 
             var srcRect = new Rect2(
@@ -399,8 +503,7 @@ public partial class TmxPreviewControl : Control
                 actualTileSize.Y
             );
 
-            var destRect = new Rect2(screenX, screenY, scaledTileSize.X, scaledTileSize.Y);
-
+            // Draw the tile (on top of base if transparent)
             DrawTextureRectRegion(texture, destRect, srcRect);
         }
 
@@ -429,6 +532,29 @@ public partial class TmxPreviewControl : Control
 
         // Draw border
         DrawRect(new Rect2(Vector2.Zero, totalSize), new Color(0.7f, 0.7f, 0.7f, 0.5f), false, 2.0f);
+    }
+
+    private void DrawCheckerboard(Rect2 destRect, Vector2I coord)
+    {
+        // Draw a checkerboard pattern to show transparency
+        var lightColor = new Color(0.4f, 0.4f, 0.4f, 1f);
+        var darkColor = new Color(0.25f, 0.25f, 0.25f, 1f);
+
+        var checkerSize = destRect.Size / 4; // 4x4 checker grid per tile
+        for (var cy = 0; cy < 4; cy++)
+        {
+            for (var cx = 0; cx < 4; cx++)
+            {
+                var isLight = ((coord.X + coord.Y + cx + cy) % 2) == 0;
+                var checkerRect = new Rect2(
+                    destRect.Position.X + cx * checkerSize.X,
+                    destRect.Position.Y + cy * checkerSize.Y,
+                    checkerSize.X,
+                    checkerSize.Y
+                );
+                DrawRect(checkerRect, isLight ? lightColor : darkColor);
+            }
+        }
     }
 }
 #endif

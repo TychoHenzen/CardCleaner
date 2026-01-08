@@ -87,8 +87,8 @@ public class SimpleMapData
 
         if (_tileRegistry == null)
         {
-            // Fallback: if registry not available, assume "floor" and "grass" are passable
-            return tileId is "floor" or "grass" or "dirt";
+            // Registry unavailable - cannot determine passability, default to false
+            return false;
         }
 
         var tile = _tileRegistry.GetTile(tileId);
@@ -102,12 +102,8 @@ public class SimpleMapData
 
         var tileId = TileIds[pos.Y, pos.X];
 
-        // Quick check for known opaque tiles (walls)
-        if (tileId == "wall")
-            return false;
-
         // Use PassableTiles as primary source (set during map generation)
-        // Most passable tiles are also transparent (floor, grass, etc.)
+        // Most passable tiles are also transparent
         if (PassableTiles.Count > 0)
         {
             _passableTilesSet ??= new HashSet<Vector2I>(PassableTiles);
@@ -119,18 +115,21 @@ public class SimpleMapData
 
         if (_tileRegistry == null)
         {
-            // Fallback: specific tile types are transparent
-            return tileId is "floor" or "grass" or "dirt" or "water" or "glass";
+            // Registry unavailable - cannot determine transparency, default to false
+            return false;
         }
 
         var tile = _tileRegistry.GetTile(tileId);
         return tile?.IsTransparent ?? false;
     }
 
+    /// <summary>
+    /// Gets the tile ID at a position. Returns empty string for out-of-bounds positions.
+    /// </summary>
     public string GetTileId(Vector2I pos)
     {
         if (pos.X < 0 || pos.X >= Size.X || pos.Y < 0 || pos.Y >= Size.Y)
-            return "wall";
+            return string.Empty;
         return TileIds[pos.Y, pos.X];
     }
 

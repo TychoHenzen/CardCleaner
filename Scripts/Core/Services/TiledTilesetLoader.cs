@@ -440,6 +440,7 @@ public static class TiledTilesetLoader
         var decorationDensity = GetFloat(props, "decorationdensity", 1f);
         var outerTerrain = GetStringOrNull(props, "outerterrain");
         var innerTerrain = GetStringOrNull(props, "innerterrain");
+        var isGapTile = GetBool(props, "isgaptile", false);
         var biomes = ParseBiomeBooleans(props);
 
         // Size (for multi-cell tiles)
@@ -471,7 +472,8 @@ public static class TiledTilesetLoader
             animation: null,
             dominance: dominance,
             innerTerrainId: innerTerrain,
-            outerTerrainId: outerTerrain);
+            outerTerrainId: outerTerrain,
+            isGapTile: isGapTile);
     }
 
     /// <summary>
@@ -538,6 +540,7 @@ public static class TiledTilesetLoader
         var decorationDensity = GetFloat(props, "decorationdensity", 1f);
         var outerTerrain = GetStringOrNull(props, "outerterrain");
         var innerTerrain = GetStringOrNull(props, "innerterrain");
+        var isGapTile = GetBool(props, "isgaptile", false);
 
         // Size (for multi-cell tiles)
         Vector2I? size = null;
@@ -613,7 +616,8 @@ public static class TiledTilesetLoader
             animation: animation,
             dominance: dominance,
             innerTerrainId: innerTerrain,
-            outerTerrainId: outerTerrain);
+            outerTerrainId: outerTerrain,
+            isGapTile: isGapTile);
     }
 
     /// <summary>

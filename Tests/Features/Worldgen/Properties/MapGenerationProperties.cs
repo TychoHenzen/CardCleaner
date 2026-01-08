@@ -8,6 +8,7 @@ using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Tests.Core.PropertyTesting;
 using CardCleaner.Tests.Core.PropertyTesting.Generators;
+using CardCleaner.Tests.Mocks;
 using FsCheck;
 using GdUnit4;
 using Godot;
@@ -22,7 +23,7 @@ namespace CardCleaner.Tests.Features.Worldgen.Properties;
 public partial class MapGenerationProperties : PropertyTestBase
 {
     private BiomeRegistry _registry = null!;
-    private ITileRegistry _tileRegistry = null!;
+    private MockTileRegistry _tileRegistry = null!;
 
     [BeforeTest]
     public new void SetupPropertyTest()
@@ -31,7 +32,7 @@ public partial class MapGenerationProperties : PropertyTestBase
         CardSignatureArbitrary.Register();
         _registry = new BiomeRegistry();
         _registry.RegisterDefaultBiomes();
-        _tileRegistry = new TileRegistry();
+        _tileRegistry = MockTileRegistry.CreateWithTestTiles();
     }
 
     #region Map Connectivity Properties (ST008)
@@ -498,7 +499,7 @@ public partial class MapGenerationProperties : PropertyTestBase
         var rng = new RandomNumberGenerator { Seed = seed };
         var gradient = new ConstantGradient(signature);
         var biomeProvider = new BiomeMapGenerator(_registry, gradient, size);
-        var generator = new SimpleMapGenerator(rng, biomeProvider, _tileRegistry);
+        var generator = new SimpleMapGenerator(rng, biomeProvider, _tileRegistry, _tileRegistry);
         return generator.GenerateMap(size);
     }
 

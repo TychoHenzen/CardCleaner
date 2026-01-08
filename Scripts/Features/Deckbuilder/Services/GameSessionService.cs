@@ -37,6 +37,7 @@ public partial class GameSessionService : Node, IGameSessionService
     private Vector2I? _playerPosition;
     private RandomNumberGenerator _rng = new();
     private ITileRegistry _tileRegistry = null!;
+    private ITileMetadataProvider _metadataProvider = null!;
     private CancellationTokenSource? _generationCts;
     private Task? _currentGenerationTask;
 
@@ -145,6 +146,7 @@ public partial class GameSessionService : Node, IGameSessionService
 
         // Get services via async callback (may not be registered yet during startup)
         ServiceLocator.Get<ITileRegistry>(registry => _tileRegistry = registry);
+        ServiceLocator.Get<ITileMetadataProvider>(provider => _metadataProvider = provider);
 
         // Create timer for game progression
         _gameTimer = new Timer();
@@ -202,7 +204,7 @@ public partial class GameSessionService : Node, IGameSessionService
 
             // Create map generator with WFC for terrain generation
             var mapGenerator = new SimpleMapGenerator(
-                _rng, biomeProvider, _tileRegistry, wfcGenerator, _biomeRegistry, gradient);
+                _rng, biomeProvider, _tileRegistry, _metadataProvider, wfcGenerator, _biomeRegistry, gradient);
 
             // Wrap in async adapter and generate on background thread
             var asyncGenerator = new AsyncMapGeneratorAdapter(mapGenerator);

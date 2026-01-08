@@ -19,13 +19,6 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 /// </summary>
 public class SimpleMapGenerator
 {
-    public const string FloorTileId = "floor";
-    public const string WallTileId = "wall";
-    public const string GrassTileId = "grass";
-    public const string DirtTileId = "dirt";
-    public const string StoneTileId = "stone";
-    public const string WaterTileId = "water";
-
     /// <summary>
     /// Maximum WFC retry attempts on contradiction (default 5).
     /// </summary>
@@ -34,24 +27,36 @@ public class SimpleMapGenerator
     private readonly IBiomeProvider _biomeProvider;
     private readonly RandomNumberGenerator _rng;
     private readonly ITileRegistry _tileRegistry;
+    private readonly ITileMetadataProvider _metadataProvider;
     private readonly WfcMapGenerator? _wfcGenerator;
     private readonly BiomeRegistry? _biomeRegistry;
     private readonly BaselineGradient? _gradient;
     private IProfiler _profiler = new NoOpProfiler();
 
+    // Cached default tile IDs (resolved once at construction)
+    private readonly string _defaultPassableTileId;
+    private readonly string _defaultSolidTileId;
+
     public SimpleMapGenerator(RandomNumberGenerator rng, IBiomeProvider biomeProvider, ITileRegistry tileRegistry,
+        ITileMetadataProvider metadataProvider,
         WfcMapGenerator? wfcGenerator = null, BiomeRegistry? biomeRegistry = null,
         BaselineGradient? gradient = null)
     {
         ArgumentNullException.ThrowIfNull(rng);
         ArgumentNullException.ThrowIfNull(biomeProvider);
         ArgumentNullException.ThrowIfNull(tileRegistry);
+        ArgumentNullException.ThrowIfNull(metadataProvider);
         _rng = rng;
         _biomeProvider = biomeProvider;
         _tileRegistry = tileRegistry;
+        _metadataProvider = metadataProvider;
         _wfcGenerator = wfcGenerator;
         _biomeRegistry = biomeRegistry;
         _gradient = gradient;
+
+        // Cache default tile IDs for fallbacks
+        _defaultPassableTileId = metadataProvider.GetDefaultPassableTileId() ?? "floor";
+        _defaultSolidTileId = metadataProvider.GetDefaultSolidTileId() ?? "wall";
     }
 
     public void SetProfiler(IProfiler profiler)
@@ -112,7 +117,7 @@ public class SimpleMapGenerator
             if (passableTiles.Count == 0)
             {
                 var center = new Vector2I(size.X / 2, size.Y / 2);
-                terrainGrid[center.Y, center.X] = FloorTileId;
+                terrainGrid[center.Y, center.X] = _defaultPassableTileId;
                 passableTiles.Add(center);
             }
         }
@@ -185,7 +190,7 @@ public class SimpleMapGenerator
             for (var x = 0; x < size.X; x++)
             {
                 var biome = _biomeProvider.GetBiomeAt(new Vector2I(x, y));
-                var tile = biome.SelectPassableTile(_rng) ?? FloorTileId;
+                var tile = biome.SelectPassableTile(_rng) ?? _defaultPassableTileId;
                 backgroundLayer[y, x] = tile;
                 foregroundLayer[y, x] = "";
                 mergedGrid[y, x] = tile;
@@ -215,11 +220,11 @@ public class SimpleMapGenerator
         }
         else
         {
-            ILog.Print($"[WFC] Background phase failed: {bgResult.ErrorMessage}, using grass fallback");
+            ILog.Print($"[WFC] Background phase failed: {bgResult.ErrorMessage}, using default passable fallback");
             for (var y = 0; y < size.Y; y++)
             for (var x = 0; x < size.X; x++)
             {
-                backgroundLayer[y, x] = GrassTileId;
+                backgroundLayer[y, x] = _defaultPassableTileId;
             }
         }
 
@@ -366,8 +371,8 @@ public class SimpleMapGenerator
                 }
             }
 
-            // Fallback to grass if no base terrain found
-            baseTerrain ??= GrassTileId;
+            // Fallback to default passable tile if no base terrain found
+            baseTerrain ??= _defaultPassableTileId;
             topTerrain ??= baseTerrain;
 
             // Compute bitmask based on which corners have the topTerrain
@@ -448,7 +453,7 @@ public class SimpleMapGenerator
 
         if (topTerrain == null)
         {
-            topTerrain = baseTerrain ?? FloorTileId;
+            topTerrain = baseTerrain ?? _defaultPassableTileId;
         }
         baseTerrain ??= topTerrain;
 

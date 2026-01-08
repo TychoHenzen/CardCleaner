@@ -154,10 +154,10 @@ public static class TsxPropertyInserter
     /// </summary>
     private static bool InsertMissingTileProperties(XElement tileElement, int tileId, int columns)
     {
-        // Only add properties to tiles that have a 'class' attribute (which serves as the tile ID)
-        // Tiles without a class are not named tiles and don't need properties
-        var tileClass = tileElement.Attribute("class")?.Value;
-        if (string.IsNullOrEmpty(tileClass))
+        // Only add properties to tiles that have a 'type' attribute (which serves as the tile ID)
+        // Tiles without a type are not named tiles and don't need properties
+        var tileType = tileElement.Attribute("type")?.Value;
+        if (string.IsNullOrEmpty(tileType))
         {
             return false;
         }
@@ -320,11 +320,11 @@ public static class TsxPropertyInserter
                 FileName = Path.GetFileName(tsxPath)
             };
 
-            // Count tiles with class attribute (which serves as the tile ID)
+            // Count tiles with type attribute (which serves as the tile ID)
             foreach (var tileElement in tileset.Elements("tile"))
             {
-                var tileClass = tileElement.Attribute("class")?.Value;
-                if (string.IsNullOrEmpty(tileClass))
+                var tileType = tileElement.Attribute("type")?.Value;
+                if (string.IsNullOrEmpty(tileType))
                     continue;
 
                 report.TilesWithId++;

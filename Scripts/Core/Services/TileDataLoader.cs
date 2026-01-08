@@ -41,7 +41,8 @@ public static class TileDataLoader
 
     /// <summary>
     /// Load tiles from TSX/TMX file, JSON file, or auto-detect based on available files.
-    /// Prefers Tiled format (TMX/TSX) if DefaultTiledPath exists, otherwise falls back to JSON.
+    /// Prefers Tiled format (TMX/TSX) over JSON when both are available.
+    /// Priority: 1) Explicit path argument, 2) TMX/TSX if exists, 3) JSON fallback.
     /// </summary>
     public static TileRegistryResult LoadTileRegistry(string? path = null)
     {
@@ -51,11 +52,13 @@ public static class TileDataLoader
             var tiledAbsolutePath = ProjectSettings.GlobalizePath(DefaultTiledPath);
             if (File.Exists(tiledAbsolutePath))
             {
-                ILog.Print($"[TileDataLoader] Tiled file found, loading from {DefaultTiledPath}");
+                ILog.Print($"[TileDataLoader] TSX/TMX PRIMARY: Loading from {DefaultTiledPath}");
                 return DefaultTiledPath.EndsWith(".tmx", StringComparison.OrdinalIgnoreCase)
                     ? LoadFromTmx(DefaultTiledPath)
                     : LoadFromTsx(DefaultTiledPath);
             }
+
+            ILog.Print($"[TileDataLoader] JSON FALLBACK: No Tiled file at {DefaultTiledPath}, using {DefaultTilesPath}");
             path = DefaultTilesPath;
         }
 
@@ -307,7 +310,8 @@ public static class TileDataLoader
             animation: animation,
             dominance: dominance,
             innerTerrainId: data.InnerTerrain,
-            outerTerrainId: data.OuterTerrain);
+            outerTerrainId: data.OuterTerrain,
+            isGapTile: data.IsGapTile ?? false);
     }
 
     /// <summary>
@@ -504,6 +508,8 @@ public static class TileDataLoader
         [JsonPropertyName("innerTerrain")] public string? InnerTerrain { get; set; }
 
         [JsonPropertyName("outerTerrain")] public string? OuterTerrain { get; set; }
+
+        [JsonPropertyName("isGapTile")] public bool? IsGapTile { get; set; }
 
         [JsonPropertyName("description")] public string? Description { get; set; }
     }

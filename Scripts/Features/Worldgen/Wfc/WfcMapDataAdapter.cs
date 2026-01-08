@@ -16,11 +16,13 @@ public class WfcMapDataAdapter
     /// <param name="grid">Fully collapsed WFC grid</param>
     /// <param name="biome">Biome to apply to all cells</param>
     /// <param name="passableTileIds">Set of tile IDs that are passable (optional)</param>
+    /// <param name="defaultTileId">Default tile ID for uncollapsed cells (optional, uses first available if null)</param>
     /// <returns>SimpleMapData ready for rendering</returns>
     public SimpleMapData ToSimpleMapData(
         WfcGrid grid,
         BiomeDefinition biome,
-        HashSet<string>? passableTileIds = null)
+        HashSet<string>? passableTileIds = null,
+        string? defaultTileId = null)
     {
         var width = grid.Width;
         var height = grid.Height;
@@ -47,9 +49,9 @@ public class WfcMapDataAdapter
 
                 if (!cell.IsCollapsed())
                 {
-                    // Use first available tile as fallback (shouldn't happen)
+                    // Use first available tile as fallback (shouldn't happen in well-formed grids)
                     var firstTile = GetFirstTile(cell);
-                    mapData.TileIds[y, x] = firstTile ?? "floor";
+                    mapData.TileIds[y, x] = firstTile ?? defaultTileId ?? string.Empty;
                 }
                 else
                 {
@@ -79,10 +81,15 @@ public class WfcMapDataAdapter
     /// <summary>
     /// Converts grid with per-cell biome assignments.
     /// </summary>
+    /// <param name="grid">Fully collapsed WFC grid</param>
+    /// <param name="biomeMap">Per-cell biome assignments</param>
+    /// <param name="passableTileIds">Set of tile IDs that are passable</param>
+    /// <param name="defaultTileId">Default tile ID for uncollapsed cells (optional, uses first available if null)</param>
     public SimpleMapData ToSimpleMapData(
         WfcGrid grid,
         string[,] biomeMap,
-        HashSet<string> passableTileIds)
+        HashSet<string> passableTileIds,
+        string? defaultTileId = null)
     {
         var width = grid.Width;
         var height = grid.Height;
@@ -105,7 +112,7 @@ public class WfcMapDataAdapter
 
                 mapData.TileIds[y, x] = cell.IsCollapsed()
                     ? cell.GetCollapsedTile()
-                    : GetFirstTile(cell) ?? "floor";
+                    : GetFirstTile(cell) ?? defaultTileId ?? string.Empty;
 
                 if (passableTileIds.Contains(mapData.TileIds[y, x]))
                 {

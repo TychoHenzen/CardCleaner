@@ -83,18 +83,230 @@ public class TmxAtlasCompiler
             return (false, "No tiles found in TSX files");
         }
 
-        // Pack tiles into atlas
-        var packResult = PackTiles(allTiles, targetTileSize);
+        // Identify simple base terrain tiles:
+        // - Must have class/type attribute in TSX (explicitly defined game tiles)
+        // - Must have layer="terrain" (not "wang")
+        // - Must not be part of any Wang set
+        var simpleBaseTerrains = allTiles
+            .Where(t => t.HasClassAttribute && // Only tiles with class/type attr in TSX
+                   t.Layer.ToLowerInvariant() == "terrain" &&
+                   !allWangSets.Any(ws => ws.WangTiles.Values.Contains(t.TileId) && ws.TsxPath == t.TsxPath))
+            .GroupBy(t => t.Id)
+            .Select(g => g.First())
+            .ToList();
+
+        // Identify compositable wang sets (OuterTerrain="*" and TransparentBackground=true)
+        var compositableWangSets = allWangSets
+            .Where(ws => ws.OuterTerrain == "*" && ws.IsTransparent)
+            .ToList();
+
+        // Identify fixed wang sets (have specific outer terrain or no transparency)
+        var fixedWangSets = allWangSets
+            .Where(ws => ws.OuterTerrain != "*" || !ws.IsTransparent)
+            .ToList();
+
+        // Wang sets with empty InnerTerrain (or $self) can use their solid fill (bitmask 15) as base terrain
+        // This allows compositing different Wang sets onto each other
+        var wangSetSolidFills = new List<TsxTileData>();
+        foreach (var ws in compositableWangSets)
+        {
+            var innerTerrain = ws.InnerTerrain;
+            if (string.IsNullOrEmpty(innerTerrain) || innerTerrain == "$self")
+            {
+                // Bitmask 15 is the solid fill (all corners same terrain)
+                if (ws.WangTiles.TryGetValue(15, out var solidTileId))
+                {
+                    var solidTile = allTiles.FirstOrDefault(t =>
+                        t.TileId == solidTileId && t.TsxPath == ws.TsxPath);
+                    if (solidTile != null)
+                    {
+                        // Create a virtual base terrain entry for this wang set's solid fill
+                        var solidFillBase = new TsxTileData
+                        {
+                            TileId = solidTileId,
+                            TsxPath = ws.TsxPath,
+                            AtlasX = solidTileId % ws.Columns,
+                            AtlasY = solidTileId / ws.Columns,
+                            SourceImage = ws.SourceImage,
+                            SourceTileWidth = ws.SourceTileWidth,
+                            SourceTileHeight = ws.SourceTileHeight,
+                            SourceScale = ws.SourceScale,
+                            Id = ToSnakeCase(ws.Name),
+                            Layer = "terrain",
+                            Dominance = 0,
+                            Properties = solidTile.Properties
+                        };
+                        wangSetSolidFills.Add(solidFillBase);
+                    }
+                }
+            }
+        }
+
+        // Combined base terrains: simple tiles + wang set solid fills
+        var baseTerrains = simpleBaseTerrains.Concat(wangSetSolidFills).ToList();
+
+        GD.Print($"[TmxAtlasCompiler] Found {simpleBaseTerrains.Count} simple base terrains, " +
+                 $"{wangSetSolidFills.Count} wang set solid fills, " +
+                 $"{compositableWangSets.Count} compositable wang sets, " +
+                 $"{fixedWangSets.Count} fixed wang sets");
+
+        // Pack base tiles into atlas (excluding compositable wang set tiles)
+        var tilesToPack = allTiles
+            .Where(t => !compositableWangSets.Any(ws =>
+                ws.WangTiles.Values.Contains(t.TileId) && ws.TsxPath == t.TsxPath))
+            .ToList();
+
+        var packResult = PackTiles(tilesToPack, targetTileSize);
         if (!packResult.success)
         {
             return (false, packResult.message);
         }
 
-        // Create atlas image
+        // Create atlas image with base tiles
         var atlasImage = CreateAtlasImage(packResult.packedTiles, packResult.atlasSize, targetTileSize);
         if (atlasImage == null)
         {
             return (false, "Failed to create atlas image");
+        }
+
+        // Initialize transition map
+        var transitionMap = new CompiledTransitionMap();
+
+        // Track current atlas position for composite tiles
+        var compositeCurrentX = 0;
+        var compositeCurrentY = packResult.atlasSize.Y; // Start below packed tiles
+        var compositeRowHeight = targetTileSize;
+        var compositeAtlasWidth = packResult.atlasSize.X;
+        var compositesGenerated = 0;
+
+        // Generate composite tiles for compositable wang sets
+        foreach (var wangSet in compositableWangSets)
+        {
+            var wangSetId = ToSnakeCase(wangSet.Name);
+
+            foreach (var baseTerrain in baseTerrains)
+            {
+                // Skip if base terrain is the same wang set's solid fill
+                if (baseTerrain.Id == wangSetId)
+                    continue;
+
+                // Generate composites for all 16 variants
+                var variantCoords = new Vector2I[16];
+                for (var bitmask = 0; bitmask < 16; bitmask++)
+                {
+                    Image compositeImage;
+
+                    if (wangSet.WangTiles.TryGetValue(bitmask, out var borderTileId))
+                    {
+                        // Extract base terrain image
+                        var baseImage = ExtractTileRegion(
+                            baseTerrain.SourceImage,
+                            baseTerrain.AtlasX,
+                            baseTerrain.AtlasY,
+                            baseTerrain.SourceTileWidth,
+                            baseTerrain.SourceTileHeight,
+                            targetTileSize);
+
+                        // Extract border variant image
+                        var borderAtlasX = borderTileId % wangSet.Columns;
+                        var borderAtlasY = borderTileId / wangSet.Columns;
+                        var borderImage = ExtractTileRegion(
+                            wangSet.SourceImage,
+                            borderAtlasX,
+                            borderAtlasY,
+                            wangSet.SourceTileWidth,
+                            wangSet.SourceTileHeight,
+                            targetTileSize);
+
+                        // Composite border onto base
+                        compositeImage = CompositeImages(baseImage, borderImage);
+                    }
+                    else
+                    {
+                        // No border for this bitmask, use base terrain directly
+                        compositeImage = ExtractTileRegion(
+                            baseTerrain.SourceImage,
+                            baseTerrain.AtlasX,
+                            baseTerrain.AtlasY,
+                            baseTerrain.SourceTileWidth,
+                            baseTerrain.SourceTileHeight,
+                            targetTileSize);
+                    }
+
+                    // Check if we need to start a new row
+                    if (compositeCurrentX + targetTileSize > compositeAtlasWidth)
+                    {
+                        compositeCurrentX = 0;
+                        compositeCurrentY += compositeRowHeight;
+                    }
+
+                    // Expand atlas if needed
+                    if (compositeCurrentY + targetTileSize > atlasImage.GetHeight())
+                    {
+                        var newHeight = Math.Min(atlasImage.GetHeight() * 2, MaxAtlasSize);
+                        var expandedAtlas = Image.CreateEmpty(atlasImage.GetWidth(), newHeight, false, Image.Format.Rgba8);
+                        expandedAtlas.Fill(new Color(0, 0, 0, 0));
+                        expandedAtlas.BlitRect(atlasImage, new Rect2I(0, 0, atlasImage.GetWidth(), atlasImage.GetHeight()), Vector2I.Zero);
+                        atlasImage = expandedAtlas;
+                    }
+
+                    // Write composite to atlas
+                    atlasImage.BlitRect(compositeImage, new Rect2I(0, 0, targetTileSize, targetTileSize),
+                        new Vector2I(compositeCurrentX, compositeCurrentY));
+
+                    // Track variant position (in tile units)
+                    variantCoords[bitmask] = new Vector2I(compositeCurrentX / targetTileSize, compositeCurrentY / targetTileSize);
+
+                    compositeCurrentX += targetTileSize;
+                    compositesGenerated++;
+                }
+
+                // Add to transition map
+                transitionMap.AddTransition(wangSetId, baseTerrain.Id, "corner16", variantCoords);
+            }
+        }
+
+        // Add fixed wang sets to transition map (non-compositable)
+        foreach (var wangSet in fixedWangSets)
+        {
+            var wangSetId = ToSnakeCase(wangSet.Name);
+            var variantCoords = new Vector2I[16];
+            var hasAnyVariants = false;
+
+            for (var bitmask = 0; bitmask < 16; bitmask++)
+            {
+                if (wangSet.WangTiles.TryGetValue(bitmask, out var tileId))
+                {
+                    var atlasX = tileId % wangSet.Columns;
+                    var atlasY = tileId / wangSet.Columns;
+                    var coordKey = $"{atlasX},{atlasY}";
+
+                    if (packResult.mapping.TryGetValue(wangSet.TsxPath, out var sourceMapping) &&
+                        sourceMapping.TryGetValue(coordKey, out var rect))
+                    {
+                        variantCoords[bitmask] = new Vector2I(rect.X, rect.Y);
+                        hasAnyVariants = true;
+                    }
+                }
+            }
+
+            if (hasAnyVariants)
+            {
+                var outerTerrain = string.IsNullOrEmpty(wangSet.OuterTerrain) ? "*" : wangSet.OuterTerrain;
+                transitionMap.AddTransition(wangSetId, outerTerrain, "corner16", variantCoords);
+            }
+        }
+
+        GD.Print($"[TmxAtlasCompiler] Generated {compositesGenerated} composite tiles");
+
+        // Trim atlas to actual used height
+        var finalHeight = compositeCurrentY + (compositeCurrentX > 0 ? compositeRowHeight : 0);
+        finalHeight = NextPowerOf2(Math.Max(finalHeight, packResult.atlasSize.Y));
+        if (finalHeight < atlasImage.GetHeight())
+        {
+            var trimmedAtlas = Image.CreateEmpty(atlasImage.GetWidth(), finalHeight, false, Image.Format.Rgba8);
+            trimmedAtlas.BlitRect(atlasImage, new Rect2I(0, 0, atlasImage.GetWidth(), finalHeight), Vector2I.Zero);
+            atlasImage = trimmedAtlas;
         }
 
         // Save atlas PNG
@@ -106,24 +318,25 @@ public class TmxAtlasCompiler
             return (false, $"Failed to save atlas: {saveError}");
         }
 
-        GD.Print($"[TmxAtlasCompiler] Saved atlas {packResult.atlasSize.X}x{packResult.atlasSize.Y} to {atlasPath}");
+        var finalAtlasSize = new Vector2I(atlasImage.GetWidth(), atlasImage.GetHeight());
+        GD.Print($"[TmxAtlasCompiler] Saved atlas {finalAtlasSize.X}x{finalAtlasSize.Y} to {atlasPath}");
 
         // Save atlas mapping JSON
-        var mappingResult = SaveAtlasMapping(packResult.mapping, packResult.atlasSize, targetTileSize, atlasPath);
+        var mappingResult = SaveAtlasMapping(packResult.mapping, finalAtlasSize, targetTileSize, atlasPath);
         if (!mappingResult.success)
         {
             return (false, mappingResult.message);
         }
 
-        // Generate and save transition map
-        var transitionMap = GenerateTransitionMap(allTiles, allWangSets, packResult.mapping, targetTileSize);
+        // Save transition map
         var transitionResult = SaveTransitionMap(transitionMap);
         if (!transitionResult.success)
         {
             return (false, transitionResult.message);
         }
 
-        return (true, $"Compiled {allTiles.Count} tiles from {tsxFiles.Length} TSX file(s) to {atlasPath}");
+        var totalTiles = tilesToPack.Count + compositesGenerated;
+        return (true, $"Compiled {totalTiles} tiles ({compositesGenerated} composites) from {tsxFiles.Length} TSX file(s) to {atlasPath}");
     }
 
     /// <summary>
@@ -181,8 +394,10 @@ public class TmxAtlasCompiler
                 return (false, $"Failed to load image: {absoluteImagePath}", tiles, wangSets);
             }
 
-            // Parse tile properties
+            // Parse tile elements - only tiles with explicit <tile> elements are defined tiles
+            // Track which tiles have class/type attributes (explicitly defined in Tiled)
             var tilePropsMap = new Dictionary<int, Dictionary<string, string>>();
+            var tilesWithClass = new HashSet<int>();
             foreach (var tileElement in tileset.Elements("tile"))
             {
                 var tileId = int.Parse(tileElement.Attribute("id")?.Value ?? "-1");
@@ -190,22 +405,54 @@ public class TmxAtlasCompiler
                 {
                     var props = ParseProperties(tileElement.Element("properties"));
                     tilePropsMap[tileId] = props;
+
+                    // Check if tile has class or type attribute (Tiled's way of marking defined tiles)
+                    var tileClass = tileElement.Attribute("class")?.Value ?? tileElement.Attribute("type")?.Value;
+                    if (!string.IsNullOrEmpty(tileClass))
+                    {
+                        tilesWithClass.Add(tileId);
+                    }
                 }
             }
 
-            // Create tile data for each tile in tileset
-            for (var i = 0; i < tileCount; i++)
+            // Also collect tile IDs from wang sets - these need to be packed even without class attr
+            var wangTileIds = new HashSet<int>();
+            var wangSetsElement = tileset.Element("wangsets");
+            if (wangSetsElement != null)
             {
-                var atlasX = i % columns;
-                var atlasY = i / columns;
+                foreach (var wangSetElement in wangSetsElement.Elements("wangset"))
+                {
+                    foreach (var wangTile in wangSetElement.Elements("wangtile"))
+                    {
+                        var tileId = int.Parse(wangTile.Attribute("tileid")?.Value ?? "-1");
+                        if (tileId >= 0)
+                        {
+                            wangTileIds.Add(tileId);
+                        }
+                    }
+                }
+            }
 
-                // Get properties for this tile
-                tilePropsMap.TryGetValue(i, out var props);
+            // Create tile data for:
+            // 1. Tiles with class/type attribute (explicitly defined game tiles)
+            // 2. Tiles referenced by wang sets (needed for packing/compositing)
+            var tilesToInclude = new HashSet<int>(tilesWithClass);
+            tilesToInclude.UnionWith(wangTileIds);
+
+            foreach (var tileId in tilesToInclude)
+            {
+                var atlasX = tileId % columns;
+                var atlasY = tileId / columns;
+
+                tilePropsMap.TryGetValue(tileId, out var props);
                 props ??= new Dictionary<string, string>();
 
+                var hasExplicitId = props.ContainsKey("id");
+                var isWangTile = wangTileIds.Contains(tileId);
+                var hasClassAttr = tilesWithClass.Contains(tileId);
                 var tileData = new TsxTileData
                 {
-                    TileId = i,
+                    TileId = tileId,
                     TsxPath = tsxPath,
                     AtlasX = atlasX,
                     AtlasY = atlasY,
@@ -214,16 +461,17 @@ public class TmxAtlasCompiler
                     SourceScale = sourceScale,
                     SourceImage = image,
                     Properties = props,
-                    Id = GetString(props, "id", $"tile_{i}"),
-                    Layer = GetString(props, "layer", "terrain"),
-                    Dominance = GetInt(props, "dominance", 0)
+                    Id = GetString(props, "id", $"tile_{tileId}"),
+                    Layer = isWangTile && !hasClassAttr ? "wang" : GetString(props, "layer", "terrain"),
+                    Dominance = GetInt(props, "dominance", 0),
+                    HasExplicitId = hasExplicitId,
+                    HasClassAttribute = hasClassAttr
                 };
 
                 tiles.Add(tileData);
             }
 
-            // Parse wang sets
-            var wangSetsElement = tileset.Element("wangsets");
+            // Parse wang sets (reuse wangSetsElement from above)
             if (wangSetsElement != null)
             {
                 foreach (var wangSetElement in wangSetsElement.Elements("wangset"))
@@ -469,60 +717,84 @@ public class TmxAtlasCompiler
         }
     }
 
-    /// <summary>
-    /// Generates the transition map for auto-tiles.
-    /// </summary>
-    private CompiledTransitionMap GenerateTransitionMap(
-        List<TsxTileData> tiles,
-        List<TsxWangSetData> wangSets,
-        Dictionary<string, Dictionary<string, TileAtlasRect>> mapping,
-        int targetTileSize)
-    {
-        var transitionMap = new CompiledTransitionMap();
-
-        foreach (var wangSet in wangSets)
-        {
-            // Get mapped coordinates for each wang tile
-            var variantCoords = new Vector2I[16]; // Corner16 has 16 variants
-            var hasAnyVariants = false;
-
-            for (var bitmask = 0; bitmask < 16; bitmask++)
-            {
-                if (wangSet.WangTiles.TryGetValue(bitmask, out var tileId))
-                {
-                    // Convert tile ID to atlas coords
-                    var atlasX = tileId % wangSet.Columns;
-                    var atlasY = tileId / wangSet.Columns;
-                    var coordKey = $"{atlasX},{atlasY}";
-
-                    if (mapping.TryGetValue(wangSet.TsxPath, out var sourceMapping) &&
-                        sourceMapping.TryGetValue(coordKey, out var rect))
-                    {
-                        variantCoords[bitmask] = new Vector2I(rect.X, rect.Y);
-                        hasAnyVariants = true;
-                    }
-                }
-            }
-
-            if (hasAnyVariants)
-            {
-                // Generate tile ID from wang set name
-                var tileId = ToSnakeCase(wangSet.Name);
-                var outerTerrain = string.IsNullOrEmpty(wangSet.OuterTerrain) ? "*" : wangSet.OuterTerrain;
-
-                transitionMap.AddTransition(tileId, outerTerrain, "corner16", variantCoords);
-
-                GD.Print($"[TmxAtlasCompiler] Added transition for {tileId} -> {outerTerrain}");
-            }
-        }
-
-        return transitionMap;
-    }
-
     private string ToSnakeCase(string name)
     {
         // Simple conversion: Grass3 -> grass3
         return name.ToLowerInvariant().Replace(" ", "_");
+    }
+
+    /// <summary>
+    /// Extracts a tile region from a source image with optional scaling.
+    /// </summary>
+    private static Image ExtractTileRegion(Image sourceImage, int atlasX, int atlasY, int sourceTileWidth, int sourceTileHeight, int targetTileSize)
+    {
+        // Source rectangle
+        var srcRect = new Rect2I(
+            atlasX * sourceTileWidth,
+            atlasY * sourceTileHeight,
+            sourceTileWidth,
+            sourceTileHeight);
+
+        // Extract tile region
+        var extracted = Image.CreateEmpty(sourceTileWidth, sourceTileHeight, false, Image.Format.Rgba8);
+        extracted.BlitRect(sourceImage, srcRect, Vector2I.Zero);
+
+        // Scale if needed
+        if (sourceTileWidth != targetTileSize || sourceTileHeight != targetTileSize)
+        {
+            extracted.Resize(targetTileSize, targetTileSize, Image.Interpolation.Nearest);
+        }
+
+        return extracted;
+    }
+
+    /// <summary>
+    /// Composites a transparent border tile onto a base terrain tile using alpha blending.
+    /// Creates a new image with the border rendered on top of the base.
+    /// </summary>
+    private static Image CompositeImages(Image baseImage, Image borderImage)
+    {
+        var width = baseImage.GetWidth();
+        var height = baseImage.GetHeight();
+
+        // Ensure border matches base dimensions
+        if (borderImage.GetWidth() != width || borderImage.GetHeight() != height)
+        {
+            var resizedBorder = Image.CreateEmpty(width, height, false, Image.Format.Rgba8);
+            resizedBorder.BlitRect(borderImage,
+                new Rect2I(0, 0, borderImage.GetWidth(), borderImage.GetHeight()),
+                Vector2I.Zero);
+            borderImage = resizedBorder;
+        }
+
+        // Create result image starting with base
+        var result = Image.CreateEmpty(width, height, false, Image.Format.Rgba8);
+        result.BlitRect(baseImage, new Rect2I(0, 0, width, height), Vector2I.Zero);
+
+        // Alpha-blend border on top pixel by pixel
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                var baseColor = result.GetPixel(x, y);
+                var borderColor = borderImage.GetPixel(x, y);
+
+                // Standard alpha blending: result = border * alpha + base * (1 - alpha)
+                var alpha = borderColor.A;
+                if (alpha > 0)
+                {
+                    var blended = new Color(
+                        borderColor.R * alpha + baseColor.R * (1 - alpha),
+                        borderColor.G * alpha + baseColor.G * (1 - alpha),
+                        borderColor.B * alpha + baseColor.B * (1 - alpha),
+                        Math.Max(baseColor.A, alpha)
+                    );
+                    result.SetPixel(x, y, blended);
+                }
+            }
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -605,6 +877,8 @@ public class TmxAtlasCompiler
         public string Id { get; set; } = "";
         public string Layer { get; set; } = "terrain";
         public int Dominance { get; set; }
+        public bool HasExplicitId { get; set; }
+        public bool HasClassAttribute { get; set; } // True if tile has class/type attr in TSX
     }
 
     private class TsxWangSetData

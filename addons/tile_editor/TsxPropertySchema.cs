@@ -14,9 +14,9 @@ public static class TsxPropertySchema
     /// Properties required for individual tiles in the TSX tileset.
     /// These are applied to tile elements based on their position in the tileset.
     ///
-    /// NOTE: The tile ID is set via the 'class' attribute on the tile element,
-    /// e.g., &lt;tile id="507" class="dirt"/&gt;. The 'class' attribute serves as the tile ID.
-    /// (Wang sets use the 'type' attribute instead.)
+    /// NOTE: The tile ID is set via the 'type' attribute on the tile element,
+    /// e.g., &lt;tile id="507" type="dirt"/&gt;. The 'type' attribute serves as the tile ID.
+    /// (Wang sets use the 'class' attribute instead.)
     ///
     /// Custom enum types are defined in Data/Tiled/Tiles.tiled-project:
     /// - Passability: passable, solid, partially_passable
@@ -25,7 +25,7 @@ public static class TsxPropertySchema
     /// </summary>
     public static readonly List<TsxProperty> TileProperties = new()
     {
-        // Display name - shown in UI (the 'class' attribute is the tile ID)
+        // Display name - shown in UI (the 'type' attribute is the tile ID)
         TsxProperty.String("name", ""),
 
         // Gameplay properties (use Tiled custom enum types from Tiles.tiled-project)
@@ -40,7 +40,7 @@ public static class TsxPropertySchema
     /// <summary>
     /// Properties required for wang sets (auto-tile configurations).
     /// These are applied to wangset elements.
-    /// Note: The tile ID is set via the 'type' attribute on the wangset element.
+    /// Note: The tile ID is set via the 'class' attribute on the wangset element.
     /// </summary>
     public static readonly List<TsxProperty> WangSetProperties = new()
     {
@@ -114,7 +114,7 @@ public static class TsxPropertySchema
     /// <summary>
     /// Creates a complete set of tile properties with defaults for a new tile.
     ///
-    /// NOTE: The tile ID is set via the 'class' attribute on the tile element, not as a property.
+    /// NOTE: The tile ID is set via the 'type' attribute on the tile element, not as a property.
     /// </summary>
     /// <param name="name">The tile display name</param>
     /// <param name="biomeFlags">Biome flags (use BiomeFlags constants, combine with |)</param>

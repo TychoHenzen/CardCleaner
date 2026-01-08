@@ -10,8 +10,9 @@ namespace CardCleaner.Tests.Core.Services;
 [RequireGodotRuntime]
 public class SimpleVisibilityCheckerTest
 {
-    private const string Floor = SimpleMapGenerator.FloorTileId;
-    private const string Wall = SimpleMapGenerator.WallTileId;
+    // Test-local tile IDs (tests don't depend on specific values, just consistent usage)
+    private const string Floor = "floor";
+    private const string Wall = "wall";
 
     private SimpleVisibilityChecker _checker = null!;
 

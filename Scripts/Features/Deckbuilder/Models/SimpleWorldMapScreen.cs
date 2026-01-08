@@ -1040,7 +1040,8 @@ public partial class SimpleWorldMapScreen : Node3D
         if (_tileRegistry == null)
         {
             ILog.Print($"[TILE DEBUG] Registry is NULL for tileId='{tileId}', using fallback");
-            var fallbackCoords = tileId == SimpleMapGenerator.WallTileId
+            // Simple fallback when registry unavailable - check common solid tile names
+            var fallbackCoords = tileId is "wall" or "stone" or "rock"
                 ? new Vector2I(2, 0)
                 : new Vector2I(4, 0);
             return (4, fallbackCoords, TileLayer.Terrain, Vector2I.One);

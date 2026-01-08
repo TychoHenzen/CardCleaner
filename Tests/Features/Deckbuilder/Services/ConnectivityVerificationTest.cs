@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Tests.Mocks;
 using GdUnit4;
 using Godot;
 using static GdUnit4.Assertions;
@@ -25,14 +26,14 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Services;
 public class ConnectivityVerificationTest
 {
     private BiomeRegistry _registry = null!;
-    private ITileRegistry _tileRegistry = null!;
+    private MockTileRegistry _tileRegistry = null!;
 
     [BeforeTest]
     public void Setup()
     {
         _registry = new BiomeRegistry();
         _registry.RegisterDefaultBiomes();
-        _tileRegistry = new TileRegistry();
+        _tileRegistry = MockTileRegistry.CreateWithTestTiles();
     }
 
     /// <summary>
@@ -51,6 +52,7 @@ public class ConnectivityVerificationTest
             rng,
             biomeProvider,
             _tileRegistry,
+            _tileRegistry,  // ITileMetadataProvider
             wfcGenerator,
             biomeRegistry: _registry,
             gradient: gradient);

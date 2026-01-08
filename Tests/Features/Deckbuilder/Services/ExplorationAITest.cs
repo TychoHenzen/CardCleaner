@@ -11,8 +11,9 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Services;
 [RequireGodotRuntime]
 public class ExplorationAITest
 {
-    private const string Floor = SimpleMapGenerator.FloorTileId;
-    private const string Wall = SimpleMapGenerator.WallTileId;
+    // Test-local tile IDs (tests don't depend on specific values, just consistent usage)
+    private const string Floor = "floor";
+    private const string Wall = "wall";
 
     [TestCase]
     public void TestExplorationAIInitialization()

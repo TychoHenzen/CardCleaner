@@ -53,7 +53,8 @@ public class TileDefinition
         TileAnimation? animation = null,
         int dominance = 0,
         string? innerTerrainId = null,
-        string? outerTerrainId = null)
+        string? outerTerrainId = null,
+        bool isGapTile = false)
     {
         Id = id;
         Name = name;
@@ -74,6 +75,7 @@ public class TileDefinition
         Dominance = dominance;
         InnerTerrainId = innerTerrainId;
         OuterTerrainId = outerTerrainId;
+        IsGapTile = isGapTile;
     }
 
     public string Id { get; }
@@ -199,6 +201,33 @@ public class TileDefinition
     /// Delegates to the format definition from the registry.
     /// </summary>
     public int ExpectedVariantCount => GetAutoTileFormat()?.GetExpectedVariantCount() ?? 16;
+
+    /// <summary>
+    /// Whether this tile is a gap tile - used to fill gaps between auto-tiles.
+    /// Gap tiles are non-auto-tile terrain tiles that separate different auto-tile regions.
+    /// </summary>
+    public bool IsGapTile { get; }
+
+    /// <summary>
+    /// Whether this is a simple terrain tile (no auto-tile variants, terrain layer).
+    /// Simple terrain tiles can serve as base backgrounds for compositable auto-tiles.
+    /// </summary>
+    public bool IsSimpleTerrain => !HasAutoTileVariants && Layer == TileLayer.Terrain;
+
+    /// <summary>
+    /// Whether this is an auto-tile (has auto-tile variants).
+    /// </summary>
+    public bool IsAutoTile => HasAutoTileVariants;
+
+    /// <summary>
+    /// Whether this is a decoration tile.
+    /// </summary>
+    public bool IsDecoration => Layer == TileLayer.Decoration;
+
+    /// <summary>
+    /// Whether this tile is solid (impassable).
+    /// </summary>
+    public bool IsSolid => Passability == TilePassability.Solid;
 
     public bool IsPassable => Passability == TilePassability.Passable;
     public bool HasAutoTileVariants => AutoTileVariants != null;

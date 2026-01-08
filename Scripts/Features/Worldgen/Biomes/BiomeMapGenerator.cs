@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
@@ -23,6 +25,31 @@ public class BiomeMapGenerator : IBiomeProvider
         _mapSize = mapSize;
 
         _fallbackBiome = CreateFallbackBiome();
+    }
+
+    private static BiomeDefinition CreateFallbackBiome()
+    {
+        // Try to get default tile IDs from metadata provider
+        var metadataProvider = ServiceLocator.Has<ITileMetadataProvider>()
+            ? ServiceLocator.Get<ITileMetadataProvider>()
+            : null;
+
+        var passableTileId = metadataProvider?.GetDefaultPassableTileId();
+        var solidTileId = metadataProvider?.GetDefaultSolidTileId();
+
+        var passable = new TilePool();
+        if (!string.IsNullOrEmpty(passableTileId))
+            passable.Add(passableTileId);
+
+        var blocked = new TilePool();
+        if (!string.IsNullOrEmpty(solidTileId))
+            blocked.Add(solidTileId);
+
+        return new BiomeDefinition(
+            "plains",
+            new CardSignature(),
+            passable,
+            blocked);
     }
 
     /// <summary>
@@ -56,18 +83,4 @@ public class BiomeMapGenerator : IBiomeProvider
     }
 
     public void ResetStats() => _biomeStats.Clear();
-
-    private static BiomeDefinition CreateFallbackBiome()
-    {
-        var passable = new TilePool();
-        passable.Add("floor");
-        var blocked = new TilePool();
-        blocked.Add("wall");
-
-        return new BiomeDefinition(
-            "plains",
-            new CardSignature(),
-            passable,
-            blocked);
-    }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -8,10 +9,10 @@ using Godot;
 namespace CardCleaner.Tests.Mocks;
 
 /// <summary>
-/// Mock ITileRegistry for testing. Allows configuring tiles with specific properties
-/// without loading from tiles.json.
+/// Mock ITileRegistry and ITileMetadataProvider for testing. Allows configuring tiles
+/// with specific properties without loading from tiles.json.
 /// </summary>
-public class MockTileRegistry : ITileRegistry
+public class MockTileRegistry : ITileRegistry, ITileMetadataProvider
 {
     private readonly Dictionary<string, TileDefinition> _tiles = new();
 
@@ -77,4 +78,71 @@ public class MockTileRegistry : ITileRegistry
         registry.RegisterTile(CreateGapTile("rock", "Rock"));
         return registry;
     }
+
+    #region ITileMetadataProvider Implementation
+
+    public IReadOnlyList<TileDefinition> GetSimpleTerrainTiles()
+        => _tiles.Values.Where(t => t.IsSimpleTerrain).ToList();
+
+    public IReadOnlyList<TileDefinition> GetAutoTiles()
+        => _tiles.Values.Where(t => t.IsAutoTile).ToList();
+
+    public IReadOnlyList<TileDefinition> GetGapTiles()
+        => _tiles.Values.Where(t => t.IsGapTile).ToList();
+
+    public IReadOnlyList<TileDefinition> GetPassableTerrainTiles()
+        => _tiles.Values.Where(t => t.Layer == TileLayer.Terrain && t.IsPassable).ToList();
+
+    public IReadOnlyList<TileDefinition> GetSolidTerrainTiles()
+        => _tiles.Values.Where(t => t.Layer == TileLayer.Terrain && t.IsSolid).ToList();
+
+    public IReadOnlyList<TileDefinition> GetDecorationTiles()
+        => _tiles.Values.Where(t => t.IsDecoration).ToList();
+
+    public IReadOnlyList<TileDefinition> GetTilesByLayer(TileLayer layer)
+        => _tiles.Values.Where(t => t.Layer == layer).ToList();
+
+    IReadOnlyList<TileDefinition> ITileMetadataProvider.GetTilesByBiome(string biomeId)
+        => _tiles.Values.Where(t => t.IsAllowedInBiome(biomeId)).ToList();
+
+    public IReadOnlyList<TileDefinition> GetBackgroundTerrainTiles()
+        => _tiles.Values.Where(t => t.IsSimpleTerrain && t.IsPassable).ToList();
+
+    public TileDefinition? GetDefaultPassableTile()
+        => _tiles.Values.FirstOrDefault(t => t.IsGapTile && t.IsPassable)
+           ?? _tiles.Values.FirstOrDefault(t => t.IsSimpleTerrain && t.IsPassable)
+           ?? _tiles.Values.FirstOrDefault(t => t.Layer == TileLayer.Terrain && t.IsPassable);
+
+    public TileDefinition? GetDefaultSolidTile()
+        => _tiles.Values.FirstOrDefault(t => t.Layer == TileLayer.Terrain && t.IsSolid);
+
+    public TileDefinition? GetDefaultGapTile()
+        => _tiles.Values.FirstOrDefault(t => t.IsGapTile)
+           ?? _tiles.Values.FirstOrDefault(t => t.IsSimpleTerrain && t.IsPassable);
+
+    public bool IsAutoTile(string tileId)
+        => _tiles.TryGetValue(tileId, out var tile) && tile.IsAutoTile;
+
+    public bool IsPassable(string tileId)
+        => _tiles.TryGetValue(tileId, out var tile) && tile.IsPassable;
+
+    public bool IsSolid(string tileId)
+        => _tiles.TryGetValue(tileId, out var tile) && tile.IsSolid;
+
+    public bool IsGapTile(string tileId)
+        => _tiles.TryGetValue(tileId, out var tile) && tile.IsGapTile;
+
+    public bool IsTransparent(string tileId)
+        => _tiles.TryGetValue(tileId, out var tile) && tile.IsTransparent;
+
+    public IReadOnlyList<string> GetWfcTileIds()
+        => _tiles.Values.Where(t => t.Layer == TileLayer.Terrain).Select(t => t.Id).ToList();
+
+    public string? GetDefaultPassableTileId() => GetDefaultPassableTile()?.Id;
+
+    public string? GetDefaultSolidTileId() => GetDefaultSolidTile()?.Id;
+
+    public string? GetDefaultGapTileId() => GetDefaultGapTile()?.Id;
+
+    #endregion
 }

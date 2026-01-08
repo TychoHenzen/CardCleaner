@@ -2835,7 +2835,7 @@
       "sourceId": 6,
       "layer": "structure",
       "elevation": 0.8,
-      "isTransparent": false,
+      "isTransparent": true,
       "size": {
         "x": 2,
         "y": 2
