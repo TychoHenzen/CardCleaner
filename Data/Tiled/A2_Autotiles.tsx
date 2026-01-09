@@ -4,7 +4,7 @@
   <export target="test..tsj" format="json"/>
  </editorsettings>
  <image source="../../Graphics/Terrain/7souls/A2_autotile_sheet.png" width="256" height="240"/>
- <tile id="0" type="base_grass1">
+ <tile id="0">
   <properties>
    <property name="biome" type="int" propertytype="Biome" value="0"/>
    <property name="elevation" type="float" value="0"/>
@@ -13,7 +13,7 @@
    <property name="passability" propertytype="Passability" value="passable"/>
   </properties>
  </tile>
- <tile id="12" type="base_dirt">
+ <tile id="12">
   <properties>
    <property name="biome" type="int" propertytype="Biome" value="0"/>
    <property name="elevation" type="float" value="0"/>
@@ -22,7 +22,7 @@
    <property name="passability" propertytype="Passability" value="passable"/>
   </properties>
  </tile>
- <tile id="204" type="base_sand">
+ <tile id="204">
   <properties>
    <property name="biome" type="int" propertytype="Biome" value="0"/>
    <property name="elevation" type="float" value="0"/>
@@ -277,7 +277,7 @@
    <properties>
     <property name="InnerTerrain" value="$self"/>
     <property name="OuterTerrain" value="*"/>
-    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
     <property name="biome" type="int" propertytype="Biome" value="0"/>
     <property name="elevation" type="float" value="0"/>
     <property name="layer" propertytype="Layer" value="terrain"/>
@@ -313,7 +313,7 @@
    <properties>
     <property name="InnerTerrain" value="$self"/>
     <property name="OuterTerrain" value="*"/>
-    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
     <property name="biome" type="int" propertytype="Biome" value="0"/>
     <property name="elevation" type="float" value="0"/>
     <property name="layer" propertytype="Layer" value="terrain"/>
@@ -349,7 +349,7 @@
    <properties>
     <property name="InnerTerrain" value="$self"/>
     <property name="OuterTerrain" value="*"/>
-    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
     <property name="biome" type="int" propertytype="Biome" value="0"/>
     <property name="elevation" type="float" value="0"/>
     <property name="layer" propertytype="Layer" value="terrain"/>
@@ -385,7 +385,7 @@
    <properties>
     <property name="InnerTerrain" value="$self"/>
     <property name="OuterTerrain" value="*"/>
-    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
     <property name="biome" type="int" propertytype="Biome" value="0"/>
     <property name="elevation" type="float" value="0"/>
     <property name="layer" propertytype="Layer" value="terrain"/>
@@ -421,39 +421,39 @@
    <properties>
     <property name="InnerTerrain" value="$self"/>
     <property name="OuterTerrain" value="*"/>
-    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
     <property name="biome" type="int" propertytype="Biome" value="0"/>
     <property name="elevation" type="float" value="0"/>
     <property name="layer" propertytype="Layer" value="terrain"/>
     <property name="passability" propertytype="Passability" value="passable"/>
    </properties>
   </wangset>
-  <wangset name="Hedge1" type="edge" tile="-1">
+  <wangset name="Hedge1" type="corner" tile="-1">
    <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
-   <wangtile tileid="788" wangid="0,0,1,0,1,0,0,0"/>
-   <wangtile tileid="789" wangid="0,0,0,0,1,0,1,0"/>
-   <wangtile tileid="790" wangid="0,0,1,0,1,0,1,0"/>
-   <wangtile tileid="791" wangid="1,0,0,0,1,0,1,0"/>
-   <wangtile tileid="820" wangid="1,0,1,0,0,0,0,0"/>
-   <wangtile tileid="821" wangid="1,0,0,0,0,0,1,0"/>
-   <wangtile tileid="822" wangid="1,0,1,0,1,0,0,0"/>
-   <wangtile tileid="823" wangid="1,0,1,0,0,0,1,0"/>
-   <wangtile tileid="852" wangid="0,0,1,0,1,0,0,0"/>
-   <wangtile tileid="853" wangid="0,0,1,0,0,0,1,0"/>
-   <wangtile tileid="854" wangid="0,0,1,0,0,0,1,0"/>
-   <wangtile tileid="855" wangid="0,0,0,0,1,0,1,0"/>
-   <wangtile tileid="884" wangid="1,0,0,0,1,0,0,0"/>
-   <wangtile tileid="887" wangid="1,0,0,0,1,0,0,0"/>
-   <wangtile tileid="916" wangid="1,0,0,0,1,0,0,0"/>
-   <wangtile tileid="919" wangid="1,0,0,0,1,0,0,0"/>
-   <wangtile tileid="948" wangid="1,0,1,0,0,0,0,0"/>
-   <wangtile tileid="949" wangid="0,0,1,0,0,0,1,0"/>
-   <wangtile tileid="950" wangid="0,0,1,0,0,0,1,0"/>
-   <wangtile tileid="951" wangid="1,0,0,0,0,0,1,0"/>
+   <wangtile tileid="788" wangid="0,0,1,1,1,0,0,0"/>
+   <wangtile tileid="789" wangid="0,0,0,0,1,1,1,0"/>
+   <wangtile tileid="790" wangid="0,1,0,1,0,1,1,0"/>
+   <wangtile tileid="791" wangid="0,0,0,1,1,1,0,1"/>
+   <wangtile tileid="820" wangid="1,1,1,0,0,0,0,0"/>
+   <wangtile tileid="821" wangid="1,0,0,0,0,0,1,1"/>
+   <wangtile tileid="822" wangid="1,1,0,1,0,0,0,1"/>
+   <wangtile tileid="823" wangid="0,1,0,0,0,1,1,1"/>
+   <wangtile tileid="852" wangid="0,0,1,1,1,0,0,0"/>
+   <wangtile tileid="853" wangid="0,0,1,1,0,1,1,0"/>
+   <wangtile tileid="854" wangid="0,0,1,1,0,1,1,0"/>
+   <wangtile tileid="855" wangid="0,0,0,0,1,1,1,0"/>
+   <wangtile tileid="884" wangid="1,1,0,1,1,0,0,0"/>
+   <wangtile tileid="887" wangid="1,0,0,0,1,1,0,1"/>
+   <wangtile tileid="916" wangid="1,1,0,1,1,0,0,0"/>
+   <wangtile tileid="919" wangid="1,0,0,0,1,1,0,1"/>
+   <wangtile tileid="948" wangid="1,1,1,0,0,0,0,0"/>
+   <wangtile tileid="949" wangid="0,1,1,0,0,0,1,1"/>
+   <wangtile tileid="950" wangid="0,1,1,0,0,0,1,1"/>
+   <wangtile tileid="951" wangid="1,0,0,0,0,0,1,1"/>
    <properties>
     <property name="InnerTerrain" value="$self"/>
     <property name="OuterTerrain" value="*"/>
-    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
     <property name="biome" type="int" propertytype="Biome" value="0"/>
     <property name="elevation" type="float" value="0"/>
     <property name="layer" propertytype="Layer" value="terrain"/>
@@ -489,39 +489,39 @@
    <properties>
     <property name="InnerTerrain" value="$self"/>
     <property name="OuterTerrain" value="*"/>
-    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
     <property name="biome" type="int" propertytype="Biome" value="0"/>
     <property name="elevation" type="float" value="0"/>
     <property name="layer" propertytype="Layer" value="terrain"/>
     <property name="passability" propertytype="Passability" value="passable"/>
    </properties>
   </wangset>
-  <wangset name="Hedge2" type="edge" tile="-1">
+  <wangset name="Hedge2" type="corner" tile="-1">
    <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
-   <wangtile tileid="780" wangid="0,0,1,0,1,0,0,0"/>
-   <wangtile tileid="781" wangid="0,0,0,0,1,0,1,0"/>
-   <wangtile tileid="782" wangid="0,0,1,0,1,0,1,0"/>
-   <wangtile tileid="783" wangid="1,0,0,0,1,0,1,0"/>
-   <wangtile tileid="812" wangid="1,0,1,0,0,0,0,0"/>
-   <wangtile tileid="813" wangid="1,0,0,0,0,0,1,0"/>
-   <wangtile tileid="814" wangid="1,0,1,0,1,0,0,0"/>
-   <wangtile tileid="815" wangid="1,0,1,0,0,0,1,0"/>
-   <wangtile tileid="844" wangid="0,0,1,0,1,0,0,0"/>
-   <wangtile tileid="845" wangid="0,0,1,0,0,0,1,0"/>
-   <wangtile tileid="846" wangid="0,0,1,0,0,0,1,0"/>
-   <wangtile tileid="847" wangid="0,0,0,0,1,0,1,0"/>
-   <wangtile tileid="876" wangid="1,0,0,0,1,0,0,0"/>
-   <wangtile tileid="879" wangid="1,0,0,0,1,0,0,0"/>
-   <wangtile tileid="908" wangid="1,0,0,0,1,0,0,0"/>
-   <wangtile tileid="911" wangid="1,0,0,0,1,0,0,0"/>
-   <wangtile tileid="940" wangid="1,0,1,0,0,0,0,0"/>
-   <wangtile tileid="941" wangid="0,0,1,0,0,0,1,0"/>
-   <wangtile tileid="942" wangid="0,0,1,0,0,0,1,0"/>
-   <wangtile tileid="943" wangid="1,0,0,0,0,0,1,0"/>
+   <wangtile tileid="780" wangid="0,0,1,1,1,0,0,0"/>
+   <wangtile tileid="781" wangid="0,0,0,0,1,1,1,0"/>
+   <wangtile tileid="782" wangid="0,1,0,1,0,1,1,0"/>
+   <wangtile tileid="783" wangid="0,0,0,1,1,1,0,1"/>
+   <wangtile tileid="812" wangid="1,1,1,0,0,0,0,0"/>
+   <wangtile tileid="813" wangid="1,0,0,0,0,0,1,1"/>
+   <wangtile tileid="814" wangid="1,1,0,1,0,0,0,1"/>
+   <wangtile tileid="815" wangid="0,1,0,0,0,1,1,1"/>
+   <wangtile tileid="844" wangid="0,0,1,1,1,0,0,0"/>
+   <wangtile tileid="845" wangid="0,0,1,1,0,1,1,0"/>
+   <wangtile tileid="846" wangid="0,0,1,1,0,1,1,0"/>
+   <wangtile tileid="847" wangid="0,0,0,0,1,1,1,0"/>
+   <wangtile tileid="876" wangid="1,1,0,1,1,0,0,0"/>
+   <wangtile tileid="879" wangid="1,0,0,0,1,1,0,1"/>
+   <wangtile tileid="908" wangid="1,1,0,1,1,0,0,0"/>
+   <wangtile tileid="911" wangid="1,0,0,0,1,1,0,1"/>
+   <wangtile tileid="940" wangid="1,1,1,0,0,0,0,0"/>
+   <wangtile tileid="941" wangid="0,1,1,0,0,0,1,1"/>
+   <wangtile tileid="942" wangid="0,1,1,0,0,0,1,1"/>
+   <wangtile tileid="943" wangid="1,0,0,0,0,0,1,1"/>
    <properties>
     <property name="InnerTerrain" value="$self"/>
     <property name="OuterTerrain" value="*"/>
-    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
     <property name="biome" type="int" propertytype="Biome" value="0"/>
     <property name="elevation" type="float" value="0"/>
     <property name="layer" propertytype="Layer" value="terrain"/>
@@ -557,7 +557,7 @@
    <properties>
     <property name="InnerTerrain" value="$self"/>
     <property name="OuterTerrain" value="*"/>
-    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
     <property name="biome" type="int" propertytype="Biome" value="0"/>
     <property name="elevation" type="float" value="0"/>
     <property name="layer" propertytype="Layer" value="terrain"/>
@@ -593,7 +593,7 @@
    <properties>
     <property name="InnerTerrain" value="$self"/>
     <property name="OuterTerrain" value="*"/>
-    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
     <property name="biome" type="int" propertytype="Biome" value="0"/>
     <property name="elevation" type="float" value="0"/>
     <property name="layer" propertytype="Layer" value="terrain"/>
@@ -605,7 +605,7 @@
    <properties>
     <property name="InnerTerrain" value="$self"/>
     <property name="OuterTerrain" value="*"/>
-    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
     <property name="biome" type="int" propertytype="Biome" value="0"/>
     <property name="elevation" type="float" value="0"/>
     <property name="layer" propertytype="Layer" value="terrain"/>
@@ -641,7 +641,7 @@
    <properties>
     <property name="InnerTerrain" value="$self"/>
     <property name="OuterTerrain" value="*"/>
-    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
     <property name="biome" type="int" propertytype="Biome" value="0"/>
     <property name="elevation" type="float" value="0"/>
     <property name="layer" propertytype="Layer" value="terrain"/>

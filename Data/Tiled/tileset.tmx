@@ -2,12 +2,13 @@
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="1" nextlayerid="2" nextobjectid="1">
  <tileset firstgid="1" source="A2_Autotiles.tsx"/>
  <tileset firstgid="961" source="FDR_Ground_Tiles_Godot.tsx"/>
+ <tileset firstgid="1441" source="FD_City.tsx"/>
  <layer id="1" name="Tile Layer 1" width="30" height="20">
   <data encoding="csv">
    <chunk x="0" y="0" width="16" height="16">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,969,972,649,652,0,0,0,0,0,0,0,0,0,0,0,
-0,1041,1044,617,618,0,0,0,0,0,0,0,0,0,0,0,
+0,969,972,649,652,0,1442,1442,0,0,0,0,0,0,0,0,
+0,1041,1044,617,618,0,1442,1442,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

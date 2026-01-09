@@ -350,7 +350,7 @@ public partial class TileEditorDock : Control
         // Confirm with user
         var dialog = new ConfirmationDialog
         {
-            DialogText = $"Insert default properties into {filesWithMissing} TSX file(s)?\n\nBackups will be created before modification.",
+            DialogText = $"Insert default properties into {filesWithMissing} TSX file(s)?",
             Title = "Insert TSX Properties"
         };
         dialog.Confirmed += () =>

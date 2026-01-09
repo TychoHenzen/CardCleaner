@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
@@ -14,9 +15,20 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 ///
 /// This shapes blobs toward rounder, more natural-looking formations
 /// without preventing normal region growth from edges.
+///
+/// Tiles without bitmask 15 (solid fill) are excluded from compactness boosting,
+/// allowing them to form linear/path-like shapes instead of round blobs.
 /// </summary>
 public class CompactnessSoftModifier : IWfcConstraint
 {
+    private const int SolidFillBitmask = 15;
+    private readonly ITileRegistry? _tileRegistry;
+
+    public CompactnessSoftModifier(ITileRegistry? tileRegistry = null)
+    {
+        _tileRegistry = tileRegistry;
+    }
+
     /// <summary>
     /// Boost multiplier for corner fills (2 same-type neighbors).
     /// Default 1.3 means corner fills are 30% more likely.
@@ -32,6 +44,11 @@ public class CompactnessSoftModifier : IWfcConstraint
     /// <inheritdoc />
     public float GetProbabilityModifier(WfcConstraintContext context)
     {
+        // Skip compactness boost for tiles without solid fill (e.g., hedges)
+        // These should form linear/path-like shapes, not round blobs
+        if (_tileRegistry != null && !HasSolidFillVariant(context.TileId))
+            return 1.0f;
+
         // Use precomputed neighbor info if available (optimization)
         var sameTypeNeighborCount = context.NeighborInfo.HasValue
             ? context.NeighborInfo.Value.SameType4Count
@@ -44,6 +61,19 @@ public class CompactnessSoftModifier : IWfcConstraint
             2 => CornerBoost,    // Corner fill - small boost
             _ => GapFillBoost    // 3-4 neighbors - gap fill - larger boost
         };
+    }
+
+    private bool HasSolidFillVariant(string tileId)
+    {
+        var tile = _tileRegistry?.GetTile(tileId);
+        if (tile == null)
+            return true; // Assume has solid fill if we can't check
+
+        var variants = tile.AutoTileVariants;
+        if (variants == null || variants.Length <= SolidFillBitmask)
+            return false;
+
+        return variants[SolidFillBitmask].HasValue;
     }
 
     private static int CountSameTypeNeighbors(WfcConstraintContext context)

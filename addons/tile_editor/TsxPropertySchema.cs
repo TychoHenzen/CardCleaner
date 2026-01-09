@@ -52,7 +52,8 @@ public static class TsxPropertySchema
 
         // Whether the auto-tile has transparent background (border-only)
         // If true, the border is composited onto base terrains at atlas compile time
-        TsxProperty.Bool("TransparentBackground", false),
+        // Default true since wang tilesets effectively always have transparent backgrounds
+        TsxProperty.Bool("TransparentBackground", true),
 
         // Terrain references for auto-tile transitions
         // "$self" = use this tile's ID as inner terrain (default)

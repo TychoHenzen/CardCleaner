@@ -11,13 +11,12 @@ namespace CardCleaner.Addons.TileEditor;
 
 /// <summary>
 /// Inserts required custom properties into TSX tileset files with sensible defaults.
-/// Preserves existing property values and creates backups before modification.
+/// Preserves existing property values.
 /// </summary>
 public static class TsxPropertyInserter
 {
     /// <summary>
     /// Inserts missing required properties into a single TSX file.
-    /// Creates a backup before modification.
     /// </summary>
     /// <param name="tsxPath">Path to the TSX file</param>
     /// <param name="insertTileProperties">Whether to insert tile properties (for tiles with id property)</param>
@@ -76,16 +75,9 @@ public static class TsxPropertyInserter
                 }
             }
 
-            // Only create backup and save if modifications were made
+            // Only save if modifications were made
             if (tilesModified > 0 || wangSetsModified > 0)
             {
-                // Create backup before saving
-                var (backupSuccess, _) = TsxPropertyWriter.CreateBackup(tsxPath);
-                if (!backupSuccess)
-                {
-                    GD.PrintErr($"[TsxPropertyInserter] Warning: Could not create backup for {tsxPath}");
-                }
-
                 using var writer = new StreamWriter(absolutePath, false, new System.Text.UTF8Encoding(false));
                 doc.Save(writer, SaveOptions.None);
 

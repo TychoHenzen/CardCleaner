@@ -32,6 +32,7 @@ public class WfcMapGenerator
     private readonly CompactnessSoftModifier _compactness;
     private readonly SpatialCoherenceConstraint _spatialCoherence;
     private readonly AutoTileGapConstraint? _autoTileGap;
+    private readonly NoSolidFillConstraint? _noSolidFill;
     private readonly BitmaskValidityConstraint? _bitmaskValidity;
     private readonly TileProbabilityConstraint? _tileProbability;
     private readonly ITileRegistry? _tileRegistry;
@@ -103,9 +104,10 @@ public class WfcMapGenerator
         _blobTracker = new BlobSizeTracker();
         _diminishingReturns = new DiminishingReturnsSoftModifier(_blobTracker);
         _novelty = new NoveltySoftModifier();
-        _compactness = new CompactnessSoftModifier();
-        _spatialCoherence = new SpatialCoherenceConstraint();
+        _compactness = new CompactnessSoftModifier(tileRegistry);
+        _spatialCoherence = new SpatialCoherenceConstraint(tileRegistry);
         _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
+        _noSolidFill = tileRegistry != null ? new NoSolidFillConstraint(tileRegistry) : null;
         _bitmaskValidity = tileRegistry != null ? new BitmaskValidityConstraint(tileRegistry) : null;
         _tileProbability = tileRegistry is TileRegistry concreteRegistry ? new TileProbabilityConstraint(concreteRegistry) : null;
         _selector = new WfcTileSelector();
@@ -125,9 +127,10 @@ public class WfcMapGenerator
         _blobTracker = new BlobSizeTracker();
         _diminishingReturns = new DiminishingReturnsSoftModifier(_blobTracker);
         _novelty = new NoveltySoftModifier();
-        _compactness = new CompactnessSoftModifier();
-        _spatialCoherence = new SpatialCoherenceConstraint();
+        _compactness = new CompactnessSoftModifier(tileRegistry);
+        _spatialCoherence = new SpatialCoherenceConstraint(tileRegistry);
         _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
+        _noSolidFill = tileRegistry != null ? new NoSolidFillConstraint(tileRegistry) : null;
         _bitmaskValidity = tileRegistry != null ? new BitmaskValidityConstraint(tileRegistry) : null;
         _tileProbability = tileRegistry is TileRegistry concreteRegistry ? new TileProbabilityConstraint(concreteRegistry) : null;
         _selector = new WfcTileSelector();
@@ -323,6 +326,10 @@ public class WfcMapGenerator
         // Enforce 1-tile gap between different auto-tile types (8-neighbor check)
         if (_autoTileGap != null)
             _selector.AddConstraint(_autoTileGap);
+
+        // Prevent 2x2 solid regions for tilesets lacking bitmask 15 (solid fill)
+        if (_noSolidFill != null)
+            _selector.AddConstraint(_noSolidFill);
 
         // Prevent tile configurations that would create disallowed bitmask patterns
         if (_bitmaskValidity != null)

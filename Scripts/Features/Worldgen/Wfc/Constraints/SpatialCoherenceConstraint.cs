@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
@@ -14,13 +15,26 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// - Full boost given for ANY matching neighbor (encourages region growth from size 1)
 /// - Boost tapers off for oversized regions to encourage tile diversity
 ///
-/// Probability calculation:
+/// Probability calculation for regular tiles:
 /// - If tile matches any neighbor region below target: modifier = 1.0 + BoostFactor
 /// - If tile matches oversized region: modifier tapers toward 1.0
 /// - If no neighbors collapsed: modifier = 1.0 (neutral)
+///
+/// Linear tiles (without bitmask 15, e.g., hedges) use repulsion instead of attraction:
+/// - Same-type tiles within LinearRepulsionRadius apply a distance-weighted penalty
+/// - Closer tiles apply stronger penalties, diminishing with distance
+/// - This creates sparse, spread-out hedge structures instead of dense clusters
+/// The NoSolidFillConstraint separately ensures they remain 1-tile wide.
 /// </remarks>
 public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
 {
+    private const int SolidFillBitmask = 15;
+    private readonly ITileRegistry? _tileRegistry;
+
+    public SpatialCoherenceConstraint(ITileRegistry? tileRegistry = null)
+    {
+        _tileRegistry = tileRegistry;
+    }
     /// <summary>
     /// Target size for coherent regions (in tiles).
     /// Regions below this receive full boost; regions above start tapering.
@@ -34,6 +48,19 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
     /// This ensures extending a region strongly dominates over starting new ones.
     /// </summary>
     public float BoostFactor { get; set; } = 500.0f;
+
+    /// <summary>
+    /// Radius within which linear tiles (hedges) repel each other.
+    /// Tiles within this distance apply a penalty that diminishes with distance.
+    /// </summary>
+    public int LinearRepulsionRadius { get; set; } = 10;
+
+    /// <summary>
+    /// Maximum penalty factor for linear tiles at distance 1.
+    /// A value of 0.9 means a same-type tile at distance 1 reduces probability by 90%.
+    /// Penalty diminishes linearly with distance up to LinearRepulsionRadius.
+    /// </summary>
+    public float LinearRepulsionStrength { get; set; } = 0.5f;
 
     /// <summary>
     /// Minimum probability modifier to prevent complete tile elimination.
@@ -85,6 +112,9 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
     {
         _totalCalls++;
 
+        // Check if this is a linear tile (no bitmask 15) - needs different boost logic
+        var isLinearTile = _tileRegistry != null && !HasSolidFillVariant(context.TileId);
+
         if (_regionTracker == null)
         {
             GD.Print("[SpatialCoherence] RegionTracker is null!");
@@ -93,12 +123,14 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
 
         var largestMatchingRegion = 0;
         var hasAnyCollapsedNeighbor = false;
+        var sameTypeNeighborCount = 0;
 
         // Use precomputed neighbor info if available (optimization)
         if (context.NeighborInfo.HasValue)
         {
             var neighborInfo = context.NeighborInfo.Value;
             hasAnyCollapsedNeighbor = neighborInfo.HasCollapsedNeighbor4;
+            sameTypeNeighborCount = neighborInfo.SameType4Count;
 
             foreach (var kvp in neighborInfo.Neighbors4)
             {
@@ -121,6 +153,7 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
                     hasAnyCollapsedNeighbor = true;
                     if (neighborTile == context.TileId)
                     {
+                        sameTypeNeighborCount++;
                         var regionSize = _regionTracker.GetRegionSize(neighbor);
                         if (regionSize > largestMatchingRegion)
                             largestMatchingRegion = regionSize;
@@ -138,7 +171,14 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
         _callsWithMatch++;
 
         float modifier;
-        if (largestMatchingRegion >= TargetRegionSize)
+
+        if (isLinearTile)
+        {
+            // Linear tiles (hedges, paths) repel each other within a radius
+            // This creates sparse, spread-out structures instead of dense clusters
+            return CalculateLinearRepulsion(context);
+        }
+        else if (largestMatchingRegion >= TargetRegionSize)
         {
             // Taper off for oversized regions to encourage new regions
             // At 2x target size, boost drops to ~50%
@@ -189,5 +229,72 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
         }
 
         return invalidated;
+    }
+
+    /// <summary>
+    /// Calculates repulsion penalty for linear tiles based on nearby same-type tiles.
+    /// </summary>
+    private float CalculateLinearRepulsion(WfcConstraintContext context)
+    {
+        var totalPenalty = 0.0f;
+        var pos = context.Position;
+        var grid = context.Grid;
+
+        // Scan within repulsion radius
+        for (var dy = -LinearRepulsionRadius; dy <= LinearRepulsionRadius; dy++)
+        {
+            for (var dx = -LinearRepulsionRadius; dx <= LinearRepulsionRadius; dx++)
+            {
+                if (dx == 0 && dy == 0)
+                    continue;
+
+                var checkX = pos.X + dx;
+                var checkY = pos.Y + dy;
+
+                // Bounds check
+                if (checkX < 0 || checkY < 0 || checkX >= grid.Width || checkY >= grid.Height)
+                    continue;
+
+                var cell = grid.GetCell(new Vector2I(checkX, checkY));
+                if (!cell.IsCollapsed())
+                    continue;
+
+                // Check if same tile type (using terrain type comparison for auto-tiles)
+                var collapsedTile = cell.GetCollapsedTile();
+                if (!_tileRegistry!.AreSameTerrainType(context.TileId, collapsedTile))
+                    continue;
+
+                // Calculate distance and penalty (Chebyshev distance for grid)
+                var distance = Mathf.Max(Mathf.Abs(dx), Mathf.Abs(dy));
+                if (distance > LinearRepulsionRadius)
+                    continue;
+
+                // Penalty diminishes linearly with distance
+                // At distance 1: full penalty, at radius: zero penalty
+                var distanceFactor = 1.0f - (float)(distance - 1) / LinearRepulsionRadius;
+                totalPenalty += LinearRepulsionStrength * distanceFactor;
+            }
+        }
+
+        // Convert accumulated penalty to modifier (clamped to MinModifier)
+        var modifier = Mathf.Max(MinModifier, 1.0f - totalPenalty);
+        return modifier;
+    }
+
+    private bool HasSolidFillVariant(string tileId)
+    {
+        var tile = _tileRegistry?.GetTile(tileId);
+        if (tile == null)
+            return true; // Assume has solid fill if we can't check
+
+        // Non-auto-tiles don't have variants, treat as having solid fill
+        if (!tile.HasAutoTileVariants)
+            return true;
+
+        var variants = tile.AutoTileVariants;
+        if (variants == null || variants.Length <= SolidFillBitmask)
+            return false;
+
+        return variants[SolidFillBitmask].HasValue;
     }
 }

@@ -571,7 +571,7 @@ public class TmxAtlasCompiler
                         SourceImage = image,
                         SourceTileWidth = tileWidth,
                         SourceTileHeight = tileHeight,
-                        IsTransparent = GetBool(props, "TransparentBackground", false),
+                        IsTransparent = GetBool(props, "TransparentBackground", true),
                         OuterTerrain = GetString(props, "OuterTerrain", ""),
                         InnerTerrain = GetString(props, "InnerTerrain", "")
                     });
