@@ -69,11 +69,16 @@ public class SimpleMapGenerator
     {
         ILog.Print($"Generating WFC-based map {size.X}x{size.Y}");
 
-        // Pre-select per-generation variants
+        // Pre-select per-generation variants (legacy atlas coordinate variations)
         Dictionary<string, int> perGenerationVariants;
+        Dictionary<string, string> perGenerationGroupVariants;
         using (_profiler.BeginScope("VariantSelection"))
         {
             perGenerationVariants = SelectPerGenerationVariants();
+            perGenerationGroupVariants = SelectPerGenerationGroupVariants();
+
+            // Pass selected variants to WFC so non-selected variants are excluded
+            _wfcGenerator?.SetSelectedVariants(perGenerationGroupVariants);
         }
 
         // Build biome map
@@ -165,6 +170,7 @@ public class SimpleMapGenerator
             EnemyPositions = enemyPositions,
             PassableTiles = passableTiles,
             PerGenerationVariants = perGenerationVariants,
+            PerGenerationGroupVariants = perGenerationGroupVariants,
             ContextualVariants = contextualVariants,
             DecorationOverlays = decorationOverlays
         };
@@ -292,6 +298,7 @@ public class SimpleMapGenerator
     {
         var variants = new Dictionary<string, int>();
 
+        // Legacy support: tiles with built-in Variations array
         foreach (var tile in _tileRegistry.GetAllTiles())
         {
             if (tile.VariationMode == VariationMode.PerGeneration && tile.HasVariations)
@@ -305,6 +312,30 @@ public class SimpleMapGenerator
             ILog.Print($"Selected per-generation variants for {variants.Count} tile types");
 
         return variants;
+    }
+
+    /// <summary>
+    /// Selects one tile from each PerGeneration variation group.
+    /// Returns a mapping from base name to selected tile ID.
+    /// </summary>
+    private Dictionary<string, string> SelectPerGenerationGroupVariants()
+    {
+        var selected = new Dictionary<string, string>();
+
+        foreach (var group in _tileRegistry.GetAllVariationGroups())
+        {
+            if (group.Mode != VariationMode.PerGeneration)
+                continue;
+
+            var selectedTileId = _tileRegistry.SelectPerMapVariant(group.BaseName, _rng);
+            if (selectedTileId != null)
+            {
+                selected[group.BaseName] = selectedTileId;
+                ILog.Print($"[SimpleMapGenerator] Selected '{selectedTileId}' for variation group '{group.BaseName}'");
+            }
+        }
+
+        return selected;
     }
 
     /// <summary>
@@ -375,12 +406,14 @@ public class SimpleMapGenerator
             baseTerrain ??= _defaultPassableTileId;
             topTerrain ??= baseTerrain;
 
-            // Compute bitmask based on which corners have the topTerrain
+            // Compute bitmask based on which corners have the same terrain type as topTerrain
+            // Use AreSameTerrainType to handle variations (e.g., grass1 vs grass2)
+            // Use Corner16 format: NE=1, SE=2, SW=4, NW=8 (dual-grid samples exactly 4 corners)
             var bitmask = 0;
-            if (fgNW == topTerrain) bitmask |= NeighborBitmaskCorner.NorthWest;
-            if (fgNE == topTerrain) bitmask |= NeighborBitmaskCorner.NorthEast;
-            if (fgSW == topTerrain) bitmask |= NeighborBitmaskCorner.SouthWest;
-            if (fgSE == topTerrain) bitmask |= NeighborBitmaskCorner.SouthEast;
+            if (_tileRegistry.AreSameTerrainType(fgNE, topTerrain)) bitmask |= NeighborBitmaskCorner.NorthEast;
+            if (_tileRegistry.AreSameTerrainType(fgSE, topTerrain)) bitmask |= NeighborBitmaskCorner.SouthEast;
+            if (_tileRegistry.AreSameTerrainType(fgSW, topTerrain)) bitmask |= NeighborBitmaskCorner.SouthWest;
+            if (_tileRegistry.AreSameTerrainType(fgNW, topTerrain)) bitmask |= NeighborBitmaskCorner.NorthWest;
 
             overlays[visualPosition] = (baseTerrain, topTerrain, bitmask);
         }
@@ -457,19 +490,16 @@ public class SimpleMapGenerator
     }
 
     /// <summary>
-    /// Computes the Corner16 bitmask for a visual tile given the selected topTerrain.
+    /// Computes the Full8/Blob47 bitmask for a visual tile given the selected topTerrain.
     /// </summary>
     private static int ComputeBitmask(string[,] terrainGrid, Vector2I size, int vx, int vy, string topTerrain)
     {
+        // Use Corner16 format: NE=1, SE=2, SW=4, NW=8
         var bitmask = 0;
-        if (IsTerrainAtPosition(terrainGrid, size, vx - 1, vy - 1, topTerrain))
-            bitmask |= NeighborBitmaskCorner.NorthWest;
-        if (IsTerrainAtPosition(terrainGrid, size, vx, vy - 1, topTerrain))
-            bitmask |= NeighborBitmaskCorner.NorthEast;
-        if (IsTerrainAtPosition(terrainGrid, size, vx - 1, vy, topTerrain))
-            bitmask |= NeighborBitmaskCorner.SouthWest;
-        if (IsTerrainAtPosition(terrainGrid, size, vx, vy, topTerrain))
-            bitmask |= NeighborBitmaskCorner.SouthEast;
+        if (IsTerrainAtPosition(terrainGrid, size, vx, vy - 1, topTerrain)) bitmask |= NeighborBitmaskCorner.NorthEast;
+        if (IsTerrainAtPosition(terrainGrid, size, vx, vy, topTerrain)) bitmask |= NeighborBitmaskCorner.SouthEast;
+        if (IsTerrainAtPosition(terrainGrid, size, vx - 1, vy, topTerrain)) bitmask |= NeighborBitmaskCorner.SouthWest;
+        if (IsTerrainAtPosition(terrainGrid, size, vx - 1, vy - 1, topTerrain)) bitmask |= NeighborBitmaskCorner.NorthWest;
         return bitmask;
     }
 

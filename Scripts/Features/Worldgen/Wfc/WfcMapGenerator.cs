@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
@@ -32,8 +33,12 @@ public class WfcMapGenerator
     private readonly SpatialCoherenceConstraint _spatialCoherence;
     private readonly AutoTileGapConstraint? _autoTileGap;
     private readonly BitmaskValidityConstraint? _bitmaskValidity;
+    private readonly TileProbabilityConstraint? _tileProbability;
     private readonly ITileRegistry? _tileRegistry;
     private IProfiler _profiler = new NoOpProfiler();
+
+    // Selected variants for PerGeneration groups (e.g., "grass" → "grass2")
+    private Dictionary<string, string>? _selectedVariants;
 
     public int MaxRetries { get; set; } = 3;
 
@@ -79,6 +84,18 @@ public class WfcMapGenerator
         _profiler = profiler;
     }
 
+    /// <summary>
+    /// Sets the selected variants for PerGeneration variation groups.
+    /// Must be called before Generate/GenerateMultiBiome to ensure
+    /// only the selected variant from each group appears on the map.
+    /// </summary>
+    /// <param name="selectedVariants">Mapping of group base name to selected tile ID.</param>
+    public void SetSelectedVariants(Dictionary<string, string>? selectedVariants)
+    {
+        _selectedVariants = selectedVariants;
+        _tileProbability?.SetSelectedVariants(selectedVariants);
+    }
+
     public WfcMapGenerator(CompiledTransitionResolver transitionResolver, ITileRegistry? tileRegistry = null)
     {
         _adjacencyRules = new WfcAdjacencyRules(transitionResolver);
@@ -90,6 +107,7 @@ public class WfcMapGenerator
         _spatialCoherence = new SpatialCoherenceConstraint();
         _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
         _bitmaskValidity = tileRegistry != null ? new BitmaskValidityConstraint(tileRegistry) : null;
+        _tileProbability = tileRegistry is TileRegistry concreteRegistry ? new TileProbabilityConstraint(concreteRegistry) : null;
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
 
@@ -111,6 +129,7 @@ public class WfcMapGenerator
         _spatialCoherence = new SpatialCoherenceConstraint();
         _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
         _bitmaskValidity = tileRegistry != null ? new BitmaskValidityConstraint(tileRegistry) : null;
+        _tileProbability = tileRegistry is TileRegistry concreteRegistry ? new TileProbabilityConstraint(concreteRegistry) : null;
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
 
@@ -308,6 +327,10 @@ public class WfcMapGenerator
         // Prevent tile configurations that would create disallowed bitmask patterns
         if (_bitmaskValidity != null)
             _selector.AddConstraint(_bitmaskValidity);
+
+        // Apply tile probability/density from TSX and variation groups
+        if (_tileProbability != null)
+            _selector.AddConstraint(_tileProbability);
     }
 
     private (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineInitialTiles(BiomeDefinition biome)

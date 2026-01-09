@@ -54,7 +54,8 @@ public class TileDefinition
         int dominance = 0,
         string? innerTerrainId = null,
         string? outerTerrainId = null,
-        bool isGapTile = false)
+        bool isGapTile = false,
+        float probability = 1.0f)
     {
         Id = id;
         Name = name;
@@ -76,6 +77,7 @@ public class TileDefinition
         InnerTerrainId = innerTerrainId;
         OuterTerrainId = outerTerrainId;
         IsGapTile = isGapTile;
+        Probability = probability;
     }
 
     public string Id { get; }
@@ -209,6 +211,14 @@ public class TileDefinition
     public bool IsGapTile { get; }
 
     /// <summary>
+    /// Selection probability/weight for this tile (0.0-1.0+).
+    /// For tiles in variation groups, this controls:
+    /// - Density: max probability in group determines how often the tile type appears
+    /// - Relative weight: probability/maxProbability determines selection ratio within the group
+    /// </summary>
+    public float Probability { get; }
+
+    /// <summary>
     /// Whether this is a simple terrain tile (no auto-tile variants, terrain layer).
     /// Simple terrain tiles can serve as base backgrounds for compositable auto-tiles.
     /// </summary>
@@ -256,26 +266,11 @@ public class TileDefinition
         if (AutoTileVariants == null)
             return AtlasCoords;
 
-        int index;
-        int maxIndex;
-
-        var format = GetAutoTileFormat();
-        if (format?.BitmaskType == BitmaskType.Full8)
-        {
-            // For blob format, convert 8-bit mask to 0-46 index
-            index = NeighborBitmask8.GetBlobIndex(bitmask);
-            maxIndex = 47;
-        }
-        else
-        {
-            // For corner16 and edge16 formats, use mask directly as index (both are 4-bit, 0-15)
-            index = bitmask;
-            maxIndex = 16;
-        }
-
-        if (index < 0 || index >= maxIndex || index >= AutoTileVariants.Length)
+        // All auto-tiles use Corner16 format (16 variants indexed 0-15)
+        // Dual-grid only samples 4 corners, so this is the native format
+        if (bitmask < 0 || bitmask >= AutoTileVariants.Length)
             return AtlasCoords;
 
-        return AutoTileVariants[index] ?? AtlasCoords;
+        return AutoTileVariants[bitmask] ?? AtlasCoords;
     }
 }

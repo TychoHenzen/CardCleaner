@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Linq;
 using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Features.Worldgen.AutoTiling;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
@@ -189,12 +190,19 @@ public static class TiledTilesetLoader
                 var bitmask = WangIdToBitmask(wangidStr, wangType, terrainColorIndex);
 
                 // Track which tiles belong to this wang set (use setId for lookups)
+                // This is needed for gap tile detection regardless of blob compliance
                 if (!result.TileToWangSet.ContainsKey(tileId))
                     result.TileToWangSet[tileId] = setId;
 
                 // Track bitmask type per tile
                 if (!result.TileBitmaskType.ContainsKey(tileId))
                     result.TileBitmaskType[tileId] = bitmaskType;
+
+                // For mixed wangsets (used as Corner16), only add tiles whose edges
+                // match what the blob constraint would derive from their corners.
+                // This ensures we pick the canonical tile for each corner combination.
+                if (wangType == "mixed" && !IsBlobCompliant(wangidStr, terrainColorIndex))
+                    continue;
 
                 // Build bitmask → tiles mapping (grouped by wang set ID)
                 var key = (setId, bitmask);
@@ -214,52 +222,81 @@ public static class TiledTilesetLoader
     private static int WangIdToBitmask(string wangidStr, string wangType, int terrainColorIndex)
     {
         // wangid format: "edge0,corner0,edge1,corner1,edge2,corner2,edge3,corner3"
-        // For corner-only: edges are 0, corners are at indices 1,3,5,7 (TL,TR,BR,BL)
-        // For edge-only: corners are 0, edges are at indices 0,2,4,6 (Top,Right,Bottom,Left)
+        // Indices: 0=N, 1=NE, 2=E, 3=SE, 4=S, 5=SW, 6=W, 7=NW
         var parts = wangidStr.Split(',');
         if (parts.Length != 8) return 0;
-
-        int bitmask = 0;
 
         if (wangType == "corner")
         {
             // Tiled wangid corner format: "0,TR,0,BR,0,BL,0,TL" (indices 1,3,5,7)
-            var tr = ParseInt(parts[1], 0);  // Top-Right = NE
-            var br = ParseInt(parts[3], 0);  // Bottom-Right = SE
-            var bl = ParseInt(parts[5], 0);  // Bottom-Left = SW
-            var tl = ParseInt(parts[7], 0);  // Top-Left = NW
+            var hasNE = ParseInt(parts[1], 0) == terrainColorIndex;  // Top-Right = NE
+            var hasSE = ParseInt(parts[3], 0) == terrainColorIndex;  // Bottom-Right = SE
+            var hasSW = ParseInt(parts[5], 0) == terrainColorIndex;  // Bottom-Left = SW
+            var hasNW = ParseInt(parts[7], 0) == terrainColorIndex;  // Top-Left = NW
 
-            // Match NeighborBitmaskCorner: NE=1, SE=2, SW=4, NW=8
-            if (tr == terrainColorIndex) bitmask |= 1;  // TR = NE
-            if (br == terrainColorIndex) bitmask |= 2;  // BR = SE
-            if (bl == terrainColorIndex) bitmask |= 4;  // BL = SW
-            if (tl == terrainColorIndex) bitmask |= 8;  // TL = NW
+            // Convert to Full8 format: derive edges from adjacent corners
+            return DualGridAutoTile.CornersToFull8Bitmask(hasNE, hasSE, hasSW, hasNW);
         }
-        else if (wangType == "edge")
+
+        if (wangType == "edge")
         {
             // Edge mode: indices 0,2,4,6 = Top,Right,Bottom,Left
-            var top = ParseInt(parts[0], 0);
-            var right = ParseInt(parts[2], 0);
-            var bottom = ParseInt(parts[4], 0);
-            var left = ParseInt(parts[6], 0);
+            var hasN = ParseInt(parts[0], 0) == terrainColorIndex;
+            var hasE = ParseInt(parts[2], 0) == terrainColorIndex;
+            var hasS = ParseInt(parts[4], 0) == terrainColorIndex;
+            var hasW = ParseInt(parts[6], 0) == terrainColorIndex;
 
-            // Bit order: 0=Top, 1=Right, 2=Bottom, 3=Left
-            if (top == terrainColorIndex) bitmask |= 1;
-            if (right == terrainColorIndex) bitmask |= 2;
-            if (bottom == terrainColorIndex) bitmask |= 4;
-            if (left == terrainColorIndex) bitmask |= 8;
+            // Convert to Full8 format (edges only, no corners)
+            int bitmask = 0;
+            if (hasN) bitmask |= NeighborBitmask8.North;
+            if (hasE) bitmask |= NeighborBitmask8.East;
+            if (hasS) bitmask |= NeighborBitmask8.South;
+            if (hasW) bitmask |= NeighborBitmask8.West;
+            return bitmask;
         }
-        else if (wangType == "mixed")
+
+        if (wangType == "mixed")
         {
-            // Full 8-bit: all positions used
-            for (int i = 0; i < 8; i++)
-            {
-                if (ParseInt(parts[i], 0) == terrainColorIndex)
-                    bitmask |= (1 << i);
-            }
+            // Mixed format: extract corners and use CornersToFull8Bitmask for consistent lookup keys
+            var hasNE = ParseInt(parts[1], 0) == terrainColorIndex;
+            var hasSE = ParseInt(parts[3], 0) == terrainColorIndex;
+            var hasSW = ParseInt(parts[5], 0) == terrainColorIndex;
+            var hasNW = ParseInt(parts[7], 0) == terrainColorIndex;
+
+            return DualGridAutoTile.CornersToFull8Bitmask(hasNE, hasSE, hasSW, hasNW);
         }
 
-        return bitmask;
+        return 0;
+    }
+
+    /// <summary>
+    /// Check if a mixed wangid has blob-compliant edges (edges match what corners imply).
+    /// For dual-grid auto-tiling, we only want tiles where edges are derived from corners.
+    /// </summary>
+    private static bool IsBlobCompliant(string wangidStr, int terrainColorIndex)
+    {
+        var parts = wangidStr.Split(',');
+        if (parts.Length != 8) return false;
+
+        // Parse all values: 0=N, 1=NE, 2=E, 3=SE, 4=S, 5=SW, 6=W, 7=NW
+        var hasN = ParseInt(parts[0], 0) == terrainColorIndex;
+        var hasNE = ParseInt(parts[1], 0) == terrainColorIndex;
+        var hasE = ParseInt(parts[2], 0) == terrainColorIndex;
+        var hasSE = ParseInt(parts[3], 0) == terrainColorIndex;
+        var hasS = ParseInt(parts[4], 0) == terrainColorIndex;
+        var hasSW = ParseInt(parts[5], 0) == terrainColorIndex;
+        var hasW = ParseInt(parts[6], 0) == terrainColorIndex;
+        var hasNW = ParseInt(parts[7], 0) == terrainColorIndex;
+
+        // Compute what blob-normalized edges SHOULD be given the corners:
+        // An edge is set if EITHER adjacent corner is set
+        var blobN = hasNW || hasNE;
+        var blobE = hasNE || hasSE;
+        var blobS = hasSE || hasSW;
+        var blobW = hasSW || hasNW;
+
+        // Check if actual edges match blob-derived edges
+        return hasN == blobN && hasE == blobE && hasS == blobS && hasW == blobW;
     }
 
     #endregion
@@ -419,14 +456,9 @@ public static class TiledTilesetLoader
         var id = ToSnakeCase(setId);
         var name = GetString(props, "name", setInfo.Name);
 
-        // Auto-tile format based on Wang type
-        var autoTileFormat = setInfo.BitmaskType switch
-        {
-            BitmaskType.Corner4 => "corner16",
-            BitmaskType.Edge4 => "edge16",
-            BitmaskType.Full8 => "blob47",
-            _ => "corner16"
-        };
+        // Dual-grid only samples 4 corners, so always use corner16 format
+        // Blob47/mixed tilesets are converted to corner16 at load time
+        var autoTileFormat = "corner16";
 
         // Build auto-tile variants
         var autoTileVariants = BuildAutoTileVariants(setId, wangData, columns, setInfo.BitmaskType);
@@ -453,6 +485,9 @@ public static class TiledTilesetLoader
                 size = new Vector2I(ParseInt(sizeParts[0], 1), ParseInt(sizeParts[1], 1));
         }
 
+        // Get probability from the wang set (for variation group weighting)
+        var probability = GetWangSetProbability(setId, wangData);
+
         return new TileDefinition(
             id: id,
             name: name,
@@ -473,7 +508,30 @@ public static class TiledTilesetLoader
             dominance: dominance,
             innerTerrainId: innerTerrain,
             outerTerrainId: outerTerrain,
-            isGapTile: isGapTile);
+            isGapTile: isGapTile,
+            probability: probability);
+    }
+
+    /// <summary>
+    /// Gets the probability for a Wang set. Uses the probability from the representative tile (bitmask 15),
+    /// or the first tile if bitmask 15 is not present.
+    /// </summary>
+    private static float GetWangSetProbability(string setName, WangSetData wangData)
+    {
+        // Prefer bitmask 255 (all corners/edges in Full8 format) as it's the "full" tile
+        // Wang data stores tiles at Full8 keys from WangIdToBitmask
+        var fullKey = (setName, 255);
+        if (wangData.BitmaskToTiles.TryGetValue(fullKey, out var fullTiles) && fullTiles.Count > 0)
+            return fullTiles[0].Probability;
+
+        // Fallback to any tile in the set
+        foreach (var ((name, _), tiles) in wangData.BitmaskToTiles)
+        {
+            if (name == setName && tiles.Count > 0)
+                return tiles[0].Probability;
+        }
+
+        return 1f; // Default probability
     }
 
     /// <summary>
@@ -481,8 +539,9 @@ public static class TiledTilesetLoader
     /// </summary>
     private static int FindRepresentativeTile(string setName, WangSetData wangData)
     {
-        // Prefer bitmask 15 (all corners) as it's the "full" tile
-        var fullKey = (setName, 15);
+        // Prefer bitmask 255 (all corners/edges) as it's the "full" tile
+        // Note: All wang types are now converted to Full8 format
+        var fullKey = (setName, 255);
         if (wangData.BitmaskToTiles.TryGetValue(fullKey, out var fullTiles) && fullTiles.Count > 0)
             return fullTiles[0].TileId;
 
@@ -599,6 +658,9 @@ public static class TiledTilesetLoader
             animation = new TileAnimation(frames, frameDuration);
         }
 
+        // Probability from tile properties (for non-Wang tiles)
+        var probability = GetFloat(props, "probability", 1f);
+
         return new TileDefinition(
             id: id,
             name: name,
@@ -619,7 +681,8 @@ public static class TiledTilesetLoader
             dominance: dominance,
             innerTerrainId: innerTerrain,
             outerTerrainId: outerTerrain,
-            isGapTile: isGapTile);
+            isGapTile: isGapTile,
+            probability: probability);
     }
 
     /// <summary>
@@ -632,28 +695,32 @@ public static class TiledTilesetLoader
         int columns,
         BitmaskType bitmaskType)
     {
-        // Determine variant count based on bitmask type
-        var variantCount = bitmaskType switch
-        {
-            BitmaskType.Corner4 => 16,  // 4-bit: 0-15
-            BitmaskType.Edge4 => 16,    // 4-bit: 0-15
-            BitmaskType.Full8 => 256,   // 8-bit: 0-255
-            _ => 16
-        };
+        // Dual-grid only samples 4 corners, so we always use Corner16 format (16 variants)
+        // For blob47/mixed tilesets, map Full8 bitmasks back to their Corner16 equivalents
+        const int variantCount = 16;
 
         var variants = new Vector2I?[variantCount];
         var hasAnyVariant = false;
 
-        for (int bitmask = 0; bitmask < variantCount; bitmask++)
+        // For each Corner16 bitmask (0-15), find the corresponding tile
+        for (int corner16 = 0; corner16 < 16; corner16++)
         {
-            var key = (wangSetName, bitmask);
-            if (wangData.BitmaskToTiles.TryGetValue(key, out var tilesForMask) && tilesForMask.Count > 0)
-            {
-                // Use first tile's coords; additional tiles are variations
-                var tileId = tilesForMask[0].TileId;
-                variants[bitmask] = TileIdToAtlasCoords(tileId, columns);
-                hasAnyVariant = true;
-            }
+            // Convert Corner16 to Full8 to look up in the parsed wang data
+            // (wang data stores tiles at Full8 bitmasks from WangIdToBitmask)
+            var hasNE = (corner16 & NeighborBitmaskCorner.NorthEast) != 0;
+            var hasSE = (corner16 & NeighborBitmaskCorner.SouthEast) != 0;
+            var hasSW = (corner16 & NeighborBitmaskCorner.SouthWest) != 0;
+            var hasNW = (corner16 & NeighborBitmaskCorner.NorthWest) != 0;
+            var full8Mask = DualGridAutoTile.CornersToFull8Bitmask(hasNE, hasSE, hasSW, hasNW);
+
+            var key = (wangSetName, full8Mask);
+            if (!wangData.BitmaskToTiles.TryGetValue(key, out var tilesForMask) || tilesForMask.Count == 0)
+                continue;
+
+            // Store at Corner16 index
+            var tileId = tilesForMask[0].TileId;
+            variants[corner16] = TileIdToAtlasCoords(tileId, columns);
+            hasAnyVariant = true;
         }
 
         return hasAnyVariant ? variants : null;
@@ -791,6 +858,67 @@ public static class TiledTilesetLoader
             _ => VariationMode.PerInstance
         };
     }
+
+    /// <summary>
+    /// Regex patterns for detecting variation groups from tile IDs.
+    /// Numbered suffix (grass1, grass2) = PerGeneration (per-map), lettered suffix (flower_a, flower_b) = PerInstance.
+    /// </summary>
+    private static readonly System.Text.RegularExpressions.Regex NumberedSuffixPattern =
+        new(@"^(.+?)(\d+)$", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    private static readonly System.Text.RegularExpressions.Regex LetteredSuffixPattern =
+        new(@"^(.+)_([a-z])$", System.Text.RegularExpressions.RegexOptions.Compiled | System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    /// <summary>
+    /// Detects variation group info from a tile ID based on naming patterns.
+    /// Numbered suffixes (grass1, grass2, grass3) = PerGeneration (one picked per map).
+    /// Lettered suffixes (flower_a, flower_b) = PerInstance (randomly picked per placement).
+    /// </summary>
+    /// <param name="tileId">The tile ID to analyze.</param>
+    /// <returns>Variation info or null if no pattern detected.</returns>
+    public static VariationGroupInfo? DetectVariationPattern(string tileId)
+    {
+        if (string.IsNullOrEmpty(tileId))
+            return null;
+
+        // Check for numbered suffix first (grass1, grass2) - per-map variation
+        var numberedMatch = NumberedSuffixPattern.Match(tileId);
+        if (numberedMatch.Success)
+        {
+            var baseName = numberedMatch.Groups[1].Value;
+            var variantIndex = int.Parse(numberedMatch.Groups[2].Value);
+
+            // Avoid matching IDs that are just numbers or have very short base names
+            if (!string.IsNullOrEmpty(baseName) && baseName.Length >= 2)
+            {
+                return new VariationGroupInfo(baseName, variantIndex, VariationMode.PerGeneration);
+            }
+        }
+
+        // Check for lettered suffix (flower_a, flower_b) - per-instance variation
+        var letteredMatch = LetteredSuffixPattern.Match(tileId);
+        if (letteredMatch.Success)
+        {
+            var baseName = letteredMatch.Groups[1].Value;
+            var letter = letteredMatch.Groups[2].Value.ToLowerInvariant()[0];
+            var variantIndex = letter - 'a'; // a=0, b=1, c=2, etc.
+
+            if (!string.IsNullOrEmpty(baseName))
+            {
+                return new VariationGroupInfo(baseName, variantIndex, VariationMode.PerInstance);
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Information about a tile's membership in a variation group.
+    /// </summary>
+    /// <param name="BaseName">The base tile name without variant suffix (e.g., "grass" for grass1).</param>
+    /// <param name="VariantIndex">The variant index (0-based for letters, 1-based for numbers).</param>
+    /// <param name="Mode">How variants should be selected: PerGeneration (one for whole map) or PerInstance (per tile).</param>
+    public record VariationGroupInfo(string BaseName, int VariantIndex, VariationMode Mode);
 
     private static string GetString(Dictionary<string, string> props, string key, string defaultValue)
         => props.GetValueOrDefault(key, defaultValue);

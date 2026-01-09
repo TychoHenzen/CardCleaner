@@ -14,6 +14,7 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     private const string DefaultTilesetPath = "res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres";
 
     private readonly Dictionary<string, TileDefinition> _tiles = new();
+    private readonly VariationGroupCollection _variationGroups = new();
 
     /// <summary>
     /// Path to the tileset resource. When using compiled atlas, this returns
@@ -59,7 +60,106 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
                 yield return tile;
     }
 
-    public void Clear() => _tiles.Clear();
+    public void Clear()
+    {
+        _tiles.Clear();
+        _variationGroups.Clear();
+    }
+
+    /// <summary>
+    /// Gets the variation group containing the specified tile, if any.
+    /// </summary>
+    public VariationGroup? GetVariationGroup(string tileId)
+    {
+        return _variationGroups.FindGroupContaining(tileId);
+    }
+
+    /// <summary>
+    /// Gets the variation group by its base name (e.g., "grass").
+    /// </summary>
+    public VariationGroup? GetVariationGroupByBaseName(string baseName)
+    {
+        return _variationGroups.GetGroupByBaseName(baseName);
+    }
+
+    /// <inheritdoc />
+    public bool AreSameTerrainType(string? tileId1, string? tileId2)
+    {
+        // Both null or empty = same (both empty)
+        if (string.IsNullOrEmpty(tileId1) && string.IsNullOrEmpty(tileId2))
+            return true;
+
+        // One null/empty, other not = different
+        if (string.IsNullOrEmpty(tileId1) || string.IsNullOrEmpty(tileId2))
+            return false;
+
+        // Exact match
+        if (tileId1 == tileId2)
+            return true;
+
+        // Check if both tiles are in the same variation group
+        var group1 = _variationGroups.FindGroupContaining(tileId1);
+        var group2 = _variationGroups.FindGroupContaining(tileId2);
+
+        if (group1 != null && group2 != null)
+            return group1.BaseName == group2.BaseName;
+
+        // Not in variation groups - compare by tile definition's auto-tile equivalence
+        // Two auto-tiles with the same variants array pointer are equivalent
+        var tile1 = GetTile(tileId1);
+        var tile2 = GetTile(tileId2);
+
+        if (tile1?.AutoTileVariants != null && tile2?.AutoTileVariants != null)
+            return ReferenceEquals(tile1.AutoTileVariants, tile2.AutoTileVariants);
+
+        return false;
+    }
+
+    /// <summary>
+    /// Selects a per-map variant for the given base name using weighted random selection.
+    /// Returns the tile ID of the selected variant.
+    /// </summary>
+    public string? SelectPerMapVariant(string baseName, RandomNumberGenerator rng)
+    {
+        var group = _variationGroups.GetGroupByBaseName(baseName);
+        if (group == null || group.Variants.Count == 0)
+            return null;
+
+        // Weighted random selection
+        var totalWeight = 0f;
+        foreach (var v in group.Variants)
+            totalWeight += v.Weight;
+
+        if (totalWeight <= 0)
+            return group.Variants[0].TileId;
+
+        var roll = rng.Randf() * totalWeight;
+        var cumulative = 0f;
+        foreach (var v in group.Variants)
+        {
+            cumulative += v.Weight;
+            if (roll <= cumulative)
+                return v.TileId;
+        }
+
+        return group.Variants[^1].TileId;
+    }
+
+    /// <summary>
+    /// Gets all variants for a base name with their weights (for per-instance selection).
+    /// </summary>
+    public IReadOnlyList<VariantWeight> GetInstanceVariants(string baseName)
+    {
+        return _variationGroups.GetVariantsFor(baseName);
+    }
+
+    /// <summary>
+    /// Returns all variation groups.
+    /// </summary>
+    public IEnumerable<VariationGroup> GetAllVariationGroups()
+    {
+        return _variationGroups.GetAllGroups();
+    }
 
     /// <summary>
     /// Loads tiles from Data/Tiles/tiles.json.
@@ -105,6 +205,7 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
                 }
 
                 ILog.Print($"[TileRegistry] SUCCESS: Registered {_tiles.Count} tiles, using compiled atlas for auto-tiles");
+                BuildVariationGroups();
                 return;
             }
             else
@@ -123,6 +224,56 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
             RegisterTile(tile);
 
         ILog.Print($"[TileRegistry] FALLBACK: Registered {_tiles.Count} tiles using tileset {TilesetPath}");
+        BuildVariationGroups();
+    }
+
+    /// <summary>
+    /// Builds variation groups from loaded tiles based on naming patterns.
+    /// Tiles with numbered suffixes (grass1, grass2) are grouped as PerGeneration.
+    /// Tiles with lettered suffixes (flower_a, flower_b) are grouped as PerInstance.
+    /// </summary>
+    private void BuildVariationGroups()
+    {
+        _variationGroups.Clear();
+
+        // Group tiles by detected pattern
+        var groups = new Dictionary<string, List<(TileDefinition tile, TiledTilesetLoader.VariationGroupInfo info)>>();
+
+        foreach (var tile in _tiles.Values)
+        {
+            var info = TiledTilesetLoader.DetectVariationPattern(tile.Id);
+            if (info == null)
+                continue;
+
+            if (!groups.ContainsKey(info.BaseName))
+                groups[info.BaseName] = new List<(TileDefinition, TiledTilesetLoader.VariationGroupInfo)>();
+
+            groups[info.BaseName].Add((tile, info));
+        }
+
+        // Create VariationGroups for groups with 2+ tiles
+        foreach (var (baseName, members) in groups)
+        {
+            if (members.Count < 2)
+                continue;
+
+            // Use the mode from the first member (they should all be the same)
+            var mode = members[0].info.Mode;
+
+            // Build variants with weights from tile probability
+            var variants = members
+                .OrderBy(m => m.info.VariantIndex) // Sort by variant index for consistency
+                .Select(m => new VariantWeight(m.tile.Id, m.tile.Probability))
+                .ToList();
+
+            var group = new VariationGroup(baseName, mode, variants);
+            _variationGroups.AddGroup(group);
+        }
+
+        if (_variationGroups.Count > 0)
+        {
+            ILog.Print($"[TileRegistry] Built {_variationGroups.Count} variation groups from tile naming patterns");
+        }
     }
 
     /// <summary>
@@ -209,7 +360,8 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
             dominance: original.Dominance,
             innerTerrainId: original.InnerTerrainId,
             outerTerrainId: original.OuterTerrainId,
-            isGapTile: original.IsGapTile);
+            isGapTile: original.IsGapTile,
+            probability: original.Probability);
     }
 
     /// <summary>

@@ -40,6 +40,13 @@ public class SimpleMapData
     public Dictionary<string, int> PerGenerationVariants { get; set; } = new();
 
     /// <summary>
+    /// Pre-selected tile IDs for variation groups with PerGeneration mode.
+    /// Maps group base name (e.g., "grass") to the selected tile ID (e.g., "grass2").
+    /// When rendering, tiles in these groups should use the selected variant.
+    /// </summary>
+    public Dictionary<string, string> PerGenerationGroupVariants { get; set; } = new();
+
+    /// <summary>
     /// Context-selected variation indices for tiles with VariationMode.Contextual.
     /// Maps tile position to variation index (0-based into TileDefinition.Variations).
     /// Variants are selected based on biome, nearby tiles, and other context.
@@ -157,6 +164,7 @@ public class SimpleMapData
             foreach (var (visualPos, (_, _, bitmask)) in DecorationOverlays)
             {
                 // Only count positions with actual transitions (not 0 or 15)
+                // Note: 15 = all corners filled in Corner16 format (NE=1 + SE=2 + SW=4 + NW=8)
                 if (bitmask == 0 || bitmask == 15)
                     continue;
 

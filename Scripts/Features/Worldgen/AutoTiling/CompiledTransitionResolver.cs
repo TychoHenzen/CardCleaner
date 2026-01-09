@@ -51,9 +51,13 @@ public class CompiledTransitionResolver : ITransitionResolver
     /// <summary>
     /// Resolves the atlas coordinates for a terrain transition.
     /// Returns the first variant (deterministic behavior).
+    /// Note: Input bitmask is Full8 format, converted to Corner16 for transition map lookup.
     /// </summary>
     public Vector2I? ResolveTransition(string innerTerrainId, string outerTerrainId, int bitmask)
     {
+        // Bitmask is already in Corner16 format from dual-grid (NE=1, SE=2, SW=4, NW=8)
+        // Transition map uses Corner16 indexing, so use directly
+
         // Try direct lookup first (for fixed transitions and composited tiles)
         var coords = _transitionMap.GetVariantCoords(innerTerrainId, outerTerrainId, bitmask);
         if (coords.HasValue)
@@ -72,15 +76,18 @@ public class CompiledTransitionResolver : ITransitionResolver
     /// <summary>
     /// Resolves the atlas coordinates for a terrain transition with random variant selection.
     /// Uses position-based seeding for consistent re-renders.
+    /// Note: Input bitmask is Full8 format, converted to Corner16 for transition map lookup.
     /// </summary>
     /// <param name="innerTerrainId">Inner terrain ID.</param>
     /// <param name="outerTerrainId">Outer terrain ID.</param>
-    /// <param name="bitmask">Corner/edge bitmask value.</param>
+    /// <param name="bitmask">Corner16 bitmask value (NE=1, SE=2, SW=4, NW=8).</param>
     /// <param name="x">X position for seed generation.</param>
     /// <param name="y">Y position for seed generation.</param>
     /// <returns>Atlas coordinates for a randomly selected variant, or null if not found.</returns>
     public Vector2I? ResolveTransitionWithVariant(string innerTerrainId, string outerTerrainId, int bitmask, int x, int y)
     {
+        // Bitmask is already in Corner16 format from dual-grid
+
         // Create position-based seed for deterministic random selection
         var positionSeed = HashPosition(x, y);
 
@@ -118,6 +125,7 @@ public class CompiledTransitionResolver : ITransitionResolver
     /// Resolves a transition with full render info, including fallback to provided coordinates.
     /// Uses first variant (deterministic behavior).
     /// When using compiled atlas, ensures fallback always uses sourceId 0.
+    /// Note: Input bitmask is Full8 format, converted to Corner16 for transition map lookup.
     /// </summary>
     public TransitionResolveResult ResolveWithFallback(
         string innerTerrainId,
@@ -126,7 +134,7 @@ public class CompiledTransitionResolver : ITransitionResolver
         int fallbackSourceId,
         Vector2I fallbackCoords)
     {
-        // Try compiled transition map first
+        // Try compiled transition map first (bitmask is already Corner16)
         var coords = ResolveTransition(innerTerrainId, outerTerrainId, bitmask);
         if (coords.HasValue)
             return new TransitionResolveResult(_compiledAtlasSourceId, coords.Value);
@@ -149,6 +157,7 @@ public class CompiledTransitionResolver : ITransitionResolver
     /// Resolves a transition with full render info and random variant selection.
     /// Uses position-based seeding for consistent re-renders.
     /// When using compiled atlas, ensures fallback always uses sourceId 0.
+    /// Note: Input bitmask is Full8 format, converted to Corner16 for transition map lookup.
     /// </summary>
     public TransitionResolveResult ResolveWithFallbackAndVariant(
         string innerTerrainId,
@@ -159,7 +168,7 @@ public class CompiledTransitionResolver : ITransitionResolver
         int tileX,
         int tileY)
     {
-        // Try compiled transition map first with variant selection
+        // Try compiled transition map first with variant selection (bitmask is already Corner16)
         var coords = ResolveTransitionWithVariant(innerTerrainId, outerTerrainId, bitmask, tileX, tileY);
         if (coords.HasValue)
             return new TransitionResolveResult(_compiledAtlasSourceId, coords.Value);

@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
@@ -15,6 +17,7 @@ namespace CardCleaner.Tests.Mocks;
 public class MockTileRegistry : ITileRegistry, ITileMetadataProvider
 {
     private readonly Dictionary<string, TileDefinition> _tiles = new();
+    private readonly VariationGroupCollection _variationGroups = new();
 
     public string TilesetPath => "res://test.tres";
     public bool UsingCompiledAtlas => false;
@@ -34,7 +37,46 @@ public class MockTileRegistry : ITileRegistry, ITileMetadataProvider
                 yield return tile;
     }
 
-    public void Clear() => _tiles.Clear();
+    public void Clear()
+    {
+        _tiles.Clear();
+        _variationGroups.Clear();
+    }
+
+    // Variation group methods (stub implementations for testing)
+    public VariationGroup? GetVariationGroup(string tileId) => _variationGroups.FindGroupContaining(tileId);
+    public VariationGroup? GetVariationGroupByBaseName(string baseName) => _variationGroups.GetGroupByBaseName(baseName);
+
+    public bool AreSameTerrainType(string? tileId1, string? tileId2)
+    {
+        if (string.IsNullOrEmpty(tileId1) && string.IsNullOrEmpty(tileId2))
+            return true;
+        if (string.IsNullOrEmpty(tileId1) || string.IsNullOrEmpty(tileId2))
+            return false;
+        if (tileId1 == tileId2)
+            return true;
+
+        var group1 = _variationGroups.FindGroupContaining(tileId1);
+        var group2 = _variationGroups.FindGroupContaining(tileId2);
+        if (group1 != null && group2 != null)
+            return group1.BaseName == group2.BaseName;
+
+        var tile1 = GetTile(tileId1);
+        var tile2 = GetTile(tileId2);
+        if (tile1?.AutoTileVariants != null && tile2?.AutoTileVariants != null)
+            return ReferenceEquals(tile1.AutoTileVariants, tile2.AutoTileVariants);
+
+        return false;
+    }
+
+    public string? SelectPerMapVariant(string baseName, RandomNumberGenerator rng) => null;
+    public IReadOnlyList<VariantWeight> GetInstanceVariants(string baseName) => Array.Empty<VariantWeight>();
+    public IEnumerable<VariationGroup> GetAllVariationGroups() => _variationGroups.GetAllGroups();
+
+    /// <summary>
+    /// Helper to add a variation group for testing.
+    /// </summary>
+    public void AddVariationGroup(VariationGroup group) => _variationGroups.AddGroup(group);
 
     /// <summary>
     /// Helper to create a simple auto-tile (HasAutoTileVariants = true).

@@ -57,10 +57,10 @@ public class AutoTileGapConstraint : IWfcConstraint
                 if (!neighborTile.HasAutoTileVariants)
                     continue;
 
-                // Both are auto-tiles - must be SAME type
-                if (context.TileId != neighborTileId)
+                // Both are auto-tiles - must be SAME terrain type (allowing variations)
+                if (!_tileRegistry.AreSameTerrainType(context.TileId, neighborTileId))
                 {
-                    return 0.0f; // Hard ban - different auto-tiles cannot be adjacent
+                    return 0.0f; // Hard ban - different auto-tile types cannot be adjacent
                 }
             }
             return 1.0f;
@@ -84,10 +84,10 @@ public class AutoTileGapConstraint : IWfcConstraint
             if (!neighborTile.HasAutoTileVariants)
                 continue;
 
-            // Both are auto-tiles - must be SAME type
-            if (context.TileId != neighborTileId)
+            // Both are auto-tiles - must be SAME terrain type (allowing variations)
+            if (!_tileRegistry.AreSameTerrainType(context.TileId, neighborTileId))
             {
-                return 0.0f; // Hard ban - different auto-tiles cannot be adjacent
+                return 0.0f; // Hard ban - different auto-tile types cannot be adjacent
             }
         }
 

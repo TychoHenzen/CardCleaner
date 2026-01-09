@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
@@ -34,4 +35,37 @@ public interface ITileRegistry
     IEnumerable<TileDefinition> GetAllTiles();
     IEnumerable<TileDefinition> GetTilesByBiome(string biomeId);
     void Clear();
+
+    /// <summary>
+    /// Gets the variation group containing the specified tile, if any.
+    /// </summary>
+    VariationGroup? GetVariationGroup(string tileId);
+
+    /// <summary>
+    /// Gets the variation group by its base name (e.g., "grass").
+    /// </summary>
+    VariationGroup? GetVariationGroupByBaseName(string baseName);
+
+    /// <summary>
+    /// Determines if two tile IDs represent the same terrain type.
+    /// Tiles are considered equivalent if they are in the same variation group,
+    /// or if they have the same ID.
+    /// </summary>
+    bool AreSameTerrainType(string? tileId1, string? tileId2);
+
+    /// <summary>
+    /// Selects a per-map variant for the given base name using weighted random selection.
+    /// Returns the tile ID of the selected variant.
+    /// </summary>
+    string? SelectPerMapVariant(string baseName, RandomNumberGenerator rng);
+
+    /// <summary>
+    /// Gets all variants for a base name with their weights (for per-instance selection).
+    /// </summary>
+    IReadOnlyList<VariantWeight> GetInstanceVariants(string baseName);
+
+    /// <summary>
+    /// Returns all variation groups.
+    /// </summary>
+    IEnumerable<VariationGroup> GetAllVariationGroups();
 }

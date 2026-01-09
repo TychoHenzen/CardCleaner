@@ -86,11 +86,11 @@ public class TmxAtlasCompiler
         // Identify simple base terrain tiles:
         // - Must have class/type attribute in TSX (explicitly defined game tiles)
         // - Must have layer="terrain" (not "wang")
-        // - Must not be part of any Wang set
+        // - Must not be part of any Wang set (uses AllMemberTileIds to include filtered tiles)
         var simpleBaseTerrains = allTiles
             .Where(t => t.HasClassAttribute && // Only tiles with class/type attr in TSX
                    t.Layer.ToLowerInvariant() == "terrain" &&
-                   !allWangSets.Any(ws => ws.WangTiles.Values.Any(list => list.Contains(t.TileId)) && ws.TsxPath == t.TsxPath))
+                   !allWangSets.Any(ws => ws.AllMemberTileIds.Contains(t.TileId) && ws.TsxPath == t.TsxPath))
             .GroupBy(t => t.Id)
             .Select(g => g.First())
             .ToList();
@@ -154,7 +154,7 @@ public class TmxAtlasCompiler
         // Pack base tiles into atlas (excluding compositable wang set tiles)
         var tilesToPack = allTiles
             .Where(t => !compositableWangSets.Any(ws =>
-                ws.WangTiles.Values.Any(list => list.Contains(t.TileId)) && ws.TsxPath == t.TsxPath))
+                ws.AllMemberTileIds.Contains(t.TileId) && ws.TsxPath == t.TsxPath))
             .ToList();
 
         // Estimate total tile count to calculate optimal atlas width
@@ -530,16 +530,27 @@ public class TmxAtlasCompiler
                     var type = wangSetElement.Attribute("type")?.Value ?? "corner";
                     var props = ParseProperties(wangSetElement.Element("properties"));
 
-                    var wangTiles = new Dictionary<int, List<int>>(); // wangid -> list of tileIds (variants)
+                    var wangTiles = new Dictionary<int, List<int>>(); // bitmask -> list of tileIds (variants)
+                    var allMemberTileIds = new HashSet<int>(); // ALL tiles in wang set
                     foreach (var wangTile in wangSetElement.Elements("wangtile"))
                     {
                         var tileId = int.Parse(wangTile.Attribute("tileid")?.Value ?? "-1");
                         var wangIdStr = wangTile.Attribute("wangid")?.Value ?? "";
 
+                        if (tileId < 0) continue;
+
+                        // Track ALL tiles as members (for exclusion from base terrains)
+                        allMemberTileIds.Add(tileId);
+
                         // Parse wangid (format: "0,1,0,1,0,1,0,1")
                         var wangId = ParseWangId(wangIdStr, type);
-                        if (tileId >= 0 && wangId >= 0)
+                        if (wangId >= 0)
                         {
+                            // For mixed wangsets, only use blob-compliant tiles for bitmask lookup
+                            // (edges must match what corners imply)
+                            if (type == "mixed" && !IsBlobCompliant(wangIdStr))
+                                continue;
+
                             // Accumulate tiles with same bitmask as variants
                             if (!wangTiles.ContainsKey(wangId))
                                 wangTiles[wangId] = new List<int>();
@@ -556,6 +567,7 @@ public class TmxAtlasCompiler
                         SourceScale = sourceScale,
                         Properties = props,
                         WangTiles = wangTiles,
+                        AllMemberTileIds = allMemberTileIds,
                         SourceImage = image,
                         SourceTileWidth = tileWidth,
                         SourceTileHeight = tileHeight,
@@ -602,6 +614,35 @@ public class TmxAtlasCompiler
         if (tl > 0) bitmask |= 8;  // TL = NW = bit 3
 
         return bitmask;
+    }
+
+    /// <summary>
+    /// Checks if a wangid has blob-compliant edges (edges match what corners imply).
+    /// For dual-grid Corner16 tilesets, we only want tiles where edges are derived from corners.
+    /// </summary>
+    private bool IsBlobCompliant(string wangIdStr)
+    {
+        var parts = wangIdStr.Split(',');
+        if (parts.Length != 8) return false;
+
+        // Parse all values: 0=N, 1=NE/TR, 2=E, 3=SE/BR, 4=S, 5=SW/BL, 6=W, 7=NW/TL
+        var n = int.Parse(parts[0]);
+        var tr = int.Parse(parts[1]);  // NE
+        var e = int.Parse(parts[2]);
+        var br = int.Parse(parts[3]);  // SE
+        var s = int.Parse(parts[4]);
+        var bl = int.Parse(parts[5]);  // SW
+        var w = int.Parse(parts[6]);
+        var tl = int.Parse(parts[7]);  // NW
+
+        // Blob constraint: edge is set if EITHER adjacent corner is set
+        var blobN = (tl > 0 || tr > 0) ? 1 : 0;
+        var blobE = (tr > 0 || br > 0) ? 1 : 0;
+        var blobS = (br > 0 || bl > 0) ? 1 : 0;
+        var blobW = (bl > 0 || tl > 0) ? 1 : 0;
+
+        // Check if actual edges match blob-derived edges
+        return n == blobN && e == blobE && s == blobS && w == blobW;
     }
 
     private Dictionary<string, string> ParseProperties(XElement? propsElement)
@@ -1128,6 +1169,7 @@ public class TmxAtlasCompiler
         public float SourceScale { get; set; }
         public Dictionary<string, string> Properties { get; set; } = new();
         public Dictionary<int, List<int>> WangTiles { get; set; } = new(); // bitmask -> list of tileIds (variants)
+        public HashSet<int> AllMemberTileIds { get; set; } = new(); // ALL tiles in wang set (for exclusion from base terrains)
         public Image SourceImage { get; set; } = null!;
         public int SourceTileWidth { get; set; }
         public int SourceTileHeight { get; set; }

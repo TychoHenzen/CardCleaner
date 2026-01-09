@@ -891,6 +891,7 @@ public partial class SimpleWorldMapScreen : Node3D
             }
             // For uniform terrain (top == base, bitmask 15), we need the solid fill
             // Self-transitions don't exist in the map, so find ANY transition with this tile
+            // Note: 15 = all corners filled in Corner16 format (NE=1 + SE=2 + SW=4 + NW=8)
             else if (topTileId == baseTileId && bitmask == 15)
             {
                 // For compositable tiles, find the solid fill from any transition
@@ -904,6 +905,7 @@ public partial class SimpleWorldMapScreen : Node3D
                 else if (baseTile.SourceId == _transitionResolver.CompiledAtlasSourceId)
                 {
                     // Tile already uses compiled atlas source - use its coordinates directly
+                    // Note: 15 = all corners filled in Corner16 format
                     atlasCoords = baseTile.HasAutoTileVariants
                         ? baseTile.GetAutoTileCoords(15)
                         : baseTile.AtlasCoords;

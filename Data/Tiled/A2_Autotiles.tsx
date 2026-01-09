@@ -212,5 +212,441 @@
     <property name="passability" propertytype="Passability" value="passable"/>
    </properties>
   </wangset>
+  <wangset name="Mound3" type="corner" tile="-1">
+   <wangcolor name="Foreground" color="#ff0000" tile="-1" probability="1"/>
+   <wangtile tileid="596" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="597" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="598" wangid="0,1,0,1,0,1,0,0"/>
+   <wangtile tileid="599" wangid="0,0,0,1,0,1,0,1"/>
+   <wangtile tileid="628" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="629" wangid="0,0,0,0,0,0,0,1"/>
+   <wangtile tileid="630" wangid="0,1,0,1,0,0,0,1"/>
+   <wangtile tileid="631" wangid="0,1,0,0,0,1,0,1"/>
+   <wangtile tileid="660" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="661" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="662" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="663" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="692" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="693" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="694" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="695" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="724" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="725" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="726" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="727" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="756" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="757" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="758" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="759" wangid="0,0,0,0,0,0,0,1"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="true"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
+  </wangset>
+  <wangset name="Mound4" type="corner" tile="-1">
+   <wangcolor name="Foreground" color="#ff0000" tile="-1" probability="1"/>
+   <wangtile tileid="600" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="601" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="602" wangid="0,1,0,1,0,1,0,0"/>
+   <wangtile tileid="603" wangid="0,0,0,1,0,1,0,1"/>
+   <wangtile tileid="632" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="633" wangid="0,0,0,0,0,0,0,1"/>
+   <wangtile tileid="634" wangid="0,1,0,1,0,0,0,1"/>
+   <wangtile tileid="635" wangid="0,1,0,0,0,1,0,1"/>
+   <wangtile tileid="664" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="665" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="666" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="667" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="696" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="697" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="698" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="699" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="728" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="729" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="730" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="731" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="760" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="761" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="762" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="763" wangid="0,0,0,0,0,0,0,1"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
+  </wangset>
+  <wangset name="Bush1" type="corner" tile="-1">
+   <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
+   <wangtile tileid="604" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="605" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="606" wangid="0,1,0,1,0,1,0,0"/>
+   <wangtile tileid="607" wangid="0,0,0,1,0,1,0,1"/>
+   <wangtile tileid="636" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="637" wangid="0,0,0,0,0,0,0,1"/>
+   <wangtile tileid="638" wangid="0,1,0,1,0,0,0,1"/>
+   <wangtile tileid="639" wangid="0,1,0,0,0,1,0,1"/>
+   <wangtile tileid="668" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="669" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="670" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="671" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="700" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="701" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="702" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="703" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="732" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="733" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="734" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="735" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="764" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="765" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="766" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="767" wangid="0,0,0,0,0,0,0,1"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
+  </wangset>
+  <wangset name="Rocks1" type="corner" tile="-1">
+   <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
+   <wangtile tileid="408" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="409" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="410" wangid="0,1,0,1,0,1,0,0"/>
+   <wangtile tileid="411" wangid="0,0,0,1,0,1,0,1"/>
+   <wangtile tileid="440" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="441" wangid="0,0,0,0,0,0,0,1"/>
+   <wangtile tileid="442" wangid="0,1,0,1,0,0,0,1"/>
+   <wangtile tileid="443" wangid="0,1,0,0,0,1,0,1"/>
+   <wangtile tileid="472" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="473" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="474" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="475" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="504" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="505" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="506" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="507" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="536" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="537" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="538" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="539" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="568" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="569" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="570" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="571" wangid="0,0,0,0,0,0,0,1"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
+  </wangset>
+  <wangset name="Bush2" type="corner" tile="-1">
+   <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
+   <wangtile tileid="412" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="413" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="414" wangid="0,1,0,1,0,1,0,0"/>
+   <wangtile tileid="415" wangid="0,0,0,1,0,1,0,1"/>
+   <wangtile tileid="444" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="445" wangid="0,0,0,0,0,0,0,1"/>
+   <wangtile tileid="446" wangid="0,1,0,1,0,0,0,1"/>
+   <wangtile tileid="447" wangid="0,1,0,0,0,1,0,1"/>
+   <wangtile tileid="476" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="477" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="478" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="479" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="508" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="509" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="510" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="511" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="540" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="541" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="542" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="543" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="572" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="573" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="574" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="575" wangid="0,0,0,0,0,0,0,1"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
+  </wangset>
+  <wangset name="Bush3" type="corner" tile="-1">
+   <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
+   <wangtile tileid="792" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="793" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="794" wangid="0,1,0,1,0,1,0,0"/>
+   <wangtile tileid="795" wangid="0,0,0,1,0,1,0,1"/>
+   <wangtile tileid="824" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="825" wangid="0,0,0,0,0,0,0,1"/>
+   <wangtile tileid="826" wangid="0,1,0,1,0,0,0,1"/>
+   <wangtile tileid="827" wangid="0,1,0,0,0,1,0,1"/>
+   <wangtile tileid="856" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="857" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="858" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="859" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="888" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="889" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="890" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="891" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="920" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="921" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="922" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="923" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="952" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="953" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="954" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="955" wangid="0,0,0,0,0,0,0,1"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
+  </wangset>
+  <wangset name="Hedge1" type="edge" tile="-1">
+   <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
+   <wangtile tileid="788" wangid="0,0,1,0,1,0,0,0"/>
+   <wangtile tileid="789" wangid="0,0,0,0,1,0,1,0"/>
+   <wangtile tileid="790" wangid="0,0,1,0,1,0,1,0"/>
+   <wangtile tileid="791" wangid="1,0,0,0,1,0,1,0"/>
+   <wangtile tileid="820" wangid="1,0,1,0,0,0,0,0"/>
+   <wangtile tileid="821" wangid="1,0,0,0,0,0,1,0"/>
+   <wangtile tileid="822" wangid="1,0,1,0,1,0,0,0"/>
+   <wangtile tileid="823" wangid="1,0,1,0,0,0,1,0"/>
+   <wangtile tileid="852" wangid="0,0,1,0,1,0,0,0"/>
+   <wangtile tileid="853" wangid="0,0,1,0,0,0,1,0"/>
+   <wangtile tileid="854" wangid="0,0,1,0,0,0,1,0"/>
+   <wangtile tileid="855" wangid="0,0,0,0,1,0,1,0"/>
+   <wangtile tileid="884" wangid="1,0,0,0,1,0,0,0"/>
+   <wangtile tileid="887" wangid="1,0,0,0,1,0,0,0"/>
+   <wangtile tileid="916" wangid="1,0,0,0,1,0,0,0"/>
+   <wangtile tileid="919" wangid="1,0,0,0,1,0,0,0"/>
+   <wangtile tileid="948" wangid="1,0,1,0,0,0,0,0"/>
+   <wangtile tileid="949" wangid="0,0,1,0,0,0,1,0"/>
+   <wangtile tileid="950" wangid="0,0,1,0,0,0,1,0"/>
+   <wangtile tileid="951" wangid="1,0,0,0,0,0,1,0"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
+  </wangset>
+  <wangset name="Bush4" type="corner" tile="-1">
+   <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
+   <wangtile tileid="784" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="785" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="786" wangid="0,1,0,1,0,1,0,0"/>
+   <wangtile tileid="787" wangid="0,0,0,1,0,1,0,1"/>
+   <wangtile tileid="816" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="817" wangid="0,0,0,0,0,0,0,1"/>
+   <wangtile tileid="818" wangid="0,1,0,1,0,0,0,1"/>
+   <wangtile tileid="819" wangid="0,1,0,0,0,1,0,1"/>
+   <wangtile tileid="848" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="849" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="850" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="851" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="880" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="881" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="882" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="883" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="912" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="913" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="914" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="915" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="944" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="945" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="946" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="947" wangid="0,0,0,0,0,0,0,1"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
+  </wangset>
+  <wangset name="Hedge2" type="edge" tile="-1">
+   <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
+   <wangtile tileid="780" wangid="0,0,1,0,1,0,0,0"/>
+   <wangtile tileid="781" wangid="0,0,0,0,1,0,1,0"/>
+   <wangtile tileid="782" wangid="0,0,1,0,1,0,1,0"/>
+   <wangtile tileid="783" wangid="1,0,0,0,1,0,1,0"/>
+   <wangtile tileid="812" wangid="1,0,1,0,0,0,0,0"/>
+   <wangtile tileid="813" wangid="1,0,0,0,0,0,1,0"/>
+   <wangtile tileid="814" wangid="1,0,1,0,1,0,0,0"/>
+   <wangtile tileid="815" wangid="1,0,1,0,0,0,1,0"/>
+   <wangtile tileid="844" wangid="0,0,1,0,1,0,0,0"/>
+   <wangtile tileid="845" wangid="0,0,1,0,0,0,1,0"/>
+   <wangtile tileid="846" wangid="0,0,1,0,0,0,1,0"/>
+   <wangtile tileid="847" wangid="0,0,0,0,1,0,1,0"/>
+   <wangtile tileid="876" wangid="1,0,0,0,1,0,0,0"/>
+   <wangtile tileid="879" wangid="1,0,0,0,1,0,0,0"/>
+   <wangtile tileid="908" wangid="1,0,0,0,1,0,0,0"/>
+   <wangtile tileid="911" wangid="1,0,0,0,1,0,0,0"/>
+   <wangtile tileid="940" wangid="1,0,1,0,0,0,0,0"/>
+   <wangtile tileid="941" wangid="0,0,1,0,0,0,1,0"/>
+   <wangtile tileid="942" wangid="0,0,1,0,0,0,1,0"/>
+   <wangtile tileid="943" wangid="1,0,0,0,0,0,1,0"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
+  </wangset>
+  <wangset name="Bush5" type="corner" tile="-1">
+   <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
+   <wangtile tileid="776" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="777" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="778" wangid="0,1,0,1,0,1,0,0"/>
+   <wangtile tileid="779" wangid="0,0,0,1,0,1,0,1"/>
+   <wangtile tileid="808" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="809" wangid="0,0,0,0,0,0,0,1"/>
+   <wangtile tileid="810" wangid="0,1,0,1,0,0,0,1"/>
+   <wangtile tileid="811" wangid="0,1,0,0,0,1,0,1"/>
+   <wangtile tileid="840" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="841" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="842" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="843" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="872" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="873" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="874" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="875" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="904" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="905" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="906" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="907" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="936" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="937" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="938" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="939" wangid="0,0,0,0,0,0,0,1"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
+  </wangset>
+  <wangset name="Mound5" type="corner" tile="-1">
+   <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
+   <wangtile tileid="772" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="773" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="774" wangid="0,1,0,1,0,1,0,0"/>
+   <wangtile tileid="775" wangid="0,0,0,1,0,1,0,1"/>
+   <wangtile tileid="804" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="805" wangid="0,0,0,0,0,0,0,1"/>
+   <wangtile tileid="806" wangid="0,1,0,1,0,0,0,1"/>
+   <wangtile tileid="807" wangid="0,1,0,0,0,1,0,1"/>
+   <wangtile tileid="836" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="837" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="838" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="839" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="868" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="869" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="870" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="871" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="900" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="901" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="902" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="903" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="932" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="933" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="934" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="935" wangid="0,0,0,0,0,0,0,1"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
+  </wangset>
+  <wangset name="Mound6" type="corner" tile="-1">
+   <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
+  </wangset>
+  <wangset name="Mound7" type="corner" tile="-1">
+   <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
+   <wangtile tileid="768" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="769" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="770" wangid="0,1,0,1,0,1,0,0"/>
+   <wangtile tileid="771" wangid="0,0,0,1,0,1,0,1"/>
+   <wangtile tileid="800" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="801" wangid="0,0,0,0,0,0,0,1"/>
+   <wangtile tileid="802" wangid="0,1,0,1,0,0,0,1"/>
+   <wangtile tileid="803" wangid="0,1,0,0,0,1,0,1"/>
+   <wangtile tileid="832" wangid="0,0,0,1,0,0,0,0"/>
+   <wangtile tileid="833" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="834" wangid="0,0,0,1,0,1,0,0"/>
+   <wangtile tileid="835" wangid="0,0,0,0,0,1,0,0"/>
+   <wangtile tileid="864" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="865" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="866" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="867" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="896" wangid="0,1,0,1,0,0,0,0"/>
+   <wangtile tileid="897" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="898" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="899" wangid="0,0,0,0,0,1,0,1"/>
+   <wangtile tileid="928" wangid="0,1,0,0,0,0,0,0"/>
+   <wangtile tileid="929" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="930" wangid="0,1,0,0,0,0,0,1"/>
+   <wangtile tileid="931" wangid="0,0,0,0,0,0,0,1"/>
+   <properties>
+    <property name="InnerTerrain" value="$self"/>
+    <property name="OuterTerrain" value="*"/>
+    <property name="TransparentBackground" type="bool" value="false"/>
+    <property name="biome" type="int" propertytype="Biome" value="0"/>
+    <property name="elevation" type="float" value="0"/>
+    <property name="layer" propertytype="Layer" value="terrain"/>
+    <property name="passability" propertytype="Passability" value="passable"/>
+   </properties>
+  </wangset>
  </wangsets>
 </tileset>

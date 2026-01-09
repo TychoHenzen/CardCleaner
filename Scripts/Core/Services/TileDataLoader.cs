@@ -311,7 +311,8 @@ public static class TileDataLoader
             dominance: dominance,
             innerTerrainId: data.InnerTerrain,
             outerTerrainId: data.OuterTerrain,
-            isGapTile: data.IsGapTile ?? false);
+            isGapTile: data.IsGapTile ?? false,
+            probability: data.Probability ?? 1.0f);
     }
 
     /// <summary>
@@ -510,6 +511,8 @@ public static class TileDataLoader
         [JsonPropertyName("outerTerrain")] public string? OuterTerrain { get; set; }
 
         [JsonPropertyName("isGapTile")] public bool? IsGapTile { get; set; }
+
+        [JsonPropertyName("probability")] public float? Probability { get; set; }
 
         [JsonPropertyName("description")] public string? Description { get; set; }
     }
