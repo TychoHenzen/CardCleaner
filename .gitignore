@@ -5,6 +5,7 @@ Card_Context.txt
 .Serena
 reports
 Graphics
+.venv-poc
 
 ### Godot ###
 # Godot 4+ specific ignores
@@ -121,3 +122,7 @@ addons/gdUnit4/GdUnitRunner.cfg
 
 # Tiled editor session files
 *.tiled-session
+
+# POC generated images
+Scripts/Tools/*.png
+Scripts/Tools/*.png.import

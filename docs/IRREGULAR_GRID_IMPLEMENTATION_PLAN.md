@@ -21,6 +21,78 @@ The dual-grid concept transfers directly:
 
 ---
 
+## Architectural Decisions
+
+### Decision 1: Continuous Movement (Grid-Disconnected)
+
+Player and enemy movement will be **continuous/physics-based**, not tied to discrete grid cells.
+
+**Implications**:
+- Movement uses world coordinates (Vector2), not cell IDs
+- Pathfinding returns waypoints (Vector2[]), not cell sequences
+- Collision detection via physics shapes, not grid passability checks
+- Current position determined by point-in-polygon test when needed
+
+**Benefits**:
+- Smoother, more natural movement
+- No need to track "current quad" constantly
+- Works identically for regular and irregular grids
+- Simpler integration with existing PlayerController (already physics-based)
+
+### Decision 2: Hybrid Layer System (Grid-on-Mesh)
+
+Structure and decoration layers remain **TileMapLayer-based** (regular grid), but check intersection with terrain mesh for validity.
+
+```
+Layer Stack:
+┌─────────────────────────────────────┐
+│  ArchitecturalDetailLayer (doors,   │  ← Regular grid, Z=25
+│  windows, trim)                     │
+├─────────────────────────────────────┤
+│  StructureLayer (walls, buildings)  │  ← Regular grid, Z=20
+├─────────────────────────────────────┤
+│  DecorationLayer (props, flora)     │  ← Regular grid, Z=10
+├─────────────────────────────────────┤
+│  TerrainMesh (irregular quads)      │  ← Irregular mesh, Z=0
+└─────────────────────────────────────┘
+```
+
+**Intersection Logic**:
+```csharp
+bool CanPlaceStructure(Vector2I gridCell, TileData structure)
+{
+    var cellRect = GetCellWorldRect(gridCell);
+    var intersectingQuads = mesh.GetQuadsIntersectingRect(cellRect);
+
+    // Check all intersecting terrain quads allow this structure
+    return intersectingQuads.All(q => IsTerrainCompatible(q, structure));
+}
+```
+
+**Benefits**:
+- Reuse existing TileMapLayer tooling for structures
+- Familiar placement workflow
+- Buildings still align to grid (looks intentional)
+- Easy to add architectural details layer
+
+### Decision 3: Architectural Detail Layer
+
+New layer for building details that sit on top of base structures:
+
+| Layer | Content | Z-Index |
+|-------|---------|---------|
+| ArchitecturalDetailLayer | Doors, windows, trim, shutters, awnings | 25 |
+| StructureLayer | Walls, roofs, floors, foundations | 20 |
+| DecorationLayer | Trees, rocks, bushes, props | 10 |
+| TerrainMesh | Ground terrain (irregular) | 0 |
+
+**ArchitecturalDetailLayer** tiles reference their parent StructureLayer cell:
+- Door placed at (5, 3) only valid if StructureLayer has wall at (5, 3)
+- Window placement checks wall orientation
+- Trim/awning placement follows roof edges
+
+---
+
 ## Phase 1: Core Mesh Infrastructure
 
 **Goal**: Port Python POC to C# and create foundational data structures.
