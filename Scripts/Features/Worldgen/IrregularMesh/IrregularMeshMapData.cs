@@ -84,7 +84,8 @@ public class IrregularMeshMapData : IMapData
         {
             var quad = _mesh.Quads[cellId];
             // Use majority vote from corner vertices
-            int filledCount = quad.VertexIds.Count(vid => _mesh.Vertices[vid].TerrainType == PassableTerrainType);
+            // NOTE: Terrain type > 0 is passable, terrain type 0 is impassable
+            int filledCount = quad.VertexIds.Count(vid => _mesh.Vertices[vid].TerrainType > 0);
             return filledCount >= 2 ? "terrain_filled" : "terrain_empty";
         }
 
@@ -101,12 +102,15 @@ public class IrregularMeshMapData : IMapData
 
         // Cell is passable if MAJORITY (at least 2 of 4) corner vertices have passable terrain
         // This allows traversal near terrain edges and provides better connectivity
+        // NOTE: Terrain type 0 = impassable, any terrain type > 0 = passable
         var quad = _mesh.Quads[cellId];
         int passableCount = 0;
         foreach (var vid in quad.VertexIds)
         {
             var vertex = _mesh.Vertices[vid];
-            if (!vertex.HasStructure && vertex.TerrainType == PassableTerrainType)
+            // Changed from == PassableTerrainType to > 0 because terrain generator
+            // assigns unique types (1, 2, 3, etc.) to different passable terrain tiles
+            if (!vertex.HasStructure && vertex.TerrainType > 0)
                 passableCount++;
         }
         return passableCount >= 2;

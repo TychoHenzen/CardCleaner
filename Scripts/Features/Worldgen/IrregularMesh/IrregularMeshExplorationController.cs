@@ -23,6 +23,7 @@ public partial class IrregularMeshExplorationController : Node2D
     private IrregularMeshFogOfWar? _fogOfWar;
 
     private bool _isExploring;
+    private bool _processingStep;
     private List<int>? _currentPath;
     private int _pathIndex;
 
@@ -96,6 +97,12 @@ public partial class IrregularMeshExplorationController : Node2D
     public event Action<int, Vector2>? PlayerMoved;
 
     /// <summary>
+    /// Raised when the player's world position updates during movement animation.
+    /// Parameters: (worldPos)
+    /// </summary>
+    public event Action<Vector2>? PositionUpdated;
+
+    /// <summary>
     /// Raised when the current path changes.
     /// Parameters: (path as cell IDs)
     /// </summary>
@@ -132,6 +139,7 @@ public partial class IrregularMeshExplorationController : Node2D
 
         _movementController.MovementCompleted += OnMovementCompleted;
         _movementController.CellEntered += OnCellEntered;
+        _movementController.PositionUpdated += OnPositionUpdated;
     }
 
     /// <summary>
@@ -140,7 +148,11 @@ public partial class IrregularMeshExplorationController : Node2D
     /// <param name="mapData">The irregular mesh map data.</param>
     /// <param name="startCellId">The starting cell ID.</param>
     /// <param name="visibilityChecker">Optional visibility checker.</param>
-    public void Initialize(IrregularMeshMapData mapData, int startCellId, IVisibilityChecker? visibilityChecker = null)
+    public void Initialize(
+        IrregularMeshMapData mapData, 
+        int startCellId, 
+        IVisibilityChecker? visibilityChecker = null,
+        IrregularMeshFogOfWar? fogOfWar = null)
     {
         _mapData = mapData;
         _visibilityChecker = visibilityChecker ?? new SimpleVisibilityChecker();
@@ -148,8 +160,8 @@ public partial class IrregularMeshExplorationController : Node2D
 
         _movementController!.Initialize(mapData, startCellId);
 
-        // Create fog of war system
-        _fogOfWar = new IrregularMeshFogOfWar(mapData, _visibilityChecker);
+        // Use provided fog of war or create our own
+        _fogOfWar = fogOfWar ?? new IrregularMeshFogOfWar(mapData, _visibilityChecker);
 
         // Create ExplorationAI using the IMapData interface
         _explorationAI = new ExplorationAI(mapData, startCellId, _visibilityChecker);
@@ -232,47 +244,75 @@ public partial class IrregularMeshExplorationController : Node2D
 
     private async void ProcessNextExplorationStep()
     {
+        // Guard against re-entrance
+        if (_processingStep)
+            return;
+
         if (!_isExploring || _explorationAI == null || _movementController == null)
             return;
 
-        // Get the next step from exploration AI
-        var stepped = _explorationAI.StepExploration();
-
-        if (!stepped || _explorationAI.HasFinishedExploration)
+        _processingStep = true;
+        try
         {
-            _isExploring = false;
-            ExplorationFinished?.Invoke();
-            return;
+            // Get the next step from exploration AI
+            var stepped = _explorationAI.StepExploration();
+
+            if (!stepped || _explorationAI.HasFinishedExploration)
+            {
+                _isExploring = false;
+                ExplorationFinished?.Invoke();
+                return;
+            }
+
+            // After StepExploration, the AI has already moved internally to the next cell.
+            // We need to animate the visual movement to where the AI now is.
+            var targetCell = _explorationAI.CurrentCellId;
+            
+            // Update path display (shows remaining path after current position)
+            var remainingPath = _explorationAI.CurrentPath;
+            if (remainingPath != null)
+            {
+                // Include current cell at start of displayed path
+                _currentPath = new List<int> { targetCell };
+                _currentPath.AddRange(remainingPath);
+                PathUpdated?.Invoke(_currentPath);
+            }
+
+            // Animate to where the AI moved
+            await _movementController.MoveToCellAsync(targetCell);
+
+            // Wait before next step
+            if (StepDelay > 0)
+            {
+                await ToSignal(GetTree().CreateTimer(StepDelay), SceneTreeTimer.SignalName.Timeout);
+            }
+
+            // Continue exploration if still active
+            if (_isExploring && AutoExplore)
+            {
+                _processingStep = false; // Allow next step
+                ProcessNextExplorationStep();
+                return;
+            }
         }
-
-        // Get the current path from the AI and move along it
-        var path = _explorationAI.CurrentPath;
-        if (path != null && path.Count > 1)
+        catch (Exception ex)
         {
-            _currentPath = path.ToList();
-            PathUpdated?.Invoke(_currentPath);
-
-            // Move to next cell in path
-            var nextCell = path[1]; // Skip current cell (index 0)
-            await _movementController.MoveToCellAsync(nextCell);
+            GD.PrintErr($"[IrregularMeshExplorationController] Error in exploration step: {ex.Message}");
         }
-
-        // Wait before next step
-        if (StepDelay > 0)
+        finally
         {
-            await ToSignal(GetTree().CreateTimer(StepDelay), SceneTreeTimer.SignalName.Timeout);
-        }
-
-        // Continue exploration if still active
-        if (_isExploring && AutoExplore)
-        {
-            ProcessNextExplorationStep();
+            _processingStep = false;
         }
     }
 
     private void OnMovementCompleted(int cellId, Vector2 worldPos)
     {
         PlayerMoved?.Invoke(cellId, worldPos);
+    }
+
+    private void OnPositionUpdated(Vector2 worldPos)
+    {
+        PositionUpdated?.Invoke(worldPos);
     }
 
     private void OnCellEntered(int cellId)

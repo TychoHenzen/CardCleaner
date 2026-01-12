@@ -2,6 +2,8 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 using Godot;
 using System;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 
 /// <summary>
 /// Test node for validating irregular mesh generation and rendering.
@@ -12,6 +14,7 @@ public partial class IrregularMeshTest : Node2D
 {
     private IrregularMesh? _mesh;
     private IrregularTerrainRenderer? _renderer;
+    private ITileRegistry? _tileRegistry;
     private bool _needsRebuild = true;
 
     /// <summary>
@@ -149,8 +152,25 @@ public partial class IrregularMeshTest : Node2D
 
     public override void _Ready()
     {
+        // Initialize tile registry for proper terrain lookups
+        try
+        {
+            _tileRegistry = new TileRegistry();
+            GD.Print($"[IrregularMeshTest] Loaded TileRegistry with {((TileRegistry)_tileRegistry).GetAllTiles().GetEnumerator().MoveNext()} tiles");
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[IrregularMeshTest] Failed to load TileRegistry: {ex.Message}");
+        }
+
         _renderer = new IrregularTerrainRenderer();
         AddChild(_renderer);
+
+        // Pass tile registry to renderer for proper terrain lookups
+        if (_tileRegistry != null)
+        {
+            _renderer.SetTileRegistry(_tileRegistry);
+        }
 
         UpdateTransform();
 
@@ -246,7 +266,6 @@ public partial class IrregularMeshTest : Node2D
     {
         if (_mesh == null || _renderer == null) return;
 
-        _renderer.TransitionKey = TransitionKey;
         _renderer.VariantSeed = _seed;
 
         if (UseSolidColors)
@@ -255,7 +274,8 @@ public partial class IrregularMeshTest : Node2D
         }
         else
         {
-            _renderer.RenderTerrain(_mesh, TransitionKey);
+            // Use RenderTerrain with transition key override if specified
+            _renderer.RenderTerrain(_mesh);
         }
     }
 

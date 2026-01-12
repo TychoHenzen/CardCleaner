@@ -1,8 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -92,12 +99,22 @@ public partial class IrregularWorldMapScreen : Node3D
     private IVisibilityChecker? _visibilityChecker;
 
     private Sprite2D? _playerSprite;
+    private readonly List<Sprite2D> _enemySprites = new();
     private IrregularMeshDebugRenderer? _debugRenderer;
     private Camera2D? _camera2D;
     private StaticBody2D? _terrainCollisionBody;
 
     private bool _isInitialized;
     private int? _pendingSeed;
+
+    // Combat system
+    private List<CardSignature>? _abilityCards;
+    private SimpleCombatSystem? _combatSystem;
+    private int _currentEnemyCellId = -1;
+    private RandomNumberGenerator _rng = new();
+
+    // Tile registry for terrain generation
+    private ITileRegistry? _tileRegistry;
 
     #endregion
 
@@ -152,10 +169,31 @@ public partial class IrregularWorldMapScreen : Node3D
     /// </summary>
     public event Action? ExplorationFinished;
 
+    /// <summary>
+    /// Raised when an enemy is spotted (within vision range).
+    /// </summary>
+    public event Action<int>? EnemySpotted;
+
+    /// <summary>
+    /// Raised when an enemy is encountered (same cell).
+    /// </summary>
+    public event Action<int>? EnemyEncountered;
+
+    /// <summary>
+    /// Raised when an enemy is defeated in combat.
+    /// </summary>
+    public event Action<int>? EnemyDefeated;
+
     #endregion
 
     public override void _Ready()
     {
+        // Get tile registry from service locator
+        ServiceLocator.Get<ITileRegistry>(registry =>
+        {
+            _tileRegistry = registry;
+        });
+
         // Setup 3D rendering pipeline
         CallDeferred(nameof(SetupScreenMesh));
         CallDeferred(nameof(SetupScreenMaterial));
@@ -172,7 +210,10 @@ public partial class IrregularWorldMapScreen : Node3D
     /// <summary>
     /// Generate a new map with the given seed.
     /// </summary>
-    public void GenerateMap(int seed)
+    /// <param name="seed">Random seed for generation.</param>
+    /// <param name="inputCards">Card signatures for terrain generation.</param>
+    /// <param name="abilityCards">Player ability cards for combat.</param>
+    public void GenerateMap(int seed, CardSignature[]? inputCards = null, CardSignature[]? abilityCards = null)
     {
         if (!IsInsideTree())
         {
@@ -180,25 +221,38 @@ public partial class IrregularWorldMapScreen : Node3D
             return;
         }
 
-        GD.Print($"[IrregularWorldMapScreen] Generating map with seed {seed}, rings={MeshRings}");
+        // Store ability cards for combat
+        _abilityCards = abilityCards?.ToList() ?? new List<CardSignature>();
+        _rng.Seed = (ulong)seed;
 
-        // Generate mesh geometry
-        var config = new MeshGenerator.GenerationConfig
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        GD.Print($"[IrregularWorldMapScreen] Generating map with seed {seed}, rings={MeshRings}, cards={inputCards?.Length ?? 0}, abilities={_abilityCards.Count}");
+
+        // Generate mesh with WFC terrain
+        var terrainGen = CreateTerrainGenerator();
+        if (inputCards != null && inputCards.Length > 0)
         {
-            Rings = MeshRings,
-            Seed = seed,
-            RelaxationIterations = 15
+            // Use WFC with card-based gradient influence
+            _mesh = terrainGen.GenerateWithCards(MeshRings, inputCards, seed, relaxationIterations: 8);
+        }
+        else
+        {
+            // Use WFC without card influence (uniform weights)
+            _mesh = terrainGen.Generate(MeshRings, null, seed, relaxationIterations: 8);
+        }
+        GD.Print($"[IrregularWorldMapScreen] WFC terrain generation complete ({sw.ElapsedMilliseconds}ms)");
+
+        // Create map data adapter with consistent world scale
+        _mapData = new IrregularMeshMapData(_mesh)
+        {
+            WorldScale = WorldScale
         };
-        _mesh = MeshGenerator.Generate(config);
-
-        // Assign terrain types
-        AssignDefaultTerrain(seed);
-
-        // Create map data adapter
-        _mapData = new IrregularMeshMapData(_mesh);
 
         // Place enemies on the map
         PlaceEnemies(seed);
+
+        // Create enemy sprites (note: they're hidden by fog until explored)
+        CreateEnemySprites();
 
         // Create subsystems
         _pathfinder = new Pathfinder(_mapData);
@@ -211,13 +265,15 @@ public partial class IrregularWorldMapScreen : Node3D
         {
             _fogOfWar = new IrregularMeshFogOfWar(_mapData, _visibilityChecker)
             {
-                VisionRange = VisionRange
+                VisionRange = VisionRange,
+                CellsPerUnit = WorldScale  // Convert cell-based vision range to world units
             };
             _fogOfWar.VisibilityChanged += OnVisibilityChanged;
         }
 
         // Setup rendering (includes collision shape generation)
         SetupRendering();
+        GD.Print($"[IrregularWorldMapScreen] Rendering setup complete ({sw.ElapsedMilliseconds}ms total)");
 
         // If using raycast visibility, update the visibility checker now that shapes exist
         if (UseRaycastVisibility && Viewport != null)
@@ -233,7 +289,8 @@ public partial class IrregularWorldMapScreen : Node3D
         _isInitialized = true;
         MapGenerated?.Invoke();
 
-        GD.Print($"[IrregularWorldMapScreen] Map generated: {_mesh.GetStatistics()}");
+        sw.Stop();
+        GD.Print($"[IrregularWorldMapScreen] Map generated in {sw.ElapsedMilliseconds}ms: {_mesh.GetStatistics()}");
 
         // Start exploration automatically
         StartExploration();
@@ -258,11 +315,17 @@ public partial class IrregularWorldMapScreen : Node3D
         var generator = new MeshTerrainGenerator(adjacencyRules, tileToTerrainType);
         _mesh = generator.Generate(MeshRings, null, seed);
 
-        // Create map data adapter
-        _mapData = new IrregularMeshMapData(_mesh);
+        // Create map data adapter with consistent world scale
+        _mapData = new IrregularMeshMapData(_mesh)
+        {
+            WorldScale = WorldScale
+        };
 
         // Place enemies on the map
         PlaceEnemies(seed);
+
+        // Create enemy sprites (note: they're hidden by fog until explored)
+        CreateEnemySprites();
 
         // Create subsystems
         _pathfinder = new Pathfinder(_mapData);
@@ -275,7 +338,8 @@ public partial class IrregularWorldMapScreen : Node3D
         {
             _fogOfWar = new IrregularMeshFogOfWar(_mapData, _visibilityChecker)
             {
-                VisionRange = VisionRange
+                VisionRange = VisionRange,
+                CellsPerUnit = WorldScale  // Convert cell-based vision range to world units
             };
             _fogOfWar.VisibilityChanged += OnVisibilityChanged;
         }
@@ -299,6 +363,78 @@ public partial class IrregularWorldMapScreen : Node3D
 
         // Start exploration automatically
         StartExploration();
+    }
+
+    /// <summary>
+    /// Creates a terrain generator using tiles from TileRegistry.
+    /// Uses actual terrain tiles with unique terrain types for visual variety.
+    /// </summary>
+    private MeshTerrainGenerator CreateTerrainGenerator()
+    {
+        // Use the same approach as IrregularMeshMapGenerator and SimpleMapGenerator:
+        // Build adjacency rules from CompiledTransitionResolver for proper terrain variety
+
+        var transitionResolver = new CompiledTransitionResolver();
+        var wfcRules = new WfcAdjacencyRules(transitionResolver);
+
+        // Get all terrain IDs from the transition resolver (grass3, base_grass1, mound1, etc.)
+        var allTerrainIds = wfcRules.AllTileIds.ToList();
+
+        GD.Print($"[IrregularWorldMapScreen] Using {allTerrainIds.Count} terrain IDs from transition resolver: {string.Join(", ", allTerrainIds.Take(10))}{(allTerrainIds.Count > 10 ? "..." : "")}");
+
+        // Convert WfcAdjacencyRules to dictionary format for MeshTerrainGenerator
+        var adjacencyRules = new Dictionary<string, HashSet<string>>();
+        foreach (var tileId in allTerrainIds)
+        {
+            var neighbors = wfcRules.GetValidNeighbors(tileId);
+            adjacencyRules[tileId] = new HashSet<string>(neighbors);
+        }
+
+        // Build terrain type mapping - assign unique terrain types for variety
+        // Terrain type 0 = impassable, 1+ = passable terrain types
+        var tileToTerrainType = new Dictionary<string, int>();
+        var tileWeights = new Dictionary<string, float>();
+        var nextTerrainType = 1;
+
+        foreach (var terrainId in allTerrainIds)
+        {
+            // Look up passability from TileRegistry if available
+            var tileDef = _tileRegistry?.GetTile(terrainId);
+            bool isPassable;
+
+            if (tileDef != null)
+            {
+                isPassable = tileDef.IsPassable;
+            }
+            else
+            {
+                // For terrain IDs not in TileRegistry (like grass3, base_grass1),
+                // infer passability from naming conventions
+                var lowerTerrain = terrainId.ToLowerInvariant();
+                isPassable = !lowerTerrain.Contains("rock") &&
+                             !lowerTerrain.Contains("wall") &&
+                             !lowerTerrain.Contains("water") &&
+                             !lowerTerrain.Contains("hedge") &&
+                             !lowerTerrain.Contains("lava");
+            }
+
+            if (!isPassable)
+            {
+                // All impassable tiles share type 0
+                tileToTerrainType[terrainId] = 0;
+            }
+            else
+            {
+                // Each passable tile gets a unique terrain type for variety
+                tileToTerrainType[terrainId] = nextTerrainType++;
+            }
+
+            // Base weight - can be adjusted by biome/card influence later
+            tileWeights[terrainId] = 1.0f;
+        }
+
+        GD.Print($"[IrregularWorldMapScreen] Terrain types assigned: {nextTerrainType - 1} passable, impassable=0");
+        return new MeshTerrainGenerator(wfcRules, tileToTerrainType, new TileRegistry());
     }
 
     /// <summary>
@@ -332,6 +468,11 @@ public partial class IrregularWorldMapScreen : Node3D
         _terrainRenderer = null;
         _fogRenderer?.QueueFree();
         _fogRenderer = null;
+
+        // Clear enemy sprites
+        foreach (var sprite in _enemySprites)
+            sprite?.QueueFree();
+        _enemySprites.Clear();
 
         // Clear collision body
         if (_terrainCollisionBody != null)
@@ -414,6 +555,7 @@ public partial class IrregularWorldMapScreen : Node3D
         Viewport.MoveChild(_terrainRenderer, 0); // Render behind everything
 
         _terrainRenderer.Scale = new Vector2(WorldScale, WorldScale);
+        _terrainRenderer.SetTileRegistry(_tileRegistry);
         _terrainRenderer.RenderTerrain(_mesh);
 
         // Create fog renderer if enabled (added to viewport)
@@ -493,37 +635,22 @@ public partial class IrregularWorldMapScreen : Node3D
         };
         Viewport.AddChild(_explorationController);
 
-        _explorationController.Initialize(_mapData, startCell, _visibilityChecker);
+        // Pass the shared fog of war instance so both screen and controller use the same one
+        _explorationController.Initialize(_mapData, startCell, _visibilityChecker, _fogOfWar);
 
         // Subscribe to events
         _explorationController.PlayerMoved += OnPlayerMoved;
+        _explorationController.PositionUpdated += OnPositionUpdated;
         _explorationController.ExplorationFinished += OnExplorationFinished;
+        _explorationController.EnemyEncountered += OnEnemyEncountered;
+        _explorationController.EnemySpotted += OnEnemySpotted;
 
         // Position player sprite
         UpdatePlayerPosition(startCell);
-
-        // Initial fog update
-        _fogOfWar?.UpdateVisibility(startCell);
-    }
-
-    private void AssignDefaultTerrain(int seed = 0)
-    {
-        if (_mesh == null) return;
-
-        var rng = new RandomNumberGenerator();
-        rng.Seed = seed != 0 ? (ulong)seed : (ulong)DateTime.Now.Ticks;
-
-        // 85% grass, 15% water for better connectivity
-        foreach (var vertex in _mesh.Vertices)
-        {
-            vertex.TerrainType = rng.Randf() < 0.85f ? 1 : 0;
-        }
-
-        _mesh.UpdateAllCachedProperties();
     }
 
     /// <summary>
-    /// Places enemies on the map.
+    /// Places enemies on the map at a minimum distance from player start.
     /// </summary>
     private void PlaceEnemies(int seed)
     {
@@ -532,42 +659,110 @@ public partial class IrregularWorldMapScreen : Node3D
         var rng = new RandomNumberGenerator();
         rng.Seed = (ulong)seed;
 
-        // Find all passable cells
-        var passableCells = new System.Collections.Generic.List<int>();
+        // Find player start cell (first passable cell)
+        int playerStartCell = 0;
         for (int i = 0; i < _mapData.CellCount; i++)
         {
             if (_mapData.IsPassable(i))
-                passableCells.Add(i);
+            {
+                playerStartCell = i;
+                break;
+            }
+        }
+        var playerStartPos = _mapData.GetCellCenter(playerStartCell);
+
+        // Minimum distance from player (in world units) - ensures player has to move
+        const float minDistanceFromPlayer = 200f;
+
+        // Find all passable cells that are far enough from player start
+        var eligibleCells = new List<int>();
+        for (int i = 0; i < _mapData.CellCount; i++)
+        {
+            if (!_mapData.IsPassable(i))
+                continue;
+
+            var cellPos = _mapData.GetCellCenter(i);
+            var distance = cellPos.DistanceTo(playerStartPos);
+
+            if (distance >= minDistanceFromPlayer)
+                eligibleCells.Add(i);
         }
 
-        if (passableCells.Count < 2)
+        if (eligibleCells.Count == 0)
+        {
+            GD.PrintErr("[IrregularWorldMapScreen] No cells far enough from player for enemy placement!");
+            // Fallback: use any passable cell that isn't the player start
+            for (int i = 0; i < _mapData.CellCount; i++)
+            {
+                if (_mapData.IsPassable(i) && i != playerStartCell)
+                    eligibleCells.Add(i);
+            }
+        }
+
+        if (eligibleCells.Count == 0)
         {
             GD.PrintErr("[IrregularWorldMapScreen] Not enough passable cells for enemies!");
             return;
         }
 
-        // Shuffle passable cells
-        for (int i = passableCells.Count - 1; i > 0; i--)
+        // Shuffle eligible cells
+        for (int i = eligibleCells.Count - 1; i > 0; i--)
         {
             int j = (int)(rng.Randi() % (uint)(i + 1));
-            (passableCells[i], passableCells[j]) = (passableCells[j], passableCells[i]);
+            (eligibleCells[i], eligibleCells[j]) = (eligibleCells[j], eligibleCells[i]);
         }
 
-        // Place 1-3 enemies (skip first cell - player start)
-        int enemyCount = rng.RandiRange(1, Mathf.Min(3, passableCells.Count - 1));
-        for (int i = 1; i <= enemyCount && i < passableCells.Count; i++)
+        // Place 1-3 enemies
+        int enemyCount = rng.RandiRange(1, Mathf.Min(3, eligibleCells.Count));
+        for (int i = 0; i < enemyCount; i++)
         {
-            _mapData.AddEnemySpawn(passableCells[i]);
+            _mapData.AddEnemySpawn(eligibleCells[i]);
         }
 
-        GD.Print($"[IrregularWorldMapScreen] Placed {enemyCount} enemies on map");
+        GD.Print($"[IrregularWorldMapScreen] Placed {enemyCount} enemies on map (min distance: {minDistanceFromPlayer})");
+    }
+
+    /// <summary>
+    /// Creates visual sprites for all enemy spawn locations.
+    /// Enemies are placed at a high z-index to be visible above terrain.
+    /// </summary>
+    private void CreateEnemySprites()
+    {
+        if (_mapData == null || Viewport == null) return;
+
+        // Clear any existing enemy sprites
+        foreach (var sprite in _enemySprites)
+            sprite?.QueueFree();
+        _enemySprites.Clear();
+
+        // Create a sprite for each enemy
+        foreach (var enemyCellId in _mapData.EnemySpawnCells)
+        {
+            var enemySprite = new Sprite2D
+            {
+                ZIndex = 80 // Below player (100) but above terrain
+            };
+
+            // Create red enemy texture
+            var enemyTexture = CreateColoredTexture(Colors.Red, 12, 12);
+            enemySprite.Texture = enemyTexture;
+
+            // Position at cell center (GetCellCenter already applies WorldScale)
+            enemySprite.Position = _mapData.GetCellCenter(enemyCellId);
+
+            Viewport.AddChild(enemySprite);
+            _enemySprites.Add(enemySprite);
+        }
+
+        GD.Print($"[IrregularWorldMapScreen] Created {_enemySprites.Count} enemy sprites");
     }
 
     private void UpdatePlayerPosition(int cellId)
     {
         if (_mapData == null || _playerSprite == null) return;
 
-        var worldPos = _mapData.GetCellCenter(cellId) * WorldScale;
+        // GetCellCenter already includes WorldScale via _mapData.WorldScale
+        var worldPos = _mapData.GetCellCenter(cellId);
         _playerSprite.Position = worldPos;
     }
 
@@ -590,6 +785,15 @@ public partial class IrregularWorldMapScreen : Node3D
         }
     }
 
+    private void OnPositionUpdated(Vector2 worldPos)
+    {
+        // Update player sprite position during movement animation
+        if (_playerSprite != null)
+        {
+            _playerSprite.Position = worldPos;
+        }
+    }
+
     private void OnVisibilityChanged(IReadOnlySet<int> changedCells)
     {
         VisibilityChanged?.Invoke(changedCells);
@@ -599,6 +803,105 @@ public partial class IrregularWorldMapScreen : Node3D
     {
         ExplorationFinished?.Invoke();
         GD.Print("[IrregularWorldMapScreen] Exploration finished");
+    }
+
+    private void OnEnemySpotted(int cellId)
+    {
+        GD.Print($"[IrregularWorldMapScreen] Enemy spotted at cell {cellId}");
+        EnemySpotted?.Invoke(cellId);
+    }
+
+    private void OnEnemyEncountered(int cellId)
+    {
+        GD.Print($"[IrregularWorldMapScreen] Enemy encountered at cell {cellId}!");
+        _currentEnemyCellId = cellId;
+        EnemyEncountered?.Invoke(cellId);
+
+        // Start combat
+        StartCombat(cellId);
+    }
+
+    private void StartCombat(int enemyCellId)
+    {
+        if (_abilityCards == null || _abilityCards.Count == 0)
+        {
+            GD.PrintErr("[IrregularWorldMapScreen] No ability cards for combat!");
+            return;
+        }
+
+        if (_mapData == null) return;
+
+        // Generate enemy signature based on cell position for variety
+        var cellCenter = _mapData.GetCellCenter(enemyCellId);
+        var positionSeed = (int)(cellCenter.X * 1000 + cellCenter.Y * 31);
+        var enemyRng = new RandomNumberGenerator { Seed = (ulong)positionSeed };
+        var enemySignature = CardSignature.Random(enemyRng);
+
+        GD.Print($"[IrregularWorldMapScreen] Starting combat with {_abilityCards.Count} ability cards");
+
+        // Create combat system
+        _combatSystem = new SimpleCombatSystem(_abilityCards, enemySignature, _rng);
+        _combatSystem.CombatEnded += OnCombatEnded;
+
+        // Process combat turns automatically
+        ProcessCombatTurns();
+    }
+
+    private async void ProcessCombatTurns()
+    {
+        if (_combatSystem == null) return;
+
+        while (!_combatSystem.CombatComplete)
+        {
+            _combatSystem.ProcessTurn();
+
+            // Small delay between turns for visibility
+            await ToSignal(GetTree().CreateTimer(0.3f), SceneTreeTimer.SignalName.Timeout);
+        }
+    }
+
+    private void OnCombatEnded()
+    {
+        var playerWon = _combatSystem?.PlayerWon ?? false;
+        GD.Print($"[IrregularWorldMapScreen] Combat ended - Player {(playerWon ? "won" : "lost")}!");
+
+        if (playerWon && _currentEnemyCellId >= 0)
+        {
+            // Remove defeated enemy
+            _mapData?.RemoveEnemySpawn(_currentEnemyCellId);
+
+            // Remove enemy sprite
+            var spriteIndex = _enemySprites.FindIndex(s =>
+                _mapData != null && s.Position == _mapData.GetCellCenter(_currentEnemyCellId));
+            if (spriteIndex >= 0 && spriteIndex < _enemySprites.Count)
+            {
+                _enemySprites[spriteIndex].QueueFree();
+                _enemySprites.RemoveAt(spriteIndex);
+            }
+
+            EnemyDefeated?.Invoke(_currentEnemyCellId);
+
+            // Continue exploration if there are more enemies
+            if (_mapData?.EnemySpawnCells.Count > 0)
+            {
+                GD.Print("[IrregularWorldMapScreen] Resuming exploration...");
+                _explorationController?.StartExploration();
+            }
+            else
+            {
+                GD.Print("[IrregularWorldMapScreen] All enemies defeated! Revealing map...");
+                RevealAll();
+                ExplorationFinished?.Invoke();
+            }
+        }
+        else
+        {
+            // Player lost - could trigger game over or respawn
+            GD.Print("[IrregularWorldMapScreen] Player defeated!");
+        }
+
+        _combatSystem = null;
+        _currentEnemyCellId = -1;
     }
 
     private void SetupCollisionShapes()
@@ -716,6 +1019,7 @@ public partial class IrregularWorldMapScreen : Node3D
             if (_explorationController != null)
             {
                 _explorationController.PlayerMoved -= OnPlayerMoved;
+                _explorationController.PositionUpdated -= OnPositionUpdated;
                 _explorationController.ExplorationFinished -= OnExplorationFinished;
             }
         }

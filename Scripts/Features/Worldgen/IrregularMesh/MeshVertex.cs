@@ -14,10 +14,17 @@ public class MeshVertex
     public Vector2 Position { get; set; }
 
     /// <summary>
-    /// Terrain type at this vertex (tile ID or terrain enum value).
+    /// Terrain type at this vertex (integer for bitmask computation).
+    /// 0 = impassable, 1+ = passable terrain.
     /// Used by adjacent quads to compute Corner16 bitmasks.
     /// </summary>
     public int TerrainType { get; set; }
+
+    /// <summary>
+    /// The actual tile ID assigned by WFC (e.g., "grass", "dirt", "forest_floor").
+    /// Used by renderers to determine visual transitions.
+    /// </summary>
+    public string? TileId { get; set; }
 
     /// <summary>
     /// Variant index for this vertex's terrain type.

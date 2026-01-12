@@ -183,7 +183,7 @@ public partial class DeckBuilderController : Node
                 break;
 
             case MapGenerationType.IrregularMesh:
-                StartIrregularMeshGeneration(mapSeeds.ToArray());
+                StartIrregularMeshGeneration(mapSeeds.ToArray(), abilities.ToArray());
                 break;
         }
 
@@ -210,7 +210,7 @@ public partial class DeckBuilderController : Node
     /// <summary>
     /// Starts map generation using the irregular mesh system.
     /// </summary>
-    private void StartIrregularMeshGeneration(CardSignature[] mapSeeds)
+    private void StartIrregularMeshGeneration(CardSignature[] mapSeeds, CardSignature[] abilities)
     {
         if (IrregularMapScreen == null)
         {
@@ -224,7 +224,9 @@ public partial class DeckBuilderController : Node
 
         // Generate a seed from the card signatures
         var seed = GenerateSeedFromSignatures(mapSeeds);
-        IrregularMapScreen.GenerateMap(seed);
+
+        // Pass seed, card signatures for terrain, and abilities for combat
+        IrregularMapScreen.GenerateMap(seed, mapSeeds, abilities);
     }
 
     /// <summary>

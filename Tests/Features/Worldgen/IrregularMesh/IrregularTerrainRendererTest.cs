@@ -40,7 +40,6 @@ public class IrregularTerrainRendererTest
     public void TestDefaultProperties()
     {
         // Verify default export values
-        AssertThat(_renderer.TransitionKey).IsEqual("grass3|base_grass1");
         AssertThat(_renderer.VariantSeed).IsEqual(12345);
         AssertBool(_renderer.ShowWireframe).IsFalse();
     }
@@ -107,10 +106,11 @@ public class IrregularTerrainRendererTest
     }
 
     [TestCase]
-    public void TestTransitionKeyCanBeChanged()
+    public void TestTileRegistryCanBeSet()
     {
-        _renderer.TransitionKey = "stone|sand";
-        AssertThat(_renderer.TransitionKey).IsEqual("stone|sand");
+        // SetTileRegistry should accept null without crashing
+        _renderer.SetTileRegistry(null);
+        // No assertion needed - just verify it doesn't throw
     }
 
     [TestCase]

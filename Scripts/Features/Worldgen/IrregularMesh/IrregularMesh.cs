@@ -19,6 +19,10 @@ public class IrregularMesh
     /// </summary>
     public (Vector2 Min, Vector2 Max) Bounds { get; private set; }
 
+    // Spatial hash grid for O(1) quad lookup
+    private Dictionary<(int, int), List<int>> _spatialHash = new();
+    private float _gridCellSize = 50f; // Default cell size, adjusted based on mesh
+
     /// <summary>
     /// Add a vertex to the mesh and return its ID.
     /// </summary>
@@ -62,11 +66,54 @@ public class IrregularMesh
         IdentifyBoundaryVertices();
         UpdateAllCachedProperties();
         ComputeBounds();
+        BuildSpatialHash();
+    }
+
+    /// <summary>
+    /// Build the spatial hash grid for fast quad lookup.
+    /// </summary>
+    private void BuildSpatialHash()
+    {
+        _spatialHash.Clear();
+
+        if (Quads.Count == 0)
+            return;
+
+        // Calculate grid cell size based on average quad size
+        float totalArea = Quads.Sum(q => q.Area);
+        float avgArea = totalArea / Quads.Count;
+        _gridCellSize = Mathf.Max(10f, Mathf.Sqrt(avgArea) * 2f);
+
+        // Insert each quad into all grid cells it overlaps
+        foreach (var quad in Quads)
+        {
+            var corners = quad.GetCornerPositions();
+            float minX = corners.Min(c => c.X);
+            float maxX = corners.Max(c => c.X);
+            float minY = corners.Min(c => c.Y);
+            float maxY = corners.Max(c => c.Y);
+
+            int startGridX = (int)Mathf.Floor(minX / _gridCellSize);
+            int endGridX = (int)Mathf.Floor(maxX / _gridCellSize);
+            int startGridY = (int)Mathf.Floor(minY / _gridCellSize);
+            int endGridY = (int)Mathf.Floor(maxY / _gridCellSize);
+
+            for (int gx = startGridX; gx <= endGridX; gx++)
+            {
+                for (int gy = startGridY; gy <= endGridY; gy++)
+                {
+                    var cell = (gx, gy);
+                    if (!_spatialHash.ContainsKey(cell))
+                        _spatialHash[cell] = new List<int>();
+                    _spatialHash[cell].Add(quad.Id);
+                }
+            }
+        }
     }
 
     /// <summary>
     /// Get the quad containing a world position, or null if outside mesh.
-    /// Uses bounding box pre-filter then point-in-polygon test.
+    /// Uses spatial hash for O(1) average lookup.
     /// </summary>
     public MeshQuad? GetQuadAtPosition(Vector2 worldPos)
     {
@@ -77,12 +124,19 @@ public class IrregularMesh
             return null;
         }
 
-        // Linear search with point-in-polygon test
-        // TODO: Optimize with spatial hash or quad-tree for large meshes
-        foreach (var quad in Quads)
+        // Find grid cell for position
+        int gridX = (int)Mathf.Floor(worldPos.X / _gridCellSize);
+        int gridY = (int)Mathf.Floor(worldPos.Y / _gridCellSize);
+        var cell = (gridX, gridY);
+
+        // Check quads in this grid cell only
+        if (_spatialHash.TryGetValue(cell, out var quadIds))
         {
-            if (quad.ContainsPoint(worldPos))
-                return quad;
+            foreach (int quadId in quadIds)
+            {
+                if (Quads[quadId].ContainsPoint(worldPos))
+                    return Quads[quadId];
+            }
         }
 
         return null;
@@ -159,6 +213,7 @@ public class IrregularMesh
             quad.UpdateCachedProperties();
         }
         ComputeBounds();
+        BuildSpatialHash();
     }
 
     private void BuildVertexAdjacency()

@@ -6,8 +6,9 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
 /// 2D grid of WFC cells. Manages cell access and neighbor enumeration.
+/// Implements IWfcGrid using linearized cell IDs (y * width + x).
 /// </summary>
-public class WfcGrid
+public class WfcGrid : IWfcGrid, IWfcGrid8Way, IWfcGridWithCoordinates
 {
     // Pre-allocated neighbor offsets for avoiding repeated allocation in hot paths
     private static readonly Vector2I[] Neighbors4Offsets =
@@ -350,6 +351,83 @@ public class WfcGrid
         var cell = _cells[pos.Y, pos.X];
         return cell.IsCollapsed() ? cell.GetCollapsedTile() : null;
     }
+
+    #region IWfcGrid Implementation
+
+    /// <inheritdoc />
+    public int CellCount => _width * _height;
+
+    /// <inheritdoc />
+    public WfcCellState GetCell(int cellId)
+    {
+        var (x, y) = CellIdToXY(cellId);
+        return _cells[y, x];
+    }
+
+    /// <inheritdoc />
+    public bool IsValidCell(int cellId)
+    {
+        return cellId >= 0 && cellId < CellCount;
+    }
+
+    /// <inheritdoc />
+    IEnumerable<int> IWfcGrid.GetNeighbors(int cellId)
+    {
+        var pos = CellIdToPosition(cellId);
+        foreach (var neighborPos in GetNeighbors(pos))
+        {
+            yield return PositionToCellId(neighborPos);
+        }
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<int> GetAllCellIds()
+    {
+        for (var i = 0; i < CellCount; i++)
+        {
+            yield return i;
+        }
+    }
+
+    /// <inheritdoc />
+    public bool HasCollapsedNeighbor(int cellId) => HasCollapsedNeighbor(CellIdToPosition(cellId));
+
+    /// <inheritdoc />
+    public string? GetCollapsedTileAt(int cellId) => GetCollapsedTileAt(CellIdToPosition(cellId));
+
+    /// <inheritdoc />
+    IWfcGrid IWfcGrid.Clone() => Clone();
+
+    #endregion
+
+    #region IWfcGrid8Way Implementation
+
+    /// <inheritdoc />
+    public IEnumerable<int> GetNeighbors8(int cellId)
+    {
+        var pos = CellIdToPosition(cellId);
+        foreach (var neighborPos in GetNeighbors8(pos))
+        {
+            yield return PositionToCellId(neighborPos);
+        }
+    }
+
+    #endregion
+
+    #region IWfcGridWithCoordinates Implementation
+
+    /// <inheritdoc />
+    public Vector2I CellIdToPosition(int cellId) => new(cellId % _width, cellId / _width);
+
+    /// <inheritdoc />
+    public int PositionToCellId(Vector2I position) => position.Y * _width + position.X;
+
+    /// <summary>
+    /// Internal helper to convert cell ID to (x, y) tuple.
+    /// </summary>
+    private (int x, int y) CellIdToXY(int cellId) => (cellId % _width, cellId / _width);
+
+    #endregion
 
     /// <summary>
     /// Creates a deep copy of this grid (for backtracking support).

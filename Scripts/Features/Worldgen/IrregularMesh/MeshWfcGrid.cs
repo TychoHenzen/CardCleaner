@@ -7,8 +7,9 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 /// <summary>
 /// WFC grid adapter for irregular mesh terrain generation.
 /// Uses vertex IDs instead of 2D grid positions.
+/// Implements IWfcGrid for unified WFC solving.
 /// </summary>
-public class MeshWfcGrid
+public class MeshWfcGrid : IWfcGrid
 {
     private readonly IrregularMesh _mesh;
     private readonly Dictionary<int, WfcCellState> _cells = new();
@@ -48,6 +49,9 @@ public class MeshWfcGrid
     /// Checks if a vertex ID is valid.
     /// </summary>
     public bool IsValidVertex(int vertexId) => _cells.ContainsKey(vertexId);
+
+    /// <inheritdoc />
+    public bool IsValidCell(int cellId) => IsValidVertex(cellId);
 
     /// <summary>
     /// Gets adjacent vertex IDs for a given vertex.
@@ -94,6 +98,9 @@ public class MeshWfcGrid
         return _cells.Keys;
     }
 
+    /// <inheritdoc />
+    public IEnumerable<int> GetAllCellIds() => GetAllVertexIds();
+
     /// <summary>
     /// Gets the collapsed tile ID at a vertex, or null if not collapsed.
     /// </summary>
@@ -115,6 +122,8 @@ public class MeshWfcGrid
             if (cell.IsCollapsed())
             {
                 var tileId = cell.GetCollapsedTile();
+                // Store both the tileId (for rendering) and terrain type (for bitmask)
+                vertex.TileId = tileId;
                 if (tileToTerrainType.TryGetValue(tileId, out var terrainType))
                 {
                     vertex.TerrainType = terrainType;
@@ -138,4 +147,7 @@ public class MeshWfcGrid
         }
         return clone;
     }
+
+    /// <inheritdoc />
+    IWfcGrid IWfcGrid.Clone() => Clone();
 }

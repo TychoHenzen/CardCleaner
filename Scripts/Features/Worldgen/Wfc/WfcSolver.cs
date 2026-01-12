@@ -116,7 +116,7 @@ public class WfcSolver
         _entropyCache.ClearInvalidators();
         foreach (var constraint in _selector.GetConstraints())
         {
-            if (constraint is Constraints.IEntropyInvalidator invalidator)
+            if (constraint is IEntropyInvalidator invalidator)
                 _entropyCache.RegisterInvalidator(invalidator);
         }
 

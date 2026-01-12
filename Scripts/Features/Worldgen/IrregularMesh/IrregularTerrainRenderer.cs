@@ -1,33 +1,31 @@
+using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
+
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 using Godot;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Core.Services;
 
 /// <summary>
 /// Renders an irregular quad mesh as terrain using ArrayMesh with UV mapping.
-/// Each quad is rendered as two triangles with UVs pointing to the appropriate
-/// auto-tile in the compiled atlas based on its Corner16 bitmask.
+/// Each quad samples its 4 corner vertices to compute a bitmask, then uses
+/// the compiled atlas to find the appropriate auto-tile variant.
 /// </summary>
 public partial class IrregularTerrainRenderer : Node2D
 {
     private const string DefaultAtlasPath = "res://Data/CompiledAtlas/terrain_atlas.png";
-    private const string DefaultTransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";
     private const int TileSize = 16;
 
     private MeshInstance2D? _meshInstance;
     private Texture2D? _atlasTexture;
-    private CompiledTransitionMap? _transitionMap;
+    private CompiledTransitionResolver? _transitionResolver;
     private Vector2 _atlasSize;
-
-    /// <summary>
-    /// The transition key to use for rendering (e.g., "grass3|base_grass1").
-    /// </summary>
-    [Export]
-    public string TransitionKey { get; set; } = "grass3|base_grass1";
+    private ITileRegistry? _tileRegistry;
 
     /// <summary>
     /// Seed for selecting tile variants (for reproducible randomization).
@@ -54,11 +52,25 @@ public partial class IrregularTerrainRenderer : Node2D
     }
 
     /// <summary>
-    /// Render the terrain mesh using the compiled atlas.
+    /// Sets the tile registry for looking up tile properties.
+    /// REQUIRED for proper terrain resolution.
     /// </summary>
-    public void RenderTerrain(IrregularMesh mesh, string? transitionKey = null)
+    public void SetTileRegistry(ITileRegistry tileRegistry)
     {
-        transitionKey ??= TransitionKey;
+        _tileRegistry = tileRegistry;
+    }
+
+    /// <summary>
+    /// Render the terrain mesh using the compiled atlas.
+    /// Each quad determines its terrain transition from its 4 corner vertices.
+    /// </summary>
+    public void RenderTerrain(IrregularMesh mesh)
+    {
+        if (_tileRegistry == null)
+        {
+            GD.PrintErr("[IrregularTerrainRenderer] CRITICAL: TileRegistry not set! Call SetTileRegistry() before rendering.");
+            return;
+        }
 
         if (!LoadResources())
         {
@@ -66,7 +78,7 @@ public partial class IrregularTerrainRenderer : Node2D
             return;
         }
 
-        var arrayMesh = BuildTerrainMesh(mesh, transitionKey);
+        var arrayMesh = BuildTerrainMesh(mesh);
         if (arrayMesh == null)
         {
             GD.PrintErr("[IrregularTerrainRenderer] Failed to build terrain mesh");
@@ -86,8 +98,7 @@ public partial class IrregularTerrainRenderer : Node2D
         if (!ShowWireframe || _meshInstance?.Mesh == null)
             return;
 
-        // Draw wireframe overlay - we'd need to store the mesh reference
-        // For now, this is a placeholder
+        // Draw wireframe overlay - placeholder for future implementation
     }
 
     /// <summary>
@@ -141,66 +152,72 @@ public partial class IrregularTerrainRenderer : Node2D
             GD.Print($"[IrregularTerrainRenderer] Loaded atlas: {_atlasSize.X}x{_atlasSize.Y}");
         }
 
-        // Load transition map
-        if (_transitionMap == null)
+        // Create transition resolver
+        if (_transitionResolver == null)
         {
-            var absolutePath = ProjectSettings.GlobalizePath(DefaultTransitionMapPath);
-            if (!File.Exists(absolutePath))
-            {
-                GD.PrintErr($"[IrregularTerrainRenderer] Transition map not found: {absolutePath}");
-                return false;
-            }
-
-            try
-            {
-                var json = File.ReadAllText(absolutePath);
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                    ReadCommentHandling = JsonCommentHandling.Skip,
-                    AllowTrailingCommas = true
-                };
-                _transitionMap = JsonSerializer.Deserialize<CompiledTransitionMap>(json, options);
-                GD.Print($"[IrregularTerrainRenderer] Loaded transition map with {_transitionMap?.Transitions.Count ?? 0} transitions");
-            }
-            catch (Exception ex)
-            {
-                GD.PrintErr($"[IrregularTerrainRenderer] Failed to load transition map: {ex.Message}");
-                return false;
-            }
+            _transitionResolver = new CompiledTransitionResolver();
+            GD.Print("[IrregularTerrainRenderer] Created transition resolver");
         }
 
-        return _atlasTexture != null && _transitionMap != null;
+        return _atlasTexture != null && _transitionResolver != null;
     }
 
-    private ArrayMesh? BuildTerrainMesh(IrregularMesh mesh, string transitionKey)
+    private ArrayMesh? BuildTerrainMesh(IrregularMesh mesh)
     {
-        if (_transitionMap == null || _atlasTexture == null)
+        if (_transitionResolver == null || _atlasTexture == null || _tileRegistry == null)
             return null;
-
-        var (borderId, outerTerrain) = CompiledTransitionMap.ParseKey(transitionKey);
 
         var surfaceTool = new SurfaceTool();
         surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
 
         int quadsRendered = 0;
         int quadsSkipped = 0;
+        var terrainStats = new Dictionary<string, int>();
 
         foreach (var quad in mesh.Quads)
         {
-            var bitmask = quad.ComputeCorner16Bitmask();
+            // Get dominant tile ID from quad's corners
+            var (bitmask, dominantTileId) = quad.ComputeDominantBitmask();
 
-            // Get atlas coordinates for this bitmask
-            // Use vertex VariantIndex if set, otherwise fall back to position hash
-            var variantIndex = quad.GetVariantIndex();
-            int variantSeed = variantIndex >= 0 ? variantIndex : HashPosition(quad.Centroid);
-            var atlasCoords = _transitionMap.GetVariantCoordsWithRandom(borderId, outerTerrain, bitmask, variantSeed);
+            if (dominantTileId == null)
+            {
+                quadsSkipped++;
+                continue;
+            }
+
+            // Look up tile definition
+            var tileDef = _tileRegistry.GetTile(dominantTileId);
+            if (tileDef == null)
+            {
+                GD.PrintErr($"[IrregularTerrainRenderer] Tile not found in registry: {dominantTileId}");
+                quadsSkipped++;
+                continue;
+            }
+
+            // Determine inner and outer terrain IDs from tile definition
+            var innerTerrain = tileDef.InnerTerrainId ?? dominantTileId;
+            var outerTerrain = tileDef.OuterTerrainId ?? "*";
+
+            // For compositable tiles ("*"), need to determine outer from context
+            // For now, use the first different tile found in corners, or fallback to same tile
+            if (outerTerrain == "*")
+            {
+                outerTerrain = FindOuterTerrainFromQuad(quad, dominantTileId, _tileRegistry) ?? dominantTileId;
+            }
+
+            // Resolve atlas coordinates using the transition resolver
+            var atlasCoords = ResolveTransition(innerTerrain, outerTerrain, bitmask, quad);
 
             if (!atlasCoords.HasValue)
             {
                 quadsSkipped++;
                 continue;
             }
+
+            // Track terrain usage for debugging
+            if (!terrainStats.ContainsKey(dominantTileId))
+                terrainStats[dominantTileId] = 0;
+            terrainStats[dominantTileId]++;
 
             // Get quad corners in sorted order: SW, SE, NE, NW
             var corners = quad.GetCornerPositions();
@@ -222,6 +239,13 @@ public partial class IrregularTerrainRenderer : Node2D
             quadsRendered++;
         }
 
+        // Log terrain variety stats
+        if (terrainStats.Count > 0)
+        {
+            var stats = string.Join(", ", terrainStats.Select(kv => $"{kv.Key}={kv.Value}"));
+            GD.Print($"[IrregularTerrainRenderer] Terrain variety: {stats}");
+        }
+
         GD.Print($"[IrregularTerrainRenderer] Built mesh: {quadsRendered} quads rendered, {quadsSkipped} skipped");
 
         if (quadsRendered == 0)
@@ -229,6 +253,75 @@ public partial class IrregularTerrainRenderer : Node2D
 
         surfaceTool.GenerateNormals();
         return surfaceTool.Commit();
+    }
+
+    /// <summary>
+    /// Resolves the atlas coordinates for a terrain transition.
+    /// Uses the same logic as SimpleWorldMapScreen's rendering.
+    /// </summary>
+    private Vector2I? ResolveTransition(string innerTerrain, string outerTerrain, int bitmask, MeshQuad quad)
+    {
+        if (_transitionResolver == null)
+            return null;
+
+        // Use quad's variant index for consistent variant selection
+        var variantIndex = quad.GetVariantIndex();
+        int positionSeed = variantIndex >= 0 ? variantIndex : HashPosition(quad.Centroid);
+
+        Vector2I? atlasCoords = null;
+
+        if (bitmask == 0)
+        {
+            // Pure outer terrain (no filled corners) - solid fill for outer
+            atlasCoords = _transitionResolver.ResolveSolidFill(outerTerrain);
+            if (!atlasCoords.HasValue)
+            {
+                atlasCoords = _transitionResolver.ResolveAsOuterTerrain(outerTerrain, 0);
+            }
+        }
+        else if (bitmask == 15)
+        {
+            // Pure inner terrain (all corners filled) - solid fill for inner
+            atlasCoords = _transitionResolver.ResolveSolidFill(innerTerrain);
+        }
+        else
+        {
+            // Transition case - need both inner and outer
+            atlasCoords = _transitionResolver.ResolveTransitionWithVariant(
+                innerTerrain, outerTerrain, bitmask, positionSeed, positionSeed);
+        }
+
+        // Fallback: try finding ANY variant with this bitmask for the inner terrain
+        if (!atlasCoords.HasValue)
+        {
+            atlasCoords = _transitionResolver.ResolveAnyVariant(innerTerrain, bitmask);
+        }
+
+        return atlasCoords;
+    }
+
+    /// <summary>
+    /// Finds an appropriate outer terrain by examining quad corners.
+    /// Returns the first different tile found, or null if all corners match.
+    /// </summary>
+    private string? FindOuterTerrainFromQuad(MeshQuad quad, string innerTileId, ITileRegistry tileRegistry)
+    {
+        var corners = quad.GetSortedCorners();
+
+        foreach (var corner in corners)
+        {
+            if (corner.TileId != null && corner.TileId != innerTileId)
+            {
+                var otherTileDef = tileRegistry.GetTile(corner.TileId);
+                if (otherTileDef != null)
+                {
+                    // Use the other tile's inner terrain as our outer
+                    return otherTileDef.InnerTerrainId ?? corner.TileId;
+                }
+            }
+        }
+
+        return null;
     }
 
     private ArrayMesh? BuildSolidColorMesh(IrregularMesh mesh)

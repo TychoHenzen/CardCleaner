@@ -232,5 +232,67 @@ public class MeshQuad
         return -1;
     }
 
+    /// <summary>
+    /// Gets the dominant tile ID from the quad's corners.
+    /// Returns the most common non-null tile ID, preferring passable tiles.
+    /// </summary>
+    /// <returns>The dominant tile ID, or null if no tiles are assigned.</returns>
+    public string? GetDominantTileId()
+    {
+        var tileCounts = new Dictionary<string, int>();
+        var passableTiles = new HashSet<string>();
+
+        foreach (var vertexId in VertexIds)
+        {
+            var vertex = _mesh.Vertices[vertexId];
+            if (vertex.TileId != null)
+            {
+                if (!tileCounts.ContainsKey(vertex.TileId))
+                    tileCounts[vertex.TileId] = 0;
+                tileCounts[vertex.TileId]++;
+
+                if (vertex.TerrainType > 0)
+                    passableTiles.Add(vertex.TileId);
+            }
+        }
+
+        if (tileCounts.Count == 0)
+            return null;
+
+        // Prefer passable tiles as the dominant type
+        var passableMax = passableTiles
+            .Where(t => tileCounts.ContainsKey(t))
+            .OrderByDescending(t => tileCounts[t])
+            .FirstOrDefault();
+
+        if (passableMax != null)
+            return passableMax;
+
+        // Fall back to most common tile
+        return tileCounts.OrderByDescending(kv => kv.Value).First().Key;
+    }
+
+    /// <summary>
+    /// Computes bitmask for the quad's dominant terrain type.
+    /// Automatically determines which terrain type to use based on corner tiles.
+    /// </summary>
+    public (int Bitmask, string? TileId) ComputeDominantBitmask()
+    {
+        var tileId = GetDominantTileId();
+        if (tileId == null)
+            return (0, null);
+
+        // Find the terrain type for this tile
+        var sortedCorners = GetSortedCorners();
+        var targetTerrainType = sortedCorners
+            .Where(v => v.TileId == tileId)
+            .Select(v => v.TerrainType)
+            .FirstOrDefault();
+
+        // Compute bitmask for this terrain type
+        var bitmask = ComputeCorner16Bitmask(targetTerrainType);
+        return (bitmask, tileId);
+    }
+
     public override string ToString() => $"Quad[{Id}] vertices={string.Join(",", VertexIds)}";
 }
