@@ -1,5 +1,9 @@
+using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -19,6 +23,7 @@ public partial class BiomeGridIntegrationTest
 {
     private WfcAdjacencyRules _rules = null!;
     private BiomeRegistry _registry = null!;
+    private TileRegistry _tileRegistry = null!;
 
     [BeforeTest]
     public void Setup()
@@ -33,6 +38,32 @@ public partial class BiomeGridIntegrationTest
             ("neutral_tile", "neutral_tile"),
             ("neutral_tile", "fire_tile")
         });
+
+        // Create a tile registry with test tiles
+        // Tiles need AllowedBiomes set for BiomeAffinityConstraint to work
+        _tileRegistry = new TileRegistry();
+        _tileRegistry.Clear(); // Clear production tiles loaded by constructor
+        _tileRegistry.RegisterTile(new TileDefinition(
+            id: "fire_tile",
+            name: "Fire Tile",
+            passability: TilePassability.Passable,
+            atlasCoords: Vector2I.Zero,
+            allowedBiomes: new HashSet<string> { "fire" }
+        ));
+        _tileRegistry.RegisterTile(new TileDefinition(
+            id: "water_tile",
+            name: "Water Tile",
+            passability: TilePassability.Passable,
+            atlasCoords: Vector2I.Zero,
+            allowedBiomes: new HashSet<string> { "water" }
+        ));
+        // neutral_tile has no AllowedBiomes (universal/neutral)
+        _tileRegistry.RegisterTile(new TileDefinition(
+            id: "neutral_tile",
+            name: "Neutral Tile",
+            passability: TilePassability.Passable,
+            atlasCoords: Vector2I.Zero
+        ));
 
         // Create test registry with biomes that have distinct signatures
         _registry = new BiomeRegistry();
@@ -56,7 +87,7 @@ public partial class BiomeGridIntegrationTest
     public void GenerateMultiBiome_WithGradient_CreatesBiomeGrid()
     {
         // Arrange
-        var generator = new WfcMapGenerator(_rules);
+        var generator = new WfcMapGenerator(_rules, _tileRegistry);
         var gradient = new FixedGradient(new CardSignature(new[] { 0f, 0.5f, 0f, 0f, 0f, 0f, 0f, 0f }));
 
         // Act
@@ -78,7 +109,7 @@ public partial class BiomeGridIntegrationTest
     public void GenerateMultiBiome_WithoutGradient_StillWorks()
     {
         // Arrange
-        var generator = new WfcMapGenerator(_rules);
+        var generator = new WfcMapGenerator(_rules, _tileRegistry);
 
         // Act: Pass null gradient (backwards compatible)
         var result = generator.GenerateMultiBiome(
@@ -100,7 +131,7 @@ public partial class BiomeGridIntegrationTest
         // when the gradient matches the biome's signature.
 
         // Arrange: Gradient matches fire biome signature
-        var generator = new WfcMapGenerator(_rules);
+        var generator = new WfcMapGenerator(_rules, _tileRegistry);
         var fireMatchingGradient = new FixedGradient(new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }));
 
         // Act: Generate map with fire-matching gradient at fire biome positions
@@ -148,7 +179,32 @@ public partial class BiomeGridIntegrationTest
             ("neutral_tile", "neutral_tile")
         });
 
-        var generator = new WfcMapGenerator(rulesWithNeutral);
+        // Create a tile registry for this test with neutral tile
+        var testTileRegistry = new TileRegistry();
+        testTileRegistry.Clear(); // Clear production tiles loaded by constructor
+        testTileRegistry.RegisterTile(new TileDefinition(
+            id: "fire_tile",
+            name: "Fire Tile",
+            passability: TilePassability.Passable,
+            atlasCoords: Vector2I.Zero,
+            allowedBiomes: new HashSet<string> { "fire" }
+        ));
+        testTileRegistry.RegisterTile(new TileDefinition(
+            id: "water_tile",
+            name: "Water Tile",
+            passability: TilePassability.Passable,
+            atlasCoords: Vector2I.Zero,
+            allowedBiomes: new HashSet<string> { "water" }
+        ));
+        // neutral_tile has no AllowedBiomes (universal/neutral)
+        testTileRegistry.RegisterTile(new TileDefinition(
+            id: "neutral_tile",
+            name: "Neutral Tile",
+            passability: TilePassability.Passable,
+            atlasCoords: Vector2I.Zero
+        ));
+
+        var generator = new WfcMapGenerator(rulesWithNeutral, testTileRegistry);
         var gradient = new FixedGradient(new CardSignature()); // Neutral signature
 
         // Create registry with tiles in pools
@@ -185,7 +241,7 @@ public partial class BiomeGridIntegrationTest
         // We compare maps generated with different gradients.
 
         // Arrange
-        var generator = new WfcMapGenerator(_rules);
+        var generator = new WfcMapGenerator(_rules, _tileRegistry);
 
         // Gradient that matches fire biome
         var fireGradient = new FixedGradient(new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }));
@@ -243,7 +299,7 @@ public partial class BiomeGridIntegrationTest
         var gradient = new FixedGradient(new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }));
         var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient, _registry);
         var constraint = new Scripts.Features.Worldgen.Wfc.Constraints.BiomeAffinityConstraint(
-            strengthGrid, _registry);
+            strengthGrid, _registry, _tileRegistry);
 
         // Act: Check constraint behavior for different tile types
         var grid = new WfcGrid(10, 10, new[] { "fire_tile", "water_tile", "neutral_tile" });

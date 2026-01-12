@@ -25,10 +25,11 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeSamePosition()
     {
-        var mapData = CreateSimpleMap(5, 5);
+        var (_, gridData) = CreateSimpleMap(5, 5);
         var position = new Vector2I(2, 2);
+        var cellId = gridData.GetCellId(position);
 
-        var result = _checker.CanSee(position, position, mapData);
+        var result = _checker.CanSee(cellId, cellId, gridData);
 
         AssertBool(result).IsTrue();
     }
@@ -36,9 +37,12 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeAdjacentTile()
     {
-        var mapData = CreateSimpleMap(5, 5);
+        var (_, gridData) = CreateSimpleMap(5, 5);
 
-        var result = _checker.CanSee(new Vector2I(2, 2), new Vector2I(3, 2), mapData);
+        var result = _checker.CanSee(
+            gridData.GetCellId(new Vector2I(2, 2)),
+            gridData.GetCellId(new Vector2I(3, 2)),
+            gridData);
 
         AssertBool(result).IsTrue();
     }
@@ -46,9 +50,12 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeDiagonalTile()
     {
-        var mapData = CreateSimpleMap(5, 5);
+        var (_, gridData) = CreateSimpleMap(5, 5);
 
-        var result = _checker.CanSee(new Vector2I(0, 0), new Vector2I(4, 4), mapData);
+        var result = _checker.CanSee(
+            gridData.GetCellId(new Vector2I(0, 0)),
+            gridData.GetCellId(new Vector2I(4, 4)),
+            gridData);
 
         AssertBool(result).IsTrue();
     }
@@ -56,11 +63,14 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCannotSeeThroughWall()
     {
-        var mapData = CreateSimpleMap(5, 1);
-        // Place wall in the middle
-        mapData.TileIds[0, 2] = Wall;
+        var (mapData, gridData) = CreateSimpleMap(5, 1);
+        // Place wall in the middle - remove from passable tiles
+        SetWall(mapData, 2, 0);
 
-        var result = _checker.CanSee(new Vector2I(0, 0), new Vector2I(4, 0), mapData);
+        var result = _checker.CanSee(
+            gridData.GetCellId(new Vector2I(0, 0)),
+            gridData.GetCellId(new Vector2I(4, 0)),
+            gridData);
 
         AssertBool(result).IsFalse();
     }
@@ -68,12 +78,15 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeUpToWall()
     {
-        var mapData = CreateSimpleMap(5, 1);
+        var (mapData, gridData) = CreateSimpleMap(5, 1);
         // Place wall in the middle
-        mapData.TileIds[0, 2] = Wall;
+        SetWall(mapData, 2, 0);
 
         // Can see the wall tile itself
-        var result = _checker.CanSee(new Vector2I(0, 0), new Vector2I(2, 0), mapData);
+        var result = _checker.CanSee(
+            gridData.GetCellId(new Vector2I(0, 0)),
+            gridData.GetCellId(new Vector2I(2, 0)),
+            gridData);
 
         AssertBool(result).IsTrue();
     }
@@ -81,11 +94,14 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeFromWallPosition()
     {
-        var mapData = CreateSimpleMap(5, 1);
-        mapData.TileIds[0, 0] = Wall;
+        var (mapData, gridData) = CreateSimpleMap(5, 1);
+        SetWall(mapData, 0, 0);
 
         // Vision check starting from a wall position should still work
-        var result = _checker.CanSee(new Vector2I(0, 0), new Vector2I(2, 0), mapData);
+        var result = _checker.CanSee(
+            gridData.GetCellId(new Vector2I(0, 0)),
+            gridData.GetCellId(new Vector2I(2, 0)),
+            gridData);
 
         AssertBool(result).IsTrue();
     }
@@ -93,15 +109,18 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCannotSeeThroughMultipleWalls()
     {
-        var mapData = CreateSimpleMap(5, 5);
+        var (mapData, gridData) = CreateSimpleMap(5, 5);
         // Create a wall barrier
-        mapData.TileIds[0, 2] = Wall;
-        mapData.TileIds[1, 2] = Wall;
-        mapData.TileIds[2, 2] = Wall;
-        mapData.TileIds[3, 2] = Wall;
-        mapData.TileIds[4, 2] = Wall;
+        SetWall(mapData, 2, 0);
+        SetWall(mapData, 2, 1);
+        SetWall(mapData, 2, 2);
+        SetWall(mapData, 2, 3);
+        SetWall(mapData, 2, 4);
 
-        var result = _checker.CanSee(new Vector2I(0, 0), new Vector2I(4, 0), mapData);
+        var result = _checker.CanSee(
+            gridData.GetCellId(new Vector2I(0, 0)),
+            gridData.GetCellId(new Vector2I(4, 0)),
+            gridData);
 
         AssertBool(result).IsFalse();
     }
@@ -109,12 +128,15 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeAroundWall()
     {
-        var mapData = CreateSimpleMap(5, 5);
+        var (mapData, gridData) = CreateSimpleMap(5, 5);
         // Wall at (2,2)
-        mapData.TileIds[2, 2] = Wall;
+        SetWall(mapData, 2, 2);
 
         // Should still see (4,0) from (0,0) - wall is not in direct line
-        var result = _checker.CanSee(new Vector2I(0, 0), new Vector2I(4, 0), mapData);
+        var result = _checker.CanSee(
+            gridData.GetCellId(new Vector2I(0, 0)),
+            gridData.GetCellId(new Vector2I(4, 0)),
+            gridData);
 
         AssertBool(result).IsTrue();
     }
@@ -122,9 +144,12 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestVerticalLineOfSight()
     {
-        var mapData = CreateSimpleMap(1, 5);
+        var (_, gridData) = CreateSimpleMap(1, 5);
 
-        var result = _checker.CanSee(new Vector2I(0, 0), new Vector2I(0, 4), mapData);
+        var result = _checker.CanSee(
+            gridData.GetCellId(new Vector2I(0, 0)),
+            gridData.GetCellId(new Vector2I(0, 4)),
+            gridData);
 
         AssertBool(result).IsTrue();
     }
@@ -132,10 +157,13 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestVerticalLineOfSightBlockedByWall()
     {
-        var mapData = CreateSimpleMap(1, 5);
-        mapData.TileIds[2, 0] = Wall;
+        var (mapData, gridData) = CreateSimpleMap(1, 5);
+        SetWall(mapData, 0, 2);
 
-        var result = _checker.CanSee(new Vector2I(0, 0), new Vector2I(0, 4), mapData);
+        var result = _checker.CanSee(
+            gridData.GetCellId(new Vector2I(0, 0)),
+            gridData.GetCellId(new Vector2I(0, 4)),
+            gridData);
 
         AssertBool(result).IsFalse();
     }
@@ -143,12 +171,15 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestBresenhamLineSymmetry()
     {
-        var mapData = CreateSimpleMap(10, 10);
-        mapData.TileIds[5, 5] = Wall;
+        var (mapData, gridData) = CreateSimpleMap(10, 10);
+        SetWall(mapData, 5, 5);
 
         // Line from (0,0) to (8,6) should give same result as (8,6) to (0,0)
-        var forward = _checker.CanSee(new Vector2I(0, 0), new Vector2I(8, 6), mapData);
-        var backward = _checker.CanSee(new Vector2I(8, 6), new Vector2I(0, 0), mapData);
+        var from1 = gridData.GetCellId(new Vector2I(0, 0));
+        var to1 = gridData.GetCellId(new Vector2I(8, 6));
+
+        var forward = _checker.CanSee(from1, to1, gridData);
+        var backward = _checker.CanSee(to1, from1, gridData);
 
         AssertThat(forward).IsEqual(backward);
     }
@@ -162,12 +193,15 @@ public class SimpleVisibilityCheckerTest
         // 1 W . .
         // 2 . . .
         // Visibility from (0,0) to (2,2) should be blocked by the corner at (1,0)-(0,1)
-        var mapData = CreateSimpleMap(3, 3);
-        mapData.TileIds[0, 1] = Wall; // Wall at (1, 0)
-        mapData.TileIds[1, 0] = Wall; // Wall at (0, 1)
+        var (mapData, gridData) = CreateSimpleMap(3, 3);
+        SetWall(mapData, 1, 0);
+        SetWall(mapData, 0, 1);
 
         // Cannot see through the diagonal corner
-        var result = _checker.CanSee(new Vector2I(0, 0), new Vector2I(2, 2), mapData);
+        var result = _checker.CanSee(
+            gridData.GetCellId(new Vector2I(0, 0)),
+            gridData.GetCellId(new Vector2I(2, 2)),
+            gridData);
 
         AssertBool(result).IsFalse();
     }
@@ -181,11 +215,14 @@ public class SimpleVisibilityCheckerTest
         // 1 . . .
         // 2 . . .
         // Visibility from (0,0) to (2,2) should NOT be blocked (only one wall)
-        var mapData = CreateSimpleMap(3, 3);
-        mapData.TileIds[0, 1] = Wall; // Wall at (1, 0)
+        var (mapData, gridData) = CreateSimpleMap(3, 3);
+        SetWall(mapData, 1, 0);
 
         // Can see through a partial corner (one wall is not enough to block)
-        var result = _checker.CanSee(new Vector2I(0, 0), new Vector2I(2, 2), mapData);
+        var result = _checker.CanSee(
+            gridData.GetCellId(new Vector2I(0, 0)),
+            gridData.GetCellId(new Vector2I(2, 2)),
+            gridData);
 
         AssertBool(result).IsTrue();
     }
@@ -194,18 +231,21 @@ public class SimpleVisibilityCheckerTest
     public void TestCornerBlockingSymmetry()
     {
         // Corner blocking should be symmetric
-        var mapData = CreateSimpleMap(3, 3);
-        mapData.TileIds[0, 1] = Wall; // Wall at (1, 0)
-        mapData.TileIds[1, 0] = Wall; // Wall at (0, 1)
+        var (mapData, gridData) = CreateSimpleMap(3, 3);
+        SetWall(mapData, 1, 0);
+        SetWall(mapData, 0, 1);
 
-        var forward = _checker.CanSee(new Vector2I(0, 0), new Vector2I(2, 2), mapData);
-        var backward = _checker.CanSee(new Vector2I(2, 2), new Vector2I(0, 0), mapData);
+        var from = gridData.GetCellId(new Vector2I(0, 0));
+        var to = gridData.GetCellId(new Vector2I(2, 2));
+
+        var forward = _checker.CanSee(from, to, gridData);
+        var backward = _checker.CanSee(to, from, gridData);
 
         AssertThat(forward).IsEqual(backward);
         AssertBool(forward).IsFalse();
     }
 
-    private static SimpleMapData CreateSimpleMap(int width, int height)
+    private static (SimpleMapData mapData, RegularGridMapData gridData) CreateSimpleMap(int width, int height)
     {
         var mapData = new SimpleMapData
         {
@@ -214,6 +254,7 @@ public class SimpleVisibilityCheckerTest
             PlayerStart = new Vector2I(0, 0)
         };
 
+        // Initialize all tiles as floor and passable
         for (var y = 0; y < height; y++)
         for (var x = 0; x < width; x++)
         {
@@ -221,6 +262,19 @@ public class SimpleVisibilityCheckerTest
             mapData.PassableTiles.Add(new Vector2I(x, y));
         }
 
-        return mapData;
+        var gridData = new RegularGridMapData(mapData);
+        return (mapData, gridData);
+    }
+
+    /// <summary>
+    /// Sets a tile as a wall (not passable, not transparent).
+    /// Updates TileIds and removes from PassableTiles.
+    /// Note: RegularGridMapData caches passable tiles, so create it after setting walls
+    /// if the grid needs to reflect wall passability.
+    /// </summary>
+    private static void SetWall(SimpleMapData mapData, int x, int y)
+    {
+        mapData.TileIds[y, x] = Wall;
+        mapData.PassableTiles.Remove(new Vector2I(x, y));
     }
 }

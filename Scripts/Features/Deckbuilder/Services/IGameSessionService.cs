@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
@@ -33,4 +34,9 @@ public interface IGameSessionService
     void StartSession(List<CardSignature> mapSeeds, List<CardSignature> abilityCards);
     void AdvanceSession();
     void ResetSession();
+
+    /// <summary>
+    /// Sets a custom map generator. Pass null to use the default generator.
+    /// </summary>
+    void SetMapGenerator(IMapGenerator? generator);
 }

@@ -273,6 +273,11 @@ public class RegularGridMapData : IMapData
     public float TileSize => _tileSize;
 
     /// <summary>
+    /// The grid dimensions (width, height) in cells.
+    /// </summary>
+    public Vector2I Size => _simpleMapData.Size;
+
+    /// <summary>
     /// Invalidate cached data (call when SimpleMapData changes).
     /// </summary>
     public void InvalidateCache()

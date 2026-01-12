@@ -111,7 +111,7 @@ public class MeshBiomeAffinityConstraint : IMeshWfcConstraint
             return 1.0f;
 
         // Get vertex position from mesh
-        var vertex = _grid.Mesh.GetVertex(vertexId);
+        var vertex = _grid.Mesh.Vertices[vertexId];
         if (vertex == null)
             return 1.0f;
 

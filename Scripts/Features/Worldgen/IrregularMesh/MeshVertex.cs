@@ -20,6 +20,13 @@ public class MeshVertex
     public int TerrainType { get; set; }
 
     /// <summary>
+    /// Variant index for this vertex's terrain type.
+    /// -1 = use position-based hash for per-vertex variation
+    /// >= 0 = use this specific variant index (for per-generation consistency)
+    /// </summary>
+    public int VariantIndex { get; set; } = -1;
+
+    /// <summary>
     /// Whether this vertex has a blocking structure.
     /// Affects passability of adjacent quads.
     /// </summary>

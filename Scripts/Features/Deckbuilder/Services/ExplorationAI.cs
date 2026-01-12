@@ -18,58 +18,79 @@ public enum ExplorationMode
 /// <summary>
 /// AI that explores a map using frontier-based exploration,
 /// switching to enemy targeting when enemies become visible.
+/// Now works with any IMapData implementation (regular or irregular grids).
 /// </summary>
 public class ExplorationAI
 {
-    private readonly SimpleMapData _mapData;
-    private readonly HashSet<Vector2I> _visitedTiles = new();
-    private readonly List<Vector2I> _pathToTarget = new();
+    private readonly IMapData _mapData;
+    private readonly Pathfinder _pathfinder;
+    private readonly HashSet<int> _visitedCells = new();
+    private readonly List<int> _pathToTarget = new();
     private readonly FrontierExplorationBehavior _frontierBehavior;
     private readonly IVisibilityChecker _visibilityChecker;
     private readonly IExplorationStrategy _frontierStrategy;
     private readonly IExplorationStrategy _enemyPursuitStrategy;
     private IExplorationStrategy _currentStrategy;
-    private Vector2I? _currentTargetTile;
-    private Vector2I? _lastKnownEnemyPosition;
-    private Vector2I? _pendingEnemyPosition;
+    private int? _currentTargetCell;
+    private int? _lastKnownEnemyCell;
+    private int? _pendingEnemyCell;
 
-    public Vector2I CurrentPosition { get; private set; }
+    public int CurrentCellId { get; private set; }
+    public Vector2 CurrentPosition => _mapData.GetCellCenter(CurrentCellId);
     public bool HasFoundEnemy { get; private set; }
-    public Vector2I? VisibleEnemyPosition { get; private set; }
+    public int? VisibleEnemyCellId { get; private set; }
+    public Vector2? VisibleEnemyPosition => VisibleEnemyCellId.HasValue
+        ? _mapData.GetCellCenter(VisibleEnemyCellId.Value)
+        : null;
     public ExplorationMode CurrentMode { get; private set; } = ExplorationMode.FrontierExploration;
 
     public bool HasFinishedExploration =>
         HasFoundEnemy ||
         (_frontierBehavior.IsFullyExplored() &&
          CurrentMode != ExplorationMode.PathToEnemy &&
-         _pendingEnemyPosition == null);
-    public IReadOnlySet<Vector2I> SeenTiles => _frontierBehavior.SeenTiles;
-    public IReadOnlySet<Vector2I> CurrentlyVisibleTiles => _frontierBehavior.CurrentlyVisibleTiles;
+         _pendingEnemyCell == null);
+    public IReadOnlySet<int> SeenCells => _frontierBehavior.SeenCells;
+    public IReadOnlySet<int> CurrentlyVisibleCells => _frontierBehavior.CurrentlyVisibleCells;
 
     /// <summary>
-    /// The current path being followed (for debug visualization).
+    /// The current path being followed as cell IDs (for debug visualization).
     /// </summary>
-    public IReadOnlyList<Vector2I> CurrentPath => _pathToTarget;
+    public IReadOnlyList<int> CurrentPath => _pathToTarget;
 
     /// <summary>
-    /// The current target tile the agent is trying to reach (for debug visualization).
+    /// The current path as world positions.
     /// </summary>
-    public Vector2I? CurrentTarget => _currentTargetTile;
+    public IEnumerable<Vector2> CurrentPathPositions => _pathToTarget.Select(c => _mapData.GetCellCenter(c));
 
-    public event Action<Vector2I>? PlayerMoved;
-    public event Action<Vector2I>? EnemyEncountered;
-    public event Action<Vector2I>? EnemySpotted;
-    public event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
-    public event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>>? VisibilityUpdated;
+    /// <summary>
+    /// The current target cell the agent is trying to reach.
+    /// </summary>
+    public int? CurrentTargetCell => _currentTargetCell;
+
+    /// <summary>
+    /// The current target as world position.
+    /// </summary>
+    public Vector2? CurrentTargetPosition => _currentTargetCell.HasValue
+        ? _mapData.GetCellCenter(_currentTargetCell.Value)
+        : null;
+
+    // Events now use world positions (Vector2) instead of grid positions (Vector2I)
+    public event Action<Vector2>? PlayerMoved;
+    public event Action<Vector2>? EnemyEncountered;
+    public event Action<Vector2>? EnemySpotted;
+    public event Action<IReadOnlySet<int>>? VisitedCellsUpdated;
+    public event Action<IReadOnlySet<int>, IReadOnlySet<int>>? VisibilityUpdated;
     public event Action? PathUpdated;
 
-    public ExplorationAI(SimpleMapData mapData, Vector2I? startPosition = null, IVisibilityChecker? visibilityChecker = null, int visionRange = 5)
+    /// <summary>
+    /// Create exploration AI with a map data provider.
+    /// </summary>
+    public ExplorationAI(IMapData mapData, int? startCell = null, IVisibilityChecker? visibilityChecker = null, int visionRange = 5)
     {
         ArgumentNullException.ThrowIfNull(mapData);
-        ArgumentNullException.ThrowIfNull(mapData.PassableTiles);
-        ArgumentNullException.ThrowIfNull(mapData.EnemyPositions);
 
         _mapData = mapData;
+        _pathfinder = new Pathfinder(mapData);
         _visibilityChecker = visibilityChecker ?? (ServiceLocator.Has<IVisibilityChecker>()
             ? ServiceLocator.Get<IVisibilityChecker>()
             : new SimpleVisibilityChecker());
@@ -81,22 +102,36 @@ public class ExplorationAI
         _enemyPursuitStrategy = new PathToEnemyStrategy();
         _currentStrategy = _frontierStrategy;
 
-        CurrentPosition = startPosition ?? mapData.PlayerStart;
-        _visitedTiles.Add(CurrentPosition);
+        CurrentCellId = startCell ?? mapData.PlayerStartCell ?? 0;
+        _visitedCells.Add(CurrentCellId);
 
         // Initial vision update
         try
         {
-            _frontierBehavior.UpdateVision(CurrentPosition);
-            VisitedTilesUpdated?.Invoke(_frontierBehavior.VisitedTiles);
-            VisibilityUpdated?.Invoke(_frontierBehavior.SeenTiles, _frontierBehavior.CurrentlyVisibleTiles);
+            _frontierBehavior.UpdateVision(CurrentCellId);
+            VisitedCellsUpdated?.Invoke(_frontierBehavior.VisitedCells);
+            VisibilityUpdated?.Invoke(_frontierBehavior.SeenCells, _frontierBehavior.CurrentlyVisibleCells);
         }
         catch (Exception ex)
         {
             ILog.Error($"Exception during initial vision update: {ex.Message}\n{ex.StackTrace}");
         }
 
-        ILog.Print($"Exploration AI initialized at {CurrentPosition}");
+        ILog.Print($"Exploration AI initialized at cell {CurrentCellId} (position: {CurrentPosition})");
+    }
+
+    /// <summary>
+    /// Backwards-compatible constructor that wraps SimpleMapData in RegularGridMapData.
+    /// </summary>
+    public ExplorationAI(SimpleMapData simpleMapData, Vector2I? startPosition = null, IVisibilityChecker? visibilityChecker = null, int visionRange = 5)
+        : this(
+            new RegularGridMapData(simpleMapData),
+            startPosition.HasValue
+                ? startPosition.Value.Y * simpleMapData.Size.X + startPosition.Value.X
+                : null,
+            visibilityChecker,
+            visionRange)
+    {
     }
 
     /// <summary>
@@ -121,17 +156,16 @@ public class ExplorationAI
         try
         {
             // Check if we've physically reached an enemy position
-            if (_mapData.EnemyPositions.Contains(CurrentPosition))
+            if (_mapData.EnemySpawnCells.Contains(CurrentCellId))
             {
                 HasFoundEnemy = true;
-                VisibleEnemyPosition = CurrentPosition;
-                ILog.Print($"Enemy encountered at {CurrentPosition}!");
+                VisibleEnemyCellId = CurrentCellId;
+                ILog.Print($"Enemy encountered at cell {CurrentCellId}!");
                 EnemyEncountered?.Invoke(CurrentPosition);
                 return false;
             }
 
             // Check for visible enemies BEFORE checking if exploration is complete
-            // (enemies can be visible even if all tiles are trivially visited)
             CheckForVisibleEnemies();
 
             if (HasFinishedExploration) return false;
@@ -139,58 +173,58 @@ public class ExplorationAI
             // If we have a path, follow it to completion (commit to destination)
             if (_pathToTarget.Count > 0)
             {
-                var nextPosition = _pathToTarget[0];
+                var nextCell = _pathToTarget[0];
                 _pathToTarget.RemoveAt(0);
-                MoveToPosition(nextPosition);
+                MoveToCell(nextCell);
                 return true;
             }
 
             // Check for pending enemy now that we've reached our destination
-            if (_pendingEnemyPosition != null && CurrentMode == ExplorationMode.FrontierExploration)
+            if (_pendingEnemyCell != null && CurrentMode == ExplorationMode.FrontierExploration)
             {
-                ILog.Print($"Reached destination, now pursuing pending enemy at {_pendingEnemyPosition}.");
+                ILog.Print($"Reached destination, now pursuing pending enemy at cell {_pendingEnemyCell}.");
                 SetMode(ExplorationMode.PathToEnemy);
-                _lastKnownEnemyPosition = _pendingEnemyPosition;
-                _pendingEnemyPosition = null;
+                _lastKnownEnemyCell = _pendingEnemyCell;
+                _pendingEnemyCell = null;
             }
 
             // Find next target using current strategy
             var context = new ExplorationContext
             {
                 MapData = _mapData,
-                CurrentPosition = CurrentPosition,
+                CurrentCellId = CurrentCellId,
                 FrontierBehavior = _frontierBehavior,
-                VisibleEnemyPosition = VisibleEnemyPosition,
-                LastKnownEnemyPosition = _lastKnownEnemyPosition
+                VisibleEnemyCellId = VisibleEnemyCellId,
+                LastKnownEnemyCellId = _lastKnownEnemyCell
             };
             var target = _currentStrategy.GetNextTarget(context);
 
             if (target == null)
             {
-                _currentTargetTile = null;
+                _currentTargetCell = null;
                 PathUpdated?.Invoke();
                 ILog.Print("No more targets to explore - exploration complete");
                 return false;
             }
 
-            // Calculate path to target
+            // Calculate path to target using Pathfinder
             _pathToTarget.Clear();
-            _currentTargetTile = target.Value;
-            var path = FindPath(CurrentPosition, target.Value);
+            _currentTargetCell = target.Value;
+            var path = _pathfinder.FindPath(CurrentCellId, target.Value);
             if (path.Count > 1)
             {
-                // Take the first step now (don't use recursion to avoid stack issues)
-                _pathToTarget.AddRange(path.Skip(1)); // Skip current position
+                // Take the first step now (skip current position)
+                _pathToTarget.AddRange(path.Skip(1));
                 PathUpdated?.Invoke();
-                var nextPosition = _pathToTarget[0];
+                var nextCell = _pathToTarget[0];
                 _pathToTarget.RemoveAt(0);
-                MoveToPosition(nextPosition);
+                MoveToCell(nextCell);
                 return true;
             }
 
-            _currentTargetTile = null;
+            _currentTargetCell = null;
             PathUpdated?.Invoke();
-            ILog.Print($"No path to target {target.Value} found from {CurrentPosition} - exploration stuck");
+            ILog.Print($"No path to target cell {target.Value} found from cell {CurrentCellId} - exploration stuck");
             return false;
         }
         catch (Exception ex)
@@ -202,20 +236,21 @@ public class ExplorationAI
 
     private void CheckForVisibleEnemies()
     {
-        Vector2I? closestVisibleEnemy = null;
+        int? closestVisibleEnemy = null;
         var closestDistanceSquared = float.MaxValue;
+        var currentPos = CurrentPosition;
 
-        foreach (var enemyPos in _mapData.EnemyPositions)
+        foreach (var enemyCellId in _mapData.EnemySpawnCells)
         {
             // Only consider enemies within our current fog of war visibility
-            // (respects both vision range AND line-of-sight)
-            if (_frontierBehavior.CurrentlyVisibleTiles.Contains(enemyPos))
+            if (_frontierBehavior.CurrentlyVisibleCells.Contains(enemyCellId))
             {
-                var distanceSquared = CurrentPosition.DistanceSquaredTo(enemyPos);
+                var enemyPos = _mapData.GetCellCenter(enemyCellId);
+                var distanceSquared = currentPos.DistanceSquaredTo(enemyPos);
                 if (distanceSquared < closestDistanceSquared)
                 {
                     closestDistanceSquared = distanceSquared;
-                    closestVisibleEnemy = enemyPos;
+                    closestVisibleEnemy = enemyCellId;
                 }
             }
         }
@@ -223,65 +258,60 @@ public class ExplorationAI
         if (closestVisibleEnemy != null)
         {
             // Enemy is visible - always track position for visibility purposes
-            VisibleEnemyPosition = closestVisibleEnemy;
-            _lastKnownEnemyPosition = closestVisibleEnemy;
+            VisibleEnemyCellId = closestVisibleEnemy;
+            _lastKnownEnemyCell = closestVisibleEnemy;
 
             if (CurrentMode == ExplorationMode.FrontierExploration && _pathToTarget.Count > 0)
             {
                 // We're exploring with an active path - defer enemy pursuit
-                if (_pendingEnemyPosition != closestVisibleEnemy)
+                if (_pendingEnemyCell != closestVisibleEnemy)
                 {
-                    ILog.Print($"Enemy spotted at {closestVisibleEnemy}! Deferring pursuit until current destination reached.");
-                    _pendingEnemyPosition = closestVisibleEnemy;
-                    EnemySpotted?.Invoke(closestVisibleEnemy.Value);
+                    ILog.Print($"Enemy spotted at cell {closestVisibleEnemy}! Deferring pursuit until current destination reached.");
+                    _pendingEnemyCell = closestVisibleEnemy;
+                    EnemySpotted?.Invoke(_mapData.GetCellCenter(closestVisibleEnemy.Value));
                 }
-                // Don't switch mode or clear path - continue to current destination
             }
             else
             {
                 // No active path or already pursuing - switch to pursuit immediately
                 if (CurrentMode != ExplorationMode.PathToEnemy)
                 {
-                    ILog.Print($"Enemy spotted at {closestVisibleEnemy}! Switching to pursuit mode.");
-                    EnemySpotted?.Invoke(closestVisibleEnemy.Value);
+                    ILog.Print($"Enemy spotted at cell {closestVisibleEnemy}! Switching to pursuit mode.");
+                    EnemySpotted?.Invoke(_mapData.GetCellCenter(closestVisibleEnemy.Value));
                 }
-                _pendingEnemyPosition = null; // Clear pending since we're pursuing now
+                _pendingEnemyCell = null;
 
                 // Only recalculate path if enemy moved or we don't have a path
                 var shouldRecalculatePath = _pathToTarget.Count == 0 ||
-                    _currentTargetTile != closestVisibleEnemy.Value;
+                    _currentTargetCell != closestVisibleEnemy.Value;
 
                 SetMode(ExplorationMode.PathToEnemy);
 
                 if (shouldRecalculatePath)
                 {
                     _pathToTarget.Clear();
-                    _currentTargetTile = null;
+                    _currentTargetCell = null;
                     PathUpdated?.Invoke();
                 }
             }
         }
-        else if (_lastKnownEnemyPosition != null)
+        else if (_lastKnownEnemyCell != null)
         {
             // Enemy not visible but we have a last known position - continue toward it
-            // Only clear and return to exploration if we've reached the last known position
-            if (CurrentPosition == _lastKnownEnemyPosition.Value)
+            if (CurrentCellId == _lastKnownEnemyCell.Value)
             {
-                // We've reached the last known position but no enemy here - it must have moved or we were wrong
-                ILog.Print($"Reached last known enemy position {_lastKnownEnemyPosition} but no enemy found. Returning to exploration.");
-                _lastKnownEnemyPosition = null;
-                VisibleEnemyPosition = null;
+                ILog.Print($"Reached last known enemy cell {_lastKnownEnemyCell} but no enemy found. Returning to exploration.");
+                _lastKnownEnemyCell = null;
+                VisibleEnemyCellId = null;
                 SetMode(ExplorationMode.FrontierExploration);
                 _pathToTarget.Clear();
-                _currentTargetTile = null;
+                _currentTargetCell = null;
                 PathUpdated?.Invoke();
             }
             else
             {
-                // Still moving toward last known position - stay in pursuit mode
-                ILog.Print($"Enemy not visible, continuing toward last known position {_lastKnownEnemyPosition}.");
-                VisibleEnemyPosition = null; // Clear visible but keep pursuing
-                // Don't clear path - let it continue
+                ILog.Print($"Enemy not visible, continuing toward last known cell {_lastKnownEnemyCell}.");
+                VisibleEnemyCellId = null;
             }
         }
         else
@@ -291,96 +321,30 @@ public class ExplorationAI
             {
                 ILog.Print("Enemy no longer visible and no last known position. Returning to exploration.");
                 _pathToTarget.Clear();
-                _currentTargetTile = null;
+                _currentTargetCell = null;
                 PathUpdated?.Invoke();
             }
             SetMode(ExplorationMode.FrontierExploration);
-            VisibleEnemyPosition = null;
+            VisibleEnemyCellId = null;
         }
     }
 
-    private void MoveToPosition(Vector2I newPosition)
+    private void MoveToCell(int newCellId)
     {
-        if (!_mapData.IsPassable(newPosition))
+        if (!_mapData.IsPassable(newCellId))
         {
-            ILog.Error($"Attempted to move to blocked position {newPosition}");
+            ILog.Error($"Attempted to move to blocked cell {newCellId}");
             return;
         }
 
-        CurrentPosition = newPosition;
-        _visitedTiles.Add(CurrentPosition);
+        CurrentCellId = newCellId;
+        _visitedCells.Add(CurrentCellId);
 
         // Update vision from new position
-        _frontierBehavior.UpdateVision(CurrentPosition);
+        _frontierBehavior.UpdateVision(CurrentCellId);
 
         PlayerMoved?.Invoke(CurrentPosition);
-        VisitedTilesUpdated?.Invoke(_frontierBehavior.VisitedTiles);
-        VisibilityUpdated?.Invoke(_frontierBehavior.SeenTiles, _frontierBehavior.CurrentlyVisibleTiles);
-    }
-
-    /// <summary>
-    /// Simple A* pathfinding
-    /// </summary>
-    private List<Vector2I> FindPath(Vector2I start, Vector2I goal)
-    {
-        var openSet = new PriorityQueue<Vector2I, float>();
-        var cameFrom = new Dictionary<Vector2I, Vector2I>();
-        var gScore = new Dictionary<Vector2I, float>();
-        var fScore = new Dictionary<Vector2I, float>();
-
-        gScore[start] = 0;
-        fScore[start] = Heuristic(start, goal);
-        openSet.Enqueue(start, fScore[start]);
-
-        while (openSet.Count > 0)
-        {
-            var current = openSet.Dequeue();
-
-            if (current == goal) return ReconstructPath(cameFrom, current);
-
-            foreach (var neighbor in GetNeighbors(current))
-            {
-                if (!_mapData.IsPassable(neighbor)) continue;
-
-                var tentativeGScore = gScore[current] + 1; // All moves cost 1
-
-                if (!gScore.TryGetValue(neighbor, out var existingGScore) || tentativeGScore < existingGScore)
-                {
-                    cameFrom[neighbor] = current;
-                    gScore[neighbor] = tentativeGScore;
-                    fScore[neighbor] = gScore[neighbor] + Heuristic(neighbor, goal);
-
-                    openSet.Enqueue(neighbor, fScore[neighbor]);
-                }
-            }
-        }
-
-        return new List<Vector2I>(); // No path found
-    }
-
-    private static float Heuristic(Vector2I a, Vector2I b)
-    {
-        return Mathf.Abs(a.X - b.X) + Mathf.Abs(a.Y - b.Y); // Manhattan distance
-    }
-
-    private static List<Vector2I> ReconstructPath(Dictionary<Vector2I, Vector2I> cameFrom, Vector2I current)
-    {
-        var path = new List<Vector2I> { current };
-
-        while (cameFrom.ContainsKey(current))
-        {
-            current = cameFrom[current];
-            path.Insert(0, current);
-        }
-
-        return path;
-    }
-
-    private IEnumerable<Vector2I> GetNeighbors(Vector2I pos)
-    {
-        yield return new Vector2I(pos.X + 1, pos.Y);
-        yield return new Vector2I(pos.X - 1, pos.Y);
-        yield return new Vector2I(pos.X, pos.Y + 1);
-        yield return new Vector2I(pos.X, pos.Y - 1);
+        VisitedCellsUpdated?.Invoke(_frontierBehavior.VisitedCells);
+        VisibilityUpdated?.Invoke(_frontierBehavior.SeenCells, _frontierBehavior.CurrentlyVisibleCells);
     }
 }

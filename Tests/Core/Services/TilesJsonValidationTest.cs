@@ -29,7 +29,10 @@ public class TilesJsonValidationTest
             var json = File.ReadAllText(absolutePath);
             _tilesDoc = JsonDocument.Parse(json);
         }
+        // Load registry explicitly from JSON (not from default TMX) for JSON validation tests
         _registry = new TileRegistry();
+        _registry.Clear();
+        _registry.LoadFromData(TilesJsonPath);
     }
 
     [AfterTest]

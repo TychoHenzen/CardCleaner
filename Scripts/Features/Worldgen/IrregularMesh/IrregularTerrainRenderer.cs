@@ -191,8 +191,10 @@ public partial class IrregularTerrainRenderer : Node2D
             var bitmask = quad.ComputeCorner16Bitmask();
 
             // Get atlas coordinates for this bitmask
-            var positionSeed = HashPosition(quad.Centroid);
-            var atlasCoords = _transitionMap.GetVariantCoordsWithRandom(borderId, outerTerrain, bitmask, positionSeed);
+            // Use vertex VariantIndex if set, otherwise fall back to position hash
+            var variantIndex = quad.GetVariantIndex();
+            int variantSeed = variantIndex >= 0 ? variantIndex : HashPosition(quad.Centroid);
+            var atlasCoords = _transitionMap.GetVariantCoordsWithRandom(borderId, outerTerrain, bitmask, variantSeed);
 
             if (!atlasCoords.HasValue)
             {

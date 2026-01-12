@@ -27,13 +27,30 @@ public class SimpleMapGeneratorTest
     {
         _rng = new RandomNumberGenerator();
         _rng.Seed = 12345;
-        _registry = new BiomeRegistry();
-        _registry.RegisterDefaultBiomes();
         _tileRegistry = MockTileRegistry.CreateWithTestTiles();
+
+        // Create biomes that use the mock tiles
+        _registry = new BiomeRegistry();
+        RegisterMockBiomes();
 
         var gradient = new CardBasedGradient(new[] { new CardSignature() }, _rng);
         var biomeProvider = new BiomeMapGenerator(_registry, gradient, new Vector2I(10, 10));
         _generator = new SimpleMapGenerator(_rng, biomeProvider, _tileRegistry, _tileRegistry);
+    }
+
+    private void RegisterMockBiomes()
+    {
+        // Create biomes that use the mock tile IDs (grass, stone, dirt, rock)
+        var passablePool = new TilePool();
+        passablePool.Add("grass", 1.0f);
+        passablePool.Add("dirt", 1.0f);
+        var blockedPool = new TilePool();
+        blockedPool.Add("stone", 1.0f);
+        blockedPool.Add("rock", 1.0f);
+
+        // Register a single test biome - all positions will use this
+        var signature = new CardSignature();
+        _registry.Register(new BiomeDefinition("test_biome", signature, passablePool, blockedPool));
     }
 
     private SimpleMapGenerator CreateGenerator(Vector2I mapSize, CardSignature? signature = null)

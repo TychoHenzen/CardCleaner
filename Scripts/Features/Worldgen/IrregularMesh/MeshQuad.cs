@@ -209,5 +209,28 @@ public class MeshQuad
         return true;
     }
 
+    /// <summary>
+    /// Gets the variant index for rendering this quad.
+    /// Uses the VariantIndex from filled corners if set (>= 0),
+    /// otherwise returns -1 to indicate position-based hash should be used.
+    /// </summary>
+    /// <param name="filledTerrainType">Terrain type considered "filled" (default: 1)</param>
+    /// <returns>Variant index from first filled corner, or -1 for position-based selection.</returns>
+    public int GetVariantIndex(int filledTerrainType = 1)
+    {
+        // Find the first filled corner with a set variant index
+        foreach (var vertexId in VertexIds)
+        {
+            var vertex = _mesh.Vertices[vertexId];
+            if (vertex.TerrainType == filledTerrainType && vertex.VariantIndex >= 0)
+            {
+                return vertex.VariantIndex;
+            }
+        }
+
+        // No filled corners with set variant, use position-based hash
+        return -1;
+    }
+
     public override string ToString() => $"Quad[{Id}] vertices={string.Join(",", VertexIds)}";
 }

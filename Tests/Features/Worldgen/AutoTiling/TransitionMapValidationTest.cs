@@ -21,7 +21,7 @@ public class TransitionMapValidationTest
     private const string AtlasMappingPath = "res://Data/CompiledAtlas/atlas_mapping.json";
     // Default values - will be read from atlas_mapping.json if available
     private const int DefaultAtlasWidth = 4096;
-    private const int DefaultAtlasHeight = 1024;  // Updated to match actual atlas
+    private const int DefaultAtlasHeight = 2048;  // Must match atlas_mapping.json
     private const int DefaultTileSize = 16;
 
     private JsonDocument? _transitionDoc;
@@ -41,7 +41,10 @@ public class TransitionMapValidationTest
                 PropertyNameCaseInsensitive = true
             });
         }
+        // Load from JSON to match transition_map.json source
         _registry = new TileRegistry();
+        _registry.Clear();
+        _registry.LoadFromData("res://Data/Tiles/tiles.json");
     }
 
     [AfterTest]

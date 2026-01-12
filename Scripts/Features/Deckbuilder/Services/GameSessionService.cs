@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
@@ -12,6 +13,8 @@ using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 using Timer = Godot.Timer;
+
+// IMapGenerator support for pluggable map generation (regular grid or irregular mesh)
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
@@ -26,15 +29,23 @@ public partial class GameSessionService : Node, IGameSessionService
     private SimpleCombatSystem? _combatSystem;
     private Vector2I? _currentEnemyPosition;
 
-    // Simple game systems
+    // Simple game systems (backward compatible)
     private SimpleMapData? _currentMap;
+    private RegularGridMapData? _currentGridMapData;
     private SessionState _currentState = SessionState.WaitingForCards;
     private ExplorationAI? _explorationAI;
     private Timer _gameTimer = null!;
     private List<CardSignature> _mapSeeds = new();
 
+    // Pluggable map generator support
+    private IMapGenerator? _mapGenerator;
+    private IGeneratedMap? _generatedMap;
+    private IMapData? _currentMapData;
+
     // Player and enemy tracking
+    private Vector2? _playerWorldPosition;
     private Vector2I? _playerPosition;
+    private int? _currentEnemyCellId;
     private RandomNumberGenerator _rng = new();
     private ITileRegistry _tileRegistry = null!;
     private ITileMetadataProvider _metadataProvider = null!;
@@ -56,12 +67,18 @@ public partial class GameSessionService : Node, IGameSessionService
 
     public event Action<SessionState>? StateChanged;
     public event Action<SimpleMapData>? MapGenerated;
+    public event Action<IGeneratedMap>? GeneratedMapReady;
     public event Action<List<CardSignature>>? LootGenerated;
     public event Action<Vector2I>? PlayerMoved;
+    public event Action<Vector2>? PlayerMovedWorld;
     public event Action<Vector2I>? EnemyDefeated;
+    public event Action<int>? EnemyDefeatedCell;
     public event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
+    public event Action<IReadOnlySet<int>>? VisitedCellsUpdated;
     public event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>>? VisibilityUpdated;
+    public event Action<IReadOnlySet<int>, IReadOnlySet<int>>? VisibilityCellsUpdated;
     public event Action<IReadOnlyList<Vector2I>, Vector2I?>? PathUpdated;
+    public event Action<IReadOnlyList<int>, int?>? PathCellsUpdated;
     public event Action<float>? ProgressUpdated;
 
     /// <summary>
@@ -69,6 +86,31 @@ public partial class GameSessionService : Node, IGameSessionService
     /// Tests can await this to wait for actual async completion instead of polling with timeouts.
     /// </summary>
     public Task? CurrentGenerationTask => _currentGenerationTask;
+
+    /// <summary>
+    /// Gets the current generated map (available after map generation completes).
+    /// Works with both regular grid and irregular mesh maps.
+    /// </summary>
+    public IGeneratedMap? CurrentGeneratedMap => _generatedMap;
+
+    /// <summary>
+    /// Gets the current map data adapter for pathfinding and exploration.
+    /// </summary>
+    public IMapData? CurrentMapData => _currentMapData;
+
+    /// <summary>
+    /// Sets a custom map generator for the next session.
+    /// When set, this generator will be used instead of the default SimpleMapGenerator.
+    /// Set to null to use the default generator.
+    /// </summary>
+    /// <param name="generator">The map generator to use, or null for default.</param>
+    public void SetMapGenerator(IMapGenerator? generator)
+    {
+        _mapGenerator = generator;
+        ILog.Print(generator != null
+            ? $"Map generator set to: {generator.GetType().Name}"
+            : "Map generator reset to default");
+    }
 
     public void StartSession(List<CardSignature>? mapSeeds, List<CardSignature>? abilityCards)
     {
@@ -126,10 +168,15 @@ public partial class GameSessionService : Node, IGameSessionService
         _mapSeeds.Clear();
         _abilityCards.Clear();
         _currentMap = null!;
+        _currentGridMapData = null;
+        _generatedMap = null;
+        _currentMapData = null;
         _explorationAI = null!;
         _combatSystem = null!;
         _playerPosition = null;
+        _playerWorldPosition = null;
         _currentEnemyPosition = null;
+        _currentEnemyCellId = null;
         _currentGenerationTask = null;
         CurrentState = SessionState.WaitingForCards;
         ILog.Print("Session reset");
@@ -185,38 +232,20 @@ public partial class GameSessionService : Node, IGameSessionService
             _rng.Seed = seed;
             ILog.Print($"Map seed: {seed}");
 
-            // Ensure tile registry is available (fallback if async callback hasn't run yet)
-            _tileRegistry ??= new TileRegistry();
-
             // Use first signature to influence map size (could blend in future)
             var mapSize = CalculateMapSize(_mapSeeds[0]);
 
-            // Create gradient from all map seeds for biome placement
-            var gradient = new CardBasedGradient(_mapSeeds.ToArray(), _rng);
-
-            // Create biome provider that maps gradient signatures to biomes
-            var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, mapSize);
-
-            // Create WFC generator with hard constraints (2x2 window, adjacency rules)
-            // Pass tile registry so WfcMapGenerator uses TileDefinition.IsPassable for connectivity
-            var transitionResolver = new CompiledTransitionResolver();
-            var wfcGenerator = new WfcMapGenerator(transitionResolver, _tileRegistry);
-
-            // Create map generator with WFC for terrain generation
-            var mapGenerator = new SimpleMapGenerator(
-                _rng, biomeProvider, _tileRegistry, _metadataProvider, wfcGenerator, _biomeRegistry, gradient);
-
-            // Wrap in async adapter and generate on background thread
-            var asyncGenerator = new AsyncMapGeneratorAdapter(mapGenerator);
-            _currentMap = await asyncGenerator.GenerateMapAsync(mapSize, progress, _generationCts.Token);
-
-            // Log biome distribution for debugging
-            biomeProvider.LogBiomeStats();
-
-            ILog.Print($"Map generated: {mapSize.X}x{mapSize.Y}, {_currentMap.EnemyPositions.Count} enemies");
-
-            // Notify listeners about the generated map
-            MapGenerated?.Invoke(_currentMap);
+            // Check if a custom map generator is set
+            if (_mapGenerator != null)
+            {
+                // Use the pluggable map generator (e.g., IrregularMeshMapGenerator)
+                await GenerateWithCustomGenerator(seed, mapSize, progress);
+            }
+            else
+            {
+                // Use the default SimpleMapGenerator
+                await GenerateWithDefaultGenerator(seed, mapSize, progress);
+            }
 
             CurrentState = SessionState.Exploring;
             CallDeferred(MethodName.AdvanceSession);
@@ -245,6 +274,72 @@ public partial class GameSessionService : Node, IGameSessionService
         }
     }
 
+    private async Task GenerateWithCustomGenerator(ulong seed, Vector2I mapSize, IProgress<float> progress)
+    {
+        // Create generation config from current session state
+        var config = new MapGenerationConfig
+        {
+            Size = mapSize,
+            Seed = seed,
+            MapSeeds = _mapSeeds.ToArray(),
+            BiomeRegistry = _biomeRegistry
+        };
+
+        // Generate using the custom generator
+        _generatedMap = await _mapGenerator!.GenerateAsync(config, progress, _generationCts!.Token);
+        _currentMapData = _generatedMap.GetMapData();
+
+        // Clear regular grid fields (not used with custom generator)
+        _currentMap = null;
+        _currentGridMapData = null;
+
+        ILog.Print($"Custom map generated: {_generatedMap.EnemyCount} enemies");
+
+        // Notify listeners with the new event
+        GeneratedMapReady?.Invoke(_generatedMap);
+    }
+
+    private async Task GenerateWithDefaultGenerator(ulong seed, Vector2I mapSize, IProgress<float> progress)
+    {
+        // Ensure tile registry is available (fallback if async callback hasn't run yet)
+        _tileRegistry ??= new TileRegistry();
+
+        // Create gradient from all map seeds for biome placement
+        var gradient = new CardBasedGradient(_mapSeeds.ToArray(), _rng);
+
+        // Create biome provider that maps gradient signatures to biomes
+        var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, mapSize);
+
+        // Create WFC generator with hard constraints (2x2 window, adjacency rules)
+        // Pass tile registry so WfcMapGenerator uses TileDefinition.IsPassable for connectivity
+        var transitionResolver = new CompiledTransitionResolver();
+        var wfcGenerator = new WfcMapGenerator(transitionResolver, _tileRegistry);
+
+        // Create map generator with WFC for terrain generation
+        var mapGenerator = new SimpleMapGenerator(
+            _rng, biomeProvider, _tileRegistry, _metadataProvider, wfcGenerator, _biomeRegistry, gradient);
+
+        // Wrap in async adapter and generate on background thread
+        var asyncGenerator = new AsyncMapGeneratorAdapter(mapGenerator);
+        _currentMap = await asyncGenerator.GenerateMapAsync(mapSize, progress, _generationCts!.Token);
+
+        // Create the IMapData adapter for exploration
+        _currentGridMapData = new RegularGridMapData(_currentMap);
+        _currentMapData = _currentGridMapData;
+
+        // Wrap in IGeneratedMap for unified interface
+        _generatedMap = new SimpleGeneratedMap(_currentMap);
+
+        // Log biome distribution for debugging
+        biomeProvider.LogBiomeStats();
+
+        ILog.Print($"Map generated: {mapSize.X}x{mapSize.Y}, {_currentMap.EnemyPositions.Count} enemies");
+
+        // Notify listeners about the generated map (backward compatible event)
+        MapGenerated?.Invoke(_currentMap);
+        GeneratedMapReady?.Invoke(_generatedMap);
+    }
+
     private void OnMapGenerationProgress(float value)
     {
         ProgressUpdated?.Invoke(value);
@@ -253,21 +348,134 @@ public partial class GameSessionService : Node, IGameSessionService
 
     private void StartExploration()
     {
-        ILog.Print($"Starting exploration... ({_currentMap?.EnemyPositions.Count ?? 0} enemies on map)");
+        var enemyCount = _generatedMap?.EnemyCount ?? _currentMap?.EnemyPositions.Count ?? 0;
+        ILog.Print($"Starting exploration... ({enemyCount} enemies on map)");
 
-        // Continue from current player position if resuming, otherwise start fresh
-        if (_currentMap == null) return;
-        _explorationAI = new ExplorationAI(_currentMap, _playerPosition);
-        _explorationAI.EnemyEncountered += OnEnemyEncountered;
-        _explorationAI.PlayerMoved += pos => PlayerMoved?.Invoke(pos);
-        _explorationAI.VisitedTilesUpdated += tiles => VisitedTilesUpdated?.Invoke(tiles);
-        _explorationAI.VisibilityUpdated += (seen, current) => VisibilityUpdated?.Invoke(seen, current);
-        _explorationAI.PathUpdated +=
-            () => PathUpdated?.Invoke(_explorationAI.CurrentPath, _explorationAI.CurrentTarget);
+        // Check if we have valid map data (from either regular or custom generator)
+        if (_currentMapData == null)
+        {
+            ILog.Error("Cannot start exploration - no map data available");
+            return;
+        }
+
+        // Determine starting cell ID based on available data
+        int? startCellId = null;
+        if (_playerWorldPosition.HasValue)
+        {
+            // Resume from world position (custom generator case)
+            startCellId = _currentMapData.GetCellAtPosition(_playerWorldPosition.Value);
+        }
+        else if (_playerPosition.HasValue && _currentGridMapData != null)
+        {
+            // Resume from grid position (regular generator case)
+            startCellId = _currentGridMapData.GetCellId(_playerPosition.Value);
+        }
+
+        _explorationAI = new ExplorationAI(_currentMapData, startCellId);
+
+        // Subscribe with adapters to emit both Vector2I and cell-based events
+        _explorationAI.EnemyEncountered += OnEnemyEncounteredWorld;
+        _explorationAI.PlayerMoved += OnPlayerMovedWorld;
+        _explorationAI.VisitedCellsUpdated += OnVisitedCellsUpdated;
+        _explorationAI.VisibilityUpdated += OnVisibilityUpdated;
+        _explorationAI.PathUpdated += OnPathUpdated;
 
         // Start exploration timer
         _gameTimer.WaitTime = ExplorationStepDelay;
         _gameTimer.Start();
+    }
+
+    // Adapter methods to emit both Vector2I (backward compat) and cell-based events
+
+    private void OnPlayerMovedWorld(Vector2 worldPos)
+    {
+        // Track world position for custom generators
+        _playerWorldPosition = worldPos;
+
+        // Emit world position event (for irregular mesh)
+        PlayerMovedWorld?.Invoke(worldPos);
+
+        // Emit grid position event (backward compat for regular grid)
+        if (_currentGridMapData != null)
+        {
+            var gridPos = _currentGridMapData.WorldToGrid(worldPos);
+            _playerPosition = gridPos;
+            PlayerMoved?.Invoke(gridPos);
+        }
+    }
+
+    private void OnEnemyEncounteredWorld(Vector2 worldPos)
+    {
+        // Get cell ID for the enemy position
+        var cellId = _currentMapData?.GetCellAtPosition(worldPos);
+        if (cellId.HasValue)
+        {
+            _currentEnemyCellId = cellId.Value;
+        }
+
+        // For regular grid, also convert to grid position
+        if (_currentGridMapData != null)
+        {
+            var gridPos = _currentGridMapData.WorldToGrid(worldPos);
+            OnEnemyEncountered(gridPos);
+        }
+        else
+        {
+            // Custom generator - just log and start combat
+            ILog.Print($"Enemy encountered at world position {worldPos}! Preparing for combat...");
+            _gameTimer.Stop();
+            CurrentState = SessionState.InCombat;
+            CallDeferred(MethodName.AdvanceSession);
+        }
+    }
+
+    private void OnVisitedCellsUpdated(IReadOnlySet<int> cellIds)
+    {
+        // Emit cell-based event (for irregular mesh)
+        VisitedCellsUpdated?.Invoke(cellIds);
+
+        // Emit grid position event (backward compat for regular grid)
+        if (_currentGridMapData != null)
+        {
+            var gridPositions = new HashSet<Vector2I>(cellIds.Select(id => _currentGridMapData.GetGridPosition(id)));
+            VisitedTilesUpdated?.Invoke(gridPositions);
+        }
+    }
+
+    private void OnVisibilityUpdated(IReadOnlySet<int> seenCells, IReadOnlySet<int> visibleCells)
+    {
+        // Emit cell-based event (for irregular mesh)
+        VisibilityCellsUpdated?.Invoke(seenCells, visibleCells);
+
+        // Emit grid position event (backward compat for regular grid)
+        if (_currentGridMapData != null)
+        {
+            var seenPositions = new HashSet<Vector2I>(seenCells.Select(id => _currentGridMapData.GetGridPosition(id)));
+            var visiblePositions = new HashSet<Vector2I>(visibleCells.Select(id => _currentGridMapData.GetGridPosition(id)));
+            VisibilityUpdated?.Invoke(seenPositions, visiblePositions);
+        }
+    }
+
+    private void OnPathUpdated()
+    {
+        if (_explorationAI == null) return;
+
+        // Emit cell-based event (for irregular mesh)
+        PathCellsUpdated?.Invoke(_explorationAI.CurrentPath, _explorationAI.CurrentTargetCell);
+
+        // Emit grid position event (backward compat for regular grid)
+        if (_currentGridMapData != null)
+        {
+            var pathPositions = _explorationAI.CurrentPath
+                .Select(id => _currentGridMapData.GetGridPosition(id))
+                .ToList();
+
+            var targetPosition = _explorationAI.CurrentTargetCell.HasValue
+                ? _currentGridMapData.GetGridPosition(_explorationAI.CurrentTargetCell.Value)
+                : (Vector2I?)null;
+
+            PathUpdated?.Invoke(pathPositions, targetPosition);
+        }
     }
 
     private void OnTimerTimeout()
@@ -341,25 +549,43 @@ public partial class GameSessionService : Node, IGameSessionService
     {
         if (_combatSystem?.PlayerWon == true)
         {
-            // Remove the defeated enemy from the map
+            // Remove the defeated enemy from the map using unified interface
+            if (_currentEnemyCellId.HasValue)
+            {
+                var defeatedCellId = _currentEnemyCellId.Value;
+
+                // Update player position to enemy's position
+                if (_currentMapData != null)
+                {
+                    _playerWorldPosition = _currentMapData.GetCellCenter(defeatedCellId);
+                }
+
+                // Remove enemy using IGeneratedMap interface
+                var removed = _generatedMap?.RemoveEnemyAt(defeatedCellId) ?? false;
+                var remainingEnemies = _generatedMap?.EnemyCount ?? 0;
+
+                ILog.Print($"Enemy at cell {defeatedCellId} destroyed! ({remainingEnemies} enemies remaining)");
+
+                // Notify UI to remove enemy sprite (cell-based event)
+                EnemyDefeatedCell?.Invoke(defeatedCellId);
+                _currentEnemyCellId = null;
+            }
+
+            // Also handle backward-compat grid position event
             if (_currentEnemyPosition.HasValue)
             {
                 var defeatedPosition = _currentEnemyPosition.Value;
-                // Player is now at the enemy's position
                 _playerPosition = defeatedPosition;
                 _currentMap?.EnemyPositions.Remove(defeatedPosition);
-                ILog.Print(
-                    $"Enemy at {defeatedPosition} destroyed! ({_currentMap?.EnemyPositions.Count ?? 0} enemies remaining)");
-
-                // Notify UI to remove enemy sprite
                 EnemyDefeated?.Invoke(defeatedPosition);
                 _currentEnemyPosition = null;
             }
 
             // Check if more enemies remain on the map
-            if (_currentMap?.EnemyPositions.Count > 0)
+            var hasMoreEnemies = (_generatedMap?.EnemyCount ?? _currentMap?.EnemyPositions.Count ?? 0) > 0;
+            if (hasMoreEnemies)
             {
-                ILog.Print($"Resuming exploration from {_playerPosition} to find remaining enemies...");
+                ILog.Print($"Resuming exploration to find remaining enemies...");
                 CurrentState = SessionState.Exploring;
                 CallDeferred(MethodName.AdvanceSession);
             }
@@ -410,10 +636,15 @@ public partial class GameSessionService : Node, IGameSessionService
 
         // Clean up GameSessionService's own data
         _currentMap = null!;
+        _currentGridMapData = null;
+        _generatedMap = null;
+        _currentMapData = null;
         _combatSystem = null!;
         _explorationAI = null!;
         _playerPosition = null;
+        _playerWorldPosition = null;
         _currentEnemyPosition = null;
+        _currentEnemyCellId = null;
     }
 
     private void ResetForNextSession()

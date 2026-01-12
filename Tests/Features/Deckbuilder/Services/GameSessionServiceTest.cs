@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using GdUnit4;
@@ -16,12 +19,23 @@ public class GameSessionServiceTest
     private SessionState _lastStateChange;
     private List<CardSignature> _lastLootGenerated = new();
     private int _stateChangeCount;
+    private TileRegistry _tileRegistry = null!;
 
     [BeforeTest]
-    public void Setup()
+    public async Task Setup()
     {
+        // Load the real tile registry so map generation works
+        _tileRegistry = new TileRegistry();
+        _tileRegistry.LoadFromData();
+
+        // Register with ServiceLocator so GameSessionService can resolve it
+        ServiceLocator.Container.RegisterSingleton<ITileRegistry>(_tileRegistry);
+        ServiceLocator.Container.RegisterSingleton<ITileMetadataProvider>(_tileRegistry);
+
         _service = new GameSessionService();
         Assertions.AddNode(_service);
+        await ISceneRunner.SyncProcessFrame;
+
         _lastStateChange = SessionState.WaitingForCards;
         _lastLootGenerated = new List<CardSignature>();
         _stateChangeCount = 0;

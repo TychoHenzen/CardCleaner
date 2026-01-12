@@ -10,6 +10,24 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 /// <summary>
+/// Controls how tile variants are selected during terrain generation.
+/// </summary>
+public enum MeshVariantMode
+{
+    /// <summary>
+    /// Use position-based hash for per-vertex variation (default).
+    /// Each vertex gets a different variant based on its position.
+    /// </summary>
+    PerVertex,
+
+    /// <summary>
+    /// Same variant for all instances of a terrain type within a generation.
+    /// Creates consistent appearance across the map.
+    /// </summary>
+    PerGeneration
+}
+
+/// <summary>
 /// Generates irregular mesh terrain using WFC for tile assignment.
 /// Combines mesh geometry generation with procedural terrain types.
 /// </summary>
@@ -28,6 +46,17 @@ public class MeshTerrainGenerator
     /// Maximum WFC iterations per attempt.
     /// </summary>
     public int MaxIterations { get; set; } = 10000;
+
+    /// <summary>
+    /// Controls how tile variants are selected.
+    /// </summary>
+    public MeshVariantMode VariantMode { get; set; } = MeshVariantMode.PerVertex;
+
+    /// <summary>
+    /// Maximum number of variants per terrain type (for per-generation mode).
+    /// The actual variant count may be less depending on the atlas.
+    /// </summary>
+    public int MaxVariantsPerType { get; set; } = 4;
 
     /// <summary>
     /// Creates a terrain generator with the given tile rules.
@@ -109,6 +138,7 @@ public class MeshTerrainGenerator
         if (result.Success)
         {
             grid.ApplyToMesh(_tileToTerrainType);
+            AssignVariants(mesh, seed);
         }
         else
         {
@@ -123,6 +153,57 @@ public class MeshTerrainGenerator
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Assigns variant indices to vertices based on the current VariantMode.
+    /// </summary>
+    /// <param name="mesh">The mesh to assign variants to.</param>
+    /// <param name="seed">Random seed for variant selection.</param>
+    public void AssignVariants(IrregularMesh mesh, ulong seed)
+    {
+        var rng = new RandomNumberGenerator();
+        rng.Seed = seed;
+
+        switch (VariantMode)
+        {
+            case MeshVariantMode.PerGeneration:
+                AssignPerGenerationVariants(mesh, rng);
+                break;
+
+            case MeshVariantMode.PerVertex:
+            default:
+                // Per-vertex mode uses position hash at render time
+                // Set VariantIndex to -1 to indicate position-based selection
+                foreach (var vertex in mesh.Vertices)
+                {
+                    vertex.VariantIndex = -1;
+                }
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Assigns the same variant to all vertices of each terrain type.
+    /// </summary>
+    private void AssignPerGenerationVariants(IrregularMesh mesh, RandomNumberGenerator rng)
+    {
+        // Select one variant per terrain type
+        var terrainTypeVariants = new Dictionary<int, int>();
+
+        foreach (var vertex in mesh.Vertices)
+        {
+            if (!terrainTypeVariants.TryGetValue(vertex.TerrainType, out var variant))
+            {
+                // First vertex of this terrain type - select a random variant
+                variant = rng.RandiRange(0, MaxVariantsPerType - 1);
+                terrainTypeVariants[vertex.TerrainType] = variant;
+            }
+
+            vertex.VariantIndex = variant;
+        }
+
+        GD.Print($"[MeshTerrainGenerator] Assigned per-generation variants to {terrainTypeVariants.Count} terrain types");
     }
 
     /// <summary>
@@ -162,6 +243,7 @@ public class MeshTerrainGenerator
         if (result.Success)
         {
             grid.ApplyToMesh(_tileToTerrainType);
+            AssignVariants(mesh, wfcSeed);
         }
         else
         {
@@ -223,7 +305,7 @@ public class MeshTerrainGenerator
         rng.Seed = seed;
 
         // Calculate map bounds from mesh
-        var bounds = mesh.CalculateBounds();
+        var bounds = mesh.Bounds;
 
         // Create solver with base weights
         var solver = new MeshWfcSolver(_adjacencyRules, _tileWeights)
@@ -259,7 +341,8 @@ public class MeshTerrainGenerator
             // Add biome affinity if we have input cards
             if (inputCards.Length > 0)
             {
-                var gradient = new MeshCardBasedGradient(inputCards, bounds, rng);
+                var mapSize = bounds.Max - bounds.Min;
+                var gradient = new MeshCardBasedGradient(inputCards, mapSize, rng);
                 var grid = CreateGrid();
                 var biomeConstraint = new MeshBiomeAffinityConstraint(gradient, grid)
                 {
@@ -280,6 +363,7 @@ public class MeshTerrainGenerator
         if (result.Success)
         {
             finalGrid.ApplyToMesh(_tileToTerrainType);
+            AssignVariants(mesh, seed);
         }
         else
         {

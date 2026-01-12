@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Wfc.Constraints;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -262,7 +263,7 @@ public class MeshWfcSolver
     }
 
     private string? SelectTile(
-        Wfc.WfcCellState cell,
+        WfcCellState cell,
         MeshWfcGrid grid,
         int vertexId,
         BiomeDefinition? biome,

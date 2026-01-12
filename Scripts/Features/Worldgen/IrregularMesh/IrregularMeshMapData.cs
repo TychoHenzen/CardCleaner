@@ -99,13 +99,17 @@ public class IrregularMeshMapData : IMapData
         if (_structureCells.Contains(cellId))
             return false;
 
-        // Cell is passable if all corner vertices have passable terrain
+        // Cell is passable if MAJORITY (at least 2 of 4) corner vertices have passable terrain
+        // This allows traversal near terrain edges and provides better connectivity
         var quad = _mesh.Quads[cellId];
-        return quad.VertexIds.All(vid =>
+        int passableCount = 0;
+        foreach (var vid in quad.VertexIds)
         {
             var vertex = _mesh.Vertices[vid];
-            return !vertex.HasStructure && vertex.TerrainType == PassableTerrainType;
-        });
+            if (!vertex.HasStructure && vertex.TerrainType == PassableTerrainType)
+                passableCount++;
+        }
+        return passableCount >= 2;
     }
 
     public bool IsTransparent(int cellId)
@@ -231,6 +235,15 @@ public class IrregularMeshMapData : IMapData
         var cell = GetCellAtPosition(worldPos);
         if (cell.HasValue)
             AddEnemySpawn(cell.Value);
+    }
+
+    /// <summary>
+    /// Remove an enemy spawn cell.
+    /// </summary>
+    /// <returns>True if the enemy was removed, false if not found.</returns>
+    public bool RemoveEnemySpawn(int cellId)
+    {
+        return _enemySpawnCells.Remove(cellId);
     }
 
     /// <summary>

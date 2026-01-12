@@ -24,7 +24,10 @@ public class CompiledTransitionResolverTest
     public void Setup()
     {
         _resolver = new CompiledTransitionResolver();
+        // Load from JSON to match transition_map.json source
         _registry = new TileRegistry();
+        _registry.Clear();
+        _registry.LoadFromData("res://Data/Tiles/tiles.json");
 
         // Load transition map for direct inspection
         var json = System.IO.File.ReadAllText(

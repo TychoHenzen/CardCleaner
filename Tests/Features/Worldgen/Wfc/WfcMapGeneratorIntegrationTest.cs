@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -268,7 +271,9 @@ public class WfcMapGeneratorIntegrationTest
             ("A", "C")
         });
 
-        var generator = new WfcMapGenerator(customRules);
+        // Create tile registry with test tiles
+        var tileRegistry = CreateTestTileRegistry("plains", "A", "B", "C");
+        var generator = new WfcMapGenerator(customRules, tileRegistry);
 
         // Create simple biome with A, B, C tiles
         var passable = new TilePool();
@@ -346,7 +351,9 @@ public class WfcMapGeneratorIntegrationTest
             ("B", "D")
         });
 
-        var generator = new WfcMapGenerator(rules);
+        // Create tile registry with test tiles
+        var tileRegistry = CreateTestTileRegistry("test", "A", "B", "C", "D");
+        var generator = new WfcMapGenerator(rules, tileRegistry);
 
         var passable = new TilePool();
         passable.Add("A", 1.0f);
@@ -438,7 +445,9 @@ public class WfcMapGeneratorIntegrationTest
             ("B", "D")
         });
 
-        var generator = new WfcMapGenerator(rules);
+        // Create tile registry with test tiles
+        var tileRegistry = CreateTestTileRegistry("test", "A", "B", "C", "D");
+        var generator = new WfcMapGenerator(rules, tileRegistry);
 
         var passable = new TilePool();
         passable.Add("A", 1.0f);
@@ -504,7 +513,9 @@ public class WfcMapGeneratorIntegrationTest
             // Note: A-C, A-D, B-D not allowed - strict chain
         });
 
-        var generator = new WfcMapGenerator(rules);
+        // Create tile registry with test tiles
+        var tileRegistry = CreateTestTileRegistry("test", "A", "B", "C", "D");
+        var generator = new WfcMapGenerator(rules, tileRegistry);
         generator.MaxRetries = 3;
 
         var passable = new TilePool();
@@ -535,5 +546,25 @@ public class WfcMapGeneratorIntegrationTest
         // Should succeed at least some of the time
         // (exact rate depends on how strict the chain is)
         AssertThat(successCount).IsGreaterEqual(1);
+    }
+
+    /// <summary>
+    /// Creates a TileRegistry with the specified tiles allowed in the given biome.
+    /// </summary>
+    private static TileRegistry CreateTestTileRegistry(string biomeId, params string[] tileIds)
+    {
+        var registry = new TileRegistry();
+        registry.Clear(); // Clear production tiles loaded by constructor
+        foreach (var tileId in tileIds)
+        {
+            registry.RegisterTile(new TileDefinition(
+                id: tileId,
+                name: tileId,
+                passability: TilePassability.Passable,
+                atlasCoords: Vector2I.Zero,
+                allowedBiomes: new HashSet<string> { biomeId }
+            ));
+        }
+        return registry;
     }
 }

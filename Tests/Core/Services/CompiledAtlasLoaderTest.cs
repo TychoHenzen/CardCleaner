@@ -227,17 +227,21 @@ public class CompiledAtlasLoaderTest
                     continue;
 
                 var idx = 0;
-                foreach (var variant in variants.EnumerateArray())
+                foreach (var variantArray in variants.EnumerateArray())
                 {
-                    if (variant.ValueKind != JsonValueKind.Null)
+                    // Each variant is an array of coordinate objects (for visual variations)
+                    if (variantArray.ValueKind != JsonValueKind.Null && variantArray.ValueKind == JsonValueKind.Array)
                     {
-                        var x = variant.GetProperty("x").GetInt32();
-                        var y = variant.GetProperty("y").GetInt32();
+                        foreach (var coord in variantArray.EnumerateArray())
+                        {
+                            var x = coord.GetProperty("x").GetInt32();
+                            var y = coord.GetProperty("y").GetInt32();
 
-                        if (x < 0 || x >= maxTileX)
-                            outOfBounds.Add($"{key}[{idx}]: x={x} out of bounds [0, {maxTileX - 1}]");
-                        if (y < 0 || y >= maxTileY)
-                            outOfBounds.Add($"{key}[{idx}]: y={y} out of bounds [0, {maxTileY - 1}]");
+                            if (x < 0 || x >= maxTileX)
+                                outOfBounds.Add($"{key}[{idx}]: x={x} out of bounds [0, {maxTileX - 1}]");
+                            if (y < 0 || y >= maxTileY)
+                                outOfBounds.Add($"{key}[{idx}]: y={y} out of bounds [0, {maxTileY - 1}]");
+                        }
                     }
                     idx++;
                 }

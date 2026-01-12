@@ -12,8 +12,6 @@ using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 using Godot.Collections;
 
-namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
-
 /// <summary>
 /// Enhanced world map screen with visual feedback for exploration and combat
 /// </summary>

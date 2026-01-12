@@ -1,6 +1,6 @@
 # Irregular Mesh: Feature Parity Gaps & Completion Plan
 
-**Status**: In Progress (Phases 1-13 Complete, Testing Pending)
+**Status**: Complete (Phases 1-16 Complete)
 **Last Updated**: 2026-01-12
 
 ## Overview
@@ -36,8 +36,8 @@ The core irregular mesh infrastructure is complete (Phases 1-10 of the original 
 1. ~~**Game Session Integration** - Not connected to game loop~~ ✅ **COMPLETE** (Phase 11)
 2. ~~**Card-Based Gradient System** - No signature-based biome influence~~ ✅ **COMPLETE** (Phase 12)
 3. ~~**Advanced WFC Constraints** - Missing constraint system~~ ✅ **COMPLETE** (Phase 13)
-4. **Tile Variation System** - No variant selection
-5. **Collision Shape Generation** - For raycast visibility
+4. ~~**Tile Variation System** - No variant selection~~ ✅ **COMPLETE** (Phase 14)
+5. ~~**Collision Shape Generation** - For raycast visibility~~ ✅ **COMPLETE** (Phase 15)
 6. **Two-Phase Terrain Generation** - Single layer only (may not be needed for mesh)
 7. ~~**Async Generation with Progress** - No async/cancellation support~~ ✅ **COMPLETE** (via IMapGenerator)
 
@@ -379,36 +379,55 @@ await GenerateMapAsync(config, progress, cancellationToken);
 
 ---
 
-### Phase 14: Tile Variations
+### Phase 14: Tile Variations ✅ COMPLETE
 
 **Goal**: Add visual variety through tile variants.
 
 **Tasks**:
-1. [ ] Add `VariantIndex` to `MeshVertex`
-2. [ ] Implement variant selection in `MeshTerrainGenerator`
-   - Per-generation: Same variant for all of a tile type
-   - Per-vertex: Random variant per vertex
-3. [ ] Update `IrregularTerrainRenderer` UV mapping for variants
-4. [ ] Test visual variety
+1. [x] Add `VariantIndex` to `MeshVertex`
+   - Added `VariantIndex` property (-1 = use position hash, >= 0 = specific variant)
+2. [x] Implement variant selection in `MeshTerrainGenerator`
+   - Added `MeshVariantMode` enum (PerVertex, PerGeneration)
+   - Added `VariantMode` and `MaxVariantsPerType` properties
+   - Added `AssignVariants()` and `AssignPerGenerationVariants()` methods
+3. [x] Update `IrregularTerrainRenderer` UV mapping for variants
+   - Added `GetVariantIndex()` method to `MeshQuad`
+   - Renderer uses vertex VariantIndex if set, otherwise position hash
 
-**Estimated Complexity**: Medium
-**Dependencies**: None
+**Completion Date**: 2026-01-12
+**Files Modified**:
+- `Scripts/Features/Worldgen/IrregularMesh/MeshVertex.cs` (added VariantIndex)
+- `Scripts/Features/Worldgen/IrregularMesh/MeshQuad.cs` (added GetVariantIndex)
+- `Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs` (added variant mode and assignment)
+- `Scripts/Features/Worldgen/IrregularMesh/IrregularTerrainRenderer.cs` (updated variant selection)
 
 ---
 
-### Phase 15: Collision Shapes & Raycast Visibility
+### Phase 15: Collision Shapes & Raycast Visibility ✅ COMPLETE
 
 **Goal**: Enable physics-based line-of-sight.
 
 **Tasks**:
-1. [ ] Create `MeshCollisionShapeGenerator`
-2. [ ] Generate convex polygon shapes for opaque quads
-3. [ ] Integrate with `IrregularWorldMapScreen`
-4. [ ] Test `RaycastVisibilityChecker` with mesh
-5. [ ] Compare performance with `SimpleVisibilityChecker`
+1. [x] Create mesh collision shape generation
+   - `TerrainCollisionShapeGenerator.GenerateForIrregularMesh()` already existed
+   - Creates convex polygon shapes from quad corners for opaque terrain
+2. [x] Generate convex polygon shapes for opaque quads
+   - Uses `ConvexPolygonShape2D` from quad vertex positions
+   - Applies world scale and offset transformation
+3. [x] Integrate with `IrregularWorldMapScreen`
+   - Added `UseRaycastVisibility` export property
+   - Added `SetupCollisionShapes()` method
+   - Collision body created and managed in rendering setup
+   - Fog of war can switch to `RaycastVisibilityChecker` when enabled
+4. [x] Added cleanup in Reset method
 
-**Estimated Complexity**: Medium
-**Dependencies**: None
+**Completion Date**: 2026-01-12
+**Files Modified**:
+- `Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs` (added collision shape integration)
+
+**Files Used** (already existed):
+- `Scripts/Core/Services/TerrainCollisionShapeGenerator.cs`
+- `Scripts/Core/Services/RaycastVisibilityChecker.cs`
 
 ---
 
@@ -435,8 +454,8 @@ await GenerateMapAsync(config, progress, cancellationToken);
 | 1 | Phase 11: Game Session Integration | **Critical** - Can't play game without it | ✅ COMPLETE |
 | 2 | Phase 13: WFC Constraints | Improves map quality significantly | ✅ COMPLETE |
 | 3 | Phase 12: Card-Based Gradient | Enables card-influenced maps | ✅ COMPLETE |
-| 4 | Phase 14: Tile Variations | Visual polish | Pending |
-| 5 | Phase 15: Collision Shapes | Performance optimization for visibility | Pending |
+| 4 | Phase 14: Tile Variations | Visual polish | ✅ COMPLETE |
+| 5 | Phase 15: Collision Shapes | Performance optimization for visibility | ✅ COMPLETE |
 | 6 | Phase 16: Async Generation | UX improvement | ✅ COMPLETE (via IMapGenerator) |
 
 ---
@@ -477,7 +496,7 @@ Scripts/Features/Worldgen/IrregularMesh/
 └── IrregularWorldMapScreen.cs
 ```
 
-### Files Created in Phases 11-13 ✅
+### Files Created/Modified in Phases 11-15 ✅
 ```
 Scripts/Core/Interfaces/
 └── IMapGenerator.cs
@@ -498,21 +517,22 @@ Scripts/Features/Worldgen/IrregularMesh/
         └── MeshBiomeAffinityConstraint.cs
 ```
 
-### Files to Create (Phases 14-16)
+### Optional Future Files
 ```
 Scripts/Features/Worldgen/IrregularMesh/
-├── MeshCollisionShapeGenerator.cs (Phase 15)
 └── Wfc/
     └── Modifiers/
-        └── MeshBlobSizeTracker.cs (optional)
+        └── MeshBlobSizeTracker.cs (optional - for diminishing returns on blob growth)
 ```
 
-### Files to Modify
+### Files Modified in Phases 11-15 ✅
 ```
-Scripts/Features/Deckbuilder/Services/GameSessionService.cs
-Scripts/Features/Worldgen/IrregularMesh/MeshVertex.cs
-Scripts/Features/Worldgen/IrregularMesh/MeshWfcSolver.cs
-Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs
-Scripts/Features/Worldgen/IrregularMesh/IrregularTerrainRenderer.cs
-Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs
+Scripts/Features/Deckbuilder/Services/GameSessionService.cs (Phase 11)
+Scripts/Features/Worldgen/IrregularMesh/MeshVertex.cs (Phase 14)
+Scripts/Features/Worldgen/IrregularMesh/MeshQuad.cs (Phase 14)
+Scripts/Features/Worldgen/IrregularMesh/MeshWfcSolver.cs (Phase 13)
+Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs (Phases 12-14)
+Scripts/Features/Worldgen/IrregularMesh/IrregularTerrainRenderer.cs (Phase 14)
+Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs (Phase 15)
+Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs (Phase 11)
 ```

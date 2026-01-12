@@ -51,7 +51,7 @@ public class SimpleMapDataTest
     public void TestIsPassableWithPassableTile()
     {
         var mapData = CreateMapData(5, 5);
-        mapData.TileIds[2, 3] = Floor;
+        SetFloor(mapData, 3, 2);
 
         AssertBool(mapData.IsPassable(new Vector2I(3, 2))).IsTrue();
     }
@@ -103,10 +103,10 @@ public class SimpleMapDataTest
     public void TestIsPassableBoundaryPositions()
     {
         var mapData = CreateMapData(5, 5);
-        mapData.TileIds[0, 0] = Floor;
-        mapData.TileIds[0, 4] = Floor;
-        mapData.TileIds[4, 0] = Floor;
-        mapData.TileIds[4, 4] = Floor;
+        SetFloor(mapData, 0, 0);
+        SetFloor(mapData, 4, 0);
+        SetFloor(mapData, 0, 4);
+        SetFloor(mapData, 4, 4);
 
         AssertBool(mapData.IsPassable(new Vector2I(0, 0))).IsTrue();
         AssertBool(mapData.IsPassable(new Vector2I(4, 0))).IsTrue();
@@ -123,7 +123,7 @@ public class SimpleMapDataTest
             Size = new Vector2I(4, 3)
         };
         FillWithWalls(mapData.TileIds);
-        mapData.TileIds[1, 2] = Floor;
+        SetFloor(mapData, 2, 1);
 
         AssertBool(mapData.IsPassable(new Vector2I(2, 1))).IsTrue();
         AssertBool(mapData.IsPassable(new Vector2I(1, 2))).IsFalse();
@@ -168,8 +168,8 @@ public class SimpleMapDataTest
             Size = new Vector2I(12, 7)
         };
         FillWithWalls(mapData.TileIds);
-        mapData.TileIds[3, 8] = Floor;
-        mapData.TileIds[6, 11] = Floor;
+        SetFloor(mapData, 8, 3);
+        SetFloor(mapData, 11, 6);
 
         AssertBool(mapData.IsPassable(new Vector2I(8, 3))).IsTrue();
         AssertBool(mapData.IsPassable(new Vector2I(11, 6))).IsTrue();
@@ -181,7 +181,7 @@ public class SimpleMapDataTest
     public void TestMinimalGridSize()
     {
         var mapData = CreateMapData(1, 1);
-        mapData.TileIds[0, 0] = Floor;
+        SetFloor(mapData, 0, 0);
 
         AssertBool(mapData.IsPassable(new Vector2I(0, 0))).IsTrue();
         AssertBool(mapData.IsPassable(new Vector2I(1, 0))).IsFalse();
@@ -192,7 +192,7 @@ public class SimpleMapDataTest
     public void TestLargeGridSize()
     {
         var mapData = CreateMapData(100, 100);
-        mapData.TileIds[99, 99] = Floor;
+        SetFloor(mapData, 99, 99);
 
         AssertBool(mapData.IsPassable(new Vector2I(99, 99))).IsTrue();
         AssertBool(mapData.IsPassable(new Vector2I(100, 100))).IsFalse();
@@ -202,7 +202,7 @@ public class SimpleMapDataTest
     public void TestGetTileIdReturnsCorrectId()
     {
         var mapData = CreateMapData(5, 5);
-        mapData.TileIds[2, 3] = Floor;
+        SetFloor(mapData, 3, 2);
         mapData.TileIds[1, 1] = Wall;
 
         AssertThat(mapData.GetTileId(new Vector2I(3, 2))).IsEqual(Floor);
@@ -210,21 +210,22 @@ public class SimpleMapDataTest
     }
 
     [TestCase]
-    public void TestGetTileIdOutOfBoundsReturnsWall()
+    public void TestGetTileIdOutOfBoundsReturnsEmpty()
     {
         var mapData = CreateMapData(5, 5);
 
-        AssertThat(mapData.GetTileId(new Vector2I(-1, 0))).IsEqual(Wall);
-        AssertThat(mapData.GetTileId(new Vector2I(0, -1))).IsEqual(Wall);
-        AssertThat(mapData.GetTileId(new Vector2I(5, 0))).IsEqual(Wall);
-        AssertThat(mapData.GetTileId(new Vector2I(0, 5))).IsEqual(Wall);
+        // Out of bounds returns empty string
+        AssertThat(mapData.GetTileId(new Vector2I(-1, 0))).IsEmpty();
+        AssertThat(mapData.GetTileId(new Vector2I(0, -1))).IsEmpty();
+        AssertThat(mapData.GetTileId(new Vector2I(5, 0))).IsEmpty();
+        AssertThat(mapData.GetTileId(new Vector2I(0, 5))).IsEmpty();
     }
 
     [TestCase]
     public void TestIsTransparentForPassableTile()
     {
         var mapData = CreateMapData(5, 5);
-        mapData.TileIds[2, 2] = Floor;
+        SetFloor(mapData, 2, 2);
 
         AssertBool(mapData.IsTransparent(new Vector2I(2, 2))).IsTrue();
     }
@@ -254,5 +255,14 @@ public class SimpleMapDataTest
         for (var y = 0; y < tileIds.GetLength(0); y++)
         for (var x = 0; x < tileIds.GetLength(1); x++)
             tileIds[y, x] = Wall;
+    }
+
+    /// <summary>
+    /// Sets a tile as floor (passable). Updates both TileIds and PassableTiles.
+    /// </summary>
+    private static void SetFloor(SimpleMapData mapData, int x, int y)
+    {
+        mapData.TileIds[y, x] = Floor;
+        mapData.PassableTiles.Add(new Vector2I(x, y));
     }
 }

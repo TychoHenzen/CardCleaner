@@ -1,5 +1,3 @@
-using Godot;
-
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Exploration;
 
 /// <summary>
@@ -9,9 +7,9 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Exploration;
 public class PathToEnemyStrategy : IExplorationStrategy
 {
     /// <inheritdoc />
-    public Vector2I? GetNextTarget(ExplorationContext context)
+    public int? GetNextTarget(ExplorationContext context)
     {
         // Prioritize visible enemy, fall back to last known position
-        return context.VisibleEnemyPosition ?? context.LastKnownEnemyPosition;
+        return context.VisibleEnemyCellId ?? context.LastKnownEnemyCellId;
     }
 }

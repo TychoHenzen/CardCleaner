@@ -7,26 +7,27 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
 /// <summary>
-/// Represents a connected region of unvisited tiles.
+/// Represents a connected region of unvisited cells.
 /// </summary>
 public readonly struct UnvisitedBlob
 {
-    public Vector2I EntryPoint { get; init; }
+    public int EntryCellId { get; init; }
     public int Size { get; init; }
     public int WalkingDistance { get; init; }
 }
 
 /// <summary>
-/// Exploration behavior that finds and paths to the nearest unexplored tile
+/// Exploration behavior that finds and paths to the nearest unexplored cell
 /// on the frontier of the visited area.
+/// Now works with any IMapData implementation (regular or irregular grids).
 /// </summary>
 public class FrontierExplorationBehavior
 {
-    private readonly SimpleMapData _mapData;
+    private readonly IMapData _mapData;
     private readonly IVisibilityChecker _visibilityChecker;
-    private readonly HashSet<Vector2I> _seenTiles = new();
-    private readonly HashSet<Vector2I> _visitedTiles = new();
-    private readonly HashSet<Vector2I> _currentlyVisibleTiles = new();
+    private readonly HashSet<int> _seenCells = new();
+    private readonly HashSet<int> _visitedCells = new();
+    private readonly HashSet<int> _currentlyVisibleCells = new();
     private readonly int _visionRange;
 
     /// <summary>
@@ -35,16 +36,16 @@ public class FrontierExplorationBehavior
     /// </summary>
     public int SignificantBlobThreshold { get; set; } = 5;
 
-    public IReadOnlySet<Vector2I> SeenTiles => _seenTiles;
-    public IReadOnlySet<Vector2I> VisitedTiles => _visitedTiles;
+    public IReadOnlySet<int> SeenCells => _seenCells;
+    public IReadOnlySet<int> VisitedCells => _visitedCells;
 
     /// <summary>
-    /// Tiles currently visible from the player's current position.
+    /// Cells currently visible from the player's current position.
     /// This set is recalculated each time UpdateVision is called.
     /// </summary>
-    public IReadOnlySet<Vector2I> CurrentlyVisibleTiles => _currentlyVisibleTiles;
+    public IReadOnlySet<int> CurrentlyVisibleCells => _currentlyVisibleCells;
 
-    public FrontierExplorationBehavior(SimpleMapData mapData, IVisibilityChecker visibilityChecker, int visionRange = 5)
+    public FrontierExplorationBehavior(IMapData mapData, IVisibilityChecker visibilityChecker, int visionRange = 5)
     {
         _mapData = mapData;
         _visibilityChecker = visibilityChecker;
@@ -52,60 +53,77 @@ public class FrontierExplorationBehavior
     }
 
     /// <summary>
-    /// Update seen and visited tiles based on current position.
-    /// Tiles that are "trivially visible" (we can see them and all their neighbors,
-    /// and they're connected to visited tiles) are marked as visited without walking there.
+    /// Update seen and visited cells based on current position.
+    /// Cells that are "trivially visible" (we can see them and all their neighbors,
+    /// and they're connected to visited cells) are marked as visited without walking there.
     /// </summary>
-    public void UpdateVision(Vector2I currentPosition)
+    public void UpdateVision(int currentCellId)
     {
         try
         {
-            // Clear currently visible tiles - will be recalculated this frame
-            _currentlyVisibleTiles.Clear();
+            // Clear currently visible cells - will be recalculated this frame
+            _currentlyVisibleCells.Clear();
 
-            // Only add passable tiles to visited set
-            if (_mapData.IsPassable(currentPosition))
-                _visitedTiles.Add(currentPosition);
-            _seenTiles.Add(currentPosition);
-            _currentlyVisibleTiles.Add(currentPosition);
+            // Only add passable cells to visited set
+            if (_mapData.IsPassable(currentCellId))
+                _visitedCells.Add(currentCellId);
+            _seenCells.Add(currentCellId);
+            _currentlyVisibleCells.Add(currentCellId);
 
-            // First pass: update seen and currently visible tiles
-            for (var dy = -_visionRange; dy <= _visionRange; dy++)
-            for (var dx = -_visionRange; dx <= _visionRange; dx++)
+            // Get current world position for distance calculations
+            var currentPos = _mapData.GetCellCenter(currentCellId);
+
+            // Check visibility to all cells within range
+            var cellsInRange = _mapData.GetCellsInRadius(currentPos, _visionRange * EstimateCellSize());
+
+            foreach (var targetCellId in cellsInRange)
             {
-                var targetPos = new Vector2I(currentPosition.X + dx, currentPosition.Y + dy);
-
-                // Skip if out of bounds
-                if (!IsInBounds(targetPos))
+                if (targetCellId == currentCellId)
                     continue;
 
-                // Check if within vision range (circular)
-                if (dx * dx + dy * dy > _visionRange * _visionRange)
+                var targetPos = _mapData.GetCellCenter(targetCellId);
+                var distance = currentPos.DistanceTo(targetPos);
+
+                // Skip if outside vision range (circular check)
+                if (distance > _visionRange * EstimateCellSize())
                     continue;
 
                 // Check line of sight
-                if (_visibilityChecker.CanSee(currentPosition, targetPos, _mapData))
+                if (_visibilityChecker.CanSee(currentCellId, targetCellId, _mapData))
                 {
-                    _seenTiles.Add(targetPos);
-                    _currentlyVisibleTiles.Add(targetPos);
+                    _seenCells.Add(targetCellId);
+                    _currentlyVisibleCells.Add(targetCellId);
                 }
             }
 
-            // Second pass: mark trivially visible tiles as visited
-            MarkTriviallyVisibleTiles();
+            // Mark trivially visible cells as visited
+            MarkTriviallyVisibleCells();
         }
         catch (Exception ex)
         {
-            ILog.Error($"Exception in UpdateVision at {currentPosition}: {ex.Message}\n{ex.StackTrace}");
+            ILog.Error($"Exception in UpdateVision at cell {currentCellId}: {ex.Message}\n{ex.StackTrace}");
             throw;
         }
     }
 
     /// <summary>
-    /// Mark tiles as visited if they are trivially visible (no need to walk there).
-    /// Iterates until no more tiles can be marked.
+    /// Estimate average cell size for vision range calculation.
     /// </summary>
-    private void MarkTriviallyVisibleTiles()
+    private float EstimateCellSize()
+    {
+        if (_mapData.CellCount == 0)
+            return 16f; // Default fallback
+
+        // Sample first cell to estimate size
+        var sampleArea = _mapData.GetCellArea(0);
+        return Mathf.Sqrt(sampleArea);
+    }
+
+    /// <summary>
+    /// Mark cells as visited if they are trivially visible (no need to walk there).
+    /// Iterates until no more cells can be marked.
+    /// </summary>
+    private void MarkTriviallyVisibleCells()
     {
         const int maxIterations = 1000; // Safety limit
         var iteration = 0;
@@ -120,24 +138,24 @@ public class FrontierExplorationBehavior
 
                 if (iteration > maxIterations)
                 {
-                    ILog.Error($"MarkTriviallyVisibleTiles exceeded {maxIterations} iterations - aborting");
+                    ILog.Error($"MarkTriviallyVisibleCells exceeded {maxIterations} iterations - aborting");
                     break;
                 }
 
-                // Create a snapshot to avoid potential iteration issues
-                var tilesToCheck = _seenTiles.ToList();
+                // Create a snapshot to avoid iteration issues
+                var cellsToCheck = _seenCells.ToList();
 
-                foreach (var tile in tilesToCheck)
+                foreach (var cellId in cellsToCheck)
                 {
-                    if (_visitedTiles.Contains(tile))
+                    if (_visitedCells.Contains(cellId))
                         continue;
 
-                    if (!_mapData.IsPassable(tile))
+                    if (!_mapData.IsPassable(cellId))
                         continue;
 
-                    if (IsTriviallyVisible(tile))
+                    if (IsTriviallyVisible(cellId))
                     {
-                        _visitedTiles.Add(tile);
+                        _visitedCells.Add(cellId);
                         changed = true;
                     }
                 }
@@ -145,22 +163,22 @@ public class FrontierExplorationBehavior
         }
         catch (Exception ex)
         {
-            ILog.Error($"Exception in MarkTriviallyVisibleTiles (iteration {iteration}): {ex.Message}\n{ex.StackTrace}");
+            ILog.Error($"Exception in MarkTriviallyVisibleCells (iteration {iteration}): {ex.Message}\n{ex.StackTrace}");
             throw;
         }
     }
 
     /// <summary>
-    /// Check if a tile is trivially visible - we can see it, all its passable neighbors
+    /// Check if a cell is trivially visible - we can see it, all its passable neighbors
     /// have also been seen, and it's connected to the visited area.
     /// </summary>
-    private bool IsTriviallyVisible(Vector2I tile)
+    private bool IsTriviallyVisible(int cellId)
     {
-        // Must be adjacent to at least one visited tile
+        // Must be adjacent to at least one visited cell
         var hasVisitedNeighbor = false;
-        foreach (var neighbor in GetNeighbors(tile))
+        foreach (var neighbor in _mapData.GetAdjacentCells(cellId))
         {
-            if (_visitedTiles.Contains(neighbor))
+            if (_visitedCells.Contains(neighbor))
             {
                 hasVisitedNeighbor = true;
                 break;
@@ -171,34 +189,27 @@ public class FrontierExplorationBehavior
             return false;
 
         // All passable neighbors must be seen
-        // This ensures we have complete visibility of the area around the tile
-        foreach (var neighbor in GetNeighbors(tile))
+        foreach (var neighbor in _mapData.GetAdjacentCells(cellId))
         {
-            if (!IsInBounds(neighbor))
+            if (!_mapData.IsValidCell(neighbor))
                 continue;
 
             // If neighbor is passable, it must be seen
-            if (_mapData.IsPassable(neighbor) && !_seenTiles.Contains(neighbor))
+            if (_mapData.IsPassable(neighbor) && !_seenCells.Contains(neighbor))
                 return false;
         }
 
         return true;
     }
 
-    private bool IsInBounds(Vector2I pos)
-    {
-        return pos.X >= 0 && pos.X < _mapData.Size.X &&
-               pos.Y >= 0 && pos.Y < _mapData.Size.Y;
-    }
-
     /// <summary>
-    /// Find the best unvisited tile to explore using blob-based prioritization.
+    /// Find the best unvisited cell to explore using blob-based prioritization.
     /// Phase 1: Prioritize large blobs (size >= SignificantBlobThreshold) by score.
-    /// Phase 2: When no significant blobs remain, target any remaining tile by distance.
+    /// Phase 2: When no significant blobs remain, target any remaining cell by distance.
     /// </summary>
-    public Vector2I? FindNearestFrontierTile(Vector2I currentPosition)
+    public int? FindNearestFrontierCell(int currentCellId)
     {
-        var blobs = FindUnvisitedBlobs(currentPosition);
+        var blobs = FindUnvisitedBlobs(currentCellId);
 
         if (blobs.Count == 0)
             return null;
@@ -210,30 +221,29 @@ public class FrontierExplorationBehavior
         {
             // Pick the closest significant blob, using size as tiebreaker
             var bestBlob = significantBlobs.OrderBy(b => b.WalkingDistance).ThenByDescending(b => b.Size).First();
-            return bestBlob.EntryPoint;
+            return bestBlob.EntryCellId;
         }
 
-        // Phase 2: No significant blobs - fall back to nearest tile
-        // This handles single-tile cleanup when major exploration is done
+        // Phase 2: No significant blobs - fall back to nearest cell
         var nearestBlob = blobs.OrderBy(b => b.WalkingDistance).First();
-        return nearestBlob.EntryPoint;
+        return nearestBlob.EntryCellId;
     }
 
     /// <summary>
-    /// Find all passable tiles that are adjacent to visited tiles but not yet visited.
+    /// Find all passable cells that are adjacent to visited cells but not yet visited.
     /// </summary>
-    public List<Vector2I> FindFrontierTiles()
+    public List<int> FindFrontierCells()
     {
-        var frontier = new HashSet<Vector2I>();
+        var frontier = new HashSet<int>();
 
-        foreach (var visitedTile in _visitedTiles)
+        foreach (var visitedCell in _visitedCells)
         {
-            foreach (var neighbor in GetNeighbors(visitedTile))
+            foreach (var neighbor in _mapData.GetAdjacentCells(visitedCell))
             {
-                if (_visitedTiles.Contains(neighbor))
+                if (_visitedCells.Contains(neighbor))
                     continue;
 
-                if (!IsInBounds(neighbor))
+                if (!_mapData.IsValidCell(neighbor))
                     continue;
 
                 if (_mapData.IsPassable(neighbor))
@@ -245,38 +255,43 @@ public class FrontierExplorationBehavior
     }
 
     /// <summary>
-    /// Check if all passable tiles have been visited.
+    /// Check if all passable cells have been visited.
     /// </summary>
     public bool IsFullyExplored()
     {
-        return _mapData.PassableTiles.All(t => _visitedTiles.Contains(t));
+        for (var i = 0; i < _mapData.CellCount; i++)
+        {
+            if (_mapData.IsPassable(i) && !_visitedCells.Contains(i))
+                return false;
+        }
+        return true;
     }
 
     /// <summary>
-    /// Find all connected blobs of unvisited tiles, with entry points and sizes.
+    /// Find all connected blobs of unvisited cells, with entry points and sizes.
     /// Uses BFS from current position to find walking distance to each blob.
     /// </summary>
-    public List<UnvisitedBlob> FindUnvisitedBlobs(Vector2I currentPosition)
+    public List<UnvisitedBlob> FindUnvisitedBlobs(int currentCellId)
     {
         var blobs = new List<UnvisitedBlob>();
-        var bfsVisited = new HashSet<Vector2I> { currentPosition };
-        var blobAssigned = new HashSet<Vector2I>();
-        var queue = new Queue<(Vector2I pos, int distance)>();
-        queue.Enqueue((currentPosition, 0));
+        var bfsVisited = new HashSet<int> { currentCellId };
+        var blobAssigned = new HashSet<int>();
+        var queue = new Queue<(int cellId, int distance)>();
+        queue.Enqueue((currentCellId, 0));
 
-        // BFS to find all reachable frontier tiles with their walking distances
-        var frontierWithDistance = new List<(Vector2I tile, int distance)>();
+        // BFS to find all reachable frontier cells with their walking distances
+        var frontierWithDistance = new List<(int cellId, int distance)>();
 
         while (queue.Count > 0)
         {
             var (current, distance) = queue.Dequeue();
 
-            foreach (var neighbor in GetNeighbors(current))
+            foreach (var neighbor in _mapData.GetAdjacentCells(current))
             {
                 if (bfsVisited.Contains(neighbor))
                     continue;
 
-                if (!IsInBounds(neighbor))
+                if (!_mapData.IsValidCell(neighbor))
                     continue;
 
                 if (!_mapData.IsPassable(neighbor))
@@ -284,48 +299,48 @@ public class FrontierExplorationBehavior
 
                 bfsVisited.Add(neighbor);
 
-                if (!_visitedTiles.Contains(neighbor))
+                if (!_visitedCells.Contains(neighbor))
                 {
-                    // Found an unvisited tile - record as potential blob entry
+                    // Found an unvisited cell - record as potential blob entry
                     frontierWithDistance.Add((neighbor, distance + 1));
                 }
                 else
                 {
-                    // Visited tile - continue BFS
+                    // Visited cell - continue BFS
                     queue.Enqueue((neighbor, distance + 1));
                 }
             }
         }
 
-        // For each frontier tile, flood fill to find the connected blob size
-        foreach (var (entryPoint, walkingDistance) in frontierWithDistance)
+        // For each frontier cell, flood fill to find the connected blob size
+        foreach (var (entryCell, walkingDistance) in frontierWithDistance)
         {
-            if (blobAssigned.Contains(entryPoint))
+            if (blobAssigned.Contains(entryCell))
                 continue;
 
-            // Flood fill to find all connected unvisited tiles
+            // Flood fill to find all connected unvisited cells
             var blobSize = 0;
-            var floodQueue = new Queue<Vector2I>();
-            floodQueue.Enqueue(entryPoint);
-            blobAssigned.Add(entryPoint);
+            var floodQueue = new Queue<int>();
+            floodQueue.Enqueue(entryCell);
+            blobAssigned.Add(entryCell);
 
             while (floodQueue.Count > 0)
             {
-                var tile = floodQueue.Dequeue();
+                var cell = floodQueue.Dequeue();
                 blobSize++;
 
-                foreach (var neighbor in GetNeighbors(tile))
+                foreach (var neighbor in _mapData.GetAdjacentCells(cell))
                 {
                     if (blobAssigned.Contains(neighbor))
                         continue;
 
-                    if (!IsInBounds(neighbor))
+                    if (!_mapData.IsValidCell(neighbor))
                         continue;
 
                     if (!_mapData.IsPassable(neighbor))
                         continue;
 
-                    if (_visitedTiles.Contains(neighbor))
+                    if (_visitedCells.Contains(neighbor))
                         continue;
 
                     blobAssigned.Add(neighbor);
@@ -335,20 +350,12 @@ public class FrontierExplorationBehavior
 
             blobs.Add(new UnvisitedBlob
             {
-                EntryPoint = entryPoint,
+                EntryCellId = entryCell,
                 Size = blobSize,
                 WalkingDistance = walkingDistance
             });
         }
 
         return blobs;
-    }
-
-    private IEnumerable<Vector2I> GetNeighbors(Vector2I pos)
-    {
-        yield return new Vector2I(pos.X + 1, pos.Y);
-        yield return new Vector2I(pos.X - 1, pos.Y);
-        yield return new Vector2I(pos.X, pos.Y + 1);
-        yield return new Vector2I(pos.X, pos.Y - 1);
     }
 }

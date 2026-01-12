@@ -18,11 +18,11 @@ public class ExplorationAITest
     [TestCase]
     public void TestExplorationAIInitialization()
     {
-        var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
 
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
 
-        AssertThat(ai.CurrentPosition).IsEqual(new Vector2I(0, 0));
+        AssertThat(GetCurrentGridPosition(ai, gridData)).IsEqual(new Vector2I(0, 0));
         AssertBool(ai.HasFoundEnemy).IsFalse();
         AssertBool(ai.HasFinishedExploration).IsFalse();
     }
@@ -30,19 +30,19 @@ public class ExplorationAITest
     [TestCase]
     public void TestExplorationMovesToPassableTiles()
     {
-        var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
 
         var moved = ai.StepExploration();
 
         AssertBool(moved || ai.HasFinishedExploration).IsTrue();
-        AssertBool(mapData.IsPassable(ai.CurrentPosition)).IsTrue();
+        AssertBool(gridData.IsPassable(ai.CurrentCellId)).IsTrue();
     }
 
     [TestCase]
     public void TestExplorationPlayerMovedEventFires()
     {
-        var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
         var moveCount = 0;
 
@@ -57,10 +57,10 @@ public class ExplorationAITest
     [TestCase]
     public void TestExplorationFindAndReportsEnemy()
     {
-        var mapData = CreateMapWithEnemy();
+        var (mapData, gridData) = CreateMapWithEnemy();
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
         var enemyFound = false;
-        Vector2I? foundPosition = null;
+        Vector2? foundPosition = null;
 
         ai.EnemyEncountered += pos =>
         {
@@ -85,7 +85,7 @@ public class ExplorationAITest
     [TestCase]
     public void TestExplorationEventuallyFinishes()
     {
-        var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
 
         var stepCount = 0;
@@ -101,7 +101,7 @@ public class ExplorationAITest
     [TestCase]
     public void TestExplorationSeesAllPassableTiles()
     {
-        var mapData = CreateSimpleMap(3, 3, new Vector2I(1, 1));
+        var (mapData, gridData) = CreateSimpleMap(3, 3, new Vector2I(1, 1));
         mapData.EnemyPositions.Clear();
 
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
@@ -114,7 +114,7 @@ public class ExplorationAITest
         }
 
         // With frontier exploration, we should have seen all passable tiles
-        AssertThat(ai.SeenTiles.Count).IsGreaterEqual(mapData.PassableTiles.Count);
+        AssertThat(ai.SeenCells.Count).IsGreaterEqual(mapData.PassableTiles.Count);
     }
 
     [TestCase]
@@ -141,12 +141,13 @@ public class ExplorationAITest
         mapData.PassableTiles.Add(new Vector2I(2, 1));
         mapData.PassableTiles.Add(new Vector2I(2, 2));
 
+        var gridData = new RegularGridMapData(mapData);
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
         var stepCount = 0;
 
         while (!ai.HasFinishedExploration && stepCount < 100)
         {
-            AssertBool(mapData.IsPassable(ai.CurrentPosition)).IsTrue();
+            AssertBool(gridData.IsPassable(ai.CurrentCellId)).IsTrue();
             ai.StepExploration();
             stepCount++;
         }
@@ -157,7 +158,7 @@ public class ExplorationAITest
     [TestCase]
     public void TestExplorationStepReturnsFalseWhenFinished()
     {
-        var mapData = CreateSimpleMap(2, 2, new Vector2I(0, 0));
+        var (mapData, gridData) = CreateSimpleMap(2, 2, new Vector2I(0, 0));
         mapData.EnemyPositions.Clear();
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
 
@@ -176,7 +177,7 @@ public class ExplorationAITest
     [TestCase]
     public void TestExplorationSwitchesToEnemyModeWhenVisible()
     {
-        var mapData = CreateSimpleMap(10, 10, new Vector2I(0, 0));
+        var (mapData, gridData) = CreateSimpleMap(10, 10, new Vector2I(0, 0));
         mapData.EnemyPositions.Add(new Vector2I(3, 0)); // Enemy directly visible
 
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 5);
@@ -236,10 +237,10 @@ public class ExplorationAITest
     [TestCase]
     public void TestExplorationPositionUpdates()
     {
-        var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
 
-        var startPosition = ai.CurrentPosition;
+        var startCellId = ai.CurrentCellId;
         var positionChanged = false;
         var stepCount = 0;
 
@@ -247,7 +248,7 @@ public class ExplorationAITest
         {
             ai.StepExploration();
             stepCount++;
-            if (ai.CurrentPosition != startPosition)
+            if (ai.CurrentCellId != startCellId)
             {
                 positionChanged = true;
                 break;
@@ -260,7 +261,7 @@ public class ExplorationAITest
     [TestCase]
     public void TestExplorationWithMultipleEnemies()
     {
-        var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
         mapData.EnemyPositions.Add(new Vector2I(2, 2));
         mapData.EnemyPositions.Add(new Vector2I(4, 4));
 
@@ -276,15 +277,19 @@ public class ExplorationAITest
         }
 
         AssertBool(ai.HasFoundEnemy).IsTrue();
+        // Check visible enemy cell is one of the enemy positions
+        var visibleEnemyPos = ai.VisibleEnemyCellId.HasValue
+            ? gridData.GetGridPosition(ai.VisibleEnemyCellId.Value)
+            : (Vector2I?)null;
         AssertBool(
-            ai.VisibleEnemyPosition == new Vector2I(2, 2) || ai.VisibleEnemyPosition == new Vector2I(4, 4)
+            visibleEnemyPos == new Vector2I(2, 2) || visibleEnemyPos == new Vector2I(4, 4)
         ).IsTrue();
     }
 
     [TestCase]
     public void TestExplorationWithNoEnemies()
     {
-        var mapData = CreateSimpleMap(3, 3, new Vector2I(1, 1));
+        var (mapData, gridData) = CreateSimpleMap(3, 3, new Vector2I(1, 1));
         mapData.EnemyPositions.Clear();
 
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
@@ -303,7 +308,7 @@ public class ExplorationAITest
     [TestCase]
     public void TestExplorationStartsInFrontierMode()
     {
-        var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
 
         AssertThat(ai.CurrentMode).IsEqual(ExplorationMode.FrontierExploration);
@@ -345,34 +350,34 @@ public class ExplorationAITest
         // This happens when a frontier tile becomes "trivially visible" before the agent reaches it.
         // The fix: when the current target becomes visited, recalculate instead of continuing.
 
-        var mapData = CreateSimpleMap(10, 10, new Vector2I(0, 0));
+        var (mapData, gridData) = CreateSimpleMap(10, 10, new Vector2I(0, 0));
         mapData.EnemyPositions.Clear(); // No enemies, pure exploration
 
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 3);
 
         // Track position history to detect oscillation
-        var positionHistory = new List<Vector2I>();
+        var positionHistory = new List<int>();
         var maxSteps = 200;
         var stepCount = 0;
 
         while (!ai.HasFinishedExploration && stepCount < maxSteps)
         {
-            positionHistory.Add(ai.CurrentPosition);
+            positionHistory.Add(ai.CurrentCellId);
             ai.StepExploration();
             stepCount++;
 
-            // Check for oscillation: same position appearing 3+ times in last 10 moves
+            // Check for oscillation: same cell appearing 3+ times in last 10 moves
             if (positionHistory.Count >= 10)
             {
                 var last10 = positionHistory.GetRange(positionHistory.Count - 10, 10);
-                var currentPos = ai.CurrentPosition;
+                var currentCell = ai.CurrentCellId;
                 var occurrences = 0;
-                foreach (var pos in last10)
+                foreach (var cell in last10)
                 {
-                    if (pos == currentPos) occurrences++;
+                    if (cell == currentCell) occurrences++;
                 }
 
-                // Fail if we're oscillating (same tile visited 3+ times in 10 moves)
+                // Fail if we're oscillating (same cell visited 3+ times in 10 moves)
                 AssertThat(occurrences).IsLess(3);
             }
         }
@@ -384,14 +389,14 @@ public class ExplorationAITest
     [TestCase]
     public void TestCurrentTargetExposedForDebug()
     {
-        // Verify that CurrentTarget and CurrentPath are exposed for debug visualization
-        var mapData = CreateSimpleMap(10, 10, new Vector2I(0, 0));
+        // Verify that CurrentTargetCell and CurrentPath are exposed for debug visualization
+        var (mapData, gridData) = CreateSimpleMap(10, 10, new Vector2I(0, 0));
         mapData.EnemyPositions.Clear();
 
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 2);
 
         // Initially no target
-        AssertThat(ai.CurrentTarget).IsNull();
+        AssertThat(ai.CurrentTargetCell).IsNull();
         AssertThat(ai.CurrentPath).IsNotNull();
         AssertThat(ai.CurrentPath.Count).IsEqual(0);
 
@@ -405,7 +410,7 @@ public class ExplorationAITest
     [TestCase]
     public void TestPathUpdatedEventFires()
     {
-        var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
         mapData.EnemyPositions.Clear();
 
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 2);
@@ -432,7 +437,7 @@ public class ExplorationAITest
         // Use small vision range (2) to force actual walking and prevent trivial visibility
         // from marking tiles as "visited" without movement.
 
-        var mapData = CreateSimpleMap(8, 8, new Vector2I(0, 0));
+        var (mapData, gridData) = CreateSimpleMap(8, 8, new Vector2I(0, 0));
         mapData.EnemyPositions.Add(new Vector2I(7, 7)); // Enemy at far corner
 
         // Small vision range forces actual movement to find enemy
@@ -490,14 +495,18 @@ public class ExplorationAITest
         // Enemy at far end, but AI will start exploring in one direction
         mapData.EnemyPositions.Add(new Vector2I(9, 0));
 
+        var gridData = new RegularGridMapData(mapData);
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
 
         // First step should find a target and start moving
         ai.StepExploration();
-        var firstTarget = ai.CurrentTarget;
+        var firstTarget = ai.CurrentTargetCell;
 
         // Enemy should be spotted (visible from anywhere with range 10)
-        AssertThat(ai.VisibleEnemyPosition).IsEqual(new Vector2I(9, 0));
+        var visibleEnemyPos = ai.VisibleEnemyCellId.HasValue
+            ? gridData.GetGridPosition(ai.VisibleEnemyCellId.Value)
+            : (Vector2I?)null;
+        AssertThat(visibleEnemyPos).IsEqual(new Vector2I(9, 0));
 
         // But if we had a path, we should continue on it (deferred pursuit)
         // Take a few more steps
@@ -600,6 +609,7 @@ public class ExplorationAITest
         // Add enemy
         mapData.EnemyPositions.Add(new Vector2I(9, 2));
 
+        var gridData = new RegularGridMapData(mapData);
         var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
 
         // Run until we find the enemy
@@ -612,10 +622,10 @@ public class ExplorationAITest
         }
 
         AssertBool(ai.HasFoundEnemy).IsTrue();
-        AssertThat(ai.CurrentPosition).IsEqual(new Vector2I(9, 2));
+        AssertThat(GetCurrentGridPosition(ai, gridData)).IsEqual(new Vector2I(9, 2));
     }
 
-    private static SimpleMapData CreateSimpleMap(int width, int height, Vector2I playerStart)
+    private static (SimpleMapData mapData, RegularGridMapData gridData) CreateSimpleMap(int width, int height, Vector2I playerStart)
     {
         var mapData = new SimpleMapData
         {
@@ -629,14 +639,15 @@ public class ExplorationAITest
             mapData.PassableTiles.Add(new Vector2I(x, y));
         }
 
-        return mapData;
+        var gridData = new RegularGridMapData(mapData);
+        return (mapData, gridData);
     }
 
-    private static SimpleMapData CreateMapWithEnemy()
+    private static (SimpleMapData mapData, RegularGridMapData gridData) CreateMapWithEnemy()
     {
-        var mapData = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
         mapData.EnemyPositions.Add(new Vector2I(4, 4));
-        return mapData;
+        return (mapData, gridData);
     }
 
     private static void FillWithWalls(string[,] tileIds)
@@ -644,5 +655,13 @@ public class ExplorationAITest
         for (var y = 0; y < tileIds.GetLength(0); y++)
         for (var x = 0; x < tileIds.GetLength(1); x++)
             tileIds[y, x] = Wall;
+    }
+
+    /// <summary>
+    /// Helper to convert AI's current cell ID back to grid position for assertions.
+    /// </summary>
+    private static Vector2I GetCurrentGridPosition(ExplorationAI ai, RegularGridMapData gridData)
+    {
+        return gridData.GetGridPosition(ai.CurrentCellId);
     }
 }
