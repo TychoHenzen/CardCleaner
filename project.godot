@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="CardCleaner"
-run/main_scene="res://Scenes/StartScene.tscn"
+run/main_scene="res://Scenes/Gameplay/StartScene.tscn"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 config/defaults/default_clear_color=Color(0.3, 0.3, 0.3, 1)

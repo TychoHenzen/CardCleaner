@@ -1,4 +1,4 @@
-namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
+namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug;
 
 using Godot;
 using System;
@@ -6,11 +6,11 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 
 /// <summary>
-/// Test node for validating irregular mesh generation and rendering.
-/// Add this to a scene to visualize the mesh generation pipeline.
+/// Editor preview node for visualizing irregular mesh generation and rendering.
+/// Add this to a scene to visualize the mesh generation pipeline in the Godot editor.
 /// </summary>
 [Tool]
-public partial class IrregularMeshTest : Node2D
+public partial class IrregularMeshPreview : Node2D
 {
     private IrregularMesh? _mesh;
     private IrregularTerrainRenderer? _renderer;
@@ -156,11 +156,11 @@ public partial class IrregularMeshTest : Node2D
         try
         {
             _tileRegistry = new TileRegistry();
-            GD.Print($"[IrregularMeshTest] Loaded TileRegistry with {((TileRegistry)_tileRegistry).GetAllTiles().GetEnumerator().MoveNext()} tiles");
+            GD.Print($"[IrregularMeshPreview] Loaded TileRegistry with {((TileRegistry)_tileRegistry).GetAllTiles().GetEnumerator().MoveNext()} tiles");
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"[IrregularMeshTest] Failed to load TileRegistry: {ex.Message}");
+            GD.PrintErr($"[IrregularMeshPreview] Failed to load TileRegistry: {ex.Message}");
         }
 
         _renderer = new IrregularTerrainRenderer();
@@ -209,7 +209,7 @@ public partial class IrregularMeshTest : Node2D
             Seed = _seed
         };
 
-        GD.Print($"[IrregularMeshTest] Generating mesh: rings={_rings}, hexRadius={_hexRadius}, " +
+        GD.Print($"[IrregularMeshPreview] Generating mesh: rings={_rings}, hexRadius={_hexRadius}, " +
                  $"merge={_mergeProbability:F2}, relax={_relaxationIterations}, seed={_seed}");
 
         _mesh = MeshGenerator.Generate(config);
@@ -259,7 +259,7 @@ public partial class IrregularMeshTest : Node2D
         {
             if (vertex.TerrainType == 1) filledCount++;
         }
-        GD.Print($"[IrregularMeshTest] Terrain assigned: {filledCount}/{_mesh.Vertices.Count} vertices filled");
+        GD.Print($"[IrregularMeshPreview] Terrain assigned: {filledCount}/{_mesh.Vertices.Count} vertices filled");
     }
 
     private void RenderMesh()

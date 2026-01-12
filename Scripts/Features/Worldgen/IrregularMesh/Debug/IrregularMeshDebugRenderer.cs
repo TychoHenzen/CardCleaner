@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
+namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug;
 
 /// <summary>
 /// Debug visualization for irregular mesh terrain.

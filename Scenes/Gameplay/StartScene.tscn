@@ -1,11 +1,11 @@
 [gd_scene load_steps=37 format=3 uid="uid://cc3ymqg03a2g5"]
 
-[ext_resource type="PackedScene" uid="uid://oqrxpyj8qkim" path="res://Scenes/CardShader.tscn" id="3_4bcsh"]
+[ext_resource type="PackedScene" uid="uid://oqrxpyj8qkim" path="res://Scenes/Components/CardShader.tscn" id="3_4bcsh"]
 [ext_resource type="Script" uid="uid://bo8luaias82fj" path="res://Scripts/Features/Card/Services/CardSpawner.cs" id="3_6nqof"]
-[ext_resource type="PackedScene" uid="uid://b80slr4xbnys8" path="res://Scenes/SimpleTileMapScreen.tscn" id="3_k3dcv"]
-[ext_resource type="PackedScene" uid="uid://wv6a67swhus" path="res://Scenes/player.tscn" id="3_k8nbv"]
-[ext_resource type="PackedScene" uid="uid://5pktuq08ry2m" path="res://Scenes/CardSlot.tscn" id="4_dta7m"]
-[ext_resource type="PackedScene" uid="uid://7stut08s5ui3" path="res://Scenes/DeckSlot.tscn" id="4_sstrp"]
+[ext_resource type="PackedScene" uid="uid://b80slr4xbnys8" path="res://Scenes/Gameplay/SimpleTileMapScreen.tscn" id="3_k3dcv"]
+[ext_resource type="PackedScene" uid="uid://wv6a67swhus" path="res://Scenes/Components/player.tscn" id="3_k8nbv"]
+[ext_resource type="PackedScene" uid="uid://5pktuq08ry2m" path="res://Scenes/UI/CardSlot.tscn" id="4_dta7m"]
+[ext_resource type="PackedScene" uid="uid://7stut08s5ui3" path="res://Scenes/UI/DeckSlot.tscn" id="4_sstrp"]
 [ext_resource type="Resource" uid="uid://c1pvj6bchej3" path="res://Assets/CardRarity/Common.tres" id="4_vkee2"]
 [ext_resource type="Resource" uid="uid://crj4wbejtk751" path="res://Assets/CardRarity/Uncommon.tres" id="5_otk7d"]
 [ext_resource type="Script" uid="uid://dckadi8fdva0e" path="res://Scripts/Features/Pause/Controllers/PauseController.cs" id="5_u668n"]
@@ -14,7 +14,7 @@
 [ext_resource type="Resource" uid="uid://c8eyaxwe0si1t" path="res://Assets/CardRarity/Epic.tres" id="7_ioitf"]
 [ext_resource type="Resource" uid="uid://vnmarlrtxlog" path="res://Assets/CardRarity/Legendary.tres" id="8_3rand"]
 [ext_resource type="Resource" uid="uid://bjkeuqtf31pgv" path="res://Assets/CardBases/Weapon.tres" id="9_3xlss"]
-[ext_resource type="PackedScene" uid="uid://dqq5wm3t0cskf" path="res://Scenes/Conveyor_Straight.tscn" id="9_dr1m3"]
+[ext_resource type="PackedScene" uid="uid://dqq5wm3t0cskf" path="res://Scenes/Components/Conveyor_Straight.tscn" id="9_dr1m3"]
 [ext_resource type="Resource" uid="uid://d3fbjw1jow8u" path="res://Assets/CardGems/Solidum.tres" id="9_h03qd"]
 [ext_resource type="Script" uid="uid://da31spt6lbnn6" path="res://Scripts/Core/Data/GameSettings.cs" id="10_1ia11"]
 [ext_resource type="Resource" uid="uid://ddus141l1tre8" path="res://Assets/CardGems/Febris.tres" id="10_3xlss"]
@@ -30,8 +30,8 @@
 [ext_resource type="Script" uid="uid://droelpip16h4t" path="res://Scripts/Core/Services/GameSaveService.cs" id="28_k3dcv"]
 [ext_resource type="Script" uid="uid://bwc5dxw38wqj" path="res://Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs" id="28_up2yq"]
 [ext_resource type="Script" uid="uid://cegl6bvhw8hui" path="res://Scripts/Features/Deckbuilder/Services/GameSessionService.cs" id="29_k3dcv"]
-[ext_resource type="PackedScene" uid="uid://cdbi77q8mi6sd" path="res://Scenes/button.tscn" id="30_up2yq"]
-[ext_resource type="PackedScene" uid="uid://dd5mg70gss14v" path="res://Scenes/IrregularTileMapScreen.tscn" id="32_ihrxd"]
+[ext_resource type="PackedScene" uid="uid://cdbi77q8mi6sd" path="res://Scenes/UI/button.tscn" id="30_up2yq"]
+[ext_resource type="PackedScene" uid="uid://dd5mg70gss14v" path="res://Scenes/Gameplay/IrregularTileMapScreen.tscn" id="32_ihrxd"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t5ln1"]
 size = Vector3(40, 0.25415, 40)
@@ -164,7 +164,6 @@ ActivateButton = NodePath("../../World/Button/StaticBody3D")
 BattleScreenScene = ExtResource("4_dta7m")
 WorldTileMapScreenScene = NodePath("../../World/SimpleTileMapScreen")
 IrregularMapScreen = NodePath("../../World/IrregularTileMapScreen")
-MapType = 1
 
 [node name="CardServiceProvider" type="Node" parent="Services" node_paths=PackedStringArray("CardRoot")]
 script = ExtResource("11_r0o6j")
