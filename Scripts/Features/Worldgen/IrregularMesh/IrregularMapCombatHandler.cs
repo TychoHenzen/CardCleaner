@@ -73,7 +73,7 @@ public class IrregularMapCombatHandler
     {
         if (_combatSystem == null) return;
 
-        while (!_combatSystem.CombatComplete)
+        while (_combatSystem != null && !_combatSystem.CombatComplete)
         {
             _combatSystem.ProcessTurn();
 

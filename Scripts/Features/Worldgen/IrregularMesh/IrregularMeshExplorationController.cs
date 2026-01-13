@@ -346,11 +346,23 @@ public partial class IrregularMeshExplorationController : Node2D
 
     private void OnExplorationEnemyEncountered(Vector2 enemyPos)
     {
+        // Stop exploration when entering combat
+        _isExploring = false;
+
         if (_mapData != null)
         {
             var cellId = _mapData.GetCellAtPosition(enemyPos);
             if (cellId.HasValue)
                 EnemyEncountered?.Invoke(cellId.Value);
         }
+    }
+
+    /// <summary>
+    /// Reset the exploration AI's combat state after combat ends.
+    /// Call this before calling StartExploration() to resume.
+    /// </summary>
+    public void ResetCombatState()
+    {
+        _explorationAI?.ResetCombatState();
     }
 }

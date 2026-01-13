@@ -13,8 +13,6 @@ public class RegularGridMapData : IMapData
     private readonly SimpleMapData _simpleMapData;
     private readonly float _tileSize;
 
-    private int[]? _enemySpawnCellsCache;
-
     /// <summary>
     /// Create a map data adapter for a regular grid.
     /// </summary>
@@ -241,20 +239,16 @@ public class RegularGridMapData : IMapData
     {
         get
         {
-            if (_enemySpawnCellsCache == null)
+            var cells = new List<int>();
+            foreach (var pos in _simpleMapData.EnemyPositions)
             {
-                var cells = new List<int>();
-                foreach (var pos in _simpleMapData.EnemyPositions)
+                if (pos.X >= 0 && pos.X < _simpleMapData.Size.X &&
+                    pos.Y >= 0 && pos.Y < _simpleMapData.Size.Y)
                 {
-                    if (pos.X >= 0 && pos.X < _simpleMapData.Size.X &&
-                        pos.Y >= 0 && pos.Y < _simpleMapData.Size.Y)
-                    {
-                        cells.Add(PositionToCellId(pos));
-                    }
+                    cells.Add(PositionToCellId(pos));
                 }
-                _enemySpawnCellsCache = cells.ToArray();
             }
-            return _enemySpawnCellsCache;
+            return cells;
         }
     }
 
@@ -276,14 +270,6 @@ public class RegularGridMapData : IMapData
     /// The grid dimensions (width, height) in cells.
     /// </summary>
     public Vector2I Size => _simpleMapData.Size;
-
-    /// <summary>
-    /// Invalidate cached data (call when SimpleMapData changes).
-    /// </summary>
-    public void InvalidateCache()
-    {
-        _enemySpawnCellsCache = null;
-    }
 
     /// <summary>
     /// Convert a Vector2I position to cell ID (convenience method).

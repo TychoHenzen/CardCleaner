@@ -537,6 +537,7 @@ public partial class IrregularWorldMapScreen : Node3D
             if (_mapData?.EnemySpawnCells.Count > 0)
             {
                 GD.Print("[IrregularWorldMapScreen] Resuming exploration...");
+                _explorationController?.ResetCombatState();
                 _explorationController?.StartExploration();
             }
             else

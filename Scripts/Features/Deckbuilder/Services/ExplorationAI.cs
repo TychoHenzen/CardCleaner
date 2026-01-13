@@ -83,6 +83,23 @@ public class ExplorationAI
     public event Action? PathUpdated;
 
     /// <summary>
+    /// Reset combat-related state to allow exploration to continue after combat ends.
+    /// Call this after successfully defeating an enemy and before resuming exploration.
+    /// </summary>
+    public void ResetCombatState()
+    {
+        HasFoundEnemy = false;
+        VisibleEnemyCellId = null;
+        _lastKnownEnemyCell = null;
+        _pendingEnemyCell = null;
+        SetMode(ExplorationMode.FrontierExploration);
+        _pathToTarget.Clear();
+        _currentTargetCell = null;
+        PathUpdated?.Invoke();
+        ILog.Print("Combat state reset - exploration can continue");
+    }
+
+    /// <summary>
     /// Create exploration AI with a map data provider.
     /// </summary>
     public ExplorationAI(IMapData mapData, int? startCell = null, IVisibilityChecker? visibilityChecker = null, int visionRange = 5)
