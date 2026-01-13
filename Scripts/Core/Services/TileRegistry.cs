@@ -3,6 +3,7 @@ using System.Linq;
 using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services.TilesetLoading;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
@@ -237,7 +238,7 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
         _variationGroups.Clear();
 
         // Group tiles by detected pattern
-        var groups = new Dictionary<string, List<(TileDefinition tile, TiledTilesetLoader.VariationGroupInfo info)>>();
+        var groups = new Dictionary<string, List<(TileDefinition tile, VariationGroupInfo info)>>();
 
         foreach (var tile in _tiles.Values)
         {
@@ -246,7 +247,7 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
                 continue;
 
             if (!groups.ContainsKey(info.BaseName))
-                groups[info.BaseName] = new List<(TileDefinition, TiledTilesetLoader.VariationGroupInfo)>();
+                groups[info.BaseName] = new List<(TileDefinition, VariationGroupInfo)>();
 
             groups[info.BaseName].Add((tile, info));
         }

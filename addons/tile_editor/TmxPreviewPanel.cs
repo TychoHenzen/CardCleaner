@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Core.Services.TilesetLoading;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
@@ -33,13 +34,13 @@ public partial class TmxPreviewPanel : VBoxContainer
     private TmxPreviewControl? _previewControl;
     private string? _currentTmxPath;
     private TileDefinition? _selectedBaseTile;
-    private TiledTilesetLoader.TmxTilesetReference? _selectedBaseTileTileset;
+    private TmxTilesetReference? _selectedBaseTileTileset;
     private TileDefinition? _selectedAutoTile;
-    private TiledTilesetLoader.TmxTilesetReference? _selectedAutoTileTileset;
+    private TmxTilesetReference? _selectedAutoTileTileset;
     private string? _formatOverride;
-    private TiledTilesetLoader.TmxMapData? _currentMapData;
-    private List<(TileDefinition Tile, TiledTilesetLoader.TmxTilesetReference Tileset)> _availableAutoTiles = new();
-    private List<(TileDefinition Tile, TiledTilesetLoader.TmxTilesetReference Tileset)> _availableBaseTiles = new();
+    private TmxMapData? _currentMapData;
+    private List<(TileDefinition Tile, TmxTilesetReference Tileset)> _availableAutoTiles = new();
+    private List<(TileDefinition Tile, TmxTilesetReference Tileset)> _availableBaseTiles = new();
 
     // Required by Godot for [Tool] classes
     public TmxPreviewPanel() { }
@@ -443,17 +444,17 @@ public partial class TmxPreviewControl : Control
     private const int VisualGridRows = DataGridRows + 1;
 
     private readonly TileEditorService? _service;
-    private TiledTilesetLoader.TmxMapData? _mapData;
+    private TmxMapData? _mapData;
     private float _scale = 2f;
     private Vector2I _tileSize = new(16, 16);
 
     // Base tile for compositing (from TSX)
     private TileDefinition? _baseTileDef;
-    private TiledTilesetLoader.TmxTilesetReference? _baseTilesetRef;
+    private TmxTilesetReference? _baseTilesetRef;
 
     // Auto-tile preview mode fields
     private TileDefinition? _autoTileDef;
-    private TiledTilesetLoader.TmxTilesetReference? _currentTilesetRef;
+    private TmxTilesetReference? _currentTilesetRef;
     private bool _isAutoTileMode;
     private bool _showDataGrid = true;
     private string? _formatOverride;
@@ -473,14 +474,14 @@ public partial class TmxPreviewControl : Control
         MouseFilter = MouseFilterEnum.Stop;
     }
 
-    public void SetBaseTile(TileDefinition? baseTile, TiledTilesetLoader.TmxTilesetReference? tilesetRef)
+    public void SetBaseTile(TileDefinition? baseTile, TmxTilesetReference? tilesetRef)
     {
         _baseTileDef = baseTile;
         _baseTilesetRef = tilesetRef;
         QueueRedraw();
     }
 
-    public void LoadTmxMap(TiledTilesetLoader.TmxMapData mapData, float scale)
+    public void LoadTmxMap(TmxMapData mapData, float scale)
     {
         _mapData = mapData;
         _scale = scale;
@@ -523,7 +524,7 @@ public partial class TmxPreviewControl : Control
     /// <summary>
     /// Switch to interactive auto-tile preview mode for the given tile definition.
     /// </summary>
-    public void SetAutoTilePreview(TileDefinition tileDef, TiledTilesetLoader.TmxTilesetReference tilesetRef, float scale, string? formatOverride = null)
+    public void SetAutoTilePreview(TileDefinition tileDef, TmxTilesetReference tilesetRef, float scale, string? formatOverride = null)
     {
         _autoTileDef = tileDef;
         _currentTilesetRef = tilesetRef;
@@ -990,7 +991,7 @@ public partial class TmxPreviewControl : Control
     /// Load and cache the texture for a tileset from its TilesetPath (TSX image source).
     /// TilesetPath is already resolved to an absolute path by TiledTilesetLoader.LoadFromTsx.
     /// </summary>
-    private Texture2D? GetTextureForTileset(TiledTilesetLoader.TmxTilesetReference tilesetRef)
+    private Texture2D? GetTextureForTileset(TmxTilesetReference tilesetRef)
     {
         var absoluteTexturePath = tilesetRef.TilesetData.TilesetPath;
         GD.Print($"[TmxPreviewControl] GetTextureForTileset: TilesetPath='{absoluteTexturePath}'");
