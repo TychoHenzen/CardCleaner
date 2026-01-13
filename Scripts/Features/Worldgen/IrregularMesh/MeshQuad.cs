@@ -200,20 +200,19 @@ public class MeshQuad
         return true;
     }
 
-    // Terrain passability/transparency - these could be moved to a terrain service
-    private static bool IsTerrainPassable(int terrainType)
-    {
-        // TODO: Hook into actual terrain definitions
-        // For now, assume terrain type 0 (empty/water) is impassable
-        return terrainType > 0;
-    }
+    /// <summary>
+    /// Check terrain passability by type.
+    /// MeshTerrainGenerator assigns terrain types based on TileDefinition.IsPassable:
+    /// 0 = impassable (water, walls), 1+ = passable terrain.
+    /// </summary>
+    private static bool IsTerrainPassable(int terrainType) => terrainType > 0;
 
-    private static bool IsTerrainTransparent(int terrainType)
-    {
-        // TODO: Hook into actual terrain definitions
-        // For now, assume all terrain is transparent (no tall walls in terrain layer)
-        return true;
-    }
+    /// <summary>
+    /// Check terrain transparency for line-of-sight.
+    /// Currently all terrain is transparent (no tall walls in terrain layer).
+    /// Structures block LOS and are checked separately via HasStructure.
+    /// </summary>
+    private static bool IsTerrainTransparent(int terrainType) => true;
 
     /// <summary>
     /// Gets the variant index for rendering this quad.
@@ -251,31 +250,23 @@ public class MeshQuad
         foreach (var vertexId in VertexIds)
         {
             var vertex = _mesh.Vertices[vertexId];
-            if (vertex.TileId != null)
-            {
-                if (!tileCounts.ContainsKey(vertex.TileId))
-                    tileCounts[vertex.TileId] = 0;
-                tileCounts[vertex.TileId]++;
+            if (vertex.TileId == null) continue;
 
-                if (vertex.TerrainType > 0)
-                    passableTiles.Add(vertex.TileId);
-            }
+            tileCounts.TryGetValue(vertex.TileId, out var count);
+            tileCounts[vertex.TileId] = count + 1;
+
+            if (vertex.TerrainType > 0)
+                passableTiles.Add(vertex.TileId);
         }
 
         if (tileCounts.Count == 0)
             return null;
 
         // Prefer passable tiles as the dominant type
-        var passableMax = passableTiles
-            .Where(t => tileCounts.ContainsKey(t))
-            .OrderByDescending(t => tileCounts[t])
-            .FirstOrDefault();
-
-        if (passableMax != null)
-            return passableMax;
-
-        // Fall back to most common tile
-        return tileCounts.OrderByDescending(kv => kv.Value).First().Key;
+        return passableTiles
+            .OrderByDescending(t => tileCounts.GetValueOrDefault(t))
+            .FirstOrDefault()
+            ?? tileCounts.MaxBy(kv => kv.Value).Key;
     }
 
     /// <summary>

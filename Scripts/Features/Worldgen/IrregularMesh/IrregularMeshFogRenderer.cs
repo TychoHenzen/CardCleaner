@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;

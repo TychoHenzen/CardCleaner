@@ -1,4 +1,5 @@
 using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
 using GdUnit4;
 using Godot;
 using static GdUnit4.Assertions;
@@ -30,7 +31,7 @@ public class IrregularMeshFogOfWarTest
     {
         for (int i = 0; i < _mapData.CellCount; i++)
         {
-            AssertThat(_fogOfWar.GetFogState(i)).IsEqual(IrregularMeshNs.FogState.Hidden);
+            AssertThat(_fogOfWar.GetFogState(i)).IsEqual(FogState.Hidden);
         }
     }
 
@@ -52,7 +53,7 @@ public class IrregularMeshFogOfWarTest
         _fogOfWar.VisionRange = 10f;
         _fogOfWar.UpdateVisibility(0);
 
-        AssertThat(_fogOfWar.GetFogState(0)).IsEqual(IrregularMeshNs.FogState.Visible);
+        AssertThat(_fogOfWar.GetFogState(0)).IsEqual(FogState.Visible);
         AssertBool(_fogOfWar.IsVisible(0)).IsTrue();
     }
 
@@ -100,7 +101,7 @@ public class IrregularMeshFogOfWarTest
         foreach (var cellId in initiallyVisible)
         {
             var state = _fogOfWar.GetFogState(cellId);
-            AssertThat(state).IsNotEqual(IrregularMeshNs.FogState.Hidden);
+            AssertThat(state).IsNotEqual(FogState.Hidden);
         }
     }
 
@@ -119,7 +120,7 @@ public class IrregularMeshFogOfWarTest
     {
         _fogOfWar.RevealCell(2);
 
-        AssertThat(_fogOfWar.GetFogState(2)).IsEqual(IrregularMeshNs.FogState.Revealed);
+        AssertThat(_fogOfWar.GetFogState(2)).IsEqual(FogState.Revealed);
         AssertBool(_fogOfWar.HasBeenSeen(2)).IsTrue();
     }
 
@@ -143,7 +144,7 @@ public class IrregularMeshFogOfWarTest
 
         for (int i = 0; i < _mapData.CellCount; i++)
         {
-            AssertThat(_fogOfWar.GetFogState(i)).IsEqual(IrregularMeshNs.FogState.Hidden);
+            AssertThat(_fogOfWar.GetFogState(i)).IsEqual(FogState.Hidden);
         }
     }
 
@@ -216,7 +217,7 @@ public class IrregularMeshFogOfWarTest
         _fogOfWar.VisionRange = 100f;
         _fogOfWar.UpdateVisibility(0);
 
-        var visibleCells = _fogOfWar.GetCellsWithState(IrregularMeshNs.FogState.Visible).ToList();
+        var visibleCells = _fogOfWar.GetCellsWithState(FogState.Visible).ToList();
 
         AssertThat(visibleCells.Count).IsEqual(4);
     }

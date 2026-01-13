@@ -114,15 +114,19 @@ public class WfcAdjacencyRules
         _allTileIds.Add(tileA);
         _allTileIds.Add(tileB);
 
-        // Ensure entries exist
-        if (!_adjacencyMap.ContainsKey(tileA))
-            _adjacencyMap[tileA] = new HashSet<string>();
-        if (!_adjacencyMap.ContainsKey(tileB))
-            _adjacencyMap[tileB] = new HashSet<string>();
-
         // Adjacency is symmetric: if A can transition to B, they can be neighbors
-        _adjacencyMap[tileA].Add(tileB);
-        _adjacencyMap[tileB].Add(tileA);
+        GetOrCreateNeighborSet(tileA).Add(tileB);
+        GetOrCreateNeighborSet(tileB).Add(tileA);
+    }
+
+    private HashSet<string> GetOrCreateNeighborSet(string tileId)
+    {
+        if (!_adjacencyMap.TryGetValue(tileId, out var neighbors))
+        {
+            neighbors = new HashSet<string>();
+            _adjacencyMap[tileId] = neighbors;
+        }
+        return neighbors;
     }
 
     /// <summary>
@@ -135,16 +139,11 @@ public class WfcAdjacencyRules
         var tiles = new List<string>(tileIds);
         foreach (var tileA in tiles)
         {
-            // Ensure entry exists
-            if (!_adjacencyMap.ContainsKey(tileA))
-            {
-                _adjacencyMap[tileA] = new HashSet<string>();
-                _allTileIds.Add(tileA);
-            }
-
+            _allTileIds.Add(tileA);
+            var neighborsA = GetOrCreateNeighborSet(tileA);
             foreach (var tileB in tiles)
             {
-                _adjacencyMap[tileA].Add(tileB);
+                neighborsA.Add(tileB);
             }
         }
     }
@@ -157,13 +156,8 @@ public class WfcAdjacencyRules
         _allTileIds.Add(tileA);
         _allTileIds.Add(tileB);
 
-        if (!_adjacencyMap.ContainsKey(tileA))
-            _adjacencyMap[tileA] = new HashSet<string>();
-        if (!_adjacencyMap.ContainsKey(tileB))
-            _adjacencyMap[tileB] = new HashSet<string>();
-
-        _adjacencyMap[tileA].Add(tileB);
-        _adjacencyMap[tileB].Add(tileA);
+        GetOrCreateNeighborSet(tileA).Add(tileB);
+        GetOrCreateNeighborSet(tileB).Add(tileA);
     }
 
     /// <summary>
@@ -173,10 +167,6 @@ public class WfcAdjacencyRules
     public void EnsureSelfAdjacency(string tileId)
     {
         _allTileIds.Add(tileId);
-
-        if (!_adjacencyMap.ContainsKey(tileId))
-            _adjacencyMap[tileId] = new HashSet<string>();
-
-        _adjacencyMap[tileId].Add(tileId);
+        GetOrCreateNeighborSet(tileId).Add(tileId);
     }
 }

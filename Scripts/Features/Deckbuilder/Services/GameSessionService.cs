@@ -21,36 +21,59 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 [Service(ServiceLifetime.Singleton, typeof(IGameSessionService))]
 public partial class GameSessionService : Node, IGameSessionService
 {
-    // Game timing
-    private const float ExplorationStepDelay = 0.1f; // 500ms between exploration steps
-    private const float CombatTurnDelay = 1.0f; // 1s between combat turns
-    private List<CardSignature> _abilityCards = new();
-    private BiomeRegistry _biomeRegistry = null!;
-    private SimpleCombatSystem? _combatSystem;
-    private Vector2I? _currentEnemyPosition;
+    #region Constants
 
-    // Simple game systems (backward compatible)
-    private SimpleMapData? _currentMap;
-    private RegularGridMapData? _currentGridMapData;
+    private const float ExplorationStepDelay = 0.1f;
+    private const float CombatTurnDelay = 1.0f;
+
+    #endregion
+
+    #region Services & Infrastructure
+
+    private ITileRegistry _tileRegistry = null!;
+    private ITileMetadataProvider _metadataProvider = null!;
+    private BiomeRegistry _biomeRegistry = null!;
+    private Timer _gameTimer = null!;
+    private RandomNumberGenerator _rng = new();
+    private readonly GridCellEventAdapter _eventAdapter = new();
+
+    #endregion
+
+    #region Session Input
+
+    private List<CardSignature> _mapSeeds = new();
+    private List<CardSignature> _abilityCards = new();
+    private IMapGenerator? _mapGenerator;
+
+    #endregion
+
+    #region Map State
+
+    private SimpleMapData? _currentMap;              // Legacy grid-based map
+    private RegularGridMapData? _currentGridMapData; // Grid coordinate adapter
+    private IGeneratedMap? _generatedMap;            // Unified map interface
+    private IMapData? _currentMapData;               // Pathfinding adapter
+
+    #endregion
+
+    #region Game State
+
     private SessionState _currentState = SessionState.WaitingForCards;
     private ExplorationAI? _explorationAI;
-    private Timer _gameTimer = null!;
-    private List<CardSignature> _mapSeeds = new();
+    private SimpleCombatSystem? _combatSystem;
+    private CancellationTokenSource? _generationCts;
+    private Task? _currentGenerationTask;
 
-    // Pluggable map generator support
-    private IMapGenerator? _mapGenerator;
-    private IGeneratedMap? _generatedMap;
-    private IMapData? _currentMapData;
+    #endregion
 
-    // Player and enemy tracking
+    #region Position Tracking
+
     private Vector2? _playerWorldPosition;
     private Vector2I? _playerPosition;
     private int? _currentEnemyCellId;
-    private RandomNumberGenerator _rng = new();
-    private ITileRegistry _tileRegistry = null!;
-    private ITileMetadataProvider _metadataProvider = null!;
-    private CancellationTokenSource? _generationCts;
-    private Task? _currentGenerationTask;
+    private Vector2I? _currentEnemyPosition;
+
+    #endregion
 
     public SessionState CurrentState
     {
@@ -292,6 +315,7 @@ public partial class GameSessionService : Node, IGameSessionService
         // Clear regular grid fields (not used with custom generator)
         _currentMap = null;
         _currentGridMapData = null;
+        _eventAdapter.SetGridMapData(null);
 
         ILog.Print($"Custom map generated: {_generatedMap.EnemyCount} enemies");
 
@@ -326,6 +350,7 @@ public partial class GameSessionService : Node, IGameSessionService
         // Create the IMapData adapter for exploration
         _currentGridMapData = new RegularGridMapData(_currentMap);
         _currentMapData = _currentGridMapData;
+        _eventAdapter.SetGridMapData(_currentGridMapData);
 
         // Wrap in IGeneratedMap for unified interface
         _generatedMap = new SimpleGeneratedMap(_currentMap);
@@ -385,43 +410,30 @@ public partial class GameSessionService : Node, IGameSessionService
         _gameTimer.Start();
     }
 
-    // Adapter methods to emit both Vector2I (backward compat) and cell-based events
+    // Event handlers that use the adapter for coordinate translation
 
     private void OnPlayerMovedWorld(Vector2 worldPos)
     {
-        // Track world position for custom generators
         _playerWorldPosition = worldPos;
+        _playerPosition = _eventAdapter.WorldToGrid(worldPos);
 
-        // Emit world position event (for irregular mesh)
-        PlayerMovedWorld?.Invoke(worldPos);
-
-        // Emit grid position event (backward compat for regular grid)
-        if (_currentGridMapData != null)
-        {
-            var gridPos = _currentGridMapData.WorldToGrid(worldPos);
-            _playerPosition = gridPos;
-            PlayerMoved?.Invoke(gridPos);
-        }
+        _eventAdapter.EmitPlayerMoved(worldPos, PlayerMovedWorld, PlayerMoved);
     }
 
     private void OnEnemyEncounteredWorld(Vector2 worldPos)
     {
-        // Get cell ID for the enemy position
         var cellId = _currentMapData?.GetCellAtPosition(worldPos);
         if (cellId.HasValue)
-        {
             _currentEnemyCellId = cellId.Value;
-        }
 
-        // For regular grid, also convert to grid position
-        if (_currentGridMapData != null)
+        if (_eventAdapter.HasGridData)
         {
-            var gridPos = _currentGridMapData.WorldToGrid(worldPos);
-            OnEnemyEncountered(gridPos);
+            var gridPos = _eventAdapter.WorldToGrid(worldPos);
+            if (gridPos.HasValue)
+                OnEnemyEncountered(gridPos.Value);
         }
         else
         {
-            // Custom generator - just log and start combat
             ILog.Print($"Enemy encountered at world position {worldPos}! Preparing for combat...");
             _gameTimer.Stop();
             CurrentState = SessionState.InCombat;
@@ -431,51 +443,23 @@ public partial class GameSessionService : Node, IGameSessionService
 
     private void OnVisitedCellsUpdated(IReadOnlySet<int> cellIds)
     {
-        // Emit cell-based event (for irregular mesh)
-        VisitedCellsUpdated?.Invoke(cellIds);
-
-        // Emit grid position event (backward compat for regular grid)
-        if (_currentGridMapData != null)
-        {
-            var gridPositions = new HashSet<Vector2I>(cellIds.Select(id => _currentGridMapData.GetGridPosition(id)));
-            VisitedTilesUpdated?.Invoke(gridPositions);
-        }
+        _eventAdapter.EmitVisitedCells(cellIds, VisitedCellsUpdated, VisitedTilesUpdated);
     }
 
     private void OnVisibilityUpdated(IReadOnlySet<int> seenCells, IReadOnlySet<int> visibleCells)
     {
-        // Emit cell-based event (for irregular mesh)
-        VisibilityCellsUpdated?.Invoke(seenCells, visibleCells);
-
-        // Emit grid position event (backward compat for regular grid)
-        if (_currentGridMapData != null)
-        {
-            var seenPositions = new HashSet<Vector2I>(seenCells.Select(id => _currentGridMapData.GetGridPosition(id)));
-            var visiblePositions = new HashSet<Vector2I>(visibleCells.Select(id => _currentGridMapData.GetGridPosition(id)));
-            VisibilityUpdated?.Invoke(seenPositions, visiblePositions);
-        }
+        _eventAdapter.EmitVisibility(seenCells, visibleCells, VisibilityCellsUpdated, VisibilityUpdated);
     }
 
     private void OnPathUpdated()
     {
         if (_explorationAI == null) return;
 
-        // Emit cell-based event (for irregular mesh)
-        PathCellsUpdated?.Invoke(_explorationAI.CurrentPath, _explorationAI.CurrentTargetCell);
-
-        // Emit grid position event (backward compat for regular grid)
-        if (_currentGridMapData != null)
-        {
-            var pathPositions = _explorationAI.CurrentPath
-                .Select(id => _currentGridMapData.GetGridPosition(id))
-                .ToList();
-
-            var targetPosition = _explorationAI.CurrentTargetCell.HasValue
-                ? _currentGridMapData.GetGridPosition(_explorationAI.CurrentTargetCell.Value)
-                : (Vector2I?)null;
-
-            PathUpdated?.Invoke(pathPositions, targetPosition);
-        }
+        _eventAdapter.EmitPath(
+            _explorationAI.CurrentPath,
+            _explorationAI.CurrentTargetCell,
+            PathCellsUpdated,
+            PathUpdated);
     }
 
     private void OnTimerTimeout()
@@ -547,62 +531,63 @@ public partial class GameSessionService : Node, IGameSessionService
 
     private void OnCombatEnded()
     {
-        if (_combatSystem?.PlayerWon == true)
-        {
-            // Remove the defeated enemy from the map using unified interface
-            if (_currentEnemyCellId.HasValue)
-            {
-                var defeatedCellId = _currentEnemyCellId.Value;
-
-                // Update player position to enemy's position
-                if (_currentMapData != null)
-                {
-                    _playerWorldPosition = _currentMapData.GetCellCenter(defeatedCellId);
-                }
-
-                // Remove enemy using IGeneratedMap interface
-                var removed = _generatedMap?.RemoveEnemyAt(defeatedCellId) ?? false;
-                var remainingEnemies = _generatedMap?.EnemyCount ?? 0;
-
-                ILog.Print($"Enemy at cell {defeatedCellId} destroyed! ({remainingEnemies} enemies remaining)");
-
-                // Notify UI to remove enemy sprite (cell-based event)
-                EnemyDefeatedCell?.Invoke(defeatedCellId);
-                _currentEnemyCellId = null;
-            }
-
-            // Also handle backward-compat grid position event
-            if (_currentEnemyPosition.HasValue)
-            {
-                var defeatedPosition = _currentEnemyPosition.Value;
-                _playerPosition = defeatedPosition;
-                _currentMap?.EnemyPositions.Remove(defeatedPosition);
-                EnemyDefeated?.Invoke(defeatedPosition);
-                _currentEnemyPosition = null;
-            }
-
-            // Check if more enemies remain on the map
-            var hasMoreEnemies = (_generatedMap?.EnemyCount ?? _currentMap?.EnemyPositions.Count ?? 0) > 0;
-            if (hasMoreEnemies)
-            {
-                ILog.Print($"Resuming exploration to find remaining enemies...");
-                CurrentState = SessionState.Exploring;
-                CallDeferred(MethodName.AdvanceSession);
-            }
-            else
-            {
-                ILog.Print("All enemies destroyed! Generating loot...");
-                CurrentState = SessionState.GeneratingLoot;
-                CallDeferred(MethodName.AdvanceSession);
-            }
-        }
-        else
+        if (_combatSystem?.PlayerWon != true)
         {
             ILog.Print("Combat lost! Session ending...");
             CleanupCurrentSession();
             CurrentState = SessionState.SessionComplete;
             CallDeferred(MethodName.ResetForNextSession);
+            return;
         }
+
+        HandleEnemyDefeated();
+        TransitionAfterCombat();
+    }
+
+    private void HandleEnemyDefeated()
+    {
+        if (!_currentEnemyCellId.HasValue) return;
+
+        var defeatedCellId = _currentEnemyCellId.Value;
+
+        // Update player position to enemy's position
+        _playerWorldPosition = _currentMapData?.GetCellCenter(defeatedCellId);
+        _playerPosition = _eventAdapter.GetGridPosition(defeatedCellId);
+
+        // Remove enemy using IGeneratedMap interface
+        _generatedMap?.RemoveEnemyAt(defeatedCellId);
+        var remainingEnemies = _generatedMap?.EnemyCount ?? 0;
+        ILog.Print($"Enemy at cell {defeatedCellId} destroyed! ({remainingEnemies} enemies remaining)");
+
+        // Emit events in both coordinate systems
+        _eventAdapter.EmitEnemyDefeated(defeatedCellId, EnemyDefeatedCell, EnemyDefeated);
+
+        // Update legacy map data if present
+        if (_currentEnemyPosition.HasValue)
+        {
+            _currentMap?.EnemyPositions.Remove(_currentEnemyPosition.Value);
+            _currentEnemyPosition = null;
+        }
+
+        _currentEnemyCellId = null;
+    }
+
+    private void TransitionAfterCombat()
+    {
+        var hasMoreEnemies = (_generatedMap?.EnemyCount ?? _currentMap?.EnemyPositions.Count ?? 0) > 0;
+
+        if (hasMoreEnemies)
+        {
+            ILog.Print("Resuming exploration to find remaining enemies...");
+            CurrentState = SessionState.Exploring;
+        }
+        else
+        {
+            ILog.Print("All enemies destroyed! Generating loot...");
+            CurrentState = SessionState.GeneratingLoot;
+        }
+
+        CallDeferred(MethodName.AdvanceSession);
     }
 
     private void GenerateLoot()
@@ -631,14 +616,14 @@ public partial class GameSessionService : Node, IGameSessionService
 
     private void CleanupCurrentSession()
     {
-        // Stop any running timers
         _gameTimer?.Stop();
 
-        // Clean up GameSessionService's own data
         _currentMap = null!;
         _currentGridMapData = null;
         _generatedMap = null;
         _currentMapData = null;
+        _eventAdapter.SetGridMapData(null);
+
         _combatSystem = null!;
         _explorationAI = null!;
         _playerPosition = null;

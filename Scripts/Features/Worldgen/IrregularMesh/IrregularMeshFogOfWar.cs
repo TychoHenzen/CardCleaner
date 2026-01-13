@@ -7,31 +7,11 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 /// <summary>
-/// Visibility state for fog of war.
-/// </summary>
-public enum FogState
-{
-    /// <summary>
-    /// Never been seen - completely hidden.
-    /// </summary>
-    Hidden,
-
-    /// <summary>
-    /// Previously seen but not currently visible - shown dimmed.
-    /// </summary>
-    Revealed,
-
-    /// <summary>
-    /// Currently visible - shown fully.
-    /// </summary>
-    Visible
-}
-
-/// <summary>
 /// Manages per-quad fog of war state for irregular mesh terrain.
 /// Tracks which quads have been seen, are currently visible, or are hidden.
+/// Implements IActiveFogOfWar for active visibility calculation from observer position.
 /// </summary>
-public class IrregularMeshFogOfWar
+public class IrregularMeshFogOfWar : IActiveFogOfWar
 {
     private readonly IrregularMeshMapData _mapData;
     private readonly Dictionary<int, FogState> _fogStates = new();
