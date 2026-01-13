@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using CardCleaner.Scripts.Core.Data;
 using Godot;
 using Godot.Collections;
 
@@ -87,20 +86,3 @@ public class GodotArrayJsonConverter<[MustBeVariant] T> : JsonConverter<Array<T>
     }
 }
 
-public class CompatibilityTagArrayJsonConverter : JsonConverter<Array<CompatibilityTag>>
-{
-    public override Array<CompatibilityTag>? Read(ref Utf8JsonReader reader, Type typeToConvert,
-        JsonSerializerOptions options)
-    {
-        // During reading, this will be handled by the string array property
-        // This converter is here to prevent serialization of the object array
-        reader.Skip();
-        return null;
-    }
-
-    public override void Write(Utf8JsonWriter writer, Array<CompatibilityTag> value, JsonSerializerOptions options)
-    {
-        // Don't write object arrays - they should be [JsonIgnore]
-        writer.WriteNullValue();
-    }
-}

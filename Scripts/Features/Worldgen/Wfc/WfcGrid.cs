@@ -6,9 +6,9 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
 /// 2D grid of WFC cells. Manages cell access and neighbor enumeration.
-/// Implements IWfcGrid using linearized cell IDs (y * width + x).
+/// Cell IDs are linearized as (y * width + x) for flat iteration.
 /// </summary>
-public class WfcGrid : IWfcGrid, IWfcGrid8Way, IWfcGridWithCoordinates
+public class WfcGrid
 {
     // Pre-allocated neighbor offsets for avoiding repeated allocation in hot paths
     private static readonly Vector2I[] Neighbors4Offsets =
@@ -352,26 +352,32 @@ public class WfcGrid : IWfcGrid, IWfcGrid8Way, IWfcGridWithCoordinates
         return cell.IsCollapsed() ? cell.GetCollapsedTile() : null;
     }
 
-    #region IWfcGrid Implementation
-
-    /// <inheritdoc />
+    /// <summary>
+    /// Total number of cells in the grid.
+    /// </summary>
     public int CellCount => _width * _height;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the cell at the given linearized ID.
+    /// </summary>
     public WfcCellState GetCell(int cellId)
     {
         var (x, y) = CellIdToXY(cellId);
         return _cells[y, x];
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Checks if a cell ID is valid.
+    /// </summary>
     public bool IsValidCell(int cellId)
     {
         return cellId >= 0 && cellId < CellCount;
     }
 
-    /// <inheritdoc />
-    IEnumerable<int> IWfcGrid.GetNeighbors(int cellId)
+    /// <summary>
+    /// Enumerates the 4-directional neighbors of a cell ID.
+    /// </summary>
+    public IEnumerable<int> GetNeighbors(int cellId)
     {
         var pos = CellIdToPosition(cellId);
         foreach (var neighborPos in GetNeighbors(pos))
@@ -380,7 +386,9 @@ public class WfcGrid : IWfcGrid, IWfcGrid8Way, IWfcGridWithCoordinates
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Enumerates all cell IDs in the grid.
+    /// </summary>
     public IEnumerable<int> GetAllCellIds()
     {
         for (var i = 0; i < CellCount; i++)
@@ -389,20 +397,19 @@ public class WfcGrid : IWfcGrid, IWfcGrid8Way, IWfcGridWithCoordinates
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Checks if a cell ID has at least one collapsed neighbor.
+    /// </summary>
     public bool HasCollapsedNeighbor(int cellId) => HasCollapsedNeighbor(CellIdToPosition(cellId));
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the collapsed tile ID at a cell ID, or null if not collapsed.
+    /// </summary>
     public string? GetCollapsedTileAt(int cellId) => GetCollapsedTileAt(CellIdToPosition(cellId));
 
-    /// <inheritdoc />
-    IWfcGrid IWfcGrid.Clone() => Clone();
-
-    #endregion
-
-    #region IWfcGrid8Way Implementation
-
-    /// <inheritdoc />
+    /// <summary>
+    /// Enumerates the 8-directional neighbors of a cell ID.
+    /// </summary>
     public IEnumerable<int> GetNeighbors8(int cellId)
     {
         var pos = CellIdToPosition(cellId);
@@ -412,22 +419,20 @@ public class WfcGrid : IWfcGrid, IWfcGrid8Way, IWfcGridWithCoordinates
         }
     }
 
-    #endregion
-
-    #region IWfcGridWithCoordinates Implementation
-
-    /// <inheritdoc />
+    /// <summary>
+    /// Converts a cell ID to a grid position.
+    /// </summary>
     public Vector2I CellIdToPosition(int cellId) => new(cellId % _width, cellId / _width);
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Converts a grid position to a cell ID.
+    /// </summary>
     public int PositionToCellId(Vector2I position) => position.Y * _width + position.X;
 
     /// <summary>
     /// Internal helper to convert cell ID to (x, y) tuple.
     /// </summary>
     private (int x, int y) CellIdToXY(int cellId) => (cellId % _width, cellId / _width);
-
-    #endregion
 
     /// <summary>
     /// Creates a deep copy of this grid (for backtracking support).
