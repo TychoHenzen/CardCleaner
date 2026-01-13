@@ -89,6 +89,12 @@ public class IrregularMeshMapGenerator : IMapGenerator
             progress?.Report(0.2f);
             var terrainGen = new MeshTerrainGenerator(_adjacencyRules, _tileToTerrainType);
 
+            // Set biome registry for card-based generation
+            if (config.BiomeRegistry != null)
+            {
+                terrainGen.SetBiomeRegistry(config.BiomeRegistry);
+            }
+
             // Use card-based gradient if cards are provided
             if (config.MapSeeds.Length > 0)
             {

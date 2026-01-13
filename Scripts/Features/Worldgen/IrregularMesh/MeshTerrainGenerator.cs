@@ -143,8 +143,8 @@ public class MeshTerrainGenerator
 
         GD.Print($"[MeshTerrainGen] Foreground WFC succeeded in {fgResult.Iterations} iterations");
 
-        // Map both layers to mesh vertices
-        MapTwoPassWfcToVertices(mesh, bgResult.MapData, fgResult.MapData, bounds);
+        // Map both layers to mesh: backgrounds to quads, foregrounds to vertices
+        MapTwoPassWfcToMesh(mesh, bgResult.MapData, fgResult.MapData, bounds);
 
         return mesh;
     }
@@ -173,7 +173,22 @@ public class MeshTerrainGenerator
     }
 
     /// <summary>
-    /// Backward-compatible GenerateWithCards method.
+    /// Optional biome registry for card-based generation.
+    /// Set via SetBiomeRegistry before calling GenerateWithCards.
+    /// </summary>
+    private BiomeRegistry? _biomeRegistry;
+
+    /// <summary>
+    /// Sets the biome registry for card-based terrain generation.
+    /// </summary>
+    public void SetBiomeRegistry(BiomeRegistry registry)
+    {
+        _biomeRegistry = registry;
+    }
+
+    /// <summary>
+    /// Generates terrain using card signatures to influence biome distribution.
+    /// Uses 2-phase WFC with card-based gradient for biome selection.
     /// </summary>
     public IrregularMesh GenerateWithCards(
         int rings,
@@ -182,10 +197,93 @@ public class MeshTerrainGenerator
         int relaxationIterations = 15,
         bool useConstraints = true)
     {
-        // For now, just do simple generation without card influence
-        // TODO: Implement card-based biome distribution
-        GD.PrintErr("[MeshTerrainGen] GenerateWithCards not fully implemented yet, using fallback");
-        return GenerateFallback(rings, seed, relaxationIterations);
+        // Generate mesh geometry first
+        var config = new MeshGenerator.GenerationConfig
+        {
+            Rings = rings,
+            Seed = seed,
+            RelaxationIterations = relaxationIterations
+        };
+        var mesh = MeshGenerator.Generate(config);
+
+        // Check if we have what we need for proper WFC
+        if (_biomeRegistry == null || _biomeRegistry.Count == 0)
+        {
+            GD.PrintErr("[MeshTerrainGen] No biomes registered, using fallback terrain");
+            ApplyFallbackTerrain(mesh);
+            return mesh;
+        }
+
+        if (inputCards.Length == 0)
+        {
+            GD.PrintErr("[MeshTerrainGen] No input cards, using fallback terrain");
+            ApplyFallbackTerrain(mesh);
+            return mesh;
+        }
+
+        // Create card-based gradient for biome selection
+        var rng = new RandomNumberGenerator();
+        rng.Seed = (ulong)seed;
+        var gradient = new CardBasedGradient(inputCards, rng);
+
+        // Calculate effective grid size from mesh bounds
+        var bounds = mesh.Bounds;
+        var effectiveSize = new Vector2I(
+            (int)Math.Ceiling(bounds.Max.X - bounds.Min.X),
+            (int)Math.Ceiling(bounds.Max.Y - bounds.Min.Y)
+        );
+
+        // Create biome provider that maps positions to biomes using card gradient
+        BiomeDefinition GetBiomeAt(Vector2I pos)
+        {
+            var signature = gradient.GetSignatureAt(pos, effectiveSize);
+            return _biomeRegistry.FindClosestBySignature(signature)
+                ?? _biomeRegistry.GetAllBiomes().First();
+        }
+
+        GD.Print($"[MeshTerrainGen] Generating with {inputCards.Length} cards, {_biomeRegistry.Count} biomes, effective size: {effectiveSize}");
+
+        // PASS 1: Background layer (non-auto-tiles only)
+        var bgResult = _wfcGenerator.GenerateMultiBiome(
+            _biomeRegistry,
+            GetBiomeAt,
+            effectiveSize,
+            (ulong)seed,
+            null,
+            tile => !tile.HasAutoTileVariants
+        );
+
+        if (!bgResult.Success || bgResult.MapData == null)
+        {
+            GD.PrintErr($"[MeshTerrainGen] Background WFC failed: {bgResult.ErrorMessage}");
+            ApplyFallbackTerrain(mesh);
+            return mesh;
+        }
+
+        GD.Print($"[MeshTerrainGen] Background WFC succeeded in {bgResult.Iterations} iterations");
+
+        // PASS 2: Foreground layer (all tiles)
+        var fgResult = _wfcGenerator.GenerateMultiBiome(
+            _biomeRegistry,
+            GetBiomeAt,
+            effectiveSize,
+            (ulong)seed + 1,
+            null
+        );
+
+        if (!fgResult.Success || fgResult.MapData == null)
+        {
+            GD.PrintErr($"[MeshTerrainGen] Foreground WFC failed: {fgResult.ErrorMessage}");
+            MapWfcToVertices(mesh, bgResult.MapData, bounds, true);
+            return mesh;
+        }
+
+        GD.Print($"[MeshTerrainGen] Foreground WFC succeeded in {fgResult.Iterations} iterations");
+
+        // Map both layers to mesh
+        MapTwoPassWfcToMesh(mesh, bgResult.MapData, fgResult.MapData, bounds);
+
+        return mesh;
     }
 
     private IrregularMesh GenerateFallback(int rings, int seed, int relaxationIterations)
@@ -202,10 +300,11 @@ public class MeshTerrainGenerator
     }
 
     /// <summary>
-    /// Maps two-pass WFC results to mesh vertices.
-    /// Each vertex gets a background tile and optionally a foreground tile (if auto-tile).
+    /// Maps two-pass WFC results to mesh.
+    /// Phase 1 (background) maps to quads (faces) - each quad gets one background tile.
+    /// Phase 2 (foreground) maps to vertices - each vertex gets an auto-tile or null for gaps.
     /// </summary>
-    private void MapTwoPassWfcToVertices(
+    private void MapTwoPassWfcToMesh(
         IrregularMesh mesh,
         SimpleMapData backgroundData,
         SimpleMapData foregroundData,
@@ -215,48 +314,67 @@ public class MeshTerrainGenerator
         var meshSize = bounds.Max - bounds.Min;
         var minPos = bounds.Min;
 
+        // Phase 1: Map background tiles to quads (faces) using centroid position
+        foreach (var quad in mesh.Quads)
+        {
+            var normalizedX = (quad.Centroid.X - minPos.X) / meshSize.X;
+            var normalizedY = (quad.Centroid.Y - minPos.Y) / meshSize.Y;
+
+            var gridX = Mathf.Clamp((int)(normalizedX * wfcSize.X), 0, wfcSize.X - 1);
+            var gridY = Mathf.Clamp((int)(normalizedY * wfcSize.Y), 0, wfcSize.Y - 1);
+
+            quad.BackgroundTileId = backgroundData.TileIds[gridY, gridX];
+        }
+
+        // Phase 2: Map foreground tiles to vertices
         var autoTileCount = 0;
 
         foreach (var vertex in mesh.Vertices)
         {
-            // Map vertex position to WFC grid coordinates
             var normalizedX = (vertex.Position.X - minPos.X) / meshSize.X;
             var normalizedY = (vertex.Position.Y - minPos.Y) / meshSize.Y;
 
             var gridX = Mathf.Clamp((int)(normalizedX * wfcSize.X), 0, wfcSize.X - 1);
             var gridY = Mathf.Clamp((int)(normalizedY * wfcSize.Y), 0, wfcSize.Y - 1);
 
-            // Get background tile (always present)
-            var bgTileId = backgroundData.TileIds[gridY, gridX];
-
-            // Get foreground tile and check if it's an auto-tile
             var fgTileId = foregroundData.TileIds[gridY, gridX];
             var fgTile = _tileRegistry?.GetTile(fgTileId);
 
-            // Determine terrain type (for passability)
-            var bgTile = _tileRegistry?.GetTile(bgTileId);
-            vertex.TerrainType = DetermineTerrainType(bgTileId, bgTile);
-
-            // Foreground goes to TileId ONLY if it's an auto-tile
+            // Foreground is stored ONLY if it's an auto-tile; gaps have null foreground
             if (fgTile?.HasAutoTileVariants == true)
             {
+                vertex.ForegroundTileId = fgTileId;
                 vertex.TileId = fgTileId;
                 autoTileCount++;
             }
             else
             {
-                // No foreground auto-tile, use background
-                vertex.TileId = bgTileId;
+                vertex.ForegroundTileId = null;
+                vertex.TileId = null;
+            }
+
+            // Determine terrain type for passability
+            // Use foreground tile if present, otherwise check if any adjacent quad has a passable background
+            if (fgTile != null)
+            {
+                vertex.TerrainType = fgTile.IsPassable ? 1 : 0;
+            }
+            else
+            {
+                // For gap vertices, passability depends on adjacent quads' backgrounds
+                // Default to passable if no tile info available
+                vertex.TerrainType = 1;
             }
         }
 
         mesh.UpdateAllCachedProperties();
 
-        GD.Print($"[MeshTerrainGen] Mapped {mesh.Vertices.Count} vertices: {autoTileCount} with auto-tiles, {mesh.Vertices.Count - autoTileCount} with background only");
+        GD.Print($"[MeshTerrainGen] Mapped {mesh.Quads.Count} quads with backgrounds, {autoTileCount}/{mesh.Vertices.Count} vertices with auto-tiles");
     }
 
     /// <summary>
-    /// Maps single-pass WFC to vertices (fallback when only one pass succeeds).
+    /// Maps single-pass WFC to mesh (fallback when only one pass succeeds).
+    /// Background is mapped to quads, no foreground is assigned.
     /// </summary>
     private void MapWfcToVertices(
         IrregularMesh mesh,
@@ -268,24 +386,29 @@ public class MeshTerrainGenerator
         var meshSize = bounds.Max - bounds.Min;
         var minPos = bounds.Min;
 
-        foreach (var vertex in mesh.Vertices)
+        // Map background to quads
+        foreach (var quad in mesh.Quads)
         {
-            var normalizedX = (vertex.Position.X - minPos.X) / meshSize.X;
-            var normalizedY = (vertex.Position.Y - minPos.Y) / meshSize.Y;
+            var normalizedX = (quad.Centroid.X - minPos.X) / meshSize.X;
+            var normalizedY = (quad.Centroid.Y - minPos.Y) / meshSize.Y;
 
             var gridX = Mathf.Clamp((int)(normalizedX * wfcSize.X), 0, wfcSize.X - 1);
             var gridY = Mathf.Clamp((int)(normalizedY * wfcSize.Y), 0, wfcSize.Y - 1);
 
-            var tileId = wfcData.TileIds[gridY, gridX];
-            vertex.TileId = tileId;
+            quad.BackgroundTileId = wfcData.TileIds[gridY, gridX];
+        }
 
-            var tile = _tileRegistry?.GetTile(tileId);
-            vertex.TerrainType = DetermineTerrainType(tileId, tile);
+        // No foreground for vertices in single-pass mode
+        foreach (var vertex in mesh.Vertices)
+        {
+            vertex.ForegroundTileId = null;
+            vertex.TileId = null;
+            vertex.TerrainType = 1; // Default passable
         }
 
         mesh.UpdateAllCachedProperties();
 
-        GD.Print($"[MeshTerrainGen] Mapped {mesh.Vertices.Count} vertices ({(isBackgroundOnly ? "background only" : "single pass")})");
+        GD.Print($"[MeshTerrainGen] Mapped {mesh.Quads.Count} quads ({(isBackgroundOnly ? "background only" : "single pass")})");
     }
 
     private int DetermineTerrainType(string tileId, TileDefinition? tile)
@@ -321,9 +444,17 @@ public class MeshTerrainGenerator
             fallbackTerrainType = mappedType;
         }
 
+        // Apply fallback background to all quads
+        foreach (var quad in mesh.Quads)
+        {
+            quad.BackgroundTileId = fallbackId;
+        }
+
+        // Clear foreground from all vertices
         foreach (var vertex in mesh.Vertices)
         {
-            vertex.TileId = fallbackId;
+            vertex.TileId = null;
+            vertex.ForegroundTileId = null;
             vertex.TerrainType = fallbackTerrainType;
         }
 

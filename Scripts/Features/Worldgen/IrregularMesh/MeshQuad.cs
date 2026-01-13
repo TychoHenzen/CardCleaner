@@ -42,6 +42,12 @@ public class MeshQuad
     /// </summary>
     public List<int> AdjacentQuadIds { get; } = new();
 
+    /// <summary>
+    /// Background tile ID for this face (non-auto-tile from WFC phase 1).
+    /// Each quad (visual cell) has exactly one background tile.
+    /// </summary>
+    public string? BackgroundTileId { get; set; }
+
     private readonly IrregularMesh _mesh;
 
     public MeshQuad(int id, int[] vertexIds, IrregularMesh mesh)

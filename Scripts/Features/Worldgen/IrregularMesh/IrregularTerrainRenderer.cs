@@ -176,37 +176,75 @@ public partial class IrregularTerrainRenderer : Node2D
 
         foreach (var quad in mesh.Quads)
         {
-            // Get dominant tile ID from quad's corners
-            var (bitmask, dominantTileId) = quad.ComputeDominantBitmask();
-
-            if (dominantTileId == null)
+            // Phase 3: Sample corners and compute transition
+            // 1. Get background tile from the quad (face)
+            var backgroundTileId = quad.BackgroundTileId;
+            if (string.IsNullOrEmpty(backgroundTileId))
             {
                 quadsSkipped++;
                 continue;
             }
 
-            // Look up tile definition
-            var tileDef = _tileRegistry.GetTile(dominantTileId);
-            if (tileDef == null)
+            // 2. Get sorted corners and find foreground tile type
+            var sortedCorners = quad.GetSortedCorners();
+            if (sortedCorners.Length != 4)
             {
-                GD.PrintErr($"[IrregularTerrainRenderer] Tile not found in registry: {dominantTileId}");
                 quadsSkipped++;
                 continue;
             }
 
-            // Determine inner and outer terrain IDs from tile definition
-            var innerTerrain = tileDef.InnerTerrainId ?? dominantTileId;
-            var outerTerrain = tileDef.OuterTerrainId ?? "*";
-
-            // For compositable tiles ("*"), need to determine outer from context
-            // For now, use the first different tile found in corners, or fallback to same tile
-            if (outerTerrain == "*")
+            // 3. Find the unique foreground tile from corners (should be at most 1 due to gap constraint)
+            string? foregroundTileId = null;
+            foreach (var corner in sortedCorners)
             {
-                outerTerrain = FindOuterTerrainFromQuad(quad, dominantTileId, _tileRegistry) ?? dominantTileId;
+                if (!string.IsNullOrEmpty(corner.ForegroundTileId))
+                {
+                    foregroundTileId = corner.ForegroundTileId;
+                    break; // Gap constraint ensures at most 1 type
+                }
             }
 
-            // Resolve atlas coordinates using the transition resolver
-            var atlasCoords = ResolveTransition(innerTerrain, outerTerrain, bitmask, quad);
+            // 4. Compute bitmask: which corners have the foreground tile
+            // Corner16 format: index 0=SW (bit 2), 1=SE (bit 1), 2=NE (bit 0), 3=NW (bit 3)
+            int bitmask = 0;
+            if (!string.IsNullOrEmpty(foregroundTileId))
+            {
+                // Corners are sorted by angle: [0]=SW, [1]=SE, [2]=NE, [3]=NW
+                if (sortedCorners[0].ForegroundTileId == foregroundTileId) bitmask |= MeshQuad.SW; // 4
+                if (sortedCorners[1].ForegroundTileId == foregroundTileId) bitmask |= MeshQuad.SE; // 2
+                if (sortedCorners[2].ForegroundTileId == foregroundTileId) bitmask |= MeshQuad.NE; // 1
+                if (sortedCorners[3].ForegroundTileId == foregroundTileId) bitmask |= MeshQuad.NW; // 8
+            }
+
+            // 5. Resolve atlas coordinates
+            Vector2I? atlasCoords;
+            if (string.IsNullOrEmpty(foregroundTileId) || bitmask == 0)
+            {
+                // Pure background - no foreground tile, show solid background
+                atlasCoords = _transitionResolver.ResolveSolidFill(backgroundTileId);
+                if (!atlasCoords.HasValue)
+                {
+                    atlasCoords = _transitionResolver.ResolveAsOuterTerrain(backgroundTileId, 0);
+                }
+            }
+            else if (bitmask == 15)
+            {
+                // All corners filled - solid foreground
+                atlasCoords = _transitionResolver.ResolveSolidFill(foregroundTileId);
+            }
+            else
+            {
+                // Transition case - look up "{foreground}|{background}" composite
+                int positionSeed = HashPosition(quad.Centroid);
+                atlasCoords = _transitionResolver.ResolveTransitionWithVariant(
+                    foregroundTileId, backgroundTileId, bitmask, positionSeed, positionSeed);
+
+                // Fallback: try any variant with this bitmask
+                if (!atlasCoords.HasValue)
+                {
+                    atlasCoords = _transitionResolver.ResolveAnyVariant(foregroundTileId, bitmask);
+                }
+            }
 
             if (!atlasCoords.HasValue)
             {
@@ -215,17 +253,13 @@ public partial class IrregularTerrainRenderer : Node2D
             }
 
             // Track terrain usage for debugging
-            if (!terrainStats.ContainsKey(dominantTileId))
-                terrainStats[dominantTileId] = 0;
-            terrainStats[dominantTileId]++;
+            var statsKey = foregroundTileId ?? backgroundTileId;
+            if (!terrainStats.ContainsKey(statsKey))
+                terrainStats[statsKey] = 0;
+            terrainStats[statsKey]++;
 
-            // Get quad corners in sorted order: SW, SE, NE, NW
+            // Get quad corners in sorted order for rendering
             var corners = quad.GetCornerPositions();
-            if (corners.Length != 4)
-            {
-                quadsSkipped++;
-                continue;
-            }
 
             // Calculate UV rectangle for this tile in the atlas
             var uvRect = GetTileUVRect(atlasCoords.Value);

@@ -8,6 +8,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
+using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug;
 using Godot;
@@ -331,7 +332,14 @@ public partial class IrregularWorldMapScreen : Node3D
             tileToTerrainType[terrainId] = isPassable ? nextTerrainType++ : 0;
         }
 
-        return new MeshTerrainGenerator(wfcRules, tileToTerrainType, new TileRegistry());
+        var generator = new MeshTerrainGenerator(wfcRules, tileToTerrainType, new TileRegistry());
+
+        // Create and register biome registry for card-based generation
+        var biomeRegistry = new BiomeRegistry();
+        biomeRegistry.RegisterDefaultBiomes();
+        generator.SetBiomeRegistry(biomeRegistry);
+
+        return generator;
     }
 
     private static bool InferPassability(string terrainId)

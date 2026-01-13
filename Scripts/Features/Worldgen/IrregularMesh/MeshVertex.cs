@@ -21,10 +21,18 @@ public class MeshVertex
     public int TerrainType { get; set; }
 
     /// <summary>
-    /// The actual tile ID assigned by WFC (e.g., "grass", "dirt", "forest_floor").
-    /// Used by renderers to determine visual transitions.
+    /// The tile ID assigned to this vertex (for backward compatibility).
+    /// For foreground vertices, this is the auto-tile ID.
+    /// For gap vertices, this may be used by legacy code.
     /// </summary>
     public string? TileId { get; set; }
+
+    /// <summary>
+    /// Foreground tile ID (auto-tile from WFC phase 2).
+    /// May be null/empty for "gap" vertices where no auto-tile is present.
+    /// Quads compute bitmasks based on which corners have a foreground tile.
+    /// </summary>
+    public string? ForegroundTileId { get; set; }
 
     /// <summary>
     /// Variant index for this vertex's terrain type.
