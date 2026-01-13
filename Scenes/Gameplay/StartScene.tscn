@@ -164,6 +164,7 @@ ActivateButton = NodePath("../../World/Button/StaticBody3D")
 BattleScreenScene = ExtResource("4_dta7m")
 WorldTileMapScreenScene = NodePath("../../World/SimpleTileMapScreen")
 IrregularMapScreen = NodePath("../../World/IrregularTileMapScreen")
+MapType = 1
 
 [node name="CardServiceProvider" type="Node" parent="Services" node_paths=PackedStringArray("CardRoot")]
 script = ExtResource("11_r0o6j")

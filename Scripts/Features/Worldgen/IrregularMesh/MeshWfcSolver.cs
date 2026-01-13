@@ -4,6 +4,7 @@ using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -36,12 +37,14 @@ public readonly struct MeshWfcSolveResult
 /// <summary>
 /// WFC solver for irregular mesh terrain generation.
 /// Operates on mesh vertices instead of 2D grid cells.
+/// Supports both legacy IMeshWfcConstraint and unified IUnifiedWfcConstraint interfaces.
 /// </summary>
 public class MeshWfcSolver
 {
     private readonly Dictionary<string, HashSet<string>> _adjacencyRules;
     private readonly Dictionary<string, float> _tileWeights;
     private readonly List<IMeshWfcConstraint> _constraints = new();
+    private readonly List<IUnifiedWfcConstraint> _unifiedConstraints = new();
 
     /// <summary>
     /// Maximum iterations before giving up.
@@ -49,7 +52,7 @@ public class MeshWfcSolver
     public int MaxIterations { get; set; } = 10000;
 
     /// <summary>
-    /// Adds a constraint to influence tile selection.
+    /// Adds a legacy constraint to influence tile selection.
     /// </summary>
     public void AddConstraint(IMeshWfcConstraint constraint)
     {
@@ -57,11 +60,21 @@ public class MeshWfcSolver
     }
 
     /// <summary>
-    /// Removes all constraints.
+    /// Adds a unified constraint to influence tile selection.
+    /// Unified constraints work with both regular grids and meshes.
+    /// </summary>
+    public void AddUnifiedConstraint(IUnifiedWfcConstraint constraint)
+    {
+        _unifiedConstraints.Add(constraint);
+    }
+
+    /// <summary>
+    /// Removes all constraints (both legacy and unified).
     /// </summary>
     public void ClearConstraints()
     {
         _constraints.Clear();
+        _unifiedConstraints.Clear();
     }
 
     /// <summary>
@@ -96,6 +109,10 @@ public class MeshWfcSolver
 
         // Reset constraints for new solve
         foreach (var constraint in _constraints)
+        {
+            constraint.Reset();
+        }
+        foreach (var constraint in _unifiedConstraints)
         {
             constraint.Reset();
         }
@@ -159,6 +176,10 @@ public class MeshWfcSolver
 
             // Notify constraints of the collapse
             foreach (var constraint in _constraints)
+            {
+                constraint.OnTileCollapsed(targetVertex.Value, selectedTile, grid);
+            }
+            foreach (var constraint in _unifiedConstraints)
             {
                 constraint.OnTileCollapsed(targetVertex.Value, selectedTile, grid);
             }
@@ -297,12 +318,22 @@ public class MeshWfcSolver
             }
         }
 
-        // Apply constraint modifiers
+        // Apply constraint modifiers (legacy)
         foreach (var tile in weights.Keys.ToList())
         {
             foreach (var constraint in _constraints)
             {
                 var modifier = constraint.GetWeightModifier(tile, vertexId, grid);
+                weights[tile] *= modifier;
+            }
+        }
+
+        // Apply unified constraint modifiers
+        foreach (var tile in weights.Keys.ToList())
+        {
+            foreach (var constraint in _unifiedConstraints)
+            {
+                var modifier = constraint.GetWeightModifier(vertexId, tile, grid);
                 weights[tile] *= modifier;
             }
         }
