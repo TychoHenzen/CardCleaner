@@ -25,9 +25,10 @@ public class FrontierExplorationBehavior
 {
     private readonly IMapData _mapData;
     private readonly IVisibilityChecker _visibilityChecker;
-    private readonly HashSet<int> _seenCells = new();
+    private readonly IFogOfWar? _fogOfWar;
+    private readonly HashSet<int> _localSeenCells = new();
     private readonly HashSet<int> _visitedCells = new();
-    private readonly HashSet<int> _currentlyVisibleCells = new();
+    private readonly HashSet<int> _localCurrentlyVisibleCells = new();
     private readonly int _visionRange;
 
     /// <summary>
@@ -36,20 +37,26 @@ public class FrontierExplorationBehavior
     /// </summary>
     public int SignificantBlobThreshold { get; set; } = 5;
 
-    public IReadOnlySet<int> SeenCells => _seenCells;
+    /// <summary>
+    /// All cells that have been seen. Uses fog of war system if provided,
+    /// otherwise uses local tracking.
+    /// </summary>
+    public IReadOnlySet<int> SeenCells => _fogOfWar?.SeenCells ?? _localSeenCells;
+
     public IReadOnlySet<int> VisitedCells => _visitedCells;
 
     /// <summary>
     /// Cells currently visible from the player's current position.
-    /// This set is recalculated each time UpdateVision is called.
+    /// Uses fog of war system if provided, otherwise uses local tracking.
     /// </summary>
-    public IReadOnlySet<int> CurrentlyVisibleCells => _currentlyVisibleCells;
+    public IReadOnlySet<int> CurrentlyVisibleCells => _fogOfWar?.CurrentlyVisibleCells ?? _localCurrentlyVisibleCells;
 
-    public FrontierExplorationBehavior(IMapData mapData, IVisibilityChecker visibilityChecker, int visionRange = 5)
+    public FrontierExplorationBehavior(IMapData mapData, IVisibilityChecker visibilityChecker, int visionRange = 5, IFogOfWar? fogOfWar = null)
     {
         _mapData = mapData;
         _visibilityChecker = visibilityChecker;
         _visionRange = visionRange;
+        _fogOfWar = fogOfWar;
     }
 
     /// <summary>
@@ -61,42 +68,49 @@ public class FrontierExplorationBehavior
     {
         try
         {
-            // Clear currently visible cells - will be recalculated this frame
-            _currentlyVisibleCells.Clear();
-
             // Only add passable cells to visited set
             if (_mapData.IsPassable(currentCellId))
                 _visitedCells.Add(currentCellId);
-            _seenCells.Add(currentCellId);
-            _currentlyVisibleCells.Add(currentCellId);
 
-            // Get current world position for distance calculations
-            var currentPos = _mapData.GetCellCenter(currentCellId);
-
-            // Check visibility to all cells within range
-            var cellsInRange = _mapData.GetCellsInRadius(currentPos, _visionRange * EstimateCellSize());
-
-            foreach (var targetCellId in cellsInRange)
+            // If using external fog of war, skip local visibility tracking
+            // The fog system handles seen/visible cells
+            if (_fogOfWar == null)
             {
-                if (targetCellId == currentCellId)
-                    continue;
+                // Clear currently visible cells - will be recalculated this frame
+                _localCurrentlyVisibleCells.Clear();
 
-                var targetPos = _mapData.GetCellCenter(targetCellId);
-                var distance = currentPos.DistanceTo(targetPos);
+                _localSeenCells.Add(currentCellId);
+                _localCurrentlyVisibleCells.Add(currentCellId);
 
-                // Skip if outside vision range (circular check)
-                if (distance > _visionRange * EstimateCellSize())
-                    continue;
+                // Get current world position for distance calculations
+                var currentPos = _mapData.GetCellCenter(currentCellId);
 
-                // Check line of sight
-                if (_visibilityChecker.CanSee(currentCellId, targetCellId, _mapData))
+                // Check visibility to all cells within range
+                var cellsInRange = _mapData.GetCellsInRadius(currentPos, _visionRange * EstimateCellSize());
+
+                foreach (var targetCellId in cellsInRange)
                 {
-                    _seenCells.Add(targetCellId);
-                    _currentlyVisibleCells.Add(targetCellId);
+                    if (targetCellId == currentCellId)
+                        continue;
+
+                    var targetPos = _mapData.GetCellCenter(targetCellId);
+                    var distance = currentPos.DistanceTo(targetPos);
+
+                    // Skip if outside vision range (circular check)
+                    if (distance > _visionRange * EstimateCellSize())
+                        continue;
+
+                    // Check line of sight
+                    if (_visibilityChecker.CanSee(currentCellId, targetCellId, _mapData))
+                    {
+                        _localSeenCells.Add(targetCellId);
+                        _localCurrentlyVisibleCells.Add(targetCellId);
+                    }
                 }
             }
 
-            // Mark trivially visible cells as visited
+            // Mark trivially visible cells as visited (uses SeenCells property which
+            // delegates to fog system if available)
             MarkTriviallyVisibleCells();
         }
         catch (Exception ex)
@@ -143,7 +157,8 @@ public class FrontierExplorationBehavior
                 }
 
                 // Create a snapshot to avoid iteration issues
-                var cellsToCheck = _seenCells.ToList();
+                // Use SeenCells property which delegates to fog system if available
+                var cellsToCheck = SeenCells.ToList();
 
                 foreach (var cellId in cellsToCheck)
                 {
@@ -188,14 +203,15 @@ public class FrontierExplorationBehavior
         if (!hasVisitedNeighbor)
             return false;
 
-        // All passable neighbors must be seen
+        // All passable neighbors must be seen (uses SeenCells property)
+        var seenCells = SeenCells;
         foreach (var neighbor in _mapData.GetAdjacentCells(cellId))
         {
             if (!_mapData.IsValidCell(neighbor))
                 continue;
 
             // If neighbor is passable, it must be seen
-            if (_mapData.IsPassable(neighbor) && !_seenCells.Contains(neighbor))
+            if (_mapData.IsPassable(neighbor) && !seenCells.Contains(neighbor))
                 return false;
         }
 

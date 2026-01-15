@@ -164,7 +164,8 @@ public partial class IrregularMeshExplorationController : Node2D
         _fogOfWar = fogOfWar ?? new IrregularMeshFogOfWar(mapData, _visibilityChecker);
 
         // Create ExplorationAI using the IMapData interface
-        _explorationAI = new ExplorationAI(mapData, startCellId, _visibilityChecker);
+        // Pass fog of war so navigation uses the same visibility state as rendering
+        _explorationAI = new ExplorationAI(mapData, startCellId, _visibilityChecker, fogOfWar: _fogOfWar);
 
         // Subscribe to exploration events
         _explorationAI.PathUpdated += OnExplorationPathUpdated;

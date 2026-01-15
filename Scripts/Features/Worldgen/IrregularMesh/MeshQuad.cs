@@ -76,14 +76,14 @@ public class MeshQuad
             .ToArray();
 
         // Step 2: Find the "most NW" vertex by spatial position
-        // In Y-up coordinates: NW means smallest X (west) and largest Y (north)
-        // Score = -relativeX + relativeY (maximize to find NW)
+        // In Y-down coordinates (Godot 2D): NW means smallest X (west) and smallest Y (north)
+        // Score = -relativeX - relativeY (maximize to find NW)
         int nwIndex = 0;
         float bestNwScore = float.MinValue;
         for (int i = 0; i < 4; i++)
         {
             var relPos = ccwSorted[i].Position - centroid;
-            float nwScore = -relPos.X + relPos.Y;
+            float nwScore = -relPos.X - relPos.Y;
             if (nwScore > bestNwScore)
             {
                 bestNwScore = nwScore;

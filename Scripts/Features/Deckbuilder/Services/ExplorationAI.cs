@@ -102,7 +102,7 @@ public class ExplorationAI
     /// <summary>
     /// Create exploration AI with a map data provider.
     /// </summary>
-    public ExplorationAI(IMapData mapData, int? startCell = null, IVisibilityChecker? visibilityChecker = null, int visionRange = 5)
+    public ExplorationAI(IMapData mapData, int? startCell = null, IVisibilityChecker? visibilityChecker = null, int visionRange = 5, IFogOfWar? fogOfWar = null)
     {
         ArgumentNullException.ThrowIfNull(mapData);
 
@@ -112,7 +112,7 @@ public class ExplorationAI
             ? ServiceLocator.Get<IVisibilityChecker>()
             : new SimpleVisibilityChecker());
 
-        _frontierBehavior = new FrontierExplorationBehavior(mapData, _visibilityChecker, visionRange);
+        _frontierBehavior = new FrontierExplorationBehavior(mapData, _visibilityChecker, visionRange, fogOfWar);
 
         // Initialize exploration strategies
         _frontierStrategy = new FrontierExplorationStrategy();

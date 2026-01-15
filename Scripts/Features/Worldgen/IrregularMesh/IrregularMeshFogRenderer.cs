@@ -193,11 +193,11 @@ public partial class IrregularMeshFogRenderer : Node2D
     private Color[] GetSmoothVertexColors(MeshQuad quad, Color baseColor)
     {
         var colors = new Color[4];
-        var vertexIds = quad.VertexIds;
+        var sortedCorners = quad.GetSortedCorners();
 
         for (int i = 0; i < 4; i++)
         {
-            var vertex = _mesh!.Vertices[vertexIds[i]];
+            var vertex = sortedCorners[i];
 
             // Average fog state from all adjacent quads
             float totalAlpha = 0f;
