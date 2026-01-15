@@ -31,9 +31,9 @@ public class DiminishingReturnsSoftModifierTest
         // Since 1 < MinimumBlobSize (default 30), no decay applied
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);
@@ -56,9 +56,9 @@ public class DiminishingReturnsSoftModifierTest
         // Position (9, 9) would join this blob, making size 100
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(9, 9),
+            CellId = _grid.PositionToCellId(new Vector2I(9, 9)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);
@@ -78,9 +78,9 @@ public class DiminishingReturnsSoftModifierTest
         // Water tile next to grass blob
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 4),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 4)),
             TileId = "water",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);
@@ -106,9 +106,9 @@ public class DiminishingReturnsSoftModifierTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(0, 9),
+            CellId = _grid.PositionToCellId(new Vector2I(0, 9)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);
@@ -129,9 +129,9 @@ public class DiminishingReturnsSoftModifierTest
         // Adding tile would make blob size 4, still under threshold
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 8),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 8)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);
@@ -158,9 +158,9 @@ public class DiminishingReturnsSoftModifierTest
         // Adding tile at (3, 0) would make blob size 10
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(3, 0),
+            CellId = _grid.PositionToCellId(new Vector2I(3, 0)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);
@@ -187,9 +187,9 @@ public class DiminishingReturnsSoftModifierTest
         // Position (0, 7) would join making size 50
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(0, 7),
+            CellId = _grid.PositionToCellId(new Vector2I(0, 7)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);
@@ -211,9 +211,9 @@ public class DiminishingReturnsSoftModifierTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(9, 9),
+            CellId = _grid.PositionToCellId(new Vector2I(9, 9)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);

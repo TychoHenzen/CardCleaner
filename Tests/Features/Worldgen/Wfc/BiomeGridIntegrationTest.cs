@@ -307,27 +307,27 @@ public partial class BiomeGridIntegrationTest
         // Fire tile at fire-matching position
         var fireContext = new Scripts.Features.Worldgen.Wfc.Constraints.WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "fire_tile",
-            Grid = grid
+            Topology = grid
         };
         var fireModifier = constraint.GetProbabilityModifier(fireContext);
 
         // Water tile at fire-matching position (should be penalized)
         var waterContext = new Scripts.Features.Worldgen.Wfc.Constraints.WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "water_tile",
-            Grid = grid
+            Topology = grid
         };
         var waterModifier = constraint.GetProbabilityModifier(waterContext);
 
         // Neutral tile (not in any biome)
         var neutralContext = new Scripts.Features.Worldgen.Wfc.Constraints.WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "neutral_tile",
-            Grid = grid
+            Topology = grid
         };
         var neutralModifier = constraint.GetProbabilityModifier(neutralContext);
 

@@ -36,6 +36,11 @@ public class BitmaskValidityConstraint : IWfcConstraint
 
     public float GetProbabilityModifier(WfcConstraintContext context)
     {
+        // This constraint is grid-specific (uses 2D positions for bitmask calculation)
+        // For non-grid topologies, return neutral (bitmask validation not supported)
+        if (context.Topology is not WfcGrid grid)
+            return 1.0f;
+
         var candidateTile = _tileRegistry.GetTile(context.TileId);
         if (candidateTile == null)
             return 1.0f;
@@ -48,25 +53,27 @@ public class BitmaskValidityConstraint : IWfcConstraint
         if (format == null)
             return 1.0f;
 
+        var position = grid.CellIdToPosition(context.CellId);
+
         // For each of the 4 visual tiles affected by this data cell placement,
         // check if the resulting bitmask would be allowed
-        var dx = context.Position.X;
-        var dy = context.Position.Y;
+        var dx = position.X;
+        var dy = position.Y;
 
         // Visual tile at (dx, dy) - candidate is SE corner
-        if (!CheckVisualTileBitmask(context, format, dx, dy, CornerRole.SE))
+        if (!CheckVisualTileBitmask(context, grid, format, dx, dy, CornerRole.SE))
             return 0.0f;
 
         // Visual tile at (dx+1, dy) - candidate is SW corner
-        if (!CheckVisualTileBitmask(context, format, dx + 1, dy, CornerRole.SW))
+        if (!CheckVisualTileBitmask(context, grid, format, dx + 1, dy, CornerRole.SW))
             return 0.0f;
 
         // Visual tile at (dx, dy+1) - candidate is NE corner
-        if (!CheckVisualTileBitmask(context, format, dx, dy + 1, CornerRole.NE))
+        if (!CheckVisualTileBitmask(context, grid, format, dx, dy + 1, CornerRole.NE))
             return 0.0f;
 
         // Visual tile at (dx+1, dy+1) - candidate is NW corner
-        if (!CheckVisualTileBitmask(context, format, dx + 1, dy + 1, CornerRole.NW))
+        if (!CheckVisualTileBitmask(context, grid, format, dx + 1, dy + 1, CornerRole.NW))
             return 0.0f;
 
         return 1.0f;
@@ -80,6 +87,7 @@ public class BitmaskValidityConstraint : IWfcConstraint
     /// </summary>
     private bool CheckVisualTileBitmask(
         WfcConstraintContext context,
+        WfcGrid grid,
         AutoTileFormatDefinition format,
         int visualX,
         int visualY,
@@ -97,10 +105,10 @@ public class BitmaskValidityConstraint : IWfcConstraint
         var sePos = new Vector2I(visualX, visualY);
 
         // Determine the state of each corner
-        bool? nwFilled = GetCornerState(context, nwPos, candidateCorner == CornerRole.NW);
-        bool? neFilled = GetCornerState(context, nePos, candidateCorner == CornerRole.NE);
-        bool? swFilled = GetCornerState(context, swPos, candidateCorner == CornerRole.SW);
-        bool? seFilled = GetCornerState(context, sePos, candidateCorner == CornerRole.SE);
+        bool? nwFilled = GetCornerState(context, grid, nwPos, candidateCorner == CornerRole.NW);
+        bool? neFilled = GetCornerState(context, grid, nePos, candidateCorner == CornerRole.NE);
+        bool? swFilled = GetCornerState(context, grid, swPos, candidateCorner == CornerRole.SW);
+        bool? seFilled = GetCornerState(context, grid, sePos, candidateCorner == CornerRole.SE);
 
         // If any corner is unknown (uncollapsed and not the candidate), we can't validate
         if (!nwFilled.HasValue || !neFilled.HasValue || !swFilled.HasValue || !seFilled.HasValue)
@@ -125,18 +133,18 @@ public class BitmaskValidityConstraint : IWfcConstraint
     /// false if it's a gap/different tile,
     /// null if it's uncollapsed and not the candidate position.
     /// </returns>
-    private bool? GetCornerState(WfcConstraintContext context, Vector2I pos, bool isCandidate)
+    private bool? GetCornerState(WfcConstraintContext context, WfcGrid grid, Vector2I pos, bool isCandidate)
     {
         // If this is the candidate position, it's filled with the auto-tile
         if (isCandidate)
             return true;
 
         // Check if position is out of bounds (treat as gap)
-        if (pos.X < 0 || pos.Y < 0 || pos.X >= context.Grid.Width || pos.Y >= context.Grid.Height)
+        if (pos.X < 0 || pos.Y < 0 || pos.X >= grid.Width || pos.Y >= grid.Height)
             return false;
 
         // Get the cell at this position
-        var cell = context.Grid.GetCell(pos);
+        var cell = grid.GetCell(pos);
 
         // If not collapsed, we don't know the state
         if (!cell.IsCollapsed())

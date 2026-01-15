@@ -8,11 +8,14 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 /// <summary>
 /// Caches weighted entropy values for WFC cells.
 /// Only recomputes entropy for cells that are affected by changes.
+/// Supports both position-based (WfcGrid) and cell ID based (IWfcTopology) access.
 /// </summary>
 public class EntropyCache
 {
-    private readonly Dictionary<Vector2I, float> _entropy = new();
-    private readonly HashSet<Vector2I> _dirty = new();
+    // Cell ID based cache (for topology-agnostic use)
+    private readonly Dictionary<int, float> _entropyCellId = new();
+    private readonly HashSet<int> _dirtyCellId = new();
+
     private readonly List<IEntropyInvalidator> _invalidators = new();
     private bool _needsFullRebuild = true;
 
@@ -38,94 +41,101 @@ public class EntropyCache
     public void Reset()
     {
         _needsFullRebuild = true;
-        _dirty.Clear();
-        _entropy.Clear();
+        _dirtyCellId.Clear();
+        _entropyCellId.Clear();
     }
 
     /// <summary>
     /// Marks cells as needing recalculation after a collapse.
-    /// Automatically handles neighbors + queries registered invalidators.
+    /// Topology-agnostic version using cell IDs.
     /// </summary>
-    public void OnCellCollapsed(Vector2I collapsedPos, string collapsedTile, WfcGrid grid)
+    public void OnCellCollapsed(int collapsedCellId, string collapsedTile, IWfcTopology topology)
     {
         // Remove collapsed cell from cache
-        _entropy.Remove(collapsedPos);
-        _dirty.Remove(collapsedPos);
+        _entropyCellId.Remove(collapsedCellId);
+        _dirtyCellId.Remove(collapsedCellId);
 
-        // Mark all 8-way neighbors as dirty (most constraints depend on neighbors)
-        foreach (var neighbor in grid.GetNeighbors8(collapsedPos))
+        // Mark all neighbors as dirty (most constraints depend on neighbors)
+        foreach (var neighborId in topology.GetNeighbors(collapsedCellId))
         {
-            if (!grid.GetCell(neighbor).IsCollapsed())
-                _dirty.Add(neighbor);
+            if (!topology.GetCell(neighborId).IsCollapsed())
+                _dirtyCellId.Add(neighborId);
         }
 
         // Query registered invalidators for additional cells
-        foreach (var invalidator in _invalidators)
+        // Note: invalidators need to be updated to support IWfcTopology
+        // For now, only support grid-based invalidators when topology is WfcGrid
+        if (topology is WfcGrid grid)
         {
-            foreach (var pos in invalidator.GetInvalidatedCells(collapsedPos, collapsedTile, grid))
+            var pos = grid.CellIdToPosition(collapsedCellId);
+            foreach (var invalidator in _invalidators)
             {
-                if (!grid.GetCell(pos).IsCollapsed())
-                    _dirty.Add(pos);
+                foreach (var invalidatedPos in invalidator.GetInvalidatedCells(pos, collapsedTile, grid))
+                {
+                    var cellId = grid.PositionToCellId(invalidatedPos);
+                    if (!grid.GetCell(invalidatedPos).IsCollapsed())
+                        _dirtyCellId.Add(cellId);
+                }
             }
         }
     }
 
     /// <summary>
-    /// Gets the frontier cell with lowest entropy.
+    /// Gets the frontier cell with lowest entropy using cell IDs.
     /// Only recomputes entropy for dirty cells.
     /// </summary>
-    public Vector2I? GetLowestEntropyCell(
-        WfcGrid grid,
-        Func<Vector2I, float> computeEntropy,
+    public int? GetLowestEntropyCellId(
+        IWfcTopology topology,
+        Func<int, float> computeEntropy,
         RandomNumberGenerator rng)
     {
         // First call: build everything
         if (_needsFullRebuild)
         {
-            RebuildAll(grid, computeEntropy);
+            RebuildAllCellId(topology, computeEntropy);
             _needsFullRebuild = false;
         }
         else
         {
             // Incremental: only update dirty cells
-            UpdateDirty(grid, computeEntropy);
+            UpdateDirtyCellId(topology, computeEntropy);
         }
 
         // Find minimum entropy among frontier cells
         var minEntropy = float.MaxValue;
-        var candidates = new List<Vector2I>();
+        var candidates = new List<int>();
 
-        foreach (var kvp in _entropy)
+        foreach (var kvp in _entropyCellId)
         {
-            var pos = kvp.Key;
+            var cellId = kvp.Key;
             var entropy = kvp.Value;
 
-            var cell = grid.GetCell(pos);
+            var cell = topology.GetCell(cellId);
             if (cell.IsExcludedFromSelection())
                 continue;
 
             // Only consider frontier cells (adjacent to collapsed)
-            if (!grid.HasCollapsedNeighbor(pos))
+            if (!topology.HasCollapsedNeighbor(cellId))
                 continue;
 
             if (entropy < minEntropy)
             {
                 minEntropy = entropy;
                 candidates.Clear();
-                candidates.Add(pos);
+                candidates.Add(cellId);
             }
             else if (Mathf.IsEqualApprox(entropy, minEntropy))
             {
-                candidates.Add(pos);
+                candidates.Add(cellId);
             }
         }
 
         // Fallback: any uncollapsed cell if no frontier (start of generation)
         if (candidates.Count == 0)
         {
-            foreach (var kvp in _entropy)
+            foreach (var kvp in _entropyCellId)
             {
-                if (!grid.GetCell(kvp.Key).IsExcludedFromSelection())
+                if (!topology.GetCell(kvp.Key).IsExcludedFromSelection())
                 {
                     candidates.Add(kvp.Key);
                     break;
@@ -139,39 +149,35 @@ public class EntropyCache
         return candidates[rng.RandiRange(0, candidates.Count - 1)];
     }
 
-    private void RebuildAll(WfcGrid grid, Func<Vector2I, float> computeEntropy)
+    private void RebuildAllCellId(IWfcTopology topology, Func<int, float> computeEntropy)
     {
-        _entropy.Clear();
-        _dirty.Clear();
+        _entropyCellId.Clear();
+        _dirtyCellId.Clear();
 
-        for (var y = 0; y < grid.Height; y++)
+        foreach (var cellId in topology.GetAllCellIds())
         {
-            for (var x = 0; x < grid.Width; x++)
+            var cell = topology.GetCell(cellId);
+            if (!cell.IsExcludedFromSelection())
             {
-                var pos = new Vector2I(x, y);
-                var cell = grid.GetCell(pos);
-                if (!cell.IsExcludedFromSelection())
-                {
-                    _entropy[pos] = computeEntropy(pos);
-                }
+                _entropyCellId[cellId] = computeEntropy(cellId);
             }
         }
     }
 
-    private void UpdateDirty(WfcGrid grid, Func<Vector2I, float> computeEntropy)
+    private void UpdateDirtyCellId(IWfcTopology topology, Func<int, float> computeEntropy)
     {
-        foreach (var pos in _dirty)
+        foreach (var cellId in _dirtyCellId)
         {
-            var cell = grid.GetCell(pos);
+            var cell = topology.GetCell(cellId);
             if (cell.IsExcludedFromSelection())
             {
-                _entropy.Remove(pos);
+                _entropyCellId.Remove(cellId);
             }
             else
             {
-                _entropy[pos] = computeEntropy(pos);
+                _entropyCellId[cellId] = computeEntropy(cellId);
             }
         }
-        _dirty.Clear();
+        _dirtyCellId.Clear();
     }
 }

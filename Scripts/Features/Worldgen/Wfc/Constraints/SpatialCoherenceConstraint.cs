@@ -129,25 +129,38 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
         if (context.NeighborInfo.HasValue)
         {
             var neighborInfo = context.NeighborInfo.Value;
-            hasAnyCollapsedNeighbor = neighborInfo.HasCollapsedNeighbor4;
-            sameTypeNeighborCount = neighborInfo.SameType4Count;
+            hasAnyCollapsedNeighbor = neighborInfo.HasCollapsedNeighbor;
+            sameTypeNeighborCount = neighborInfo.SameTypeCount;
 
-            foreach (var kvp in neighborInfo.Neighbors4)
+            // For region tracking, convert cell IDs to positions (grid-specific)
+            if (context.Topology is WfcGrid grid)
             {
-                if (kvp.Value == context.TileId)
+                foreach (var kvp in neighborInfo.Neighbors)
                 {
-                    var regionSize = _regionTracker.GetRegionSize(kvp.Key);
-                    if (regionSize > largestMatchingRegion)
-                        largestMatchingRegion = regionSize;
+                    if (kvp.Value == context.TileId)
+                    {
+                        var neighborPos = grid.CellIdToPosition(kvp.Key);
+                        var regionSize = _regionTracker.GetRegionSize(neighborPos);
+                        if (regionSize > largestMatchingRegion)
+                            largestMatchingRegion = regionSize;
+                    }
                 }
             }
-        }
-        else
-        {
-            // Fallback: iterate neighbors directly (for backward compatibility)
-            foreach (var neighbor in context.Grid.GetNeighbors(context.Position))
+            else
             {
-                var neighborTile = context.Grid.GetCollapsedTileAt(neighbor);
+                // Non-grid topology: use same-type count as region size estimate
+                // This is a simplification for mesh topologies
+                if (sameTypeNeighborCount > 0)
+                    largestMatchingRegion = sameTypeNeighborCount;
+            }
+        }
+        else if (context.Topology is WfcGrid gridFallback)
+        {
+            // Fallback: iterate neighbors directly (for grid topology)
+            var position = gridFallback.CellIdToPosition(context.CellId);
+            foreach (var neighbor in gridFallback.GetNeighbors(position))
+            {
+                var neighborTile = gridFallback.GetCollapsedTileAt(neighbor);
                 if (neighborTile != null)
                 {
                     hasAnyCollapsedNeighbor = true;
@@ -160,6 +173,22 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
                     }
                 }
             }
+        }
+        else
+        {
+            // Non-grid fallback: iterate neighbors via topology
+            foreach (var neighborId in context.Topology.GetNeighbors(context.CellId))
+            {
+                var neighborTile = context.Topology.GetCollapsedTileAt(neighborId);
+                if (neighborTile != null)
+                {
+                    hasAnyCollapsedNeighbor = true;
+                    if (neighborTile == context.TileId)
+                        sameTypeNeighborCount++;
+                }
+            }
+            if (sameTypeNeighborCount > 0)
+                largestMatchingRegion = sameTypeNeighborCount;
         }
 
         if (!hasAnyCollapsedNeighbor)
@@ -236,9 +265,12 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
     /// </summary>
     private float CalculateLinearRepulsion(WfcConstraintContext context)
     {
+        // Only works for grid topologies (requires coordinate-based distance)
+        if (context.Topology is not WfcGrid grid)
+            return 1.0f;
+
         var totalPenalty = 0.0f;
-        var pos = context.Position;
-        var grid = context.Grid;
+        var pos = grid.CellIdToPosition(context.CellId);
 
         // Scan within repulsion radius
         for (var dy = -LinearRepulsionRadius; dy <= LinearRepulsionRadius; dy++)

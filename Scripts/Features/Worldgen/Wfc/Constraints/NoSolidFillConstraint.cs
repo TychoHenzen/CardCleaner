@@ -40,6 +40,11 @@ public class NoSolidFillConstraint : IWfcConstraint
 
     public float GetProbabilityModifier(WfcConstraintContext context)
     {
+        // This constraint is grid-specific (uses 2D positions for 2x2 window checking)
+        // For non-grid topologies, return neutral (solid fill validation not supported)
+        if (context.Topology is not WfcGrid grid)
+            return 1.0f;
+
         var candidateTile = _tileRegistry.GetTile(context.TileId);
         if (candidateTile == null)
             return 1.0f;
@@ -55,10 +60,12 @@ public class NoSolidFillConstraint : IWfcConstraint
         if (hasSolidFill)
             return 1.0f;
 
+        var position = grid.CellIdToPosition(context.CellId);
+
         // Check all four 2x2 windows this cell could complete
         foreach (var offsets in WindowOffsets)
         {
-            if (WouldCompleteSolidRegion(context, offsets))
+            if (WouldCompleteSolidRegion(context, grid, position, offsets))
             {
                 return 0.0f; // Ban - would create 2x2 region without solid fill variant
             }
@@ -67,20 +74,20 @@ public class NoSolidFillConstraint : IWfcConstraint
         return 1.0f;
     }
 
-    private bool WouldCompleteSolidRegion(WfcConstraintContext context, Vector2I[] neighborOffsets)
+    private bool WouldCompleteSolidRegion(WfcConstraintContext context, WfcGrid grid, Vector2I position, Vector2I[] neighborOffsets)
     {
         string? matchingTileId = null;
 
         foreach (var offset in neighborOffsets)
         {
-            var neighborPos = context.Position + offset;
+            var neighborPos = position + offset;
 
             // Bounds check - if any neighbor is outside the grid, can't form a complete 2x2
             if (neighborPos.X < 0 || neighborPos.Y < 0 ||
-                neighborPos.X >= context.Grid.Width || neighborPos.Y >= context.Grid.Height)
+                neighborPos.X >= grid.Width || neighborPos.Y >= grid.Height)
                 return false;
 
-            var neighborCell = context.Grid.GetCell(neighborPos);
+            var neighborCell = grid.GetCell(neighborPos);
 
             // If neighbor isn't collapsed yet, can't form a complete 2x2
             if (!neighborCell.IsCollapsed())

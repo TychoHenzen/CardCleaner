@@ -7,8 +7,9 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 /// <summary>
 /// 2D grid of WFC cells. Manages cell access and neighbor enumeration.
 /// Cell IDs are linearized as (y * width + x) for flat iteration.
+/// Implements IWfcTopology for use with topology-agnostic WFC components.
 /// </summary>
-public class WfcGrid
+public class WfcGrid : IWfcTopology
 {
     // Pre-allocated neighbor offsets for avoiding repeated allocation in hot paths
     private static readonly Vector2I[] Neighbors4Offsets =
@@ -376,8 +377,9 @@ public class WfcGrid
 
     /// <summary>
     /// Enumerates the 4-directional neighbors of a cell ID.
+    /// Use this for connectivity/movement (walking is 4-way).
     /// </summary>
-    public IEnumerable<int> GetNeighbors(int cellId)
+    public IEnumerable<int> GetNeighbors4(int cellId)
     {
         var pos = CellIdToPosition(cellId);
         foreach (var neighborPos in GetNeighbors(pos))
@@ -385,6 +387,41 @@ public class WfcGrid
             yield return PositionToCellId(neighborPos);
         }
     }
+
+    /// <summary>
+    /// Enumerates the 8-directional neighbors of a cell ID (IWfcTopology implementation).
+    /// This is the default for WFC constraints as it covers all cells sharing 2x2 windows.
+    /// </summary>
+    IEnumerable<int> IWfcTopology.GetNeighbors(int cellId)
+    {
+        var pos = CellIdToPosition(cellId);
+        foreach (var neighborPos in GetNeighbors8(pos))
+        {
+            yield return PositionToCellId(neighborPos);
+        }
+    }
+
+    /// <summary>
+    /// Gets 8-way neighbors into a pre-allocated span (IWfcTopology implementation).
+    /// </summary>
+    int IWfcTopology.GetNeighborsNonAlloc(int cellId, Span<int> output)
+    {
+        var pos = CellIdToPosition(cellId);
+        Span<Vector2I> posBuffer = stackalloc Vector2I[8];
+        var count = GetNeighbors8NonAlloc(pos, posBuffer);
+
+        for (var i = 0; i < count && i < output.Length; i++)
+        {
+            output[i] = PositionToCellId(posBuffer[i]);
+        }
+
+        return Math.Min(count, output.Length);
+    }
+
+    /// <summary>
+    /// Maximum neighbors is 8 for rectangular grid (IWfcTopology implementation).
+    /// </summary>
+    int IWfcTopology.MaxNeighborCount => 8;
 
     /// <summary>
     /// Enumerates all cell IDs in the grid.

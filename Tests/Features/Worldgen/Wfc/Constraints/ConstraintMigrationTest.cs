@@ -77,9 +77,9 @@ public class ConstraintMigrationTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 6),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 6)),
             TileId = "grass", // grass can be adjacent to water
-            Grid = _grid
+            Topology = _grid
         };
 
         var result = constraint.GetProbabilityModifier(context);
@@ -99,9 +99,9 @@ public class ConstraintMigrationTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 6),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 6)),
             TileId = "grass", // grass cannot be adjacent to sand (not in rules)
-            Grid = _grid
+            Topology = _grid
         };
 
         var result = constraint.GetProbabilityModifier(context);
@@ -130,7 +130,7 @@ public class ConstraintMigrationTest
             null,
             rng,
             null,
-            new Vector2I(5, 5),
+            _grid.PositionToCellId(new Vector2I(5, 5)),
             _grid);
 
         // The test is really about verifying constraints are called and applied

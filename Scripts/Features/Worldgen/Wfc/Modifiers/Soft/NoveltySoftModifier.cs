@@ -41,7 +41,7 @@ public class NoveltySoftModifier : IWfcConstraint
     {
         // Use precomputed neighbor info if available (optimization)
         var sameTypeNeighborCount = context.NeighborInfo.HasValue
-            ? context.NeighborInfo.Value.SameType4Count
+            ? context.NeighborInfo.Value.SameTypeCount
             : CountSameTypeNeighbors(context);
 
         // Only boost tiles that would start a new isolated blob
@@ -52,9 +52,10 @@ public class NoveltySoftModifier : IWfcConstraint
     {
         var count = 0;
 
-        foreach (var neighborPos in context.Grid.GetNeighbors(context.Position))
+        // Use topology-agnostic neighbor iteration
+        foreach (var neighborId in context.Topology.GetNeighbors(context.CellId))
         {
-            var neighborCell = context.Grid.GetCell(neighborPos);
+            var neighborCell = context.Topology.GetCell(neighborId);
             if (neighborCell.IsCollapsed() && neighborCell.GetCollapsedTile() == context.TileId)
             {
                 count++;

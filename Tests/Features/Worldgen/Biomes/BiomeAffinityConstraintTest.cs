@@ -77,9 +77,9 @@ public partial class BiomeAffinityConstraintTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "fire_tile", // Belongs to fire biome
-            Grid = _grid
+            Topology = _grid
         };
 
         // Act
@@ -99,9 +99,9 @@ public partial class BiomeAffinityConstraintTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "fire_tile", // Belongs to fire biome, but biome has negative strength here
-            Grid = _grid
+            Topology = _grid
         };
 
         // Act
@@ -121,9 +121,9 @@ public partial class BiomeAffinityConstraintTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "neutral_tile", // Not in any biome
-            Grid = _grid
+            Topology = _grid
         };
 
         // Act
@@ -143,9 +143,9 @@ public partial class BiomeAffinityConstraintTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "unknown_tile", // Not registered in any biome
-            Grid = _grid
+            Topology = _grid
         };
 
         // Act
@@ -169,9 +169,9 @@ public partial class BiomeAffinityConstraintTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "fire_tile",
-            Grid = _grid
+            Topology = _grid
         };
 
         // Act

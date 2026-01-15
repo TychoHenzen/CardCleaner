@@ -25,7 +25,7 @@ public class WfcPropagatorTest
         // Collapse left cell to grass
         grid.GetCell(0, 0).CollapseTo("grass");
 
-        var result = propagator.Propagate(grid, new Vector2I(0, 0));
+        var result = propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 0)));
 
         AssertBool(result.Success).IsTrue();
 
@@ -50,7 +50,7 @@ public class WfcPropagatorTest
 
         // Right cell only has grass and dirt, but grass-dirt isn't allowed
         // After propagation, right cell should have no valid tiles (contradiction)
-        var result = propagator.Propagate(grid, new Vector2I(0, 0));
+        var result = propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 0)));
 
         // Actually with the empty rules and self-adjacency, grass can neighbor grass
         // Let me rethink this test...
@@ -72,7 +72,7 @@ public class WfcPropagatorTest
         // Collapse left cell to A
         grid.GetCell(0, 0).CollapseTo("A");
 
-        var result = propagator.Propagate(grid, new Vector2I(0, 0));
+        var result = propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 0)));
 
         AssertBool(result.Success).IsTrue();
 
@@ -126,7 +126,7 @@ public class WfcPropagatorTest
 
         grid.GetCell(0, 0).CollapseTo("grass");
 
-        var result = propagator.Propagate(grid, new Vector2I(0, 0));
+        var result = propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 0)));
 
         // At least one cell should have been updated
         AssertThat(result.CellsUpdated).IsGreaterEqual(1);
@@ -149,7 +149,7 @@ public class WfcPropagatorTest
         // With all-to-all connectivity, collapsing one cell shouldn't reduce others
         grid.GetCell(1, 0).CollapseTo("B");
 
-        var result = propagator.Propagate(grid, new Vector2I(1, 0));
+        var result = propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(1, 0)));
 
         AssertBool(result.Success).IsTrue();
 
@@ -170,7 +170,7 @@ public class WfcPropagatorTest
 
         // This should succeed since A can neighbor A (self-adjacency)
         grid.GetCell(0, 0).CollapseTo("A");
-        var result = propagator.Propagate(grid, new Vector2I(0, 0));
+        var result = propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 0)));
 
         AssertBool(result.Success).IsTrue();
     }
@@ -190,7 +190,7 @@ public class WfcPropagatorTest
         // Collapse center to grass
         grid.GetCell(1, 1).CollapseTo("grass");
 
-        var result = propagator.Propagate(grid, new Vector2I(1, 1));
+        var result = propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(1, 1)));
 
         AssertBool(result.Success).IsTrue();
 
@@ -227,13 +227,13 @@ public class WfcPropagatorTest
 
         // Collapse 3 cells of the 2x2 window to A, B, A
         grid.GetCell(0, 0).CollapseTo("A");
-        propagator.Propagate(grid, new Vector2I(0, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 0)));
 
         grid.GetCell(1, 0).CollapseTo("B");
-        propagator.Propagate(grid, new Vector2I(1, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(1, 0)));
 
         grid.GetCell(0, 1).CollapseTo("A");
-        propagator.Propagate(grid, new Vector2I(0, 1));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 1)));
 
         // Cell (1,1) is adjacent to B (1,0) and A (0,1)
         // Adjacency rules: A can neighbor A,B,C; B can neighbor A,B,C; C can neighbor A,B
@@ -259,13 +259,13 @@ public class WfcPropagatorTest
 
         // Collapse 3 cells to A
         grid.GetCell(0, 0).CollapseTo("A");
-        propagator.Propagate(grid, new Vector2I(0, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 0)));
 
         grid.GetCell(1, 0).CollapseTo("A");
-        propagator.Propagate(grid, new Vector2I(1, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(1, 0)));
 
         grid.GetCell(0, 1).CollapseTo("A");
-        propagator.Propagate(grid, new Vector2I(0, 1));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 1)));
 
         // 4th cell should allow A (continuing same type)
         var cornerCell = grid.GetCell(1, 1);
@@ -286,13 +286,13 @@ public class WfcPropagatorTest
 
         // Collapse 3 cells: A, A, B
         grid.GetCell(0, 0).CollapseTo("A");
-        propagator.Propagate(grid, new Vector2I(0, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 0)));
 
         grid.GetCell(1, 0).CollapseTo("A");
-        propagator.Propagate(grid, new Vector2I(1, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(1, 0)));
 
         grid.GetCell(0, 1).CollapseTo("B");
-        propagator.Propagate(grid, new Vector2I(0, 1));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 1)));
 
         // 4th cell can be A or B (both keep window at 2 types)
         var cornerCell = grid.GetCell(1, 1);
@@ -316,10 +316,10 @@ public class WfcPropagatorTest
 
         // 1D row - no complete 2x2 windows possible
         grid.GetCell(0, 0).CollapseTo("A");
-        propagator.Propagate(grid, new Vector2I(0, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 0)));
 
         grid.GetCell(1, 0).CollapseTo("B");
-        propagator.Propagate(grid, new Vector2I(1, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(1, 0)));
 
         // No 2x2 window constraint applies in 1D, only adjacency rules
         // B can neighbor C, so C should still be allowed
@@ -348,19 +348,19 @@ public class WfcPropagatorTest
 
         // Set up cells around center (1,1)
         grid.GetCell(0, 0).CollapseTo("A");
-        propagator.Propagate(grid, new Vector2I(0, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 0)));
 
         grid.GetCell(1, 0).CollapseTo("B");
-        propagator.Propagate(grid, new Vector2I(1, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(1, 0)));
 
         grid.GetCell(2, 0).CollapseTo("C");
-        propagator.Propagate(grid, new Vector2I(2, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(2, 0)));
 
         grid.GetCell(0, 1).CollapseTo("A");
-        propagator.Propagate(grid, new Vector2I(0, 1));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 1)));
 
         grid.GetCell(2, 1).CollapseTo("C");
-        propagator.Propagate(grid, new Vector2I(2, 1));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(2, 1)));
 
         // Center cell (1,1) is adjacent to: B (1,0), A (0,1), C (2,1)
         // All tiles (A,B,C,D) can neighbor A, B, and C based on adjacency rules
@@ -390,10 +390,10 @@ public class WfcPropagatorTest
 
         // Collapse 2 cells with DIFFERENT types - A and B
         grid.GetCell(0, 0).CollapseTo("A");
-        propagator.Propagate(grid, new Vector2I(0, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 0)));
 
         grid.GetCell(1, 0).CollapseTo("B");
-        propagator.Propagate(grid, new Vector2I(1, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(1, 0)));
 
         // Cell (1,1) is adjacent to B (1,0) and uncollapsed (0,1)
         // B can neighbor A, B, C; so A, B, C all remain valid
@@ -419,10 +419,10 @@ public class WfcPropagatorTest
 
         // Collapse 2 cells with SAME type - A and A
         grid.GetCell(0, 0).CollapseTo("A");
-        propagator.Propagate(grid, new Vector2I(0, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(0, 0)));
 
         grid.GetCell(1, 0).CollapseTo("A");
-        propagator.Propagate(grid, new Vector2I(1, 0));
+        propagator.Propagate(grid, grid.PositionToCellId(new Vector2I(1, 0)));
 
         // Window has only type {A} - remaining cells can still introduce B
         // (that would make 2 types, which is fine)

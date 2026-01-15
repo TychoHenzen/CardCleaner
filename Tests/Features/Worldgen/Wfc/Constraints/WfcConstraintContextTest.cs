@@ -19,9 +19,9 @@ public class WfcConstraintContextTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(2, 3),
+            CellId = grid.PositionToCellId(new Vector2I(2, 3)),
             TileId = "grass",
-            Grid = grid,
+            Topology = grid,
             Rng = rng
         };
 
@@ -42,9 +42,9 @@ public class WfcConstraintContextTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(1, 1),
+            CellId = grid.PositionToCellId(new Vector2I(1, 1)),
             TileId = "grass",
-            Grid = grid
+            Topology = grid
             // Rng not specified
         };
 

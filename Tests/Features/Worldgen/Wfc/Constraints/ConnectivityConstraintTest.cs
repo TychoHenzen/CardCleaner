@@ -296,9 +296,9 @@ public class ConnectivityConstraintTest
     {
         return new WfcConstraintContext
         {
-            Position = position,
+            CellId = _grid.PositionToCellId(position),
             TileId = tileId,
-            Grid = _grid,
+            Topology = _grid,
             Rng = null
         };
     }

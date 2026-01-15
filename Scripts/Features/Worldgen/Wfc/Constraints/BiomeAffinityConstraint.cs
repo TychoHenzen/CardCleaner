@@ -49,13 +49,20 @@ public class BiomeAffinityConstraint : IWfcConstraint
         if (!_tileToBiomes.TryGetValue(context.TileId, out var biomeIds) || biomeIds.Count == 0)
             return 1.0f;
 
+        // BiomeStrengthGrid uses Vector2I positions - only works for grid topologies
+        // For non-grid topologies, return neutral (biome affinity not supported)
+        if (context.Topology is not WfcGrid grid)
+            return 1.0f;
+
+        var position = grid.CellIdToPosition(context.CellId);
+
         // Find maximum strength across all biomes this tile belongs to
         // Using max instead of average prevents dilution for tiles in multiple biomes
         var maxStrength = float.MinValue;
 
         foreach (var biomeId in biomeIds)
         {
-            var strength = _grid.GetStrength(context.Position, biomeId);
+            var strength = _grid.GetStrength(position, biomeId);
             if (strength > maxStrength)
                 maxStrength = strength;
         }

@@ -46,7 +46,9 @@ public class ConnectivityConstraint : IWfcConstraint, IEntropyInvalidator
         // === PROACTIVE: Ensure corridor between disconnected regions ===
         // This is expensive (O(V²) closest pair calculation) so disabled by default.
         // Reactive bridge detection below is usually sufficient for connectivity.
-        if (EnableProactiveCorridors && _graph.HasDisconnectedRegions() &&
+        // Note: Only works for grid topologies (uses positions for corridor calculation)
+        if (EnableProactiveCorridors && context.Topology is WfcGrid &&
+            _graph.HasDisconnectedRegions() &&
             _graph.IsOnCorridorPath(context.Position, CorridorTolerance))
         {
             return 0.0f;
@@ -87,25 +89,32 @@ public class ConnectivityConstraint : IWfcConstraint, IEntropyInvalidator
     {
         var result = new List<Vector2I>(4);
 
+        // Only works for grid topologies (PassabilityGraph uses positions)
+        if (context.Topology is not WfcGrid grid)
+            return result;
+
         // Use precomputed neighbor info if available
         if (context.NeighborInfo.HasValue)
         {
-            foreach (var kvp in context.NeighborInfo.Value.Neighbors4)
+            foreach (var kvp in context.NeighborInfo.Value.Neighbors)
             {
                 if (_isPassable(kvp.Value))
                 {
-                    result.Add(kvp.Key);
+                    // Convert cell ID to position for PassabilityGraph
+                    var neighborPos = grid.CellIdToPosition(kvp.Key);
+                    result.Add(neighborPos);
                 }
             }
             return result;
         }
 
-        // Fallback: iterate neighbors directly
-        foreach (var neighborPos in context.Grid.GetNeighbors(context.Position))
+        // Fallback: iterate neighbors directly using topology
+        foreach (var neighborId in context.Topology.GetNeighbors(context.CellId))
         {
-            var neighborTile = context.Grid.GetCollapsedTileAt(neighborPos);
+            var neighborTile = context.Topology.GetCollapsedTileAt(neighborId);
             if (neighborTile != null && _isPassable(neighborTile))
             {
+                var neighborPos = grid.CellIdToPosition(neighborId);
                 result.Add(neighborPos);
             }
         }

@@ -212,7 +212,9 @@ public class WfcMapGenerator
         WfcGrid grid;
         using (_profiler.BeginScope("WfcSolve"))
         {
-            (solveResult, grid) = solver.SolveWithRetry(CreateGrid, biome, seed, MaxRetries);
+            var (result, topology) = solver.SolveWithRetry(CreateGrid, biome, seed, MaxRetries);
+            solveResult = result;
+            grid = (WfcGrid)topology;
         }
 
         if (!solveResult.Success)
@@ -266,7 +268,9 @@ public class WfcMapGenerator
         WfcGrid grid;
         using (_profiler.BeginScope("MultiBiomeWfcSolve"))
         {
-            (solveResult, grid) = solver.SolveWithRetry(CreateGrid, defaultBiome, seed, MaxRetries);
+            var (result, topology) = solver.SolveWithRetry(CreateGrid, defaultBiome, seed, MaxRetries);
+            solveResult = result;
+            grid = (WfcGrid)topology;
         }
 
         if (!solveResult.Success)

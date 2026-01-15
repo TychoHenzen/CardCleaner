@@ -8,21 +8,30 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 /// <summary>
-/// Generates irregular mesh terrain using TWO-PASS WFC identical to regular grid system.
-/// Pass 1: Background layer (non-auto-tiles)
-/// Pass 2: Foreground layer (auto-tiles)
-/// Pass 3: Renderer samples quad corners and computes bitmasks
+/// Generates irregular mesh terrain using TWO-PASS WFC.
+/// Now runs WFC directly on mesh topology (vertices as cells, quad-sharing neighbors)
+/// instead of projecting from rectangular grid.
+/// Pass 1: Background layer (non-auto-tiles) - still uses rectangular grid for quads
+/// Pass 2: Foreground layer (auto-tiles) - uses mesh topology for proper gap constraints
 /// </summary>
 public class MeshTerrainGenerator
 {
     private readonly WfcMapGenerator _wfcGenerator;
     private readonly ITileRegistry _tileRegistry;
     private readonly Dictionary<string, int>? _tileToTerrainType;
+    private readonly CompiledTransitionResolver? _transitionResolver;
+
+    /// <summary>
+    /// When true, uses mesh topology for foreground WFC (proper gap constraints).
+    /// When false, uses legacy grid projection (for backward compatibility testing).
+    /// </summary>
+    public bool UseDirectMeshWfc { get; set; } = true;
 
     public int MaxRetries
     {
@@ -33,10 +42,11 @@ public class MeshTerrainGenerator
     /// <summary>
     /// Creates a two-pass terrain generator (preferred constructor).
     /// </summary>
-    public MeshTerrainGenerator(WfcMapGenerator wfcGenerator, ITileRegistry tileRegistry)
+    public MeshTerrainGenerator(WfcMapGenerator wfcGenerator, ITileRegistry tileRegistry, CompiledTransitionResolver? transitionResolver = null)
     {
         _wfcGenerator = wfcGenerator;
         _tileRegistry = tileRegistry;
+        _transitionResolver = transitionResolver;
     }
 
     /// <summary>
@@ -124,28 +134,44 @@ public class MeshTerrainGenerator
 
         GD.Print($"[MeshTerrainGen] Background WFC succeeded in {bgResult.Iterations} iterations");
 
-        // PASS 2: Foreground layer (all tiles, then filter to auto-tiles)
-        var fgResult = _wfcGenerator.GenerateMultiBiome(
-            biomeRegistry,
-            getBiomeAt,
-            effectiveSize,
-            seed + 1, // Different seed for foreground
-            null  // No filter - include all tiles (gap constraint handles spacing)
-        );
+        // Map background to quads
+        MapBackgroundToQuads(mesh, bgResult.MapData, bounds);
 
-        if (!fgResult.Success || fgResult.MapData == null)
+        // PASS 2: Foreground layer (auto-tiles)
+        if (UseDirectMeshWfc)
         {
-            GD.PrintErr($"[MeshTerrainGen] Foreground WFC failed: {fgResult.ErrorMessage}");
-            // Continue with background only
-            MapWfcToVertices(mesh, bgResult.MapData, bounds, true);
-            return mesh;
+            // Use direct mesh topology for proper gap constraints
+            var fgSuccess = GenerateForegroundOnMesh(mesh, biomeRegistry, seed + 1);
+            if (!fgSuccess)
+            {
+                GD.PrintErr("[MeshTerrainGen] Direct mesh foreground WFC failed, clearing foreground");
+                ClearForeground(mesh);
+            }
+        }
+        else
+        {
+            // Legacy: project from rectangular grid
+            var fgResult = _wfcGenerator.GenerateMultiBiome(
+                biomeRegistry,
+                getBiomeAt,
+                effectiveSize,
+                seed + 1,
+                null
+            );
+
+            if (!fgResult.Success || fgResult.MapData == null)
+            {
+                GD.PrintErr($"[MeshTerrainGen] Foreground WFC failed: {fgResult.ErrorMessage}");
+                ClearForeground(mesh);
+            }
+            else
+            {
+                GD.Print($"[MeshTerrainGen] Legacy foreground WFC succeeded in {fgResult.Iterations} iterations");
+                MapForegroundToVertices(mesh, fgResult.MapData, bounds);
+            }
         }
 
-        GD.Print($"[MeshTerrainGen] Foreground WFC succeeded in {fgResult.Iterations} iterations");
-
-        // Map both layers to mesh: backgrounds to quads, foregrounds to vertices
-        MapTwoPassWfcToMesh(mesh, bgResult.MapData, fgResult.MapData, bounds);
-
+        mesh.UpdateAllCachedProperties();
         return mesh;
     }
 
@@ -262,27 +288,44 @@ public class MeshTerrainGenerator
 
         GD.Print($"[MeshTerrainGen] Background WFC succeeded in {bgResult.Iterations} iterations");
 
-        // PASS 2: Foreground layer (all tiles)
-        var fgResult = _wfcGenerator.GenerateMultiBiome(
-            _biomeRegistry,
-            GetBiomeAt,
-            effectiveSize,
-            (ulong)seed + 1,
-            null
-        );
+        // Map background to quads
+        MapBackgroundToQuads(mesh, bgResult.MapData, bounds);
 
-        if (!fgResult.Success || fgResult.MapData == null)
+        // PASS 2: Foreground layer (auto-tiles)
+        if (UseDirectMeshWfc)
         {
-            GD.PrintErr($"[MeshTerrainGen] Foreground WFC failed: {fgResult.ErrorMessage}");
-            MapWfcToVertices(mesh, bgResult.MapData, bounds, true);
-            return mesh;
+            // Use direct mesh topology for proper gap constraints
+            var fgSuccess = GenerateForegroundOnMesh(mesh, _biomeRegistry, (ulong)seed + 1);
+            if (!fgSuccess)
+            {
+                GD.PrintErr("[MeshTerrainGen] Direct mesh foreground WFC failed, clearing foreground");
+                ClearForeground(mesh);
+            }
+        }
+        else
+        {
+            // Legacy: project from rectangular grid
+            var fgResult = _wfcGenerator.GenerateMultiBiome(
+                _biomeRegistry,
+                GetBiomeAt,
+                effectiveSize,
+                (ulong)seed + 1,
+                null
+            );
+
+            if (!fgResult.Success || fgResult.MapData == null)
+            {
+                GD.PrintErr($"[MeshTerrainGen] Foreground WFC failed: {fgResult.ErrorMessage}");
+                ClearForeground(mesh);
+            }
+            else
+            {
+                GD.Print($"[MeshTerrainGen] Legacy foreground WFC succeeded in {fgResult.Iterations} iterations");
+                MapForegroundToVertices(mesh, fgResult.MapData, bounds);
+            }
         }
 
-        GD.Print($"[MeshTerrainGen] Foreground WFC succeeded in {fgResult.Iterations} iterations");
-
-        // Map both layers to mesh
-        MapTwoPassWfcToMesh(mesh, bgResult.MapData, fgResult.MapData, bounds);
-
+        mesh.UpdateAllCachedProperties();
         return mesh;
     }
 
@@ -300,21 +343,17 @@ public class MeshTerrainGenerator
     }
 
     /// <summary>
-    /// Maps two-pass WFC results to mesh.
-    /// Phase 1 (background) maps to quads (faces) - each quad gets one background tile.
-    /// Phase 2 (foreground) maps to vertices - each vertex gets an auto-tile or null for gaps.
+    /// Maps background WFC results to quad faces using centroid position.
     /// </summary>
-    private void MapTwoPassWfcToMesh(
+    private void MapBackgroundToQuads(
         IrregularMesh mesh,
         SimpleMapData backgroundData,
-        SimpleMapData foregroundData,
         (Vector2 Min, Vector2 Max) bounds)
     {
         var wfcSize = backgroundData.Size;
         var meshSize = bounds.Max - bounds.Min;
         var minPos = bounds.Min;
 
-        // Phase 1: Map background tiles to quads (faces) using centroid position
         foreach (var quad in mesh.Quads)
         {
             var normalizedX = (quad.Centroid.X - minPos.X) / meshSize.X;
@@ -326,7 +365,20 @@ public class MeshTerrainGenerator
             quad.BackgroundTileId = backgroundData.TileIds[gridY, gridX];
         }
 
-        // Phase 2: Map foreground tiles to vertices
+        GD.Print($"[MeshTerrainGen] Mapped {mesh.Quads.Count} quads with backgrounds");
+    }
+
+    /// <summary>
+    /// Maps foreground WFC results to vertices using position projection (legacy method).
+    /// </summary>
+    private void MapForegroundToVertices(
+        IrregularMesh mesh,
+        SimpleMapData foregroundData,
+        (Vector2 Min, Vector2 Max) bounds)
+    {
+        var wfcSize = foregroundData.Size;
+        var meshSize = bounds.Max - bounds.Min;
+        var minPos = bounds.Min;
         var autoTileCount = 0;
 
         foreach (var vertex in mesh.Vertices)
@@ -340,7 +392,6 @@ public class MeshTerrainGenerator
             var fgTileId = foregroundData.TileIds[gridY, gridX];
             var fgTile = _tileRegistry?.GetTile(fgTileId);
 
-            // Foreground is stored ONLY if it's an auto-tile; gaps have null foreground
             if (fgTile?.HasAutoTileVariants == true)
             {
                 vertex.ForegroundTileId = fgTileId;
@@ -353,23 +404,37 @@ public class MeshTerrainGenerator
                 vertex.TileId = null;
             }
 
-            // Determine terrain type for passability
-            // Use foreground tile if present, otherwise check if any adjacent quad has a passable background
-            if (fgTile != null)
-            {
-                vertex.TerrainType = fgTile.IsPassable ? 1 : 0;
-            }
-            else
-            {
-                // For gap vertices, passability depends on adjacent quads' backgrounds
-                // Default to passable if no tile info available
-                vertex.TerrainType = 1;
-            }
+            vertex.TerrainType = fgTile?.IsPassable == true ? 1 : 0;
         }
 
-        mesh.UpdateAllCachedProperties();
+        GD.Print($"[MeshTerrainGen] Mapped {autoTileCount}/{mesh.Vertices.Count} vertices with auto-tiles (legacy projection)");
+    }
 
-        GD.Print($"[MeshTerrainGen] Mapped {mesh.Quads.Count} quads with backgrounds, {autoTileCount}/{mesh.Vertices.Count} vertices with auto-tiles");
+    /// <summary>
+    /// Clears foreground from all vertices.
+    /// </summary>
+    private void ClearForeground(IrregularMesh mesh)
+    {
+        foreach (var vertex in mesh.Vertices)
+        {
+            vertex.ForegroundTileId = null;
+            vertex.TileId = null;
+            vertex.TerrainType = 1; // Default passable
+        }
+    }
+
+    /// <summary>
+    /// Maps two-pass WFC results to mesh (legacy combined method).
+    /// </summary>
+    private void MapTwoPassWfcToMesh(
+        IrregularMesh mesh,
+        SimpleMapData backgroundData,
+        SimpleMapData foregroundData,
+        (Vector2 Min, Vector2 Max) bounds)
+    {
+        MapBackgroundToQuads(mesh, backgroundData, bounds);
+        MapForegroundToVertices(mesh, foregroundData, bounds);
+        mesh.UpdateAllCachedProperties();
     }
 
     /// <summary>
@@ -460,5 +525,156 @@ public class MeshTerrainGenerator
 
         mesh.UpdateAllCachedProperties();
         GD.PrintErr("[MeshTerrainGen] Applied fallback terrain");
+    }
+
+    /// <summary>
+    /// Runs WFC directly on the mesh topology for foreground (auto-tile) generation.
+    /// This ensures gap constraints are properly enforced using quad-sharing neighbors.
+    /// </summary>
+    private bool GenerateForegroundOnMesh(
+        IrregularMesh mesh,
+        BiomeRegistry biomeRegistry,
+        ulong seed)
+    {
+        if (_tileRegistry == null)
+        {
+            GD.PrintErr("[MeshTerrainGen] Cannot run direct mesh WFC without tile registry");
+            return false;
+        }
+
+        // Collect initial tiles (all auto-tiles and gap tiles)
+        var initialTiles = new HashSet<string>();
+        var biomeIds = biomeRegistry.GetAllBiomeIds().ToList();
+
+        foreach (var tile in _tileRegistry.GetAllTiles())
+        {
+            // Check if tile is allowed in any biome
+            var isAllowedInAnyBiome = biomeIds.Any(biomeId => tile.IsAllowedInBiome(biomeId));
+            if (!isAllowedInAnyBiome)
+                continue;
+
+            initialTiles.Add(tile.Id);
+        }
+
+        if (initialTiles.Count == 0)
+        {
+            GD.PrintErr("[MeshTerrainGen] No valid tiles for mesh WFC");
+            return false;
+        }
+
+        GD.Print($"[MeshTerrainGen] Starting direct mesh WFC with {initialTiles.Count} tiles on {mesh.Vertices.Count} vertices");
+
+        // Create mesh topology
+        var topology = new IrregularMeshWfcTopology(mesh, initialTiles);
+
+        // Create propagator with adjacency rules (if available)
+        var adjacencyRules = _transitionResolver != null
+            ? new WfcAdjacencyRules(_transitionResolver)
+            : new WfcAdjacencyRules(new CompiledTransitionResolver());
+
+        // Allow all gap tiles to be adjacent to each other and to auto-tiles
+        ConfigureGapTileAdjacencies(adjacencyRules);
+
+        var propagator = new WfcPropagator(adjacencyRules);
+
+        // Create selector with gap constraint
+        var selector = new WfcTileSelector();
+        selector.AddConstraint(new AutoTileGapConstraint(_tileRegistry));
+
+        // Create solver
+        var solver = new WfcSolver(propagator, selector, tileRegistry: _tileRegistry);
+        solver.MaxIterations = mesh.Vertices.Count * 2; // Allow reasonable iterations
+
+        // Run WFC
+        var rng = new RandomNumberGenerator();
+        rng.Seed = seed;
+
+        var result = solver.Solve(topology, null, rng);
+
+        if (!result.Success)
+        {
+            GD.PrintErr($"[MeshTerrainGen] Direct mesh WFC failed: {result.ErrorMessage}");
+            return false;
+        }
+
+        GD.Print($"[MeshTerrainGen] Direct mesh WFC succeeded in {result.Iterations} iterations");
+
+        // Map results to vertices
+        var autoTileCount = 0;
+        for (var i = 0; i < mesh.Vertices.Count; i++)
+        {
+            var tileId = topology.GetCollapsedTileAt(i);
+            var vertex = mesh.Vertices[i];
+
+            if (tileId == null)
+            {
+                vertex.ForegroundTileId = null;
+                vertex.TileId = null;
+                vertex.TerrainType = 1;
+                continue;
+            }
+
+            var tile = _tileRegistry.GetTile(tileId);
+
+            // Only assign foreground if it's an auto-tile
+            if (tile?.HasAutoTileVariants == true)
+            {
+                vertex.ForegroundTileId = tileId;
+                vertex.TileId = tileId;
+                autoTileCount++;
+            }
+            else
+            {
+                vertex.ForegroundTileId = null;
+                vertex.TileId = null;
+            }
+
+            // Set terrain type for passability
+            vertex.TerrainType = tile?.IsPassable == true ? 1 : 0;
+        }
+
+        GD.Print($"[MeshTerrainGen] Assigned {autoTileCount}/{mesh.Vertices.Count} vertices with auto-tiles");
+        return true;
+    }
+
+    /// <summary>
+    /// Configures adjacency rules so gap tiles can be adjacent to anything.
+    /// </summary>
+    private void ConfigureGapTileAdjacencies(WfcAdjacencyRules adjacencyRules)
+    {
+        if (_tileRegistry == null)
+            return;
+
+        var gapTiles = new List<string>();
+        var autoTiles = new List<string>();
+
+        foreach (var tile in _tileRegistry.GetAllTiles())
+        {
+            if (!tile.HasAutoTileVariants)
+                gapTiles.Add(tile.Id);
+            else
+                autoTiles.Add(tile.Id);
+        }
+
+        // Gap tiles can be adjacent to each other
+        if (gapTiles.Count > 0)
+        {
+            adjacencyRules.AddMutualAdjacencies(gapTiles);
+
+            // Gap tiles can be adjacent to any auto-tile
+            foreach (var gapTile in gapTiles)
+            {
+                foreach (var autoTile in autoTiles)
+                {
+                    adjacencyRules.AddAdjacency(gapTile, autoTile);
+                }
+            }
+        }
+
+        // Auto-tiles can be adjacent to themselves
+        foreach (var autoTile in autoTiles)
+        {
+            adjacencyRules.EnsureSelfAdjacency(autoTile);
+        }
     }
 }

@@ -540,8 +540,8 @@ public class VariationGroupTest
         return new WfcConstraintContext
         {
             TileId = tileId,
-            Position = Vector2I.Zero,
-            Grid = grid,
+            CellId = 0,
+            Topology = grid,
             Rng = null,
             NeighborInfo = null
         };
