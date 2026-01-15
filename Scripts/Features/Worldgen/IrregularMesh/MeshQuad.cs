@@ -61,18 +61,46 @@ public class MeshQuad
     }
 
     /// <summary>
-    /// Get the corner vertices in CCW order sorted by angle from centroid.
-    /// Returns: [SW, SE, NE, NW] based on angle sorting.
+    /// Get the corner vertices in CCW order, oriented so index 3 is the most NW vertex.
+    /// Returns: [SW, SE, NE, NW] based on actual spatial position relative to centroid.
+    /// This ensures consistent compass-direction mapping regardless of quad rotation.
     /// </summary>
     public MeshVertex[] GetSortedCorners()
     {
         var vertices = VertexIds.Select(id => _mesh.Vertices[id]).ToArray();
         var centroid = Centroid;
 
-        // Sort by angle from centroid (CCW from -X axis)
-        return vertices
+        // Step 1: Sort by angle from centroid to get consistent CCW winding
+        var ccwSorted = vertices
             .OrderBy(v => Mathf.Atan2(v.Position.Y - centroid.Y, v.Position.X - centroid.X))
             .ToArray();
+
+        // Step 2: Find the "most NW" vertex by spatial position
+        // In Y-up coordinates: NW means smallest X (west) and largest Y (north)
+        // Score = -relativeX + relativeY (maximize to find NW)
+        int nwIndex = 0;
+        float bestNwScore = float.MinValue;
+        for (int i = 0; i < 4; i++)
+        {
+            var relPos = ccwSorted[i].Position - centroid;
+            float nwScore = -relPos.X + relPos.Y;
+            if (nwScore > bestNwScore)
+            {
+                bestNwScore = nwScore;
+                nwIndex = i;
+            }
+        }
+
+        // Step 3: Rotate array so NW vertex ends up at index 3
+        // This preserves CCW winding while ensuring spatial orientation
+        int shift = (nwIndex + 1) % 4;
+        var result = new MeshVertex[4];
+        for (int i = 0; i < 4; i++)
+        {
+            result[i] = ccwSorted[(i + shift) % 4];
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -85,18 +113,18 @@ public class MeshQuad
 
     /// <summary>
     /// Compute Corner16 bitmask based on corner vertex terrain.
-    /// Uses angle-based corner classification matching the Python POC.
+    /// Uses spatially-oriented corner classification.
     /// </summary>
     /// <param name="filledTerrainType">Terrain type considered "filled" (default: 1)</param>
     public int ComputeCorner16Bitmask(int filledTerrainType = 1)
     {
         var sortedCorners = GetSortedCorners();
 
-        // After angle sorting from -X axis (CCW):
-        // Index 0 = SW (smallest angle, ~-π, pointing left/west)
-        // Index 1 = SE (next CCW, ~-π/2, pointing down/south)
-        // Index 2 = NE (next CCW, ~0, pointing right/east)
-        // Index 3 = NW (largest angle, ~π/2, pointing up/north)
+        // GetSortedCorners returns vertices oriented by spatial position:
+        // Index 0 = SW (most south-west)
+        // Index 1 = SE (most south-east)
+        // Index 2 = NE (most north-east)
+        // Index 3 = NW (most north-west)
 
         int mask = 0;
 

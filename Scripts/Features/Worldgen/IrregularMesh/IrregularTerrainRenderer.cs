@@ -48,6 +48,8 @@ public partial class IrregularTerrainRenderer : Node2D
     public override void _Ready()
     {
         _meshInstance = new MeshInstance2D();
+        // Use nearest-neighbor filtering to prevent texture bleeding at tile edges
+        _meshInstance.TextureFilter = TextureFilterEnum.Nearest;
         AddChild(_meshInstance);
     }
 
