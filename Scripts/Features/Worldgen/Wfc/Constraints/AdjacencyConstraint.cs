@@ -18,7 +18,6 @@ public class AdjacencyConstraint : IWfcConstraint
     /// <inheritdoc />
     public float GetProbabilityModifier(WfcConstraintContext context)
     {
-        return 1f;
         // Check all collapsed neighbors using topology-agnostic API
         foreach (var neighborId in context.Topology.GetNeighbors(context.CellId))
         {
