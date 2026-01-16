@@ -204,6 +204,9 @@ public class WfcMapGenerator
                 "No valid tiles found: biome tiles have no overlap with adjacency rules");
         }
 
+        // Initialize spatial coherence for this map size
+        _spatialCoherence.Reset(size.X, size.Y);
+
         var solver = CreateSolver();
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, initialTiles);

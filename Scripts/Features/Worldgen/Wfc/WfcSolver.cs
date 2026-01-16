@@ -105,6 +105,12 @@ public class WfcSolver
         _blobTracker?.Clear();
         _entropyCache.Reset();
 
+        // Reset spatial coherence region tracking for grid topologies
+        if (_spatialCoherence != null && topology is WfcGrid gridForReset)
+        {
+            _spatialCoherence.Reset(gridForReset.Width, gridForReset.Height);
+        }
+
         // Register constraints that need to invalidate cells beyond neighbors
         _entropyCache.ClearInvalidators();
         foreach (var constraint in _selector.GetConstraints())
