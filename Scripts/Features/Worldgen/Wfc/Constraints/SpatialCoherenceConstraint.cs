@@ -115,9 +115,11 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
         // Check if this is a linear tile (no bitmask 15) - needs different boost logic
         var isLinearTile = _tileRegistry != null && !HasSolidFillVariant(context.TileId);
 
-        if (_regionTracker == null)
+        // RegionTracker is only used for grid topologies - mesh topologies use neighbor-count approximation
+        var isGridTopology = context.Topology is WfcGrid;
+        if (_regionTracker == null && isGridTopology)
         {
-            GD.Print("[SpatialCoherence] RegionTracker is null!");
+            GD.Print("[SpatialCoherence] RegionTracker is null for grid topology!");
             return 1.0f;
         }
 
@@ -198,6 +200,12 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
             return 1.0f;
 
         _callsWithMatch++;
+
+        // Debug: log first few boosts to verify spatial coherence is working
+        if (_callsWithMatch <= 5)
+        {
+            GD.Print($"[SpatialCoherence] Match #{_callsWithMatch}: tile={context.TileId}, regionSize={largestMatchingRegion}, isLinear={isLinearTile}");
+        }
 
         float modifier;
 

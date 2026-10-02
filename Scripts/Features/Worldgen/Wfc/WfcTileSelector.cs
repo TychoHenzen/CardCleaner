@@ -97,6 +97,8 @@ public class WfcTileSelector
         {
             _loggedConstraintCount = true;
             GD.Print($"[WfcTileSelector] SelectTile called with cellId, constraints: {_constraints.Count}");
+            foreach (var c in _constraints)
+                GD.Print($"  - {c.GetType().Name}");
         }
 
         // Build weight lookup from biome

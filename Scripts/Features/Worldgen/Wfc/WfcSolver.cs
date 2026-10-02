@@ -211,10 +211,17 @@ public class WfcSolver
             {
                 targetCell.CollapseTo(selectedTile);
 
-                // Update blob tracker for soft modifiers (grid-specific for now)
-                if (_blobTracker != null && topology is WfcGrid grid)
+                // Update blob tracker for soft modifiers
+                if (_blobTracker != null)
                 {
-                    _blobTracker.RegisterCollapse(grid.CellIdToPosition(targetCellId.Value), selectedTile, grid);
+                    if (topology is WfcGrid grid)
+                    {
+                        _blobTracker.RegisterCollapse(grid.CellIdToPosition(targetCellId.Value), selectedTile, grid);
+                    }
+                    else
+                    {
+                        _blobTracker.RegisterCollapse(targetCellId.Value, selectedTile, topology);
+                    }
                 }
 
                 // Update spatial coherence for region tracking (grid-specific for now)

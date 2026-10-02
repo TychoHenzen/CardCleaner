@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
@@ -7,10 +8,12 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 /// <summary>
 /// Tracks connected blob sizes during WFC generation.
 /// Uses array-based union-find (disjoint set) for efficient blob size queries.
+/// Supports both grid topologies (Vector2I) and generic topologies (cell IDs).
 /// </summary>
 /// <remarks>
 /// Optimized version using flat arrays instead of Dictionary&lt;Vector2I, _&gt;.
 /// Array indexing is O(1) vs Dictionary hash lookup, which matters in hot paths.
+/// For non-grid topologies, cell IDs are used directly as array indices.
 /// </remarks>
 public class BlobSizeTracker
 {
@@ -19,7 +22,9 @@ public class BlobSizeTracker
     private string?[]? _tileType;
     private int _width;
     private int _height;
+    private int _cellCount;
     private bool _initialized;
+    private bool _isGridMode;
 
     /// <summary>
     /// Initializes the tracker for a grid of the given size.
@@ -32,11 +37,33 @@ public class BlobSizeTracker
 
         _width = width;
         _height = height;
-        var totalCells = width * height;
+        _cellCount = width * height;
+        _isGridMode = true;
 
-        _parent = new int[totalCells];
-        _size = new int[totalCells];
-        _tileType = new string?[totalCells];
+        _parent = new int[_cellCount];
+        _size = new int[_cellCount];
+        _tileType = new string?[_cellCount];
+
+        Reset();
+        _initialized = true;
+    }
+
+    /// <summary>
+    /// Initializes the tracker for any topology with the given cell count.
+    /// Cell IDs must be in range [0, cellCount).
+    /// </summary>
+    public void Initialize(int cellCount)
+    {
+        if (cellCount <= 0) throw new ArgumentOutOfRangeException(nameof(cellCount));
+
+        _width = 0;
+        _height = 0;
+        _cellCount = cellCount;
+        _isGridMode = false;
+
+        _parent = new int[_cellCount];
+        _size = new int[_cellCount];
+        _tileType = new string?[_cellCount];
 
         Reset();
         _initialized = true;
@@ -60,7 +87,7 @@ public class BlobSizeTracker
     }
 
     /// <summary>
-    /// Registers a collapsed tile at the given position.
+    /// Registers a collapsed tile at the given position (grid topology).
     /// Merges with adjacent tiles of the same type.
     /// </summary>
     public void RegisterCollapse(Vector2I position, string tileId, WfcGrid grid)
@@ -82,6 +109,31 @@ public class BlobSizeTracker
             if (_tileType[neighborIndex] == tileId)
             {
                 Union(index, neighborIndex);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Registers a collapsed tile at the given cell ID (any topology).
+    /// Merges with adjacent tiles of the same type.
+    /// </summary>
+    public void RegisterCollapse(int cellId, string tileId, IWfcTopology topology)
+    {
+        // Auto-initialize if needed
+        if (!_initialized)
+        {
+            Initialize(topology.CellCount);
+        }
+
+        _tileType![cellId] = tileId;
+        // parent and size already initialized to self/1 in Reset()
+
+        // Merge with adjacent collapsed tiles of same type
+        foreach (var neighborId in topology.GetNeighbors(cellId))
+        {
+            if (_tileType[neighborId] == tileId)
+            {
+                Union(cellId, neighborId);
             }
         }
     }
@@ -121,6 +173,34 @@ public class BlobSizeTracker
             if (_tileType![neighborIndex] == tileId)
             {
                 var root = Find(neighborIndex);
+                if (counted.Add(root))
+                {
+                    size += _size![root];
+                }
+            }
+        }
+
+        return size;
+    }
+
+    /// <summary>
+    /// Gets the size of the blob that would exist if the given tile were placed
+    /// at the specified cell (hypothetical query without modifying state).
+    /// Works with any topology.
+    /// </summary>
+    public int GetPotentialBlobSize(int cellId, string tileId, IWfcTopology topology)
+    {
+        if (!_initialized)
+            return 1;
+
+        var size = 1; // Start with this tile itself
+        var counted = new HashSet<int>(); // Track counted roots by index
+
+        foreach (var neighborId in topology.GetNeighbors(cellId))
+        {
+            if (_tileType![neighborId] == tileId)
+            {
+                var root = Find(neighborId);
                 if (counted.Add(root))
                 {
                     size += _size![root];

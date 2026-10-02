@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
@@ -9,6 +10,8 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -577,12 +580,35 @@ public class MeshTerrainGenerator
 
         var propagator = new WfcPropagator(adjacencyRules);
 
-        // Create selector with gap constraint
+        // Create selector with constraints matching background layer
         var selector = new WfcTileSelector();
+
+        // Create blob tracker for diminishing returns
+        var blobTracker = new BlobSizeTracker();
+        blobTracker.Initialize(mesh.Vertices.Count);
+
+        // Diminishing returns to prevent single tile dominating the map
+        var diminishingReturns = new DiminishingReturnsSoftModifier(blobTracker);
+        selector.AddConstraint(diminishingReturns);
+
+        // Spatial coherence for region formation (critical for clustering)
+        var spatialCoherence = new SpatialCoherenceConstraint(_tileRegistry);
+        selector.AddConstraint(spatialCoherence);
+
+        // Gap constraint to prevent different auto-tiles from being adjacent
         selector.AddConstraint(new AutoTileGapConstraint(_tileRegistry));
 
-        // Create solver
-        var solver = new WfcSolver(propagator, selector, tileRegistry: _tileRegistry);
+        // Prevent 2x2 solid regions for tilesets lacking bitmask 15
+        selector.AddConstraint(new NoSolidFillConstraint(_tileRegistry));
+
+        // Apply tile probability/density from TSX and variation groups
+        if (_tileRegistry is TileRegistry concreteRegistry)
+        {
+            selector.AddConstraint(new TileProbabilityConstraint(concreteRegistry));
+        }
+
+        // Create solver with blob tracking and spatial coherence
+        var solver = new WfcSolver(propagator, selector, blobTracker, spatialCoherence: spatialCoherence, tileRegistry: _tileRegistry);
         solver.MaxIterations = mesh.Vertices.Count * 2; // Allow reasonable iterations
 
         // Run WFC

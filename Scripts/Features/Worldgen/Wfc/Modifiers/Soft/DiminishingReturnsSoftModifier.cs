@@ -46,16 +46,25 @@ public class DiminishingReturnsSoftModifier : IWfcConstraint
     /// <inheritdoc />
     public float GetProbabilityModifier(WfcConstraintContext context)
     {
-        // BlobSizeTracker is grid-specific (uses Vector2I positions)
-        // For non-grid topologies, return neutral (no diminishing returns)
-        if (context.Topology is not WfcGrid grid)
-            return 1.0f;
+        int potentialSize;
 
-        var position = grid.CellIdToPosition(context.CellId);
-        var potentialSize = _blobTracker.GetPotentialBlobSize(
-            position,
-            context.TileId,
-            grid);
+        // Use appropriate method based on topology type
+        if (context.Topology is WfcGrid grid)
+        {
+            var position = grid.CellIdToPosition(context.CellId);
+            potentialSize = _blobTracker.GetPotentialBlobSize(
+                position,
+                context.TileId,
+                grid);
+        }
+        else
+        {
+            // Generic topology - use cell ID based method
+            potentialSize = _blobTracker.GetPotentialBlobSize(
+                context.CellId,
+                context.TileId,
+                context.Topology);
+        }
 
         if (potentialSize <= MinimumBlobSize)
             return 1.0f;
