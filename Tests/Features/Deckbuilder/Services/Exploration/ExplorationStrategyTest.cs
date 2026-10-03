@@ -1,9 +1,8 @@
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.Exploration;
-using GdUnit4;
+using CardCleaner.Tests.TestUtilities.Fixtures;
 using Godot;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Services.Exploration;
 
@@ -12,13 +11,12 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Services.Exploration;
 public class ExplorationStrategyTest
 {
     // Test-local tile IDs (tests don't depend on specific values, just consistent usage)
-    private const string Floor = "floor";
     private const string Wall = "wall";
 
     [TestCase]
     public void TestFrontierExplorationStrategyReturnsNearestFrontier()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
         var visibilityChecker = new SimpleVisibilityChecker();
         var frontierBehavior = new FrontierExplorationBehavior(gridData, visibilityChecker);
         var startCell = gridData.GetCellId(new Vector2I(0, 0));
@@ -42,7 +40,7 @@ public class ExplorationStrategyTest
     [TestCase]
     public void TestFrontierExplorationStrategyReturnsNullWhenFullyExplored()
     {
-        var (mapData, gridData) = CreateSimpleMap(2, 2, new Vector2I(0, 0));
+        var (mapData, gridData) = OpenFloorMap.Create(2, 2, new Vector2I(0, 0));
         var visibilityChecker = new SimpleVisibilityChecker();
         var frontierBehavior = new FrontierExplorationBehavior(gridData, visibilityChecker, visionRange: 10);
 
@@ -67,7 +65,7 @@ public class ExplorationStrategyTest
     [TestCase]
     public void TestPathToEnemyStrategyPrioritizesVisibleEnemy()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
         var visibilityChecker = new SimpleVisibilityChecker();
         var frontierBehavior = new FrontierExplorationBehavior(gridData, visibilityChecker);
 
@@ -94,7 +92,7 @@ public class ExplorationStrategyTest
     [TestCase]
     public void TestPathToEnemyStrategyFallsBackToLastKnown()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
         var visibilityChecker = new SimpleVisibilityChecker();
         var frontierBehavior = new FrontierExplorationBehavior(gridData, visibilityChecker);
 
@@ -120,7 +118,7 @@ public class ExplorationStrategyTest
     [TestCase]
     public void TestPathToEnemyStrategyReturnsNullWhenNoEnemy()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
         var visibilityChecker = new SimpleVisibilityChecker();
         var frontierBehavior = new FrontierExplorationBehavior(gridData, visibilityChecker);
 
@@ -145,7 +143,7 @@ public class ExplorationStrategyTest
     [TestCase]
     public void TestExplorationContextContainsAllRequiredData()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
         var visibilityChecker = new SimpleVisibilityChecker();
         var frontierBehavior = new FrontierExplorationBehavior(gridData, visibilityChecker);
         var currentCell = gridData.GetCellId(new Vector2I(2, 2));
@@ -171,7 +169,7 @@ public class ExplorationStrategyTest
     [TestCase]
     public void TestStrategiesAreInterchangeable()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 5, new Vector2I(0, 0));
+        var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
         mapData.EnemyPositions.Add(new Vector2I(4, 4));
         var visibilityChecker = new SimpleVisibilityChecker();
         var frontierBehavior = new FrontierExplorationBehavior(gridData, visibilityChecker);
@@ -200,28 +198,5 @@ public class ExplorationStrategyTest
 
         // Enemy strategy returns enemy cell
         AssertThat(enemyTarget).IsEqual(visibleEnemyCell);
-    }
-
-    private static (SimpleMapData mapData, RegularGridMapData gridData) CreateSimpleMap(
-        int width,
-        int height,
-        Vector2I playerStart)
-    {
-        var mapData = new SimpleMapData
-        {
-            TileIds = new string[height, width],
-            Size = new Vector2I(width, height),
-            PlayerStart = playerStart
-        };
-
-        for (var y = 0; y < height; y++)
-        for (var x = 0; x < width; x++)
-        {
-            mapData.TileIds[y, x] = Floor;
-            mapData.PassableTiles.Add(new Vector2I(x, y));
-        }
-
-        var gridData = new RegularGridMapData(mapData);
-        return (mapData, gridData);
     }
 }

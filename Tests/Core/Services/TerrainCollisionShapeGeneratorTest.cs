@@ -1,9 +1,8 @@
 using System.Linq;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
-using GdUnit4;
+using CardCleaner.Tests.TestUtilities.Fixtures;
 using Godot;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Core.Services;
 
@@ -15,7 +14,6 @@ namespace CardCleaner.Tests.Core.Services;
 [RequireGodotRuntime]
 public class TerrainCollisionShapeGeneratorTest
 {
-    private const string Floor = "floor";
     private const string Wall = "wall";
 
     private static int GetShapeOwnerCount(CollisionObject2D body) => body.GetShapeOwners().Count();
@@ -23,7 +21,7 @@ public class TerrainCollisionShapeGeneratorTest
     [TestCase]
     public void TestGeneratesShapesForOpaqueCell()
     {
-        var (mapData, gridData) = CreateSimpleMap(3, 3);
+        var (mapData, gridData) = OpenFloorMap.Create(3, 3);
         // Make center cell opaque (wall)
         SetWall(mapData, 1, 1);
 
@@ -39,7 +37,7 @@ public class TerrainCollisionShapeGeneratorTest
     [TestCase]
     public void TestNoShapesForTransparentCells()
     {
-        var (_, gridData) = CreateSimpleMap(3, 3);
+        var (_, gridData) = OpenFloorMap.Create(3, 3);
         // All cells are floors (transparent)
 
         var staticBody = new StaticBody2D();
@@ -54,7 +52,7 @@ public class TerrainCollisionShapeGeneratorTest
     [TestCase]
     public void TestMultipleOpaqueShapes()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 5);
+        var (mapData, gridData) = OpenFloorMap.Create(5, 5);
         // Create separate wall clusters
         SetWall(mapData, 0, 0);
         SetWall(mapData, 4, 4);
@@ -71,7 +69,7 @@ public class TerrainCollisionShapeGeneratorTest
     [TestCase]
     public void TestSetsCollisionLayer()
     {
-        var (mapData, gridData) = CreateSimpleMap(3, 3);
+        var (mapData, gridData) = OpenFloorMap.Create(3, 3);
         SetWall(mapData, 1, 1);
 
         var staticBody = new StaticBody2D();
@@ -87,7 +85,7 @@ public class TerrainCollisionShapeGeneratorTest
     [TestCase]
     public void TestSetsCollisionLayerForArea2D()
     {
-        var (mapData, gridData) = CreateSimpleMap(3, 3);
+        var (mapData, gridData) = OpenFloorMap.Create(3, 3);
         SetWall(mapData, 1, 1);
 
         var area = new Area2D();
@@ -103,7 +101,7 @@ public class TerrainCollisionShapeGeneratorTest
     [TestCase]
     public void TestCustomCollisionLayer()
     {
-        var (mapData, gridData) = CreateSimpleMap(3, 3);
+        var (mapData, gridData) = OpenFloorMap.Create(3, 3);
         SetWall(mapData, 1, 1);
 
         var staticBody = new StaticBody2D();
@@ -118,7 +116,7 @@ public class TerrainCollisionShapeGeneratorTest
     [TestCase]
     public void TestClearShapes()
     {
-        var (mapData, gridData) = CreateSimpleMap(3, 3);
+        var (mapData, gridData) = OpenFloorMap.Create(3, 3);
         SetWall(mapData, 1, 1);
 
         var staticBody = new StaticBody2D();
@@ -139,7 +137,7 @@ public class TerrainCollisionShapeGeneratorTest
     [TestCase]
     public void TestOptimizedMergingReducesShapeCount()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 5);
+        var (mapData, gridData) = OpenFloorMap.Create(5, 5);
         // Create a 3x3 block of walls (9 cells)
         for (var y = 1; y <= 3; y++)
         for (var x = 1; x <= 3; x++)
@@ -166,7 +164,7 @@ public class TerrainCollisionShapeGeneratorTest
     [TestCase]
     public void TestOptimizedMergingMergesContiguousRow()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 1);
+        var (mapData, gridData) = OpenFloorMap.Create(5, 1);
         // Create a full row of walls
         for (var x = 0; x < 5; x++)
             SetWall(mapData, x, 0);
@@ -183,7 +181,7 @@ public class TerrainCollisionShapeGeneratorTest
     [TestCase]
     public void TestOptimizedMergingHandlesSeparateRegions()
     {
-        var (mapData, gridData) = CreateSimpleMap(7, 1);
+        var (mapData, gridData) = OpenFloorMap.Create(7, 1);
         // Create two separate wall regions
         SetWall(mapData, 0, 0);
         SetWall(mapData, 1, 0);
@@ -204,7 +202,7 @@ public class TerrainCollisionShapeGeneratorTest
     [TestCase]
     public void TestShapePositionMatchesTilePosition()
     {
-        var (mapData, gridData) = CreateSimpleMap(3, 3);
+        var (mapData, gridData) = OpenFloorMap.Create(3, 3);
         SetWall(mapData, 1, 1);
         const float tileSize = 16f;
 
@@ -228,7 +226,7 @@ public class TerrainCollisionShapeGeneratorTest
     [TestCase]
     public void TestShapeSizeMatchesTileSize()
     {
-        var (mapData, gridData) = CreateSimpleMap(3, 3);
+        var (mapData, gridData) = OpenFloorMap.Create(3, 3);
         SetWall(mapData, 1, 1);
         const float tileSize = 32f;
 
@@ -244,26 +242,6 @@ public class TerrainCollisionShapeGeneratorTest
         AssertThat(shape!.Size).IsEqual(new Vector2(tileSize, tileSize));
 
         staticBody.Free();
-    }
-
-    private static (SimpleMapData mapData, RegularGridMapData gridData) CreateSimpleMap(int width, int height)
-    {
-        var mapData = new SimpleMapData
-        {
-            TileIds = new string[height, width],
-            Size = new Vector2I(width, height),
-            PlayerStart = new Vector2I(0, 0)
-        };
-
-        for (var y = 0; y < height; y++)
-        for (var x = 0; x < width; x++)
-        {
-            mapData.TileIds[y, x] = Floor;
-            mapData.PassableTiles.Add(new Vector2I(x, y));
-        }
-
-        var gridData = new RegularGridMapData(mapData);
-        return (mapData, gridData);
     }
 
     /// <summary>

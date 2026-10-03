@@ -1,8 +1,7 @@
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
-using GdUnit4;
+using CardCleaner.Tests.TestUtilities.Fixtures;
 using Godot;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Core.Services;
 
@@ -15,7 +14,6 @@ namespace CardCleaner.Tests.Core.Services;
 [RequireGodotRuntime]
 public class RaycastVisibilityCheckerTest
 {
-    private const string Floor = "floor";
     private const string Wall = "wall";
     private const float TileSize = 16f;
 
@@ -52,7 +50,7 @@ public class RaycastVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeSameCell()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 5);
+        var (mapData, gridData) = OpenFloorMap.Create(5, 5);
         GenerateCollisionShapes(gridData);
 
         var checker = new RaycastVisibilityChecker(_spaceState);
@@ -66,7 +64,7 @@ public class RaycastVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeAdjacentCell()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 5);
+        var (mapData, gridData) = OpenFloorMap.Create(5, 5);
         GenerateCollisionShapes(gridData);
 
         var checker = new RaycastVisibilityChecker(_spaceState);
@@ -81,7 +79,7 @@ public class RaycastVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeAcrossEmptyMap()
     {
-        var (mapData, gridData) = CreateSimpleMap(10, 10);
+        var (mapData, gridData) = OpenFloorMap.Create(10, 10);
         GenerateCollisionShapes(gridData);
 
         var checker = new RaycastVisibilityChecker(_spaceState);
@@ -111,7 +109,7 @@ public class RaycastVisibilityCheckerTest
     [TestCase]
     public void TestSameWorldPositionAlwaysVisible()
     {
-        var (mapData, gridData) = CreateSimpleMap(3, 3);
+        var (mapData, gridData) = OpenFloorMap.Create(3, 3);
         GenerateCollisionShapes(gridData);
 
         var checker = new RaycastVisibilityChecker(_spaceState);
@@ -144,25 +142,5 @@ public class RaycastVisibilityCheckerTest
     {
         TerrainCollisionShapeGenerator.ClearShapes(_terrainCollider);
         TerrainCollisionShapeGenerator.GenerateForRegularGrid(gridData, _terrainCollider, TileSize);
-    }
-
-    private static (SimpleMapData mapData, RegularGridMapData gridData) CreateSimpleMap(int width, int height)
-    {
-        var mapData = new SimpleMapData
-        {
-            TileIds = new string[height, width],
-            Size = new Vector2I(width, height),
-            PlayerStart = new Vector2I(0, 0)
-        };
-
-        for (var y = 0; y < height; y++)
-        for (var x = 0; x < width; x++)
-        {
-            mapData.TileIds[y, x] = Floor;
-            mapData.PassableTiles.Add(new Vector2I(x, y));
-        }
-
-        var gridData = new RegularGridMapData(mapData);
-        return (mapData, gridData);
     }
 }

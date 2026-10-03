@@ -1,8 +1,7 @@
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
-using GdUnit4;
+using CardCleaner.Tests.TestUtilities.Fixtures;
 using Godot;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Core.Services;
 
@@ -11,7 +10,6 @@ namespace CardCleaner.Tests.Core.Services;
 public class SimpleVisibilityCheckerTest
 {
     // Test-local tile IDs (tests don't depend on specific values, just consistent usage)
-    private const string Floor = "floor";
     private const string Wall = "wall";
 
     private SimpleVisibilityChecker _checker = null!;
@@ -25,7 +23,7 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeSamePosition()
     {
-        var (_, gridData) = CreateSimpleMap(5, 5);
+        var (_, gridData) = OpenFloorMap.Create(5, 5);
         var position = new Vector2I(2, 2);
         var cellId = gridData.GetCellId(position);
 
@@ -37,7 +35,7 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeAdjacentTile()
     {
-        var (_, gridData) = CreateSimpleMap(5, 5);
+        var (_, gridData) = OpenFloorMap.Create(5, 5);
 
         var result = _checker.CanSee(
             gridData.GetCellId(new Vector2I(2, 2)),
@@ -50,7 +48,7 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeDiagonalTile()
     {
-        var (_, gridData) = CreateSimpleMap(5, 5);
+        var (_, gridData) = OpenFloorMap.Create(5, 5);
 
         var result = _checker.CanSee(
             gridData.GetCellId(new Vector2I(0, 0)),
@@ -63,7 +61,7 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCannotSeeThroughWall()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 1);
+        var (mapData, gridData) = OpenFloorMap.Create(5, 1);
         // Place wall in the middle - remove from passable tiles
         SetWall(mapData, 2, 0);
 
@@ -78,7 +76,7 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeUpToWall()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 1);
+        var (mapData, gridData) = OpenFloorMap.Create(5, 1);
         // Place wall in the middle
         SetWall(mapData, 2, 0);
 
@@ -94,7 +92,7 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeFromWallPosition()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 1);
+        var (mapData, gridData) = OpenFloorMap.Create(5, 1);
         SetWall(mapData, 0, 0);
 
         // Vision check starting from a wall position should still work
@@ -109,7 +107,7 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCannotSeeThroughMultipleWalls()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 5);
+        var (mapData, gridData) = OpenFloorMap.Create(5, 5);
         // Create a wall barrier
         SetWall(mapData, 2, 0);
         SetWall(mapData, 2, 1);
@@ -128,7 +126,7 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestCanSeeAroundWall()
     {
-        var (mapData, gridData) = CreateSimpleMap(5, 5);
+        var (mapData, gridData) = OpenFloorMap.Create(5, 5);
         // Wall at (2,2)
         SetWall(mapData, 2, 2);
 
@@ -144,7 +142,7 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestVerticalLineOfSight()
     {
-        var (_, gridData) = CreateSimpleMap(1, 5);
+        var (_, gridData) = OpenFloorMap.Create(1, 5);
 
         var result = _checker.CanSee(
             gridData.GetCellId(new Vector2I(0, 0)),
@@ -157,7 +155,7 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestVerticalLineOfSightBlockedByWall()
     {
-        var (mapData, gridData) = CreateSimpleMap(1, 5);
+        var (mapData, gridData) = OpenFloorMap.Create(1, 5);
         SetWall(mapData, 0, 2);
 
         var result = _checker.CanSee(
@@ -171,7 +169,7 @@ public class SimpleVisibilityCheckerTest
     [TestCase]
     public void TestBresenhamLineSymmetry()
     {
-        var (mapData, gridData) = CreateSimpleMap(10, 10);
+        var (mapData, gridData) = OpenFloorMap.Create(10, 10);
         SetWall(mapData, 5, 5);
 
         // Line from (0,0) to (8,6) should give same result as (8,6) to (0,0)
@@ -193,7 +191,7 @@ public class SimpleVisibilityCheckerTest
         // 1 W . .
         // 2 . . .
         // Visibility from (0,0) to (2,2) should be blocked by the corner at (1,0)-(0,1)
-        var (mapData, gridData) = CreateSimpleMap(3, 3);
+        var (mapData, gridData) = OpenFloorMap.Create(3, 3);
         SetWall(mapData, 1, 0);
         SetWall(mapData, 0, 1);
 
@@ -215,7 +213,7 @@ public class SimpleVisibilityCheckerTest
         // 1 . . .
         // 2 . . .
         // Visibility from (0,0) to (2,2) should NOT be blocked (only one wall)
-        var (mapData, gridData) = CreateSimpleMap(3, 3);
+        var (mapData, gridData) = OpenFloorMap.Create(3, 3);
         SetWall(mapData, 1, 0);
 
         // Can see through a partial corner (one wall is not enough to block)
@@ -231,7 +229,7 @@ public class SimpleVisibilityCheckerTest
     public void TestCornerBlockingSymmetry()
     {
         // Corner blocking should be symmetric
-        var (mapData, gridData) = CreateSimpleMap(3, 3);
+        var (mapData, gridData) = OpenFloorMap.Create(3, 3);
         SetWall(mapData, 1, 0);
         SetWall(mapData, 0, 1);
 
@@ -243,27 +241,6 @@ public class SimpleVisibilityCheckerTest
 
         AssertThat(forward).IsEqual(backward);
         AssertBool(forward).IsFalse();
-    }
-
-    private static (SimpleMapData mapData, RegularGridMapData gridData) CreateSimpleMap(int width, int height)
-    {
-        var mapData = new SimpleMapData
-        {
-            TileIds = new string[height, width],
-            Size = new Vector2I(width, height),
-            PlayerStart = new Vector2I(0, 0)
-        };
-
-        // Initialize all tiles as floor and passable
-        for (var y = 0; y < height; y++)
-        for (var x = 0; x < width; x++)
-        {
-            mapData.TileIds[y, x] = Floor;
-            mapData.PassableTiles.Add(new Vector2I(x, y));
-        }
-
-        var gridData = new RegularGridMapData(mapData);
-        return (mapData, gridData);
     }
 
     /// <summary>
