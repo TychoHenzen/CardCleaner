@@ -148,6 +148,62 @@
       {
         "responsibility": "IsInBounds",
         "owner": "SimpleMapData"
+      },
+      {
+        "responsibility": "BeginRun",
+        "owner": "GenerationTracker"
+      },
+      {
+        "responsibility": "TakePending",
+        "owner": "GenerationTracker"
+      },
+      {
+        "responsibility": "GenerateAsync",
+        "owner": "MapGenerationCoordinator"
+      },
+      {
+        "responsibility": "GenerateWithCustomGenerator",
+        "owner": "MapGenerationCoordinator"
+      },
+      {
+        "responsibility": "GenerateWithDefaultGenerator",
+        "owner": "MapGenerationCoordinator"
+      },
+      {
+        "responsibility": "BuildAsync",
+        "owner": "DefaultSessionMapBuilder"
+      },
+      {
+        "responsibility": "ComputeSeedFromCards",
+        "owner": "MapSeeding"
+      },
+      {
+        "responsibility": "CalculateMapSize",
+        "owner": "MapSeeding"
+      },
+      {
+        "responsibility": "GenerateSignature",
+        "owner": "LootGenerator"
+      },
+      {
+        "responsibility": "ResolveDefeatedEnemy",
+        "owner": "ExplorationSession"
+      },
+      {
+        "responsibility": "ProcessCombatTurn",
+        "owner": "SessionFlow"
+      },
+      {
+        "responsibility": "OnCombatEnded",
+        "owner": "SessionFlow"
+      },
+      {
+        "responsibility": "GenerateLoot",
+        "owner": "SessionFlow"
+      },
+      {
+        "responsibility": "StartExploration",
+        "owner": "SessionFlow"
       }
     ],
     "boundaries": [

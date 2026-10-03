@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
 using GdUnit4;
 using Godot;
 
@@ -555,8 +556,8 @@ public class GameSessionServiceTest
             new(new[] { 1.0f, 0.0f, -0.5f, 0.25f, 0.0f, 0.0f, 0.0f, 0.0f })
         };
 
-        var seed1 = GameSessionService.ComputeSeedFromCards(cards1);
-        var seed2 = GameSessionService.ComputeSeedFromCards(cards2);
+        var seed1 = MapSeeding.ComputeSeedFromCards(cards1);
+        var seed2 = MapSeeding.ComputeSeedFromCards(cards2);
 
         Assertions.AssertThat(seed1).IsEqual(seed2);
     }
@@ -574,14 +575,14 @@ public class GameSessionServiceTest
             new(new[] { 0.6f, -0.3f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }) // Slightly different
         };
 
-        var seed1 = GameSessionService.ComputeSeedFromCards(cards1);
-        var seed2 = GameSessionService.ComputeSeedFromCards(cards2);
+        var seed1 = MapSeeding.ComputeSeedFromCards(cards1);
+        var seed2 = MapSeeding.ComputeSeedFromCards(cards2);
 
         Assertions.AssertThat(seed1).IsNotEqual(seed2);
     }
 
     [TestCase]
-    public void ComputeSeedFromCards_OrderMatters()
+    public static void ComputeSeedFromCards_OrderMatters()
     {
         // [A, B] should produce different seed than [B, A]
         var cardA = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
@@ -590,8 +591,8 @@ public class GameSessionServiceTest
         var cardsAB = new List<CardSignature> { cardA, cardB };
         var cardsBA = new List<CardSignature> { cardB, cardA };
 
-        var seedAB = GameSessionService.ComputeSeedFromCards(cardsAB);
-        var seedBA = GameSessionService.ComputeSeedFromCards(cardsBA);
+        var seedAB = MapSeeding.ComputeSeedFromCards(cardsAB);
+        var seedBA = MapSeeding.ComputeSeedFromCards(cardsBA);
 
         Assertions.AssertThat(seedAB).IsNotEqual(seedBA);
     }
