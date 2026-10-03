@@ -16,7 +16,7 @@ public class SimpleCombatSystem
     /// <summary>
     /// Combat participant that implements ICombatant for command pattern integration.
     /// </summary>
-    public class Combatant : ICombatant
+    internal sealed class Combatant : ICombatant
     {
         public required string Name { get; set; }
         public int Health { get; set; }

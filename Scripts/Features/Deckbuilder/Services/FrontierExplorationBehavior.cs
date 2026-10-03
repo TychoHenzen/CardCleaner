@@ -2,19 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Deckbuilder.Services.FrontierExploration;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
-
-/// <summary>
-/// Represents a connected region of unvisited cells.
-/// </summary>
-internal readonly struct UnvisitedBlob
-{
-    public int EntryCellId { get; init; }
-    public int Size { get; init; }
-    public int WalkingDistance { get; init; }
-}
 
 /// <summary>
 /// Exploration behavior that finds and paths to the nearest unexplored cell
@@ -24,12 +15,9 @@ internal readonly struct UnvisitedBlob
 public class FrontierExplorationBehavior
 {
     private readonly IMapData _mapData;
-    private readonly IVisibilityChecker _visibilityChecker;
     private readonly IFogOfWar? _fogOfWar;
-    private readonly HashSet<int> _localSeenCells = new();
+    private readonly LocalVisionTracker _localVision;
     private readonly HashSet<int> _visitedCells = new();
-    private readonly HashSet<int> _localCurrentlyVisibleCells = new();
-    private readonly int _visionRange;
 
     /// <summary>
     /// Minimum blob size to be considered "significant" for prioritization.
@@ -41,7 +29,7 @@ public class FrontierExplorationBehavior
     /// All cells that have been seen. Uses fog of war system if provided,
     /// otherwise uses local tracking.
     /// </summary>
-    public IReadOnlySet<int> SeenCells => _fogOfWar?.SeenCells ?? _localSeenCells;
+    public IReadOnlySet<int> SeenCells => _fogOfWar?.SeenCells ?? _localVision.SeenCells;
 
     public IReadOnlySet<int> VisitedCells => _visitedCells;
 
@@ -49,7 +37,8 @@ public class FrontierExplorationBehavior
     /// Cells currently visible from the player's current position.
     /// Uses fog of war system if provided, otherwise uses local tracking.
     /// </summary>
-    public IReadOnlySet<int> CurrentlyVisibleCells => _fogOfWar?.CurrentlyVisibleCells ?? _localCurrentlyVisibleCells;
+    public IReadOnlySet<int> CurrentlyVisibleCells =>
+        _fogOfWar?.CurrentlyVisibleCells ?? _localVision.CurrentlyVisibleCells;
 
     public FrontierExplorationBehavior(
         IMapData mapData,
@@ -58,8 +47,7 @@ public class FrontierExplorationBehavior
         IFogOfWar? fogOfWar = null)
     {
         _mapData = mapData;
-        _visibilityChecker = visibilityChecker;
-        _visionRange = visionRange;
+        _localVision = new LocalVisionTracker(mapData, visibilityChecker, visionRange);
         _fogOfWar = fogOfWar;
     }
 
@@ -79,39 +67,7 @@ public class FrontierExplorationBehavior
             // If using external fog of war, skip local visibility tracking
             // The fog system handles seen/visible cells
             if (_fogOfWar == null)
-            {
-                // Clear currently visible cells - will be recalculated this frame
-                _localCurrentlyVisibleCells.Clear();
-
-                _localSeenCells.Add(currentCellId);
-                _localCurrentlyVisibleCells.Add(currentCellId);
-
-                // Get current world position for distance calculations
-                var currentPos = _mapData.GetCellCenter(currentCellId);
-
-                // Check visibility to all cells within range
-                var cellsInRange = _mapData.GetCellsInRadius(currentPos, _visionRange * EstimateCellSize());
-
-                foreach (var targetCellId in cellsInRange)
-                {
-                    if (targetCellId == currentCellId)
-                        continue;
-
-                    var targetPos = _mapData.GetCellCenter(targetCellId);
-                    var distance = currentPos.DistanceTo(targetPos);
-
-                    // Skip if outside vision range (circular check)
-                    if (distance > _visionRange * EstimateCellSize())
-                        continue;
-
-                    // Check line of sight
-                    if (_visibilityChecker.CanSee(currentCellId, targetCellId, _mapData))
-                    {
-                        _localSeenCells.Add(targetCellId);
-                        _localCurrentlyVisibleCells.Add(targetCellId);
-                    }
-                }
-            }
+                _localVision.Update(currentCellId);
 
             // Mark trivially visible cells as visited (uses SeenCells property which
             // delegates to fog system if available)
@@ -122,19 +78,6 @@ public class FrontierExplorationBehavior
             ILog.Error($"Exception in UpdateVision at cell {currentCellId}: {ex.Message}\n{ex.StackTrace}");
             throw;
         }
-    }
-
-    /// <summary>
-    /// Estimate average cell size for vision range calculation.
-    /// </summary>
-    private float EstimateCellSize()
-    {
-        if (_mapData.CellCount == 0)
-            return 16f; // Default fallback
-
-        // Sample first cell to estimate size
-        var sampleArea = _mapData.GetCellArea(0);
-        return Mathf.Sqrt(sampleArea);
     }
 
     /// <summary>
@@ -295,89 +238,6 @@ public class FrontierExplorationBehavior
     /// </summary>
     internal List<UnvisitedBlob> FindUnvisitedBlobs(int currentCellId)
     {
-        var blobs = new List<UnvisitedBlob>();
-        var bfsVisited = new HashSet<int> { currentCellId };
-        var blobAssigned = new HashSet<int>();
-        var queue = new Queue<(int cellId, int distance)>();
-        queue.Enqueue((currentCellId, 0));
-
-        // BFS to find all reachable frontier cells with their walking distances
-        var frontierWithDistance = new List<(int cellId, int distance)>();
-
-        while (queue.Count > 0)
-        {
-            var (current, distance) = queue.Dequeue();
-
-            foreach (var neighbor in _mapData.GetAdjacentCells(current))
-            {
-                if (bfsVisited.Contains(neighbor))
-                    continue;
-
-                if (!_mapData.IsValidCell(neighbor))
-                    continue;
-
-                if (!_mapData.IsPassable(neighbor))
-                    continue;
-
-                bfsVisited.Add(neighbor);
-
-                if (!_visitedCells.Contains(neighbor))
-                {
-                    // Found an unvisited cell - record as potential blob entry
-                    frontierWithDistance.Add((neighbor, distance + 1));
-                }
-                else
-                {
-                    // Visited cell - continue BFS
-                    queue.Enqueue((neighbor, distance + 1));
-                }
-            }
-        }
-
-        // For each frontier cell, flood fill to find the connected blob size
-        foreach (var (entryCell, walkingDistance) in frontierWithDistance)
-        {
-            if (blobAssigned.Contains(entryCell))
-                continue;
-
-            // Flood fill to find all connected unvisited cells
-            var blobSize = 0;
-            var floodQueue = new Queue<int>();
-            floodQueue.Enqueue(entryCell);
-            blobAssigned.Add(entryCell);
-
-            while (floodQueue.Count > 0)
-            {
-                var cell = floodQueue.Dequeue();
-                blobSize++;
-
-                foreach (var neighbor in _mapData.GetAdjacentCells(cell))
-                {
-                    if (blobAssigned.Contains(neighbor))
-                        continue;
-
-                    if (!_mapData.IsValidCell(neighbor))
-                        continue;
-
-                    if (!_mapData.IsPassable(neighbor))
-                        continue;
-
-                    if (_visitedCells.Contains(neighbor))
-                        continue;
-
-                    blobAssigned.Add(neighbor);
-                    floodQueue.Enqueue(neighbor);
-                }
-            }
-
-            blobs.Add(new UnvisitedBlob
-            {
-                EntryCellId = entryCell,
-                Size = blobSize,
-                WalkingDistance = walkingDistance
-            });
-        }
-
-        return blobs;
+        return new UnvisitedBlobFinder(_mapData, _visitedCells).Find(currentCellId);
     }
 }

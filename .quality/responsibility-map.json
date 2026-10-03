@@ -128,6 +128,26 @@
       {
         "responsibility": "ReadReferences",
         "owner": "TmxTilesetReferenceReader"
+      },
+      {
+        "responsibility": "FloodFillBlob",
+        "owner": "UnvisitedBlobFinder"
+      },
+      {
+        "responsibility": "Update",
+        "owner": "LocalVisionTracker"
+      },
+      {
+        "responsibility": "EstimateCellSize",
+        "owner": "LocalVisionTracker"
+      },
+      {
+        "responsibility": "LookupTile",
+        "owner": "SimpleMapData"
+      },
+      {
+        "responsibility": "IsInBounds",
+        "owner": "SimpleMapData"
       }
     ],
     "boundaries": [

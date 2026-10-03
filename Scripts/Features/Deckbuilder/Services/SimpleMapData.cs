@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -58,63 +59,54 @@ public class SimpleMapData
 
     public string GetBiomeAt(Vector2I pos)
     {
-        if (BiomeMap == null || pos.X < 0 || pos.X >= Size.X || pos.Y < 0 || pos.Y >= Size.Y)
+        if (BiomeMap == null || !IsInBounds(pos))
             return "plains";
         return BiomeMap[pos.Y, pos.X];
     }
 
     public bool IsPassable(Vector2I pos)
     {
-        if (pos.X < 0 || pos.X >= Size.X || pos.Y < 0 || pos.Y >= Size.Y)
+        if (!IsInBounds(pos))
             return false;
 
         // Use PassableTiles as primary source (set during map generation)
         if (PassableTiles.Count > 0)
-        {
-            _passableTilesSet ??= new HashSet<Vector2I>(PassableTiles);
-            return _passableTilesSet.Contains(pos);
-        }
+            return PassableTilesSet.Contains(pos);
 
         // Fallback to tile registry lookup
-        var tileId = TileIds[pos.Y, pos.X];
-        _tileRegistry ??= ServiceLocator.Has<ITileRegistry>() ? ServiceLocator.Get<ITileRegistry>() : null;
-
-        if (_tileRegistry == null)
-        {
-            // Registry unavailable - cannot determine passability, default to false
-            return false;
-        }
-
-        var tile = _tileRegistry.GetTile(tileId);
+        var tile = LookupTile(pos);
         return tile?.IsPassable ?? false;
     }
 
     public bool IsTransparent(Vector2I pos)
     {
-        if (pos.X < 0 || pos.X >= Size.X || pos.Y < 0 || pos.Y >= Size.Y)
+        if (!IsInBounds(pos))
             return false;
-
-        var tileId = TileIds[pos.Y, pos.X];
 
         // Use PassableTiles as primary source (set during map generation)
         // Most passable tiles are also transparent
-        if (PassableTiles.Count > 0)
-        {
-            _passableTilesSet ??= new HashSet<Vector2I>(PassableTiles);
-            if (_passableTilesSet.Contains(pos))
-                return true;
-        }
+        if (PassableTiles.Count > 0 && PassableTilesSet.Contains(pos))
+            return true;
 
-        _tileRegistry ??= ServiceLocator.Has<ITileRegistry>() ? ServiceLocator.Get<ITileRegistry>() : null;
-
-        if (_tileRegistry == null)
-        {
-            // Registry unavailable - cannot determine transparency, default to false
-            return false;
-        }
-
-        var tile = _tileRegistry.GetTile(tileId);
+        var tile = LookupTile(pos);
         return tile?.IsTransparent ?? false;
+    }
+
+    private bool IsInBounds(Vector2I pos)
+    {
+        return pos.X >= 0 && pos.X < Size.X && pos.Y >= 0 && pos.Y < Size.Y;
+    }
+
+    private HashSet<Vector2I> PassableTilesSet => _passableTilesSet ??= new HashSet<Vector2I>(PassableTiles);
+
+    /// <summary>
+    /// Looks up the registry tile for an in-bounds position.
+    /// Returns null when the registry is unavailable, so callers default to false.
+    /// </summary>
+    private TileDefinition? LookupTile(Vector2I pos)
+    {
+        _tileRegistry ??= ServiceLocator.Has<ITileRegistry>() ? ServiceLocator.Get<ITileRegistry>() : null;
+        return _tileRegistry?.GetTile(TileIds[pos.Y, pos.X]);
     }
 
     /// <summary>
@@ -122,7 +114,7 @@ public class SimpleMapData
     /// </summary>
     public string GetTileId(Vector2I pos)
     {
-        if (pos.X < 0 || pos.X >= Size.X || pos.Y < 0 || pos.Y >= Size.Y)
+        if (!IsInBounds(pos))
             return string.Empty;
         return TileIds[pos.Y, pos.X];
     }
