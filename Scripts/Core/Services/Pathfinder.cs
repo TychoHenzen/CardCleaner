@@ -97,7 +97,7 @@ public class Pathfinder
             if (!search.TryImprovePath(current, neighbor, movementCost, out var newCost))
                 continue;
 
-            search.EnqueueIfAbsent(neighbor, newCost + Heuristic(neighbor, goalCell));
+            search.Enqueue(neighbor, newCost + Heuristic(neighbor, goalCell));
         }
     }
 }

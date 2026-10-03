@@ -66,13 +66,27 @@ public class RaycastVisibilityChecker : IVisibilityChecker
         if (result.Count == 0)
             return true;
 
-        // Check if the intersection point is past the target
-        // (this handles the case where we're looking at an opaque cell - we should see it)
-        var hitPosition = (Vector2)result["position"];
-        var toTarget = toPosition - fromPosition;
-        var toHit = hitPosition - fromPosition;
+        // A hit on the destination's own collision shape does not block: an opaque target stays visible,
+        // while opaque cells in front of it still block the ray.
+        return HitsShapeContaining(result, toPosition);
+    }
 
-        // If we hit something after the target, we can see the target
-        return toHit.LengthSquared() >= toTarget.LengthSquared() - 0.01f;
+    private bool HitsShapeContaining(Godot.Collections.Dictionary hit, Vector2 position)
+    {
+        var pointQuery = new PhysicsPointQueryParameters2D
+        {
+            Position = position,
+            CollisionMask = _collisionMask
+        };
+
+        var hitRid = (Rid)hit["rid"];
+        var hitShape = (int)hit["shape"];
+        foreach (var overlap in _spaceState.IntersectPoint(pointQuery))
+        {
+            if ((Rid)overlap["rid"] == hitRid && (int)overlap["shape"] == hitShape)
+                return true;
+        }
+
+        return false;
     }
 }

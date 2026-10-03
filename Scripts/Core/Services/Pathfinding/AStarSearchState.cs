@@ -10,26 +10,26 @@ internal sealed class AStarSearchState
     private readonly PriorityQueue<int, float> _openSet = new();
     private readonly Dictionary<int, int> _cameFrom = new();
     private readonly Dictionary<int, float> _gScore = new();
-    private readonly HashSet<int> _inOpenSet = new();
+    private readonly Dictionary<int, float> _bestEstimate = new();
 
     internal AStarSearchState(int startCell, float startEstimate)
     {
         _gScore[startCell] = 0;
-        _openSet.Enqueue(startCell, startEstimate);
-        _inOpenSet.Add(startCell);
+        Enqueue(startCell, startEstimate);
     }
 
+    /// <summary>
+    /// Dequeues the open cell with the lowest estimate, skipping entries superseded by a cheaper route.
+    /// </summary>
     internal bool TryDequeue(out int current)
     {
-        if (_openSet.Count == 0)
+        while (_openSet.TryDequeue(out current, out var estimate))
         {
-            current = default;
-            return false;
+            if (estimate <= _bestEstimate[current])
+                return true;
         }
 
-        current = _openSet.Dequeue();
-        _inOpenSet.Remove(current);
-        return true;
+        return false;
     }
 
     /// <summary>
@@ -47,11 +47,12 @@ internal sealed class AStarSearchState
         return true;
     }
 
-    internal void EnqueueIfAbsent(int cell, float estimate)
+    /// <summary>
+    /// Queues <paramref name="cell"/> with a new estimate. An earlier entry for the same cell becomes stale.
+    /// </summary>
+    internal void Enqueue(int cell, float estimate)
     {
-        if (!_inOpenSet.Add(cell))
-            return;
-
+        _bestEstimate[cell] = estimate;
         _openSet.Enqueue(cell, estimate);
     }
 

@@ -201,7 +201,11 @@ public class RegularGridMapData : IMapData
     public IEnumerable<int> GetCellsInRect(Rect2 rect)
     {
         var minGrid = WorldToGrid(rect.Position);
-        var maxGrid = WorldToGrid(rect.Position + rect.Size);
+        var exclusiveMax = rect.Position + rect.Size;
+        var maxGrid = new Vector2I(
+            Mathf.Max(minGrid.X, Mathf.CeilToInt(exclusiveMax.X / _tileSize) - 1),
+            Mathf.Max(minGrid.Y, Mathf.CeilToInt(exclusiveMax.Y / _tileSize) - 1)
+        );
 
         minGrid = new Vector2I(
             Mathf.Max(0, minGrid.X),
