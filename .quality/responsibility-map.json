@@ -39,7 +39,27 @@
       },
       {
         "responsibility": "ParseCommonProperties",
-        "owner": "TileDefinitionBuilder"
+        "owner": "TilePropertyReader"
+      },
+      {
+        "responsibility": "BuildTileDefinitionFromWangSet",
+        "owner": "WangTileDefinitionBuilder"
+      },
+      {
+        "responsibility": "BuildTileDefinitionFromProperties",
+        "owner": "PropertyTileDefinitionBuilder"
+      },
+      {
+        "responsibility": "BuildAutoTileVariants",
+        "owner": "WangSetTileLookup"
+      },
+      {
+        "responsibility": "FindRepresentativeTile",
+        "owner": "WangSetTileLookup"
+      },
+      {
+        "responsibility": "ParseTileSize",
+        "owner": "TilePropertyReader"
       },
       {
         "responsibility": "Build",
