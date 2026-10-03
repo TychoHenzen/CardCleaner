@@ -205,5 +205,14 @@
     "reason": "Pure type move: public Godot resource NoiseGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: NoiseGradient.get)",
     "author": "Tycho",
     "time": "2026-10-03T21:56:17.569Z"
+  },
+  {
+    "findingId": "b356c765620210ea3aef80e3f389e493118b1917f4d2ba7b31ad7952182c5463",
+    "fingerprint": "5678a58154db0434d54e72ff668e93b0ffe1e9f1669926e1d4d3891dc0982b42",
+    "baseSha": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetSha": "1f21941a7bf93b387a734c9a084ceb1c1b524e74",
+    "reason": "Pure type move: TileAnimation record moved unchanged out of TileDefinition.cs (types-per-file). It is the type of the public TileDefinition.Animation property so it must stay public; namespace unchanged (member: TileAnimation.TotalDuration)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:57:07.792Z"
   }
 ]
