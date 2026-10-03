@@ -23,12 +23,12 @@ public class TileAtlasCompiler
     /// Compiles all tiles from the TileEditorService into a single atlas.
     /// For compositable auto-tiles (OuterTerrainId="*"), generates N×M composite variants
     /// by compositing each border onto each base terrain.
-    /// Returns (success, message).
+    /// Returns the compilation status and message.
     /// </summary>
-    public (bool success, string message) CompileAtlas(TileEditorService service)
+    public TileAtlasCompilationResult CompileAtlas(TileEditorService service)
     {
         if (service.TileSet == null)
-            return (false, "No TileSet loaded");
+            return new TileAtlasCompilationResult(false, "No TileSet loaded");
 
         foreach (var warning in _transitionValidator.Validate(service.AllTiles))
             GD.PrintErr($"[TileAtlasCompiler] {warning}");
@@ -41,12 +41,12 @@ public class TileAtlasCompiler
 
         var tilesToPack = _terrainSelector.CollectTilesToPack(service.AllTiles);
         if (tilesToPack.Count == 0)
-            return (false, "No tiles to compile");
+            return new TileAtlasCompilationResult(false, "No tiles to compile");
 
         GD.Print($"[TileAtlasCompiler] Packing {tilesToPack.Count} base tile regions");
         var packResult = _atlasPacker.PackTiles(tilesToPack, tileSize);
         if (!packResult.Success)
-            return (false, packResult.Message);
+            return new TileAtlasCompilationResult(false, packResult.Message);
 
         var atlasPath = $"{TileAtlasCompilerConstants.CompiledAtlasDirectory}/"
             + TileAtlasCompilerConstants.AtlasFileName;
@@ -56,7 +56,9 @@ public class TileAtlasCompiler
             tileSet,
             tileSize);
         if (atlasImage == null)
-            return (false, "Failed to create atlas image");
+            return new TileAtlasCompilationResult(
+                false,
+                "Failed to create atlas image");
 
         var composition = _transitionComposer.Generate(new TileAtlasCompositionInput
         {
@@ -75,7 +77,7 @@ public class TileAtlasCompiler
             + "composite tiles");
 
         var result = SaveOutputs(composition, packResult, tileSize, tilesToPack.Count, atlasPath);
-        return (result.Success, result.Message);
+        return new TileAtlasCompilationResult(result.Success, result.Message);
     }
 
     private TileAtlasSaveResult SaveOutputs(
