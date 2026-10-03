@@ -34,5 +34,14 @@
     "reason": "Pure type move: MapGenerationConfig moved unchanged out of IMapGenerator.cs (types-per-file). It is the parameter type of the public IMapGenerator.GenerateAsync so it must stay public; namespace unchanged (member: MapGenerationConfig.get)",
     "author": "Tycho",
     "time": "2026-10-03T21:40:47.799Z"
+  },
+  {
+    "findingId": "36b2d3e40051c34da2649754f5155faec008453dde70acf93d8141ae4db55be9",
+    "fingerprint": "5678a58154db0434d54e72ff668e93b0ffe1e9f1669926e1d4d3891dc0982b42",
+    "baseSha": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetSha": "1f21941a7bf93b387a734c9a084ceb1c1b524e74",
+    "reason": "Pure type move: public Godot resource NoiseGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: NoiseGradient.GetSignatureAt)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:41:35.843Z"
   }
 ]
