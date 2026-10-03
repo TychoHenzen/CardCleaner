@@ -15,13 +15,7 @@ public record TransitionResolveResult(int SourceId, Vector2I AtlasCoords);
 /// </summary>
 public interface ITransitionResolver
 {
-    /// <summary>
-    /// Resolves the atlas coordinates for a terrain transition.
-    /// </summary>
-    /// <param name="innerTerrainId">The dominant terrain (border terrain).</param>
-    /// <param name="outerTerrainId">The background terrain.</param>
-    /// <param name="bitmask">The neighbor bitmask for variant selection.</param>
-    /// <returns>Atlas coordinates if a transition exists, null otherwise.</returns>
+    /// <summary>Resolves atlas coordinates for a terrain transition, or null if unavailable.</summary>
     Vector2I? ResolveTransition(string innerTerrainId, string outerTerrainId, int bitmask);
 
     /// <summary>
@@ -41,12 +35,7 @@ public interface ITransitionResolver
         int fallbackSourceId,
         Vector2I fallbackCoords);
 
-    /// <summary>
-    /// Checks if a transition exists for the given terrain pair.
-    /// </summary>
-    /// <param name="innerTerrainId">The dominant terrain (border terrain).</param>
-    /// <param name="outerTerrainId">The background terrain.</param>
-    /// <returns>True if a transition is defined for this pair.</returns>
+    /// <summary>Checks whether a transition exists for a terrain pair.</summary>
     bool HasTransition(string innerTerrainId, string outerTerrainId);
 
     /// <summary>
@@ -55,12 +44,6 @@ public interface ITransitionResolver
     /// </summary>
     int CompiledAtlasSourceId { get; }
 
-    /// <summary>
-    /// Finds the solid fill (bitmask 15) coordinates for a terrain by searching
-    /// any transition that uses it. Used for uniform terrain areas where
-    /// self-transitions don't exist.
-    /// </summary>
-    /// <param name="terrainId">The terrain tile ID to find the solid fill for.</param>
-    /// <returns>Atlas coordinates of the solid fill, or null if not found.</returns>
+    /// <summary>Finds solid-fill coordinates for a terrain, or null if unavailable.</summary>
     Vector2I? ResolveSolidFill(string terrainId);
 }

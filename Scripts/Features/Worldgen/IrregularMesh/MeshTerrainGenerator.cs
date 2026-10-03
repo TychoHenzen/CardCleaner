@@ -45,7 +45,10 @@ public class MeshTerrainGenerator
     /// <summary>
     /// Creates a two-pass terrain generator (preferred constructor).
     /// </summary>
-    public MeshTerrainGenerator(WfcMapGenerator wfcGenerator, ITileRegistry tileRegistry, CompiledTransitionResolver? transitionResolver = null)
+    public MeshTerrainGenerator(
+        WfcMapGenerator wfcGenerator,
+        ITileRegistry tileRegistry,
+        CompiledTransitionResolver? transitionResolver = null)
     {
         _wfcGenerator = wfcGenerator;
         _tileRegistry = tileRegistry;
@@ -116,7 +119,9 @@ public class MeshTerrainGenerator
             (int)Math.Ceiling(bounds.Max.Y - bounds.Min.Y)
         );
 
-        GD.Print($"[MeshTerrainGen] Mesh: {mesh.Vertices.Count} vertices, {mesh.Quads.Count} quads, effective size: {effectiveSize}");
+        GD.Print(
+            $"[MeshTerrainGen] Mesh: {mesh.Vertices.Count} vertices, {mesh.Quads.Count} quads, " +
+            $"effective size: {effectiveSize}");
 
         // PASS 1: Background layer (non-auto-tiles only)
         var bgResult = _wfcGenerator.GenerateMultiBiome(
@@ -270,7 +275,9 @@ public class MeshTerrainGenerator
                 ?? _biomeRegistry.GetAllBiomes().First();
         }
 
-        GD.Print($"[MeshTerrainGen] Generating with {inputCards.Length} cards, {_biomeRegistry.Count} biomes, effective size: {effectiveSize}");
+        GD.Print(
+            $"[MeshTerrainGen] Generating with {inputCards.Length} cards, {_biomeRegistry.Count} biomes, " +
+            $"effective size: {effectiveSize}");
 
         // PASS 1: Background layer (non-auto-tiles only)
         var bgResult = _wfcGenerator.GenerateMultiBiome(
@@ -410,7 +417,9 @@ public class MeshTerrainGenerator
             vertex.TerrainType = fgTile?.IsPassable == true ? 1 : 0;
         }
 
-        GD.Print($"[MeshTerrainGen] Mapped {autoTileCount}/{mesh.Vertices.Count} vertices with auto-tiles (legacy projection)");
+        GD.Print(
+            $"[MeshTerrainGen] Mapped {autoTileCount}/{mesh.Vertices.Count} vertices " +
+            "with auto-tiles (legacy projection)");
     }
 
     /// <summary>
@@ -476,7 +485,9 @@ public class MeshTerrainGenerator
 
         mesh.UpdateAllCachedProperties();
 
-        GD.Print($"[MeshTerrainGen] Mapped {mesh.Quads.Count} quads ({(isBackgroundOnly ? "background only" : "single pass")})");
+        GD.Print(
+            $"[MeshTerrainGen] Mapped {mesh.Quads.Count} quads " +
+            $"({(isBackgroundOnly ? "background only" : "single pass")})");
     }
 
     private int DetermineTerrainType(string tileId, TileDefinition? tile)
@@ -565,7 +576,9 @@ public class MeshTerrainGenerator
             return false;
         }
 
-        GD.Print($"[MeshTerrainGen] Starting direct mesh WFC with {initialTiles.Count} tiles on {mesh.Vertices.Count} vertices");
+        GD.Print(
+            $"[MeshTerrainGen] Starting direct mesh WFC with {initialTiles.Count} tiles " +
+            $"on {mesh.Vertices.Count} vertices");
 
         // Create mesh topology
         var topology = new IrregularMeshWfcTopology(mesh, initialTiles);
@@ -608,7 +621,12 @@ public class MeshTerrainGenerator
         }
 
         // Create solver with blob tracking and spatial coherence
-        var solver = new WfcSolver(propagator, selector, blobTracker, spatialCoherence: spatialCoherence, tileRegistry: _tileRegistry);
+        var solver = new WfcSolver(
+            propagator,
+            selector,
+            blobTracker,
+            spatialCoherence: spatialCoherence,
+            tileRegistry: _tileRegistry);
         solver.MaxIterations = mesh.Vertices.Count * 2; // Allow reasonable iterations
 
         // Run WFC

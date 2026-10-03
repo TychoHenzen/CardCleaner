@@ -113,7 +113,9 @@ public class WorldMapTerrainRenderer
         }
 
         var atlasStatus = _usingCompiledAtlas ? "compiled atlas" : "FALLBACK (no compiled atlas)";
-        ILog.Print($"[DUAL-GRID] Rendered {tilesRendered} terrain tiles ({transitionsResolved} transitions) using {atlasStatus}");
+        ILog.Print(
+            $"[DUAL-GRID] Rendered {tilesRendered} terrain tiles ({transitionsResolved} transitions) " +
+            $"using {atlasStatus}");
 
         if (missingTileIds.Count > 0)
             ILog.Print($"[DUAL-GRID] WARNING: Missing tiles: {string.Join(", ", missingTileIds)}");
@@ -260,7 +262,9 @@ public class WorldMapTerrainRenderer
         }
 
         if (structureCount + decorationCount + effectCount > 0)
-            ILog.Print($"[NON-TERRAIN] Rendered {structureCount} structures, {decorationCount} decorations, {effectCount} effects");
+            ILog.Print(
+                $"[NON-TERRAIN] Rendered {structureCount} structures, {decorationCount} decorations, " +
+                $"{effectCount} effects");
     }
 
     /// <summary>
@@ -312,7 +316,8 @@ public class WorldMapTerrainRenderer
             foreach (var tile in _tileRegistry.GetAllTiles())
             {
                 ILog.Print(
-                    $"[TILE DEBUG] Registered: id='{tile.Id}' sourceId={tile.SourceId} atlas={tile.AtlasCoords} passable={tile.IsPassable}");
+                    $"[TILE DEBUG] Registered: id='{tile.Id}' sourceId={tile.SourceId} " +
+                    $"atlas={tile.AtlasCoords} passable={tile.IsPassable}");
             }
         }
 

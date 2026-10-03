@@ -5,15 +5,7 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 
 /// <summary>
-/// Maps auto-tile borders to their compiled atlas coordinates.
-/// Used at runtime to look up the correct composite tile for terrain transitions.
-///
-/// Key format: "{border_id}|{outer_terrain}" where:
-/// - border_id: The auto-tile's tile ID (e.g., "grass_border")
-/// - outer_terrain: The background terrain ID (e.g., "sand") or "*" for compositable's direct lookup
-///
-/// For compositable tiles, entries are generated for each base terrain during atlas compilation.
-/// For fixed tiles, a single entry exists with the baked outer terrain.
+/// Maps auto-tile borders to compiled atlas coordinates using "{border_id}|{outer_terrain}" keys.
 /// </summary>
 public class CompiledTransitionMap
 {
@@ -71,8 +63,12 @@ public class CompiledTransitionMap
     /// <param name="borderId">The border tile ID.</param>
     /// <param name="outerTerrain">The outer terrain tile ID.</param>
     /// <param name="formatName">The auto-tile format name (e.g., "corner16", "edge16", "blob47").</param>
-    /// <param name="variantArrays">Atlas coordinates for each bitmask, where each bitmask can have multiple variants.</param>
-    public void AddTransitionWithVariants(string borderId, string outerTerrain, string formatName, Vector2I[][] variantArrays)
+    /// <param name="variantArrays">Atlas coordinates for each bitmask; each bitmask can have multiple variants.</param>
+    public void AddTransitionWithVariants(
+        string borderId,
+        string outerTerrain,
+        string formatName,
+        Vector2I[][] variantArrays)
     {
         var key = CreateKey(borderId, outerTerrain);
         Transitions[key] = new TransitionEntry

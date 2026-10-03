@@ -122,7 +122,9 @@ public class WfcMapGenerator
         _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
         _noSolidFill = tileRegistry != null ? new NoSolidFillConstraint(tileRegistry) : null;
         _bitmaskValidity = tileRegistry != null ? new BitmaskValidityConstraint(tileRegistry) : null;
-        _tileProbability = tileRegistry is TileRegistry concreteRegistry ? new TileProbabilityConstraint(concreteRegistry) : null;
+        _tileProbability = tileRegistry is TileRegistry concreteRegistry
+            ? new TileProbabilityConstraint(concreteRegistry)
+            : null;
         _selector = new WfcTileSelector();
         _adapter = new WfcMapDataAdapter();
 
@@ -171,7 +173,9 @@ public class WfcMapGenerator
                 }
             }
 
-            GD.Print($"[WFC] Configured {gapTiles.Count} gap tiles for adjacency (can be next to {autoTiles.Count} auto-tiles)");
+            GD.Print(
+                $"[WFC] Configured {gapTiles.Count} gap tiles for adjacency " +
+                $"(can be next to {autoTiles.Count} auto-tiles)");
         }
 
         // Add auto-tiles with self-adjacency if not already in rules
@@ -300,7 +304,14 @@ public class WfcMapGenerator
             bool IsPassable(string tileId) => _tileRegistry.GetTile(tileId)?.IsPassable ?? false;
 
             _selector.AddConstraint(new ConnectivityConstraint(passabilityGraph, IsPassable));
-            solver = new WfcSolver(propagator, _selector, _blobTracker, passabilityGraph, IsPassable, _spatialCoherence, _tileRegistry);
+            solver = new WfcSolver(
+                propagator,
+                _selector,
+                _blobTracker,
+                passabilityGraph,
+                IsPassable,
+                _spatialCoherence,
+                _tileRegistry);
         }
 
         solver.SetProfiler(_profiler);

@@ -102,7 +102,12 @@ public class ExplorationAI
     /// <summary>
     /// Create exploration AI with a map data provider.
     /// </summary>
-    public ExplorationAI(IMapData mapData, int? startCell = null, IVisibilityChecker? visibilityChecker = null, int visionRange = 5, IFogOfWar? fogOfWar = null)
+    public ExplorationAI(
+        IMapData mapData,
+        int? startCell = null,
+        IVisibilityChecker? visibilityChecker = null,
+        int visionRange = 5,
+        IFogOfWar? fogOfWar = null)
     {
         ArgumentNullException.ThrowIfNull(mapData);
 
@@ -140,7 +145,11 @@ public class ExplorationAI
     /// <summary>
     /// Backwards-compatible constructor that wraps SimpleMapData in RegularGridMapData.
     /// </summary>
-    public ExplorationAI(SimpleMapData simpleMapData, Vector2I? startPosition = null, IVisibilityChecker? visibilityChecker = null, int visionRange = 5)
+    public ExplorationAI(
+        SimpleMapData simpleMapData,
+        Vector2I? startPosition = null,
+        IVisibilityChecker? visibilityChecker = null,
+        int visionRange = 5)
         : this(
             new RegularGridMapData(simpleMapData),
             startPosition.HasValue
@@ -283,7 +292,9 @@ public class ExplorationAI
                 // We're exploring with an active path - defer enemy pursuit
                 if (_pendingEnemyCell != closestVisibleEnemy)
                 {
-                    ILog.Print($"Enemy spotted at cell {closestVisibleEnemy}! Deferring pursuit until current destination reached.");
+                    ILog.Print(
+                        $"Enemy spotted at cell {closestVisibleEnemy}! " +
+                        "Deferring pursuit until current destination reached.");
                     _pendingEnemyCell = closestVisibleEnemy;
                     EnemySpotted?.Invoke(_mapData.GetCellCenter(closestVisibleEnemy.Value));
                 }
@@ -317,7 +328,9 @@ public class ExplorationAI
             // Enemy not visible but we have a last known position - continue toward it
             if (CurrentCellId == _lastKnownEnemyCell.Value)
             {
-                ILog.Print($"Reached last known enemy cell {_lastKnownEnemyCell} but no enemy found. Returning to exploration.");
+                ILog.Print(
+                    $"Reached last known enemy cell {_lastKnownEnemyCell} but no enemy found. " +
+                    "Returning to exploration.");
                 _lastKnownEnemyCell = null;
                 VisibleEnemyCellId = null;
                 SetMode(ExplorationMode.FrontierExploration);

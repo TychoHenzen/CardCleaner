@@ -33,28 +33,17 @@ public interface IWfcTopology
     /// </summary>
     IEnumerable<int> GetAllCellIds();
 
-    /// <summary>
-    /// Gets all cells that share a "visual face" with this cell.
-    /// For rectangular grids: 8-way neighbors (cells sharing any 2x2 window).
-    /// For irregular meshes: all vertices sharing any quad with this vertex.
-    /// </summary>
+    /// <summary>Gets cells that share a visual face with this cell.</summary>
     /// <param name="cellId">Cell to get neighbors for.</param>
     IEnumerable<int> GetNeighbors(int cellId);
 
-    /// <summary>
-    /// Gets neighbors into a pre-allocated span to avoid allocations in hot paths.
-    /// Returns the number of neighbors written.
-    /// </summary>
+    /// <summary>Writes neighbors into a pre-allocated span and returns the count.</summary>
     /// <param name="cellId">Cell to get neighbors for.</param>
     /// <param name="output">Span to write neighbor IDs into.</param>
     /// <returns>Number of neighbors written.</returns>
     int GetNeighborsNonAlloc(int cellId, Span<int> output);
 
-    /// <summary>
-    /// Gets the maximum number of neighbors any cell can have.
-    /// Used for allocating appropriately-sized buffers.
-    /// For rectangular grids: 8. For irregular meshes: varies (use a safe upper bound).
-    /// </summary>
+    /// <summary>Gets the maximum neighbor count for buffer allocation.</summary>
     int MaxNeighborCount { get; }
 
     /// <summary>

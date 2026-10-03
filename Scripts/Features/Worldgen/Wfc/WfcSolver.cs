@@ -30,7 +30,12 @@ public class WfcSolver
     /// </summary>
     public int MaxIterations { get; set; } = 10000;
 
-    public WfcSolver(WfcPropagator propagator, WfcTileSelector selector, BlobSizeTracker? blobTracker = null, SpatialCoherenceConstraint? spatialCoherence = null, ITileRegistry? tileRegistry = null)
+    public WfcSolver(
+        WfcPropagator propagator,
+        WfcTileSelector selector,
+        BlobSizeTracker? blobTracker = null,
+        SpatialCoherenceConstraint? spatialCoherence = null,
+        ITileRegistry? tileRegistry = null)
     {
         _propagator = propagator;
         _selector = selector;
@@ -177,7 +182,9 @@ public class WfcSolver
 
             if (selectedTile == null)
             {
-                GD.Print($"[WFC] Selector returned null at cell {targetCellId} after {iterations}/{totalCells} cells, validTiles={targetCell.GetPossibleTiles().Count}");
+                GD.Print(
+                    $"[WFC] Selector returned null at cell {targetCellId} after " +
+                    $"{iterations}/{totalCells} cells, validTiles={targetCell.GetPossibleTiles().Count}");
                 return WfcSolveResult.Failed(
                     "Tile selector returned null",
                     iterations,
@@ -205,13 +212,19 @@ public class WfcSolver
                 // Update spatial coherence for region tracking (grid-specific for now)
                 if (_spatialCoherence != null && topology is WfcGrid gridForCoherence)
                 {
-                    _spatialCoherence.OnTileCollapsed(gridForCoherence.CellIdToPosition(targetCellId.Value), selectedTile, gridForCoherence);
+                    _spatialCoherence.OnTileCollapsed(
+                        gridForCoherence.CellIdToPosition(targetCellId.Value),
+                        selectedTile,
+                        gridForCoherence);
                 }
 
                 // Reserve cells for multi-cell variants (grid-specific)
                 if (topology is WfcGrid gridForReserve)
                 {
-                    ReserveMultiCellVariant(gridForReserve.CellIdToPosition(targetCellId.Value), selectedTile, gridForReserve);
+                    ReserveMultiCellVariant(
+                        gridForReserve.CellIdToPosition(targetCellId.Value),
+                        selectedTile,
+                        gridForReserve);
                 }
 
                 // Mark affected cells dirty for entropy recalculation
@@ -226,7 +239,9 @@ public class WfcSolver
             }
             if (!propResult.Success)
             {
-                GD.Print($"[WFC] Propagation failed at cell {propResult.ContradictionCellId} after placing {selectedTile} at cell {targetCellId}, {iterations}/{totalCells} cells");
+                GD.Print(
+                    $"[WFC] Propagation failed at cell {propResult.ContradictionCellId} after placing " +
+                    $"{selectedTile} at cell {targetCellId}, {iterations}/{totalCells} cells");
                 return WfcSolveResult.Failed(
                     $"Propagation failed at cell {propResult.ContradictionCellId}",
                     iterations,

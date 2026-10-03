@@ -17,7 +17,7 @@ public class WfcMapDataAdapter
     /// <param name="grid">Fully collapsed WFC grid</param>
     /// <param name="biome">Biome to apply to all cells</param>
     /// <param name="passableTileIds">Set of tile IDs that are passable (required)</param>
-    /// <param name="defaultTileId">Default tile ID for uncollapsed cells (optional, uses first available if null)</param>
+    /// <param name="defaultTileId">Optional fallback tile ID; null uses the first available.</param>
     /// <returns>SimpleMapData ready for rendering</returns>
     public SimpleMapData ToSimpleMapData(
         WfcGrid grid,
@@ -27,7 +27,8 @@ public class WfcMapDataAdapter
     {
         if (passableTileIds == null)
             throw new ArgumentNullException(nameof(passableTileIds),
-                "passableTileIds must be provided. Use TileDefinition.IsPassable to build the set from a tile registry.");
+                "passableTileIds must be provided. " +
+                "Use TileDefinition.IsPassable to build the set from a tile registry.");
 
         var width = grid.Width;
         var height = grid.Height;
@@ -86,7 +87,7 @@ public class WfcMapDataAdapter
     /// <param name="grid">Fully collapsed WFC grid</param>
     /// <param name="biomeMap">Per-cell biome assignments</param>
     /// <param name="passableTileIds">Set of tile IDs that are passable</param>
-    /// <param name="defaultTileId">Default tile ID for uncollapsed cells (optional, uses first available if null)</param>
+    /// <param name="defaultTileId">Optional fallback tile ID; null uses the first available.</param>
     public SimpleMapData ToSimpleMapData(
         WfcGrid grid,
         string[,] biomeMap,

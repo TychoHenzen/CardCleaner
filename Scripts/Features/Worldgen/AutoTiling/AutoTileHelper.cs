@@ -44,7 +44,10 @@ public static class AutoTileHelper
     /// <param name="tileDef">The tile definition</param>
     /// <param name="getTileId">Function to get tile ID at a position</param>
     /// <returns>The variant definition, or null if not found</returns>
-    public static VariantDefinition? GetAutoTileVariant(Vector2I position, TileDefinition tileDef, Func<Vector2I, string?> getTileId)
+    public static VariantDefinition? GetAutoTileVariant(
+        Vector2I position,
+        TileDefinition tileDef,
+        Func<Vector2I, string?> getTileId)
     {
         if (!tileDef.HasAutoTileVariants)
             return null;
@@ -60,7 +63,10 @@ public static class AutoTileHelper
     /// <param name="tileDef">The tile definition</param>
     /// <param name="getTileId">Function to get tile ID at a position</param>
     /// <returns>The atlas coordinates to use for rendering</returns>
-    public static Vector2I GetAutoTileCoords(Vector2I position, TileDefinition tileDef, Func<Vector2I, string?> getTileId)
+    public static Vector2I GetAutoTileCoords(
+        Vector2I position,
+        TileDefinition tileDef,
+        Func<Vector2I, string?> getTileId)
     {
         if (!tileDef.HasAutoTileVariants)
             return tileDef.AtlasCoords;
@@ -78,7 +84,12 @@ public static class AutoTileHelper
     /// <param name="mapSize">Size of the map</param>
     /// <param name="sourceId">The TileSet source ID to use</param>
     /// <returns>Number of tiles that had auto-tile variants applied</returns>
-    public static int ApplyToTileMap(TileMapLayer tileMap, ITileRegistry tileRegistry, string[,] tileIds, Vector2I mapSize, int sourceId = 4)
+    public static int ApplyToTileMap(
+        TileMapLayer tileMap,
+        ITileRegistry tileRegistry,
+        string[,] tileIds,
+        Vector2I mapSize,
+        int sourceId = 4)
     {
         var variantsApplied = 0;
 

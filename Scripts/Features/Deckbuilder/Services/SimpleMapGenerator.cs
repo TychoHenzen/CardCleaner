@@ -157,7 +157,9 @@ public class SimpleMapGenerator
         var enemyCount = _rng.RandiRange(2, Mathf.Min(3, shuffledTiles.Count - 1));
         var enemyPositions = shuffledTiles.Skip(1).Take(enemyCount).ToList();
 
-        ILog.Print($"Map generated: {passableTiles.Count} passable tiles, player at {playerStart}, {enemyCount} enemies");
+        ILog.Print(
+            $"Map generated: {passableTiles.Count} passable tiles, player at {playerStart}, " +
+            $"{enemyCount} enemies");
 
         // Optional: Validate spatial coherence (diagnostic)
         ValidateSpatialCoherence(finalTileIds, size);
@@ -524,7 +526,8 @@ public class SimpleMapGenerator
         if (IsTerrainAtPosition(terrainGrid, size, vx, vy - 1, topTerrain)) bitmask |= NeighborBitmaskCorner.NorthEast;
         if (IsTerrainAtPosition(terrainGrid, size, vx, vy, topTerrain)) bitmask |= NeighborBitmaskCorner.SouthEast;
         if (IsTerrainAtPosition(terrainGrid, size, vx - 1, vy, topTerrain)) bitmask |= NeighborBitmaskCorner.SouthWest;
-        if (IsTerrainAtPosition(terrainGrid, size, vx - 1, vy - 1, topTerrain)) bitmask |= NeighborBitmaskCorner.NorthWest;
+        if (IsTerrainAtPosition(terrainGrid, size, vx - 1, vy - 1, topTerrain))
+            bitmask |= NeighborBitmaskCorner.NorthWest;
         return bitmask;
     }
 
@@ -561,13 +564,19 @@ public class SimpleMapGenerator
     {
         var metrics = RegionAnalyzer.Analyze(tileMap);
 
-        ILog.Print($"[SpatialCoherence] {metrics.RegionCount} regions found (avg size: {metrics.AverageSize:F1} tiles)");
+        ILog.Print(
+            $"[SpatialCoherence] {metrics.RegionCount} regions found " +
+            $"(avg size: {metrics.AverageSize:F1} tiles)");
         ILog.Print($"[SpatialCoherence] Region sizes: min={metrics.MinSize}, max={metrics.MaxSize}");
-        ILog.Print($"[SpatialCoherence] {metrics.PercentInLargeRegions:F1}% of tiles in regions >= 30 tiles ({metrics.TilesInLargeRegions}/{metrics.TotalTiles})");
+        ILog.Print(
+            $"[SpatialCoherence] {metrics.PercentInLargeRegions:F1}% of tiles in regions >= 30 tiles " +
+            $"({metrics.TilesInLargeRegions}/{metrics.TotalTiles})");
 
         if (metrics.PercentInLargeRegions < 70.0f)
         {
-            ILog.Print($"[SpatialCoherence] WARNING: Low coherence - only {metrics.PercentInLargeRegions:F1}% of tiles in large regions (target: 70%+)");
+            ILog.Print(
+                $"[SpatialCoherence] WARNING: Low coherence - only {metrics.PercentInLargeRegions:F1}% " +
+                "of tiles in large regions (target: 70%+)");
         }
     }
 
@@ -586,7 +595,9 @@ public class SimpleMapGenerator
 
         if (terrainConflicts > 0)
         {
-            ILog.Print($"[BitmaskConsistency] {terrainConflicts} adjacent tiles with different topTerrains (3-way boundaries)");
+            ILog.Print(
+                $"[BitmaskConsistency] {terrainConflicts} adjacent tiles with different " +
+                "topTerrains (3-way boundaries)");
         }
 
         if (bitmaskViolations > 0)
