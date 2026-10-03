@@ -29,48 +29,14 @@ public class Pathfinder
         if (startCell == goalCell)
             return new List<int> { startCell };
 
-        var openSet = new PriorityQueue<int, float>();
-        var cameFrom = new Dictionary<int, int>();
-        var gScore = new Dictionary<int, float>();
-        var inOpenSet = new HashSet<int>();
+        var search = new AStarSearchState(startCell, Heuristic(startCell, goalCell));
 
-        gScore[startCell] = 0;
-        var fScore = Heuristic(startCell, goalCell);
-        openSet.Enqueue(startCell, fScore);
-        inOpenSet.Add(startCell);
-
-        while (openSet.Count > 0)
+        while (search.TryDequeue(out var current))
         {
-            var current = openSet.Dequeue();
-            inOpenSet.Remove(current);
-
             if (current == goalCell)
-                return ReconstructPath(cameFrom, current);
+                return search.ReconstructPath(current);
 
-            foreach (var neighbor in _mapData.GetAdjacentCells(current))
-            {
-                if (!_mapData.IsValidCell(neighbor))
-                    continue;
-
-                var movementCost = _mapData.GetMovementCost(current, neighbor);
-                if (float.IsPositiveInfinity(movementCost))
-                    continue;
-
-                var tentativeGScore = gScore[current] + movementCost;
-
-                if (!gScore.TryGetValue(neighbor, out var existingGScore) || tentativeGScore < existingGScore)
-                {
-                    cameFrom[neighbor] = current;
-                    gScore[neighbor] = tentativeGScore;
-                    var neighborFScore = tentativeGScore + Heuristic(neighbor, goalCell);
-
-                    if (!inOpenSet.Contains(neighbor))
-                    {
-                        openSet.Enqueue(neighbor, neighborFScore);
-                        inOpenSet.Add(neighbor);
-                    }
-                }
-            }
+            ExpandNeighbors(search, current, goalCell);
         }
 
         return new List<int>(); // No path found
@@ -117,16 +83,21 @@ public class Pathfinder
         return posA.DistanceTo(posB);
     }
 
-    private static List<int> ReconstructPath(Dictionary<int, int> cameFrom, int current)
+    private void ExpandNeighbors(AStarSearchState search, int current, int goalCell)
     {
-        var path = new List<int> { current };
-
-        while (cameFrom.TryGetValue(current, out var previous))
+        foreach (var neighbor in _mapData.GetAdjacentCells(current))
         {
-            current = previous;
-            path.Insert(0, current);
-        }
+            if (!_mapData.IsValidCell(neighbor))
+                continue;
 
-        return path;
+            var movementCost = _mapData.GetMovementCost(current, neighbor);
+            if (float.IsPositiveInfinity(movementCost))
+                continue;
+
+            if (!search.TryImprovePath(current, neighbor, movementCost, out var newCost))
+                continue;
+
+            search.EnqueueIfAbsent(neighbor, newCost + Heuristic(neighbor, goalCell));
+        }
     }
 }

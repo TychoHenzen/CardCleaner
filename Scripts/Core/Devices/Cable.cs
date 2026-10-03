@@ -3,7 +3,7 @@ using Godot;
 
 namespace CardCleaner.Scripts.Core.Devices;
 
-public partial class Cable : Node3D, ICable
+internal partial class Cable : Node3D, ICable
 {
     private const float CableRadius = 0.02f;
     private static readonly Color CableColor = new(0.2f, 0.2f, 0.2f);
@@ -103,12 +103,12 @@ public partial class Cable : Node3D, ICable
         UpdateCylinderTransform(_meshInstance, startPos.Value, endPos.Value);
     }
 
-    private (Vector3? start, Vector3? end) GetEndpoints()
+    private CableEndpoints GetEndpoints()
     {
         var startMarker = FindJackMarker(_sourceDevice, SourceJack.Name);
         var endMarker = FindJackMarker(_destinationDevice, DestinationJack.Name);
 
-        return (startMarker?.GlobalPosition, endMarker?.GlobalPosition);
+        return new CableEndpoints(startMarker?.GlobalPosition, endMarker?.GlobalPosition);
     }
 
     private static Node3D? FindJackMarker(IDevice? device, string jackName)

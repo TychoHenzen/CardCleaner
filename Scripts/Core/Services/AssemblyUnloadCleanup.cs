@@ -17,7 +17,7 @@ namespace CardCleaner.Scripts.Core.Services;
 /// The solution: Use a ModuleInitializer to register cleanup handlers that clear these
 /// caches before the assembly unloads.
 /// </summary>
-public static class AssemblyUnloadCleanup
+internal static class AssemblyUnloadCleanup
 {
     private static bool _initialized;
 

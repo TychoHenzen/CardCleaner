@@ -14,10 +14,3 @@ public class ServiceAttribute : Attribute
         ServiceTypes = serviceTypes;
     }
 }
-
-public enum ServiceLifetime
-{
-    Singleton,
-    Transient,
-    Scoped // For future use
-}

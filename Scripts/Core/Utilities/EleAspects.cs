@@ -3,7 +3,7 @@ using CardCleaner.Scripts.Core.Enumeration;
 
 namespace CardCleaner.Scripts.Core.Utilities;
 
-public static class EleAspects
+internal static class EleAspects
 {
     public static Aspect Positive(this Element e)
     {

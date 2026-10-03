@@ -65,8 +65,8 @@ public class SimpleVisibilityChecker : IVisibilityChecker
 
         var dx = Math.Abs(x1 - x0);
         var dy = Math.Abs(y1 - y0);
-        var sx = x0 < x1 ? 1 : -1;
-        var sy = y0 < y1 ? 1 : -1;
+        var sx = StepToward(x0, x1);
+        var sy = StepToward(y0, y1);
         var err = dx - dy;
 
         while (true)
@@ -75,31 +75,18 @@ public class SimpleVisibilityChecker : IVisibilityChecker
             if (x0 == x1 && y0 == y1)
                 return true;
 
-            var currentPos = new Vector2I(x0, y0);
-            var currentCellId = gridData.GetCellId(currentPos);
-
             // Check if this tile blocks visibility (skip the starting tile)
-            if (currentCellId != fromCellId && !gridData.IsTransparent(currentCellId))
+            if (BlocksVisibility(gridData, new Vector2I(x0, y0), fromCellId))
                 return false;
 
             var e2 = 2 * err;
             var movingX = e2 > -dy;
             var movingY = e2 < dx;
 
-            // Check for diagonal corner blocking:
             // If moving diagonally and both adjacent tiles are opaque, block visibility
-            if (movingX && movingY)
-            {
-                var horizontalPos = new Vector2I(x0 + sx, y0);
-                var verticalPos = new Vector2I(x0, y0 + sy);
-
-                var hCellId = gridData.GetCellId(horizontalPos);
-                var vCellId = gridData.GetCellId(verticalPos);
-
-                // If both tiles adjacent to the diagonal are opaque, we can't see through the corner
-                if (!gridData.IsTransparent(hCellId) && !gridData.IsTransparent(vCellId))
-                    return false;
-            }
+            if (movingX && movingY && IsDiagonalCornerBlocked(
+                    gridData, new Vector2I(x0 + sx, y0), new Vector2I(x0, y0 + sy)))
+                return false;
 
             if (movingX)
             {
@@ -112,6 +99,24 @@ public class SimpleVisibilityChecker : IVisibilityChecker
                 y0 += sy;
             }
         }
+    }
+
+    private static int StepToward(int from, int to) => from < to ? 1 : -1;
+
+    private static bool BlocksVisibility(RegularGridMapData gridData, Vector2I position, int fromCellId)
+    {
+        var cellId = gridData.GetCellId(position);
+        return cellId != fromCellId && !gridData.IsTransparent(cellId);
+    }
+
+    private static bool IsDiagonalCornerBlocked(
+        RegularGridMapData gridData, Vector2I horizontalPos, Vector2I verticalPos)
+    {
+        var hCellId = gridData.GetCellId(horizontalPos);
+        var vCellId = gridData.GetCellId(verticalPos);
+
+        // If both tiles adjacent to the diagonal are opaque, we can't see through the corner
+        return !gridData.IsTransparent(hCellId) && !gridData.IsTransparent(vCellId);
     }
 
     /// <summary>

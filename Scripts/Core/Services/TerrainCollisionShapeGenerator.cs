@@ -175,44 +175,45 @@ public static class TerrainCollisionShapeGenerator
 
         // Expand width first
         int endX = start.X;
-        while (endX < width)
+        while (endX < width && IsFreeCell(mapData, visited, start.Y * width + endX))
         {
-            var cellId = start.Y * width + endX;
-            if (visited.Contains(cellId) || mapData.IsTransparent(cellId))
-                break;
             endX++;
         }
         int rectWidth = endX - start.X;
 
         // Then expand height
         int endY = start.Y;
-        bool canExpand = true;
-        while (canExpand && endY < height)
+        while (endY < height && IsRowFree(mapData, visited, new RowSpan(endY, start.X, rectWidth), width))
         {
-            // Check entire row
-            for (int x = start.X; x < start.X + rectWidth; x++)
-            {
-                var cellId = endY * width + x;
-                if (visited.Contains(cellId) || mapData.IsTransparent(cellId))
-                {
-                    canExpand = false;
-                    break;
-                }
-            }
-
-            if (canExpand)
-            {
-                // Mark row as visited
-                for (int x = start.X; x < start.X + rectWidth; x++)
-                {
-                    var cellId = endY * width + x;
-                    visited.Add(cellId);
-                }
-                endY++;
-            }
+            MarkRowVisited(visited, new RowSpan(endY, start.X, rectWidth), width);
+            endY++;
         }
 
         return new Rect2I(start, new Vector2I(rectWidth, endY - start.Y));
+    }
+
+    private static bool IsFreeCell(RegularGridMapData mapData, HashSet<int> visited, int cellId)
+    {
+        return !visited.Contains(cellId) && !mapData.IsTransparent(cellId);
+    }
+
+    private static bool IsRowFree(RegularGridMapData mapData, HashSet<int> visited, RowSpan row, int gridWidth)
+    {
+        for (int x = row.StartX; x < row.StartX + row.Width; x++)
+        {
+            if (!IsFreeCell(mapData, visited, row.Y * gridWidth + x))
+                return false;
+        }
+
+        return true;
+    }
+
+    private static void MarkRowVisited(HashSet<int> visited, RowSpan row, int gridWidth)
+    {
+        for (int x = row.StartX; x < row.StartX + row.Width; x++)
+        {
+            visited.Add(row.Y * gridWidth + x);
+        }
     }
 
     /// <summary>

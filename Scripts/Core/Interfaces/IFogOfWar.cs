@@ -4,21 +4,6 @@ using System.Collections.Generic;
 namespace CardCleaner.Scripts.Core.Interfaces;
 
 /// <summary>
-/// Visibility state for fog of war cells.
-/// </summary>
-public enum FogState
-{
-    /// <summary>Never been seen - completely hidden.</summary>
-    Hidden,
-
-    /// <summary>Previously seen but not currently visible - shown dimmed.</summary>
-    Revealed,
-
-    /// <summary>Currently visible - shown fully.</summary>
-    Visible
-}
-
-/// <summary>
 /// Interface for fog of war state management.
 /// Implementations track which cells have been seen/revealed/visible.
 /// </summary>
@@ -64,31 +49,4 @@ public interface IFogOfWar
     /// Parameter: set of cell IDs that changed.
     /// </summary>
     event Action<IReadOnlySet<int>>? VisibilityChanged;
-}
-
-/// <summary>
-/// Extended fog of war interface for active visibility calculation.
-/// Implementations calculate visibility from an observer position.
-/// </summary>
-public interface IActiveFogOfWar : IFogOfWar
-{
-    /// <summary>
-    /// Update visibility from an observer cell position.
-    /// </summary>
-    void UpdateVisibility(int observerCellId);
-
-    /// <summary>
-    /// Vision range in world units.
-    /// </summary>
-    float VisionRange { get; set; }
-}
-
-/// <summary>
-/// Extended fog of war interface for passive visibility updates.
-/// Implementations receive pre-computed visibility sets from external sources.
-/// </summary>
-public interface IPassiveFogOfWar : IFogOfWar
-{
-    /// <summary>Updates visibility from externally computed seen and visible sets.</summary>
-    void UpdateVisibility(IReadOnlySet<int> seenCellIds, IReadOnlySet<int> visibleCellIds);
 }

@@ -616,6 +616,62 @@
       {
         "responsibility": "InferPassability",
         "owner": "TerrainGeneratorFactory"
+      },
+      {
+        "responsibility": "GetDefaultGapTile",
+        "owner": "TileCatalogQueries"
+      },
+      {
+        "responsibility": "GetDefaultPassableTile",
+        "owner": "TileCatalogQueries"
+      },
+      {
+        "responsibility": "GetDefaultSolidTile",
+        "owner": "TileCatalogQueries"
+      },
+      {
+        "responsibility": "GetWfcTileIds",
+        "owner": "TileCatalogQueries"
+      },
+      {
+        "responsibility": "GetFloatArrayFromData",
+        "owner": "SavedCardReader"
+      },
+      {
+        "responsibility": "GetVector3FromData",
+        "owner": "SavedCardReader"
+      },
+      {
+        "responsibility": "ReconstructPath",
+        "owner": "AStarSearchState"
+      },
+      {
+        "responsibility": "TryImprovePath",
+        "owner": "AStarSearchState"
+      },
+      {
+        "responsibility": "Translate",
+        "owner": "CompiledAtlasTileTranslator"
+      },
+      {
+        "responsibility": "Rebuild",
+        "owner": "VariationGroupBuilder"
+      },
+      {
+        "responsibility": "Respawn",
+        "owner": "SavedCardRespawner"
+      },
+      {
+        "responsibility": "ReadTmx",
+        "owner": "TiledTilesetLoader"
+      },
+      {
+        "responsibility": "ReadTsx",
+        "owner": "TiledTilesetLoader"
+      },
+      {
+        "responsibility": "ExpandNeighbors",
+        "owner": "Pathfinder"
       }
     ],
     "boundaries": [

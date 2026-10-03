@@ -25,51 +25,66 @@ public static class TiledTilesetLoader
         if (!File.Exists(absolutePath))
         {
             ILog.Print($"[TiledTilesetLoader] TMX file not found: {absolutePath}");
-            return new TileRegistryResult("", [], TilesetConfig.Default);
+            return EmptyResult();
         }
 
         try
         {
-            var doc = XDocument.Load(absolutePath);
-            var map = doc.Root;
-            if (map == null || map.Name != "map")
-            {
-                ILog.Print("[TiledTilesetLoader] Invalid TMX: missing map root element");
-                return new TileRegistryResult("", [], TilesetConfig.Default);
-            }
-
-            var tmxDir = Path.GetDirectoryName(absolutePath) ?? "";
-            var allTiles = new List<TileDefinition>();
-            TilesetConfig? config = null;
-
-            // Load each referenced tileset
-            foreach (var tilesetRef in map.Elements("tileset"))
-            {
-                var firstGid = ParseHelpers.ParseInt(tilesetRef.Attribute("firstgid")?.Value, 1);
-                var source = tilesetRef.Attribute("source")?.Value;
-
-                if (string.IsNullOrEmpty(source)) continue;
-
-                // Resolve relative TSX path
-                var tsxAbsolutePath = Path.GetFullPath(Path.Combine(tmxDir, source));
-
-                ILog.Print($"[TiledTilesetLoader] Loading tileset from TMX: {source} (firstgid={firstGid})");
-
-                var result = LoadFromTsx(tsxAbsolutePath, firstGid);
-                allTiles.AddRange(result.Tiles);
-
-                // Use config from first tileset
-                config ??= result.TilesetConfig;
-            }
-
-            ILog.Print($"[TiledTilesetLoader] Loaded {allTiles.Count} tiles from TMX {tmxPath}");
-            return new TileRegistryResult("", allTiles, config ?? TilesetConfig.Default);
+            return ReadTmx(absolutePath, tmxPath);
         }
         catch (Exception ex)
         {
             ILog.Print($"[TiledTilesetLoader] Error loading TMX: {ex.Message}");
-            return new TileRegistryResult("", [], TilesetConfig.Default);
+            return EmptyResult();
         }
+    }
+
+    private static TileRegistryResult ReadTmx(string absolutePath, string tmxPath)
+    {
+        var doc = XDocument.Load(absolutePath);
+        var map = doc.Root;
+        if (map == null || map.Name != "map")
+        {
+            ILog.Print("[TiledTilesetLoader] Invalid TMX: missing map root element");
+            return EmptyResult();
+        }
+
+        var tmxDir = Path.GetDirectoryName(absolutePath) ?? "";
+        var allTiles = new List<TileDefinition>();
+        var config = LoadReferencedTilesets(map, tmxDir, allTiles);
+
+        ILog.Print($"[TiledTilesetLoader] Loaded {allTiles.Count} tiles from TMX {tmxPath}");
+        return new TileRegistryResult("", allTiles, config ?? TilesetConfig.Default);
+    }
+
+    /// <summary>
+    /// Loads every tileset referenced by the map into <paramref name="allTiles"/> and returns the
+    /// config of the first one.
+    /// </summary>
+    private static TilesetConfig? LoadReferencedTilesets(XElement map, string tmxDir, List<TileDefinition> allTiles)
+    {
+        TilesetConfig? config = null;
+
+        foreach (var tilesetRef in map.Elements("tileset"))
+        {
+            var firstGid = ParseHelpers.ParseInt(tilesetRef.Attribute("firstgid")?.Value, 1);
+            var source = tilesetRef.Attribute("source")?.Value;
+
+            if (string.IsNullOrEmpty(source)) continue;
+
+            // Resolve relative TSX path
+            var tsxAbsolutePath = Path.GetFullPath(Path.Combine(tmxDir, source));
+
+            ILog.Print($"[TiledTilesetLoader] Loading tileset from TMX: {source} (firstgid={firstGid})");
+
+            var result = LoadFromTsx(tsxAbsolutePath, firstGid);
+            allTiles.AddRange(result.Tiles);
+
+            // Use config from first tileset
+            config ??= result.TilesetConfig;
+        }
+
+        return config;
     }
 
     /// <summary>
@@ -81,58 +96,69 @@ public static class TiledTilesetLoader
         if (!File.Exists(absolutePath))
         {
             ILog.Print($"[TiledTilesetLoader] TSX file not found: {absolutePath}");
-            return new TileRegistryResult("", [], TilesetConfig.Default);
+            return EmptyResult();
         }
 
         try
         {
-            var doc = XDocument.Load(absolutePath);
-            var tileset = doc.Root;
-            if (tileset == null || tileset.Name != "tileset")
-            {
-                ILog.Print("[TiledTilesetLoader] Invalid TSX: missing tileset root element");
-                return new TileRegistryResult("", [], TilesetConfig.Default);
-            }
-
-            var tileWidth = ParseHelpers.ParseInt(tileset.Attribute("tilewidth")?.Value, 16);
-            var tileHeight = ParseHelpers.ParseInt(tileset.Attribute("tileheight")?.Value, 16);
-            var columns = ParseHelpers.ParseInt(tileset.Attribute("columns")?.Value, 1);
-
-            // Parse image source path
-            var imageElement = tileset.Element("image");
-            var imageSource = imageElement?.Attribute("source")?.Value ?? "";
-
-            // Resolve relative path from TSX location
-            if (!string.IsNullOrEmpty(imageSource) && !imageSource.StartsWith("res://"))
-            {
-                var tsxDir = Path.GetDirectoryName(absolutePath) ?? "";
-                var fullImagePath = Path.GetFullPath(Path.Combine(tsxDir, imageSource));
-                imageSource = fullImagePath; // Keep absolute for now, caller can convert
-            }
-
-            // Parse Wang sets for auto-tile mappings
-            var wangData = WangSetParser.ParseWangSets(tileset);
-
-            // Parse per-tile properties
-            var tileProperties = TilePropertyParser.ParseAllTileProperties(tileset);
-
-            // Build TileDefinitions
-            var tiles = TileDefinitionBuilder.BuildTileDefinitions(tileProperties, wangData, columns, sourceId);
-
-            var config = new TilesetConfig
-            {
-                BaseTileSize = new Vector2I(tileWidth, tileHeight)
-            };
-
-            ILog.Print($"[TiledTilesetLoader] Loaded {tiles.Count} tiles from {tsxPath}");
-            return new TileRegistryResult(imageSource, tiles, config);
+            return ReadTsx(absolutePath, tsxPath, sourceId);
         }
         catch (Exception ex)
         {
             ILog.Print($"[TiledTilesetLoader] Error loading TSX: {ex.Message}");
-            return new TileRegistryResult("", [], TilesetConfig.Default);
+            return EmptyResult();
         }
     }
+
+    private static TileRegistryResult ReadTsx(string absolutePath, string tsxPath, int sourceId)
+    {
+        var doc = XDocument.Load(absolutePath);
+        var tileset = doc.Root;
+        if (tileset == null || tileset.Name != "tileset")
+        {
+            ILog.Print("[TiledTilesetLoader] Invalid TSX: missing tileset root element");
+            return EmptyResult();
+        }
+
+        var tileWidth = ParseHelpers.ParseInt(tileset.Attribute("tilewidth")?.Value, 16);
+        var tileHeight = ParseHelpers.ParseInt(tileset.Attribute("tileheight")?.Value, 16);
+        var columns = ParseHelpers.ParseInt(tileset.Attribute("columns")?.Value, 1);
+
+        var imageSource = ResolveImageSource(tileset, absolutePath);
+
+        // Parse Wang sets for auto-tile mappings
+        var wangData = WangSetParser.ParseWangSets(tileset);
+
+        // Parse per-tile properties
+        var tileProperties = TilePropertyParser.ParseAllTileProperties(tileset);
+
+        // Build TileDefinitions
+        var tiles = TileDefinitionBuilder.BuildTileDefinitions(tileProperties, wangData, columns, sourceId);
+
+        var config = new TilesetConfig
+        {
+            BaseTileSize = new Vector2I(tileWidth, tileHeight)
+        };
+
+        ILog.Print($"[TiledTilesetLoader] Loaded {tiles.Count} tiles from {tsxPath}");
+        return new TileRegistryResult(imageSource, tiles, config);
+    }
+
+    /// <summary>
+    /// Reads the image source and makes relative paths absolute from the TSX location
+    /// (the caller can convert them back to project paths).
+    /// </summary>
+    private static string ResolveImageSource(XElement tileset, string tsxAbsolutePath)
+    {
+        var imageSource = tileset.Element("image")?.Attribute("source")?.Value ?? "";
+        if (string.IsNullOrEmpty(imageSource) || imageSource.StartsWith("res://"))
+            return imageSource;
+
+        var tsxDir = Path.GetDirectoryName(tsxAbsolutePath) ?? "";
+        return Path.GetFullPath(Path.Combine(tsxDir, imageSource));
+    }
+
+    private static TileRegistryResult EmptyResult() => new("", [], TilesetConfig.Default);
 
     /// <summary>
     /// Detects variation group info from a tile ID based on naming patterns.
