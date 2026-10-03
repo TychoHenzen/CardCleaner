@@ -219,7 +219,7 @@ public static class CompiledAtlasLoader
     /// Translates original tile coordinates to compiled atlas coordinates.
     /// Returns the original coordinates if no mapping exists.
     /// </summary>
-    public static (int sourceId, Vector2I atlasCoords) TranslateCoordinates(
+    internal static AtlasCoordinateTranslation TranslateCoordinates(
         int originalSourceId,
         Vector2I originalAtlasCoords,
         AtlasMappingData? mapping = null)
@@ -227,7 +227,7 @@ public static class CompiledAtlasLoader
         mapping ??= _cachedMapping;
 
         if (mapping?.Sources == null)
-            return (originalSourceId, originalAtlasCoords);
+            return new AtlasCoordinateTranslation(originalSourceId, originalAtlasCoords);
 
         var sourceKey = originalSourceId.ToString();
         var coordKey = $"{originalAtlasCoords.X},{originalAtlasCoords.Y}";
@@ -236,12 +236,12 @@ public static class CompiledAtlasLoader
             coordMappings.TryGetValue(coordKey, out var rect))
         {
             // When using compiled atlas, all tiles use sourceId 0
-            return (0, new Vector2I(rect.X, rect.Y));
+            return new AtlasCoordinateTranslation(0, new Vector2I(rect.X, rect.Y));
         }
 
         // No mapping found - return original (will fail at runtime if atlas-only mode)
         ILog.Print($"[CompiledAtlasLoader] No mapping for source {originalSourceId} coord {originalAtlasCoords}");
-        return (originalSourceId, originalAtlasCoords);
+        return new AtlasCoordinateTranslation(originalSourceId, originalAtlasCoords);
     }
 
     /// <summary>

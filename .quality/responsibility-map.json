@@ -56,6 +56,14 @@
       {
         "responsibility": "ComputeTransitionBitmask",
         "owner": "SimpleMapGenerator"
+      },
+      {
+        "responsibility": "TranslateCoordinates",
+        "owner": "CompiledAtlasLoader"
+      },
+      {
+        "responsibility": "SolveWithRetry",
+        "owner": "WfcSolver"
       }
     ],
     "boundaries": [

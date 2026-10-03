@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 367,
+  "fileCount": 369,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
@@ -359,6 +359,11 @@
     },
     {
       "path": "Scripts/Core/Services/CancellableProgressProfiler.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/CompiledAtlas/AtlasCoordinateTranslation.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -1084,6 +1089,11 @@
     },
     {
       "path": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveAttempt.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -1839,21 +1849,21 @@
     }
   ],
   "summary": {
-    "total": 7433,
-    "errors": 705,
-    "warnings": 6728,
+    "total": 7437,
+    "errors": 703,
+    "warnings": 6734,
     "byRule": {
       "dead-export": 35,
       "duplicate-block": 148,
       "types-per-file": 54,
       "file-length": 222,
       "complexity": 331,
-      "function-length": 373,
+      "function-length": 374,
       "nesting-depth": 40,
       "param-count": 111,
-      "unnamed-tuple": 67,
+      "unnamed-tuple": 65,
       "comment-bloat": 133,
-      "line-length": 4527,
+      "line-length": 4532,
       "test-only-export": 13,
       "else-branch": 148,
       "stateless-method": 898,
@@ -2013,7 +2023,6 @@
       "addons/tile_editor/TilesetAtlasPicker.cs": 24,
       "Scripts/Features/Deckbuilder/Components/BiomeDistributionPreview.cs": 20,
       "Scripts/Features/Worldgen/Wfc/EntropyCache.cs": 14,
-      "Scripts/Core/Services/CompiledAtlasLoader.cs": 37,
       "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs": 22,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWar.cs": 13,
       "Tests/Core/Services/RaycastVisibilityCheckerTest.cs": 5,
@@ -2062,6 +2071,7 @@
       "Scripts/Core/Interfaces/ITileMetadataProvider.cs": 5,
       "Scripts/Core/Services/CancellableProgressProfiler.cs": 7,
       "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs": 33,
+      "Scripts/Core/Services/CompiledAtlasLoader.cs": 39,
       "Scripts/Core/Services/InputService.cs": 33,
       "Scripts/Core/Utilities/CsgBaker.cs": 13,
       "Scripts/Features/Card/Components/CardDesigner.cs": 23,
@@ -2168,6 +2178,7 @@
       "Scripts/Core/Interfaces/ICardGenerator.cs": 1,
       "Scripts/Core/Interfaces/IInputService.cs": 2,
       "Scripts/Core/Interfaces/IPlayerResetService.cs": 3,
+      "Scripts/Core/Services/CompiledAtlas/AtlasCoordinateTranslation.cs": 1,
       "Scripts/Core/Services/SafePositionTracker.cs": 4,
       "Scripts/Features/Card/Components/CardDropper.cs": 2,
       "Scripts/Features/Card/Components/CardShaderRenderer.cs": 2,
@@ -2178,6 +2189,7 @@
       "Scripts/Features/Worldgen/Biomes/BiomeMapGenerator.cs": 4,
       "Scripts/Features/Worldgen/CardBasedGradient.cs": 2,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularGeneratedMap.cs": 1,
+      "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveAttempt.cs": 1,
       "Tests/Core/Data/GameSettingsTest.cs": 2,
       "Tests/Core/PropertyTesting/SeedManager.cs": 7,
       "Tests/Core/ServiceProviders/CardServiceProviderTest.cs": 5,
@@ -3093,7 +3105,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 39,
+      "line": 40,
       "rule": "types-per-file",
       "severity": "error",
       "message": "2 types in one file: WfcSolveResult, WfcSolver",
@@ -3496,8 +3508,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "error",
-      "message": "file is 372 lines",
-      "metric": 372
+      "message": "file is 375 lines",
+      "metric": 375
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
@@ -4277,7 +4289,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 99,
+      "line": 100,
       "rule": "complexity",
       "severity": "error",
       "message": "Solve() cyclomatic complexity 18",
@@ -4285,7 +4297,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 328,
+      "line": 331,
       "rule": "complexity",
       "severity": "error",
       "message": "ReserveMultiCellVariant() cyclomatic complexity 15",
@@ -4861,7 +4873,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 99,
+      "line": 100,
       "rule": "function-length",
       "severity": "error",
       "message": "Solve() is 163 lines",
@@ -5324,14 +5336,6 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 222,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (int sourceId, Vector2I atlasCoords) TranslateCoordinates( — replace it with a named type",
-      "metric": 1
-    },
-    {
       "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
       "line": 169,
       "rule": "unnamed-tuple",
@@ -5449,14 +5453,6 @@
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineMultiBiomeTiles( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 272,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (WfcSolveResult result, IWfcTopology topology) SolveWithRetry( — replace it with a named type",
       "metric": 1
     },
     {
@@ -6981,7 +6977,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 55,
+      "line": 56,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 198 chars",
@@ -6989,7 +6985,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 202,
+      "line": 203,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 169 chars",
@@ -6997,7 +6993,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 230,
+      "line": 231,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 141 chars",
@@ -7005,7 +7001,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 236,
+      "line": 237,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 127 chars",
@@ -7013,7 +7009,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 251,
+      "line": 252,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 180 chars",
@@ -12789,7 +12785,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 328,
+      "line": 273,
+      "rule": "function-length",
+      "severity": "warn",
+      "message": "SolveWithRetry() is 32 lines",
+      "metric": 32
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+      "line": 331,
       "rule": "function-length",
       "severity": "warn",
       "message": "ReserveMultiCellVariant() is 43 lines",
@@ -14341,7 +14345,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 99,
+      "line": 100,
       "rule": "nesting-depth",
       "severity": "warn",
       "message": "Solve() nests 4 levels deep",
@@ -15077,7 +15081,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 22,
+      "line": 23,
       "rule": "param-count",
       "severity": "warn",
       "message": "WfcSolveResult() takes 4 parameters",
@@ -15085,7 +15089,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 55,
+      "line": 56,
       "rule": "param-count",
       "severity": "warn",
       "message": "WfcSolver() takes 5 parameters",
@@ -15093,7 +15097,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 69,
+      "line": 70,
       "rule": "param-count",
       "severity": "warn",
       "message": "WfcSolver() takes 7 parameters",
@@ -15101,7 +15105,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 272,
+      "line": 273,
       "rule": "param-count",
       "severity": "warn",
       "message": "SolveWithRetry() takes 4 parameters",
@@ -15869,7 +15873,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 99,
+      "line": 100,
       "rule": "else-branch",
       "severity": "warn",
       "message": "Solve() has 1 else branch(es) — prefer guard clauses",
@@ -18325,7 +18329,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 272,
+      "line": 273,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "SolveWithRetry() never touches instance state — make it a free function",
@@ -24797,7 +24801,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 233,
+      "line": 234,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -26549,7 +26553,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 22,
+      "line": 23,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "WfcSolveResult() takes a boolean flag; split the behavior or name the policy",
@@ -27604,6 +27608,14 @@
       "metric": 92
     },
     {
+      "file": "Scripts/Core/Services/CompiledAtlas/AtlasCoordinateTranslation.cs",
+      "line": 5,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
       "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
       "line": 14,
       "rule": "line-length",
@@ -27957,6 +27969,22 @@
     },
     {
       "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 230,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 239,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
       "line": 242,
       "rule": "line-length",
       "severity": "warn",
@@ -27970,6 +27998,14 @@
       "severity": "warn",
       "message": "line is 114 chars",
       "metric": 114
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 244,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
     },
     {
       "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
@@ -41036,6 +41072,14 @@
       "metric": 85
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveAttempt.cs",
+      "line": 5,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/EntropyCache.cs",
       "line": 11,
       "rule": "line-length",
@@ -42085,7 +42129,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 22,
+      "line": 23,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 111 chars",
@@ -42093,7 +42137,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 30,
+      "line": 31,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -42101,7 +42145,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 31,
+      "line": 32,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -42109,7 +42153,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 36,
+      "line": 37,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -42117,7 +42161,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 37,
+      "line": 38,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -42125,7 +42169,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 65,
+      "line": 66,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -42133,7 +42177,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 83,
+      "line": 84,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -42141,7 +42185,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 93,
+      "line": 94,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -42149,7 +42193,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 99,
+      "line": 100,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 105 chars",
@@ -42157,7 +42201,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 138,
+      "line": 139,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -42165,7 +42209,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 144,
+      "line": 145,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -42173,7 +42217,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 147,
+      "line": 148,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 108 chars",
@@ -42181,7 +42225,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 177,
+      "line": 178,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 110 chars",
@@ -42189,7 +42233,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 185,
+      "line": 186,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -42197,7 +42241,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 219,
+      "line": 220,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 117 chars",
@@ -42205,7 +42249,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 223,
+      "line": 224,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -42213,7 +42257,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 227,
+      "line": 228,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -42221,7 +42265,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 228,
+      "line": 229,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -42229,7 +42273,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 240,
+      "line": 241,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -42237,7 +42281,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 247,
+      "line": 248,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -42245,7 +42289,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 253,
+      "line": 254,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -42253,7 +42297,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 259,
+      "line": 260,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -42261,7 +42305,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 267,
+      "line": 268,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -42269,23 +42313,23 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 271,
+      "line": 272,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
+      "message": "line is 95 chars",
+      "metric": 95
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 298,
+      "line": 300,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
+      "message": "line is 95 chars",
+      "metric": 95
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 307,
+      "line": 310,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -42293,7 +42337,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 328,
+      "line": 331,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -74084,411 +74128,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "errors": 11,
-      "warnings": 37,
-      "rules": {
-        "types-per-file": 1,
-        "file-length": 1,
-        "complexity": 2,
-        "function-length": 2,
-        "unnamed-tuple": 1,
-        "line-length": 32,
-        "nesting-depth": 1,
-        "param-count": 4,
-        "else-branch": 1,
-        "stateless-method": 1,
-        "comment-restates-code": 1,
-        "flag-parameter": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 39,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: WfcSolveResult, WfcSolver",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 372 lines",
-          "metric": 372
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 99,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "Solve() cyclomatic complexity 18",
-          "metric": 18
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 328,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "ReserveMultiCellVariant() cyclomatic complexity 15",
-          "metric": 15
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 99,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "Solve() is 163 lines",
-          "metric": 163
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 272,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (WfcSolveResult result, IWfcTopology topology) SolveWithRetry( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 55,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 198 chars",
-          "metric": 198
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 202,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 169 chars",
-          "metric": 169
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 230,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 141 chars",
-          "metric": 141
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 236,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 127 chars",
-          "metric": 127
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 251,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 180 chars",
-          "metric": 180
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 328,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ReserveMultiCellVariant() is 43 lines",
-          "metric": 43
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 99,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "Solve() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 22,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "WfcSolveResult() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 55,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "WfcSolver() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 69,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "WfcSolver() takes 7 parameters",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 272,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "SolveWithRetry() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 99,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "Solve() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 272,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "SolveWithRetry() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 233,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 22,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "WfcSolveResult() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 22,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 30,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 31,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 36,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 37,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 65,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 83,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 93,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 99,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 138,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 144,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 147,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 177,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 185,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 219,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 223,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 227,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 228,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 240,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 247,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 253,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 259,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 267,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 271,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 298,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 307,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 328,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
       "errors": 11,
       "warnings": 30,
@@ -76674,6 +76313,410 @@
           "severity": "warn",
           "message": "line is 90 chars",
           "metric": 90
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+      "errors": 10,
+      "warnings": 38,
+      "rules": {
+        "types-per-file": 1,
+        "file-length": 1,
+        "complexity": 2,
+        "function-length": 3,
+        "line-length": 32,
+        "nesting-depth": 1,
+        "param-count": 4,
+        "else-branch": 1,
+        "stateless-method": 1,
+        "comment-restates-code": 1,
+        "flag-parameter": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 40,
+          "rule": "types-per-file",
+          "severity": "error",
+          "message": "2 types in one file: WfcSolveResult, WfcSolver",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "error",
+          "message": "file is 375 lines",
+          "metric": 375
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 100,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "Solve() cyclomatic complexity 18",
+          "metric": 18
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 331,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "ReserveMultiCellVariant() cyclomatic complexity 15",
+          "metric": 15
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 100,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "Solve() is 163 lines",
+          "metric": 163
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 56,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 198 chars",
+          "metric": 198
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 203,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 169 chars",
+          "metric": 169
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 231,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 141 chars",
+          "metric": 141
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 237,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 127 chars",
+          "metric": 127
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 252,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 180 chars",
+          "metric": 180
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 273,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "SolveWithRetry() is 32 lines",
+          "metric": 32
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 331,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "ReserveMultiCellVariant() is 43 lines",
+          "metric": 43
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 100,
+          "rule": "nesting-depth",
+          "severity": "warn",
+          "message": "Solve() nests 4 levels deep",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 23,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "WfcSolveResult() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 56,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "WfcSolver() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 70,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "WfcSolver() takes 7 parameters",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 273,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "SolveWithRetry() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 100,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "Solve() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 273,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SolveWithRetry() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 234,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 23,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "WfcSolveResult() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 23,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 31,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 32,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 38,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 66,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 84,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 94,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 100,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 139,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 145,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 148,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 178,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 186,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 220,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 224,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 228,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 229,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 241,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 248,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 254,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 260,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 268,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 272,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 300,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 310,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 331,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
         }
       ]
     },
@@ -107606,317 +107649,6 @@
       ]
     },
     {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "errors": 1,
-      "warnings": 36,
-      "rules": {
-        "unnamed-tuple": 1,
-        "file-length": 1,
-        "complexity": 3,
-        "function-length": 2,
-        "else-branch": 2,
-        "line-length": 28
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 222,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (int sourceId, Vector2I atlasCoords) TranslateCoordinates( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 284 lines",
-          "metric": 284
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 51,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "LoadMapping() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 105,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "LoadCompiledTileSet() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 222,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "TranslateCoordinates() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 51,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "LoadMapping() is 49 lines",
-          "metric": 49
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 105,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "LoadCompiledTileSet() is 47 lines",
-          "metric": 47
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 51,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "LoadMapping() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 159,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "TryLoadAtlasResource() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 18,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 21,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 43,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 64,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 68,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 75,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 77,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 82,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 83,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 88,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 95,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 110,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 119,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 134,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 139,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 148,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 163,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 171,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 175,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 184,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 189,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 196,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 200,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 202,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 213,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 242,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 243,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 264,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        }
-      ]
-    },
-    {
       "file": "Tests/Features/Worldgen/AutoTiling/BuiltInAutoTileFormatsTest.cs",
       "errors": 1,
       "warnings": 34,
@@ -114412,6 +114144,332 @@
           "severity": "error",
           "message": "GdUnit4TestRunnerScene is exported but never referenced anywhere",
           "metric": 1
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "errors": 0,
+      "warnings": 39,
+      "rules": {
+        "file-length": 1,
+        "complexity": 3,
+        "function-length": 2,
+        "else-branch": 2,
+        "line-length": 31
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 284 lines",
+          "metric": 284
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 51,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "LoadMapping() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 105,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "LoadCompiledTileSet() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 222,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "TranslateCoordinates() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 51,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "LoadMapping() is 49 lines",
+          "metric": 49
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 105,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "LoadCompiledTileSet() is 47 lines",
+          "metric": 47
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 51,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "LoadMapping() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 159,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "TryLoadAtlasResource() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 18,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 21,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 43,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 64,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 68,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 75,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 77,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 82,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 83,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 88,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 95,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 110,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 119,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 134,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 139,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 148,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 163,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 171,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 175,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 184,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 189,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 196,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 200,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 202,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 213,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 230,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 239,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 242,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 243,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 244,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 264,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
         }
       ]
     },
@@ -125366,6 +125424,24 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/CompiledAtlas/AtlasCoordinateTranslation.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/AtlasCoordinateTranslation.cs",
+          "line": 5,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Card/Services/SignatureCardHelper.cs",
       "errors": 0,
       "warnings": 1,
@@ -125434,6 +125510,24 @@
           "severity": "warn",
           "message": "line is 82 chars",
           "metric": 82
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveAttempt.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveAttempt.cs",
+          "line": 5,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
         }
       ]
     },

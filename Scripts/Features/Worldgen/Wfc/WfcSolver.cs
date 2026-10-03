@@ -4,6 +4,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Contracts;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 using Godot;
 
@@ -268,8 +269,8 @@ public class WfcSolver
     /// <param name="biome">Biome for soft rule weighting</param>
     /// <param name="baseSeed">Base seed for random number generation</param>
     /// <param name="maxRetries">Maximum retry attempts (default 3)</param>
-    /// <returns>Tuple of (result, finalTopology) - topology is the last attempt's topology</returns>
-    public (WfcSolveResult result, IWfcTopology topology) SolveWithRetry(
+    /// <returns>Named result containing the solve result and last attempt's topology</returns>
+    internal WfcSolveAttempt SolveWithRetry(
         Func<IWfcTopology> createTopology,
         BiomeDefinition? biome,
         ulong baseSeed,
@@ -290,14 +291,16 @@ public class WfcSolver
 
             if (lastResult.Success)
             {
-                return (lastResult, topology);
+                return new WfcSolveAttempt(lastResult, topology);
             }
         }
 
-        return (WfcSolveResult.Failed(
-            $"All {maxRetries + 1} attempts failed. Last error: {lastResult.ErrorMessage}",
-            lastResult.Iterations,
-            lastResult.ContradictionCellId), lastTopology!);
+        return new WfcSolveAttempt(
+            WfcSolveResult.Failed(
+                $"All {maxRetries + 1} attempts failed. Last error: {lastResult.ErrorMessage}",
+                lastResult.Iterations,
+                lastResult.ContradictionCellId),
+            lastTopology!);
     }
 
     /// <summary>
