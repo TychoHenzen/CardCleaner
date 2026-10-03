@@ -318,7 +318,10 @@ public partial class MapGenerationProperties : PropertyTestBase
                 {
                     // All -1 signature (extreme cold, dark, chaotic, etc.)
                     var signature = new CardSignature(new[] { -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1f });
-                    var map = GenerateMapWithSignature((ulong)args.Seed, new Vector2I(args.Width, args.Height), signature);
+                    var map = GenerateMapWithSignature(
+                        (ulong)args.Seed,
+                        new Vector2I(args.Width, args.Height),
+                        signature);
                     return ValidateMapInvariants(map, args.Width, args.Height);
                 })
             .Iterations(30));
@@ -340,7 +343,10 @@ public partial class MapGenerationProperties : PropertyTestBase
                 {
                     // All +1 signature (extreme hot, bright, orderly, etc.)
                     var signature = new CardSignature(new[] { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f });
-                    var map = GenerateMapWithSignature((ulong)args.Seed, new Vector2I(args.Width, args.Height), signature);
+                    var map = GenerateMapWithSignature(
+                        (ulong)args.Seed,
+                        new Vector2I(args.Width, args.Height),
+                        signature);
                     return ValidateMapInvariants(map, args.Width, args.Height);
                 })
             .Iterations(30));
@@ -362,7 +368,10 @@ public partial class MapGenerationProperties : PropertyTestBase
                 {
                     // All 0 signature (neutral/balanced)
                     var signature = new CardSignature();
-                    var map = GenerateMapWithSignature((ulong)args.Seed, new Vector2I(args.Width, args.Height), signature);
+                    var map = GenerateMapWithSignature(
+                        (ulong)args.Seed,
+                        new Vector2I(args.Width, args.Height),
+                        signature);
                     return ValidateMapInvariants(map, args.Width, args.Height);
                 })
             .Iterations(30));
@@ -383,7 +392,10 @@ public partial class MapGenerationProperties : PropertyTestBase
                 Arb.From(mapParamsGen),
                 args =>
                 {
-                    var map = GenerateMapWithSignature((ulong)args.Seed, new Vector2I(args.Width, args.Height), args.Signature);
+                    var map = GenerateMapWithSignature(
+                        (ulong)args.Seed,
+                        new Vector2I(args.Width, args.Height),
+                        args.Signature);
                     return ValidateMapInvariants(map, args.Width, args.Height);
                 })
             .Iterations(50));
@@ -405,7 +417,10 @@ public partial class MapGenerationProperties : PropertyTestBase
                 {
                     // Alternating extremes: -1, +1, -1, +1, etc.
                     var signature = new CardSignature(new[] { -1f, 1f, -1f, 1f, -1f, 1f, -1f, 1f });
-                    var map = GenerateMapWithSignature((ulong)args.Seed, new Vector2I(args.Width, args.Height), signature);
+                    var map = GenerateMapWithSignature(
+                        (ulong)args.Seed,
+                        new Vector2I(args.Width, args.Height),
+                        signature);
                     return ValidateMapInvariants(map, args.Width, args.Height);
                 })
             .Iterations(30));

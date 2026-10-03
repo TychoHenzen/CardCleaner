@@ -294,7 +294,9 @@ public class PipelineIntegrationTest
             GD.Print($"  {result}");
         }
 
-        GD.Print($"\nSummary: {validCoords} valid, {nullCoords} null ({100.0 * nullCoords / (validCoords + nullCoords):F1}% null)");
+        GD.Print(
+            $"\nSummary: {validCoords} valid, {nullCoords} null " +
+            $"({100.0 * nullCoords / (validCoords + nullCoords):F1}% null)");
 
         // Should have more valid than null
         AssertThat(validCoords).IsGreater(nullCoords);
@@ -341,7 +343,11 @@ public class PipelineIntegrationTest
         AssertThat(mismatches.Count).IsEqual(0);
     }
 
-    private List<string> RunPipeline(string terrainId, int dataWidth, int dataHeight, System.Func<int, int, bool> isTerrainAt)
+    private List<string> RunPipeline(
+        string terrainId,
+        int dataWidth,
+        int dataHeight,
+        System.Func<int, int, bool> isTerrainAt)
     {
         var results = new List<string>();
         var visualWidth = dataWidth + 1;
@@ -462,7 +468,9 @@ public class PipelineIntegrationTest
             GD.PrintErr($"L-shape expected output errors:\n{string.Join("\n", errors)}");
         }
 
-        GD.Print($"L-shape pattern validated: {expectedBitmasks.Count - errors.Count}/{expectedBitmasks.Count} correct");
+        GD.Print(
+            $"L-shape pattern validated: {expectedBitmasks.Count - errors.Count}/" +
+            $"{expectedBitmasks.Count} correct");
 
         // Allow some tolerance since expected values were hand-calculated
         // After boundary calculation fixes, up to 4 edge positions may differ

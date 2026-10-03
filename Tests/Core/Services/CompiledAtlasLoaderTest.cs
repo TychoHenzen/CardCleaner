@@ -346,7 +346,9 @@ public class CompiledAtlasLoaderTest
         GD.Print($"  Total coordinate mappings: {totalMappings}");
         GD.Print($"  Atlas size: {_mapping.Atlas!.Width}x{_mapping.Atlas.Height}");
         GD.Print($"  Tile size: {_mapping.Atlas.TileSize}");
-        GD.Print($"  Grid size: {_mapping.Atlas.Width / _mapping.Atlas.TileSize}x{_mapping.Atlas.Height / _mapping.Atlas.TileSize}");
+        GD.Print(
+            $"  Grid size: {_mapping.Atlas.Width / _mapping.Atlas.TileSize}x" +
+            $"{_mapping.Atlas.Height / _mapping.Atlas.TileSize}");
 
         AssertThat(totalMappings).IsGreater(0);
     }
@@ -388,7 +390,9 @@ public class CompiledAtlasLoaderTest
 
         if (missingMappings.Count > 0)
         {
-            GD.Print($"Non-compositable tiles without direct mapping (may use transition_map):\n{string.Join("\n", missingMappings.Take(20))}");
+            GD.Print(
+                "Non-compositable tiles without direct mapping (may use transition_map):\n" +
+                $"{string.Join("\n", missingMappings.Take(20))}");
         }
 
         // This is informational - tiles may use transition_map instead

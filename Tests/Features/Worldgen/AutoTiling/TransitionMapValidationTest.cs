@@ -239,7 +239,9 @@ public class TransitionMapValidationTest
         {
             // During TSX migration, log as warning instead of error
             var totalBorders = _transitionMap.GetAllBorderIds().Count();
-            GD.Print($"[Migration] {missingBorders.Count}/{totalBorders} border IDs not in TileRegistry (TSX migration in progress)");
+            GD.Print(
+                $"[Migration] {missingBorders.Count}/{totalBorders} border IDs not in " +
+                "TileRegistry (TSX migration in progress)");
             GD.Print($"  Missing: {string.Join(", ", missingBorders.Take(5))}...");
 
             // Skip assertion during TSX migration - tiles may not be defined yet
@@ -272,7 +274,9 @@ public class TransitionMapValidationTest
         {
             // During TSX migration, log as warning instead of error
             var totalTransitions = _transitionMap.Transitions.Count;
-            GD.Print($"[Migration] {missingOuter.Count}/{totalTransitions} outer terrain refs not in TileRegistry (TSX migration in progress)");
+            GD.Print(
+                $"[Migration] {missingOuter.Count}/{totalTransitions} outer terrain refs not in " +
+                "TileRegistry (TSX migration in progress)");
             GD.Print($"  Sample: {string.Join(", ", missingOuter.Take(3))}...");
 
             // Skip assertion during TSX migration
@@ -330,7 +334,9 @@ public class TransitionMapValidationTest
         }
 
         if (nullVariant0.Count > 0)
-            GD.Print($"Transitions with null variant[0] (may cause issues):\n{string.Join("\n", nullVariant0.Take(10))}");
+            GD.Print(
+                "Transitions with null variant[0] (may cause issues):\n" +
+                $"{string.Join("\n", nullVariant0.Take(10))}");
 
         // This is informational - null variant[0] may be intentional for some transitions
     }
@@ -418,7 +424,9 @@ public class TransitionMapValidationTest
         }
 
         if (duplicates.Count > 0)
-            GD.Print($"Duplicate coordinates within transitions (may be intentional):\n{string.Join("\n", duplicates.Take(20))}");
+            GD.Print(
+                "Duplicate coordinates within transitions (may be intentional):\n" +
+                $"{string.Join("\n", duplicates.Take(20))}");
 
         // This is informational - some tiles may intentionally use the same coords for multiple variants
     }

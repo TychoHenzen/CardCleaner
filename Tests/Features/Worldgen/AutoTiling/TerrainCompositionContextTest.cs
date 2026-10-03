@@ -123,7 +123,9 @@ public class TerrainCompositionContextTest
         var lowDom = tilesWithDominance.First();
         var highDom = tilesWithDominance.Last();
 
-        GD.Print($"\nExpected: {highDom.Id} (dom={highDom.Dominance}) renders its border on top of {lowDom.Id} (dom={lowDom.Dominance})");
+        GD.Print(
+            $"\nExpected: {highDom.Id} (dom={highDom.Dominance}) renders its border " +
+            $"on top of {lowDom.Id} (dom={lowDom.Dominance})");
 
         // The transition should be keyed as highDom|lowDom, not lowDom|highDom
         var correctKeyExists = _resolver.HasTransition(highDom.Id, lowDom.Id);

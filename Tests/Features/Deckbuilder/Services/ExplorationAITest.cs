@@ -625,7 +625,10 @@ public class ExplorationAITest
         AssertThat(GetCurrentGridPosition(ai, gridData)).IsEqual(new Vector2I(9, 2));
     }
 
-    private static (SimpleMapData mapData, RegularGridMapData gridData) CreateSimpleMap(int width, int height, Vector2I playerStart)
+    private static (SimpleMapData mapData, RegularGridMapData gridData) CreateSimpleMap(
+        int width,
+        int height,
+        Vector2I playerStart)
     {
         var mapData = new SimpleMapData
         {

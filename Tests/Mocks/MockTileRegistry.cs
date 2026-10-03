@@ -45,7 +45,8 @@ public class MockTileRegistry : ITileRegistry, ITileMetadataProvider
 
     // Variation group methods (stub implementations for testing)
     public VariationGroup? GetVariationGroup(string tileId) => _variationGroups.FindGroupContaining(tileId);
-    public VariationGroup? GetVariationGroupByBaseName(string baseName) => _variationGroups.GetGroupByBaseName(baseName);
+    public VariationGroup? GetVariationGroupByBaseName(string baseName) =>
+        _variationGroups.GetGroupByBaseName(baseName);
 
     public bool AreSameTerrainType(string? tileId1, string? tileId2)
     {

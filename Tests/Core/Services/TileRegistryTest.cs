@@ -122,10 +122,16 @@ public class TileRegistryTest
         // (doesn't depend on production tile counts)
         _registry.Clear();
 
-        _registry.RegisterTile(new TileDefinition("universal1", "Universal 1", TilePassability.Passable, new Vector2I(0, 0)));
-        _registry.RegisterTile(new TileDefinition("universal2", "Universal 2", TilePassability.Solid, new Vector2I(1, 0)));
-        _registry.RegisterTile(new TileDefinition("forest1", "Forest 1", TilePassability.Passable, new Vector2I(2, 0), allowedBiomes: ["forest"]));
-        _registry.RegisterTile(new TileDefinition("desert1", "Desert 1", TilePassability.Solid, new Vector2I(3, 0), allowedBiomes: ["desert"]));
+        _registry.RegisterTile(new TileDefinition(
+            "universal1", "Universal 1", TilePassability.Passable, new Vector2I(0, 0)));
+        _registry.RegisterTile(new TileDefinition(
+            "universal2", "Universal 2", TilePassability.Solid, new Vector2I(1, 0)));
+        _registry.RegisterTile(new TileDefinition(
+            "forest1", "Forest 1", TilePassability.Passable, new Vector2I(2, 0),
+            allowedBiomes: ["forest"]));
+        _registry.RegisterTile(new TileDefinition(
+            "desert1", "Desert 1", TilePassability.Solid, new Vector2I(3, 0),
+            allowedBiomes: ["desert"]));
 
         var forestTiles = _registry.GetTilesByBiome("forest").ToList();
         var desertTiles = _registry.GetTilesByBiome("desert").ToList();

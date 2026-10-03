@@ -202,7 +202,10 @@ public class ExplorationStrategyTest
         AssertThat(enemyTarget).IsEqual(visibleEnemyCell);
     }
 
-    private static (SimpleMapData mapData, RegularGridMapData gridData) CreateSimpleMap(int width, int height, Vector2I playerStart)
+    private static (SimpleMapData mapData, RegularGridMapData gridData) CreateSimpleMap(
+        int width,
+        int height,
+        Vector2I playerStart)
     {
         var mapData = new SimpleMapData
         {

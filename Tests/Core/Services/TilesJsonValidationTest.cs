@@ -406,7 +406,11 @@ public class TilesJsonValidationTest
         AssertThat(_tilesDoc).IsNotNull();
         var tiles = _tilesDoc!.RootElement.GetProperty("tiles");
 
-        var validBiomes = new[] { "plains", "forest", "desert", "tundra", "swamp", "mountains", "water", "cave", "volcanic", "magical" };
+        var validBiomes = new[]
+        {
+            "plains", "forest", "desert", "tundra", "swamp",
+            "mountains", "water", "cave", "volcanic", "magical"
+        };
         var invalidBiomes = new System.Collections.Generic.List<string>();
 
         foreach (var tile in tiles.EnumerateArray())

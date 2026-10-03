@@ -130,7 +130,12 @@ public class TiledTilesetLoaderTest
         // Verify that passability is one of the valid enum values
         foreach (var tile in _tiles)
         {
-            var validPassabilities = new[] { TilePassability.Passable, TilePassability.Solid, TilePassability.PartiallyPassable };
+            var validPassabilities = new[]
+            {
+                TilePassability.Passable,
+                TilePassability.Solid,
+                TilePassability.PartiallyPassable
+            };
             AssertThat(validPassabilities).Contains(tile.Passability);
         }
     }

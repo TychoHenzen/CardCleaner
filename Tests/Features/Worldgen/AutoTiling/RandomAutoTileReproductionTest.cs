@@ -100,14 +100,7 @@ public class RandomAutoTileReproductionTest
 
         var expectedMasks = new Dictionary<(int, int), int>
         {
-            // Visual tile at (1,1) samples (0,0), (1,0), (0,1), (1,1)
-            // Filled: (0,0) and (1,1) = NW and SE corners
-            // But wait, let me recalculate:
-            // NE corner samples data (vx, vy-1) = (1, 0) - not filled
-            // SE corner samples data (vx, vy) = (1, 1) - filled (diagonal)
-            // SW corner samples data (vx-1, vy) = (0, 1) - not filled
-            // NW corner samples data (vx-1, vy-1) = (0, 0) - filled (diagonal)
-            // So: NW(8) + SE(2) = 10
+            // Diagonal data cells should produce the NW+SE mask (10).
             { (1, 1), NeighborBitmaskCorner.NorthWest | NeighborBitmaskCorner.SouthEast }, // 10
 
             // Visual tile at (2,2) samples (1,1), (2,1), (1,2), (2,2)
@@ -288,7 +281,9 @@ public class RandomAutoTileReproductionTest
 
                 if (result1.AtlasCoords != result2.AtlasCoords || result2.AtlasCoords != result3.AtlasCoords)
                 {
-                    inconsistencies.Add($"{tile.Id} bitmask={bitmask}: got different results {result1.AtlasCoords}, {result2.AtlasCoords}, {result3.AtlasCoords}");
+                    inconsistencies.Add(
+                        $"{tile.Id} bitmask={bitmask}: got different results " +
+                        $"{result1.AtlasCoords}, {result2.AtlasCoords}, {result3.AtlasCoords}");
                 }
             }
         }
@@ -343,7 +338,9 @@ public class RandomAutoTileReproductionTest
 
         if (suspiciousEntries.Count > 0)
         {
-            GD.Print($"Transitions with high coordinate duplication (may cause 'random' appearance):\n{string.Join("\n", suspiciousEntries)}");
+            GD.Print(
+                "Transitions with high coordinate duplication (may cause 'random' appearance):\n" +
+                $"{string.Join("\n", suspiciousEntries)}");
         }
 
         // Informational - not a hard failure

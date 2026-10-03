@@ -144,7 +144,9 @@ public class CompiledTransitionResolverTest
                 if (coords == null)
                     results.Add($"bitmask {bitmask}: expected ({firstVariant.X},{firstVariant.Y}), got null");
                 else if (coords.Value.X != firstVariant.X || coords.Value.Y != firstVariant.Y)
-                    results.Add($"bitmask {bitmask}: expected ({firstVariant.X},{firstVariant.Y}), got ({coords.Value.X},{coords.Value.Y})");
+                    results.Add(
+                        $"bitmask {bitmask}: expected ({firstVariant.X},{firstVariant.Y}), " +
+                        $"got ({coords.Value.X},{coords.Value.Y})");
             }
             else
             {
@@ -221,7 +223,9 @@ public class CompiledTransitionResolverTest
 
         // The coords might be from any transition with this border
         // Just verify they're not the invalid fallback
-        GD.Print($"ResolveWithFallback returned: sourceId={result.SourceId}, coords=({result.AtlasCoords.X},{result.AtlasCoords.Y})");
+        GD.Print(
+            $"ResolveWithFallback returned: sourceId={result.SourceId}, " +
+            $"coords=({result.AtlasCoords.X},{result.AtlasCoords.Y})");
     }
 
     [TestCase]
@@ -429,12 +433,20 @@ public class CompiledTransitionResolverTest
 
             if (entry.Variants.Length < 16 || entry.Variants[15] == null || entry.Variants[15]!.Length == 0)
             {
-                missingVariant15.Add($"{key}: variant[15] is {(entry.Variants.Length < 16 ? "missing (length=" + entry.Variants.Length + ")" : entry.Variants[15] == null ? "null" : "empty")}");
+                missingVariant15.Add(
+                    $"{key}: variant[15] is " +
+                    $"{(entry.Variants.Length < 16
+                        ? "missing (length=" + entry.Variants.Length + ")"
+                        : entry.Variants[15] == null
+                            ? "null"
+                            : "empty")}");
             }
         }
 
         if (missingVariant15.Count > 0)
-            GD.PrintErr($"Corner16 transitions missing variant[15] (solid fill):\n{string.Join("\n", missingVariant15)}");
+            GD.PrintErr(
+                "Corner16 transitions missing variant[15] (solid fill):\n" +
+                $"{string.Join("\n", missingVariant15)}");
 
         AssertThat(missingVariant15.Count).IsEqual(0);
     }

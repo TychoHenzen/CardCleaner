@@ -98,14 +98,18 @@ public class BlackTileReproductionTest
                 // Check if using compiled atlas sourceId (coords already translated)
                 if (tile.SourceId != CompiledAtlasSourceId)
                 {
-                    unmappedCoords.Add($"{tile.Id}: ({tile.AtlasCoords.X},{tile.AtlasCoords.Y}) from source {tile.SourceId}");
+                    unmappedCoords.Add(
+                        $"{tile.Id}: ({tile.AtlasCoords.X},{tile.AtlasCoords.Y}) " +
+                        $"from source {tile.SourceId}");
                 }
             }
         }
 
         if (unmappedCoords.Count > 0)
         {
-            GD.PrintErr($"BLACK TILE CAUSE: Tiles with unmapped coordinates:\n{string.Join("\n", unmappedCoords.Take(20))}...");
+            GD.PrintErr(
+                "BLACK TILE CAUSE: Tiles with unmapped coordinates:\n" +
+                $"{string.Join("\n", unmappedCoords.Take(20))}...");
         }
 
         GD.Print($"Tiles with unmapped coordinates: {unmappedCoords.Count}");
@@ -135,7 +139,9 @@ public class BlackTileReproductionTest
 
         if (missingTransitions.Count > 0)
         {
-            GD.PrintErr($"BLACK TILE CAUSE: Compositable tiles without transitions:\n{string.Join(", ", missingTransitions)}");
+            GD.PrintErr(
+                "BLACK TILE CAUSE: Compositable tiles without transitions:\n" +
+                $"{string.Join(", ", missingTransitions)}");
         }
 
         AssertThat(missingTransitions.Count).IsEqual(0);
@@ -177,7 +183,9 @@ public class BlackTileReproductionTest
 
         if (nullVariants.Count > 0)
         {
-            GD.PrintErr($"BLACK TILE CAUSE: Transitions with null critical variants:\n{string.Join("\n", nullVariants.Take(30))}");
+            GD.PrintErr(
+                "BLACK TILE CAUSE: Transitions with null critical variants:\n" +
+                $"{string.Join("\n", nullVariants.Take(30))}");
         }
 
         GD.Print($"Null critical variants found: {nullVariants.Count}");
@@ -217,7 +225,9 @@ public class BlackTileReproductionTest
 
         if (fallbackFailures.Count > 0)
         {
-            GD.PrintErr($"POTENTIAL BLACK TILES: Fallback chain issues:\n{string.Join("\n", fallbackFailures.Take(20))}");
+            GD.PrintErr(
+                "POTENTIAL BLACK TILES: Fallback chain issues:\n" +
+                $"{string.Join("\n", fallbackFailures.Take(20))}");
         }
 
         GD.Print($"Fallback chain issues found: {fallbackFailures.Count}");
@@ -275,7 +285,9 @@ public class BlackTileReproductionTest
 
         if (missingSelfTransitions.Count > 0)
         {
-            GD.PrintErr($"BLACK TILE CAUSE: Compositable tiles without solid fill:\n{string.Join(", ", missingSelfTransitions)}");
+            GD.PrintErr(
+                "BLACK TILE CAUSE: Compositable tiles without solid fill:\n" +
+                $"{string.Join(", ", missingSelfTransitions)}");
         }
 
         GD.Print($"Compositable tiles without solid fill: {missingSelfTransitions.Count}");
@@ -309,7 +321,9 @@ public class BlackTileReproductionTest
 
         if (negativeCoords.Count > 0)
         {
-            GD.PrintErr($"BLACK TILE CAUSE: Negative coordinates in transition_map:\n{string.Join("\n", negativeCoords)}");
+            GD.PrintErr(
+                "BLACK TILE CAUSE: Negative coordinates in transition_map:\n" +
+                $"{string.Join("\n", negativeCoords)}");
         }
 
         AssertThat(negativeCoords.Count).IsEqual(0);
@@ -385,7 +399,9 @@ public class BlackTileReproductionTest
 
         if (blackTileConditions.Count > 0)
         {
-            GD.Print($"Boundary rendering potential black tiles:\n{string.Join("\n", blackTileConditions.Take(20))}...");
+            GD.Print(
+                "Boundary rendering potential black tiles:\n" +
+                $"{string.Join("\n", blackTileConditions.Take(20))}...");
         }
 
         GD.Print($"Boundary terrain black tile conditions: {blackTileConditions.Count}");

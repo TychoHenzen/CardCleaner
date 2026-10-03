@@ -413,7 +413,9 @@ public class WfcMapGeneratorIntegrationTest
                     if (cornerTypes.Count > 2)
                     {
                         violationCount++;
-                        GD.Print($"Seed {seed}: Visual tile at ({vx},{vy}) has {cornerTypes.Count} types: {string.Join(", ", cornerTypes)}");
+                        GD.Print(
+                            $"Seed {seed}: Visual tile at ({vx},{vy}) has {cornerTypes.Count} types: " +
+                            $"{string.Join(", ", cornerTypes)}");
                     }
                 }
             }
@@ -488,7 +490,9 @@ public class WfcMapGeneratorIntegrationTest
 
             foreach (var dist in distribution.Distributions)
             {
-                GD.Print($"  {dist.TileId}: {dist.Percentage:F1}% ({dist.TileCount} tiles, {dist.RegionCount} regions)");
+                GD.Print(
+                    $"  {dist.TileId}: {dist.Percentage:F1}% " +
+                    $"({dist.TileCount} tiles, {dist.RegionCount} regions)");
             }
 
             // Check if no tile type exceeds 50% (less strict than 30% initially)

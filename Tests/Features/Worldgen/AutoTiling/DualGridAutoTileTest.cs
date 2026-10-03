@@ -5,30 +5,7 @@ using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Worldgen.AutoTiling;
 
-/// <summary>
-/// Tests for DualGridAutoTile bitmask computation.
-/// Validates that the 4-corner sampling produces correct Corner16 bitmasks.
-///
-/// Corner16 Bitmask Diagram:
-///
-///     Data Grid (what we sample):        Visual Grid (what we render):
-///
-///     ┌───┬───┬───┐                      ┌───┬───┬───┬───┐
-///     │NW │NE │   │                      │   │   │   │   │
-///     │(0,0)│(1,0)│                      │   │ V │ V │ V │ <- Visual tiles
-///     ├───┼───┼───┤                      ├───┼───┼───┼───┤
-///     │SW │SE │   │                      │   │ V │ V │ V │
-///     │(0,1)│(1,1)│                      │   │   │   │   │
-///     └───┴───┴───┘                      └───┴───┴───┴───┘
-///
-///     Visual tile at (vx, vy) samples:
-///       NW = data[vy-1, vx-1]
-///       NE = data[vy-1, vx]
-///       SW = data[vy, vx-1]
-///       SE = data[vy, vx]
-///
-///     Bitmask bits: NE=1, SE=2, SW=4, NW=8
-/// </summary>
+/// <summary>Tests four-corner sampling for correct Corner16 bitmasks.</summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class DualGridAutoTileTest
@@ -227,7 +204,10 @@ public class DualGridAutoTileTest
         };
 
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.NorthEast | NeighborBitmaskCorner.SouthEast | NeighborBitmaskCorner.SouthWest); // 7
+        AssertThat(mask).IsEqual(
+            NeighborBitmaskCorner.NorthEast |
+            NeighborBitmaskCorner.SouthEast |
+            NeighborBitmaskCorner.SouthWest); // 7
     }
 
     /// <summary>
@@ -243,7 +223,10 @@ public class DualGridAutoTileTest
         };
 
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.NorthEast | NeighborBitmaskCorner.SouthEast | NeighborBitmaskCorner.NorthWest); // 11
+        AssertThat(mask).IsEqual(
+            NeighborBitmaskCorner.NorthEast |
+            NeighborBitmaskCorner.SouthEast |
+            NeighborBitmaskCorner.NorthWest); // 11
     }
 
     /// <summary>
@@ -259,7 +242,10 @@ public class DualGridAutoTileTest
         };
 
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.NorthEast | NeighborBitmaskCorner.SouthWest | NeighborBitmaskCorner.NorthWest); // 13
+        AssertThat(mask).IsEqual(
+            NeighborBitmaskCorner.NorthEast |
+            NeighborBitmaskCorner.SouthWest |
+            NeighborBitmaskCorner.NorthWest); // 13
     }
 
     /// <summary>
@@ -275,7 +261,10 @@ public class DualGridAutoTileTest
         };
 
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.SouthEast | NeighborBitmaskCorner.SouthWest | NeighborBitmaskCorner.NorthWest); // 14
+        AssertThat(mask).IsEqual(
+            NeighborBitmaskCorner.SouthEast |
+            NeighborBitmaskCorner.SouthWest |
+            NeighborBitmaskCorner.NorthWest); // 14
     }
 
     // ==================== Full Fill ====================
@@ -491,7 +480,9 @@ public class DualGridAutoTileTest
 
             if (actual != expected)
             {
-                GD.PrintErr($"Bitmask {expected}: expected={expected}, actual={actual}, grid=[NW={hasNW},NE={hasNE},SW={hasSW},SE={hasSE}]");
+                GD.PrintErr(
+                    $"Bitmask {expected}: expected={expected}, actual={actual}, " +
+                    $"grid=[NW={hasNW},NE={hasNE},SW={hasSW},SE={hasSE}]");
             }
 
             AssertThat(actual).IsEqual(expected);
