@@ -277,5 +277,14 @@
     "reason": "Pure type move: public Godot resource TilePoolEntry moved unchanged out of TilePool.cs (types-per-file; Godot expects one script class per file). It is the element type of the public TilePool entries so it must stay public; namespace unchanged, no scene or resource references the old path (member: TilePoolEntry._PropertyCanRevert)",
     "author": "Tycho",
     "time": "2026-10-03T22:02:55.928Z"
+  },
+  {
+    "findingId": "fd05cce34e04426fd097e617dcf35dc1811152839ea1ac36e7b3f1dab1fe0fdb",
+    "fingerprint": "5678a58154db0434d54e72ff668e93b0ffe1e9f1669926e1d4d3891dc0982b42",
+    "baseSha": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetSha": "1f21941a7bf93b387a734c9a084ceb1c1b524e74",
+    "reason": "Pure type move: VariantCoord moved unchanged out of CompiledTransitionMap.cs (types-per-file). It is the element type of the public TransitionEntry.Variants JSON model so it must stay public; namespace unchanged (member: VariantCoord.get)",
+    "author": "Tycho",
+    "time": "2026-10-03T22:03:46.860Z"
   }
 ]
