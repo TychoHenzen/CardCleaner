@@ -178,5 +178,14 @@
     "reason": "Pure type move: VariationGroupCollection moved unchanged out of VariationGroup.cs (types-per-file). It is a public dependency of TileRegistry so it must stay public; namespace unchanged (member: VariationGroupCollection.GetVariantsFor)",
     "author": "Tycho",
     "time": "2026-10-03T21:53:53.021Z"
+  },
+  {
+    "findingId": "a3630dffc80fc2121ea2c5e172b4ba9a076904748d23bfd504344c535871c577",
+    "fingerprint": "5678a58154db0434d54e72ff668e93b0ffe1e9f1669926e1d4d3891dc0982b42",
+    "baseSha": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetSha": "1f21941a7bf93b387a734c9a084ceb1c1b524e74",
+    "reason": "Pure type move: public Godot resource NoiseGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: NoiseGradient._PropertyCanRevert)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:54:40.529Z"
   }
 ]
