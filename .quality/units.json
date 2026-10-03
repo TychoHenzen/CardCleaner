@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 366,
+  "fileCount": 367,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
@@ -359,6 +359,11 @@
     },
     {
       "path": "Scripts/Core/Services/CancellableProgressProfiler.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -1834,33 +1839,32 @@
     }
   ],
   "summary": {
-    "total": 7431,
-    "errors": 720,
-    "warnings": 6711,
+    "total": 7435,
+    "errors": 707,
+    "warnings": 6728,
     "byRule": {
-      "dead-export": 36,
+      "dead-export": 35,
       "duplicate-block": 148,
       "types-per-file": 54,
-      "file-length": 221,
-      "complexity": 332,
-      "function-length": 374,
-      "nesting-depth": 43,
-      "param-count": 107,
+      "file-length": 222,
+      "complexity": 331,
+      "function-length": 373,
+      "nesting-depth": 41,
+      "param-count": 111,
       "unnamed-tuple": 67,
       "comment-bloat": 133,
-      "line-length": 4532,
+      "line-length": 4528,
       "test-only-export": 13,
-      "else-branch": 149,
+      "else-branch": 148,
       "stateless-method": 898,
       "comment-restates-code": 262,
-      "output-parameter": 6,
+      "output-parameter": 15,
       "flag-parameter": 56
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
       "Scripts/Core/Interfaces/IMapData.cs": 9,
       "Scripts/Core/Services/AssemblyUnloadCleanup.cs": 16,
-      "Scripts/Core/Services/CompiledAtlasLoader.cs": 66,
       "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs": 41,
       "Scripts/Core/Utilities/EleAspects.cs": 1,
       "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs": 27,
@@ -2009,6 +2013,7 @@
       "addons/tile_editor/TilesetAtlasPicker.cs": 24,
       "Scripts/Features/Deckbuilder/Components/BiomeDistributionPreview.cs": 20,
       "Scripts/Features/Worldgen/Wfc/EntropyCache.cs": 14,
+      "Scripts/Core/Services/CompiledAtlasLoader.cs": 37,
       "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs": 22,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWar.cs": 13,
       "Tests/Core/Services/RaycastVisibilityCheckerTest.cs": 5,
@@ -2056,6 +2061,7 @@
       "Scripts/Core/DependencyInjection/ServiceLocator.cs": 14,
       "Scripts/Core/Interfaces/ITileMetadataProvider.cs": 5,
       "Scripts/Core/Services/CancellableProgressProfiler.cs": 7,
+      "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs": 33,
       "Scripts/Core/Services/InputService.cs": 33,
       "Scripts/Core/Utilities/CsgBaker.cs": 13,
       "Scripts/Features/Card/Components/CardDesigner.cs": 23,
@@ -2203,14 +2209,6 @@
       "rule": "dead-export",
       "severity": "error",
       "message": "AssemblyUnloadCleanup is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 386,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "TransitionMapData is exported but never referenced anywhere",
       "metric": 1
     },
     {
@@ -3270,14 +3268,6 @@
       "metric": 2
     },
     {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 407 lines",
-      "metric": 407
-    },
-    {
       "file": "Scripts/Core/Services/GameSaveService.cs",
       "line": 1,
       "rule": "file-length",
@@ -3924,14 +3914,6 @@
       "severity": "error",
       "message": "file is 546 lines",
       "metric": 546
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 105,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "LoadCompiledTileSet() cyclomatic complexity 19",
-      "metric": 19
     },
     {
       "file": "Scripts/Core/Services/GameSaveService.cs",
@@ -4646,22 +4628,6 @@
       "metric": 16
     },
     {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 105,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "LoadCompiledTileSet() is 142 lines",
-      "metric": 142
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 281,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "CreateTransitionMapTiles() is 68 lines",
-      "metric": 68
-    },
-    {
       "file": "Scripts/Core/Services/GameSaveService.cs",
       "line": 137,
       "rule": "function-length",
@@ -5294,22 +5260,6 @@
       "metric": 82
     },
     {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 105,
-      "rule": "nesting-depth",
-      "severity": "error",
-      "message": "LoadCompiledTileSet() nests 6 levels deep",
-      "metric": 6
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 281,
-      "rule": "nesting-depth",
-      "severity": "error",
-      "message": "CreateTransitionMapTiles() nests 6 levels deep",
-      "metric": 6
-    },
-    {
       "file": "Tests/Features/Deckbuilder/Services/GameSessionServiceTest.cs",
       "line": 262,
       "rule": "nesting-depth",
@@ -5391,7 +5341,7 @@
     },
     {
       "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 252,
+      "line": 222,
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (int sourceId, Vector2I atlasCoords) TranslateCoordinates( — replace it with a named type",
@@ -6552,54 +6502,6 @@
     {
       "file": "Scripts/Core/Services/AssemblyUnloadCleanup.cs",
       "line": 69,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 121 chars",
-      "metric": 121
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 123,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 169 chars",
-      "metric": 169
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 206,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 142 chars",
-      "metric": 142
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 217,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 130 chars",
-      "metric": 130
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 329,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 133 chars",
-      "metric": 133
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 340,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 122 chars",
-      "metric": 122
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 366,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 121 chars",
@@ -8918,6 +8820,22 @@
       "metric": 115
     },
     {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 273 lines",
+      "metric": 273
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 284 lines",
+      "metric": 284
+    },
+    {
       "file": "Scripts/Core/Services/InputService.cs",
       "line": 1,
       "rule": "file-length",
@@ -9999,19 +9917,19 @@
     },
     {
       "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 252,
+      "line": 105,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "LoadCompiledTileSet() cyclomatic complexity 8",
+      "metric": 8
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 222,
       "rule": "complexity",
       "severity": "warn",
       "message": "TranslateCoordinates() cyclomatic complexity 6",
       "metric": 6
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 281,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "CreateTransitionMapTiles() cyclomatic complexity 8",
-      "metric": 8
     },
     {
       "file": "Scripts/Core/Services/InputService.cs",
@@ -11932,6 +11850,14 @@
       "severity": "warn",
       "message": "LoadMapping() is 49 lines",
       "metric": 49
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 105,
+      "rule": "function-length",
+      "severity": "warn",
+      "message": "LoadCompiledTileSet() is 47 lines",
+      "metric": 47
     },
     {
       "file": "Scripts/Core/Services/Pathfinder.cs",
@@ -14582,6 +14508,38 @@
       "metric": 4
     },
     {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 68,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "AddMappedTile() takes 4 parameters",
+      "metric": 4
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 180,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "AddTransitionEntryTiles() takes 4 parameters",
+      "metric": 4
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 200,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "AddTransitionVariantTiles() takes 4 parameters",
+      "metric": 4
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 215,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "AddTransitionTile() takes 4 parameters",
+      "metric": 4
+    },
+    {
       "file": "Scripts/Core/Services/InputService.cs",
       "line": 33,
       "rule": "param-count",
@@ -15399,18 +15357,10 @@
     },
     {
       "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 105,
+      "line": 159,
       "rule": "else-branch",
       "severity": "warn",
-      "message": "LoadCompiledTileSet() has 2 else branch(es) — prefer guard clauses",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 281,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "CreateTransitionMapTiles() has 1 else branch(es) — prefer guard clauses",
+      "message": "TryLoadAtlasResource() has 1 else branch(es) — prefer guard clauses",
       "metric": 1
     },
     {
@@ -26286,6 +26236,78 @@
       "metric": 1
     },
     {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 68,
+      "rule": "output-parameter",
+      "severity": "warn",
+      "message": "AddMappedTile() exposes an output parameter; return a value instead",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 68,
+      "rule": "output-parameter",
+      "severity": "warn",
+      "message": "AddMappedTile() exposes an output parameter; return a value instead",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 127,
+      "rule": "output-parameter",
+      "severity": "warn",
+      "message": "TryReadTransitionMap() exposes an output parameter; return a value instead",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 180,
+      "rule": "output-parameter",
+      "severity": "warn",
+      "message": "AddTransitionEntryTiles() exposes an output parameter; return a value instead",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 180,
+      "rule": "output-parameter",
+      "severity": "warn",
+      "message": "AddTransitionEntryTiles() exposes an output parameter; return a value instead",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 200,
+      "rule": "output-parameter",
+      "severity": "warn",
+      "message": "AddTransitionVariantTiles() exposes an output parameter; return a value instead",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 200,
+      "rule": "output-parameter",
+      "severity": "warn",
+      "message": "AddTransitionVariantTiles() exposes an output parameter; return a value instead",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 215,
+      "rule": "output-parameter",
+      "severity": "warn",
+      "message": "AddTransitionTile() exposes an output parameter; return a value instead",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 215,
+      "rule": "output-parameter",
+      "severity": "warn",
+      "message": "AddTransitionTile() exposes an output parameter; return a value instead",
+      "metric": 1
+    },
+    {
       "file": "Scripts/Features/Worldgen/AutoTiling/AutoTileFormatRegistry.cs",
       "line": 66,
       "rule": "output-parameter",
@@ -27590,20 +27612,164 @@
       "metric": 92
     },
     {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 17,
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 14,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 35,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 37,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 46,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 61,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 91,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 99,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 107,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 110,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 114,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 120,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 137,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 142,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
       "metric": 92
     },
     {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 157,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 171,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 175,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 211,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 237,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "line": 248,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
       "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
       "line": 18,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 99 chars",
-      "metric": 99
+      "message": "line is 92 chars",
+      "metric": 92
     },
     {
       "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
@@ -27703,143 +27869,7 @@
     },
     {
       "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 130,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 132,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 138,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 102 chars",
-      "metric": 102
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 140,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 147,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 151,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 104 chars",
-      "metric": 104
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 158,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 162,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 106 chars",
-      "metric": 106
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 164,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 169,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 102 chars",
-      "metric": 102
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 175,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 192,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 106 chars",
-      "metric": 106
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 196,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 220,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 222,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 119 chars",
-      "metric": 119
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 234,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 235,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 236,
+      "line": 134,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -27847,95 +27877,7 @@
     },
     {
       "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 243,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 272,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 273,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 114 chars",
-      "metric": 114
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 278,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 279,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 283,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 286,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 293,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 105 chars",
-      "metric": 105
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 297,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 345,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 389,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 111 chars",
-      "metric": 111
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 396,
+      "line": 139,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 104 chars",
@@ -27943,11 +27885,107 @@
     },
     {
       "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "line": 398,
+      "line": 148,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 163,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 171,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 175,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 184,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 189,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 196,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 200,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 202,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 213,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 242,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
       "metric": 87
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 243,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 114 chars",
+      "metric": 114
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "line": 264,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
     },
     {
       "file": "Scripts/Core/Services/GameSaveService.cs",
@@ -69784,551 +69822,6 @@
       ]
     },
     {
-      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-      "errors": 14,
-      "warnings": 52,
-      "rules": {
-        "dead-export": 1,
-        "file-length": 1,
-        "complexity": 4,
-        "function-length": 3,
-        "nesting-depth": 2,
-        "unnamed-tuple": 1,
-        "line-length": 51,
-        "else-branch": 3
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 386,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "TransitionMapData is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 407 lines",
-          "metric": 407
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 105,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "LoadCompiledTileSet() cyclomatic complexity 19",
-          "metric": 19
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 105,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "LoadCompiledTileSet() is 142 lines",
-          "metric": 142
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 281,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "CreateTransitionMapTiles() is 68 lines",
-          "metric": 68
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 105,
-          "rule": "nesting-depth",
-          "severity": "error",
-          "message": "LoadCompiledTileSet() nests 6 levels deep",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 281,
-          "rule": "nesting-depth",
-          "severity": "error",
-          "message": "CreateTransitionMapTiles() nests 6 levels deep",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 252,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (int sourceId, Vector2I atlasCoords) TranslateCoordinates( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 123,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 169 chars",
-          "metric": 169
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 206,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 142 chars",
-          "metric": 142
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 217,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 130 chars",
-          "metric": 130
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 329,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 133 chars",
-          "metric": 133
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 340,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 122 chars",
-          "metric": 122
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 366,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 121 chars",
-          "metric": 121
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 51,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "LoadMapping() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 252,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "TranslateCoordinates() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 281,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "CreateTransitionMapTiles() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 51,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "LoadMapping() is 49 lines",
-          "metric": 49
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 51,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "LoadMapping() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 105,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "LoadCompiledTileSet() has 2 else branch(es) — prefer guard clauses",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 281,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "CreateTransitionMapTiles() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 17,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 18,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 21,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 43,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 64,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 68,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 75,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 77,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 82,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 83,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 88,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 95,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 110,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 119,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 130,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 132,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 138,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 140,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 147,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 151,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 158,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 162,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 164,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 169,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 175,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 192,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 196,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 220,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 222,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 119 chars",
-          "metric": 119
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 234,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 235,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 236,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 243,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 272,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 273,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 278,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 279,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 283,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 286,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 293,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 297,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 345,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 389,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 396,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
-          "line": 398,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        }
-      ]
-    },
-    {
       "file": "Tests/Features/Worldgen/AutoTiling/BlackTileReproductionTest.cs",
       "errors": 14,
       "warnings": 52,
@@ -108146,6 +107639,317 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+      "errors": 1,
+      "warnings": 36,
+      "rules": {
+        "unnamed-tuple": 1,
+        "file-length": 1,
+        "complexity": 3,
+        "function-length": 2,
+        "else-branch": 2,
+        "line-length": 28
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 222,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (int sourceId, Vector2I atlasCoords) TranslateCoordinates( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 284 lines",
+          "metric": 284
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 51,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "LoadMapping() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 105,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "LoadCompiledTileSet() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 222,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "TranslateCoordinates() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 51,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "LoadMapping() is 49 lines",
+          "metric": 49
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 105,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "LoadCompiledTileSet() is 47 lines",
+          "metric": 47
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 51,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "LoadMapping() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 159,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "TryLoadAtlasResource() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 18,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 21,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 43,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 64,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 68,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 75,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 77,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 82,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 83,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 88,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 95,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 110,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 119,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 134,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 139,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 148,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 163,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 171,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 175,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 184,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 189,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 196,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 200,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 202,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 213,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 242,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 243,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
+          "line": 264,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        }
+      ]
+    },
+    {
       "file": "Tests/Features/Worldgen/AutoTiling/BuiltInAutoTileFormatsTest.cs",
       "errors": 1,
       "warnings": 34,
@@ -115228,6 +115032,283 @@
           "severity": "warn",
           "message": "line is 89 chars",
           "metric": 89
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "errors": 0,
+      "warnings": 33,
+      "rules": {
+        "file-length": 1,
+        "param-count": 4,
+        "output-parameter": 9,
+        "line-length": 19
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 273 lines",
+          "metric": 273
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 68,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "AddMappedTile() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 180,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "AddTransitionEntryTiles() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 200,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "AddTransitionVariantTiles() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 215,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "AddTransitionTile() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 68,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddMappedTile() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 68,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddMappedTile() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 127,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "TryReadTransitionMap() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 180,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddTransitionEntryTiles() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 180,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddTransitionEntryTiles() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 200,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddTransitionVariantTiles() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 200,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddTransitionVariantTiles() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 215,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddTransitionTile() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 215,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddTransitionTile() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 14,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 35,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 46,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 61,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 91,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 99,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 107,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 110,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 114,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 120,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 137,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 142,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 157,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 171,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 175,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 211,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 237,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 248,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
         }
       ]
     },

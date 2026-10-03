@@ -40,6 +40,10 @@
       {
         "responsibility": "ParseCommonProperties",
         "owner": "TileDefinitionBuilder"
+      },
+      {
+        "responsibility": "Build",
+        "owner": "CompiledAtlasTileSetBuilder"
       }
     ],
     "boundaries": [

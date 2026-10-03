@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
@@ -15,7 +16,6 @@ namespace CardCleaner.Scripts.Core.Services;
 public static class CompiledAtlasLoader
 {
     private const string DefaultMappingPath = "res://Data/CompiledAtlas/atlas_mapping.json";
-    private const string DefaultTransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";
 
     /// <summary>
     /// Creates fresh JsonSerializerOptions per call to avoid assembly unload issues.
@@ -120,121 +120,26 @@ public static class CompiledAtlasLoader
             return null;
         }
 
-        ILog.Print($"[CompiledAtlasLoader] Atlas info: path={mapping.Atlas.Path}, size={mapping.Atlas.Width}x{mapping.Atlas.Height}, tileSize={mapping.Atlas.TileSize}");
+        ILog.Print(
+            $"[CompiledAtlasLoader] Atlas info: path={mapping.Atlas.Path}, " +
+            $"size={mapping.Atlas.Width}x{mapping.Atlas.Height}, " +
+            $"tileSize={mapping.Atlas.TileSize}");
 
         try
         {
-            var atlasPath = mapping.Atlas.Path;
-            Texture2D? atlasTexture = null;
-
-            // Try loading via ResourceLoader first (works when properly imported)
-            var resourceExists = ResourceLoader.Exists(atlasPath);
-            ILog.Print($"[CompiledAtlasLoader] ResourceLoader.Exists({atlasPath})={resourceExists}");
-
-            if (resourceExists)
-            {
-                atlasTexture = ResourceLoader.Load<Texture2D>(atlasPath);
-                if (atlasTexture != null)
-                    ILog.Print($"[CompiledAtlasLoader] Loaded atlas via ResourceLoader: {atlasPath}");
-                else
-                    ILog.Print($"[CompiledAtlasLoader] ResourceLoader.Load returned null");
-            }
-
-            // Fallback: load PNG directly from disk and create ImageTexture
+            var atlasTexture = LoadAtlasTexture(mapping.Atlas.Path);
             if (atlasTexture == null)
             {
-                var absolutePath = ProjectSettings.GlobalizePath(atlasPath);
-                ILog.Print($"[CompiledAtlasLoader] Trying direct file read: {absolutePath}");
-
-                if (!File.Exists(absolutePath))
-                {
-                    ILog.Print($"[CompiledAtlasLoader] FAILED: Atlas PNG not found at: {absolutePath}");
-                    return null;
-                }
-
-                var image = Image.LoadFromFile(absolutePath);
-                if (image == null)
-                {
-                    ILog.Print($"[CompiledAtlasLoader] FAILED: Image.LoadFromFile returned null");
-                    return null;
-                }
-
-                ILog.Print($"[CompiledAtlasLoader] Loaded image: {image.GetWidth()}x{image.GetHeight()}");
-                atlasTexture = ImageTexture.CreateFromImage(image);
-                ILog.Print($"[CompiledAtlasLoader] Loaded atlas via direct file read: {atlasPath}");
-            }
-
-            if (atlasTexture == null)
-            {
-                ILog.Print($"[CompiledAtlasLoader] FAILED: All load methods failed for: {atlasPath}");
+                ILog.Print(
+                    $"[CompiledAtlasLoader] FAILED: All load methods failed for: " +
+                    mapping.Atlas.Path);
                 return null;
             }
 
-            // Create TileSet with matching tile size
-            var tileSet = new TileSet();
-            tileSet.TileSize = new Vector2I(mapping.Atlas.TileSize, mapping.Atlas.TileSize);
-
-            // Create a single TileSetAtlasSource for the compiled atlas
-            var atlasSource = new TileSetAtlasSource();
-            atlasSource.Texture = atlasTexture;
-            atlasSource.TextureRegionSize = tileSet.TileSize;
-            atlasSource.UseTexturePadding = false;
-
-            // Create tiles for all mapped coordinates
-            var tilesCreated = 0;
-            var tilesSkipped = 0;
-            if (mapping.Sources != null)
-            {
-                foreach (var (sourceIdStr, coordMappings) in mapping.Sources)
-                {
-                    foreach (var (coordKey, rect) in coordMappings)
-                    {
-                        // The atlas coords in the mapping are where this tile lives in the compiled atlas
-                        var atlasCoords = new Vector2I(rect.X, rect.Y);
-                        var tileSize = new Vector2I(rect.W, rect.H);
-
-                        // Create the tile at these atlas coordinates if not already exists
-                        if (!atlasSource.HasTile(atlasCoords))
-                        {
-                            try
-                            {
-                                atlasSource.CreateTile(atlasCoords, tileSize);
-                                tilesCreated++;
-                            }
-                            catch (Exception tileEx)
-                            {
-                                ILog.Print($"[CompiledAtlasLoader] Failed to create tile at {atlasCoords} size {tileSize}: {tileEx.Message}");
-                            }
-                        }
-                        else
-                        {
-                            tilesSkipped++;
-                        }
-                    }
-                }
-            }
-
-            ILog.Print($"[CompiledAtlasLoader] Created {tilesCreated} tiles from atlas_mapping, skipped {tilesSkipped} existing");
-
-            // Also create tiles for transition map coordinates
-            // These are the composited auto-tile variants that aren't in atlas_mapping
-            var transitionTilesCreated = CreateTransitionMapTiles(atlasSource);
-            ILog.Print($"[CompiledAtlasLoader] Created {transitionTilesCreated} additional tiles from transition_map");
-
-            // Add the atlas source to the tileset at index 0
-            // All tiles will use sourceId 0 when using compiled atlas
-            tileSet.AddSource(atlasSource, 0);
+            var tileSet = CompiledAtlasTileSetBuilder.Build(mapping, atlasTexture, CreateJsonOptions());
 
             _cachedTileSet = tileSet;
-
-            // Verify the source was added correctly
-            var sourceCount = tileSet.GetSourceCount();
-            var source0 = tileSet.GetSource(0);
-            var atlasSourceCheck = source0 as TileSetAtlasSource;
-            var textureDims = atlasSourceCheck?.Texture?.GetSize() ?? Vector2.Zero;
-            ILog.Print($"[CompiledAtlasLoader] Created TileSet: {sourceCount} source(s), " +
-                       $"source 0 = {(source0 != null ? "present" : "MISSING")}, " +
-                       $"texture = {textureDims.X}x{textureDims.Y}");
+            LogTileSetDetails(tileSet);
 
             return tileSet;
         }
@@ -243,6 +148,71 @@ public static class CompiledAtlasLoader
             ILog.Print($"[CompiledAtlasLoader] Error creating TileSet: {ex.Message}");
             return null;
         }
+    }
+
+    private static Texture2D? LoadAtlasTexture(string atlasPath)
+    {
+        var atlasTexture = TryLoadAtlasResource(atlasPath);
+        return atlasTexture ?? LoadAtlasTextureFromFile(atlasPath);
+    }
+
+    private static Texture2D? TryLoadAtlasResource(string atlasPath)
+    {
+        var resourceExists = ResourceLoader.Exists(atlasPath);
+        ILog.Print(
+            $"[CompiledAtlasLoader] ResourceLoader.Exists({atlasPath})={resourceExists}");
+
+        if (!resourceExists)
+            return null;
+
+        var atlasTexture = ResourceLoader.Load<Texture2D>(atlasPath);
+        if (atlasTexture != null)
+        {
+            ILog.Print($"[CompiledAtlasLoader] Loaded atlas via ResourceLoader: {atlasPath}");
+        }
+        else
+        {
+            ILog.Print("[CompiledAtlasLoader] ResourceLoader.Load returned null");
+        }
+
+        return atlasTexture;
+    }
+
+    private static Texture2D? LoadAtlasTextureFromFile(string atlasPath)
+    {
+        var absolutePath = ProjectSettings.GlobalizePath(atlasPath);
+        ILog.Print($"[CompiledAtlasLoader] Trying direct file read: {absolutePath}");
+
+        if (!File.Exists(absolutePath))
+        {
+            ILog.Print(
+                $"[CompiledAtlasLoader] FAILED: Atlas PNG not found at: {absolutePath}");
+            return null;
+        }
+
+        var image = Image.LoadFromFile(absolutePath);
+        if (image == null)
+        {
+            ILog.Print("[CompiledAtlasLoader] FAILED: Image.LoadFromFile returned null");
+            return null;
+        }
+
+        ILog.Print($"[CompiledAtlasLoader] Loaded image: {image.GetWidth()}x{image.GetHeight()}");
+        var atlasTexture = ImageTexture.CreateFromImage(image);
+        ILog.Print($"[CompiledAtlasLoader] Loaded atlas via direct file read: {atlasPath}");
+        return atlasTexture;
+    }
+
+    private static void LogTileSetDetails(TileSet tileSet)
+    {
+        var sourceCount = tileSet.GetSourceCount();
+        var source0 = tileSet.GetSource(0);
+        var atlasSourceCheck = source0 as TileSetAtlasSource;
+        var textureDims = atlasSourceCheck?.Texture?.GetSize() ?? Vector2.Zero;
+        ILog.Print(
+            $"[CompiledAtlasLoader] Created TileSet: {sourceCount} source(s), " +
+            $"source 0 = {(source0 != null ? "present" : "MISSING")}, " +
+            $"texture = {textureDims.X}x{textureDims.Y}");
     }
 
     /// <summary>
@@ -275,79 +245,6 @@ public static class CompiledAtlasLoader
     }
 
     /// <summary>
-    /// Creates tiles in the atlas source for all coordinates referenced in transition_map.json.
-    /// These are the composited auto-tile variants generated during atlas compilation.
-    /// </summary>
-    private static int CreateTransitionMapTiles(TileSetAtlasSource atlasSource)
-    {
-        var absolutePath = ProjectSettings.GlobalizePath(DefaultTransitionMapPath);
-        if (!File.Exists(absolutePath))
-        {
-            ILog.Print($"[CompiledAtlasLoader] Transition map not found: {absolutePath}");
-            return 0;
-        }
-
-        try
-        {
-            var json = File.ReadAllText(absolutePath);
-            var transitionMap = JsonSerializer.Deserialize<TransitionMapData>(json, CreateJsonOptions());
-
-            if (transitionMap?.Transitions == null)
-            {
-                ILog.Print("[CompiledAtlasLoader] Transition map has no transitions");
-                return 0;
-            }
-
-            var tilesCreated = 0;
-            var tilesSkipped = 0;
-
-            foreach (var (key, entry) in transitionMap.Transitions)
-            {
-                if (entry.Variants == null)
-                    continue;
-
-                // Outer array: each bitmask index
-                foreach (var variantOptions in entry.Variants)
-                {
-                    if (variantOptions == null)
-                        continue;
-
-                    // Inner array: variant options for this bitmask
-                    foreach (var variant in variantOptions)
-                    {
-                        var atlasCoords = new Vector2I(variant.X, variant.Y);
-
-                        if (!atlasSource.HasTile(atlasCoords))
-                        {
-                            try
-                            {
-                                atlasSource.CreateTile(atlasCoords);
-                                tilesCreated++;
-                            }
-                            catch (Exception ex)
-                            {
-                                ILog.Print($"[CompiledAtlasLoader] Failed to create transition tile at {atlasCoords}: {ex.Message}");
-                            }
-                        }
-                        else
-                        {
-                            tilesSkipped++;
-                        }
-                    }
-                }
-            }
-
-            ILog.Print($"[CompiledAtlasLoader] Transition tiles: {tilesCreated} created, {tilesSkipped} already existed");
-            return tilesCreated;
-        }
-        catch (Exception ex)
-        {
-            ILog.Print($"[CompiledAtlasLoader] Error loading transition map: {ex.Message}");
-            return 0;
-        }
-    }
-
-    /// <summary>
     /// Clears the cached mapping and tileset.
     /// Call this if the compiled atlas has been regenerated.
     /// </summary>
@@ -363,7 +260,8 @@ public static class CompiledAtlasLoader
     {
         [JsonPropertyName("version")] public string? Version { get; set; }
         [JsonPropertyName("atlas")] public AtlasInfo? Atlas { get; set; }
-        [JsonPropertyName("sources")] public Dictionary<string, Dictionary<string, TileAtlasRect>>? Sources { get; set; }
+        [JsonPropertyName("sources")]
+        public Dictionary<string, Dictionary<string, TileAtlasRect>>? Sources { get; set; }
     }
 
     public class AtlasInfo
@@ -382,25 +280,4 @@ public static class CompiledAtlasLoader
         [JsonPropertyName("h")] public int H { get; set; }
     }
 
-    // Transition map deserialization classes
-    public class TransitionMapData
-    {
-        [JsonPropertyName("version")] public string? Version { get; set; }
-        [JsonPropertyName("transitions")] public Dictionary<string, TransitionEntry>? Transitions { get; set; }
-    }
-
-    public class TransitionEntry
-    {
-        [JsonPropertyName("format")] public string? Format { get; set; }
-        /// <summary>
-        /// Nested array: outer index is bitmask, inner array contains variant options for that bitmask.
-        /// </summary>
-        [JsonPropertyName("variants")] public VariantCoord[]?[]? Variants { get; set; }
-    }
-
-    public class VariantCoord
-    {
-        [JsonPropertyName("x")] public int X { get; set; }
-        [JsonPropertyName("y")] public int Y { get; set; }
-    }
 }
