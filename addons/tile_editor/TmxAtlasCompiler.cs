@@ -70,7 +70,9 @@ public class TmxAtlasCompiler
             {
                 allTiles.AddRange(result.tiles);
                 allWangSets.AddRange(result.wangSets);
-                GD.Print($"[TmxAtlasCompiler] Loaded {result.tiles.Count} tiles, {result.wangSets.Count} wang sets from {Path.GetFileName(tsxPath)}");
+                GD.Print(
+                    $"[TmxAtlasCompiler] Loaded {result.tiles.Count} tiles, " +
+                    $"{result.wangSets.Count} wang sets from {Path.GetFileName(tsxPath)}");
             }
             else
             {
@@ -171,7 +173,9 @@ public class TmxAtlasCompiler
         var totalEstimatedTiles = tilesToPack.Count + estimatedComposites;
         var optimalAtlasWidth = CalculateOptimalAtlasWidth(totalEstimatedTiles, targetTileSize);
 
-        GD.Print($"[TmxAtlasCompiler] Estimated {totalEstimatedTiles} total tiles, using atlas width {optimalAtlasWidth}px");
+        GD.Print(
+            $"[TmxAtlasCompiler] Estimated {totalEstimatedTiles} total tiles, " +
+            $"using atlas width {optimalAtlasWidth}px");
 
         var packResult = PackTiles(tilesToPack, targetTileSize, optimalAtlasWidth);
         if (!packResult.success)
@@ -248,7 +252,10 @@ public class TmxAtlasCompiler
                                 compositeCurrentX, compositeCurrentY, compositeRowHeight, compositeAtlasWidth);
 
                             // Track variant position (in tile units)
-                            variantCoords[bitmask].Add(new Vector2I(compositeCurrentX / targetTileSize, compositeCurrentY / targetTileSize));
+                            variantCoords[bitmask].Add(
+                                new Vector2I(
+                                    compositeCurrentX / targetTileSize,
+                                    compositeCurrentY / targetTileSize));
 
                             compositeCurrentX += targetTileSize;
                             compositesGenerated++;
@@ -271,7 +278,10 @@ public class TmxAtlasCompiler
                             compositeCurrentX, compositeCurrentY, compositeRowHeight, compositeAtlasWidth);
 
                         // Track variant position (in tile units)
-                        variantCoords[bitmask].Add(new Vector2I(compositeCurrentX / targetTileSize, compositeCurrentY / targetTileSize));
+                        variantCoords[bitmask].Add(
+                            new Vector2I(
+                                compositeCurrentX / targetTileSize,
+                                compositeCurrentY / targetTileSize));
 
                         compositeCurrentX += targetTileSize;
                         compositesGenerated++;
@@ -372,7 +382,10 @@ public class TmxAtlasCompiler
         }
 
         var totalTiles = tilesToPack.Count + compositesGenerated;
-        return (true, $"Compiled {totalTiles} tiles ({compositesGenerated} composites) from {tsxFiles.Length} TSX file(s) to {atlasPath}");
+        return (
+            true,
+            $"Compiled {totalTiles} tiles ({compositesGenerated} composites) " +
+            $"from {tsxFiles.Length} TSX file(s) to {atlasPath}");
     }
 
     /// <summary>
@@ -834,7 +847,14 @@ public class TmxAtlasCompiler
             var newHeight = Math.Min(atlasImage.GetHeight() * 2, MaxAtlasSize);
             var expandedAtlas = Image.CreateEmpty(atlasImage.GetWidth(), newHeight, false, Image.Format.Rgba8);
             expandedAtlas.Fill(new Color(0, 0, 0, 0));
-            expandedAtlas.BlitRect(atlasImage, new Rect2I(0, 0, atlasImage.GetWidth(), atlasImage.GetHeight()), Vector2I.Zero);
+            expandedAtlas.BlitRect(
+                atlasImage,
+                new Rect2I(
+                    0,
+                    0,
+                    atlasImage.GetWidth(),
+                    atlasImage.GetHeight()),
+                Vector2I.Zero);
             atlasImage = expandedAtlas;
         }
 
@@ -869,7 +889,11 @@ public class TmxAtlasCompiler
                 );
 
                 // Extract tile region
-                var extractedTile = Image.CreateEmpty(tile.SourceTileWidth, tile.SourceTileHeight, false, Image.Format.Rgba8);
+                var extractedTile = Image.CreateEmpty(
+                    tile.SourceTileWidth,
+                    tile.SourceTileHeight,
+                    false,
+                    Image.Format.Rgba8);
                 extractedTile.BlitRect(sourceImage, srcRect, Vector2I.Zero);
 
                 // Resize if needed using appropriate interpolation
@@ -903,7 +927,13 @@ public class TmxAtlasCompiler
     /// Extracts a tile region from a source image with optional scaling.
     /// Uses nearest-neighbor for power-of-2 source sizes, bilinear otherwise.
     /// </summary>
-    private static Image ExtractTileRegion(Image sourceImage, int atlasX, int atlasY, int sourceTileWidth, int sourceTileHeight, int targetTileSize)
+    private static Image ExtractTileRegion(
+        Image sourceImage,
+        int atlasX,
+        int atlasY,
+        int sourceTileWidth,
+        int sourceTileHeight,
+        int targetTileSize)
     {
         // Source rectangle
         var srcRect = new Rect2I(
@@ -1061,12 +1091,17 @@ public class TmxAtlasCompiler
             compositeCurrentX, compositeCurrentY, compositeRowHeight, compositeAtlasWidth);
 
         // Track variant position (in tile units)
-        variantCoords[targetBitmask].Add(new Vector2I(compositeCurrentX / targetTileSize, compositeCurrentY / targetTileSize));
+        variantCoords[targetBitmask].Add(
+            new Vector2I(
+                compositeCurrentX / targetTileSize,
+                compositeCurrentY / targetTileSize));
 
         compositeCurrentX += targetTileSize;
         compositesGenerated++;
 
-        GD.Print($"[TmxAtlasCompiler] Generated diagonal bitmask {targetBitmask} for {wangSet.Name} on {baseTerrain.Id}");
+        GD.Print(
+            $"[TmxAtlasCompiler] Generated diagonal bitmask {targetBitmask} " +
+            $"for {wangSet.Name} on {baseTerrain.Id}");
     }
 
     /// <summary>
@@ -1169,7 +1204,8 @@ public class TmxAtlasCompiler
         public float SourceScale { get; set; }
         public Dictionary<string, string> Properties { get; set; } = new();
         public Dictionary<int, List<int>> WangTiles { get; set; } = new(); // bitmask -> list of tileIds (variants)
-        public HashSet<int> AllMemberTileIds { get; set; } = new(); // ALL tiles in wang set (for exclusion from base terrains)
+        // ALL tiles in wang set (for exclusion from base terrains)
+        public HashSet<int> AllMemberTileIds { get; set; } = new();
         public Image SourceImage { get; set; } = null!;
         public int SourceTileWidth { get; set; }
         public int SourceTileHeight { get; set; }
@@ -1190,7 +1226,8 @@ public class TmxAtlasCompiler
     {
         [JsonPropertyName("version")] public string Version { get; set; } = "1.0";
         [JsonPropertyName("atlas")] public AtlasInfo Atlas { get; set; } = new();
-        [JsonPropertyName("sources")] public Dictionary<string, Dictionary<string, TileAtlasRect>> Sources { get; set; } = new();
+        [JsonPropertyName("sources")]
+        public Dictionary<string, Dictionary<string, TileAtlasRect>> Sources { get; set; } = new();
     }
 
     private class AtlasInfo

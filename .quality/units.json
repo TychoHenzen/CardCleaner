@@ -1864,21 +1864,21 @@
     }
   ],
   "summary": {
-    "total": 7419,
-    "errors": 683,
-    "warnings": 6736,
+    "total": 7421,
+    "errors": 671,
+    "warnings": 6750,
     "byRule": {
       "dead-export": 34,
-      "duplicate-block": 148,
+      "duplicate-block": 158,
       "types-per-file": 52,
       "file-length": 222,
       "complexity": 331,
-      "function-length": 374,
+      "function-length": 375,
       "nesting-depth": 40,
       "param-count": 111,
       "unnamed-tuple": 63,
       "comment-bloat": 132,
-      "line-length": 4520,
+      "line-length": 4511,
       "test-only-export": 13,
       "else-branch": 148,
       "stateless-method": 898,
@@ -1932,9 +1932,9 @@
       "Tests/Features/Worldgen/Wfc/WfcMapGeneratorIntegrationTest.cs": 65,
       "Tests/Features/Worldgen/Wfc/WfcPerformanceBenchmarkTest.cs": 21,
       "Tests/Features/Worldgen/Wfc/WfcTileSelectorTest.cs": 12,
-      "addons/tile_editor/TileAtlasCompiler.cs": 155,
+      "addons/tile_editor/TileAtlasCompiler.cs": 160,
       "addons/tile_editor/TileEditorService.cs": 219,
-      "addons/tile_editor/TmxAtlasCompiler.cs": 252,
+      "addons/tile_editor/TmxAtlasCompiler.cs": 249,
       "Scripts/Core/DependencyInjection/ServiceAttribute.cs": 2,
       "Scripts/Core/Devices/IJackT.cs": 3,
       "Scripts/Core/Interfaces/IFogOfWar.cs": 4,
@@ -2832,26 +2832,26 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 224,
+      "line": 228,
       "rule": "duplicate-block",
       "severity": "error",
-      "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:224, addons/tile_editor/TmxAtlasCompiler.cs:261, addons/tile_editor/TmxAtlasCompiler.cs:1029",
+      "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:228, addons/tile_editor/TmxAtlasCompiler.cs:268, addons/tile_editor/TmxAtlasCompiler.cs:1059",
       "metric": 3
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 261,
+      "line": 268,
       "rule": "duplicate-block",
       "severity": "error",
-      "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:224, addons/tile_editor/TmxAtlasCompiler.cs:261, addons/tile_editor/TmxAtlasCompiler.cs:1029",
+      "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:228, addons/tile_editor/TmxAtlasCompiler.cs:268, addons/tile_editor/TmxAtlasCompiler.cs:1059",
       "metric": 3
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1029,
+      "line": 1059,
       "rule": "duplicate-block",
       "severity": "error",
-      "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:224, addons/tile_editor/TmxAtlasCompiler.cs:261, addons/tile_editor/TmxAtlasCompiler.cs:1029",
+      "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:228, addons/tile_editor/TmxAtlasCompiler.cs:268, addons/tile_editor/TmxAtlasCompiler.cs:1059",
       "metric": 3
     },
     {
@@ -3875,8 +3875,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "error",
-      "message": "file is 1213 lines",
-      "metric": 1213
+      "message": "file is 1250 lines",
+      "metric": 1250
     },
     {
       "file": "addons/tile_editor/TmxPreviewPanel.cs",
@@ -4560,7 +4560,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 381,
+      "line": 394,
       "rule": "complexity",
       "severity": "error",
       "message": "private() cyclomatic complexity 50",
@@ -4568,7 +4568,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 623,
+      "line": 636,
       "rule": "complexity",
       "severity": "error",
       "message": "IsBlobCompliant() cyclomatic complexity 13",
@@ -5147,12 +5147,12 @@
       "line": 40,
       "rule": "function-length",
       "severity": "error",
-      "message": "CompileFromTmx() is 337 lines",
-      "metric": 337
+      "message": "CompileFromTmx() is 350 lines",
+      "metric": 350
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 381,
+      "line": 394,
       "rule": "function-length",
       "severity": "error",
       "message": "private() is 207 lines",
@@ -5160,7 +5160,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 705,
+      "line": 718,
       "rule": "function-length",
       "severity": "error",
       "message": "PackTiles() is 79 lines",
@@ -5168,11 +5168,11 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 996,
+      "line": 1026,
       "rule": "function-length",
       "severity": "error",
-      "message": "GenerateDiagonalIfMissing() is 75 lines",
-      "metric": 75
+      "message": "GenerateDiagonalIfMissing() is 80 lines",
+      "metric": 80
     },
     {
       "file": "addons/tile_editor/TmxPreviewPanel.cs",
@@ -5328,7 +5328,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 996,
+      "line": 1026,
       "rule": "param-count",
       "severity": "error",
       "message": "GenerateDiagonalIfMissing() takes 13 parameters",
@@ -5784,7 +5784,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 381,
+      "line": 394,
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (bool success, string error, List<TsxTileData> tiles, List<TsxWangSetData> wangSets) LoadTsxFile( — replace it with a named type",
@@ -5792,7 +5792,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 703,
+      "line": 716,
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (bool success, string message, List<PackedTsxTile> packedTiles, Vector2I atlasSize,\n        Dictionary<string, Dictionary<string, TileAtlasRect>> mapping)\n        PackTiles( — replace it with a named type",
@@ -5800,7 +5800,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 820,
+      "line": 833,
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (Image atlas, int currentX, int currentY) PackCompositeToAtlas( — replace it with a named type",
@@ -5808,7 +5808,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1075,
+      "line": 1110,
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (bool success, string message) SaveAtlasMapping( — replace it with a named type",
@@ -5816,7 +5816,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1127,
+      "line": 1162,
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (bool success, string message) SaveTransitionMap( — replace it with a named type",
@@ -7495,102 +7495,6 @@
       "metric": 124
     },
     {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 73,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 150 chars",
-      "metric": 150
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 174,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 125 chars",
-      "metric": 125
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 251,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 141 chars",
-      "metric": 141
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 274,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 137 chars",
-      "metric": 137
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 375,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 139 chars",
-      "metric": 139
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 837,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 127 chars",
-      "metric": 127
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 872,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 126 chars",
-      "metric": 126
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 906,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 148 chars",
-      "metric": 148
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1064,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 127 chars",
-      "metric": 127
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1069,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 122 chars",
-      "metric": 122
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1172,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 127 chars",
-      "metric": 127
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1193,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 129 chars",
-      "metric": 129
-    },
-    {
       "file": "addons/tile_editor/TmxPreviewPanel.cs",
       "line": 364,
       "rule": "line-length",
@@ -8567,19 +8471,99 @@
       "metric": 2
     },
     {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 223,
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 206,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:223, addons/tile_editor/TmxAtlasCompiler.cs:1028",
+      "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:206, addons/tile_editor/TmxAtlasCompiler.cs:849",
+      "metric": 2
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 207,
+      "rule": "duplicate-block",
+      "severity": "warn",
+      "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:207, addons/tile_editor/TmxAtlasCompiler.cs:850",
+      "metric": 2
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 208,
+      "rule": "duplicate-block",
+      "severity": "warn",
+      "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:208, addons/tile_editor/TmxAtlasCompiler.cs:851",
+      "metric": 2
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 209,
+      "rule": "duplicate-block",
+      "severity": "warn",
+      "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:209, addons/tile_editor/TmxAtlasCompiler.cs:852",
+      "metric": 2
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 210,
+      "rule": "duplicate-block",
+      "severity": "warn",
+      "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:210, addons/tile_editor/TmxAtlasCompiler.cs:853",
       "metric": 2
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1028,
+      "line": 227,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:223, addons/tile_editor/TmxAtlasCompiler.cs:1028",
+      "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:227, addons/tile_editor/TmxAtlasCompiler.cs:1058",
+      "metric": 2
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 849,
+      "rule": "duplicate-block",
+      "severity": "warn",
+      "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:206, addons/tile_editor/TmxAtlasCompiler.cs:849",
+      "metric": 2
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 850,
+      "rule": "duplicate-block",
+      "severity": "warn",
+      "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:207, addons/tile_editor/TmxAtlasCompiler.cs:850",
+      "metric": 2
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 851,
+      "rule": "duplicate-block",
+      "severity": "warn",
+      "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:208, addons/tile_editor/TmxAtlasCompiler.cs:851",
+      "metric": 2
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 852,
+      "rule": "duplicate-block",
+      "severity": "warn",
+      "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:209, addons/tile_editor/TmxAtlasCompiler.cs:852",
+      "metric": 2
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 853,
+      "rule": "duplicate-block",
+      "severity": "warn",
+      "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:210, addons/tile_editor/TmxAtlasCompiler.cs:853",
+      "metric": 2
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 1058,
+      "rule": "duplicate-block",
+      "severity": "warn",
+      "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:227, addons/tile_editor/TmxAtlasCompiler.cs:1058",
       "metric": 2
     },
     {
@@ -11536,7 +11520,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 593,
+      "line": 606,
       "rule": "complexity",
       "severity": "warn",
       "message": "ParseWangId() cyclomatic complexity 7",
@@ -11544,7 +11528,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 705,
+      "line": 718,
       "rule": "complexity",
       "severity": "warn",
       "message": "PackTiles() cyclomatic complexity 6",
@@ -11552,7 +11536,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 933,
+      "line": 963,
       "rule": "complexity",
       "severity": "warn",
       "message": "CompositeImages() cyclomatic complexity 6",
@@ -11560,7 +11544,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 996,
+      "line": 1026,
       "rule": "complexity",
       "severity": "warn",
       "message": "GenerateDiagonalIfMissing() cyclomatic complexity 7",
@@ -13864,15 +13848,23 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 851,
+      "line": 833,
       "rule": "function-length",
       "severity": "warn",
-      "message": "CreateAtlasImage() is 44 lines",
-      "metric": 44
+      "message": "private() is 34 lines",
+      "metric": 34
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 933,
+      "line": 871,
+      "rule": "function-length",
+      "severity": "warn",
+      "message": "CreateAtlasImage() is 48 lines",
+      "metric": 48
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 963,
       "rule": "function-length",
       "severity": "warn",
       "message": "CompositeImages() is 44 lines",
@@ -13880,7 +13872,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1075,
+      "line": 1110,
       "rule": "function-length",
       "severity": "warn",
       "message": "private() is 48 lines",
@@ -14296,7 +14288,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 381,
+      "line": 394,
       "rule": "nesting-depth",
       "severity": "warn",
       "message": "private() nests 5 levels deep",
@@ -15128,7 +15120,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 381,
+      "line": 394,
       "rule": "param-count",
       "severity": "warn",
       "message": "private() takes 4 parameters",
@@ -15136,7 +15128,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 906,
+      "line": 930,
       "rule": "param-count",
       "severity": "warn",
       "message": "ExtractTileRegion() takes 6 parameters",
@@ -16200,7 +16192,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 381,
+      "line": 394,
       "rule": "else-branch",
       "severity": "warn",
       "message": "private() has 2 else branch(es) — prefer guard clauses",
@@ -23416,7 +23408,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 593,
+      "line": 606,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ParseWangId() never touches instance state — make it a free function",
@@ -23424,7 +23416,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 623,
+      "line": 636,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "IsBlobCompliant() never touches instance state — make it a free function",
@@ -23432,7 +23424,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 648,
+      "line": 661,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ParseProperties() never touches instance state — make it a free function",
@@ -23440,7 +23432,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 666,
+      "line": 679,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetString() never touches instance state — make it a free function",
@@ -23448,7 +23440,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 669,
+      "line": 682,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetInt() never touches instance state — make it a free function",
@@ -23456,7 +23448,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 672,
+      "line": 685,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetBool() never touches instance state — make it a free function",
@@ -23464,7 +23456,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 684,
+      "line": 697,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "CalculateOptimalAtlasWidth() never touches instance state — make it a free function",
@@ -23472,7 +23464,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 896,
+      "line": 920,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ToSnakeCase() never touches instance state — make it a free function",
@@ -23952,7 +23944,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 801,
+      "line": 814,
       "rule": "comment-bloat",
       "severity": "warn",
       "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
@@ -25792,7 +25784,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 146,
+      "line": 148,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25800,7 +25792,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 222,
+      "line": 226,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25808,7 +25800,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 231,
+      "line": 235,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25816,7 +25808,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 242,
+      "line": 246,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25824,7 +25816,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 245,
+      "line": 249,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25832,7 +25824,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 268,
+      "line": 275,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25840,7 +25832,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 292,
+      "line": 302,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25848,7 +25840,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 348,
+      "line": 358,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25856,7 +25848,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 360,
+      "line": 370,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25864,7 +25856,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 367,
+      "line": 377,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25872,7 +25864,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 401,
+      "line": 414,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25880,7 +25872,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 882,
+      "line": 906,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25888,7 +25880,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 948,
+      "line": 978,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25896,7 +25888,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1027,
+      "line": 1057,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25904,7 +25896,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1058,
+      "line": 1088,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -26152,7 +26144,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 996,
+      "line": 1026,
       "rule": "output-parameter",
       "severity": "warn",
       "message": "GenerateDiagonalIfMissing() exposes an output parameter; return a value instead",
@@ -26160,7 +26152,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 996,
+      "line": 1026,
       "rule": "output-parameter",
       "severity": "warn",
       "message": "GenerateDiagonalIfMissing() exposes an output parameter; return a value instead",
@@ -26168,7 +26160,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 996,
+      "line": 1026,
       "rule": "output-parameter",
       "severity": "warn",
       "message": "GenerateDiagonalIfMissing() exposes an output parameter; return a value instead",
@@ -26176,7 +26168,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 996,
+      "line": 1026,
       "rule": "output-parameter",
       "severity": "warn",
       "message": "GenerateDiagonalIfMissing() exposes an output parameter; return a value instead",
@@ -26576,7 +26568,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 381,
+      "line": 394,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "private() takes a boolean flag; split the behavior or name the policy",
@@ -26584,7 +26576,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 672,
+      "line": 685,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "GetBool() takes a boolean flag; split the behavior or name the policy",
@@ -26592,7 +26584,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1075,
+      "line": 1110,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "private() takes a boolean flag; split the behavior or name the policy",
@@ -26600,7 +26592,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1127,
+      "line": 1162,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "private() takes a boolean flag; split the behavior or name the policy",
@@ -58696,7 +58688,15 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 77,
+      "line": 75,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 79,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -58704,7 +58704,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 87,
+      "line": 89,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -58712,7 +58712,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 89,
+      "line": 91,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -58720,7 +58720,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 91,
+      "line": 93,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -58728,7 +58728,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 93,
+      "line": 95,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 109 chars",
@@ -58736,7 +58736,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 98,
+      "line": 100,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -58744,7 +58744,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 103,
+      "line": 105,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -58752,7 +58752,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 108,
+      "line": 110,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 109 chars",
@@ -58760,7 +58760,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 117,
+      "line": 119,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -58768,7 +58768,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 119,
+      "line": 121,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -58776,7 +58776,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 124,
+      "line": 126,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -58784,7 +58784,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 147,
+      "line": 149,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -58792,7 +58792,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 149,
+      "line": 151,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -58800,7 +58800,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 157,
+      "line": 159,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -58808,7 +58808,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 161,
+      "line": 163,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 111 chars",
@@ -58816,7 +58816,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 165,
+      "line": 167,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -58824,7 +58824,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 166,
+      "line": 168,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -58832,7 +58832,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 167,
+      "line": 169,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 109 chars",
@@ -58840,7 +58840,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 168,
+      "line": 170,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -58848,7 +58848,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 172,
+      "line": 174,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -58856,7 +58856,15 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 176,
+      "line": 177,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 180,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -58864,7 +58872,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 183,
+      "line": 187,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 104 chars",
@@ -58872,7 +58880,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 194,
+      "line": 198,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -58880,7 +58888,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 196,
+      "line": 200,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -58888,7 +58896,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 210,
+      "line": 214,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -58896,7 +58904,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 217,
+      "line": 221,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 113 chars",
@@ -58904,7 +58912,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 243,
+      "line": 247,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -58912,7 +58920,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 246,
+      "line": 250,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
@@ -58920,7 +58928,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 248,
+      "line": 252,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 111 chars",
@@ -58928,7 +58936,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 259,
+      "line": 266,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -58936,7 +58944,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 269,
+      "line": 276,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -58944,7 +58952,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 271,
+      "line": 278,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 107 chars",
@@ -58952,7 +58960,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 281,
+      "line": 291,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -58960,67 +58968,11 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 282,
+      "line": 292,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
       "metric": 94
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 283,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 284,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 285,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 286,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 288,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 289,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 290,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
@@ -59035,20 +58987,20 @@
       "line": 294,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 110 chars",
-      "metric": 110
+      "message": "line is 88 chars",
+      "metric": 88
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 309,
+      "line": 295,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
+      "message": "line is 81 chars",
+      "metric": 81
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 318,
+      "line": 296,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -59056,79 +59008,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 321,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 330,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 107 chars",
-      "metric": 107
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 331,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 332,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 108 chars",
-      "metric": 108
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 336,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 339,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 340,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 343,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 112 chars",
-      "metric": 112
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 344,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 115 chars",
-      "metric": 115
-    },
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 357,
+      "line": 298,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -59136,7 +59016,135 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 358,
+      "line": 299,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 300,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 303,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 304,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 110 chars",
+      "metric": 110
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 319,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 328,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 331,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 340,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 107 chars",
+      "metric": 107
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 341,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 342,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 108 chars",
+      "metric": 108
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 346,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 349,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 350,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 353,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 112 chars",
+      "metric": 112
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 354,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 115 chars",
+      "metric": 115
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 367,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 368,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 105 chars",
@@ -59144,7 +59152,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 361,
+      "line": 371,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 108 chars",
@@ -59152,7 +59160,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 381,
+      "line": 394,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 109 chars",
@@ -59160,7 +59168,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 393,
+      "line": 406,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -59168,7 +59176,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 396,
+      "line": 409,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -59176,7 +59184,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 397,
+      "line": 410,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -59184,7 +59192,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 398,
+      "line": 411,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -59192,7 +59200,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 419,
+      "line": 432,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -59200,7 +59208,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 423,
+      "line": 436,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -59208,7 +59216,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 430,
+      "line": 443,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -59216,7 +59224,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 433,
+      "line": 446,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -59224,7 +59232,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 434,
+      "line": 447,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -59232,7 +59240,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 435,
+      "line": 448,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -59240,7 +59248,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 436,
+      "line": 449,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -59248,7 +59256,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 439,
+      "line": 452,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -59256,7 +59264,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 442,
+      "line": 455,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -59264,7 +59272,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 445,
+      "line": 458,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -59272,7 +59280,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 446,
+      "line": 459,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -59280,7 +59288,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 447,
+      "line": 460,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 114 chars",
@@ -59288,7 +59296,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 455,
+      "line": 468,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -59296,7 +59304,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 460,
+      "line": 473,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -59304,7 +59312,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 462,
+      "line": 475,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -59312,7 +59320,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 464,
+      "line": 477,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -59320,7 +59328,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 474,
+      "line": 487,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -59328,7 +59336,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 491,
+      "line": 504,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 106 chars",
@@ -59336,7 +59344,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 494,
+      "line": 507,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 106 chars",
@@ -59344,7 +59352,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 512,
+      "line": 525,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 104 chars",
@@ -59352,7 +59360,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 524,
+      "line": 537,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -59360,7 +59368,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 526,
+      "line": 539,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -59368,7 +59376,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 530,
+      "line": 543,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -59376,7 +59384,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 531,
+      "line": 544,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -59384,7 +59392,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 533,
+      "line": 546,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 110 chars",
@@ -59392,7 +59400,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 534,
+      "line": 547,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -59400,7 +59408,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 535,
+      "line": 548,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -59408,7 +59416,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 537,
+      "line": 550,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -59416,7 +59424,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 538,
+      "line": 551,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -59424,7 +59432,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 542,
+      "line": 555,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -59432,7 +59440,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 549,
+      "line": 562,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -59440,7 +59448,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 574,
+      "line": 587,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -59448,7 +59456,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 607,
+      "line": 620,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -59456,7 +59464,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 620,
+      "line": 633,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -59464,7 +59472,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 621,
+      "line": 634,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -59472,7 +59480,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 628,
+      "line": 641,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -59480,7 +59488,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 650,
+      "line": 663,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -59488,7 +59496,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 666,
+      "line": 679,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -59496,7 +59504,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 669,
+      "line": 682,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -59504,7 +59512,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 670,
+      "line": 683,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -59512,7 +59520,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 672,
+      "line": 685,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -59520,7 +59528,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 702,
+      "line": 715,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -59528,7 +59536,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 703,
+      "line": 716,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -59536,7 +59544,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 705,
+      "line": 718,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -59544,7 +59552,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 708,
+      "line": 721,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -59552,7 +59560,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 749,
+      "line": 762,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 111 chars",
@@ -59560,7 +59568,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 778,
+      "line": 791,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -59568,7 +59576,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 782,
+      "line": 795,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -59576,7 +59584,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 803,
+      "line": 816,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -59584,7 +59592,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 806,
+      "line": 819,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -59592,7 +59600,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 812,
+      "line": 825,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -59600,7 +59608,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 835,
+      "line": 848,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 111 chars",
@@ -59608,7 +59616,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 842,
+      "line": 862,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -59616,7 +59624,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 851,
+      "line": 871,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 108 chars",
@@ -59624,7 +59632,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 855,
+      "line": 875,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -59632,7 +59640,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 876,
+      "line": 900,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
@@ -59640,7 +59648,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 878,
+      "line": 902,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 109 chars",
@@ -59648,7 +59656,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 879,
+      "line": 903,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -59656,7 +59664,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 884,
+      "line": 908,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 109 chars",
@@ -59664,7 +59672,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 891,
+      "line": 915,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -59672,7 +59680,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 916,
+      "line": 946,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 104 chars",
@@ -59680,7 +59688,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 920,
+      "line": 950,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -59688,7 +59696,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 922,
+      "line": 952,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -59696,7 +59704,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 930,
+      "line": 960,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -59704,7 +59712,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 939,
+      "line": 969,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -59712,7 +59720,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 941,
+      "line": 971,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -59720,7 +59728,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 943,
+      "line": 973,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -59728,7 +59736,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 949,
+      "line": 979,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -59736,7 +59744,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 950,
+      "line": 980,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -59744,7 +59752,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 960,
+      "line": 990,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -59752,7 +59760,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 979,
+      "line": 1009,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -59760,7 +59768,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 980,
+      "line": 1010,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -59768,7 +59776,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 981,
+      "line": 1011,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -59776,7 +59784,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 984,
+      "line": 1014,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -59784,7 +59792,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 985,
+      "line": 1015,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -59792,7 +59800,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 986,
+      "line": 1016,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -59800,7 +59808,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 987,
+      "line": 1017,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -59808,7 +59816,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 990,
+      "line": 1020,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -59816,7 +59824,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 991,
+      "line": 1021,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -59824,7 +59832,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 994,
+      "line": 1024,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -59832,7 +59840,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 995,
+      "line": 1025,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -59840,7 +59848,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1012,
+      "line": 1042,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 107 chars",
@@ -59848,7 +59856,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1016,
+      "line": 1046,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 108 chars",
@@ -59856,7 +59864,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1019,
+      "line": 1049,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 108 chars",
@@ -59864,7 +59872,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1022,
+      "line": 1052,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -59872,7 +59880,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1023,
+      "line": 1053,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -59880,7 +59888,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1024,
+      "line": 1054,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -59888,7 +59896,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1059,
+      "line": 1089,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -59896,7 +59904,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1061,
+      "line": 1091,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -59904,7 +59912,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1084,
+      "line": 1119,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -59912,7 +59920,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1085,
+      "line": 1120,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -59920,7 +59928,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1086,
+      "line": 1121,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -59928,7 +59936,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1089,
+      "line": 1124,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -59936,7 +59944,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1092,
+      "line": 1127,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -59944,7 +59952,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1112,
+      "line": 1147,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
@@ -59952,7 +59960,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1127,
+      "line": 1162,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -59960,7 +59968,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1131,
+      "line": 1166,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -59968,7 +59976,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1132,
+      "line": 1167,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 108 chars",
@@ -59976,7 +59984,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1135,
+      "line": 1170,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -59984,7 +59992,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1160,
+      "line": 1195,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -59992,7 +60000,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1171,
+      "line": 1206,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 115 chars",
@@ -60000,7 +60008,7 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1191,
+      "line": 1227,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -60008,11 +60016,19 @@
     },
     {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "line": 1192,
+      "line": 1228,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
       "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "line": 1230,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
     },
     {
       "file": "addons/tile_editor/TmxPreviewPanel.cs",
@@ -61568,2045 +61584,6 @@
     }
   ],
   "units": [
-    {
-      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-      "errors": 31,
-      "warnings": 221,
-      "rules": {
-        "duplicate-block": 6,
-        "file-length": 1,
-        "complexity": 7,
-        "function-length": 7,
-        "param-count": 3,
-        "unnamed-tuple": 6,
-        "line-length": 184,
-        "nesting-depth": 2,
-        "else-branch": 2,
-        "stateless-method": 8,
-        "comment-bloat": 1,
-        "comment-restates-code": 17,
-        "output-parameter": 4,
-        "flag-parameter": 4
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 2,
-          "rule": "duplicate-block",
-          "severity": "error",
-          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:2, addons/tile_editor/TileEditorService.cs:2, addons/tile_editor/TmxAtlasCompiler.cs:2, Scripts/Core/Services/TileDataLoader.cs:1",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 224,
-          "rule": "duplicate-block",
-          "severity": "error",
-          "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:224, addons/tile_editor/TmxAtlasCompiler.cs:261, addons/tile_editor/TmxAtlasCompiler.cs:1029",
-          "metric": 3
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 261,
-          "rule": "duplicate-block",
-          "severity": "error",
-          "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:224, addons/tile_editor/TmxAtlasCompiler.cs:261, addons/tile_editor/TmxAtlasCompiler.cs:1029",
-          "metric": 3
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1029,
-          "rule": "duplicate-block",
-          "severity": "error",
-          "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:224, addons/tile_editor/TmxAtlasCompiler.cs:261, addons/tile_editor/TmxAtlasCompiler.cs:1029",
-          "metric": 3
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 1213 lines",
-          "metric": 1213
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 40,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "CompileFromTmx() cyclomatic complexity 38",
-          "metric": 38
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 381,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "private() cyclomatic complexity 50",
-          "metric": 50
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 623,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "IsBlobCompliant() cyclomatic complexity 13",
-          "metric": 13
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 40,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "CompileFromTmx() is 337 lines",
-          "metric": 337
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 381,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "private() is 207 lines",
-          "metric": 207
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 705,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "PackTiles() is 79 lines",
-          "metric": 79
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 996,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "GenerateDiagonalIfMissing() is 75 lines",
-          "metric": 75
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 996,
-          "rule": "param-count",
-          "severity": "error",
-          "message": "GenerateDiagonalIfMissing() takes 13 parameters",
-          "metric": 13
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 40,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) CompileFromTmx( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 381,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string error, List<TsxTileData> tiles, List<TsxWangSetData> wangSets) LoadTsxFile( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 703,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message, List<PackedTsxTile> packedTiles, Vector2I atlasSize,\n        Dictionary<string, Dictionary<string, TileAtlasRect>> mapping)\n        PackTiles( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 820,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (Image atlas, int currentX, int currentY) PackCompositeToAtlas( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1075,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) SaveAtlasMapping( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1127,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) SaveTransitionMap( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 73,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 150 chars",
-          "metric": 150
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 174,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 125 chars",
-          "metric": 125
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 251,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 141 chars",
-          "metric": 141
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 274,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 137 chars",
-          "metric": 137
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 375,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 139 chars",
-          "metric": 139
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 837,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 127 chars",
-          "metric": 127
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 872,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 126 chars",
-          "metric": 126
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 906,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 148 chars",
-          "metric": 148
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1064,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 127 chars",
-          "metric": 127
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1069,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 122 chars",
-          "metric": 122
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1172,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 127 chars",
-          "metric": 127
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1193,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 129 chars",
-          "metric": 129
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 223,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:223, addons/tile_editor/TmxAtlasCompiler.cs:1028",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1028,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:223, addons/tile_editor/TmxAtlasCompiler.cs:1028",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 593,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ParseWangId() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 705,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "PackTiles() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 933,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "CompositeImages() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 996,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GenerateDiagonalIfMissing() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 851,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "CreateAtlasImage() is 44 lines",
-          "metric": 44
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 933,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "CompositeImages() is 44 lines",
-          "metric": 44
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1075,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "private() is 48 lines",
-          "metric": 48
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 40,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "CompileFromTmx() nests 5 levels deep",
-          "metric": 5
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 381,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "private() nests 5 levels deep",
-          "metric": 5
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 381,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "private() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 906,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "ExtractTileRegion() takes 6 parameters",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 40,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "CompileFromTmx() has 2 else branch(es) — prefer guard clauses",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 381,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "private() has 2 else branch(es) — prefer guard clauses",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 593,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ParseWangId() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 623,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "IsBlobCompliant() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 648,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ParseProperties() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 666,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetString() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 669,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetInt() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 672,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetBool() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 684,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "CalculateOptimalAtlasWidth() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 896,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ToSnakeCase() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 801,
-          "rule": "comment-bloat",
-          "severity": "warn",
-          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 48,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 57,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 146,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 222,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 231,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 242,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 245,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 268,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 292,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 348,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 360,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 367,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 401,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 882,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 948,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1027,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1058,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 996,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "GenerateDiagonalIfMissing() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 996,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "GenerateDiagonalIfMissing() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 996,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "GenerateDiagonalIfMissing() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 996,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "GenerateDiagonalIfMissing() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 381,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "private() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 672,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "GetBool() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1075,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "private() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1127,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "private() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 16,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 17,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 35,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 38,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 39,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 40,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 49,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 77,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 87,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 89,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 91,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 93,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 98,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 103,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 108,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 117,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 119,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 124,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 147,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 149,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 157,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 161,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 165,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 166,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 167,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 168,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 172,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 176,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 183,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 194,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 196,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 210,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 217,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 113 chars",
-          "metric": 113
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 243,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 246,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 248,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 259,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 269,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 271,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 281,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 282,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 283,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 284,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 285,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 286,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 288,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 289,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 290,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 293,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 294,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 309,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 318,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 321,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 330,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 331,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 332,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 336,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 339,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 340,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 343,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 344,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 357,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 358,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 361,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 381,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 393,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 396,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 397,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 398,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 419,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 423,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 430,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 433,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 434,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 435,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 436,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 439,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 442,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 445,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 446,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 447,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 455,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 460,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 462,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 464,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 474,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 491,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 494,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 512,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 524,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 526,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 530,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 531,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 533,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 534,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 535,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 537,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 538,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 542,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 549,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 574,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 607,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 620,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 621,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 628,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 650,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 666,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 669,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 670,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 672,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 702,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 703,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 705,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 708,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 749,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 778,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 782,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 803,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 806,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 812,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 835,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 842,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 851,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 855,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 876,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 878,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 879,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 884,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 891,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 916,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 920,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 922,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 930,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 939,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 941,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 943,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 949,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 950,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 960,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 979,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 980,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 981,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 984,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 985,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 986,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 987,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 990,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 991,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 994,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 995,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1012,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1016,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1019,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1022,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1023,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1024,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1059,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1061,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1084,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1085,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1086,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1089,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1092,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1112,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1127,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1131,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1132,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1135,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1160,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1171,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1191,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
-          "line": 1192,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        }
-      ]
-    },
     {
       "file": "Tests/Features/Worldgen/Properties/MapGenerationProperties.cs",
       "errors": 25,
@@ -66047,11 +64024,2026 @@
       ]
     },
     {
+      "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+      "errors": 19,
+      "warnings": 230,
+      "rules": {
+        "duplicate-block": 11,
+        "file-length": 1,
+        "complexity": 7,
+        "function-length": 8,
+        "param-count": 3,
+        "unnamed-tuple": 6,
+        "nesting-depth": 2,
+        "else-branch": 2,
+        "stateless-method": 8,
+        "comment-bloat": 1,
+        "comment-restates-code": 17,
+        "output-parameter": 4,
+        "flag-parameter": 4,
+        "line-length": 175
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 2,
+          "rule": "duplicate-block",
+          "severity": "error",
+          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:2, addons/tile_editor/TileEditorService.cs:2, addons/tile_editor/TmxAtlasCompiler.cs:2, Scripts/Core/Services/TileDataLoader.cs:1",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 228,
+          "rule": "duplicate-block",
+          "severity": "error",
+          "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:228, addons/tile_editor/TmxAtlasCompiler.cs:268, addons/tile_editor/TmxAtlasCompiler.cs:1059",
+          "metric": 3
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 268,
+          "rule": "duplicate-block",
+          "severity": "error",
+          "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:228, addons/tile_editor/TmxAtlasCompiler.cs:268, addons/tile_editor/TmxAtlasCompiler.cs:1059",
+          "metric": 3
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1059,
+          "rule": "duplicate-block",
+          "severity": "error",
+          "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:228, addons/tile_editor/TmxAtlasCompiler.cs:268, addons/tile_editor/TmxAtlasCompiler.cs:1059",
+          "metric": 3
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "error",
+          "message": "file is 1250 lines",
+          "metric": 1250
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 40,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "CompileFromTmx() cyclomatic complexity 38",
+          "metric": 38
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 394,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "private() cyclomatic complexity 50",
+          "metric": 50
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 636,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "IsBlobCompliant() cyclomatic complexity 13",
+          "metric": 13
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 40,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "CompileFromTmx() is 350 lines",
+          "metric": 350
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 394,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "private() is 207 lines",
+          "metric": 207
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 718,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "PackTiles() is 79 lines",
+          "metric": 79
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1026,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "GenerateDiagonalIfMissing() is 80 lines",
+          "metric": 80
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1026,
+          "rule": "param-count",
+          "severity": "error",
+          "message": "GenerateDiagonalIfMissing() takes 13 parameters",
+          "metric": 13
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 40,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (bool success, string message) CompileFromTmx( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 394,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (bool success, string error, List<TsxTileData> tiles, List<TsxWangSetData> wangSets) LoadTsxFile( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 716,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (bool success, string message, List<PackedTsxTile> packedTiles, Vector2I atlasSize,\n        Dictionary<string, Dictionary<string, TileAtlasRect>> mapping)\n        PackTiles( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 833,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (Image atlas, int currentX, int currentY) PackCompositeToAtlas( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1110,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (bool success, string message) SaveAtlasMapping( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1162,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (bool success, string message) SaveTransitionMap( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 227,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:227, addons/tile_editor/TmxAtlasCompiler.cs:1058",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 849,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:206, addons/tile_editor/TmxAtlasCompiler.cs:849",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 850,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:207, addons/tile_editor/TmxAtlasCompiler.cs:850",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 851,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:208, addons/tile_editor/TmxAtlasCompiler.cs:851",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 852,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:209, addons/tile_editor/TmxAtlasCompiler.cs:852",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 853,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:210, addons/tile_editor/TmxAtlasCompiler.cs:853",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1058,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at addons/tile_editor/TmxAtlasCompiler.cs:227, addons/tile_editor/TmxAtlasCompiler.cs:1058",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 606,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "ParseWangId() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 718,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "PackTiles() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 963,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "CompositeImages() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1026,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GenerateDiagonalIfMissing() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 833,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "private() is 34 lines",
+          "metric": 34
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 871,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "CreateAtlasImage() is 48 lines",
+          "metric": 48
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 963,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "CompositeImages() is 44 lines",
+          "metric": 44
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1110,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "private() is 48 lines",
+          "metric": 48
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 40,
+          "rule": "nesting-depth",
+          "severity": "warn",
+          "message": "CompileFromTmx() nests 5 levels deep",
+          "metric": 5
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 394,
+          "rule": "nesting-depth",
+          "severity": "warn",
+          "message": "private() nests 5 levels deep",
+          "metric": 5
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 394,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "private() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 930,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "ExtractTileRegion() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 40,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "CompileFromTmx() has 2 else branch(es) — prefer guard clauses",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 394,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "private() has 2 else branch(es) — prefer guard clauses",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 606,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ParseWangId() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 636,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "IsBlobCompliant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 661,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ParseProperties() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 679,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetString() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 682,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetInt() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 685,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetBool() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 697,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CalculateOptimalAtlasWidth() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 920,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToSnakeCase() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 814,
+          "rule": "comment-bloat",
+          "severity": "warn",
+          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
+          "metric": 5
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 48,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 57,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 148,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 226,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 235,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 246,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 249,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 275,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 302,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 358,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 370,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 377,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 414,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 906,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 978,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1057,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1088,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1026,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "GenerateDiagonalIfMissing() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1026,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "GenerateDiagonalIfMissing() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1026,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "GenerateDiagonalIfMissing() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1026,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "GenerateDiagonalIfMissing() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 394,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "private() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 685,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "GetBool() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1110,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "private() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1162,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "private() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 16,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 17,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 35,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 38,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 39,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 49,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 75,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 79,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 89,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 91,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 93,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 95,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 100,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 105,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 110,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 119,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 121,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 126,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 149,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 151,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 159,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 163,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 167,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 168,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 169,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 170,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 174,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 177,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 180,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 187,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 198,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 200,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 214,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 221,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 113 chars",
+          "metric": 113
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 247,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 250,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 252,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 266,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 276,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 278,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 291,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 292,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 293,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 294,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 295,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 296,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 298,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 299,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 300,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 303,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 304,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 319,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 328,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 331,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 340,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 341,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 342,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 346,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 349,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 350,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 353,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 354,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 367,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 368,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 371,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 394,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 406,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 409,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 410,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 411,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 432,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 436,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 443,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 446,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 447,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 448,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 449,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 452,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 455,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 458,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 459,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 460,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 468,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 473,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 475,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 477,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 487,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 504,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 507,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 525,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 537,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 539,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 543,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 544,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 546,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 547,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 548,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 550,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 551,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 555,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 562,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 587,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 620,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 633,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 634,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 641,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 663,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 679,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 682,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 683,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 685,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 715,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 716,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 718,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 721,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 762,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 791,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 795,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 816,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 819,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 825,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 848,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 862,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 871,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 875,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 900,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 902,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 903,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 908,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 915,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 946,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 950,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 952,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 960,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 969,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 971,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 973,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 979,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 980,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 990,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1009,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1010,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1011,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1014,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1015,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1016,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1017,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1020,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1021,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1024,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1025,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1042,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1046,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1049,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1052,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1053,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1054,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1089,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1091,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1119,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1120,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1121,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1124,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1127,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1147,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1162,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1166,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1167,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1170,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1195,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1206,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1227,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1228,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TmxAtlasCompiler.cs",
+          "line": 1230,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
       "errors": 16,
-      "warnings": 139,
+      "warnings": 144,
       "rules": {
-        "duplicate-block": 1,
+        "duplicate-block": 6,
         "file-length": 1,
         "complexity": 6,
         "function-length": 9,
@@ -66192,6 +66184,46 @@
           "severity": "error",
           "message": "tuple (bool success, string message) SaveAtlasMapping( — replace it with a named type",
           "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 206,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:206, addons/tile_editor/TmxAtlasCompiler.cs:849",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 207,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:207, addons/tile_editor/TmxAtlasCompiler.cs:850",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 208,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:208, addons/tile_editor/TmxAtlasCompiler.cs:851",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 209,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:209, addons/tile_editor/TmxAtlasCompiler.cs:852",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 210,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:210, addons/tile_editor/TmxAtlasCompiler.cs:853",
+          "metric": 2
         },
         {
           "file": "addons/tile_editor/TileAtlasCompiler.cs",
