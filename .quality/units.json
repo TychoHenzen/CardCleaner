@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 460,
+  "fileCount": 464,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
@@ -199,6 +199,26 @@
     },
     {
       "path": "addons/tile_editor/TileAtlas/TileIdValidation.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TileAtlas/TransitionCoverageMatrix.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TileAtlas/TransitionStatus.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -2304,27 +2324,27 @@
     }
   ],
   "summary": {
-    "total": 7095,
-    "errors": 333,
-    "warnings": 6762,
+    "total": 7086,
+    "errors": 328,
+    "warnings": 6758,
     "byRule": {
       "dead-export": 15,
       "duplicate-block": 169,
-      "types-per-file": 45,
+      "types-per-file": 44,
       "file-length": 274,
-      "complexity": 306,
-      "function-length": 347,
-      "nesting-depth": 32,
-      "param-count": 137,
+      "complexity": 305,
+      "function-length": 345,
+      "nesting-depth": 31,
+      "param-count": 138,
       "unnamed-tuple": 42,
       "test-only-export": 13,
-      "else-branch": 128,
-      "stateless-method": 1269,
+      "else-branch": 126,
+      "stateless-method": 1274,
       "comment-bloat": 54,
-      "comment-restates-code": 153,
+      "comment-restates-code": 151,
       "output-parameter": 20,
       "flag-parameter": 55,
-      "line-length": 4036
+      "line-length": 4030
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
@@ -2394,7 +2414,6 @@
       "Tests/Features/Worldgen/Biomes/BiomeMapGeneratorTest.cs": 13,
       "Tests/Mocking/IAsyncTestService.cs": 2,
       "Tests/Mocking/ITestService.cs": 2,
-      "addons/tile_editor/TransitionCoveragePanel.cs": 45,
       "addons/tile_editor/TsxPropertyInserter.cs": 45,
       "Scripts/Core/Services/GameSaveService.cs": 28,
       "Scripts/Core/Services/TileRegistry.cs": 56,
@@ -2625,12 +2644,14 @@
       "addons/tile_editor/TmxPreview/TmxPreviewControlState.cs": 22,
       "addons/tile_editor/TmxPreview/TmxPreviewPanelInitialization.cs": 12,
       "addons/tile_editor/TmxPreview/TmxPreviewPanelSelection.cs": 25,
+      "addons/tile_editor/TransitionCoveragePanel.cs": 13,
       "addons/tile_editor/TsxPropertySchema.cs": 20,
       "Scripts/Core/Services/PlayerResetService.cs": 9,
       "Scripts/Features/Conveyor/Components/ConveyorBelt.cs": 4,
       "Scripts/Features/Worldgen/Wfc/Constraints/TileProbabilityConstraint.cs": 16,
       "Tests/Features/Deckbuilder/Services/TilePassabilityDiagnosticTest.cs": 8,
       "addons/tile_editor/TileAtlas/TileAtlasTransitionValidator.cs": 6,
+      "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs": 9,
       "addons/tile_editor/TileEditorValidation.cs": 6,
       "addons/tile_editor/TileProperties/TilePropertiesPanelAdvancedVariants.cs": 12,
       "addons/tile_editor/TmxAtlas/TmxTsxSourceReader.cs": 4,
@@ -2645,6 +2666,7 @@
       "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs": 4,
       "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs": 5,
       "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs": 9,
+      "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs": 9,
       "Scripts/Core/Interfaces/ILog.cs": 3,
       "addons/tile_editor/TileEditorDock.TestHooks.cs": 1,
       "Scripts/Core/Data/GameSettings.cs": 8,
@@ -2677,6 +2699,7 @@
       "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs": 8,
       "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLifecycle.cs": 4,
       "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelPersistence.cs": 3,
+      "addons/tile_editor/TileAtlas/TransitionCoverageMatrix.cs": 5,
       "addons/tile_editor/TileProperties/TilePropertiesPanelAtlasInitialization.cs": 4,
       "addons/tile_editor/TmxPreview/TmxPreviewControlRendering.cs": 4,
       "addons/tile_editor/TmxPreview/TmxPreviewPanelLoading.cs": 5,
@@ -3488,14 +3511,6 @@
       "metric": 3
     },
     {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 275,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "3 types in one file: TransitionCoveragePanel, TransitionStatus, TransitionCoverageMatrix",
-      "metric": 3
-    },
-    {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
       "line": 383,
       "rule": "types-per-file",
@@ -4056,14 +4071,6 @@
       "metric": 425
     },
     {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 318 lines",
-      "metric": 318
-    },
-    {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
       "line": 1,
       "rule": "file-length",
@@ -4576,14 +4583,6 @@
       "metric": 11
     },
     {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 209,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "CalculateCoverageMatrix() cyclomatic complexity 11",
-      "metric": 11
-    },
-    {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
       "line": 25,
       "rule": "complexity",
@@ -4950,22 +4949,6 @@
       "severity": "error",
       "message": "_Draw() is 83 lines",
       "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 99,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "RefreshDisplay() is 62 lines",
-      "metric": 62
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 209,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "CalculateCoverageMatrix() is 61 lines",
-      "metric": 61
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
@@ -8152,6 +8135,14 @@
       "metric": 181
     },
     {
+      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 148 lines",
+      "metric": 148
+    },
+    {
       "file": "addons/tile_editor/TsxPropertySchema.cs",
       "line": 1,
       "rule": "file-length",
@@ -9736,6 +9727,14 @@
       "metric": 6
     },
     {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+      "line": 8,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "RefreshDisplay() cyclomatic complexity 6",
+      "metric": 6
+    },
+    {
       "file": "addons/tile_editor/TileEditorDock.cs",
       "line": 264,
       "rule": "complexity",
@@ -10030,14 +10029,6 @@
       "severity": "warn",
       "message": "GetTextureForTileset() cyclomatic complexity 7",
       "metric": 7
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 99,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "RefreshDisplay() cyclomatic complexity 8",
-      "metric": 8
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
@@ -12361,7 +12352,7 @@
     },
     {
       "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 175,
+      "line": 112,
       "rule": "function-length",
       "severity": "warn",
       "message": "CreateStatusCell() is 33 lines",
@@ -12685,14 +12676,6 @@
       "rule": "nesting-depth",
       "severity": "warn",
       "message": "CollectTilesToPack() nests 4 levels deep",
-      "metric": 4
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 209,
-      "rule": "nesting-depth",
-      "severity": "warn",
-      "message": "CalculateCoverageMatrix() nests 4 levels deep",
       "metric": 4
     },
     {
@@ -13557,6 +13540,14 @@
       "rule": "param-count",
       "severity": "warn",
       "message": "TileButton() takes 4 parameters",
+      "metric": 4
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+      "line": 71,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "ApplyFixedCoverage() takes 4 parameters",
       "metric": 4
     },
     {
@@ -14725,22 +14716,6 @@
       "rule": "else-branch",
       "severity": "warn",
       "message": "OnBaseTileSelected() has 1 else branch(es) — prefer guard clauses",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 99,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "RefreshDisplay() has 2 else branch(es) — prefer guard clauses",
-      "metric": 2
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 209,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "CalculateCoverageMatrix() has 1 else branch(es) — prefer guard clauses",
       "metric": 1
     },
     {
@@ -22736,6 +22711,62 @@
       "metric": 1
     },
     {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoverageMatrix.cs",
+      "line": 24,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "SetCoverage() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoverageMatrix.cs",
+      "line": 29,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetStatus() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+      "line": 9,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "CalculateCoverageMatrix() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+      "line": 8,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "RefreshDisplay() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+      "line": 22,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "UpdateSummary() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+      "line": 47,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ClearMatrixGrid() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+      "line": 53,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "PopulateMatrixGrid() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
       "file": "addons/tile_editor/TileEditorAtlasSources.cs",
       "line": 14,
       "rule": "stateless-method",
@@ -24904,22 +24935,6 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 302,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "SetCoverage() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 307,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "GetStatus() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
       "line": 25,
       "rule": "stateless-method",
@@ -26490,22 +26505,6 @@
     {
       "file": "addons/tile_editor/TilesetAtlasPicker.cs",
       "line": 120,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 103,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 214,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -55864,6 +55863,118 @@
       "metric": 88
     },
     {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoverageMatrix.cs",
+      "line": 13,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoverageMatrix.cs",
+      "line": 24,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoverageMatrix.cs",
+      "line": 34,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+      "line": 17,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+      "line": 19,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+      "line": 25,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+      "line": 52,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+      "line": 66,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+      "line": 67,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+      "line": 78,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+      "line": 10,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+      "line": 43,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+      "line": 66,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+      "line": 67,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
       "line": 9,
       "rule": "line-length",
@@ -58401,39 +58512,7 @@
     },
     {
       "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 101,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 107 chars",
-      "metric": 107
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 124,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 112 chars",
-      "metric": 112
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 156,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 157,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 175,
+      "line": 112,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -58441,7 +58520,7 @@
     },
     {
       "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 190,
+      "line": 127,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -58449,7 +58528,7 @@
     },
     {
       "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 191,
+      "line": 128,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -58457,7 +58536,7 @@
     },
     {
       "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 192,
+      "line": 129,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -58465,139 +58544,11 @@
     },
     {
       "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 193,
+      "line": 130,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
       "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 214,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 226,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 232,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 233,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 243,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 244,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 113 chars",
-      "metric": 113
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 249,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 251,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 102 chars",
-      "metric": 102
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 252,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 102 chars",
-      "metric": 102
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 260,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 262,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 263,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 293,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 295,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 104 chars",
-      "metric": 104
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 302,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "line": 312,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
@@ -67006,384 +66957,6 @@
           "severity": "warn",
           "message": "line is 104 chars",
           "metric": 104
-        }
-      ]
-    },
-    {
-      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-      "errors": 5,
-      "warnings": 40,
-      "rules": {
-        "types-per-file": 1,
-        "file-length": 1,
-        "complexity": 2,
-        "function-length": 4,
-        "nesting-depth": 1,
-        "else-branch": 2,
-        "stateless-method": 2,
-        "comment-restates-code": 2,
-        "line-length": 30
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 275,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "3 types in one file: TransitionCoveragePanel, TransitionStatus, TransitionCoverageMatrix",
-          "metric": 3
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 318 lines",
-          "metric": 318
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 209,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "CalculateCoverageMatrix() cyclomatic complexity 11",
-          "metric": 11
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 99,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "RefreshDisplay() is 62 lines",
-          "metric": 62
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 209,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "CalculateCoverageMatrix() is 61 lines",
-          "metric": 61
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 99,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "RefreshDisplay() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 33,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "_Ready() is 43 lines",
-          "metric": 43
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 175,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "CreateStatusCell() is 33 lines",
-          "metric": 33
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 209,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "CalculateCoverageMatrix() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 99,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "RefreshDisplay() has 2 else branch(es) — prefer guard clauses",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 209,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "CalculateCoverageMatrix() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 302,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "SetCoverage() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 307,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetStatus() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 103,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 214,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 10,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 59,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 60,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 61,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 62,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 101,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 124,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 156,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 157,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 175,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 190,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 191,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 192,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 193,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 214,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 226,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 232,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 233,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 243,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 244,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 113 chars",
-          "metric": 113
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 249,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 251,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 252,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 260,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 262,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 263,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 293,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 295,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 302,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
-          "line": 312,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
         }
       ]
     },
@@ -111618,6 +111191,122 @@
       ]
     },
     {
+      "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+      "errors": 0,
+      "warnings": 13,
+      "rules": {
+        "file-length": 1,
+        "function-length": 2,
+        "line-length": 10
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 148 lines",
+          "metric": 148
+        },
+        {
+          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+          "line": 33,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "_Ready() is 43 lines",
+          "metric": 43
+        },
+        {
+          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+          "line": 112,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "CreateStatusCell() is 33 lines",
+          "metric": 33
+        },
+        {
+          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+          "line": 10,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+          "line": 59,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+          "line": 60,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+          "line": 61,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+          "line": 62,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+          "line": 112,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+          "line": 127,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+          "line": 128,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+          "line": 129,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TransitionCoveragePanel.cs",
+          "line": 130,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Card/Models/GemVisual.cs",
       "errors": 0,
       "warnings": 13,
@@ -115688,6 +115377,90 @@
       ]
     },
     {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+      "errors": 0,
+      "warnings": 9,
+      "rules": {
+        "complexity": 1,
+        "stateless-method": 4,
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+          "line": 8,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "RefreshDisplay() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+          "line": 8,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "RefreshDisplay() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+          "line": 22,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "UpdateSummary() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+          "line": 47,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ClearMatrixGrid() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+          "line": 53,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "PopulateMatrixGrid() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+          "line": 10,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+          "line": 43,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+          "line": 66,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
+          "line": 67,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
       "errors": 0,
       "warnings": 9,
@@ -115768,6 +115541,90 @@
           "severity": "warn",
           "message": "SetShowDataGrid() takes a boolean flag; split the behavior or name the policy",
           "metric": 1
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+      "errors": 0,
+      "warnings": 9,
+      "rules": {
+        "param-count": 1,
+        "stateless-method": 1,
+        "line-length": 7
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+          "line": 71,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "ApplyFixedCoverage() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+          "line": 9,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CalculateCoverageMatrix() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+          "line": 17,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+          "line": 25,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+          "line": 52,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+          "line": 66,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+          "line": 67,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs",
+          "line": 78,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
         }
       ]
     },
@@ -119038,6 +118895,57 @@
           "severity": "warn",
           "message": "line is 85 chars",
           "metric": 85
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TransitionCoverageMatrix.cs",
+      "errors": 0,
+      "warnings": 5,
+      "rules": {
+        "stateless-method": 2,
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoverageMatrix.cs",
+          "line": 24,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SetCoverage() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoverageMatrix.cs",
+          "line": 29,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetStatus() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoverageMatrix.cs",
+          "line": 13,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoverageMatrix.cs",
+          "line": 24,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TransitionCoverageMatrix.cs",
+          "line": 34,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
         }
       ]
     },
