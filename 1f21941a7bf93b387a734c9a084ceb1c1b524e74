@@ -196,5 +196,14 @@
     "reason": "Pure type move: TransitionEntry moved unchanged out of CompiledTransitionMap.cs (types-per-file). It is the value type of the public CompiledTransitionMap.Transitions JSON model so it must stay public; namespace unchanged (member: TransitionEntry.get)",
     "author": "Tycho",
     "time": "2026-10-03T21:55:29.086Z"
+  },
+  {
+    "findingId": "ab8f5b85d138241d07f8c9d47d125c67e1c4217315a4a2ef8d97e763ed35e6a3",
+    "fingerprint": "5678a58154db0434d54e72ff668e93b0ffe1e9f1669926e1d4d3891dc0982b42",
+    "baseSha": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetSha": "1f21941a7bf93b387a734c9a084ceb1c1b524e74",
+    "reason": "Pure type move: public Godot resource NoiseGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: NoiseGradient.get)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:56:17.569Z"
   }
 ]
