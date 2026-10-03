@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 781,
+  "fileCount": 785,
   "files": [
     {
       "path": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
@@ -1498,7 +1498,27 @@
       "classification": "production"
     },
     {
+      "path": "Scripts/Features/Deckbuilder/Services/Combat/CombatContext.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Deckbuilder/Services/Combat/CombatStatus.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Deckbuilder/Services/Combat/ICombatant.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "Scripts/Features/Deckbuilder/Services/Combat/ICombatCommand.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Deckbuilder/Services/Exploration/ExplorationContext.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -3909,27 +3929,26 @@
     }
   ],
   "summary": {
-    "total": 7466,
-    "errors": 16,
-    "warnings": 7450,
+    "total": 7461,
+    "errors": 13,
+    "warnings": 7448,
     "byRule": {
       "dead-export": 4,
-      "types-per-file": 11,
-      "unnamed-tuple": 1,
+      "types-per-file": 9,
       "test-only-export": 10,
       "duplicate-block": 70,
       "file-length": 351,
       "complexity": 231,
       "function-length": 263,
       "nesting-depth": 11,
-      "param-count": 178,
+      "param-count": 177,
       "else-branch": 91,
       "stateless-method": 1541,
       "comment-bloat": 49,
       "comment-restates-code": 95,
       "output-parameter": 29,
       "flag-parameter": 72,
-      "line-length": 4459
+      "line-length": 4458
     },
     "byFile": {
       "Scripts/Features/ModularDevices/ButtonDevice.cs": 3,
@@ -3939,15 +3958,12 @@
       "Scripts/Core/Interfaces/IMapGenerator.cs": 2,
       "Scripts/Core/Interfaces/IProfiler.cs": 6,
       "Scripts/Core/Services/VariationGroup.cs": 8,
-      "Scripts/Features/Deckbuilder/Services/Combat/ICombatCommand.cs": 2,
-      "Scripts/Features/Deckbuilder/Services/Exploration/IExplorationStrategy.cs": 1,
       "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs": 31,
       "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs": 30,
       "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs": 12,
       "Scripts/Features/Worldgen/BaselineGradient.cs": 18,
       "Scripts/Features/Worldgen/Biomes/TilePool.cs": 5,
       "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs": 18,
-      "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs": 21,
       "Scripts/Core/Services/MapGenerationProfiler.cs": 2,
       "Scripts/Features/Worldgen/AutoTiling/AutoTileHelper.cs": 15,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapGenerator.cs": 27,
@@ -4038,6 +4054,7 @@
       "Scripts/Features/Deckbuilder/Services/Session/ExplorationSession.cs": 18,
       "Scripts/Features/Deckbuilder/Services/Session/Generation/MapGenerationCoordinator.cs": 16,
       "Scripts/Features/Deckbuilder/Services/Session/SessionFlow.cs": 12,
+      "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs": 18,
       "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs": 21,
       "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapGenerationPipeline.cs": 20,
       "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs": 37,
@@ -4495,6 +4512,7 @@
       "Scripts/Features/Deckbuilder/Models/WorldMap/LayerTileSets.cs": 2,
       "Scripts/Features/Deckbuilder/Models/WorldMap/LootCardSpawner.cs": 1,
       "Scripts/Features/Deckbuilder/Models/WorldMap/WorldMapCameraRig.cs": 7,
+      "Scripts/Features/Deckbuilder/Services/Combat/ICombatCommand.cs": 1,
       "Scripts/Features/Deckbuilder/Services/ExplorationAI/ExplorationState.cs": 2,
       "Scripts/Features/Deckbuilder/Services/ExplorationAI/ExplorationStepCallbacks.cs": 1,
       "Scripts/Features/Deckbuilder/Services/FrontierExploration/FrontierCell.cs": 1,
@@ -4661,22 +4679,6 @@
       "metric": 3
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Services/Combat/ICombatCommand.cs",
-      "line": 16,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "3 types in one file: CombatContext, ICombatant, ICombatCommand",
-      "metric": 3
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/Exploration/IExplorationStrategy.cs",
-      "line": 23,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: ExplorationContext, IExplorationStrategy",
-      "metric": 2
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
       "line": 35,
       "rule": "types-per-file",
@@ -4723,14 +4725,6 @@
       "severity": "error",
       "message": "2 types in one file: DecorationRenderer, DecorationData",
       "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-      "line": 168,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (int playerHealth, int playerMaxHealth, int enemyHealth, int enemyMaxHealth) GetCombatStatus( — replace it with a named type",
-      "metric": 1
     },
     {
       "file": "Scripts/Core/Services/MapGenerationProfiler.cs",
@@ -12554,14 +12548,6 @@
       "rule": "param-count",
       "severity": "warn",
       "message": "SessionFlow() takes 4 parameters",
-      "metric": 4
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-      "line": 168,
-      "rule": "param-count",
-      "severity": "warn",
-      "message": "public() takes 4 parameters",
       "metric": 4
     },
     {
@@ -35182,7 +35168,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/Combat/ICombatCommand.cs",
-      "line": 43,
+      "line": 19,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -36590,19 +36576,11 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-      "line": 168,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 105 chars",
-      "metric": 105
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
       "line": 170,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
+      "message": "line is 100 chars",
+      "metric": 100
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleGeneratedMap.cs",
@@ -64853,190 +64831,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-      "errors": 1,
-      "warnings": 20,
-      "rules": {
-        "unnamed-tuple": 1,
-        "file-length": 1,
-        "function-length": 1,
-        "param-count": 1,
-        "else-branch": 1,
-        "comment-restates-code": 1,
-        "line-length": 15
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 168,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (int playerHealth, int playerMaxHealth, int enemyHealth, int enemyMaxHealth) GetCombatStatus( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 185 lines",
-          "metric": 185
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 55,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "SimpleCombatSystem() is 41 lines",
-          "metric": 41
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 168,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "public() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 100,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "ProcessTurn() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 85,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 17,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 32,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 38,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 55,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 118 chars",
-          "metric": 118
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 91,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 94,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 129,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 136,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 138,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 139,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 140,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 153,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 162,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 168,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
-          "line": 170,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
       "errors": 1,
       "warnings": 17,
@@ -65792,33 +65586,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Services/Combat/ICombatCommand.cs",
-      "errors": 1,
-      "warnings": 1,
-      "rules": {
-        "types-per-file": 1,
-        "line-length": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/Combat/ICombatCommand.cs",
-          "line": 16,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "3 types in one file: CombatContext, ICombatant, ICombatCommand",
-          "metric": 3
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/Combat/ICombatCommand.cs",
-          "line": 43,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/ModularDevices/HexScreenDevice.cs",
       "errors": 1,
       "warnings": 0,
@@ -65833,24 +65600,6 @@
           "severity": "error",
           "message": "HexScreenDevice is exported but never referenced anywhere",
           "metric": 1
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/Exploration/IExplorationStrategy.cs",
-      "errors": 1,
-      "warnings": 0,
-      "rules": {
-        "types-per-file": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/Exploration/IExplorationStrategy.cs",
-          "line": 23,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: ExplorationContext, IExplorationStrategy",
-          "metric": 2
         }
       ]
     },
@@ -95530,6 +95279,164 @@
           "severity": "warn",
           "message": "line is 105 chars",
           "metric": 105
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+      "errors": 0,
+      "warnings": 18,
+      "rules": {
+        "file-length": 1,
+        "function-length": 1,
+        "else-branch": 1,
+        "comment-restates-code": 1,
+        "line-length": 14
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 185 lines",
+          "metric": 185
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 55,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "SimpleCombatSystem() is 41 lines",
+          "metric": 41
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 100,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "ProcessTurn() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 85,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 17,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 32,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 38,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 55,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 118 chars",
+          "metric": 118
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 91,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 94,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 129,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 136,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 138,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 139,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 140,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 153,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 162,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
+          "line": 170,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
         }
       ]
     },
@@ -131487,6 +131394,24 @@
           "severity": "warn",
           "message": "line is 100 chars",
           "metric": 100
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/Combat/ICombatCommand.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/Combat/ICombatCommand.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
         }
       ]
     },

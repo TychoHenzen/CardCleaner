@@ -25,5 +25,32 @@
     "reason": "Pure type move: CollapsedNeighborInfo.int is the synthesized constructor-signature entry of the same unchanged struct moved from WfcConstraintContext.cs; see the CollapsedNeighborInfo acknowledgement.",
     "author": "Tycho",
     "time": "2026-10-03T20:23:42.026Z"
+  },
+  {
+    "findingId": "6f5548c6668b9b17783bf5b3fd6cab61007069f8910c0f9c78793abd157a2bda",
+    "fingerprint": "45d4457cb8bf0a7220bdf27a2f0fae611d6a0514c6f184900283a74a58d5d27c",
+    "baseIdentity": "762f23d7733ff9f6dbd92ac8527c1c800b4df275",
+    "targetIdentity": "5505ada4f6f3a2885a5862ace2bb20c5697a2ecce12347e13c857cd5be97661b",
+    "reason": "Pure type move: CombatContext class moved unchanged from ICombatCommand.cs to its own file to satisfy types-per-file. It is the parameter type of the public ICombatCommand methods, so it must stay public; members and namespace unchanged.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:42:31.343Z"
+  },
+  {
+    "findingId": "88dcf19751dde5d96304eb1f182945515e2da43ee0dc82bcaa02149e1004d028",
+    "fingerprint": "45d4457cb8bf0a7220bdf27a2f0fae611d6a0514c6f184900283a74a58d5d27c",
+    "baseIdentity": "762f23d7733ff9f6dbd92ac8527c1c800b4df275",
+    "targetIdentity": "5505ada4f6f3a2885a5862ace2bb20c5697a2ecce12347e13c857cd5be97661b",
+    "reason": "Pure type move: ExplorationContext class moved unchanged from IExplorationStrategy.cs to its own file to satisfy types-per-file. It is the parameter type of the public IExplorationStrategy.GetNextTarget, so it must stay public; members and namespace unchanged.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:43:24.004Z"
+  },
+  {
+    "findingId": "f8500f9bd020b0c5f6a8ff3ea2af5401eb5da0e51d30f24e8f0fa490880f52a7",
+    "fingerprint": "45d4457cb8bf0a7220bdf27a2f0fae611d6a0514c6f184900283a74a58d5d27c",
+    "baseIdentity": "762f23d7733ff9f6dbd92ac8527c1c800b4df275",
+    "targetIdentity": "5505ada4f6f3a2885a5862ace2bb20c5697a2ecce12347e13c857cd5be97661b",
+    "reason": "Deliberate signature change, not a pure move: SimpleCombatSystem.GetCombatStatus now returns the named readonly record struct CombatStatus instead of an unnamed 4-tuple (clears the unnamed-tuple error). Positional order and deconstruction are identical, there are no production callers, and all existing deconstructing test callers compile and pass unchanged.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:44:14.313Z"
   }
 ]
