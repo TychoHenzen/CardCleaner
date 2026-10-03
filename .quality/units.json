@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 480,
+  "fileCount": 483,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
@@ -913,12 +913,27 @@
       "classification": "production"
     },
     {
+      "path": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "Scripts/Core/Services/TiledTilesetLoader.cs",
       "language": "cs",
       "classification": "production"
     },
     {
       "path": "Scripts/Core/Services/TileRegistry.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TileRegistryResult.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -2404,27 +2419,27 @@
     }
   ],
   "summary": {
-    "total": 7066,
-    "errors": 305,
-    "warnings": 6761,
+    "total": 7060,
+    "errors": 300,
+    "warnings": 6760,
     "byRule": {
       "dead-export": 13,
-      "duplicate-block": 166,
-      "types-per-file": 42,
-      "file-length": 283,
-      "complexity": 300,
-      "function-length": 334,
+      "duplicate-block": 164,
+      "types-per-file": 41,
+      "file-length": 285,
+      "complexity": 298,
+      "function-length": 332,
       "nesting-depth": 31,
       "param-count": 144,
       "unnamed-tuple": 39,
       "test-only-export": 13,
       "else-branch": 121,
-      "stateless-method": 1301,
+      "stateless-method": 1303,
       "comment-bloat": 54,
       "comment-restates-code": 137,
       "output-parameter": 23,
       "flag-parameter": 58,
-      "line-length": 4007
+      "line-length": 4004
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
@@ -2459,7 +2474,6 @@
       "Scripts/Core/Interfaces/IFogOfWar.cs": 4,
       "Scripts/Core/Interfaces/IMapGenerator.cs": 2,
       "Scripts/Core/Interfaces/IProfiler.cs": 6,
-      "Scripts/Core/Services/TileDataLoader.cs": 85,
       "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs": 40,
       "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs": 9,
       "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs": 38,
@@ -2589,7 +2603,6 @@
       "addons/tile_editor/TileAtlas/TileAtlasImageOperations.cs": 31,
       "addons/tile_editor/TileAtlas/TileAtlasOutputWriter.cs": 8,
       "addons/tile_editor/TileAtlas/TileAtlasTransitionComposer.cs": 14,
-      "addons/tile_editor/TileEditorLoading.cs": 25,
       "addons/tile_editor/TmxAtlas/CompilerModels.cs": 5,
       "addons/tile_editor/TmxAtlas/TmxAtlasImageOperations.cs": 22,
       "addons/tile_editor/TmxAtlas/TmxAtlasOutputWriter.cs": 12,
@@ -2605,6 +2618,9 @@
       "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs": 33,
       "Scripts/Core/Services/CompiledAtlasLoader.cs": 40,
       "Scripts/Core/Services/InputService.cs": 33,
+      "Scripts/Core/Services/TileDataLoader.Models.cs": 26,
+      "Scripts/Core/Services/TileDataLoader.Parsing.cs": 21,
+      "Scripts/Core/Services/TileDataLoader.cs": 32,
       "Scripts/Core/Utilities/CsgBaker.cs": 13,
       "Scripts/Features/Card/Components/CardDesigner.cs": 23,
       "Scripts/Features/Card/Components/CardHighlighter.cs": 13,
@@ -2700,6 +2716,7 @@
       "addons/tile_editor/TileAtlasCompiler.cs": 16,
       "addons/tile_editor/TileEditorAtlasSources.cs": 25,
       "addons/tile_editor/TileEditorFormatLoading.cs": 10,
+      "addons/tile_editor/TileEditorLoading.cs": 24,
       "addons/tile_editor/TileEditorModels/EditableTile.cs": 33,
       "addons/tile_editor/TileEditorModels/EditableVariantDefinition.cs": 6,
       "addons/tile_editor/TileEditorModels/TileEditorJsonModels.cs": 1,
@@ -2818,6 +2835,7 @@
       "Scripts/Core/Interfaces/ITileRegistry.cs": 6,
       "Scripts/Core/Interfaces/IVisibilityChecker.cs": 2,
       "Scripts/Core/Services/SafePositionTracker.cs": 4,
+      "Scripts/Core/Services/TileRegistryResult.cs": 1,
       "Scripts/Features/Card/Components/CardDropper.cs": 2,
       "Scripts/Features/Card/Components/CardShaderRenderer.cs": 2,
       "Scripts/Features/Card/Services/SignatureCardHelper.cs": 1,
@@ -3295,14 +3313,6 @@
       "metric": 3
     },
     {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 25,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: TileRegistryResult, TileDataLoader",
-      "metric": 2
-    },
-    {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
       "line": 202,
       "rule": "types-per-file",
@@ -3597,14 +3607,6 @@
       "severity": "error",
       "message": "file is 334 lines",
       "metric": 334
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 566 lines",
-      "metric": 566
     },
     {
       "file": "Scripts/Core/Services/TileRegistry.cs",
@@ -4151,22 +4153,6 @@
       "metric": 11
     },
     {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 234,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "ParseCustomAutoTileFormat() cyclomatic complexity 16",
-      "metric": 16
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 296,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "ConvertToTileDefinition() cyclomatic complexity 21",
-      "metric": 21
-    },
-    {
       "file": "Scripts/Core/Services/TileRegistry.cs",
       "line": 285,
       "rule": "complexity",
@@ -4589,14 +4575,6 @@
       "severity": "error",
       "message": "RecreateCards() is 112 lines",
       "metric": 112
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 234,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "ParseCustomAutoTileFormat() is 61 lines",
-      "metric": 61
     },
     {
       "file": "Scripts/Core/Services/TileRegistry.cs",
@@ -5389,14 +5367,6 @@
       "severity": "warn",
       "message": "AdjacencyConstraint is only referenced by tests — delete it and its tests",
       "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 1,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at addons/tile_editor/TileEditorLoading.cs:2, Scripts/Core/Services/TileDataLoader.cs:1",
-      "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
@@ -6279,14 +6249,6 @@
       "metric": 2
     },
     {
-      "file": "addons/tile_editor/TileEditorLoading.cs",
-      "line": 2,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at addons/tile_editor/TileEditorLoading.cs:2, Scripts/Core/Services/TileDataLoader.cs:1",
-      "metric": 2
-    },
-    {
       "file": "addons/tile_editor/TmxAtlas/CompilerModels.cs",
       "line": 108,
       "rule": "duplicate-block",
@@ -6517,6 +6479,30 @@
       "severity": "warn",
       "message": "file is 231 lines",
       "metric": 231
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 125 lines",
+      "metric": 125
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 250 lines",
+      "metric": 250
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 225 lines",
+      "metric": 225
     },
     {
       "file": "Scripts/Core/Services/TiledTilesetLoader.cs",
@@ -8239,8 +8225,16 @@
       "metric": 6
     },
     {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 226,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "ParseAutoTileVariants() cyclomatic complexity 9",
+      "metric": 9
+    },
+    {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 47,
+      "line": 40,
       "rule": "complexity",
       "severity": "warn",
       "message": "LoadTileRegistry() cyclomatic complexity 6",
@@ -8248,7 +8242,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 95,
+      "line": 88,
       "rule": "complexity",
       "severity": "warn",
       "message": "LoadFromJson() cyclomatic complexity 9",
@@ -8256,7 +8250,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 146,
+      "line": 139,
       "rule": "complexity",
       "severity": "warn",
       "message": "LoadBiomes() cyclomatic complexity 7",
@@ -8264,19 +8258,11 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 199,
+      "line": 192,
       "rule": "complexity",
       "severity": "warn",
       "message": "RegisterCustomAutoTileFormats() cyclomatic complexity 6",
       "metric": 6
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 422,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "ParseAutoTileVariants() cyclomatic complexity 9",
-      "metric": 9
     },
     {
       "file": "Scripts/Core/Services/TileRegistry.cs",
@@ -10184,7 +10170,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 95,
+      "line": 88,
       "rule": "function-length",
       "severity": "warn",
       "message": "LoadFromJson() is 47 lines",
@@ -10192,19 +10178,11 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 199,
+      "line": 192,
       "rule": "function-length",
       "severity": "warn",
       "message": "RegisterCustomAutoTileFormats() is 31 lines",
       "metric": 31
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 296,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "ConvertToTileDefinition() is 40 lines",
-      "metric": 40
     },
     {
       "file": "Scripts/Core/Services/TileRegistry.cs",
@@ -15087,16 +15065,32 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 385,
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 32,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ToLowerInvariant() never touches instance state — make it a free function",
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 396,
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 151,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ToLowerInvariant() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 189,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ToLowerInvariant() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 200,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ToLowerInvariant() never touches instance state — make it a free function",
@@ -25176,7 +25170,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 42,
+      "line": 35,
       "rule": "comment-bloat",
       "severity": "warn",
       "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
@@ -25663,8 +25657,8 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 427,
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 231,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -29151,16 +29145,320 @@
       "metric": 107
     },
     {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 20,
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 15,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 17,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 108 chars",
+      "metric": 108
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 19,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 26,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 28,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 35,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 37,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 39,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 110 chars",
       "metric": 110
     },
     {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 41,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 48,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 54,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 63,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 65,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 73,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 79,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 81,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 83,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 85,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 87,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 89,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 93,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 95,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 99,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 101,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+      "line": 108,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 13,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 55,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 62,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 75,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 109 chars",
+      "metric": 109
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 81,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 107 chars",
+      "metric": 107
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 90,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 98,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 114,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 131,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 136,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 142,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 146,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 226,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "line": 233,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 29,
+      "line": 22,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 107 chars",
@@ -29168,7 +29466,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 32,
+      "line": 25,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -29176,11 +29474,27 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 43,
+      "line": 36,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
       "metric": 89
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.cs",
+      "line": 38,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.cs",
+      "line": 42,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
@@ -29192,23 +29506,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 49,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 52,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 55,
+      "line": 48,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -29216,7 +29514,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 56,
+      "line": 49,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -29224,7 +29522,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 62,
+      "line": 55,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -29232,7 +29530,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 79,
+      "line": 72,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -29240,7 +29538,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 103,
+      "line": 96,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -29248,7 +29546,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 109,
+      "line": 102,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -29256,7 +29554,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 113,
+      "line": 106,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -29264,7 +29562,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 133,
+      "line": 126,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 111 chars",
@@ -29272,7 +29570,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 139,
+      "line": 132,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -29280,7 +29578,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 153,
+      "line": 146,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -29288,7 +29586,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 160,
+      "line": 153,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -29296,7 +29594,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 167,
+      "line": 160,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -29304,7 +29602,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 178,
+      "line": 171,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -29312,7 +29610,7 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 191,
+      "line": 184,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -29320,7 +29618,15 @@
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 199,
+      "line": 192,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.cs",
+      "line": 204,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -29331,360 +29637,16 @@
       "line": 211,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 218,
-      "rule": "line-length",
-      "severity": "warn",
       "message": "line is 117 chars",
       "metric": 117
     },
     {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 226,
+      "line": 219,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
       "metric": 102
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 234,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 260,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 113 chars",
-      "metric": 113
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 263,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 270,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 273,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 281,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 284,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 117 chars",
-      "metric": 117
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 296,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 304,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 305,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 306,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 310,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 325,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 338,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 342,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 422,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 99 chars",
-      "metric": 99
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 429,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 454,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 456,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 108 chars",
-      "metric": 108
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 458,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 465,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 467,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 474,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 476,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 478,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 110 chars",
-      "metric": 110
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 480,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 487,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 493,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 502,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 504,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 512,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 518,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 520,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 522,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 524,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 526,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 528,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 532,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 534,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 538,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 540,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "line": 547,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
     },
     {
       "file": "Scripts/Core/Services/TileRegistry.cs",
@@ -29997,6 +29959,14 @@
       "severity": "warn",
       "message": "line is 84 chars",
       "metric": 84
+    },
+    {
+      "file": "Scripts/Core/Services/TileRegistryResult.cs",
+      "line": 10,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 110 chars",
+      "metric": 110
     },
     {
       "file": "Scripts/Core/Services/TiledTilesetLoader.cs",
@@ -63279,704 +63249,6 @@
           "severity": "warn",
           "message": "line is 105 chars",
           "metric": 105
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.cs",
-      "errors": 5,
-      "warnings": 80,
-      "rules": {
-        "types-per-file": 1,
-        "file-length": 1,
-        "complexity": 7,
-        "function-length": 4,
-        "duplicate-block": 1,
-        "stateless-method": 2,
-        "comment-bloat": 1,
-        "comment-restates-code": 1,
-        "line-length": 67
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 25,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: TileRegistryResult, TileDataLoader",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 566 lines",
-          "metric": 566
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 234,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "ParseCustomAutoTileFormat() cyclomatic complexity 16",
-          "metric": 16
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 296,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "ConvertToTileDefinition() cyclomatic complexity 21",
-          "metric": 21
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 234,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "ParseCustomAutoTileFormat() is 61 lines",
-          "metric": 61
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 1,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at addons/tile_editor/TileEditorLoading.cs:2, Scripts/Core/Services/TileDataLoader.cs:1",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 47,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "LoadTileRegistry() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 95,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "LoadFromJson() cyclomatic complexity 9",
-          "metric": 9
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 146,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "LoadBiomes() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 199,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "RegisterCustomAutoTileFormats() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 422,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ParseAutoTileVariants() cyclomatic complexity 9",
-          "metric": 9
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 95,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "LoadFromJson() is 47 lines",
-          "metric": 47
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 199,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "RegisterCustomAutoTileFormats() is 31 lines",
-          "metric": 31
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 296,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ConvertToTileDefinition() is 40 lines",
-          "metric": 40
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 385,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ToLowerInvariant() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 396,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ToLowerInvariant() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 42,
-          "rule": "comment-bloat",
-          "severity": "warn",
-          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 427,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 20,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 29,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 32,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 43,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 45,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 49,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 52,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 55,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 56,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 62,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 79,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 103,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 109,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 113,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 133,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 139,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 153,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 160,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 167,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 178,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 191,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 199,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 211,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 218,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 226,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 234,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 260,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 113 chars",
-          "metric": 113
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 263,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 270,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 273,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 281,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 284,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 296,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 304,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 305,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 306,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 310,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 325,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 338,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 342,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 422,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 429,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 454,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 456,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 458,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 465,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 467,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 474,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 476,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 478,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 480,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 487,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 493,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 502,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 504,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 512,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 518,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 520,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 522,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 524,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 526,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 528,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 532,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 534,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 538,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 540,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.cs",
-          "line": 547,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
         }
       ]
     },
@@ -97484,6 +96756,276 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/TileDataLoader.cs",
+      "errors": 0,
+      "warnings": 32,
+      "rules": {
+        "file-length": 1,
+        "complexity": 4,
+        "function-length": 2,
+        "comment-bloat": 1,
+        "line-length": 24
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 225 lines",
+          "metric": 225
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 40,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "LoadTileRegistry() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 88,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "LoadFromJson() cyclomatic complexity 9",
+          "metric": 9
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 139,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "LoadBiomes() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 192,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "RegisterCustomAutoTileFormats() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 88,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "LoadFromJson() is 47 lines",
+          "metric": 47
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 192,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "RegisterCustomAutoTileFormats() is 31 lines",
+          "metric": 31
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 35,
+          "rule": "comment-bloat",
+          "severity": "warn",
+          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 22,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 25,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 38,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 42,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 45,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 48,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 49,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 55,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 72,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 96,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 102,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 106,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 126,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 132,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 146,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 153,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 160,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 171,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 184,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 192,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 204,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 211,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.cs",
+          "line": 219,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TileAtlas/TileAtlasImageOperations.cs",
       "errors": 0,
       "warnings": 31,
@@ -98940,150 +98482,112 @@
       ]
     },
     {
-      "file": "addons/tile_editor/TileEditorLoading.cs",
+      "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
       "errors": 0,
-      "warnings": 25,
+      "warnings": 26,
       "rules": {
-        "duplicate-block": 1,
         "file-length": 1,
-        "complexity": 4,
-        "function-length": 1,
-        "else-branch": 1,
-        "stateless-method": 6,
-        "flag-parameter": 1,
-        "line-length": 10
+        "line-length": 25
       },
       "items": [
         {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 2,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at addons/tile_editor/TileEditorLoading.cs:2, Scripts/Core/Services/TileDataLoader.cs:1",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 271 lines",
-          "metric": 271
+          "message": "file is 125 lines",
+          "metric": 125
         },
         {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 29,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "LoadTiles() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 171,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "LoadAutoTileVariants() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 222,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "LoadBiomes() cyclomatic complexity 10",
-          "metric": 10
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 243,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ComputeTileModeFromData() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 29,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "LoadTiles() is 38 lines",
-          "metric": 38
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 209,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "ApplyTileMetadata() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 29,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "LoadTiles() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 68,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ResetLoadedData() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 76,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "LoadTileSet() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 88,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "LoadTileDefinitions() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 222,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "LoadBiomes() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 263,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "EmitLoadSignals() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 161,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "GetBoolOrDefault() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 9,
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 15,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
+          "message": "line is 97 chars",
+          "metric": 97
         },
         {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 17,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 26,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 28,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 35,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 39,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 48,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 54,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
           "line": 63,
           "rule": "line-length",
           "severity": "warn",
@@ -99091,68 +98595,108 @@
           "metric": 82
         },
         {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 65,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
           "line": 73,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 79,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 81,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 83,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 85,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 87,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 89,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 93,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 95,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 99,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 81 chars",
           "metric": 81
         },
         {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 107,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 171,
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 101,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 82 chars",
           "metric": 82
         },
         {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 173,
+          "file": "Scripts/Core/Services/TileDataLoader.Models.cs",
+          "line": 108,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 178,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 182,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 235,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TileEditorLoading.cs",
-          "line": 236,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
+          "message": "line is 92 chars",
+          "metric": 92
         }
       ]
     },
@@ -100212,6 +99756,214 @@
           "severity": "warn",
           "message": "line is 89 chars",
           "metric": 89
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/TileEditorLoading.cs",
+      "errors": 0,
+      "warnings": 24,
+      "rules": {
+        "file-length": 1,
+        "complexity": 4,
+        "function-length": 1,
+        "else-branch": 1,
+        "stateless-method": 6,
+        "flag-parameter": 1,
+        "line-length": 10
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 271 lines",
+          "metric": 271
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 29,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "LoadTiles() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 171,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "LoadAutoTileVariants() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 222,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "LoadBiomes() cyclomatic complexity 10",
+          "metric": 10
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 243,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "ComputeTileModeFromData() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 29,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "LoadTiles() is 38 lines",
+          "metric": 38
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 209,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "ApplyTileMetadata() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 29,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "LoadTiles() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 68,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ResetLoadedData() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 76,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "LoadTileSet() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 88,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "LoadTileDefinitions() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 222,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "LoadBiomes() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 263,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "EmitLoadSignals() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 161,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "GetBoolOrDefault() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 9,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 63,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 73,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 107,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 171,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 173,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 178,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 182,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 235,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileEditorLoading.cs",
+          "line": 236,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
         }
       ]
     },
@@ -102513,6 +102265,188 @@
         {
           "file": "Scripts/Core/DependencyInjection/AutoServiceProvider.cs",
           "line": 122,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "errors": 0,
+      "warnings": 21,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "stateless-method": 4,
+        "comment-restates-code": 1,
+        "line-length": 14
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 250 lines",
+          "metric": 250
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 226,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "ParseAutoTileVariants() cyclomatic complexity 9",
+          "metric": 9
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 32,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToLowerInvariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 151,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToLowerInvariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 189,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToLowerInvariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 200,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToLowerInvariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 231,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 13,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 55,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 62,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 75,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 81,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 90,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 98,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 114,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 131,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 136,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 142,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 146,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 226,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 233,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 88 chars",
@@ -121136,6 +121070,24 @@
           "severity": "warn",
           "message": "line is 90 chars",
           "metric": 90
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/TileRegistryResult.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TileRegistryResult.cs",
+          "line": 10,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
         }
       ]
     },
