@@ -16,5 +16,14 @@
     "reason": "Pure type move: ExplorationContext class moved unchanged from IExplorationStrategy.cs to its own file to satisfy types-per-file. It is the parameter type of the public IExplorationStrategy.GetNextTarget, so it must stay public; members and namespace unchanged.",
     "author": "Tycho",
     "time": "2026-10-03T20:47:49.497Z"
+  },
+  {
+    "findingId": "f8500f9bd020b0c5f6a8ff3ea2af5401eb5da0e51d30f24e8f0fa490880f52a7",
+    "fingerprint": "cda95ddf7c59cfe95d40c0b2738fa5a302fe769dc38f2ce02f5f539dd17f18aa",
+    "baseSha": "762f23d7733ff9f6dbd92ac8527c1c800b4df275",
+    "targetSha": "59eeec381362820da27083de731b9c6c580ee012",
+    "reason": "Deliberate signature change, not a pure move: SimpleCombatSystem.GetCombatStatus now returns the named readonly record struct CombatStatus instead of an unnamed 4-tuple (clears the unnamed-tuple error). Positional order and deconstruction are identical, there are no production callers, and all existing deconstructing test callers compile and pass unchanged.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:48:49.780Z"
   }
 ]
