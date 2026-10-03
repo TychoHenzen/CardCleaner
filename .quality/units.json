@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 452,
+  "fileCount": 455,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
@@ -104,6 +104,21 @@
     },
     {
       "path": "addons/tile_editor/AutoTilePreviewPanel.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/BiomePool/BiomeIdValidation.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/BiomePool/BiomeSection.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -2264,27 +2279,27 @@
     }
   ],
   "summary": {
-    "total": 7115,
-    "errors": 346,
-    "warnings": 6769,
+    "total": 7091,
+    "errors": 339,
+    "warnings": 6752,
     "byRule": {
-      "dead-export": 18,
-      "duplicate-block": 171,
-      "types-per-file": 47,
-      "file-length": 269,
-      "complexity": 309,
-      "function-length": 351,
-      "nesting-depth": 33,
-      "param-count": 136,
-      "unnamed-tuple": 44,
+      "dead-export": 16,
+      "duplicate-block": 169,
+      "types-per-file": 46,
+      "file-length": 271,
+      "complexity": 307,
+      "function-length": 349,
+      "nesting-depth": 32,
+      "param-count": 137,
+      "unnamed-tuple": 43,
       "test-only-export": 13,
-      "else-branch": 130,
+      "else-branch": 129,
       "stateless-method": 1245,
       "comment-bloat": 54,
-      "comment-restates-code": 164,
+      "comment-restates-code": 159,
       "output-parameter": 20,
       "flag-parameter": 56,
-      "line-length": 4055
+      "line-length": 4045
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
@@ -2298,7 +2313,6 @@
       "Scripts/Features/ModularDevices/RectScreenDevice.cs": 2,
       "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs": 21,
       "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs": 12,
-      "addons/tile_editor/BiomePoolPanel.cs": 55,
       "addons/tile_editor/TileAtlasPanel.cs": 53,
       "addons/tile_editor/TileEditorPlugin.cs": 4,
       "addons/tile_editor/UnusedSourcesPanel.cs": 51,
@@ -2547,6 +2561,9 @@
       "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs": 20,
       "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs": 13,
       "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs": 22,
+      "addons/tile_editor/BiomePool/BiomeSection.cs": 11,
+      "addons/tile_editor/BiomePool/BiomeTileEntry.cs": 7,
+      "addons/tile_editor/BiomePoolPanel.cs": 13,
       "addons/tile_editor/FoldoutContainer.cs": 4,
       "addons/tile_editor/TileAtlas/TileAtlasPacker.cs": 12,
       "addons/tile_editor/TileAtlas/TileAtlasTerrainSelector.cs": 7,
@@ -2768,22 +2785,6 @@
       "rule": "dead-export",
       "severity": "error",
       "message": "CollapsedNeighborInfo is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 244,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "BiomeSection is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 489,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "BiomeTileEntry is exported but never referenced anywhere",
       "metric": 1
     },
     {
@@ -3467,14 +3468,6 @@
       "metric": 3
     },
     {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 244,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "3 types in one file: BiomePoolPanel, BiomeSection, BiomeTileEntry",
-      "metric": 3
-    },
-    {
       "file": "addons/tile_editor/TileAtlasPanel.cs",
       "line": 450,
       "rule": "types-per-file",
@@ -4035,14 +4028,6 @@
       "metric": 436
     },
     {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 602 lines",
-      "metric": 602
-    },
-    {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
       "line": 1,
       "rule": "file-length",
@@ -4563,14 +4548,6 @@
       "metric": 14
     },
     {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 322,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "RefreshTiles() cyclomatic complexity 13",
-      "metric": 13
-    },
-    {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
       "line": 269,
       "rule": "complexity",
@@ -4961,14 +4938,6 @@
       "severity": "error",
       "message": "TestTileDistributionDiversity() is 74 lines",
       "metric": 74
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 322,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "RefreshTiles() is 101 lines",
-      "metric": 101
     },
     {
       "file": "addons/tile_editor/TileAtlasPanel.cs",
@@ -5424,14 +5393,6 @@
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (8, 15)\n            select ( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 201,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (bool valid, string message) ValidateBiomeId( — replace it with a named type",
       "metric": 1
     },
     {
@@ -6376,22 +6337,6 @@
       "rule": "duplicate-block",
       "severity": "warn",
       "message": "6-line block duplicated at addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs:139, addons/tile_editor/TmxPreview/TmxPreviewControlAutoRendering.cs:114",
-      "metric": 2
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 381,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at addons/tile_editor/BiomePoolPanel.cs:381, addons/tile_editor/BiomePoolPanel.cs:405",
-      "metric": 2
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 405,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at addons/tile_editor/BiomePoolPanel.cs:381, addons/tile_editor/BiomePoolPanel.cs:405",
       "metric": 2
     },
     {
@@ -7801,6 +7746,30 @@
       "severity": "warn",
       "message": "file is 182 lines",
       "metric": 182
+    },
+    {
+      "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 267 lines",
+      "metric": 267
+    },
+    {
+      "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 125 lines",
+      "metric": 125
+    },
+    {
+      "file": "addons/tile_editor/BiomePoolPanel.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 242 lines",
+      "metric": 242
     },
     {
       "file": "addons/tile_editor/FoldoutContainer.cs",
@@ -9691,28 +9660,20 @@
       "metric": 6
     },
     {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 265,
+      "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+      "line": 33,
       "rule": "complexity",
       "severity": "warn",
-      "message": "_Ready() cyclomatic complexity 7",
-      "metric": 7
+      "message": "_Ready() cyclomatic complexity 6",
+      "metric": 6
     },
     {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 461,
+      "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+      "line": 239,
       "rule": "complexity",
       "severity": "warn",
       "message": "_DropData() cyclomatic complexity 6",
       "metric": 6
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 517,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "_Ready() cyclomatic complexity 7",
-      "metric": 7
     },
     {
       "file": "addons/tile_editor/TileAtlas/TileAtlasImageOperations.cs",
@@ -12059,6 +12020,14 @@
       "metric": 48
     },
     {
+      "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+      "line": 61,
+      "rule": "function-length",
+      "severity": "warn",
+      "message": "AddTileContainers() is 36 lines",
+      "metric": 36
+    },
+    {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
       "line": 40,
       "rule": "function-length",
@@ -12073,22 +12042,6 @@
       "severity": "warn",
       "message": "OnAddBiomePressed() is 49 lines",
       "metric": 49
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 265,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "_Ready() is 56 lines",
-      "metric": 56
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 517,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "_Ready() is 58 lines",
-      "metric": 58
     },
     {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
@@ -12720,14 +12673,6 @@
       "rule": "nesting-depth",
       "severity": "warn",
       "message": "TestNoVisualTileHasThreeOrMoreTerrainTypes() nests 4 levels deep",
-      "metric": 4
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 322,
-      "rule": "nesting-depth",
-      "severity": "warn",
-      "message": "RefreshTiles() nests 4 levels deep",
       "metric": 4
     },
     {
@@ -13515,8 +13460,16 @@
       "metric": 4
     },
     {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 501,
+      "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+      "line": 176,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "AddWeightedTiles() takes 4 parameters",
+      "metric": 4
+    },
+    {
+      "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+      "line": 21,
       "rule": "param-count",
       "severity": "warn",
       "message": "BiomeTileEntry() takes 6 parameters",
@@ -14579,16 +14532,8 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 265,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "_Ready() has 1 else branch(es) — prefer guard clauses",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 322,
+      "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+      "line": 98,
       "rule": "else-branch",
       "severity": "warn",
       "message": "RefreshTiles() has 1 else branch(es) — prefer guard clauses",
@@ -22435,6 +22380,14 @@
       "metric": 1
     },
     {
+      "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+      "line": 46,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ToLowerInvariant() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
       "line": 80,
       "rule": "stateless-method",
@@ -22472,14 +22425,6 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "OnTileModified() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 528,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "ToLowerInvariant() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -26283,46 +26228,6 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 272,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 288,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 375,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 397,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 537,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
       "line": 114,
       "rule": "comment-restates-code",
@@ -26979,24 +26884,24 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 201,
+      "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+      "line": 176,
       "rule": "flag-parameter",
       "severity": "warn",
-      "message": "private() takes a boolean flag; split the behavior or name the policy",
+      "message": "AddWeightedTiles() takes a boolean flag; split the behavior or name the policy",
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 501,
+      "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+      "line": 21,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "BiomeTileEntry() takes a boolean flag; split the behavior or name the policy",
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 501,
+      "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+      "line": 21,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "BiomeTileEntry() takes a boolean flag; split the behavior or name the policy",
@@ -55219,6 +55124,54 @@
       "metric": 83
     },
     {
+      "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+      "line": 10,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 102 chars",
+      "metric": 102
+    },
+    {
+      "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+      "line": 26,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+      "line": 145,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+      "line": 182,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+      "line": 57,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+      "line": 59,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
       "line": 11,
       "rule": "line-length",
@@ -55244,139 +55197,11 @@
     },
     {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 242,
+      "line": 207,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 258,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 298,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 111 chars",
-      "metric": 111
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 301,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 305,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 109 chars",
-      "metric": 109
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 308,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 314,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 338,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 357,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 370,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 376,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 394,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 400,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 104 chars",
-      "metric": 104
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 418,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 475,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 540,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "line": 542,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
+      "message": "line is 96 chars",
+      "metric": 96
     },
     {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
@@ -62710,469 +62535,6 @@
           "severity": "warn",
           "message": "line is 110 chars",
           "metric": 110
-        }
-      ]
-    },
-    {
-      "file": "addons/tile_editor/BiomePoolPanel.cs",
-      "errors": 7,
-      "warnings": 48,
-      "rules": {
-        "dead-export": 2,
-        "types-per-file": 1,
-        "file-length": 1,
-        "complexity": 4,
-        "function-length": 5,
-        "unnamed-tuple": 1,
-        "duplicate-block": 2,
-        "nesting-depth": 1,
-        "param-count": 1,
-        "else-branch": 2,
-        "stateless-method": 6,
-        "comment-restates-code": 6,
-        "flag-parameter": 3,
-        "line-length": 20
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 244,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "BiomeSection is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 489,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "BiomeTileEntry is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 244,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "3 types in one file: BiomePoolPanel, BiomeSection, BiomeTileEntry",
-          "metric": 3
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 602 lines",
-          "metric": 602
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 322,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "RefreshTiles() cyclomatic complexity 13",
-          "metric": 13
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 322,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "RefreshTiles() is 101 lines",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 201,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool valid, string message) ValidateBiomeId( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 381,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at addons/tile_editor/BiomePoolPanel.cs:381, addons/tile_editor/BiomePoolPanel.cs:405",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 405,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at addons/tile_editor/BiomePoolPanel.cs:381, addons/tile_editor/BiomePoolPanel.cs:405",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 265,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "_Ready() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 461,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "_DropData() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 517,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "_Ready() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 40,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "_Ready() is 39 lines",
-          "metric": 39
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 142,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "OnAddBiomePressed() is 49 lines",
-          "metric": 49
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 265,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "_Ready() is 56 lines",
-          "metric": 56
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 517,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "_Ready() is 58 lines",
-          "metric": 58
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 322,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "RefreshTiles() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 501,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "BiomeTileEntry() takes 6 parameters",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 265,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "_Ready() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 322,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "RefreshTiles() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 80,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "OnTilesLoaded() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 85,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "OnBiomesLoaded() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 90,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "OnBiomeAdded() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 95,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "OnBiomeRemoved() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 136,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "OnTileModified() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 528,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ToLowerInvariant() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 21,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 272,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 288,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 375,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 397,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 537,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 201,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "private() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 501,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "BiomeTileEntry() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 501,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "BiomeTileEntry() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 11,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 60,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 120,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 242,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 258,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 298,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 301,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 305,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 308,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 314,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 338,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 357,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 370,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 376,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 394,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 400,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 418,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 475,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 540,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/BiomePoolPanel.cs",
-          "line": 542,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
         }
       ]
     },
@@ -112083,6 +111445,124 @@
       ]
     },
     {
+      "file": "addons/tile_editor/BiomePoolPanel.cs",
+      "errors": 0,
+      "warnings": 13,
+      "rules": {
+        "file-length": 1,
+        "function-length": 2,
+        "stateless-method": 5,
+        "comment-restates-code": 1,
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/BiomePoolPanel.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 242 lines",
+          "metric": 242
+        },
+        {
+          "file": "addons/tile_editor/BiomePoolPanel.cs",
+          "line": 40,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "_Ready() is 39 lines",
+          "metric": 39
+        },
+        {
+          "file": "addons/tile_editor/BiomePoolPanel.cs",
+          "line": 142,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "OnAddBiomePressed() is 49 lines",
+          "metric": 49
+        },
+        {
+          "file": "addons/tile_editor/BiomePoolPanel.cs",
+          "line": 80,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnTilesLoaded() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BiomePoolPanel.cs",
+          "line": 85,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnBiomesLoaded() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BiomePoolPanel.cs",
+          "line": 90,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnBiomeAdded() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BiomePoolPanel.cs",
+          "line": 95,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnBiomeRemoved() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BiomePoolPanel.cs",
+          "line": 136,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnTileModified() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BiomePoolPanel.cs",
+          "line": 21,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BiomePoolPanel.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/BiomePoolPanel.cs",
+          "line": 60,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/BiomePoolPanel.cs",
+          "line": 120,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/BiomePoolPanel.cs",
+          "line": 207,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
       "errors": 0,
       "warnings": 13,
@@ -114341,6 +113821,110 @@
           "severity": "warn",
           "message": "line is 92 chars",
           "metric": 92
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+      "errors": 0,
+      "warnings": 11,
+      "rules": {
+        "file-length": 1,
+        "complexity": 2,
+        "function-length": 1,
+        "param-count": 1,
+        "else-branch": 1,
+        "flag-parameter": 1,
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 267 lines",
+          "metric": 267
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+          "line": 33,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "_Ready() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+          "line": 239,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "_DropData() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+          "line": 61,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "AddTileContainers() is 36 lines",
+          "metric": 36
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+          "line": 176,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "AddWeightedTiles() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+          "line": 98,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "RefreshTiles() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+          "line": 176,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "AddWeightedTiles() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+          "line": 10,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+          "line": 26,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+          "line": 145,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeSection.cs",
+          "line": 182,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
         }
       ]
     },
@@ -117449,6 +117033,76 @@
           "severity": "warn",
           "message": "line is 85 chars",
           "metric": 85
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+      "errors": 0,
+      "warnings": 7,
+      "rules": {
+        "file-length": 1,
+        "param-count": 1,
+        "stateless-method": 1,
+        "flag-parameter": 2,
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 125 lines",
+          "metric": 125
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+          "line": 21,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "BiomeTileEntry() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+          "line": 46,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToLowerInvariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+          "line": 21,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "BiomeTileEntry() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+          "line": 21,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "BiomeTileEntry() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+          "line": 57,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/BiomePool/BiomeTileEntry.cs",
+          "line": 59,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
         }
       ]
     },
