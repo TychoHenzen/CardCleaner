@@ -353,7 +353,7 @@ public class IrregularMesh
     /// <summary>
     /// Get statistics about the mesh.
     /// </summary>
-    public MeshStatistics GetStatistics()
+    internal MeshStatistics GetStatistics()
     {
         var areas = Quads.Select(q => q.Area).ToList();
         int boundaryCount = Vertices.Count(v => v.IsBoundary);
@@ -383,7 +383,7 @@ public class IrregularMesh
 /// <summary>
 /// Statistics about the mesh for debugging and validation.
 /// </summary>
-public struct MeshStatistics
+internal struct MeshStatistics
 {
     public int VertexCount;
     public int QuadCount;

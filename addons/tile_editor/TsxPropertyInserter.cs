@@ -283,7 +283,7 @@ public static class TsxPropertyInserter
     /// Generates a report of missing properties in TSX files.
     /// Useful for previewing what InsertProperties would do.
     /// </summary>
-    public static List<TsxPropertyReport> AnalyzePropertiesInDirectory(string directoryPath)
+    internal static List<TsxPropertyReport> AnalyzePropertiesInDirectory(string directoryPath)
     {
         var reports = new List<TsxPropertyReport>();
         var absoluteDir = ProjectSettings.GlobalizePath(directoryPath);
@@ -380,7 +380,7 @@ public static class TsxPropertyInserter
 /// <summary>
 /// Report of properties status in a TSX file.
 /// </summary>
-public class TsxPropertyReport
+internal class TsxPropertyReport
 {
     public string TsxPath { get; set; } = "";
     public string FileName { get; set; } = "";

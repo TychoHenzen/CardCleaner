@@ -13,7 +13,7 @@ public static class BitmaskConsistencyValidator
     /// <summary>
     /// A detected bitmask violation where adjacent tiles disagree on a shared data cell.
     /// </summary>
-    public readonly struct Violation
+    internal readonly struct Violation
     {
         public Vector2I TileA { get; init; }
         public Vector2I TileB { get; init; }
@@ -41,7 +41,7 @@ public static class BitmaskConsistencyValidator
     /// <param name="visualWidth">Width of visual grid</param>
     /// <param name="visualHeight">Height of visual grid</param>
     /// <returns>List of violations found</returns>
-    public static List<Violation> ValidateConsistency(
+    internal static List<Violation> ValidateConsistency(
         Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> overlays,
         int visualWidth,
         int visualHeight)

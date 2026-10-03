@@ -9,7 +9,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 /// Analyzes contiguous regions in a tile map using flood-fill.
 /// Provides metrics for evaluating spatial coherence of generated maps.
 /// </summary>
-public static class RegionAnalyzer
+internal static class RegionAnalyzer
 {
     /// <summary>
     /// Analyzes a tile map and returns region statistics.
@@ -178,7 +178,7 @@ public static class RegionAnalyzer
 /// <summary>
 /// Statistics about contiguous regions in a tile map.
 /// </summary>
-public record RegionMetrics(
+internal record RegionMetrics(
     int RegionCount,
     int MinSize,
     int MaxSize,
@@ -191,7 +191,7 @@ public record RegionMetrics(
 /// <summary>
 /// Distribution statistics for a specific tile type.
 /// </summary>
-public record TileTypeDistribution(
+internal record TileTypeDistribution(
     string TileId,
     int TileCount,
     float Percentage,
@@ -201,7 +201,7 @@ public record TileTypeDistribution(
 /// <summary>
 /// Complete distribution analysis of all tile types in a map.
 /// </summary>
-public record DistributionMetrics(
+internal record DistributionMetrics(
     int TotalTiles,
     int UniqueTileTypes,
     TileTypeDistribution[] Distributions

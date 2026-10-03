@@ -9,7 +9,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 /// <summary>
 /// Represents a connected region of unvisited cells.
 /// </summary>
-public readonly struct UnvisitedBlob
+internal readonly struct UnvisitedBlob
 {
     public int EntryCellId { get; init; }
     public int Size { get; init; }
@@ -293,7 +293,7 @@ public class FrontierExplorationBehavior
     /// Find all connected blobs of unvisited cells, with entry points and sizes.
     /// Uses BFS from current position to find walking distance to each blob.
     /// </summary>
-    public List<UnvisitedBlob> FindUnvisitedBlobs(int currentCellId)
+    internal List<UnvisitedBlob> FindUnvisitedBlobs(int currentCellId)
     {
         var blobs = new List<UnvisitedBlob>();
         var bfsVisited = new HashSet<int> { currentCellId };

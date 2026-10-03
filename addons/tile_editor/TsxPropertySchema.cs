@@ -55,7 +55,7 @@ public static class TsxPropertySchema
     /// These match the order in Data/Tiled/Tiles.tiled-project.
     /// Use bitwise OR to combine multiple biomes.
     /// </summary>
-    public static class BiomeFlags
+    internal static class BiomeFlags
     {
         public const int None = 0;
         public const int Plains = 1 << 0;      // 1

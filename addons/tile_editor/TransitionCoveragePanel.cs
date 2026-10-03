@@ -272,7 +272,7 @@ public partial class TransitionCoveragePanel : ScrollContainer
 /// <summary>
 /// Status of a terrain transition pair.
 /// </summary>
-public enum TransitionStatus
+internal enum TransitionStatus
 {
     /// <summary>No transition defined for this pair.</summary>
     Missing,
@@ -287,7 +287,7 @@ public enum TransitionStatus
 /// <summary>
 /// Matrix tracking transition coverage between terrain pairs.
 /// </summary>
-public class TransitionCoverageMatrix
+internal class TransitionCoverageMatrix
 {
     public List<string> TerrainIds { get; set; } = new();
     private readonly Dictionary<(string inner, string outer), TransitionStatus> _coverage = new();

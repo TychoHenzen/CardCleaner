@@ -12,7 +12,7 @@ namespace CardCleaner.Scripts.Core.Services.TilesetLoading;
 /// <summary>
 /// Represents a chunk of tile data from a TMX infinite map.
 /// </summary>
-public class TmxChunk
+internal class TmxChunk
 {
     public Vector2I ChunkPosition { get; }
     public int Width { get; }
@@ -83,7 +83,7 @@ public class TmxTilesetReference
 /// <summary>
 /// Result of resolving a tile at a specific map position.
 /// </summary>
-public record TmxTileResolution(
+internal record TmxTileResolution(
     int GlobalTileId,
     int LocalTileId,
     Vector2I AtlasCoords,
@@ -100,7 +100,7 @@ public class TmxMapData
     public int ChunkSize { get; }
     private readonly Dictionary<Vector2I, TmxChunk> _chunks;
 
-    public TmxMapData(
+    internal TmxMapData(
         Vector2I mapSize,
         List<TmxTilesetReference> tilesets,
         Dictionary<Vector2I, TmxChunk> chunks,
@@ -115,7 +115,7 @@ public class TmxMapData
     /// <summary>
     /// Gets tile information at the specified world coordinates.
     /// </summary>
-    public TmxTileResolution? GetTileAt(int x, int y)
+    internal TmxTileResolution? GetTileAt(int x, int y)
     {
         // Calculate chunk coordinates (handle negative coords for infinite maps)
         var chunkX = x >= 0 ? x / ChunkSize : (x - ChunkSize + 1) / ChunkSize;
@@ -151,7 +151,7 @@ public class TmxMapData
     /// <summary>
     /// Gets all non-empty tiles in the map as coordinate-resolution pairs.
     /// </summary>
-    public IEnumerable<(Vector2I Coord, TmxTileResolution Resolution)> GetAllTiles()
+    internal IEnumerable<(Vector2I Coord, TmxTileResolution Resolution)> GetAllTiles()
     {
         foreach (var (chunkCoord, chunk) in _chunks)
         {
