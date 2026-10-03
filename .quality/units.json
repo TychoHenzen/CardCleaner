@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 799,
+  "fileCount": 794,
   "files": [
     {
       "path": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
@@ -1824,31 +1824,6 @@
     },
     {
       "path": "Scripts/Features/Deckbuilder/UI/LoadingScreen.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Features/ModularDevices/ButtonDevice.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Features/ModularDevices/CardSlotDevice.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Features/ModularDevices/HexScreenDevice.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Features/ModularDevices/RectScreenDevice.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -3999,31 +3974,30 @@
     }
   ],
   "summary": {
-    "total": 7448,
-    "errors": 4,
-    "warnings": 7444,
+    "total": 7429,
+    "errors": 3,
+    "warnings": 7426,
     "byRule": {
-      "dead-export": 4,
+      "dead-export": 3,
       "test-only-export": 9,
-      "duplicate-block": 70,
-      "file-length": 348,
+      "duplicate-block": 68,
+      "file-length": 347,
       "complexity": 231,
       "function-length": 263,
       "nesting-depth": 11,
       "param-count": 177,
       "else-branch": 91,
-      "stateless-method": 1541,
+      "stateless-method": 1538,
       "comment-bloat": 49,
       "comment-restates-code": 95,
       "output-parameter": 29,
       "flag-parameter": 72,
-      "line-length": 4458
+      "line-length": 4446
     },
     "byFile": {
-      "Scripts/Features/ModularDevices/ButtonDevice.cs": 3,
-      "Scripts/Features/ModularDevices/CardSlotDevice.cs": 5,
-      "Scripts/Features/ModularDevices/HexScreenDevice.cs": 1,
-      "Scripts/Features/ModularDevices/RectScreenDevice.cs": 2,
+      "Scripts/Core/Devices/CardSignatureList.cs": 1,
+      "Scripts/Core/Devices/Jack.cs": 2,
+      "Scripts/Core/Devices/Trigger.cs": 1,
       "Scripts/Core/Services/MapGenerationProfiler.cs": 2,
       "Scripts/Features/Worldgen/AutoTiling/AutoTileHelper.cs": 15,
       "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs": 9,
@@ -4035,7 +4009,6 @@
       "addons/tile_editor/TileEditorPlugin.cs": 4,
       "Scripts/Features/Card/Services/SignatureCardGenerator.cs": 23,
       "Scripts/Features/Deckbuilder/Models/WorldMap/WorldMapRuntime.cs": 26,
-      "Scripts/Features/ModularDevices/ScreenDeviceBase.cs": 11,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs": 19,
       "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs": 21,
       "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs": 14,
@@ -4545,7 +4518,6 @@
       "Scripts/Core/DependencyInjection/ServiceAttribute.cs": 1,
       "Scripts/Core/Devices/Cabling/CableEndpoints.cs": 1,
       "Scripts/Core/Devices/IJack.cs": 1,
-      "Scripts/Core/Devices/Jack.cs": 1,
       "Scripts/Core/Devices/Jacks/IJackOfT.cs": 1,
       "Scripts/Core/Devices/Jacks/IOutputJack.cs": 1,
       "Scripts/Core/Interfaces/Fog/FogState.cs": 1,
@@ -4697,35 +4669,27 @@
   "comparison": null,
   "violations": [
     {
-      "file": "Scripts/Features/ModularDevices/ButtonDevice.cs",
+      "file": "Scripts/Core/Devices/CardSignatureList.cs",
+      "line": 10,
+      "rule": "dead-export",
+      "severity": "error",
+      "message": "CardSignatureList is exported but never referenced anywhere",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Core/Devices/Jack.cs",
       "line": 9,
       "rule": "dead-export",
       "severity": "error",
-      "message": "ButtonDevice is exported but never referenced anywhere",
+      "message": "Jack is exported but never referenced anywhere",
       "metric": 1
     },
     {
-      "file": "Scripts/Features/ModularDevices/CardSlotDevice.cs",
-      "line": 10,
+      "file": "Scripts/Core/Devices/Trigger.cs",
+      "line": 6,
       "rule": "dead-export",
       "severity": "error",
-      "message": "CardSlotDevice is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/HexScreenDevice.cs",
-      "line": 11,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "HexScreenDevice is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/RectScreenDevice.cs",
-      "line": 10,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "RectScreenDevice is exported but never referenced anywhere",
+      "message": "Trigger is exported but never referenced anywhere",
       "metric": 1
     },
     {
@@ -4814,22 +4778,6 @@
       "rule": "duplicate-block",
       "severity": "warn",
       "message": "6-line block duplicated at Scripts/Features/Deckbuilder/Models/WorldMap/WorldMapRuntime.cs:1, Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs:2",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/CardSlotDevice.cs",
-      "line": 1,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/ModularDevices/CardSlotDevice.cs:1, Scripts/Features/ModularDevices/ScreenDeviceBase.cs:1",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-      "line": 1,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/ModularDevices/CardSlotDevice.cs:1, Scripts/Features/ModularDevices/ScreenDeviceBase.cs:1",
       "metric": 2
     },
     {
@@ -5847,14 +5795,6 @@
       "severity": "warn",
       "message": "file is 230 lines",
       "metric": 230
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "warn",
-      "message": "file is 114 lines",
-      "metric": 114
     },
     {
       "file": "Scripts/Features/Player/Controllers/InteractionSystem.cs",
@@ -15558,30 +15498,6 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetVariantDefinition() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/RectScreenDevice.cs",
-      "line": 22,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "ValidateInputs() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-      "line": 76,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "ValidateInputs() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-      "line": 96,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "ResetScreen() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -37527,102 +37443,6 @@
       "severity": "warn",
       "message": "line is 102 chars",
       "metric": 102
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/ButtonDevice.cs",
-      "line": 27,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/ButtonDevice.cs",
-      "line": 36,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/CardSlotDevice.cs",
-      "line": 33,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/CardSlotDevice.cs",
-      "line": 34,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/CardSlotDevice.cs",
-      "line": 45,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-      "line": 11,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 99 chars",
-      "metric": 99
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-      "line": 22,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-      "line": 23,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-      "line": 37,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-      "line": 38,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-      "line": 52,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-      "line": 101,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
     },
     {
       "file": "Scripts/Features/Player/Controllers/InteractionSystem.cs",
@@ -64283,121 +64103,34 @@
   ],
   "units": [
     {
-      "file": "Scripts/Features/ModularDevices/CardSlotDevice.cs",
-      "errors": 1,
-      "warnings": 4,
-      "rules": {
-        "dead-export": 1,
-        "duplicate-block": 1,
-        "line-length": 3
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/ModularDevices/CardSlotDevice.cs",
-          "line": 10,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "CardSlotDevice is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/CardSlotDevice.cs",
-          "line": 1,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/ModularDevices/CardSlotDevice.cs:1, Scripts/Features/ModularDevices/ScreenDeviceBase.cs:1",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/CardSlotDevice.cs",
-          "line": 33,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/CardSlotDevice.cs",
-          "line": 34,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/CardSlotDevice.cs",
-          "line": 45,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/ButtonDevice.cs",
-      "errors": 1,
-      "warnings": 2,
-      "rules": {
-        "dead-export": 1,
-        "line-length": 2
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/ModularDevices/ButtonDevice.cs",
-          "line": 9,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "ButtonDevice is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/ButtonDevice.cs",
-          "line": 27,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/ButtonDevice.cs",
-          "line": 36,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/ModularDevices/RectScreenDevice.cs",
+      "file": "Scripts/Core/Devices/Jack.cs",
       "errors": 1,
       "warnings": 1,
       "rules": {
         "dead-export": 1,
-        "stateless-method": 1
+        "line-length": 1
       },
       "items": [
         {
-          "file": "Scripts/Features/ModularDevices/RectScreenDevice.cs",
-          "line": 10,
+          "file": "Scripts/Core/Devices/Jack.cs",
+          "line": 9,
           "rule": "dead-export",
           "severity": "error",
-          "message": "RectScreenDevice is exported but never referenced anywhere",
+          "message": "Jack is exported but never referenced anywhere",
           "metric": 1
         },
         {
-          "file": "Scripts/Features/ModularDevices/RectScreenDevice.cs",
-          "line": 22,
-          "rule": "stateless-method",
+          "file": "Scripts/Core/Devices/Jack.cs",
+          "line": 7,
+          "rule": "line-length",
           "severity": "warn",
-          "message": "ValidateInputs() never touches instance state — make it a free function",
-          "metric": 1
+          "message": "line is 81 chars",
+          "metric": 81
         }
       ]
     },
     {
-      "file": "Scripts/Features/ModularDevices/HexScreenDevice.cs",
+      "file": "Scripts/Core/Devices/CardSignatureList.cs",
       "errors": 1,
       "warnings": 0,
       "rules": {
@@ -64405,11 +64138,29 @@
       },
       "items": [
         {
-          "file": "Scripts/Features/ModularDevices/HexScreenDevice.cs",
-          "line": 11,
+          "file": "Scripts/Core/Devices/CardSignatureList.cs",
+          "line": 10,
           "rule": "dead-export",
           "severity": "error",
-          "message": "HexScreenDevice is exported but never referenced anywhere",
+          "message": "CardSignatureList is exported but never referenced anywhere",
+          "metric": 1
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Devices/Trigger.cs",
+      "errors": 1,
+      "warnings": 0,
+      "rules": {
+        "dead-export": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Devices/Trigger.cs",
+          "line": 6,
+          "rule": "dead-export",
+          "severity": "error",
+          "message": "Trigger is exported but never referenced anywhere",
           "metric": 1
         }
       ]
@@ -111480,107 +111231,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-      "errors": 0,
-      "warnings": 11,
-      "rules": {
-        "duplicate-block": 1,
-        "file-length": 1,
-        "stateless-method": 2,
-        "line-length": 7
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-          "line": 1,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/ModularDevices/CardSlotDevice.cs:1, Scripts/Features/ModularDevices/ScreenDeviceBase.cs:1",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 114 lines",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-          "line": 76,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ValidateInputs() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-          "line": 96,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ResetScreen() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-          "line": 11,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-          "line": 22,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-          "line": 23,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-          "line": 37,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-          "line": 38,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-          "line": 52,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
-          "line": 101,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
       "errors": 0,
       "warnings": 11,
@@ -130974,24 +130624,6 @@
           "severity": "warn",
           "message": "line is 87 chars",
           "metric": 87
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Devices/Jack.cs",
-      "errors": 0,
-      "warnings": 1,
-      "rules": {
-        "line-length": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Devices/Jack.cs",
-          "line": 7,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
         }
       ]
     },
