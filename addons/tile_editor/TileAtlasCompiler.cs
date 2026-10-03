@@ -198,9 +198,20 @@ public class TileAtlasCompiler
                     if (compositeCurrentY + tileSize.Y > atlasImage.GetHeight())
                     {
                         var newHeight = Math.Min(atlasImage.GetHeight() * 2, maxAtlasHeight);
-                        var expandedAtlas = Image.CreateEmpty(atlasImage.GetWidth(), newHeight, false, Image.Format.Rgba8);
+                        var expandedAtlas = Image.CreateEmpty(
+                            atlasImage.GetWidth(),
+                            newHeight,
+                            false,
+                            Image.Format.Rgba8);
                         expandedAtlas.Fill(new Color(0, 0, 0, 0));
-                        expandedAtlas.BlitRect(atlasImage, new Rect2I(0, 0, atlasImage.GetWidth(), atlasImage.GetHeight()), Vector2I.Zero);
+                        expandedAtlas.BlitRect(
+                            atlasImage,
+                            new Rect2I(
+                                0,
+                                0,
+                                atlasImage.GetWidth(),
+                                atlasImage.GetHeight()),
+                            Vector2I.Zero);
                         atlasImage = expandedAtlas;
                     }
 
@@ -281,8 +292,12 @@ public class TileAtlasCompiler
 
         // Save mapping file
         var mappingPath = $"{CompiledAtlasDir}/{MappingFileName}";
-        var mappingResult = SaveAtlasMapping(packResult.mapping, new Vector2I(atlasImage.GetWidth(), atlasImage.GetHeight()),
-            tileSize, atlasPath, mappingPath);
+        var mappingResult = SaveAtlasMapping(
+            packResult.mapping,
+            new Vector2I(atlasImage.GetWidth(), atlasImage.GetHeight()),
+            tileSize,
+            atlasPath,
+            mappingPath);
         if (!mappingResult.success)
             return (false, mappingResult.message);
 
@@ -299,7 +314,11 @@ public class TileAtlasCompiler
     /// <summary>
     /// Creates the atlas image by rendering all packed tiles.
     /// </summary>
-    private Image? CreateAtlasImage(List<PackedTile> packedTiles, Vector2I atlasSize, TileSet tileSet, Vector2I tileSize)
+    private Image? CreateAtlasImage(
+        List<PackedTile> packedTiles,
+        Vector2I atlasSize,
+        TileSet tileSet,
+        Vector2I tileSize)
     {
         try
         {
@@ -372,7 +391,9 @@ public class TileAtlasCompiler
             var absolutePath = ProjectSettings.GlobalizePath(path);
             File.WriteAllText(absolutePath, json);
 
-            GD.Print($"[TileAtlasCompiler] Saved transition map with {transitionMap.Transitions.Count} entries to {path}");
+            GD.Print(
+                $"[TileAtlasCompiler] Saved transition map with " +
+                $"{transitionMap.Transitions.Count} entries to {path}");
             return (true, "");
         }
         catch (Exception ex)
@@ -406,7 +427,9 @@ public class TileAtlasCompiler
             {
                 if (!allTileIds.Contains(tile.InnerTerrainId))
                 {
-                    warnings.Add($"Tile '{tile.Id}': InnerTerrainId '{tile.InnerTerrainId}' references non-existent tile");
+                    warnings.Add(
+                        $"Tile '{tile.Id}': InnerTerrainId '{tile.InnerTerrainId}' " +
+                        "references non-existent tile");
                 }
                 else if (!simpleTileIds.Contains(tile.InnerTerrainId))
                 {
@@ -415,7 +438,9 @@ public class TileAtlasCompiler
                     var referencedTile = service.AllTiles.FirstOrDefault(t => t.Id == tile.InnerTerrainId);
                     if (referencedTile?.HasAutoTileVariants == true)
                     {
-                        warnings.Add($"Tile '{tile.Id}': InnerTerrainId '{tile.InnerTerrainId}' references another auto-tile (expected simple tile)");
+                        warnings.Add(
+                            $"Tile '{tile.Id}': InnerTerrainId '{tile.InnerTerrainId}' " +
+                            "references another auto-tile (expected simple tile)");
                     }
                 }
             }
@@ -425,14 +450,18 @@ public class TileAtlasCompiler
             {
                 if (!allTileIds.Contains(tile.OuterTerrainId))
                 {
-                    warnings.Add($"Tile '{tile.Id}': OuterTerrainId '{tile.OuterTerrainId}' references non-existent tile");
+                    warnings.Add(
+                        $"Tile '{tile.Id}': OuterTerrainId '{tile.OuterTerrainId}' " +
+                        "references non-existent tile");
                 }
                 else if (!simpleTileIds.Contains(tile.OuterTerrainId))
                 {
                     var referencedTile = service.AllTiles.FirstOrDefault(t => t.Id == tile.OuterTerrainId);
                     if (referencedTile?.HasAutoTileVariants == true)
                     {
-                        warnings.Add($"Tile '{tile.Id}': OuterTerrainId '{tile.OuterTerrainId}' references another auto-tile (expected simple tile)");
+                        warnings.Add(
+                            $"Tile '{tile.Id}': OuterTerrainId '{tile.OuterTerrainId}' " +
+                            "references another auto-tile (expected simple tile)");
                     }
                 }
             }
@@ -465,7 +494,15 @@ public class TileAtlasCompiler
             if (!tile.IsCompositable)
             {
                 // Add base tile
-                AddRegionIfNew(regions, seenRegions, tile.SourceId, tile.AtlasX, tile.AtlasY, tile.SizeX, tile.SizeY, sourceScale);
+                AddRegionIfNew(
+                    regions,
+                    seenRegions,
+                    tile.SourceId,
+                    tile.AtlasX,
+                    tile.AtlasY,
+                    tile.SizeX,
+                    tile.SizeY,
+                    sourceScale);
             }
 
             // Add auto-tile variants only for NON-compositable tiles
@@ -475,7 +512,15 @@ public class TileAtlasCompiler
                 foreach (var variant in tile.AutoTileVariants)
                 {
                     if (variant.HasValue)
-                        AddRegionIfNew(regions, seenRegions, tile.SourceId, variant.Value.X, variant.Value.Y, 1, 1, sourceScale);
+                        AddRegionIfNew(
+                            regions,
+                            seenRegions,
+                            tile.SourceId,
+                            variant.Value.X,
+                            variant.Value.Y,
+                            1,
+                            1,
+                            sourceScale);
                 }
             }
 
@@ -484,7 +529,15 @@ public class TileAtlasCompiler
             {
                 foreach (var variation in tile.Variations)
                 {
-                    AddRegionIfNew(regions, seenRegions, tile.SourceId, variation.X, variation.Y, tile.SizeX, tile.SizeY, sourceScale);
+                    AddRegionIfNew(
+                        regions,
+                        seenRegions,
+                        tile.SourceId,
+                        variation.X,
+                        variation.Y,
+                        tile.SizeX,
+                        tile.SizeY,
+                        sourceScale);
                 }
             }
 
@@ -493,7 +546,15 @@ public class TileAtlasCompiler
             {
                 foreach (var frame in tile.AnimationFrames)
                 {
-                    AddRegionIfNew(regions, seenRegions, tile.SourceId, frame.X, frame.Y, tile.SizeX, tile.SizeY, sourceScale);
+                    AddRegionIfNew(
+                        regions,
+                        seenRegions,
+                        tile.SourceId,
+                        frame.X,
+                        frame.Y,
+                        tile.SizeX,
+                        tile.SizeY,
+                        sourceScale);
                 }
             }
         }
@@ -501,7 +562,15 @@ public class TileAtlasCompiler
         return regions;
     }
 
-    private void AddRegionIfNew(List<TileRegion> regions, HashSet<string> seen, int sourceId, int x, int y, int w, int h, float sourceScale)
+    private void AddRegionIfNew(
+        List<TileRegion> regions,
+        HashSet<string> seen,
+        int sourceId,
+        int x,
+        int y,
+        int w,
+        int h,
+        float sourceScale)
     {
         var key = $"{sourceId}:{x},{y}";
         if (seen.Contains(key))
@@ -515,8 +584,16 @@ public class TileAtlasCompiler
     /// Packs tiles into an atlas using simple row-based bin packing.
     /// Returns atlas image, size, and coordinate mapping.
     /// </summary>
-    private (bool success, string message, List<PackedTile> atlas, Vector2I atlasSize, Dictionary<string, AtlasTileMapping> mapping)
-        PackTiles(List<TileRegion> tiles, Vector2I tileSize, int maxSize)
+    private (
+        bool success,
+        string message,
+        List<PackedTile> atlas,
+        Vector2I atlasSize,
+        Dictionary<string, AtlasTileMapping> mapping)
+        PackTiles(
+            List<TileRegion> tiles,
+            Vector2I tileSize,
+            int maxSize)
     {
         var atlas = new List<PackedTile>();
         var mapping = new Dictionary<string, AtlasTileMapping>();
@@ -547,7 +624,12 @@ public class TileAtlasCompiler
             // Check if atlas is full
             if (currentY + tilePixelHeight > maxSize)
             {
-                return (false, $"Atlas exceeds {maxSize}x{maxSize} - need multi-atlas support", atlas, Vector2I.Zero, mapping);
+                return (
+                    false,
+                    $"Atlas exceeds {maxSize}x{maxSize} - need multi-atlas support",
+                    atlas,
+                    Vector2I.Zero,
+                    mapping);
             }
 
             // Place tile
@@ -793,15 +875,6 @@ public class TileAtlasCompiler
         return result;
     }
 
-    /// <summary>
-    /// Extracts a tile region from a source image with optional scaling.
-    /// </summary>
-    /// <param name="sourceImage">The source texture image</param>
-    /// <param name="atlasX">Tile X coordinate in source</param>
-    /// <param name="atlasY">Tile Y coordinate in source</param>
-    /// <param name="tileSize">Target tile size in pixels</param>
-    /// <param name="sourceScale">Source scale factor (0.5=32px source, 1.0=16px, 2.0=8px)</param>
-    /// <returns>Extracted and scaled tile image</returns>
     private static Image ExtractTileRegion(Image sourceImage, int atlasX, int atlasY, int tileSize, float sourceScale)
     {
         // Calculate source pixel size based on scale

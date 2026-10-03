@@ -1864,9 +1864,9 @@
     }
   ],
   "summary": {
-    "total": 7431,
-    "errors": 699,
-    "warnings": 6732,
+    "total": 7419,
+    "errors": 683,
+    "warnings": 6736,
     "byRule": {
       "dead-export": 34,
       "duplicate-block": 148,
@@ -1876,9 +1876,9 @@
       "function-length": 374,
       "nesting-depth": 40,
       "param-count": 111,
-      "unnamed-tuple": 64,
-      "comment-bloat": 133,
-      "line-length": 4530,
+      "unnamed-tuple": 63,
+      "comment-bloat": 132,
+      "line-length": 4520,
       "test-only-export": 13,
       "else-branch": 148,
       "stateless-method": 898,
@@ -1932,7 +1932,7 @@
       "Tests/Features/Worldgen/Wfc/WfcMapGeneratorIntegrationTest.cs": 65,
       "Tests/Features/Worldgen/Wfc/WfcPerformanceBenchmarkTest.cs": 21,
       "Tests/Features/Worldgen/Wfc/WfcTileSelectorTest.cs": 12,
-      "addons/tile_editor/TileAtlasCompiler.cs": 167,
+      "addons/tile_editor/TileAtlasCompiler.cs": 155,
       "addons/tile_editor/TileEditorService.cs": 219,
       "addons/tile_editor/TmxAtlasCompiler.cs": 252,
       "Scripts/Core/DependencyInjection/ServiceAttribute.cs": 2,
@@ -3835,8 +3835,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "error",
-      "message": "file is 900 lines",
-      "metric": 900
+      "message": "file is 973 lines",
+      "metric": 973
     },
     {
       "file": "addons/tile_editor/TileAtlasPanel.cs",
@@ -4440,7 +4440,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 389,
+      "line": 410,
       "rule": "complexity",
       "severity": "error",
       "message": "ValidateTransitionReferences() cyclomatic complexity 12",
@@ -4448,7 +4448,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 695,
+      "line": 777,
       "rule": "complexity",
       "severity": "error",
       "message": "ExtendEdgesToPadding() cyclomatic complexity 13",
@@ -5003,28 +5003,44 @@
       "line": 38,
       "rule": "function-length",
       "severity": "error",
-      "message": "public() is 260 lines",
-      "metric": 260
+      "message": "public() is 275 lines",
+      "metric": 275
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 302,
+      "line": 317,
       "rule": "function-length",
       "severity": "error",
-      "message": "CreateAtlasImage() is 61 lines",
-      "metric": 61
+      "message": "CreateAtlasImage() is 65 lines",
+      "metric": 65
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 518,
+      "line": 410,
       "rule": "function-length",
       "severity": "error",
-      "message": "private() is 71 lines",
-      "metric": 71
+      "message": "ValidateTransitionReferences() is 68 lines",
+      "metric": 68
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 601,
+      "line": 483,
+      "rule": "function-length",
+      "severity": "error",
+      "message": "CollectTilesToPack() is 81 lines",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 587,
+      "rule": "function-length",
+      "severity": "error",
+      "message": "private() is 84 lines",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 683,
       "rule": "function-length",
       "severity": "error",
       "message": "private() is 90 lines",
@@ -5304,7 +5320,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 504,
+      "line": 565,
       "rule": "param-count",
       "severity": "error",
       "message": "AddRegionIfNew() takes 8 parameters",
@@ -5696,7 +5712,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 367,
+      "line": 386,
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (bool success, string message) SaveTransitionMap( — replace it with a named type",
@@ -5704,15 +5720,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 518,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (bool success, string message, List<PackedTile> atlas, Vector2I atlasSize, Dictionary<string, AtlasTileMapping> mapping)\r\n        PackTiles( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 601,
+      "line": 683,
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (bool success, string message) SaveAtlasImage( — replace it with a named type",
@@ -5720,7 +5728,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 833,
+      "line": 906,
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (bool success, string message) SaveAtlasMapping( — replace it with a named type",
@@ -6373,14 +6381,6 @@
       "severity": "error",
       "message": "8-line comment over 1 line(s) of code - keep the why, cut the rest",
       "metric": 8
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 796,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "9-line comment over 2 line(s) of code - keep the why, cut the rest",
-      "metric": 9
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
@@ -7421,134 +7421,6 @@
       "severity": "error",
       "message": "line is 135 chars",
       "metric": 135
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 201,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 123 chars",
-      "metric": 123
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 203,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 139 chars",
-      "metric": 139
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 284,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 125 chars",
-      "metric": 125
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 302,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 121 chars",
-      "metric": 121
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 375,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 123 chars",
-      "metric": 123
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 409,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 123 chars",
-      "metric": 123
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 418,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 150 chars",
-      "metric": 150
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 428,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 123 chars",
-      "metric": 123
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 435,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 150 chars",
-      "metric": 150
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 468,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 131 chars",
-      "metric": 131
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 478,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 129 chars",
-      "metric": 129
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 487,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 135 chars",
-      "metric": 135
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 496,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 127 chars",
-      "metric": 127
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 504,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 140 chars",
-      "metric": 140
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 518,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 132 chars",
-      "metric": 132
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 550,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 127 chars",
-      "metric": 127
     },
     {
       "file": "addons/tile_editor/TileAtlasPanel.cs",
@@ -11400,7 +11272,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 454,
+      "line": 483,
       "rule": "complexity",
       "severity": "warn",
       "message": "CollectTilesToPack() cyclomatic complexity 7",
@@ -11408,7 +11280,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 601,
+      "line": 683,
       "rule": "complexity",
       "severity": "warn",
       "message": "private() cyclomatic complexity 6",
@@ -11416,7 +11288,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 749,
+      "line": 831,
       "rule": "complexity",
       "severity": "warn",
       "message": "CompositeImages() cyclomatic complexity 6",
@@ -13784,23 +13656,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 389,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "ValidateTransitionReferences() is 60 lines",
-      "metric": 60
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 454,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "CollectTilesToPack() is 49 lines",
-      "metric": 49
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 695,
+      "line": 777,
       "rule": "function-length",
       "severity": "warn",
       "message": "ExtendEdgesToPadding() is 46 lines",
@@ -13808,7 +13664,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 749,
+      "line": 831,
       "rule": "function-length",
       "severity": "warn",
       "message": "CompositeImages() is 46 lines",
@@ -13816,7 +13672,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 833,
+      "line": 906,
       "rule": "function-length",
       "severity": "warn",
       "message": "private() is 34 lines",
@@ -14400,7 +14256,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 389,
+      "line": 410,
       "rule": "nesting-depth",
       "severity": "warn",
       "message": "ValidateTransitionReferences() nests 4 levels deep",
@@ -15224,7 +15080,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 302,
+      "line": 317,
       "rule": "param-count",
       "severity": "warn",
       "message": "CreateAtlasImage() takes 4 parameters",
@@ -15232,7 +15088,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 518,
+      "line": 587,
       "rule": "param-count",
       "severity": "warn",
       "message": "private() takes 5 parameters",
@@ -15240,7 +15096,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 695,
+      "line": 777,
       "rule": "param-count",
       "severity": "warn",
       "message": "ExtendEdgesToPadding() takes 4 parameters",
@@ -15248,7 +15104,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 805,
+      "line": 878,
       "rule": "param-count",
       "severity": "warn",
       "message": "ExtractTileRegion() takes 5 parameters",
@@ -16128,7 +15984,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 302,
+      "line": 317,
       "rule": "else-branch",
       "severity": "warn",
       "message": "CreateAtlasImage() has 1 else branch(es) — prefer guard clauses",
@@ -16136,7 +15992,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 389,
+      "line": 410,
       "rule": "else-branch",
       "severity": "warn",
       "message": "ValidateTransitionReferences() has 2 else branch(es) — prefer guard clauses",
@@ -16144,7 +16000,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 601,
+      "line": 683,
       "rule": "else-branch",
       "severity": "warn",
       "message": "private() has 1 else branch(es) — prefer guard clauses",
@@ -23392,7 +23248,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 389,
+      "line": 410,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ValidateTransitionReferences() never touches instance state — make it a free function",
@@ -23400,7 +23256,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 504,
+      "line": 565,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "AddRegionIfNew() never touches instance state — make it a free function",
@@ -25424,7 +25280,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 218,
+      "line": 229,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25432,7 +25288,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 274,
+      "line": 285,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25440,7 +25296,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 289,
+      "line": 304,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25448,7 +25304,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 610,
+      "line": 692,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25456,7 +25312,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 625,
+      "line": 707,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25464,7 +25320,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 664,
+      "line": 746,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25472,7 +25328,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 677,
+      "line": 759,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -25480,7 +25336,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 765,
+      "line": 847,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -26624,7 +26480,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 367,
+      "line": 386,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "private() takes a boolean flag; split the behavior or name the policy",
@@ -26632,7 +26488,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 518,
+      "line": 587,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "private() takes a boolean flag; split the behavior or name the policy",
@@ -26640,7 +26496,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 601,
+      "line": 683,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "private() takes a boolean flag; split the behavior or name the policy",
@@ -26648,7 +26504,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 833,
+      "line": 906,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "private() takes a boolean flag; split the behavior or name the policy",
@@ -55312,7 +55168,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 208,
+      "line": 219,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -55320,7 +55176,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 212,
+      "line": 223,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 116 chars",
@@ -55328,7 +55184,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 219,
+      "line": 230,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
@@ -55336,7 +55192,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 223,
+      "line": 234,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -55344,7 +55200,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 235,
+      "line": 246,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -55352,7 +55208,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 243,
+      "line": 254,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -55360,7 +55216,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 250,
+      "line": 261,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -55368,7 +55224,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 255,
+      "line": 266,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -55376,7 +55232,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 259,
+      "line": 270,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -55384,7 +55240,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 262,
+      "line": 273,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -55392,7 +55248,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 265,
+      "line": 276,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -55400,7 +55256,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 266,
+      "line": 277,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -55408,7 +55264,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 269,
+      "line": 280,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -55416,7 +55272,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 270,
+      "line": 281,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 115 chars",
@@ -55424,7 +55280,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 280,
+      "line": 291,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 117 chars",
@@ -55432,7 +55288,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 291,
+      "line": 306,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -55440,7 +55296,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 296,
+      "line": 311,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 104 chars",
@@ -55448,7 +55304,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 306,
+      "line": 325,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -55456,7 +55312,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 313,
+      "line": 332,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -55464,7 +55320,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 316,
+      "line": 335,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -55472,7 +55328,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 323,
+      "line": 342,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 110 chars",
@@ -55480,7 +55336,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 338,
+      "line": 357,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -55488,7 +55344,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 342,
+      "line": 361,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 117 chars",
@@ -55496,7 +55352,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 344,
+      "line": 363,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -55504,7 +55360,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 345,
+      "line": 364,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 108 chars",
@@ -55512,7 +55368,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 352,
+      "line": 371,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 111 chars",
@@ -55520,7 +55376,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 359,
+      "line": 378,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -55528,7 +55384,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 367,
+      "line": 386,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 110 chars",
@@ -55536,7 +55392,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 371,
+      "line": 390,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -55544,7 +55400,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 392,
+      "line": 413,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -55552,7 +55408,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 395,
+      "line": 416,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -55560,7 +55416,15 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 413,
+      "line": 431,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 436,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -55568,7 +55432,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 415,
+      "line": 438,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 107 chars",
@@ -55576,7 +55440,23 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 423,
+      "line": 442,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 443,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 448,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -55584,7 +55464,7 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 424,
+      "line": 449,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -55592,7 +55472,15 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 432,
+      "line": 454,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 459,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 107 chars",
@@ -55600,239 +55488,15 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 443,
+      "line": 463,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 116 chars",
-      "metric": 116
+      "message": "line is 90 chars",
+      "metric": 90
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 452,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 454,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 110 chars",
-      "metric": 110
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 457,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 525,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 587,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 599,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 611,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 618,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 621,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 629,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 110 chars",
-      "metric": 110
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 634,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 636,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 652,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 658,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 117 chars",
-      "metric": 117
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 661,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 662,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 665,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 108 chars",
-      "metric": 108
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 674,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 111 chars",
-      "metric": 111
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 683,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 695,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 715,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 737,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 743,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 755,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 757,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 758,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 760,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 766,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 767,
+      "line": 464,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -55840,55 +55504,23 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 777,
+      "line": 472,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
+      "message": "line is 116 chars",
+      "metric": 116
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 785,
+      "line": 481,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
+      "message": "line is 92 chars",
+      "metric": 92
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 803,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 805,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 118 chars",
-      "metric": 118
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 818,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 103 chars",
-      "metric": 103
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 859,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 105 chars",
-      "metric": 105
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 869,
+      "line": 483,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 110 chars",
@@ -55896,15 +55528,31 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 878,
+      "line": 486,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
+      "message": "line is 94 chars",
+      "metric": 94
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 879,
+      "line": 602,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 629,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 669,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -55912,7 +55560,263 @@
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "line": 880,
+      "line": 681,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 693,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 700,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 703,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 711,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 110 chars",
+      "metric": 110
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 716,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 718,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 734,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 740,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 117 chars",
+      "metric": 117
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 743,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 744,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 747,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 108 chars",
+      "metric": 108
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 756,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 111 chars",
+      "metric": 111
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 765,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 777,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 797,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 819,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 825,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 837,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 839,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 840,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 842,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 848,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 849,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 859,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 867,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 878,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 118 chars",
+      "metric": 118
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 891,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 103 chars",
+      "metric": 103
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 932,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 105 chars",
+      "metric": 105
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 942,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 110 chars",
+      "metric": 110
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 951,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 952,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "line": 953,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -61665,1364 +61569,6 @@
   ],
   "units": [
     {
-      "file": "addons/tile_editor/TileAtlasCompiler.cs",
-      "errors": 32,
-      "warnings": 135,
-      "rules": {
-        "duplicate-block": 1,
-        "file-length": 1,
-        "complexity": 6,
-        "function-length": 9,
-        "param-count": 5,
-        "unnamed-tuple": 5,
-        "comment-bloat": 1,
-        "line-length": 115,
-        "nesting-depth": 2,
-        "else-branch": 4,
-        "stateless-method": 2,
-        "comment-restates-code": 11,
-        "flag-parameter": 5
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 2,
-          "rule": "duplicate-block",
-          "severity": "error",
-          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:2, addons/tile_editor/TileEditorService.cs:2, addons/tile_editor/TmxAtlasCompiler.cs:2, Scripts/Core/Services/TileDataLoader.cs:1",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 900 lines",
-          "metric": 900
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 38,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "public() cyclomatic complexity 35",
-          "metric": 35
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 389,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "ValidateTransitionReferences() cyclomatic complexity 12",
-          "metric": 12
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 695,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "ExtendEdgesToPadding() cyclomatic complexity 13",
-          "metric": 13
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 38,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "public() is 260 lines",
-          "metric": 260
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 302,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "CreateAtlasImage() is 61 lines",
-          "metric": 61
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 518,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "private() is 71 lines",
-          "metric": 71
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 601,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "private() is 90 lines",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 504,
-          "rule": "param-count",
-          "severity": "error",
-          "message": "AddRegionIfNew() takes 8 parameters",
-          "metric": 8
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 38,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) CompileAtlas( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 367,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) SaveTransitionMap( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 518,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message, List<PackedTile> atlas, Vector2I atlasSize, Dictionary<string, AtlasTileMapping> mapping)\r\n        PackTiles( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 601,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) SaveAtlasImage( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 833,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) SaveAtlasMapping( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 796,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "9-line comment over 2 line(s) of code - keep the why, cut the rest",
-          "metric": 9
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 201,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 123 chars",
-          "metric": 123
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 203,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 139 chars",
-          "metric": 139
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 284,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 125 chars",
-          "metric": 125
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 302,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 121 chars",
-          "metric": 121
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 375,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 123 chars",
-          "metric": 123
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 409,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 123 chars",
-          "metric": 123
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 418,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 150 chars",
-          "metric": 150
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 428,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 123 chars",
-          "metric": 123
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 435,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 150 chars",
-          "metric": 150
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 468,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 131 chars",
-          "metric": 131
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 478,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 129 chars",
-          "metric": 129
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 487,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 135 chars",
-          "metric": 135
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 496,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 127 chars",
-          "metric": 127
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 504,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 140 chars",
-          "metric": 140
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 518,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 132 chars",
-          "metric": 132
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 550,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 127 chars",
-          "metric": 127
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 454,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "CollectTilesToPack() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 601,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "private() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 749,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "CompositeImages() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 389,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ValidateTransitionReferences() is 60 lines",
-          "metric": 60
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 454,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "CollectTilesToPack() is 49 lines",
-          "metric": 49
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 695,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ExtendEdgesToPadding() is 46 lines",
-          "metric": 46
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 749,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "CompositeImages() is 46 lines",
-          "metric": 46
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 833,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "private() is 34 lines",
-          "metric": 34
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 38,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "public() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 389,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "ValidateTransitionReferences() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 302,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "CreateAtlasImage() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 518,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "private() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 695,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "ExtendEdgesToPadding() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 805,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "ExtractTileRegion() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 38,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "public() has 4 else branch(es) — prefer guard clauses",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 302,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "CreateAtlasImage() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 389,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "ValidateTransitionReferences() has 2 else branch(es) — prefer guard clauses",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 601,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "private() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 389,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ValidateTransitionReferences() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 504,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "AddRegionIfNew() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 157,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 177,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 181,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 218,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 274,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 289,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 610,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 625,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 664,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 677,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 765,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 38,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "public() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 367,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "private() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 518,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "private() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 601,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "private() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 833,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "private() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 14,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 34,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 38,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 58,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 71,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 78,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 80,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 90,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 99,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 108,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 117,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 120,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 130,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 134,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 140,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 147,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 158,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 167,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 174,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 178,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 182,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 193,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 200,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 208,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 212,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 116 chars",
-          "metric": 116
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 219,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 223,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 235,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 243,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 250,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 255,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 259,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 262,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 265,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 266,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 269,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 270,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 280,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 291,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 296,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 306,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 313,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 316,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 323,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 338,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 342,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 344,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 345,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 352,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 359,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 367,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 371,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 392,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 395,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 413,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 415,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 423,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 424,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 432,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 443,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 116 chars",
-          "metric": 116
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 452,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 454,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 457,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 525,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 587,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 599,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 611,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 618,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 621,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 629,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 634,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 636,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 652,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 658,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 661,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 662,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 665,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 674,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 683,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 695,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 715,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 737,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 743,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 755,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 757,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 758,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 760,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 766,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 767,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 777,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 785,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 803,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 805,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 118 chars",
-          "metric": 118
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 818,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 859,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 869,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 878,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 879,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasCompiler.cs",
-          "line": 880,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        }
-      ]
-    },
-    {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
       "errors": 31,
       "warnings": 221,
@@ -67497,6 +66043,1267 @@
           "severity": "warn",
           "message": "line is 117 chars",
           "metric": 117
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/TileAtlasCompiler.cs",
+      "errors": 16,
+      "warnings": 139,
+      "rules": {
+        "duplicate-block": 1,
+        "file-length": 1,
+        "complexity": 6,
+        "function-length": 9,
+        "param-count": 5,
+        "unnamed-tuple": 4,
+        "nesting-depth": 2,
+        "else-branch": 4,
+        "stateless-method": 2,
+        "comment-restates-code": 11,
+        "flag-parameter": 5,
+        "line-length": 105
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 2,
+          "rule": "duplicate-block",
+          "severity": "error",
+          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:2, addons/tile_editor/TileEditorService.cs:2, addons/tile_editor/TmxAtlasCompiler.cs:2, Scripts/Core/Services/TileDataLoader.cs:1",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "error",
+          "message": "file is 973 lines",
+          "metric": 973
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 38,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "public() cyclomatic complexity 35",
+          "metric": 35
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 410,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "ValidateTransitionReferences() cyclomatic complexity 12",
+          "metric": 12
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 777,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "ExtendEdgesToPadding() cyclomatic complexity 13",
+          "metric": 13
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 38,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "public() is 275 lines",
+          "metric": 275
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 317,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "CreateAtlasImage() is 65 lines",
+          "metric": 65
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 410,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "ValidateTransitionReferences() is 68 lines",
+          "metric": 68
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 483,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "CollectTilesToPack() is 81 lines",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 587,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "private() is 84 lines",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 683,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "private() is 90 lines",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 565,
+          "rule": "param-count",
+          "severity": "error",
+          "message": "AddRegionIfNew() takes 8 parameters",
+          "metric": 8
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 38,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (bool success, string message) CompileAtlas( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 386,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (bool success, string message) SaveTransitionMap( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 683,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (bool success, string message) SaveAtlasImage( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 906,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (bool success, string message) SaveAtlasMapping( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 483,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "CollectTilesToPack() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 683,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "private() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 831,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "CompositeImages() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 777,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "ExtendEdgesToPadding() is 46 lines",
+          "metric": 46
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 831,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "CompositeImages() is 46 lines",
+          "metric": 46
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 906,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "private() is 34 lines",
+          "metric": 34
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 38,
+          "rule": "nesting-depth",
+          "severity": "warn",
+          "message": "public() nests 4 levels deep",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 410,
+          "rule": "nesting-depth",
+          "severity": "warn",
+          "message": "ValidateTransitionReferences() nests 4 levels deep",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 317,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "CreateAtlasImage() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 587,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "private() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 777,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "ExtendEdgesToPadding() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 878,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "ExtractTileRegion() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 38,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "public() has 4 else branch(es) — prefer guard clauses",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 317,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "CreateAtlasImage() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 410,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "ValidateTransitionReferences() has 2 else branch(es) — prefer guard clauses",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 683,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "private() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 410,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ValidateTransitionReferences() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 565,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddRegionIfNew() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 157,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 177,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 181,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 229,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 285,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 304,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 692,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 707,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 746,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 759,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 847,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 38,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "public() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 386,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "private() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 587,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "private() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 683,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "private() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 906,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "private() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 14,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 34,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 38,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 58,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 71,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 78,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 80,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 90,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 99,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 108,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 117,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 120,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 130,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 134,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 140,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 147,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 158,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 167,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 174,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 178,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 182,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 193,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 200,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 219,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 223,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 116 chars",
+          "metric": 116
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 230,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 234,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 246,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 254,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 261,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 266,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 270,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 273,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 276,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 277,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 280,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 281,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 291,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 306,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 311,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 325,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 332,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 335,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 342,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 357,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 361,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 363,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 364,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 371,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 378,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 386,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 390,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 413,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 416,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 431,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 436,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 438,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 442,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 443,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 448,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 449,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 454,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 459,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 463,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 464,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 472,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 116 chars",
+          "metric": 116
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 481,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 483,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 486,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 602,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 629,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 669,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 681,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 693,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 700,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 703,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 711,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 716,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 718,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 734,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 740,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 743,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 744,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 747,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 756,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 765,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 777,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 797,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 819,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 825,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 837,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 839,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 840,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 842,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 848,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 849,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 859,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 867,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 878,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 118 chars",
+          "metric": 118
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 891,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 932,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 942,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 951,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 952,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileAtlasCompiler.cs",
+          "line": 953,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
         }
       ]
     },
