@@ -3,7 +3,6 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Tests.Core.PropertyTesting;
 using CardCleaner.Tests.Core.PropertyTesting.Generators;
 using FsCheck;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Properties;
@@ -205,30 +204,7 @@ public partial class AutoTilingProperties : PropertyTestBase
         Property(p => p
             .ForAll(
                 Arb.From(NeighborBitmaskArbitrary.Blob47),
-                mask =>
-                {
-                    // NE corner requires N and E edges
-                    if (NeighborBitmask8.HasNorthEast(mask))
-                        if (!NeighborBitmask8.HasNorth(mask) || !NeighborBitmask8.HasEast(mask))
-                            return false;
-
-                    // SE corner requires E and S edges
-                    if (NeighborBitmask8.HasSouthEast(mask))
-                        if (!NeighborBitmask8.HasEast(mask) || !NeighborBitmask8.HasSouth(mask))
-                            return false;
-
-                    // SW corner requires S and W edges
-                    if (NeighborBitmask8.HasSouthWest(mask))
-                        if (!NeighborBitmask8.HasSouth(mask) || !NeighborBitmask8.HasWest(mask))
-                            return false;
-
-                    // NW corner requires W and N edges
-                    if (NeighborBitmask8.HasNorthWest(mask))
-                        if (!NeighborBitmask8.HasWest(mask) || !NeighborBitmask8.HasNorth(mask))
-                            return false;
-
-                    return true;
-                })
+                mask => CornersHaveAdjacentEdges(mask))
             .Iterations(100));
     }
 
@@ -277,6 +253,25 @@ public partial class AutoTilingProperties : PropertyTestBase
     #endregion
 
     #region Helper Methods
+
+    private static bool CornersHaveAdjacentEdges(int mask)
+    {
+        var north = NeighborBitmask8.HasNorth(mask);
+        var east = NeighborBitmask8.HasEast(mask);
+        var south = NeighborBitmask8.HasSouth(mask);
+        var west = NeighborBitmask8.HasWest(mask);
+
+        // NE needs N+E, SE needs E+S, SW needs S+W, NW needs W+N
+        return CornerRequiresEdges(NeighborBitmask8.HasNorthEast(mask), north, east)
+               && CornerRequiresEdges(NeighborBitmask8.HasSouthEast(mask), east, south)
+               && CornerRequiresEdges(NeighborBitmask8.HasSouthWest(mask), south, west)
+               && CornerRequiresEdges(NeighborBitmask8.HasNorthWest(mask), west, north);
+    }
+
+    private static bool CornerRequiresEdges(bool hasCorner, bool firstEdge, bool secondEdge)
+    {
+        return !hasCorner || (firstEdge && secondEdge);
+    }
 
     private static System.Func<Vector2I, bool> CreatePredicateFromBitmask(int bitmask, Vector2I[] directions)
     {
