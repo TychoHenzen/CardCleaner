@@ -1,0 +1,35 @@
+{
+  "targetScope": [
+    "."
+  ],
+  "responsibilities": [
+    {
+      "name": "repository-wide quality evidence scope",
+      "currentOwners": [
+        "repository root"
+      ],
+      "consumers": [
+        "quality-scan.mjs",
+        "quality-guard report"
+      ],
+      "dependencies": [
+        "excluded path: .venv-poc",
+        "excluded path: .godot",
+        "excluded path: reports",
+        "excluded path: addons/gdUnit4",
+        "excluded path: addons/saveable",
+        "excluded path: Data/Tiled",
+        "excluded path: tools"
+      ]
+    }
+  ],
+  "desired": {
+    "ownership": [
+      {
+        "responsibility": "repository-wide quality evidence scope",
+        "owner": "repository root"
+      }
+    ],
+    "boundaries": []
+  }
+}

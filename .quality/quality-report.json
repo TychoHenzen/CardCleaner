@@ -1,0 +1,23 @@
+{
+  "scanEvidence": {
+    "repositoryRoot": "C:\\Development\\Projects\\cardcleaner",
+    "profile": "default",
+    "exclusions": [
+      ".venv-poc",
+      ".godot",
+      "reports",
+      "addons/gdUnit4",
+      "addons/saveable",
+      "Data/Tiled",
+      "tools"
+    ],
+    "command": "node C:\\Users\\siriu\\.codex\\plugins\\cache\\dod-guard-monorepo\\quality-guard\\0.5.15\\dist\\bundle.js report --root=C:\\Development\\Projects\\cardcleaner",
+    "generator": "C:\\Users\\siriu\\.codex\\plugins\\cache\\dod-guard-monorepo\\quality-guard\\0.5.15\\dist\\bundle.js",
+    "supportsExclusions": false,
+    "status": "unavailable",
+    "exitCode": 1,
+    "error": "quality-guard MCP server failed: Error: quality scan failed: spawnSync C:\\Program Files\\nodejs\\node.exe ETIMEDOUT",
+    "limitation": "The shipped report command parses only --root and cannot forward --exclude values. The unfiltered repository-root report timed out before producing a payload; no plugin or production source was changed."
+  },
+  "report": null
+}
