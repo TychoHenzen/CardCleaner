@@ -47,6 +47,7 @@ $importArguments = @(
     '--headless'
     '--editor'
     '--recovery-mode'
+    '--build-solutions'
     '--import'
     '--path'
     '.'
