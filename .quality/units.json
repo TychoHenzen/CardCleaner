@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 794,
+  "fileCount": 791,
   "files": [
     {
       "path": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
@@ -698,11 +698,6 @@
       "classification": "production"
     },
     {
-      "path": "Scripts/Core/Devices/CardSignatureList.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
       "path": "Scripts/Core/Devices/ICable.cs",
       "language": "cs",
       "classification": "production"
@@ -723,11 +718,6 @@
       "classification": "production"
     },
     {
-      "path": "Scripts/Core/Devices/Jack.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
       "path": "Scripts/Core/Devices/JackDirection.cs",
       "language": "cs",
       "classification": "production"
@@ -739,11 +729,6 @@
     },
     {
       "path": "Scripts/Core/Devices/Jacks/IOutputJack.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Core/Devices/Trigger.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -3974,11 +3959,10 @@
     }
   ],
   "summary": {
-    "total": 7429,
-    "errors": 3,
-    "warnings": 7426,
+    "total": 7425,
+    "errors": 0,
+    "warnings": 7425,
     "byRule": {
-      "dead-export": 3,
       "test-only-export": 9,
       "duplicate-block": 68,
       "file-length": 347,
@@ -3992,12 +3976,9 @@
       "comment-restates-code": 95,
       "output-parameter": 29,
       "flag-parameter": 72,
-      "line-length": 4446
+      "line-length": 4445
     },
     "byFile": {
-      "Scripts/Core/Devices/CardSignatureList.cs": 1,
-      "Scripts/Core/Devices/Jack.cs": 2,
-      "Scripts/Core/Devices/Trigger.cs": 1,
       "Scripts/Core/Services/MapGenerationProfiler.cs": 2,
       "Scripts/Features/Worldgen/AutoTiling/AutoTileHelper.cs": 15,
       "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs": 9,
@@ -4668,30 +4649,6 @@
   },
   "comparison": null,
   "violations": [
-    {
-      "file": "Scripts/Core/Devices/CardSignatureList.cs",
-      "line": 10,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "CardSignatureList is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Devices/Jack.cs",
-      "line": 9,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "Jack is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Devices/Trigger.cs",
-      "line": 6,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "Trigger is exported but never referenced anywhere",
-      "metric": 1
-    },
     {
       "file": "Scripts/Core/Services/MapGenerationProfiler.cs",
       "line": 8,
@@ -28995,14 +28952,6 @@
       "severity": "warn",
       "message": "line is 87 chars",
       "metric": 87
-    },
-    {
-      "file": "Scripts/Core/Devices/Jack.cs",
-      "line": 7,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
     },
     {
       "file": "Scripts/Core/Devices/Jacks/IJackOfT.cs",
@@ -64102,69 +64051,6 @@
     }
   ],
   "units": [
-    {
-      "file": "Scripts/Core/Devices/Jack.cs",
-      "errors": 1,
-      "warnings": 1,
-      "rules": {
-        "dead-export": 1,
-        "line-length": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Devices/Jack.cs",
-          "line": 9,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "Jack is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Devices/Jack.cs",
-          "line": 7,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Devices/CardSignatureList.cs",
-      "errors": 1,
-      "warnings": 0,
-      "rules": {
-        "dead-export": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Devices/CardSignatureList.cs",
-          "line": 10,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "CardSignatureList is exported but never referenced anywhere",
-          "metric": 1
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Devices/Trigger.cs",
-      "errors": 1,
-      "warnings": 0,
-      "rules": {
-        "dead-export": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Devices/Trigger.cs",
-          "line": 6,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "Trigger is exported but never referenced anywhere",
-          "metric": 1
-        }
-      ]
-    },
     {
       "file": "Scripts/Features/Worldgen/AutoTiling/DualGridAutoTile.cs",
       "errors": 0,
