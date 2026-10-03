@@ -1,0 +1,11 @@
+[
+  {
+    "findingId": "6f5548c6668b9b17783bf5b3fd6cab61007069f8910c0f9c78793abd157a2bda",
+    "fingerprint": "cda95ddf7c59cfe95d40c0b2738fa5a302fe769dc38f2ce02f5f539dd17f18aa",
+    "baseSha": "762f23d7733ff9f6dbd92ac8527c1c800b4df275",
+    "targetSha": "59eeec381362820da27083de731b9c6c580ee012",
+    "reason": "Pure type move: CombatContext class moved unchanged from ICombatCommand.cs to its own file to satisfy types-per-file. It is the parameter type of the public ICombatCommand methods, so it must stay public; members and namespace unchanged.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:46:57.355Z"
+  }
+]
