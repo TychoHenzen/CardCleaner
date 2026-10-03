@@ -52,5 +52,14 @@
     "reason": "Pure type move: ProfileStats moved unchanged out of IProfiler.cs (types-per-file). It is the return type of the public IProfiler.GetStatistics so it must stay public; namespace unchanged (member: ProfileStats.get)",
     "author": "Tycho",
     "time": "2026-10-03T21:42:25.365Z"
+  },
+  {
+    "findingId": "4fb09a0c97141addf7d732353198880fdae99d4a7eede9dcd90192e77d31237f",
+    "fingerprint": "5678a58154db0434d54e72ff668e93b0ffe1e9f1669926e1d4d3891dc0982b42",
+    "baseSha": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetSha": "1f21941a7bf93b387a734c9a084ceb1c1b524e74",
+    "reason": "Pure type move: public Godot resource NoiseGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: NoiseGradient._PropertyGetRevert)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:43:14.254Z"
   }
 ]
