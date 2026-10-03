@@ -452,6 +452,170 @@
       {
         "responsibility": "InsertQuad",
         "owner": "MeshSpatialIndex"
+      },
+      {
+        "responsibility": "ProcessNextExplorationStep",
+        "owner": "ExplorationStepLoop"
+      },
+      {
+        "responsibility": "AdvanceExploration",
+        "owner": "ExplorationStepLoop"
+      },
+      {
+        "responsibility": "ShowFromCell",
+        "owner": "ExplorationPathDisplay"
+      },
+      {
+        "responsibility": "ToWorldPositions",
+        "owner": "ExplorationPathDisplay"
+      },
+      {
+        "responsibility": "OnPathUpdated",
+        "owner": "ExplorationAiEventTranslator"
+      },
+      {
+        "responsibility": "DrawVertexMarkers",
+        "owner": "MeshDebugPainter"
+      },
+      {
+        "responsibility": "DrawQuadIds",
+        "owner": "MeshDebugPainter"
+      },
+      {
+        "responsibility": "DrawPath",
+        "owner": "MeshDebugPainter"
+      },
+      {
+        "responsibility": "DrawHighlightedCells",
+        "owner": "MeshDebugPainter"
+      },
+      {
+        "responsibility": "DrawSelectedCell",
+        "owner": "MeshDebugPainter"
+      },
+      {
+        "responsibility": "DrawAdjacency",
+        "owner": "MeshDebugPainter"
+      },
+      {
+        "responsibility": "GetScaledCorners",
+        "owner": "MeshDebugPainter"
+      },
+      {
+        "responsibility": "GetTerrainColor",
+        "owner": "MeshDebugPainter"
+      },
+      {
+        "responsibility": "DrawVertices",
+        "owner": "PreviewMeshPainter"
+      },
+      {
+        "responsibility": "FillIsland",
+        "owner": "IslandTerrainAssigner"
+      },
+      {
+        "responsibility": "CountFilled",
+        "owner": "IslandTerrainAssigner"
+      },
+      {
+        "responsibility": "Find",
+        "owner": "PreviewDefaults"
+      },
+      {
+        "responsibility": "FindRandom",
+        "owner": "PassableCellFinder"
+      },
+      {
+        "responsibility": "FindNearest",
+        "owner": "PassableCellFinder"
+      },
+      {
+        "responsibility": "CountFilledCorners",
+        "owner": "QuadCornerCounter"
+      },
+      {
+        "responsibility": "CountPassableCorners",
+        "owner": "QuadCornerCounter"
+      },
+      {
+        "responsibility": "FindEligibleCells",
+        "owner": "IrregularMapEnemyManager"
+      },
+      {
+        "responsibility": "ShuffleCells",
+        "owner": "IrregularMapEnemyManager"
+      },
+      {
+        "responsibility": "CalculateRings",
+        "owner": "IrregularMeshMapGenerator"
+      },
+      {
+        "responsibility": "BuildMesh",
+        "owner": "IrregularMeshMapGenerator"
+      },
+      {
+        "responsibility": "BuildWfcMesh",
+        "owner": "IrregularMeshMapGenerator"
+      },
+      {
+        "responsibility": "GenerateDefaultGeometry",
+        "owner": "IrregularMeshMapGenerator"
+      },
+      {
+        "responsibility": "FindPassableCellsWithFallback",
+        "owner": "IrregularMeshMapGenerator"
+      },
+      {
+        "responsibility": "CollectPassableCells",
+        "owner": "IrregularMeshMapGenerator"
+      },
+      {
+        "responsibility": "Prepare",
+        "owner": "WorldMapSession"
+      },
+      {
+        "responsibility": "Complete",
+        "owner": "WorldMapSession"
+      },
+      {
+        "responsibility": "InitializeComponents",
+        "owner": "WorldMapSession"
+      },
+      {
+        "responsibility": "FindPlayerStartCell",
+        "owner": "WorldMapSession"
+      },
+      {
+        "responsibility": "InitializeFogOfWar",
+        "owner": "WorldMapSession"
+      },
+      {
+        "responsibility": "SetupExploration",
+        "owner": "WorldMapSession"
+      },
+      {
+        "responsibility": "UpgradeToRaycastVisibility",
+        "owner": "WorldMapSession"
+      },
+      {
+        "responsibility": "BuildFogRenderer",
+        "owner": "WorldMapRenderLayer"
+      },
+      {
+        "responsibility": "BuildCollisionShapes",
+        "owner": "WorldMapRenderLayer"
+      },
+      {
+        "responsibility": "ConfigureViewportAndCamera",
+        "owner": "WorldMapRenderLayer"
+      },
+      {
+        "responsibility": "AssignTerrainTypes",
+        "owner": "TerrainGeneratorFactory"
+      },
+      {
+        "responsibility": "InferPassability",
+        "owner": "TerrainGeneratorFactory"
       }
     ],
     "boundaries": [

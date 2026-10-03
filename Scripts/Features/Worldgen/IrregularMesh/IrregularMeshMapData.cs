@@ -2,8 +2,8 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 using Godot;
 using System.Collections.Generic;
-using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.CellQueries;
 
 /// <summary>
 /// IMapData implementation that wraps an IrregularMesh.
@@ -85,7 +85,7 @@ public class IrregularMeshMapData : IMapData
             var quad = _mesh.Quads[cellId];
             // Use majority vote from corner vertices
             // NOTE: Terrain type > 0 is passable, terrain type 0 is impassable
-            int filledCount = quad.VertexIds.Count(vid => _mesh.Vertices[vid].TerrainType > 0);
+            int filledCount = QuadCornerCounter.CountFilledCorners(_mesh, quad);
             return filledCount >= 2 ? "terrain_filled" : "terrain_empty";
         }
 
@@ -103,16 +103,9 @@ public class IrregularMeshMapData : IMapData
         // Cell is passable if MAJORITY (at least 2 of 4) corner vertices have passable terrain
         // This allows traversal near terrain edges and provides better connectivity
         // NOTE: Terrain type 0 = impassable, any terrain type > 0 = passable
-        var quad = _mesh.Quads[cellId];
-        int passableCount = 0;
-        foreach (var vid in quad.VertexIds)
-        {
-            var vertex = _mesh.Vertices[vid];
-            // Changed from == PassableTerrainType to > 0 because terrain generator
-            // assigns unique types (1, 2, 3, etc.) to different passable terrain tiles
-            if (!vertex.HasStructure && vertex.TerrainType > 0)
-                passableCount++;
-        }
+        // Changed from == PassableTerrainType to > 0 because terrain generator
+        // assigns unique types (1, 2, 3, etc.) to different passable terrain tiles
+        int passableCount = QuadCornerCounter.CountPassableCorners(_mesh, _mesh.Quads[cellId]);
         return passableCount >= 2;
     }
 
@@ -284,21 +277,7 @@ public class IrregularMeshMapData : IMapData
     /// <summary>
     /// Find a random passable cell.
     /// </summary>
-    public int? FindRandomPassableCell(int seed)
-    {
-        var passableCells = new List<int>();
-        for (int i = 0; i < _mesh.Quads.Count; i++)
-        {
-            if (IsPassable(i))
-                passableCells.Add(i);
-        }
-
-        if (passableCells.Count == 0)
-            return null;
-
-        var random = new System.Random(seed);
-        return passableCells[random.Next(passableCells.Count)];
-    }
+    public int? FindRandomPassableCell(int seed) => PassableCellFinder.FindRandom(this, seed);
 
     /// <summary>
     /// Find the nearest passable cell to a world position.
@@ -306,24 +285,7 @@ public class IrregularMeshMapData : IMapData
     public int? FindNearestPassableCell(Vector2 worldPos)
     {
         var meshPos = (worldPos - WorldOffset) / WorldScale;
-
-        int? nearestCell = null;
-        float nearestDist = float.MaxValue;
-
-        for (int i = 0; i < _mesh.Quads.Count; i++)
-        {
-            if (!IsPassable(i))
-                continue;
-
-            float dist = _mesh.Quads[i].Centroid.DistanceSquaredTo(meshPos);
-            if (dist < nearestDist)
-            {
-                nearestDist = dist;
-                nearestCell = i;
-            }
-        }
-
-        return nearestCell;
+        return PassableCellFinder.FindNearest(this, _mesh, meshPos);
     }
 
     #endregion

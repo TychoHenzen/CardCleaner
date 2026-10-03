@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Exploration;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -22,10 +22,8 @@ public partial class IrregularMeshExplorationController : Node2D
     private IVisibilityChecker? _visibilityChecker;
     private IrregularMeshFogOfWar? _fogOfWar;
 
-    private bool _isExploring;
-    private bool _processingStep;
-    private List<int>? _currentPath;
-    private int _pathIndex;
+    private ExplorationStepLoop? _stepLoop;
+    private readonly ExplorationPathDisplay _pathDisplay = new();
 
     /// <summary>
     /// Delay between exploration steps in seconds.
@@ -52,7 +50,7 @@ public partial class IrregularMeshExplorationController : Node2D
     /// <summary>
     /// Whether exploration is currently in progress.
     /// </summary>
-    public bool IsExploring => _isExploring;
+    public bool IsExploring => _stepLoop?.IsExploring ?? false;
 
     /// <summary>
     /// Whether exploration has finished (no more cells to explore).
@@ -77,18 +75,7 @@ public partial class IrregularMeshExplorationController : Node2D
     /// <summary>
     /// Current path as world positions.
     /// </summary>
-    public IReadOnlyList<Vector2> CurrentPathPositions
-    {
-        get
-        {
-            if (_currentPath == null || _mapData == null)
-                return Array.Empty<Vector2>();
-
-            return _currentPath
-                .Select(id => _mapData.GetCellCenter(id))
-                .ToList();
-        }
-    }
+    public IReadOnlyList<Vector2> CurrentPathPositions => _pathDisplay.ToWorldPositions(_mapData);
 
     /// <summary>
     /// Raised when the player moves to a new cell.
@@ -137,9 +124,9 @@ public partial class IrregularMeshExplorationController : Node2D
         _movementController = new IrregularMeshMovementController();
         AddChild(_movementController);
 
-        _movementController.MovementCompleted += OnMovementCompleted;
-        _movementController.CellEntered += OnCellEntered;
-        _movementController.PositionUpdated += OnPositionUpdated;
+        _movementController.MovementCompleted += (cellId, worldPos) => PlayerMoved?.Invoke(cellId, worldPos);
+        _movementController.CellEntered += cellId => _fogOfWar?.UpdateVisibility(cellId); // fog follows the new cell
+        _movementController.PositionUpdated += worldPos => PositionUpdated?.Invoke(worldPos);
     }
 
     /// <summary>
@@ -168,10 +155,20 @@ public partial class IrregularMeshExplorationController : Node2D
         _explorationAI = new ExplorationAI(mapData, startCellId, _visibilityChecker, fogOfWar: _fogOfWar);
 
         // Subscribe to exploration events
-        _explorationAI.PathUpdated += OnExplorationPathUpdated;
-        _explorationAI.VisibilityUpdated += OnExplorationVisibilityUpdated;
-        _explorationAI.EnemySpotted += OnExplorationEnemySpotted;
-        _explorationAI.EnemyEncountered += OnExplorationEnemyEncountered;
+        var aiEvents = new ExplorationAiEventTranslator(_explorationAI, mapData);
+        aiEvents.PathUpdated += path => PathUpdated?.Invoke(path);
+        aiEvents.VisibilityUpdated += (seen, visible) => VisibilityUpdated?.Invoke(seen, visible);
+        aiEvents.EnemySpotted += cellId => EnemySpotted?.Invoke(cellId);
+        aiEvents.EnemyEncountered += OnAiEnemyEncountered;
+
+        _stepLoop = new ExplorationStepLoop(
+            _explorationAI,
+            _movementController,
+            _pathDisplay,
+            () => StepDelay > 0 ? ToSignal(GetTree().CreateTimer(StepDelay), SceneTreeTimer.SignalName.Timeout) : null,
+            () => AutoExplore);
+        _stepLoop.PathUpdated += path => PathUpdated?.Invoke(path);
+        _stepLoop.Finished += () => ExplorationFinished?.Invoke();
 
         // Initial fog update from starting position
         _fogOfWar.UpdateVisibility(startCellId);
@@ -182,11 +179,10 @@ public partial class IrregularMeshExplorationController : Node2D
     /// </summary>
     public void StartExploration()
     {
-        if (_explorationAI == null || _isExploring)
+        if (_stepLoop == null)
             return;
 
-        _isExploring = true;
-        ProcessNextExplorationStep();
+        _stepLoop.Start();
     }
 
     /// <summary>
@@ -194,7 +190,8 @@ public partial class IrregularMeshExplorationController : Node2D
     /// </summary>
     public void StopExploration()
     {
-        _isExploring = false;
+        if (_stepLoop != null)
+            _stepLoop.IsExploring = false;
     }
 
     /// <summary>
@@ -221,12 +218,12 @@ public partial class IrregularMeshExplorationController : Node2D
         if (path == null || path.Count == 0)
             return;
 
-        _currentPath = path;
+        _pathDisplay.Show(path);
         PathUpdated?.Invoke(path);
 
         await _movementController.MoveAlongPathAsync(path);
 
-        _currentPath = null;
+        _pathDisplay.Clear();
         PathUpdated?.Invoke(Array.Empty<int>());
     }
 
@@ -243,119 +240,13 @@ public partial class IrregularMeshExplorationController : Node2D
     /// </summary>
     public Node2D GetVisualNode() => _movementController!;
 
-    private async void ProcessNextExplorationStep()
-    {
-        // Guard against re-entrance
-        if (_processingStep)
-            return;
-
-        if (!_isExploring || _explorationAI == null || _movementController == null)
-            return;
-
-        _processingStep = true;
-        try
-        {
-            // Get the next step from exploration AI
-            var stepped = _explorationAI.StepExploration();
-
-            if (!stepped || _explorationAI.HasFinishedExploration)
-            {
-                _isExploring = false;
-                ExplorationFinished?.Invoke();
-                return;
-            }
-
-            // After StepExploration, the AI has already moved internally to the next cell.
-            // We need to animate the visual movement to where the AI now is.
-            var targetCell = _explorationAI.CurrentCellId;
-            
-            // Update path display (shows remaining path after current position)
-            var remainingPath = _explorationAI.CurrentPath;
-            if (remainingPath != null)
-            {
-                // Include current cell at start of displayed path
-                _currentPath = new List<int> { targetCell };
-                _currentPath.AddRange(remainingPath);
-                PathUpdated?.Invoke(_currentPath);
-            }
-
-            // Animate to where the AI moved
-            await _movementController.MoveToCellAsync(targetCell);
-
-            // Wait before next step
-            if (StepDelay > 0)
-            {
-                await ToSignal(GetTree().CreateTimer(StepDelay), SceneTreeTimer.SignalName.Timeout);
-            }
-
-            // Continue exploration if still active
-            if (_isExploring && AutoExplore)
-            {
-                _processingStep = false; // Allow next step
-                ProcessNextExplorationStep();
-                return;
-            }
-        }
-        catch (Exception ex)
-        {
-            GD.PrintErr($"[IrregularMeshExplorationController] Error in exploration step: {ex.Message}");
-        }
-        finally
-        {
-            _processingStep = false;
-        }
-    }
-
-    private void OnMovementCompleted(int cellId, Vector2 worldPos)
-    {
-        PlayerMoved?.Invoke(cellId, worldPos);
-    }
-
-    private void OnPositionUpdated(Vector2 worldPos)
-    {
-        PositionUpdated?.Invoke(worldPos);
-    }
-
-    private void OnCellEntered(int cellId)
-    {
-        // Update fog of war from new position
-        _fogOfWar?.UpdateVisibility(cellId);
-    }
-
-    private void OnExplorationPathUpdated()
-    {
-        if (_explorationAI?.CurrentPath != null)
-        {
-            PathUpdated?.Invoke(_explorationAI.CurrentPath.ToList());
-        }
-    }
-
-    private void OnExplorationVisibilityUpdated(IReadOnlySet<int> seen, IReadOnlySet<int> visible)
-    {
-        VisibilityUpdated?.Invoke(seen, visible);
-    }
-
-    private void OnExplorationEnemySpotted(Vector2 enemyPos)
-    {
-        if (_mapData != null)
-        {
-            var cellId = _mapData.GetCellAtPosition(enemyPos);
-            if (cellId.HasValue)
-                EnemySpotted?.Invoke(cellId.Value);
-        }
-    }
-
-    private void OnExplorationEnemyEncountered(Vector2 enemyPos)
+    private void OnAiEnemyEncountered(int? cellId)
     {
         // Stop exploration when entering combat
-        _isExploring = false;
+        StopExploration();
 
-        if (_mapData != null)
-        {
-            var cellId = _mapData.GetCellAtPosition(enemyPos);
-            if (cellId.HasValue)
-                EnemyEncountered?.Invoke(cellId.Value);
-        }
+        if (cellId.HasValue)
+            EnemyEncountered?.Invoke(cellId.Value);
     }
 
     /// <summary>

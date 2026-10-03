@@ -4,6 +4,7 @@ using Godot;
 using System;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug.Painting;
 
 /// <summary>
 /// Editor preview node for visualizing irregular mesh generation and rendering.
@@ -26,7 +27,7 @@ public partial class IrregularMeshPreview : Node2D
         get => _rings;
         set { _rings = value; _needsRebuild = true; }
     }
-    private int _rings = 6;
+    private int _rings = PreviewDefaults.Rings;
 
     /// <summary>
     /// Radius of each hexagon in world units.
@@ -37,7 +38,7 @@ public partial class IrregularMeshPreview : Node2D
         get => _hexRadius;
         set { _hexRadius = value; _needsRebuild = true; }
     }
-    private float _hexRadius = 1.0f;
+    private float _hexRadius = PreviewDefaults.HexRadius;
 
     /// <summary>
     /// Probability of merging triangles into quads.
@@ -48,7 +49,7 @@ public partial class IrregularMeshPreview : Node2D
         get => _mergeProbability;
         set { _mergeProbability = value; _needsRebuild = true; }
     }
-    private float _mergeProbability = 0.7f;
+    private float _mergeProbability = PreviewDefaults.MergeProbability;
 
     /// <summary>
     /// Number of Lloyd relaxation iterations.
@@ -59,7 +60,7 @@ public partial class IrregularMeshPreview : Node2D
         get => _relaxationIterations;
         set { _relaxationIterations = value; _needsRebuild = true; }
     }
-    private int _relaxationIterations = 15;
+    private int _relaxationIterations = PreviewDefaults.RelaxationIterations;
 
     /// <summary>
     /// Random seed for reproducible generation.
@@ -70,7 +71,7 @@ public partial class IrregularMeshPreview : Node2D
         get => _seed;
         set { _seed = value; _needsRebuild = true; }
     }
-    private int _seed = 12345;
+    private int _seed = PreviewDefaults.Seed;
 
     /// <summary>
     /// Transition key for atlas lookup (e.g., "grass3|base_grass1").
@@ -93,7 +94,7 @@ public partial class IrregularMeshPreview : Node2D
         get => _numIslands;
         set { _numIslands = value; _needsRebuild = true; }
     }
-    private int _numIslands = 5;
+    private int _numIslands = PreviewDefaults.NumIslands;
 
     /// <summary>
     /// Show wireframe overlay.
@@ -138,7 +139,7 @@ public partial class IrregularMeshPreview : Node2D
             UpdateTransform();
         }
     }
-    private float _visualScale = 50f;
+    private float _visualScale = PreviewDefaults.VisualScale;
 
     /// <summary>
     /// Button to regenerate mesh.
@@ -229,38 +230,7 @@ public partial class IrregularMeshPreview : Node2D
     {
         if (_mesh == null) return;
 
-        // Reset all terrain
-        foreach (var vertex in _mesh.Vertices)
-        {
-            vertex.TerrainType = 0;
-        }
-
-        // Create random islands
-        var random = new Random(_seed + 1000);
-        var bounds = _mesh.Bounds;
-
-        for (int i = 0; i < _numIslands; i++)
-        {
-            var center = new Vector2(
-                (float)(bounds.Min.X + random.NextDouble() * (bounds.Max.X - bounds.Min.X)),
-                (float)(bounds.Min.Y + random.NextDouble() * (bounds.Max.Y - bounds.Min.Y))
-            );
-            var radius = (float)(1.0 + random.NextDouble() * 2.5);
-
-            foreach (var vertex in _mesh.Vertices)
-            {
-                if (vertex.Position.DistanceTo(center) < radius)
-                {
-                    vertex.TerrainType = 1;
-                }
-            }
-        }
-
-        int filledCount = 0;
-        foreach (var vertex in _mesh.Vertices)
-        {
-            if (vertex.TerrainType == 1) filledCount++;
-        }
+        int filledCount = IslandTerrainAssigner.Assign(_mesh, _seed, _numIslands);
         GD.Print($"[IrregularMeshPreview] Terrain assigned: {filledCount}/{_mesh.Vertices.Count} vertices filled");
     }
 
@@ -286,41 +256,16 @@ public partial class IrregularMeshPreview : Node2D
         if (_mesh == null) return;
 
         var transform = Transform2D.Identity.Scaled(new Vector2(_visualScale, -_visualScale));
+        var painter = new PreviewMeshPainter(this, _mesh, transform);
 
-        // Draw wireframe
         if (_showWireframe)
         {
-            foreach (var quad in _mesh.Quads)
-            {
-                var corners = quad.GetCornerPositions();
-                if (corners.Length != 4) continue;
-
-                for (int i = 0; i < 4; i++)
-                {
-                    var p1 = transform * corners[i];
-                    var p2 = transform * corners[(i + 1) % 4];
-                    DrawLine(p1, p2, new Color(0.2f, 0.2f, 0.2f, 0.5f), 1f);
-                }
-            }
+            painter.DrawWireframe();
         }
 
-        // Draw vertices
         if (_showVertices)
         {
-            foreach (var vertex in _mesh.Vertices)
-            {
-                var pos = transform * vertex.Position;
-                var color = vertex.TerrainType == 1
-                    ? new Color(0.0f, 0.5f, 0.0f)
-                    : new Color(0.6f, 0.5f, 0.4f);
-                var size = vertex.IsBoundary ? 4f : 3f;
-                DrawCircle(pos, size, color);
-
-                if (vertex.IsBoundary)
-                {
-                    DrawCircle(pos, size + 1, Colors.White with { A = 0.5f });
-                }
-            }
+            painter.DrawVertices();
         }
     }
 
@@ -329,31 +274,11 @@ public partial class IrregularMeshPreview : Node2D
     /// </summary>
     public override bool _PropertyCanRevert(StringName property)
     {
-        return property.ToString() switch
-        {
-            nameof(Rings) => true,
-            nameof(HexRadius) => true,
-            nameof(MergeProbability) => true,
-            nameof(RelaxationIterations) => true,
-            nameof(Seed) => true,
-            nameof(NumIslands) => true,
-            nameof(VisualScale) => true,
-            _ => base._PropertyCanRevert(property)
-        };
+        return PreviewDefaults.Find(property.ToString()).HasValue || base._PropertyCanRevert(property);
     }
 
     public override Variant _PropertyGetRevert(StringName property)
     {
-        return property.ToString() switch
-        {
-            nameof(Rings) => 6,
-            nameof(HexRadius) => 1.0f,
-            nameof(MergeProbability) => 0.7f,
-            nameof(RelaxationIterations) => 15,
-            nameof(Seed) => 12345,
-            nameof(NumIslands) => 5,
-            nameof(VisualScale) => 50f,
-            _ => base._PropertyGetRevert(property)
-        };
+        return PreviewDefaults.Find(property.ToString()) ?? base._PropertyGetRevert(property);
     }
 }
