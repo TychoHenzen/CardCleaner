@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 455,
+  "fileCount": 460,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
@@ -163,6 +163,21 @@
       "classification": "production"
     },
     {
+      "path": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "addons/tile_editor/TileAtlas/TileAtlasTerrainSelector.cs",
       "language": "cs",
       "classification": "production"
@@ -174,6 +189,16 @@
     },
     {
       "path": "addons/tile_editor/TileAtlas/TileAtlasTransitionValidator.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TileAtlas/TileButton.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TileAtlas/TileIdValidation.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -2279,27 +2304,27 @@
     }
   ],
   "summary": {
-    "total": 7091,
-    "errors": 339,
-    "warnings": 6752,
+    "total": 7095,
+    "errors": 333,
+    "warnings": 6762,
     "byRule": {
-      "dead-export": 16,
+      "dead-export": 15,
       "duplicate-block": 169,
-      "types-per-file": 46,
-      "file-length": 271,
-      "complexity": 307,
-      "function-length": 349,
+      "types-per-file": 45,
+      "file-length": 274,
+      "complexity": 306,
+      "function-length": 347,
       "nesting-depth": 32,
       "param-count": 137,
-      "unnamed-tuple": 43,
+      "unnamed-tuple": 42,
       "test-only-export": 13,
-      "else-branch": 129,
-      "stateless-method": 1245,
+      "else-branch": 128,
+      "stateless-method": 1269,
       "comment-bloat": 54,
-      "comment-restates-code": 159,
+      "comment-restates-code": 153,
       "output-parameter": 20,
-      "flag-parameter": 56,
-      "line-length": 4045
+      "flag-parameter": 55,
+      "line-length": 4036
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
@@ -2313,7 +2338,6 @@
       "Scripts/Features/ModularDevices/RectScreenDevice.cs": 2,
       "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs": 21,
       "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs": 12,
-      "addons/tile_editor/TileAtlasPanel.cs": 53,
       "addons/tile_editor/TileEditorPlugin.cs": 4,
       "addons/tile_editor/UnusedSourcesPanel.cs": 51,
       "addons/tile_editor/VariantMappingEditor.cs": 56,
@@ -2566,7 +2590,11 @@
       "addons/tile_editor/BiomePoolPanel.cs": 13,
       "addons/tile_editor/FoldoutContainer.cs": 4,
       "addons/tile_editor/TileAtlas/TileAtlasPacker.cs": 12,
+      "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs": 16,
+      "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs": 21,
+      "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs": 9,
       "addons/tile_editor/TileAtlas/TileAtlasTerrainSelector.cs": 7,
+      "addons/tile_editor/TileAtlas/TileButton.cs": 11,
       "addons/tile_editor/TileAtlasCompiler.cs": 16,
       "addons/tile_editor/TileEditorAtlasSources.cs": 25,
       "addons/tile_editor/TileEditorFormatLoading.cs": 10,
@@ -2785,14 +2813,6 @@
       "rule": "dead-export",
       "severity": "error",
       "message": "CollapsedNeighborInfo is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 450,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "TileButton is exported but never referenced anywhere",
       "metric": 1
     },
     {
@@ -3468,14 +3488,6 @@
       "metric": 3
     },
     {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 450,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: TileAtlasPanel, TileButton",
-      "metric": 2
-    },
-    {
       "file": "addons/tile_editor/TransitionCoveragePanel.cs",
       "line": 275,
       "rule": "types-per-file",
@@ -4036,14 +4048,6 @@
       "metric": 352
     },
     {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 562 lines",
-      "metric": 562
-    },
-    {
       "file": "addons/tile_editor/TileEditorDock.cs",
       "line": 1,
       "rule": "file-length",
@@ -4556,14 +4560,6 @@
       "metric": 15
     },
     {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 206,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "GetFilteredTiles() cyclomatic complexity 18",
-      "metric": 18
-    },
-    {
       "file": "addons/tile_editor/TilesetAtlasPicker.cs",
       "line": 111,
       "rule": "complexity",
@@ -4938,14 +4934,6 @@
       "severity": "error",
       "message": "TestTileDistributionDiversity() is 74 lines",
       "metric": 74
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 54,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "_Ready() is 96 lines",
-      "metric": 96
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
@@ -5393,14 +5381,6 @@
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (8, 15)\n            select ( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 367,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (bool valid, string message) ValidateTileId( — replace it with a named type",
       "metric": 1
     },
     {
@@ -7812,6 +7792,30 @@
       "metric": 105
     },
     {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 164 lines",
+      "metric": 164
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 146 lines",
+      "metric": 146
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 120 lines",
+      "metric": 120
+    },
+    {
       "file": "addons/tile_editor/TileAtlas/TileAtlasTerrainSelector.cs",
       "line": 1,
       "rule": "file-length",
@@ -7826,6 +7830,14 @@
       "severity": "warn",
       "message": "file is 251 lines",
       "metric": 251
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 139 lines",
+      "metric": 139
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
@@ -9692,6 +9704,22 @@
       "metric": 7
     },
     {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 97,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "OnDuplicateConfirmed() cyclomatic complexity 6",
+      "metric": 6
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 76,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "ApplyBiomeFilter() cyclomatic complexity 6",
+      "metric": 6
+    },
+    {
       "file": "addons/tile_editor/TileAtlas/TileAtlasTransitionComposer.cs",
       "line": 228,
       "rule": "complexity",
@@ -9706,22 +9734,6 @@
       "severity": "warn",
       "message": "ValidateReference() cyclomatic complexity 6",
       "metric": 6
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 381,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "OnDuplicateConfirmed() cyclomatic complexity 6",
-      "metric": 6
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 494,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "_Draw() cyclomatic complexity 8",
-      "metric": 8
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
@@ -12092,6 +12104,14 @@
       "metric": 39
     },
     {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+      "line": 23,
+      "rule": "function-length",
+      "severity": "warn",
+      "message": "CreateFilterBar() is 33 lines",
+      "metric": 33
+    },
+    {
       "file": "addons/tile_editor/TileAtlas/TileAtlasTransitionComposer.cs",
       "line": 38,
       "rule": "function-length",
@@ -12116,6 +12136,14 @@
       "metric": 40
     },
     {
+      "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+      "line": 54,
+      "rule": "function-length",
+      "severity": "warn",
+      "message": "_Draw() is 41 lines",
+      "metric": 41
+    },
+    {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
       "line": 28,
       "rule": "function-length",
@@ -12130,30 +12158,6 @@
       "severity": "warn",
       "message": "SaveOutputs() is 40 lines",
       "metric": 40
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 206,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "GetFilteredTiles() is 53 lines",
-      "metric": 53
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 312,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "OnDuplicatePressed() is 45 lines",
-      "metric": 45
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 494,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "_Draw() is 52 lines",
-      "metric": 52
     },
     {
       "file": "addons/tile_editor/TileEditorAtlasSources.cs",
@@ -13548,20 +13552,20 @@
       "metric": 6
     },
     {
+      "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+      "line": 23,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "TileButton() takes 4 parameters",
+      "metric": 4
+    },
+    {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
       "line": 83,
       "rule": "param-count",
       "severity": "warn",
       "message": "SaveOutputs() takes 5 parameters",
       "metric": 5
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 463,
-      "rule": "param-count",
-      "severity": "warn",
-      "message": "TileButton() takes 4 parameters",
-      "metric": 4
     },
     {
       "file": "addons/tile_editor/TileEditorFormatLoading.cs",
@@ -14564,16 +14568,8 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 206,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "GetFilteredTiles() has 1 else branch(es) — prefer guard clauses",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 494,
+      "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+      "line": 54,
       "rule": "else-branch",
       "severity": "warn",
       "message": "_Draw() has 1 else branch(es) — prefer guard clauses",
@@ -22468,6 +22464,230 @@
       "metric": 1
     },
     {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 9,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "_GetDragData() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 31,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnDuplicatePressed() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 45,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "CreateDuplicateDialog() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 76,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnDuplicateIdChanged() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 86,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ValidateTileId() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 97,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnDuplicateConfirmed() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 117,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "SelectTileDeferred() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 122,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnDeletePressed() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 137,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "CreateDeleteDialog() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 152,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnDeleteConfirmed() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 11,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnTilesLoaded() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 16,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnTileModified() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 26,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnTileAdded() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 31,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnTileRemoved() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 36,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "RefreshTileDisplay() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 55,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetFilteredTiles() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 65,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ApplySearchFilter() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 76,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ApplyBiomeFilter() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 94,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ApplyPassabilityFilter() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 106,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ApplyLayerFilter() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 119,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "SelectTile() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 134,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "UpdateToolbarState() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+      "line": 8,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "_Ready() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+      "line": 23,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "CreateFilterBar() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+      "line": 57,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddBiomeFilterItems() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+      "line": 69,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddLayerFilterItems() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+      "line": 78,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "CreateActionToolbar() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+      "line": 102,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "CreateTileGrid() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
       "file": "addons/tile_editor/TileAtlas/TileAtlasTerrainSelector.cs",
       "line": 10,
       "rule": "stateless-method",
@@ -22500,48 +22720,16 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 151,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "OnTilesLoaded() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 168,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "OnTileAdded() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 173,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "OnTileRemoved() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 403,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "SelectTileDeferred() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 486,
+      "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+      "line": 46,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ToLowerInvariant() never touches instance state — make it a free function",
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 547,
+      "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+      "line": 124,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "UpdateTile() never touches instance state — make it a free function",
@@ -26244,54 +26432,6 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 66,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 189,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 219,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 237,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 246,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 268,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
       "file": "addons/tile_editor/TileEditorDock.cs",
       "line": 142,
       "rule": "comment-restates-code",
@@ -26948,16 +27088,8 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 367,
-      "rule": "flag-parameter",
-      "severity": "warn",
-      "message": "private() takes a boolean flag; split the behavior or name the policy",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 555,
+      "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+      "line": 132,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "SetSelected() takes a boolean flag; split the behavior or name the policy",
@@ -55516,6 +55648,102 @@
       "metric": 85
     },
     {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 58,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 82,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 91,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "line": 132,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 46,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 65,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 76,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 103,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 106,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 112,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "line": 122,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+      "line": 98,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
       "file": "addons/tile_editor/TileAtlas/TileAtlasTerrainSelector.cs",
       "line": 30,
       "rule": "line-length",
@@ -55602,6 +55830,38 @@
       "severity": "warn",
       "message": "line is 100 chars",
       "metric": 100
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+      "line": 7,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+      "line": 23,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+      "line": 73,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+      "line": 86,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
     },
     {
       "file": "addons/tile_editor/TileAtlasCompiler.cs",
@@ -55698,206 +55958,6 @@
       "severity": "warn",
       "message": "line is 82 chars",
       "metric": 82
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 132,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 194,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 223,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 104 chars",
-      "metric": 104
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 233,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 243,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 250,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 263,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 331,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 360,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 372,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 428,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 446,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 457,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 463,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 472,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 473,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 479,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 512,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 99 chars",
-      "metric": 99
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 519,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 523,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 530,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 104 chars",
-      "metric": 104
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 531,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 537,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 538,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "line": 542,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
     },
     {
       "file": "addons/tile_editor/TileEditorAtlasSources.cs",
@@ -63671,451 +63731,6 @@
           "severity": "warn",
           "message": "line is 94 chars",
           "metric": 94
-        }
-      ]
-    },
-    {
-      "file": "addons/tile_editor/TileAtlasPanel.cs",
-      "errors": 6,
-      "warnings": 47,
-      "rules": {
-        "dead-export": 1,
-        "types-per-file": 1,
-        "file-length": 1,
-        "complexity": 3,
-        "function-length": 4,
-        "unnamed-tuple": 1,
-        "param-count": 1,
-        "else-branch": 2,
-        "stateless-method": 6,
-        "comment-restates-code": 6,
-        "flag-parameter": 2,
-        "line-length": 25
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 450,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "TileButton is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 450,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: TileAtlasPanel, TileButton",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 562 lines",
-          "metric": 562
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 206,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "GetFilteredTiles() cyclomatic complexity 18",
-          "metric": 18
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 54,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "_Ready() is 96 lines",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 367,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool valid, string message) ValidateTileId( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 381,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "OnDuplicateConfirmed() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 494,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "_Draw() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 206,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "GetFilteredTiles() is 53 lines",
-          "metric": 53
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 312,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "OnDuplicatePressed() is 45 lines",
-          "metric": 45
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 494,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "_Draw() is 52 lines",
-          "metric": 52
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 463,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "TileButton() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 206,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "GetFilteredTiles() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 494,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "_Draw() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 151,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "OnTilesLoaded() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 168,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "OnTileAdded() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 173,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "OnTileRemoved() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 403,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "SelectTileDeferred() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 486,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ToLowerInvariant() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 547,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "UpdateTile() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 66,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 189,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 219,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 237,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 246,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 268,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 367,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "private() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 555,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "SetSelected() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 132,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 194,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 223,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 233,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 243,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 250,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 263,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 331,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 360,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 372,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 428,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 446,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 457,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 463,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 472,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 473,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 479,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 512,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 519,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 523,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 530,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 531,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 537,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 538,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TileAtlasPanel.cs",
-          "line": 542,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
         }
       ]
     },
@@ -105145,6 +104760,187 @@
       ]
     },
     {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+      "errors": 0,
+      "warnings": 21,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "stateless-method": 12,
+        "line-length": 7
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 146 lines",
+          "metric": 146
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 76,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "ApplyBiomeFilter() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 11,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnTilesLoaded() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 16,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnTileModified() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 26,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnTileAdded() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 31,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnTileRemoved() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 36,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "RefreshTileDisplay() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 55,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetFilteredTiles() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 65,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ApplySearchFilter() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 76,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ApplyBiomeFilter() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 94,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ApplyPassabilityFilter() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 106,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ApplyLayerFilter() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 119,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SelectTile() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 134,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "UpdateToolbarState() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 46,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 65,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 76,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 103,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 106,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 112,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDisplay.cs",
+          "line": 122,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TileProperties/TilePropertiesPanelVariations.cs",
       "errors": 0,
       "warnings": 21,
@@ -108522,6 +108318,147 @@
           "severity": "warn",
           "message": "line is 83 chars",
           "metric": 83
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+      "errors": 0,
+      "warnings": 16,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "stateless-method": 10,
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 164 lines",
+          "metric": 164
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 97,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "OnDuplicateConfirmed() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 9,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "_GetDragData() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 31,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnDuplicatePressed() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 45,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CreateDuplicateDialog() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 76,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnDuplicateIdChanged() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 86,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ValidateTileId() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 97,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnDuplicateConfirmed() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 117,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SelectTileDeferred() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 122,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnDeletePressed() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 137,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CreateDeleteDialog() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 152,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnDeleteConfirmed() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 58,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 82,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 91,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs",
+          "line": 132,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
         }
       ]
     },
@@ -113929,6 +113866,110 @@
       ]
     },
     {
+      "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+      "errors": 0,
+      "warnings": 11,
+      "rules": {
+        "file-length": 1,
+        "function-length": 1,
+        "param-count": 1,
+        "else-branch": 1,
+        "stateless-method": 2,
+        "flag-parameter": 1,
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 139 lines",
+          "metric": 139
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+          "line": 54,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "_Draw() is 41 lines",
+          "metric": 41
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+          "line": 23,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "TileButton() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+          "line": 54,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "_Draw() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+          "line": 46,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToLowerInvariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+          "line": 124,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "UpdateTile() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+          "line": 132,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "SetSelected() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+          "line": 7,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+          "line": 23,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+          "line": 73,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileButton.cs",
+          "line": 86,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TileProperties/TilePropertiesPanelOptionalInitialization.cs",
       "errors": 0,
       "warnings": 11,
@@ -115472,6 +115513,91 @@
           "severity": "warn",
           "message": "TestUnknownTileCanOnlyNeighborItself() never touches instance state — make it a free function",
           "metric": 1
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+      "errors": 0,
+      "warnings": 9,
+      "rules": {
+        "file-length": 1,
+        "function-length": 1,
+        "stateless-method": 6,
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 120 lines",
+          "metric": 120
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+          "line": 23,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "CreateFilterBar() is 33 lines",
+          "metric": 33
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+          "line": 8,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "_Ready() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+          "line": 23,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CreateFilterBar() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+          "line": 57,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddBiomeFilterItems() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+          "line": 69,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddLayerFilterItems() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+          "line": 78,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CreateActionToolbar() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+          "line": 102,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CreateTileGrid() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
+          "line": 98,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
         }
       ]
     },
