@@ -728,6 +728,74 @@
       {
         "responsibility": "Load",
         "owner": "TransitionMapLoader"
+      },
+      {
+        "responsibility": "InsertIntoTile",
+        "owner": "TsxElementPropertyInserter"
+      },
+      {
+        "responsibility": "InsertIntoWangSet",
+        "owner": "TsxElementPropertyInserter"
+      },
+      {
+        "responsibility": "AppendMissing",
+        "owner": "TsxSchemaPropertyWriter"
+      },
+      {
+        "responsibility": "ReadExistingNames",
+        "owner": "TsxSchemaPropertyWriter"
+      },
+      {
+        "responsibility": "FindMissingNames",
+        "owner": "TsxSchemaPropertyWriter"
+      },
+      {
+        "responsibility": "AnalyzeDirectory",
+        "owner": "TsxPropertyAnalyzer"
+      },
+      {
+        "responsibility": "GetValidBitmasks",
+        "owner": "BitmaskTypeCatalog"
+      },
+      {
+        "responsibility": "GetEdgeCount",
+        "owner": "BitmaskTypeCatalog"
+      },
+      {
+        "responsibility": "GetPreviewFormat",
+        "owner": "BitmaskTypeCatalog"
+      },
+      {
+        "responsibility": "CellAt",
+        "owner": "AtlasGridLayout"
+      },
+      {
+        "responsibility": "DrawHover",
+        "owner": "AtlasPickerPainter"
+      },
+      {
+        "responsibility": "DrawSelection",
+        "owner": "AtlasPickerPainter"
+      },
+      {
+        "responsibility": "DrawGridLines",
+        "owner": "AtlasPickerPainter"
+      },
+      {
+        "responsibility": "CreateIn",
+        "owner": "TileEditorToolbar"
+      },
+      {
+        "responsibility": "AddTo",
+        "owner": "TileEditorPanels"
+      },
+      {
+        "responsibility": "CompileTmx",
+        "owner": "TileEditorToolCommands"
+      },
+      {
+        "responsibility": "ConfirmInsertTsxProps",
+        "owner": "TileEditorToolCommands"
       }
     ],
     "boundaries": [

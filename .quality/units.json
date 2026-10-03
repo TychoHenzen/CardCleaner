@@ -1,7 +1,22 @@
 {
   "profile": "default",
-  "fileCount": 642,
+  "fileCount": 655,
   "files": [
+    {
+      "path": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AtlasPicker/AtlasPickerSelection.cs",
+      "language": "cs",
+      "classification": "production"
+    },
     {
       "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
       "language": "cs",
@@ -128,7 +143,27 @@
       "classification": "production"
     },
     {
+      "path": "addons/tile_editor/BitmaskConfig/BitmaskTypeCatalog.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "addons/tile_editor/BitmaskConfigGrid.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/Dock/TileEditorToolbar.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -519,6 +554,36 @@
     },
     {
       "path": "addons/tile_editor/TransitionCoveragePanel.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TsxProperties/TsxDirectoryInsertResult.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TsxProperties/TsxInsertResult.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TsxProperties/TsxPropertyReport.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -3214,34 +3279,33 @@
     }
   ],
   "summary": {
-    "total": 7150,
-    "errors": 164,
-    "warnings": 6986,
+    "total": 7165,
+    "errors": 148,
+    "warnings": 7017,
     "byRule": {
-      "dead-export": 6,
+      "dead-export": 5,
       "duplicate-block": 139,
-      "types-per-file": 25,
-      "file-length": 300,
-      "complexity": 245,
-      "function-length": 277,
-      "nesting-depth": 15,
-      "unnamed-tuple": 31,
-      "test-only-export": 9,
+      "types-per-file": 24,
+      "file-length": 301,
+      "complexity": 240,
+      "function-length": 270,
+      "nesting-depth": 13,
+      "unnamed-tuple": 30,
+      "test-only-export": 10,
       "param-count": 174,
-      "else-branch": 100,
-      "stateless-method": 1301,
+      "else-branch": 97,
+      "stateless-method": 1306,
       "comment-bloat": 53,
-      "comment-restates-code": 111,
+      "comment-restates-code": 102,
       "output-parameter": 29,
       "flag-parameter": 69,
-      "line-length": 4266
+      "line-length": 4303
     },
     "byFile": {
       "Scripts/Features/ModularDevices/ButtonDevice.cs": 3,
       "Scripts/Features/ModularDevices/CardSlotDevice.cs": 5,
       "Scripts/Features/ModularDevices/HexScreenDevice.cs": 1,
       "Scripts/Features/ModularDevices/RectScreenDevice.cs": 2,
-      "addons/tile_editor/TileEditorPlugin.cs": 4,
       "gdunit4_testadapter_v5/GdUnit4TestRunnerScene.cs": 1,
       "Tests/Features/Deckbuilder/Services/ConnectivityVerificationTest.cs": 39,
       "Tests/Features/Deckbuilder/Services/SimpleMapGeneratorTest.cs": 49,
@@ -3279,7 +3343,6 @@
       "Tests/Features/Worldgen/Biomes/BiomeMapGeneratorTest.cs": 13,
       "Tests/Mocking/IAsyncTestService.cs": 2,
       "Tests/Mocking/ITestService.cs": 2,
-      "addons/tile_editor/TsxPropertyInserter.cs": 45,
       "Tests/Core/PropertyTesting/StatisticalAssertions.cs": 43,
       "Tests/Core/Services/CompiledAtlasLoaderTest.cs": 44,
       "Tests/Core/Services/TileRegistryTest.cs": 30,
@@ -3306,10 +3369,7 @@
       "Tests/Features/Worldgen/Wfc/CellReservationTest.cs": 23,
       "Tests/Features/Worldgen/Wfc/Constraints/ConnectivityConstraintTest.cs": 33,
       "Tests/Features/Worldgen/Wfc/WfcPropagatorTest.cs": 38,
-      "addons/tile_editor/BitmaskConfigGrid.cs": 20,
-      "addons/tile_editor/TileEditorDock.cs": 30,
       "Tests/Features/Worldgen/Properties/AutoTilingProperties.cs": 43,
-      "addons/tile_editor/TilesetAtlasPicker.cs": 24,
       "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs": 21,
       "Tests/Core/Services/RaycastVisibilityCheckerTest.cs": 5,
       "Tests/Core/Services/SimpleVisibilityCheckerTest.cs": 7,
@@ -3320,6 +3380,7 @@
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapGenerator.cs": 27,
       "Scripts/Features/Worldgen/IrregularMesh/StructurePlacement.cs": 11,
       "Scripts/Features/Worldgen/Wfc/Constraints/AdjacencyConstraint.cs": 2,
+      "addons/tile_editor/TileEditorPlugin.cs": 4,
       "Scripts/Features/Card/Services/SignatureCardGenerator.cs": 23,
       "Scripts/Features/Deckbuilder/Models/WorldMap/WorldMapRuntime.cs": 26,
       "Scripts/Features/ModularDevices/ScreenDeviceBase.cs": 11,
@@ -3507,6 +3568,8 @@
       "addons/tile_editor/BiomePool/BiomeSection.cs": 11,
       "addons/tile_editor/BiomePool/BiomeTileEntry.cs": 7,
       "addons/tile_editor/BiomePoolPanel.cs": 13,
+      "addons/tile_editor/BitmaskConfigGrid.cs": 16,
+      "addons/tile_editor/Dock/TileEditorToolCommands.cs": 9,
       "addons/tile_editor/FoldoutContainer.cs": 4,
       "addons/tile_editor/TileAtlas/TileAtlasPacker.cs": 12,
       "addons/tile_editor/TileAtlas/TileAtlasPanelDialogs.cs": 16,
@@ -3516,6 +3579,7 @@
       "addons/tile_editor/TileAtlas/TileButton.cs": 11,
       "addons/tile_editor/TileAtlasCompiler.cs": 16,
       "addons/tile_editor/TileEditorAtlasSources.cs": 25,
+      "addons/tile_editor/TileEditorDock.cs": 13,
       "addons/tile_editor/TileEditorFormatLoading.cs": 10,
       "addons/tile_editor/TileEditorLoading.cs": 24,
       "addons/tile_editor/TileEditorModels/EditableTile.cs": 33,
@@ -3537,6 +3601,7 @@
       "addons/tile_editor/TileProperties/TilePropertiesPanelVariantThumbnail.cs": 12,
       "addons/tile_editor/TileProperties/TilePropertiesPanelVariations.cs": 21,
       "addons/tile_editor/TileShapePreview.cs": 14,
+      "addons/tile_editor/TilesetAtlasPicker.cs": 18,
       "addons/tile_editor/TmxAtlas/TmxTerrainSelector.cs": 10,
       "addons/tile_editor/TmxAtlas/TmxTsxLoader.cs": 17,
       "addons/tile_editor/TmxAtlas/TmxWangSetReader.cs": 8,
@@ -3546,6 +3611,7 @@
       "addons/tile_editor/TmxPreview/TmxPreviewPanelInitialization.cs": 12,
       "addons/tile_editor/TmxPreview/TmxPreviewPanelSelection.cs": 25,
       "addons/tile_editor/TransitionCoveragePanel.cs": 13,
+      "addons/tile_editor/TsxPropertyInserter.cs": 21,
       "addons/tile_editor/TsxPropertySchema.cs": 20,
       "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs": 13,
       "addons/tile_editor/UnusedSourcesPanel.cs": 28,
@@ -3589,6 +3655,7 @@
       "Scripts/Features/Worldgen/Wfc/Modifiers/Soft/DiminishingReturnsSoftModifier.cs": 3,
       "Scripts/Features/Worldgen/Wfc/Solving/WfcRetrySolver.cs": 5,
       "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLeft.cs": 2,
+      "addons/tile_editor/Dock/TileEditorToolbar.cs": 4,
       "Scripts/Core/Services/Pathfinding/AStarSearchState.cs": 6,
       "Scripts/Core/Services/SaveGame/SavedCardRespawner.cs": 5,
       "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunk.cs": 2,
@@ -3649,6 +3716,7 @@
       "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs": 8,
       "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLifecycle.cs": 4,
       "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelPersistence.cs": 3,
+      "addons/tile_editor/Dock/TileEditorPanels.cs": 14,
       "addons/tile_editor/TileAtlas/TransitionCoverageMatrix.cs": 5,
       "addons/tile_editor/TileProperties/TilePropertiesPanelAtlasInitialization.cs": 4,
       "addons/tile_editor/TmxPreview/TmxPreviewControlRendering.cs": 4,
@@ -3778,9 +3846,16 @@
       "Tests/Core/ServiceProviders/CardServiceProviderTest.cs": 5,
       "Tests/Mocking/MockCardShaderRenderer.cs": 1,
       "Tests/TestUtilities/Helpers/GodotTestHelpers.cs": 1,
+      "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs": 4,
+      "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs": 9,
+      "addons/tile_editor/AtlasPicker/AtlasPickerSelection.cs": 2,
       "addons/tile_editor/AutoTileFormatEditor/EditableAutoTileFormat.cs": 1,
       "addons/tile_editor/AutoTileFormatEditorPanel.cs": 2,
-      "addons/tile_editor/TmxPreview/TmxPreviewControl.cs": 1
+      "addons/tile_editor/BitmaskConfig/BitmaskTypeCatalog.cs": 4,
+      "addons/tile_editor/TmxPreview/TmxPreviewControl.cs": 1,
+      "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs": 7,
+      "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs": 7,
+      "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs": 6
     }
   },
   "comparison": null,
@@ -3815,14 +3890,6 @@
       "rule": "dead-export",
       "severity": "error",
       "message": "RectScreenDevice is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileEditorPlugin.cs",
-      "line": 8,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "TileEditorPlugin is exported but never referenced anywhere",
       "metric": 1
     },
     {
@@ -4306,14 +4373,6 @@
       "metric": 3
     },
     {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 383,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: TsxPropertyInserter, TsxPropertyReport",
-      "metric": 2
-    },
-    {
       "file": "Tests/Core/PropertyTesting/StatisticalAssertions.cs",
       "line": 1,
       "rule": "file-length",
@@ -4602,30 +4661,6 @@
       "metric": 436
     },
     {
-      "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 352 lines",
-      "metric": 352
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 425 lines",
-      "metric": 425
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 396 lines",
-      "metric": 396
-    },
-    {
       "file": "Tests/Features/Deckbuilder/Services/GameSessionServiceTest.cs",
       "line": 354,
       "rule": "complexity",
@@ -4698,46 +4733,6 @@
       "metric": 14
     },
     {
-      "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 269,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "GetValidBlobBitmasks() cyclomatic complexity 15",
-      "metric": 15
-    },
-    {
-      "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 111,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "_Draw() cyclomatic complexity 18",
-      "metric": 18
-    },
-    {
-      "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 195,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "_GuiInput() cyclomatic complexity 11",
-      "metric": 11
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 25,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "InsertProperties() cyclomatic complexity 17",
-      "metric": 17
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 309,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "AnalyzeTsxFile() cyclomatic complexity 16",
-      "metric": 16
-    },
-    {
       "file": "Tests/Features/Deckbuilder/Services/FrontierExplorationBehaviorTest.cs",
       "line": 458,
       "rule": "function-length",
@@ -4800,46 +4795,6 @@
       "severity": "error",
       "message": "TestTileDistributionDiversity() is 74 lines",
       "metric": 74
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 100,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "SetupUI() is 93 lines",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 111,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "_Draw() is 83 lines",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 25,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "InsertProperties() is 71 lines",
-      "metric": 71
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 155,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "InsertMissingTileProperties() is 62 lines",
-      "metric": 62
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 309,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "AnalyzeTsxFile() is 69 lines",
-      "metric": 69
     },
     {
       "file": "Tests/Features/Deckbuilder/Services/GameSessionServiceTest.cs",
@@ -5090,14 +5045,6 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 25,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (bool success, string message, int tilesModified, int wangSetsModified) InsertProperties( — replace it with a named type",
-      "metric": 1
-    },
-    {
       "file": "Scripts/Core/Services/MapGenerationProfiler.cs",
       "line": 8,
       "rule": "test-only-export",
@@ -5167,6 +5114,14 @@
       "rule": "test-only-export",
       "severity": "warn",
       "message": "AdjacencyConstraint is only referenced by tests — delete it and its tests",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileEditorPlugin.cs",
+      "line": 8,
+      "rule": "test-only-export",
+      "severity": "warn",
+      "message": "TileEditorPlugin is only referenced by tests — delete it and its tests",
       "metric": 1
     },
     {
@@ -7046,8 +7001,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 160 lines",
-      "metric": 160
+      "message": "file is 161 lines",
+      "metric": 161
     },
     {
       "file": "Tests/Core/Data/CardTemplateTest.cs",
@@ -7626,6 +7581,22 @@
       "metric": 242
     },
     {
+      "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 260 lines",
+      "metric": 260
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 106 lines",
+      "metric": 106
+    },
+    {
       "file": "addons/tile_editor/FoldoutContainer.cs",
       "line": 1,
       "rule": "file-length",
@@ -7728,6 +7699,14 @@
       "severity": "warn",
       "message": "file is 219 lines",
       "metric": 219
+    },
+    {
+      "file": "addons/tile_editor/TileEditorDock.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 255 lines",
+      "metric": 255
     },
     {
       "file": "addons/tile_editor/TileEditorFormatLoading.cs",
@@ -7902,8 +7881,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 248 lines",
-      "metric": 248
+      "message": "file is 161 lines",
+      "metric": 161
     },
     {
       "file": "addons/tile_editor/TmxAtlas/CompilerModels.cs",
@@ -8032,6 +8011,14 @@
       "severity": "warn",
       "message": "file is 148 lines",
       "metric": 148
+    },
+    {
+      "file": "addons/tile_editor/TsxPropertyInserter.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 144 lines",
+      "metric": 144
     },
     {
       "file": "addons/tile_editor/TsxPropertySchema.cs",
@@ -9603,7 +9590,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 264,
+      "line": 184,
       "rule": "complexity",
       "severity": "warn",
       "message": "_UnhandledKeyInput() cyclomatic complexity 7",
@@ -9826,6 +9813,14 @@
       "metric": 6
     },
     {
+      "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+      "line": 122,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "_GuiInput() cyclomatic complexity 6",
+      "metric": 6
+    },
+    {
       "file": "addons/tile_editor/TmxAtlas/TmxTerrainSelector.cs",
       "line": 53,
       "rule": "complexity",
@@ -9899,26 +9894,18 @@
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 106,
+      "line": 23,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "InsertProperties() cyclomatic complexity 9",
+      "metric": 9
+    },
+    {
+      "file": "addons/tile_editor/TsxPropertyInserter.cs",
+      "line": 58,
       "rule": "complexity",
       "severity": "warn",
       "message": "InsertPropertiesInDirectory() cyclomatic complexity 7",
-      "metric": 7
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 155,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "InsertMissingTileProperties() cyclomatic complexity 8",
-      "metric": 8
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 221,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "InsertMissingWangSetProperties() cyclomatic complexity 7",
       "metric": 7
     },
     {
@@ -10710,8 +10697,8 @@
       "line": 64,
       "rule": "function-length",
       "severity": "warn",
-      "message": "PluginRegistrationAndToolbarActionsWorkHeadlessly() is 47 lines",
-      "metric": 47
+      "message": "PluginRegistrationAndToolbarActionsWorkHeadlessly() is 48 lines",
+      "metric": 48
     },
     {
       "file": "Tests/Core/DependencyInjection/ServiceLocatorTest.cs",
@@ -11675,7 +11662,7 @@
     },
     {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 146,
+      "line": 132,
       "rule": "function-length",
       "severity": "warn",
       "message": "BuildGroupedGrid() is 37 lines",
@@ -11683,11 +11670,19 @@
     },
     {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 184,
+      "line": 170,
       "rule": "function-length",
       "severity": "warn",
       "message": "CreateBitmaskCell() is 35 lines",
       "metric": 35
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorToolbar.cs",
+      "line": 25,
+      "rule": "function-length",
+      "severity": "warn",
+      "message": "CreateIn() is 42 lines",
+      "metric": 42
     },
     {
       "file": "addons/tile_editor/FoldoutContainer.cs",
@@ -11786,22 +11781,6 @@
       "metric": 32
     },
     {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 338,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "OnInsertTsxPropsPressed() is 36 lines",
-      "metric": 36
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 375,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "DoInsertTsxProps() is 31 lines",
-      "metric": 31
-    },
-    {
       "file": "addons/tile_editor/TileEditorLoading.cs",
       "line": 29,
       "rule": "function-length",
@@ -11898,14 +11877,6 @@
       "metric": 31
     },
     {
-      "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 195,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "_GuiInput() is 33 lines",
-      "metric": 33
-    },
-    {
       "file": "addons/tile_editor/TmxAtlas/TmxAtlasOutputWriter.cs",
       "line": 38,
       "rule": "function-length",
@@ -11987,19 +11958,19 @@
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 106,
+      "line": 23,
       "rule": "function-length",
       "severity": "warn",
-      "message": "InsertPropertiesInDirectory() is 45 lines",
-      "metric": 45
+      "message": "InsertProperties() is 31 lines",
+      "metric": 31
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 221,
+      "line": 58,
       "rule": "function-length",
       "severity": "warn",
-      "message": "InsertMissingWangSetProperties() is 60 lines",
-      "metric": 60
+      "message": "InsertPropertiesInDirectory() is 41 lines",
+      "metric": 41
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
@@ -12144,22 +12115,6 @@
       "severity": "warn",
       "message": "CollectTilesToPack() nests 4 levels deep",
       "metric": 4
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 25,
-      "rule": "nesting-depth",
-      "severity": "warn",
-      "message": "InsertProperties() nests 4 levels deep",
-      "metric": 4
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 309,
-      "rule": "nesting-depth",
-      "severity": "warn",
-      "message": "AnalyzeTsxFile() nests 5 levels deep",
-      "metric": 5
     },
     {
       "file": "Scripts/Core/DependencyInjection/AutoServiceProvider.cs",
@@ -13387,7 +13342,7 @@
     },
     {
       "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 84,
+      "line": 80,
       "rule": "param-count",
       "severity": "warn",
       "message": "SetSource() takes 4 parameters",
@@ -14123,7 +14078,7 @@
     },
     {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 104,
+      "line": 90,
       "rule": "else-branch",
       "severity": "warn",
       "message": "RebuildGrid() has 1 else branch(es) — prefer guard clauses",
@@ -14131,7 +14086,7 @@
     },
     {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 220,
+      "line": 206,
       "rule": "else-branch",
       "severity": "warn",
       "message": "OnBitmaskToggled() has 1 else branch(es) — prefer guard clauses",
@@ -14163,7 +14118,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 248,
+      "line": 168,
       "rule": "else-branch",
       "severity": "warn",
       "message": "OnSavePressed() has 1 else branch(es) — prefer guard clauses",
@@ -14171,26 +14126,10 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 279,
+      "line": 199,
       "rule": "else-branch",
       "severity": "warn",
       "message": "OnReloadPressed() has 1 else branch(es) — prefer guard clauses",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 307,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "DoCompileTmx() has 1 else branch(es) — prefer guard clauses",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 375,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "DoInsertTsxProps() has 1 else branch(es) — prefer guard clauses",
       "metric": 1
     },
     {
@@ -14259,7 +14198,7 @@
     },
     {
       "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 84,
+      "line": 80,
       "rule": "else-branch",
       "severity": "warn",
       "message": "SetSource() has 1 else branch(es) — prefer guard clauses",
@@ -14267,7 +14206,7 @@
     },
     {
       "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 195,
+      "line": 122,
       "rule": "else-branch",
       "severity": "warn",
       "message": "_GuiInput() has 1 else branch(es) — prefer guard clauses",
@@ -14303,14 +14242,6 @@
       "rule": "else-branch",
       "severity": "warn",
       "message": "OnBaseTileSelected() has 1 else branch(es) — prefer guard clauses",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 221,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "InsertMissingWangSetProperties() has 1 else branch(es) — prefer guard clauses",
       "metric": 1
     },
     {
@@ -16195,7 +16126,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 112,
+      "line": 113,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "WriteInvalidFixture() never touches instance state — make it a free function",
@@ -16203,7 +16134,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 123,
+      "line": 124,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "WriteValidFixture() never touches instance state — make it a free function",
@@ -21971,7 +21902,7 @@
     },
     {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 69,
+      "line": 55,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "_Ready() never touches instance state — make it a free function",
@@ -21979,10 +21910,74 @@
     },
     {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 146,
+      "line": 132,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "BuildGroupedGrid() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "line": 14,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "TileAtlasPanel() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "line": 15,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "TilePropertiesPanel() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "line": 16,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "BiomePoolPanel() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "line": 17,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AutoTilePreviewPanel() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "line": 18,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "TmxPreviewPanel() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "line": 19,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AutoTileFormatEditorPanel() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "line": 20,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "UnusedSourcesPanel() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "line": 21,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "TransitionCoveragePanel() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -22411,18 +22406,10 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 50,
+      "line": 43,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ShowErrorState() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 338,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "OnInsertTsxPropsPressed() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -23827,7 +23814,7 @@
     },
     {
       "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 104,
+      "line": 100,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "_Ready() never touches instance state — make it a free function",
@@ -24503,22 +24490,6 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "Refresh() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 25,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "InsertProperties() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 106,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "InsertPropertiesInDirectory() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -25987,71 +25958,7 @@
     },
     {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 114,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 191,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 142,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 155,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 165,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 170,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 175,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 183,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 188,
+      "line": 177,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -26059,15 +25966,7 @@
     },
     {
       "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 120,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 63,
+      "line": 114,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -26707,7 +26606,7 @@
     },
     {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 220,
+      "line": 206,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "OnBitmaskToggled() takes a boolean flag; split the behavior or name the policy",
@@ -44614,12 +44513,12 @@
       "line": 68,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 115 chars",
-      "metric": 115
+      "message": "line is 83 chars",
+      "metric": 83
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 70,
+      "line": 71,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -44627,7 +44526,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 71,
+      "line": 72,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -44635,7 +44534,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 109,
+      "line": 110,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -44643,7 +44542,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 116,
+      "line": 117,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 106 chars",
@@ -44651,7 +44550,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 126,
+      "line": 127,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -44659,7 +44558,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 129,
+      "line": 130,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 106 chars",
@@ -44667,7 +44566,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 137,
+      "line": 138,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -56538,6 +56437,126 @@
       "metric": 105
     },
     {
+      "file": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
+      "line": 7,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
+      "line": 12,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
+      "line": 37,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
+      "line": 49,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+      "line": 7,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+      "line": 17,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+      "line": 19,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 109 chars",
+      "metric": 109
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+      "line": 24,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+      "line": 32,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+      "line": 34,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 113 chars",
+      "metric": 113
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+      "line": 49,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+      "line": 54,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+      "line": 60,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasPickerSelection.cs",
+      "line": 7,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasPickerSelection.cs",
+      "line": 9,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 105 chars",
+      "metric": 105
+    },
+    {
       "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
       "line": 16,
       "rule": "line-length",
@@ -57002,6 +57021,38 @@
       "metric": 96
     },
     {
+      "file": "addons/tile_editor/BitmaskConfig/BitmaskTypeCatalog.cs",
+      "line": 11,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "addons/tile_editor/BitmaskConfig/BitmaskTypeCatalog.cs",
+      "line": 19,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 103 chars",
+      "metric": 103
+    },
+    {
+      "file": "addons/tile_editor/BitmaskConfig/BitmaskTypeCatalog.cs",
+      "line": 41,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "addons/tile_editor/BitmaskConfig/BitmaskTypeCatalog.cs",
+      "line": 45,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
       "line": 11,
       "rule": "line-length",
@@ -57019,15 +57070,7 @@
     },
     {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 35,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 76,
+      "line": 62,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -57035,7 +57078,7 @@
     },
     {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 78,
+      "line": 64,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 107 chars",
@@ -57043,7 +57086,7 @@
     },
     {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 159,
+      "line": 145,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -57051,27 +57094,155 @@
     },
     {
       "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 212,
+      "line": 183,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+      "line": 198,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
       "metric": 87
     },
     {
-      "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 244,
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "line": 7,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
       "metric": 87
     },
     {
-      "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "line": 267,
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "line": 17,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 103 chars",
-      "metric": 103
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "line": 19,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "line": 20,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "line": 21,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "line": 41,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+      "line": 9,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+      "line": 17,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+      "line": 24,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+      "line": 45,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 107 chars",
+      "metric": 107
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+      "line": 55,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+      "line": 87,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+      "line": 88,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+      "line": 94,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorToolbar.cs",
+      "line": 7,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorToolbar.cs",
+      "line": 23,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorToolbar.cs",
+      "line": 53,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
     },
     {
       "file": "addons/tile_editor/FoldoutContainer.cs",
@@ -57851,7 +58022,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 57,
+      "line": 50,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 114 chars",
@@ -57859,7 +58030,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 73,
+      "line": 66,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -57867,7 +58038,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 96,
+      "line": 89,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -57875,15 +58046,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 137,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 145,
+      "line": 103,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -57891,47 +58054,15 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 245,
+      "line": 129,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
+      "message": "line is 81 chars",
+      "metric": 81
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 266,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 283,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 108 chars",
-      "metric": 108
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 318,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 103 chars",
-      "metric": 103
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 392,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 111 chars",
-      "metric": 111
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 399,
+      "line": 165,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -57939,11 +58070,19 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 401,
+      "line": 186,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 103 chars",
-      "metric": 103
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "addons/tile_editor/TileEditorDock.cs",
+      "line": 203,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 108 chars",
+      "metric": 108
     },
     {
       "file": "addons/tile_editor/TileEditorFormatLoading.cs",
@@ -59155,15 +59294,15 @@
     },
     {
       "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 36,
+      "line": 32,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 106 chars",
-      "metric": 106
+      "message": "line is 98 chars",
+      "metric": 98
     },
     {
       "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 39,
+      "line": 35,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -59171,7 +59310,7 @@
     },
     {
       "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 63,
+      "line": 59,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -59179,7 +59318,7 @@
     },
     {
       "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 84,
+      "line": 80,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -59187,59 +59326,35 @@
     },
     {
       "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 148,
+      "line": 112,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
+      "message": "line is 97 chars",
+      "metric": 97
     },
     {
       "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 157,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 184,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 191,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 216,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 218,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "line": 229,
+      "line": 115,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
       "metric": 85
+    },
+    {
+      "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+      "line": 127,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
+      "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+      "line": 131,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 110 chars",
+      "metric": 110
     },
     {
       "file": "addons/tile_editor/TmxAtlas/CompilerModels.cs",
@@ -60218,8 +60333,160 @@
       "metric": 93
     },
     {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 13,
+      "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+      "line": 14,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+      "line": 24,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+      "line": 33,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+      "line": 34,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+      "line": 44,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+      "line": 58,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+      "line": 60,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+      "line": 16,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+      "line": 24,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+      "line": 63,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+      "line": 67,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+      "line": 68,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+      "line": 79,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+      "line": 89,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
+      "line": 11,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
+      "line": 17,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
+      "line": 36,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
+      "line": 43,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
+      "line": 47,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
+      "line": 76,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -60227,7 +60494,15 @@
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 22,
+      "line": 11,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "addons/tile_editor/TsxPropertyInserter.cs",
+      "line": 20,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 113 chars",
@@ -60235,7 +60510,7 @@
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 23,
+      "line": 21,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -60243,23 +60518,55 @@
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 25,
+      "line": 30,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 107 chars",
-      "metric": 107
+      "message": "line is 91 chars",
+      "metric": 91
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 54,
+      "line": 37,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
+      "message": "line is 93 chars",
+      "metric": 93
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 57,
+      "line": 39,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/TsxPropertyInserter.cs",
+      "line": 40,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "addons/tile_editor/TsxPropertyInserter.cs",
+      "line": 41,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "addons/tile_editor/TsxPropertyInserter.cs",
+      "line": 65,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 103 chars",
+      "metric": 103
+    },
+    {
+      "file": "addons/tile_editor/TsxPropertyInserter.cs",
+      "line": 67,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -60270,140 +60577,28 @@
       "line": 69,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 71,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 81,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 110 chars",
-      "metric": 110
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 117,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 130,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 149,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 155,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 157,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 166,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 206,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 224,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 246,
-      "rule": "line-length",
-      "severity": "warn",
       "message": "line is 85 chars",
       "metric": 85
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 270,
+      "line": 78,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
+      "message": "line is 98 chars",
+      "metric": 98
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 286,
+      "line": 97,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
+      "message": "line is 114 chars",
+      "metric": 114
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 294,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 335,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 340,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 358,
+      "line": 132,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -60411,19 +60606,19 @@
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 361,
+      "line": 135,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
+      "message": "line is 102 chars",
+      "metric": 102
     },
     {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "line": 365,
+      "line": 140,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
+      "message": "line is 82 chars",
+      "metric": 82
     },
     {
       "file": "addons/tile_editor/TsxPropertySchema.cs",
@@ -62653,385 +62848,6 @@
           "severity": "warn",
           "message": "line is 84 chars",
           "metric": 84
-        }
-      ]
-    },
-    {
-      "file": "addons/tile_editor/TsxPropertyInserter.cs",
-      "errors": 8,
-      "warnings": 37,
-      "rules": {
-        "types-per-file": 1,
-        "file-length": 1,
-        "complexity": 5,
-        "function-length": 5,
-        "unnamed-tuple": 1,
-        "nesting-depth": 2,
-        "else-branch": 1,
-        "stateless-method": 2,
-        "comment-restates-code": 1,
-        "line-length": 26
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 383,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: TsxPropertyInserter, TsxPropertyReport",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 396 lines",
-          "metric": 396
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 25,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "InsertProperties() cyclomatic complexity 17",
-          "metric": 17
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 309,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "AnalyzeTsxFile() cyclomatic complexity 16",
-          "metric": 16
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 25,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "InsertProperties() is 71 lines",
-          "metric": 71
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 155,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "InsertMissingTileProperties() is 62 lines",
-          "metric": 62
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 309,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "AnalyzeTsxFile() is 69 lines",
-          "metric": 69
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 25,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message, int tilesModified, int wangSetsModified) InsertProperties( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 106,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "InsertPropertiesInDirectory() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 155,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "InsertMissingTileProperties() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 221,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "InsertMissingWangSetProperties() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 106,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "InsertPropertiesInDirectory() is 45 lines",
-          "metric": 45
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 221,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "InsertMissingWangSetProperties() is 60 lines",
-          "metric": 60
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 25,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "InsertProperties() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 309,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "AnalyzeTsxFile() nests 5 levels deep",
-          "metric": 5
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 221,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "InsertMissingWangSetProperties() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 25,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "InsertProperties() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 106,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "InsertPropertiesInDirectory() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 63,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 13,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 22,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 113 chars",
-          "metric": 113
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 23,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 25,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 54,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 57,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 69,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 71,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 81,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 117,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 130,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 149,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 155,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 157,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 166,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 206,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 224,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 246,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 270,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 286,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 294,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 335,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 340,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 358,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 361,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TsxPropertyInserter.cs",
-          "line": 365,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
         }
       ]
     },
@@ -68412,215 +68228,6 @@
       ]
     },
     {
-      "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-      "errors": 3,
-      "warnings": 21,
-      "rules": {
-        "complexity": 2,
-        "function-length": 2,
-        "file-length": 1,
-        "param-count": 1,
-        "else-branch": 2,
-        "stateless-method": 1,
-        "comment-restates-code": 1,
-        "line-length": 14
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 111,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "_Draw() cyclomatic complexity 18",
-          "metric": 18
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 195,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "_GuiInput() cyclomatic complexity 11",
-          "metric": 11
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 111,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "_Draw() is 83 lines",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 248 lines",
-          "metric": 248
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 195,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "_GuiInput() is 33 lines",
-          "metric": 33
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 84,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "SetSource() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 84,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "SetSource() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 195,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "_GuiInput() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 104,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "_Ready() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 120,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 7,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 20,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 21,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 36,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 39,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 63,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 84,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 148,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 157,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 184,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 191,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 216,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 218,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
-          "line": 229,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        }
-      ]
-    },
-    {
       "file": "Tests/Features/Worldgen/Wfc/WfcTileSelectorTest.cs",
       "errors": 3,
       "warnings": 9,
@@ -69361,262 +68968,6 @@
       ]
     },
     {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "errors": 2,
-      "warnings": 28,
-      "rules": {
-        "file-length": 1,
-        "function-length": 3,
-        "complexity": 1,
-        "else-branch": 4,
-        "stateless-method": 2,
-        "comment-restates-code": 7,
-        "line-length": 12
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 425 lines",
-          "metric": 425
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 100,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "SetupUI() is 93 lines",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 264,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "_UnhandledKeyInput() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 338,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "OnInsertTsxPropsPressed() is 36 lines",
-          "metric": 36
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 375,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "DoInsertTsxProps() is 31 lines",
-          "metric": 31
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 248,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "OnSavePressed() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 279,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "OnReloadPressed() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 307,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "DoCompileTmx() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 375,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "DoInsertTsxProps() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 50,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ShowErrorState() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 338,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "OnInsertTsxPropsPressed() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 142,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 155,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 165,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 170,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 175,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 183,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 188,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 57,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 73,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 96,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 137,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 145,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 245,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 266,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 283,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 318,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 392,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 399,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 401,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        }
-      ]
-    },
-    {
       "file": "Tests/Features/Worldgen/Wfc/WfcPerformanceBenchmarkTest.cs",
       "errors": 2,
       "warnings": 19,
@@ -69795,183 +69146,6 @@
           "severity": "warn",
           "message": "line is 82 chars",
           "metric": 82
-        }
-      ]
-    },
-    {
-      "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-      "errors": 2,
-      "warnings": 18,
-      "rules": {
-        "file-length": 1,
-        "complexity": 1,
-        "function-length": 2,
-        "else-branch": 2,
-        "stateless-method": 2,
-        "comment-restates-code": 2,
-        "flag-parameter": 1,
-        "line-length": 9
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 352 lines",
-          "metric": 352
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 269,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "GetValidBlobBitmasks() cyclomatic complexity 15",
-          "metric": 15
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 146,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "BuildGroupedGrid() is 37 lines",
-          "metric": 37
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 184,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "CreateBitmaskCell() is 35 lines",
-          "metric": 35
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 104,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "RebuildGrid() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 220,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "OnBitmaskToggled() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 69,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "_Ready() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 146,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "BuildGroupedGrid() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 114,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 191,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 220,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "OnBitmaskToggled() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 11,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 12,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 35,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 76,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 78,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 159,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 212,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 244,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
-          "line": 267,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
         }
       ]
     },
@@ -80689,50 +79863,6 @@
           "severity": "warn",
           "message": "line is 110 chars",
           "metric": 110
-        }
-      ]
-    },
-    {
-      "file": "addons/tile_editor/TileEditorPlugin.cs",
-      "errors": 1,
-      "warnings": 3,
-      "rules": {
-        "dead-export": 1,
-        "stateless-method": 1,
-        "line-length": 2
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/TileEditorPlugin.cs",
-          "line": 8,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "TileEditorPlugin is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorPlugin.cs",
-          "line": 13,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "_EnterTree() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorPlugin.cs",
-          "line": 35,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorPlugin.cs",
-          "line": 55,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
         }
       ]
     },
@@ -95452,16 +94582,16 @@
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 160 lines",
-          "metric": 160
+          "message": "file is 161 lines",
+          "metric": 161
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
           "line": 64,
           "rule": "function-length",
           "severity": "warn",
-          "message": "PluginRegistrationAndToolbarActionsWorkHeadlessly() is 47 lines",
-          "metric": 47
+          "message": "PluginRegistrationAndToolbarActionsWorkHeadlessly() is 48 lines",
+          "metric": 48
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
@@ -95481,7 +94611,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 112,
+          "line": 113,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "WriteInvalidFixture() never touches instance state — make it a free function",
@@ -95489,7 +94619,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 123,
+          "line": 124,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "WriteValidFixture() never touches instance state — make it a free function",
@@ -95556,12 +94686,12 @@
           "line": 68,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
+          "message": "line is 83 chars",
+          "metric": 83
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 70,
+          "line": 71,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 98 chars",
@@ -95569,7 +94699,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 71,
+          "line": 72,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 94 chars",
@@ -95577,7 +94707,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 109,
+          "line": 110,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 101 chars",
@@ -95585,7 +94715,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 116,
+          "line": 117,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 106 chars",
@@ -95593,7 +94723,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 126,
+          "line": 127,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 92 chars",
@@ -95601,7 +94731,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 129,
+          "line": 130,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 106 chars",
@@ -95609,7 +94739,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 137,
+          "line": 138,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 81 chars",
@@ -95978,6 +95108,187 @@
           "severity": "warn",
           "message": "line is 88 chars",
           "metric": 88
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/TsxPropertyInserter.cs",
+      "errors": 0,
+      "warnings": 21,
+      "rules": {
+        "file-length": 1,
+        "complexity": 2,
+        "function-length": 2,
+        "line-length": 16
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 144 lines",
+          "metric": 144
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 23,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "InsertProperties() cyclomatic complexity 9",
+          "metric": 9
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 58,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "InsertPropertiesInDirectory() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 23,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "InsertProperties() is 31 lines",
+          "metric": 31
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 58,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "InsertPropertiesInDirectory() is 41 lines",
+          "metric": 41
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 20,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 113 chars",
+          "metric": 113
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 21,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 30,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 39,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 65,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 67,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 69,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 78,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 97,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 132,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 135,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "addons/tile_editor/TsxPropertyInserter.cs",
+          "line": 140,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
         }
       ]
     },
@@ -100181,6 +99492,166 @@
       ]
     },
     {
+      "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+      "errors": 0,
+      "warnings": 18,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "param-count": 1,
+        "else-branch": 2,
+        "stateless-method": 1,
+        "comment-restates-code": 1,
+        "line-length": 11
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 161 lines",
+          "metric": 161
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 122,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "_GuiInput() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 80,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "SetSource() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 80,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "SetSource() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 122,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "_GuiInput() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 100,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "_Ready() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 114,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 7,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 20,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 21,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 32,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 35,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 59,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 80,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 112,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 115,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 127,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TilesetAtlasPicker.cs",
+          "line": 131,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
       "errors": 0,
       "warnings": 17,
@@ -102229,6 +101700,150 @@
           "severity": "warn",
           "message": "line is 82 chars",
           "metric": 82
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+      "errors": 0,
+      "warnings": 16,
+      "rules": {
+        "file-length": 1,
+        "function-length": 2,
+        "else-branch": 2,
+        "stateless-method": 2,
+        "comment-restates-code": 1,
+        "flag-parameter": 1,
+        "line-length": 7
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 260 lines",
+          "metric": 260
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 132,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "BuildGroupedGrid() is 37 lines",
+          "metric": 37
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 170,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "CreateBitmaskCell() is 35 lines",
+          "metric": 35
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 90,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "RebuildGrid() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 206,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "OnBitmaskToggled() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 55,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "_Ready() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 132,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "BuildGroupedGrid() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 177,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 206,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "OnBitmaskToggled() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 12,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 62,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 64,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 145,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 183,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfigGrid.cs",
+          "line": 198,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
         }
       ]
     },
@@ -105882,6 +105497,129 @@
       ]
     },
     {
+      "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+      "errors": 0,
+      "warnings": 14,
+      "rules": {
+        "stateless-method": 8,
+        "line-length": 6
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+          "line": 14,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "TileAtlasPanel() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+          "line": 15,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "TilePropertiesPanel() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+          "line": 16,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "BiomePoolPanel() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+          "line": 17,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AutoTilePreviewPanel() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+          "line": 18,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "TmxPreviewPanel() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+          "line": 19,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AutoTileFormatEditorPanel() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+          "line": 20,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "UnusedSourcesPanel() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+          "line": 21,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "TransitionCoveragePanel() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+          "line": 7,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+          "line": 17,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+          "line": 20,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+          "line": 21,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorPanels.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        }
+      ]
+    },
+    {
       "file": "Scripts/Core/Devices/Cable.cs",
       "errors": 0,
       "warnings": 13,
@@ -106703,6 +106441,124 @@
           "severity": "warn",
           "message": "line is 96 chars",
           "metric": 96
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/TileEditorDock.cs",
+      "errors": 0,
+      "warnings": 13,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "else-branch": 2,
+        "stateless-method": 1,
+        "line-length": 8
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 255 lines",
+          "metric": 255
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 184,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "_UnhandledKeyInput() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 168,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "OnSavePressed() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 199,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "OnReloadPressed() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 43,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ShowErrorState() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 50,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 66,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 89,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 103,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 129,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 165,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 186,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 203,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
         }
       ]
     },
@@ -113714,6 +113570,89 @@
       ]
     },
     {
+      "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+      "errors": 0,
+      "warnings": 9,
+      "rules": {
+        "file-length": 1,
+        "line-length": 8
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 106 lines",
+          "metric": 106
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+          "line": 9,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+          "line": 17,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+          "line": 24,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+          "line": 45,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+          "line": 55,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+          "line": 87,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+          "line": 88,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorToolCommands.cs",
+          "line": 94,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TileAtlas/TileAtlasPanelSetup.cs",
       "errors": 0,
       "warnings": 9,
@@ -114719,6 +114658,88 @@
           "severity": "warn",
           "message": "line is 93 chars",
           "metric": 93
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+      "errors": 0,
+      "warnings": 9,
+      "rules": {
+        "line-length": 9
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+          "line": 7,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+          "line": 17,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+          "line": 24,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+          "line": 32,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+          "line": 34,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 113 chars",
+          "metric": 113
+        },
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+          "line": 49,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+          "line": 54,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasPickerPainter.cs",
+          "line": 60,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
         }
       ]
     },
@@ -117728,6 +117749,138 @@
       ]
     },
     {
+      "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+      "errors": 0,
+      "warnings": 7,
+      "rules": {
+        "line-length": 7
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+          "line": 14,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+          "line": 24,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+          "line": 33,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+          "line": 34,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+          "line": 44,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+          "line": 58,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxElementPropertyInserter.cs",
+          "line": 60,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+      "errors": 0,
+      "warnings": 7,
+      "rules": {
+        "line-length": 7
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+          "line": 16,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+          "line": 24,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+          "line": 63,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+          "line": 67,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+          "line": 68,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+          "line": 79,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxPropertyAnalyzer.cs",
+          "line": 89,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        }
+      ]
+    },
+    {
       "file": "Scripts/Core/Services/Pathfinder.cs",
       "errors": 0,
       "warnings": 6,
@@ -119269,6 +119422,64 @@
       ]
     },
     {
+      "file": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
+      "errors": 0,
+      "warnings": 6,
+      "rules": {
+        "line-length": 6
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
+          "line": 17,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
+          "line": 43,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
+          "line": 47,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
+          "line": 76,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TmxAtlas/CompilerModels.cs",
       "errors": 0,
       "warnings": 5,
@@ -120757,6 +120968,50 @@
       ]
     },
     {
+      "file": "addons/tile_editor/TileEditorPlugin.cs",
+      "errors": 0,
+      "warnings": 4,
+      "rules": {
+        "test-only-export": 1,
+        "stateless-method": 1,
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TileEditorPlugin.cs",
+          "line": 8,
+          "rule": "test-only-export",
+          "severity": "warn",
+          "message": "TileEditorPlugin is only referenced by tests — delete it and its tests",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorPlugin.cs",
+          "line": 13,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "_EnterTree() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorPlugin.cs",
+          "line": 35,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorPlugin.cs",
+          "line": 55,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Deckbuilder/Services/GridCellEventAdapter.cs",
       "errors": 0,
       "warnings": 4,
@@ -121108,6 +121363,49 @@
           "severity": "warn",
           "message": "line is 87 chars",
           "metric": 87
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/Dock/TileEditorToolbar.cs",
+      "errors": 0,
+      "warnings": 4,
+      "rules": {
+        "function-length": 1,
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/Dock/TileEditorToolbar.cs",
+          "line": 25,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "CreateIn() is 42 lines",
+          "metric": 42
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorToolbar.cs",
+          "line": 7,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorToolbar.cs",
+          "line": 23,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/Dock/TileEditorToolbar.cs",
+          "line": 53,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
         }
       ]
     },
@@ -122005,6 +122303,90 @@
           "severity": "warn",
           "message": "line is 104 chars",
           "metric": 104
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
+      "errors": 0,
+      "warnings": 4,
+      "rules": {
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
+          "line": 7,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
+          "line": 12,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
+          "line": 49,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/BitmaskConfig/BitmaskTypeCatalog.cs",
+      "errors": 0,
+      "warnings": 4,
+      "rules": {
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/BitmaskConfig/BitmaskTypeCatalog.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfig/BitmaskTypeCatalog.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfig/BitmaskTypeCatalog.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/BitmaskConfig/BitmaskTypeCatalog.cs",
+          "line": 45,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
         }
       ]
     },
@@ -123873,6 +124255,32 @@
           "severity": "warn",
           "message": "line is 88 chars",
           "metric": 88
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/AtlasPicker/AtlasPickerSelection.cs",
+      "errors": 0,
+      "warnings": 2,
+      "rules": {
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasPickerSelection.cs",
+          "line": 7,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/AtlasPicker/AtlasPickerSelection.cs",
+          "line": 9,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
         }
       ]
     },

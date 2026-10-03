@@ -65,7 +65,8 @@ public class TileEditorWiringSmokeTest
     {
         var pluginConfig = new ConfigFile();
         Assertions.AssertThat(pluginConfig.Load("res://addons/tile_editor/plugin.cfg")).IsEqual(Error.Ok);
-        Assertions.AssertThat(pluginConfig.GetValue("plugin", "script").AsString()).IsEqual("TileEditorPlugin.cs");
+        Assertions.AssertThat(pluginConfig.GetValue("plugin", "script").AsString())
+            .IsEqual($"{nameof(TileEditorPlugin)}.cs");
 
         var enabledPlugins = ProjectSettings.GetSetting("editor_plugins/enabled").AsStringArray();
         Assertions.AssertThat(enabledPlugins).Contains("res://addons/tile_editor/plugin.cfg");

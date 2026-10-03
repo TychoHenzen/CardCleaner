@@ -28,20 +28,6 @@ public partial class BitmaskConfigGrid : VBoxContainer
     private bool _isUpdating;
     private bool _isReadOnly;
 
-    // Labels for 4-bit corner format (NE=1, SE=2, SW=4, NW=8)
-    private static readonly string[] CornerBitmaskLabels =
-    {
-        "None", "NE", "SE", "NE+SE", "SW", "NE+SW", "SE+SW", "NE+SE+SW",
-        "NW", "NE+NW", "SE+NW", "NE+SE+NW", "SW+NW", "NE+SW+NW", "SE+SW+NW", "All"
-    };
-
-    // Labels for 4-bit edge format (N=1, E=2, S=4, W=8)
-    private static readonly string[] EdgeBitmaskLabels =
-    {
-        "None", "N", "E", "N+E", "S", "N+S", "E+S", "N+E+S",
-        "W", "N+W", "E+W", "N+E+W", "S+W", "N+S+W", "E+S+W", "All"
-    };
-
     // Required by Godot for [Tool] classes
     public BitmaskConfigGrid() { }
 
@@ -112,7 +98,7 @@ public partial class BitmaskConfigGrid : VBoxContainer
         _previews.Clear();
 
         // Get valid bitmasks for this type
-        var validBitmasks = GetValidBitmasksForType(_bitmaskType);
+        var validBitmasks = BitmaskTypeCatalog.GetValidBitmasks(_bitmaskType);
 
         // For Full8 (blob47), group by edge count to reduce overwhelm
         if (_bitmaskType == BitmaskType.Full8)
@@ -147,7 +133,7 @@ public partial class BitmaskConfigGrid : VBoxContainer
     {
         // Group by edge count (number of set bits in cardinal directions)
         var groups = validBitmasks
-            .GroupBy(GetEdgeCount)
+            .GroupBy(BitmaskTypeCatalog.GetEdgeCount)
             .OrderBy(g => g.Key)
             .ToList();
 
@@ -194,14 +180,14 @@ public partial class BitmaskConfigGrid : VBoxContainer
             CustomMinimumSize = new Vector2(30, 30),
             SizeFlagsHorizontal = SizeFlags.ShrinkCenter
         };
-        preview.SetMask(bitmask, BitmaskTypeToPreviewFormat(_bitmaskType));
+        preview.SetMask(bitmask, BitmaskTypeCatalog.GetPreviewFormat(_bitmaskType));
         cell.AddChild(preview);
         _previews[bitmask] = preview;
 
         // Checkbox with label
         var checkButton = new CheckButton
         {
-            Text = GetBitmaskLabel(bitmask),
+            Text = bitmask.ToString(),
             ButtonPressed = _allowedBitmasks.Contains(bitmask),
             Disabled = _isReadOnly,
             SizeFlagsHorizontal = SizeFlags.ShrinkCenter
@@ -230,84 +216,6 @@ public partial class BitmaskConfigGrid : VBoxContainer
         EmitSignal(SignalName.AllowedBitmasksChanged);
     }
 
-    private string GetBitmaskLabel(int bitmask)
-    {
-        return _bitmaskType switch
-        {
-            BitmaskType.Corner4 when bitmask < 16 => $"{bitmask}",
-            BitmaskType.Edge4 when bitmask < 16 => $"{bitmask}",
-            BitmaskType.Full8 => $"{bitmask}",
-            _ => bitmask.ToString()
-        };
-    }
-
-    private static TileShapePreview.Format BitmaskTypeToPreviewFormat(BitmaskType type)
-    {
-        return type switch
-        {
-            BitmaskType.Corner4 => TileShapePreview.Format.Corner16,
-            BitmaskType.Edge4 => TileShapePreview.Format.Edge16,
-            BitmaskType.Full8 => TileShapePreview.Format.Blob47,
-            _ => TileShapePreview.Format.Corner16
-        };
-    }
-
-    private static int[] GetValidBitmasksForType(BitmaskType type)
-    {
-        return type switch
-        {
-            BitmaskType.Corner4 => Enumerable.Range(0, 16).ToArray(),
-            BitmaskType.Edge4 => Enumerable.Range(0, 16).ToArray(),
-            BitmaskType.Full8 => GetValidBlobBitmasks(),
-            _ => Enumerable.Range(0, 16).ToArray()
-        };
-    }
-
-    /// <summary>
-    /// Gets the 47 valid 8-bit blob bitmasks (where corners are only valid if adjacent edges are set).
-    /// </summary>
-    private static int[] GetValidBlobBitmasks()
-    {
-        var valid = new List<int>();
-
-        for (var mask = 0; mask < 256; mask++)
-        {
-            var isValid = true;
-
-            // NE corner (2) requires N (1) and E (4)
-            if ((mask & 2) != 0 && ((mask & 1) == 0 || (mask & 4) == 0))
-                isValid = false;
-            // SE corner (8) requires E (4) and S (16)
-            if ((mask & 8) != 0 && ((mask & 4) == 0 || (mask & 16) == 0))
-                isValid = false;
-            // SW corner (32) requires S (16) and W (64)
-            if ((mask & 32) != 0 && ((mask & 16) == 0 || (mask & 64) == 0))
-                isValid = false;
-            // NW corner (128) requires W (64) and N (1)
-            if ((mask & 128) != 0 && ((mask & 64) == 0 || (mask & 1) == 0))
-                isValid = false;
-
-            if (isValid)
-                valid.Add(mask);
-        }
-
-        return valid.ToArray();
-    }
-
-    /// <summary>
-    /// Gets the number of cardinal edges set in a blob bitmask.
-    /// N=1, E=4, S=16, W=64
-    /// </summary>
-    private static int GetEdgeCount(int bitmask)
-    {
-        var count = 0;
-        if ((bitmask & 1) != 0) count++;   // N
-        if ((bitmask & 4) != 0) count++;   // E
-        if ((bitmask & 16) != 0) count++;  // S
-        if ((bitmask & 64) != 0) count++;  // W
-        return count;
-    }
-
     /// <summary>
     /// Selects all bitmasks.
     /// </summary>
@@ -316,11 +224,11 @@ public partial class BitmaskConfigGrid : VBoxContainer
         if (_isReadOnly) return;
 
         _isUpdating = true;
-        var validBitmasks = GetValidBitmasksForType(_bitmaskType);
+        var validBitmasks = BitmaskTypeCatalog.GetValidBitmasks(_bitmaskType);
         _allowedBitmasks.Clear();
         _allowedBitmasks.UnionWith(validBitmasks);
 
-        foreach (var (bitmask, checkButton) in _checkButtons)
+        foreach (var checkButton in _checkButtons.Values)
         {
             checkButton.ButtonPressed = true;
         }
