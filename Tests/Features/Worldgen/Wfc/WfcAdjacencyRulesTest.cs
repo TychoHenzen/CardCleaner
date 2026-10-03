@@ -1,6 +1,4 @@
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
-using GdUnit4;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 

@@ -4,8 +4,6 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
-using GdUnit4;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 

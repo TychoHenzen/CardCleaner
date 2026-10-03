@@ -1,7 +1,5 @@
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using GdUnit4;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Worldgen.Biomes;
 

@@ -1,8 +1,6 @@
 using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
-using GdUnit4;
 using Godot;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 

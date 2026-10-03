@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GdUnit4;
 using Godot;
-using static GdUnit4.Assertions;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;

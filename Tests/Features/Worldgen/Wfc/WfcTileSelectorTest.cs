@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
-using GdUnit4;
 using Godot;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 
@@ -46,30 +44,12 @@ public class WfcTileSelectorTest
     [TestCase]
     public void TestBiomeTilesPreferred()
     {
-        var passable = new TilePool();
-        passable.Add("grass", 1.0f);
+        var biome = CreatePlainsBiome(new Dictionary<string, float> { { "grass", 1.0f } });
 
-        var biome = new BiomeDefinition(
-            "plains",
-            new CardSignature(),
-            passable,
-            new TilePool(),
-            0.15f);
-
-        var tiles = new List<string> { "grass", "water" };
-
-        var grassCount = 0;
-        var waterCount = 0;
-
-        for (var i = 0; i < 100; i++)
-        {
-            var result = _selector.SelectTile(tiles, biome, _rng);
-            if (result == "grass") grassCount++;
-            else if (result == "water") waterCount++;
-        }
+        var counts = SampleSelections(new List<string> { "grass", "water" }, biome, 100);
 
         // Grass (in biome) should be selected much more often than water (0.1x penalty)
-        AssertThat(grassCount).IsGreater(waterCount * 5);
+        AssertThat(counts.GetValueOrDefault("grass")).IsGreater(counts.GetValueOrDefault("water") * 5);
     }
 
     [TestCase]
@@ -97,31 +77,12 @@ public class WfcTileSelectorTest
     [TestCase]
     public void TestBiomeWeightsRespected()
     {
-        var passable = new TilePool();
-        passable.Add("common", 9.0f);
-        passable.Add("rare", 1.0f);
+        var biome = CreatePlainsBiome(new Dictionary<string, float> { { "common", 9.0f }, { "rare", 1.0f } });
 
-        var biome = new BiomeDefinition(
-            "plains",
-            new CardSignature(),
-            passable,
-            new TilePool(),
-            0.15f);
-
-        var tiles = new List<string> { "common", "rare" };
-
-        var commonCount = 0;
-        var rareCount = 0;
-
-        for (var i = 0; i < 100; i++)
-        {
-            var result = _selector.SelectTile(tiles, biome, _rng);
-            if (result == "common") commonCount++;
-            else if (result == "rare") rareCount++;
-        }
+        var counts = SampleSelections(new List<string> { "common", "rare" }, biome, 100);
 
         // Common should appear ~9x more than rare
-        AssertThat(commonCount).IsGreater(rareCount * 5);
+        AssertThat(counts.GetValueOrDefault("common")).IsGreater(counts.GetValueOrDefault("rare") * 5);
     }
 
     [TestCase]
@@ -166,31 +127,43 @@ public class WfcTileSelectorTest
     {
         _selector.NonBiomeTilePenalty = 0.5f; // 50% instead of 10%
 
-        var passable = new TilePool();
-        passable.Add("biome_tile", 1.0f);
+        var biome = CreatePlainsBiome(new Dictionary<string, float> { { "biome_tile", 1.0f } });
 
-        var biome = new BiomeDefinition(
-            "plains",
-            new CardSignature(),
-            passable,
-            new TilePool(),
-            0.15f);
-
-        var tiles = new List<string> { "biome_tile", "other_tile" };
-
-        var biomeCount = 0;
-        var otherCount = 0;
-
-        for (var i = 0; i < 100; i++)
-        {
-            var result = _selector.SelectTile(tiles, biome, _rng);
-            if (result == "biome_tile") biomeCount++;
-            else otherCount++;
-        }
+        var counts = SampleSelections(new List<string> { "biome_tile", "other_tile" }, biome, 100);
+        var biomeCount = counts.GetValueOrDefault("biome_tile");
+        var otherCount = counts.GetValueOrDefault("other_tile");
 
         // With 0.5 penalty, other should appear more often than with 0.1 penalty
         // biome_tile: 1.0, other_tile: 0.5, so ratio should be ~2:1
         AssertThat(biomeCount).IsGreater(otherCount);
         AssertThat(otherCount).IsGreater(20); // Should have meaningful count
+    }
+
+    private static BiomeDefinition CreatePlainsBiome(Dictionary<string, float> passableWeights)
+    {
+        var passable = new TilePool();
+        foreach (var (tileId, weight) in passableWeights)
+        {
+            passable.Add(tileId, weight);
+        }
+
+        return new BiomeDefinition(
+            "plains",
+            new CardSignature(),
+            passable,
+            new TilePool(),
+            0.15f);
+    }
+
+    private Dictionary<string, int> SampleSelections(List<string> tiles, BiomeDefinition biome, int samples)
+    {
+        var counts = new Dictionary<string, int>();
+        for (var i = 0; i < samples; i++)
+        {
+            var result = _selector.SelectTile(tiles, biome, _rng)!;
+            counts[result] = counts.GetValueOrDefault(result) + 1;
+        }
+
+        return counts;
     }
 }

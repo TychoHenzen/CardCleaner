@@ -1,12 +1,10 @@
 using System.Diagnostics;
 using System.Linq;
-using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
-using GdUnit4;
+using CardCleaner.Tests.Features.Worldgen.Support;
 using Godot;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 
@@ -156,31 +154,10 @@ public class WfcPerformanceBenchmarkTest
     {
         // This test measures how long each constraint evaluation takes
         // by comparing WFC with and without constraints
-        var rules = new WfcAdjacencyRules(new[]
-        {
-            ("A", "B"),
-            ("B", "C"),
-            ("A", "C"),
-            ("C", "D"),
-            ("A", "D"),
-            ("B", "D")
-        });
-
-        var generator = new WfcMapGenerator(rules);
+        var generator = new WfcMapGenerator(WfcTestFixtures.FullAdjacencyRules());
         generator.MaxRetries = 1; // Quick fail on contradiction
 
-        var passable = new TilePool();
-        passable.Add("A", 1.0f);
-        passable.Add("B", 1.0f);
-        passable.Add("C", 1.0f);
-        passable.Add("D", 1.0f);
-
-        var biome = new BiomeDefinition(
-            "test",
-            new CardSignature(),
-            passable,
-            new TilePool(),
-            0.0f);
+        var biome = WfcTestFixtures.CreateAbcdBiome();
 
         const int size = 40;
         const int runs = 3;

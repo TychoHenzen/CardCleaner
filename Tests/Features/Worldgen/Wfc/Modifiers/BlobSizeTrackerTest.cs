@@ -1,8 +1,6 @@
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
-using GdUnit4;
 using Godot;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc.Modifiers;
 
