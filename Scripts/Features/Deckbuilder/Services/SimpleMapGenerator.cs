@@ -474,7 +474,7 @@ public class SimpleMapGenerator
     /// <summary>
     /// Selects base and top terrains from the terrain info for a visual tile.
     /// </summary>
-    private (string BaseTerrain, string TopTerrain) SelectTerrains(
+    private TerrainSelection SelectTerrains(
         Dictionary<string, (int Dominance, bool HasAutoTile)> terrainInfo)
     {
         string? baseTerrain = null;
@@ -513,7 +513,7 @@ public class SimpleMapGenerator
         }
         baseTerrain ??= topTerrain;
 
-        return (baseTerrain, topTerrain);
+        return new TerrainSelection(baseTerrain, topTerrain);
     }
 
     /// <summary>

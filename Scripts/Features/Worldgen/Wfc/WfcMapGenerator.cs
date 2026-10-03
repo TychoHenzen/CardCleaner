@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Contracts;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 using Godot;
@@ -191,7 +192,9 @@ public class WfcMapGenerator
         ulong seed,
         CardSignature? signature = null)
     {
-        var (initialTiles, passableSet) = DetermineInitialTiles(biome);
+        var initialTileSets = DetermineInitialTiles(biome);
+        var initialTiles = initialTileSets.AllTiles;
+        var passableSet = initialTileSets.PassableTiles;
         if (initialTiles.Count == 0)
         {
             return WfcGenerationResult.Failed(
@@ -235,7 +238,9 @@ public class WfcMapGenerator
         BaselineGradient? gradient = null,
         Func<TileDefinition, bool>? tileFilter = null)
     {
-        var (allTiles, passableTiles) = DetermineMultiBiomeTiles(biomeRegistry, tileFilter);
+        var tileSets = DetermineMultiBiomeTiles(biomeRegistry, tileFilter);
+        var allTiles = tileSets.AllTiles;
+        var passableTiles = tileSets.PassableTiles;
         if (allTiles.Count == 0)
         {
             return WfcGenerationResult.Failed("No valid tiles across all biomes");
@@ -349,7 +354,7 @@ public class WfcMapGenerator
             _selector.AddConstraint(_tileProbability);
     }
 
-    private (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineInitialTiles(BiomeDefinition biome)
+    private WfcTileSets DetermineInitialTiles(BiomeDefinition biome)
     {
         var allTiles = new HashSet<string>();
         var passableTiles = new HashSet<string>();
@@ -371,10 +376,10 @@ public class WfcMapGenerator
                 passableTiles.Add(tileId);
         }
 
-        return (allTiles, passableTiles);
+        return new WfcTileSets(allTiles, passableTiles);
     }
 
-    private (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineMultiBiomeTiles(
+    private WfcTileSets DetermineMultiBiomeTiles(
         BiomeRegistry registry,
         Func<TileDefinition, bool>? tileFilter = null)
     {
@@ -407,7 +412,7 @@ public class WfcMapGenerator
                 passableTiles.Add(tileId);
         }
 
-        return (allTiles, passableTiles);
+        return new WfcTileSets(allTiles, passableTiles);
     }
 
     private static string[,] BuildBiomeMap(Vector2I size, Func<Vector2I, BiomeDefinition> getBiomeAt)

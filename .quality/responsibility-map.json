@@ -68,6 +68,18 @@
       {
         "responsibility": "GenerateTwoPhaseWfc",
         "owner": "SimpleMapGenerator"
+      },
+      {
+        "responsibility": "DetermineInitialTiles",
+        "owner": "WfcMapGenerator"
+      },
+      {
+        "responsibility": "DetermineMultiBiomeTiles",
+        "owner": "WfcMapGenerator"
+      },
+      {
+        "responsibility": "SelectTerrains",
+        "owner": "SimpleMapGenerator"
       }
     ],
     "boundaries": [
