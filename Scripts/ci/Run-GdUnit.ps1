@@ -45,6 +45,9 @@ Write-Host "Using Godot executable: $godotPath"
 
 $importArguments = @(
     '--headless'
+    '--editor'
+    '--recovery-mode'
+    '--import'
     '--path'
     '.'
     '--quit'
