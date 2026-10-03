@@ -1069,7 +1069,11 @@ public partial class TileEditorService : RefCounted
                     Size = (t.SizeX != 1 || t.SizeY != 1) ? new Vector2IData { X = t.SizeX, Y = t.SizeY } : null,
                     SourceScale = t.SourceScale != 1.0f ? t.SourceScale : null,
                     AutoTileVariants = t.HasAutoTileVariants
-                        ? t.AutoTileVariants!.Select(v => v.HasValue ? new Vector2IData { X = v.Value.X, Y = v.Value.Y } : null).ToArray()
+                        ? t.AutoTileVariants!
+                            .Select(v => v.HasValue
+                                ? new Vector2IData { X = v.Value.X, Y = v.Value.Y }
+                                : null)
+                            .ToArray()
                         : null,
                     DecorationDensity = t.DecorationDensity < 1.0f ? t.DecorationDensity : null,
                     AutoTileFormat = t.AutoTileFormat != "corner16" ? t.AutoTileFormat : null,
@@ -1220,12 +1224,7 @@ public partial class TileEditorService : RefCounted
         /// </summary>
         [JsonPropertyName("innerTerrain")] public string? InnerTerrain { get; set; }
 
-        /// <summary>
-        /// For auto-tiles: the background terrain.
-        /// "*" = compositable (transparent border, composite onto any base terrain).
-        /// Specific tile ID = fixed transition (baked pair, use as-is).
-        /// Null = use dominance-based resolution at runtime.
-        /// </summary>
+        /// <summary>Background terrain for auto-tiles; "*" is compositable, null uses dominance resolution.</summary>
         [JsonPropertyName("outerTerrain")] public string? OuterTerrain { get; set; }
 
         /// <summary>
@@ -1267,34 +1266,16 @@ public class EditableTile
     public int SizeX { get; set; } = 1;
     public int SizeY { get; set; } = 1;
 
-    /// <summary>
-    /// Source scale factor for tiles from differently-sized source textures.
-    /// 0.5 = 32x32 source scaled down to 16x16
-    /// 1.0 = 16x16 source (standard, no scaling)
-    /// 2.0 = 8x8 source scaled up to 16x16
-    /// </summary>
+    /// <summary>Source texture scale: 0.5 for 32px, 1.0 for 16px, 2.0 for 8px tiles.</summary>
     public float SourceScale { get; set; } = 1.0f;
 
-    /// <summary>
-    /// Auto-tile variant atlas coordinates indexed by bitmask.
-    /// For Corner16: 16 entries indexed by 4-bit corner mask.
-    /// For Blob47: 47 entries indexed by blob index.
-    /// Null array means no auto-tiling. Null elements use the base tile's atlas coords.
-    /// </summary>
+    /// <summary>Auto-tile atlas coordinates by bitmask; null elements use base coordinates.</summary>
     public Vector2I?[]? AutoTileVariants { get; set; }
 
-    /// <summary>
-    /// The auto-tile format name. Can be a built-in format ("corner16", "blob47", "edge16")
-    /// or a custom format name registered in AutoTileFormatRegistry.
-    /// Default is corner16 for backward compatibility.
-    /// </summary>
+    /// <summary>Auto-tile format name; built-ins and registered custom formats are supported.</summary>
     public string AutoTileFormat { get; set; } = "corner16";
 
-    /// <summary>
-    /// Custom variant definitions for this tile, keyed by bitmask index.
-    /// Used when the tile needs per-variant size/offset configuration (e.g., tall variants).
-    /// If null or empty, standard 1x1 variants are assumed.
-    /// </summary>
+    /// <summary>Per-bitmask variant size/offset definitions; null or empty uses 1x1 variants.</summary>
     public Dictionary<int, EditableVariantDefinition>? CustomVariantDefinitions { get; set; }
 
     /// <summary>
@@ -1319,11 +1300,7 @@ public class EditableTile
     /// </summary>
     public Vector2I[]? Variations { get; set; }
 
-    /// <summary>
-    /// How variations are selected during map generation.
-    /// "perinstance" = Random per tile placement (foliage-style).
-    /// "pergeneration" = One variant selected at generation start, used for all instances.
-    /// </summary>
+    /// <summary>Variation mode: perinstance randomizes placements; pergeneration shares one choice.</summary>
     public string VariationMode { get; set; } = "perinstance";
 
     /// <summary>
@@ -1352,11 +1329,7 @@ public class EditableTile
     /// </summary>
     public string TileMode { get; set; } = "plain";
 
-    /// <summary>
-    /// Visual dominance for terrain transitions. Higher values render on top of lower values.
-    /// Used by dual-grid auto-tiling to determine which terrain's edges show at boundaries.
-    /// Defaults to file order index if not specified.
-    /// </summary>
+    /// <summary>Terrain transition dominance; higher values render above lower values.</summary>
     public int? Dominance { get; set; }
 
     /// <summary>
@@ -1365,12 +1338,7 @@ public class EditableTile
     /// </summary>
     public string? InnerTerrainId { get; set; }
 
-    /// <summary>
-    /// For auto-tiles: the background terrain.
-    /// "*" = compositable (transparent border, composite onto any base terrain).
-    /// Specific tile ID = fixed transition (baked pair, use as-is).
-    /// Null = use dominance-based resolution at runtime.
-    /// </summary>
+    /// <summary>Background terrain for auto-tiles; "*" is compositable, null uses dominance resolution.</summary>
     public string? OuterTerrainId { get; set; }
 
     /// <summary>

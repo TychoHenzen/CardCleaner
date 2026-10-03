@@ -1864,9 +1864,9 @@
     }
   ],
   "summary": {
-    "total": 7345,
-    "errors": 579,
-    "warnings": 6766,
+    "total": 7337,
+    "errors": 570,
+    "warnings": 6767,
     "byRule": {
       "dead-export": 34,
       "duplicate-block": 160,
@@ -1877,7 +1877,7 @@
       "nesting-depth": 40,
       "param-count": 111,
       "unnamed-tuple": 62,
-      "comment-bloat": 105,
+      "comment-bloat": 97,
       "line-length": 4458,
       "test-only-export": 13,
       "else-branch": 148,
@@ -1933,7 +1933,7 @@
       "Tests/Features/Worldgen/Wfc/WfcPerformanceBenchmarkTest.cs": 21,
       "Tests/Features/Worldgen/Wfc/WfcTileSelectorTest.cs": 12,
       "addons/tile_editor/TileAtlasCompiler.cs": 160,
-      "addons/tile_editor/TileEditorService.cs": 219,
+      "addons/tile_editor/TileEditorService.cs": 211,
       "addons/tile_editor/TmxAtlasCompiler.cs": 249,
       "Scripts/Core/DependencyInjection/ServiceAttribute.cs": 2,
       "Scripts/Core/Devices/IJackT.cs": 3,
@@ -3223,7 +3223,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1255,
+      "line": 1254,
       "rule": "types-per-file",
       "severity": "error",
       "message": "5 types in one file: TileEditorService, EditableTile, AtlasSourceInfo, EditableBiome, EditableVariantDefinition",
@@ -3858,8 +3858,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "error",
-      "message": "file is 1650 lines",
-      "metric": 1650
+      "message": "file is 1618 lines",
+      "metric": 1618
     },
     {
       "file": "addons/tile_editor/TilePropertiesPanel.cs",
@@ -5090,8 +5090,8 @@
       "line": 1008,
       "rule": "function-length",
       "severity": "error",
-      "message": "public() is 112 lines",
-      "metric": 112
+      "message": "public() is 116 lines",
+      "metric": 116
     },
     {
       "file": "addons/tile_editor/TilePropertiesPanel.cs",
@@ -5775,7 +5775,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1125,
+      "line": 1129,
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (bool success, string message) CompileAtlas( — replace it with a named type",
@@ -6180,70 +6180,6 @@
       "severity": "error",
       "message": "8-line comment over 1 line(s) of code - keep the why, cut the rest",
       "metric": 8
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1223,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "6-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 6
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1270,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "6-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 6
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1278,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "6-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 6
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1286,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1293,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1322,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1355,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1368,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "6-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 6
     },
     {
       "file": "Scripts/Core/Services/AssemblyUnloadCleanup.cs",
@@ -6836,14 +6772,6 @@
       "severity": "error",
       "message": "line is 121 chars",
       "metric": 121
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1072,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 138 chars",
-      "metric": 138
     },
     {
       "file": "Scripts/Core/Services/MapGenerationProfiler.cs",
@@ -10623,7 +10551,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1403,
+      "line": 1371,
       "rule": "complexity",
       "severity": "warn",
       "message": "GetVariantDefinition() cyclomatic complexity 6",
@@ -10631,7 +10559,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1443,
+      "line": 1411,
       "rule": "complexity",
       "severity": "warn",
       "message": "SetVariantDefinition() cyclomatic complexity 7",
@@ -10639,7 +10567,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1456,
+      "line": 1424,
       "rule": "complexity",
       "severity": "warn",
       "message": "Clone() cyclomatic complexity 6",
@@ -10647,7 +10575,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1599,
+      "line": 1567,
       "rule": "complexity",
       "severity": "warn",
       "message": "ToVariantDefinition() cyclomatic complexity 8",
@@ -13047,7 +12975,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1403,
+      "line": 1371,
       "rule": "function-length",
       "severity": "warn",
       "message": "GetVariantDefinition() is 36 lines",
@@ -13055,7 +12983,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1456,
+      "line": 1424,
       "rule": "function-length",
       "severity": "warn",
       "message": "Clone() is 57 lines",
@@ -25831,7 +25759,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1125,
+      "line": 1129,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "public() takes a boolean flag; split the behavior or name the policy",
@@ -56274,24 +56202,16 @@
       "line": 1074,
       "rule": "line-length",
       "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "addons/tile_editor/TileEditorService.cs",
+      "line": 1078,
+      "rule": "line-length",
+      "severity": "warn",
       "message": "line is 96 chars",
       "metric": 96
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1075,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1077,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
@@ -56303,7 +56223,23 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
+      "line": 1081,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "addons/tile_editor/TileEditorService.cs",
       "line": 1083,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "addons/tile_editor/TileEditorService.cs",
+      "line": 1087,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 117 chars",
@@ -56311,7 +56247,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1099,
+      "line": 1103,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -56319,7 +56255,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1107,
+      "line": 1111,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 104 chars",
@@ -56327,7 +56263,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1108,
+      "line": 1112,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -56335,7 +56271,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1116,
+      "line": 1120,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -56343,7 +56279,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1143,
+      "line": 1147,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -56351,7 +56287,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1145,
+      "line": 1149,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -56359,7 +56295,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1154,
+      "line": 1158,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -56367,7 +56303,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1156,
+      "line": 1160,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -56375,7 +56311,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1159,
+      "line": 1163,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -56383,7 +56319,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1161,
+      "line": 1165,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 110 chars",
@@ -56391,7 +56327,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1166,
+      "line": 1170,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -56399,7 +56335,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1170,
+      "line": 1174,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -56407,7 +56343,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1172,
+      "line": 1176,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 105 chars",
@@ -56415,7 +56351,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1174,
+      "line": 1178,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -56423,7 +56359,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1183,
+      "line": 1187,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -56431,7 +56367,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1185,
+      "line": 1189,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -56439,7 +56375,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1193,
+      "line": 1197,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -56447,7 +56383,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1199,
+      "line": 1203,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -56455,7 +56391,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1201,
+      "line": 1205,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -56463,23 +56399,23 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1203,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1205,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
       "line": 1207,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "addons/tile_editor/TileEditorService.cs",
+      "line": 1209,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "addons/tile_editor/TileEditorService.cs",
+      "line": 1211,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -56487,7 +56423,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1209,
+      "line": 1213,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -56495,7 +56431,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1215,
+      "line": 1219,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -56503,7 +56439,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1218,
+      "line": 1222,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -56511,23 +56447,23 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1221,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
       "line": 1225,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
+      "message": "line is 84 chars",
+      "metric": 84
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1229,
+      "line": 1227,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 118 chars",
+      "metric": 118
+    },
+    {
+      "file": "addons/tile_editor/TileEditorService.cs",
+      "line": 1228,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -56535,7 +56471,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1234,
+      "line": 1233,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -56543,7 +56479,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1241,
+      "line": 1240,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -56551,27 +56487,59 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1282,
+      "line": 1269,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
+      "message": "line is 95 chars",
+      "metric": 95
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1287,
+      "line": 1272,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
+      "message": "line is 102 chars",
+      "metric": 102
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1295,
+      "line": 1275,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 104 chars",
+      "metric": 104
+    },
+    {
+      "file": "addons/tile_editor/TileEditorService.cs",
+      "line": 1278,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 104 chars",
+      "metric": 104
+    },
+    {
+      "file": "addons/tile_editor/TileEditorService.cs",
+      "line": 1279,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
       "metric": 93
+    },
+    {
+      "file": "addons/tile_editor/TileEditorService.cs",
+      "line": 1284,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "addons/tile_editor/TileEditorService.cs",
+      "line": 1292,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
@@ -56586,36 +56554,12 @@
       "line": 1303,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
+      "message": "line is 110 chars",
+      "metric": 110
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1311,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1317,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1325,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1347,
+      "line": 1324,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -56623,23 +56567,15 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1356,
+      "line": 1332,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
+      "message": "line is 97 chars",
+      "metric": 97
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1357,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1363,
+      "line": 1336,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -56647,15 +56583,15 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1370,
+      "line": 1341,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
+      "message": "line is 114 chars",
+      "metric": 114
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1384,
+      "line": 1352,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -56663,7 +56599,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1389,
+      "line": 1357,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -56671,7 +56607,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1392,
+      "line": 1360,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -56679,7 +56615,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1395,
+      "line": 1363,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -56687,7 +56623,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1397,
+      "line": 1365,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -56695,7 +56631,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1401,
+      "line": 1369,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -56703,7 +56639,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1407,
+      "line": 1375,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -56711,7 +56647,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1413,
+      "line": 1381,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -56719,7 +56655,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1443,
+      "line": 1411,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -56727,7 +56663,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1445,
+      "line": 1413,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -56735,7 +56671,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1452,
+      "line": 1420,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -56743,7 +56679,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1487,
+      "line": 1455,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -56751,7 +56687,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1499,
+      "line": 1467,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -56759,7 +56695,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1504,
+      "line": 1472,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -56767,7 +56703,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1572,
+      "line": 1540,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -56775,7 +56711,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1575,
+      "line": 1543,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -56783,7 +56719,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1578,
+      "line": 1546,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -56791,7 +56727,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1601,
+      "line": 1569,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -56799,7 +56735,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
-      "line": 1616,
+      "line": 1584,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 117 chars",
@@ -61641,1780 +61577,6 @@
       ]
     },
     {
-      "file": "addons/tile_editor/TileEditorService.cs",
-      "errors": 24,
-      "warnings": 195,
-      "rules": {
-        "duplicate-block": 1,
-        "types-per-file": 1,
-        "file-length": 1,
-        "complexity": 13,
-        "function-length": 10,
-        "nesting-depth": 4,
-        "unnamed-tuple": 4,
-        "comment-bloat": 8,
-        "line-length": 162,
-        "else-branch": 2,
-        "stateless-method": 3,
-        "comment-restates-code": 6,
-        "flag-parameter": 4
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 2,
-          "rule": "duplicate-block",
-          "severity": "error",
-          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:2, addons/tile_editor/TileEditorService.cs:2, addons/tile_editor/TmxAtlasCompiler.cs:2, Scripts/Core/Services/TileDataLoader.cs:1",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1255,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "5 types in one file: TileEditorService, EditableTile, AtlasSourceInfo, EditableBiome, EditableVariantDefinition",
-          "metric": 5
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 1650 lines",
-          "metric": 1650
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 154,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "LoadTiles() cyclomatic complexity 67",
-          "metric": 67
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 597,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "FindDuplicateSources() cyclomatic complexity 11",
-          "metric": 11
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 748,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "CompactAtlasSourceIds() cyclomatic complexity 12",
-          "metric": 12
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1008,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "public() cyclomatic complexity 21",
-          "metric": 21
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 154,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "LoadTiles() is 240 lines",
-          "metric": 240
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 748,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "CompactAtlasSourceIds() is 95 lines",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1008,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "public() is 112 lines",
-          "metric": 112
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 154,
-          "rule": "nesting-depth",
-          "severity": "error",
-          "message": "LoadTiles() nests 6 levels deep",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 971,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) ValidateTile( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1003,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) SaveTiles( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1008,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) SaveTiles( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1125,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) CompileAtlas( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1223,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "6-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1270,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "6-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1278,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "6-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1286,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1293,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1322,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1355,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1368,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "6-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1072,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 138 chars",
-          "metric": 138
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 501,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GetAvailableAtlasSources() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 662,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "RemoveDuplicateSources() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 714,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "AreSourceIdsContiguous() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 949,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ComputeTileModeFromData() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 971,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "public() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1403,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GetVariantDefinition() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1443,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "SetVariantDefinition() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1456,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "Clone() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1599,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ToVariantDefinition() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 501,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "GetAvailableAtlasSources() is 31 lines",
-          "metric": 31
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 561,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "RemoveSource() is 31 lines",
-          "metric": 31
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 597,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "FindDuplicateSources() is 59 lines",
-          "metric": 59
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 662,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "RemoveDuplicateSources() is 48 lines",
-          "metric": 48
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 971,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "public() is 31 lines",
-          "metric": 31
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1403,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "GetVariantDefinition() is 36 lines",
-          "metric": 36
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1456,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "Clone() is 57 lines",
-          "metric": 57
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 597,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "FindDuplicateSources() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 662,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "RemoveDuplicateSources() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1008,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "public() nests 5 levels deep",
-          "metric": 5
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 154,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "LoadTiles() has 2 else branch(es) — prefer guard clauses",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 748,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "CompactAtlasSourceIds() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 112,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetFormatDefinition() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 123,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "IsBuiltInFormat() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1003,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "public() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 44,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 184,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 235,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 688,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 695,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 824,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 971,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "public() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1003,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "public() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1008,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "public() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1125,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "public() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 49,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 50,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 53,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 64,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 69,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 74,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 82,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 89,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 97,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 112,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 115,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 159,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 172,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 188,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 192,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 218,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 220,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 221,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 223,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 233,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 240,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 245,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 251,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 254,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 256,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 263,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 266,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 298,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 299,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 313,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 315,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 316,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 320,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 321,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 327,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 331,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 346,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 347,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 359,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 362,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 363,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 370,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 377,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 379,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 388,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 404,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 409,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 415,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 416,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 441,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 454,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 461,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 468,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 476,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 488,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 493,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 521,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 527,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 545,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 570,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 579,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 583,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 588,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 628,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 631,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 652,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 683,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 691,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 699,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 706,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 738,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 745,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 747,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 753,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 790,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 828,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 832,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 839,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 887,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 896,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 931,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 965,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 982,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 986,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1032,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1035,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1039,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1042,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1050,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1051,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1054,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1055,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1063,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1069,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 113 chars",
-          "metric": 113
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1074,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1075,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1077,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1079,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1083,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1099,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1107,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1108,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1116,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1143,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1145,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1154,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1156,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1159,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1161,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1166,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1170,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1172,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1174,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1183,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1185,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1193,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1199,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1201,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1203,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1205,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1207,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1209,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1215,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1218,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1221,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1225,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1229,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1234,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1241,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1282,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1287,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1295,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1298,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1303,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1311,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1317,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1325,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1347,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1356,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1357,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1363,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1370,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1384,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1389,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1392,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1395,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1397,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1401,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1407,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1413,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1443,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1445,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1452,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1487,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1499,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1504,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1572,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1575,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1578,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1601,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileEditorService.cs",
-          "line": 1616,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        }
-      ]
-    },
-    {
       "file": "addons/tile_editor/TmxAtlasCompiler.cs",
       "errors": 19,
       "warnings": 230,
@@ -66727,6 +64889,1715 @@
           "severity": "warn",
           "message": "line is 112 chars",
           "metric": 112
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/TileEditorService.cs",
+      "errors": 15,
+      "warnings": 196,
+      "rules": {
+        "duplicate-block": 1,
+        "types-per-file": 1,
+        "file-length": 1,
+        "complexity": 13,
+        "function-length": 10,
+        "nesting-depth": 4,
+        "unnamed-tuple": 4,
+        "else-branch": 2,
+        "stateless-method": 3,
+        "comment-restates-code": 6,
+        "flag-parameter": 4,
+        "line-length": 162
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 2,
+          "rule": "duplicate-block",
+          "severity": "error",
+          "message": "6-line block duplicated at addons/tile_editor/TileAtlasCompiler.cs:2, addons/tile_editor/TileEditorService.cs:2, addons/tile_editor/TmxAtlasCompiler.cs:2, Scripts/Core/Services/TileDataLoader.cs:1",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1254,
+          "rule": "types-per-file",
+          "severity": "error",
+          "message": "5 types in one file: TileEditorService, EditableTile, AtlasSourceInfo, EditableBiome, EditableVariantDefinition",
+          "metric": 5
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "error",
+          "message": "file is 1618 lines",
+          "metric": 1618
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 154,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "LoadTiles() cyclomatic complexity 67",
+          "metric": 67
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 597,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "FindDuplicateSources() cyclomatic complexity 11",
+          "metric": 11
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 748,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "CompactAtlasSourceIds() cyclomatic complexity 12",
+          "metric": 12
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1008,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "public() cyclomatic complexity 21",
+          "metric": 21
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 154,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "LoadTiles() is 240 lines",
+          "metric": 240
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 748,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "CompactAtlasSourceIds() is 95 lines",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1008,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "public() is 116 lines",
+          "metric": 116
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 154,
+          "rule": "nesting-depth",
+          "severity": "error",
+          "message": "LoadTiles() nests 6 levels deep",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 971,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (bool success, string message) ValidateTile( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1003,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (bool success, string message) SaveTiles( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1008,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (bool success, string message) SaveTiles( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1129,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (bool success, string message) CompileAtlas( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 501,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GetAvailableAtlasSources() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 662,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "RemoveDuplicateSources() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 714,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "AreSourceIdsContiguous() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 949,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "ComputeTileModeFromData() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 971,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "public() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1371,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GetVariantDefinition() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1411,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "SetVariantDefinition() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1424,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "Clone() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1567,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "ToVariantDefinition() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 501,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "GetAvailableAtlasSources() is 31 lines",
+          "metric": 31
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 561,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "RemoveSource() is 31 lines",
+          "metric": 31
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 597,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "FindDuplicateSources() is 59 lines",
+          "metric": 59
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 662,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "RemoveDuplicateSources() is 48 lines",
+          "metric": 48
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 971,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "public() is 31 lines",
+          "metric": 31
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1371,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "GetVariantDefinition() is 36 lines",
+          "metric": 36
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1424,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "Clone() is 57 lines",
+          "metric": 57
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 597,
+          "rule": "nesting-depth",
+          "severity": "warn",
+          "message": "FindDuplicateSources() nests 4 levels deep",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 662,
+          "rule": "nesting-depth",
+          "severity": "warn",
+          "message": "RemoveDuplicateSources() nests 4 levels deep",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1008,
+          "rule": "nesting-depth",
+          "severity": "warn",
+          "message": "public() nests 5 levels deep",
+          "metric": 5
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 154,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "LoadTiles() has 2 else branch(es) — prefer guard clauses",
+          "metric": 2
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 748,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "CompactAtlasSourceIds() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 112,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetFormatDefinition() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 123,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "IsBuiltInFormat() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1003,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "public() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 44,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 184,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 235,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 688,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 695,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 824,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 971,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "public() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1003,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "public() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1008,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "public() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1129,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "public() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 49,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 50,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 53,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 64,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 69,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 74,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 82,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 89,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 97,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 112,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 115,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 159,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 172,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 188,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 192,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 218,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 220,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 221,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 223,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 233,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 240,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 245,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 251,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 254,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 256,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 263,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 266,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 298,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 299,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 313,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 315,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 316,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 320,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 321,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 327,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 331,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 346,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 347,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 359,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 362,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 363,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 370,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 377,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 379,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 388,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 404,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 409,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 415,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 416,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 441,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 454,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 461,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 468,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 476,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 488,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 493,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 521,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 527,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 545,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 570,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 579,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 583,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 588,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 628,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 631,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 652,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 683,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 691,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 699,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 706,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 738,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 745,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 747,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 753,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 790,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 828,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 832,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 839,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 887,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 896,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 931,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 965,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 982,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 986,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1032,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1035,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1039,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1042,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1050,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1051,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1054,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1055,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1063,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1069,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 113 chars",
+          "metric": 113
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1074,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1078,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1079,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1081,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1083,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1087,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1103,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1111,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1112,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1120,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1147,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1149,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1158,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1160,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1163,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1165,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1170,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1174,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1176,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1178,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1187,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1189,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1197,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1203,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1205,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1207,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1209,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1211,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1213,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1219,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1222,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1225,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1227,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 118 chars",
+          "metric": 118
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1228,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1233,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1240,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1269,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1272,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1275,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1278,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1279,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1284,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1292,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1298,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1303,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1324,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1332,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1336,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1341,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1352,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1357,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1360,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1363,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1365,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1369,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1375,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1381,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1411,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1413,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1420,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1455,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1467,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1472,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1540,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1543,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1546,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1569,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TileEditorService.cs",
+          "line": 1584,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
         }
       ]
     },
