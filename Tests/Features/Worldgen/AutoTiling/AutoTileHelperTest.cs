@@ -310,7 +310,10 @@ public class AutoTileHelperTest
             "Test Tile",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            autoTileFormatName: "nonexistent_format_xyz");
+            new TileDefinitionOptions
+            {
+                AutoTileFormatName = "nonexistent_format_xyz"
+            });
 
         var pos = new Vector2I(5, 5);
         // Use NE neighbor which is diagonal (only Corner4 checks diagonals as primary)
@@ -387,8 +390,11 @@ public class AutoTileHelperTest
             id,
             TilePassability.Passable,
             new Vector2I(0, 0),
-            autoTileVariants: variants,
-            autoTileFormatName: formatName);
+            new TileDefinitionOptions
+            {
+                AutoTileVariants = variants,
+                AutoTileFormatName = formatName
+            });
     }
 
     private static TileDefinition CreateTileDefinitionWithVariants(
@@ -401,8 +407,11 @@ public class AutoTileHelperTest
             id,
             TilePassability.Passable,
             new Vector2I(0, 0),
-            autoTileVariants: variants,
-            autoTileFormatName: formatName);
+            new TileDefinitionOptions
+            {
+                AutoTileVariants = variants,
+                AutoTileFormatName = formatName
+            });
     }
 
     private static Vector2I?[] CreateVariantArray(int count)

@@ -567,12 +567,14 @@ public class WfcMapGeneratorIntegrationTest
         foreach (var tileId in tileIds)
         {
             registry.RegisterTile(new TileDefinition(
-                id: tileId,
-                name: tileId,
-                passability: TilePassability.Passable,
-                atlasCoords: Vector2I.Zero,
-                allowedBiomes: new HashSet<string> { biomeId }
-            ));
+                tileId,
+                tileId,
+                TilePassability.Passable,
+                Vector2I.Zero,
+                new TileDefinitionOptions
+                {
+                    AllowedBiomes = new HashSet<string> { biomeId }
+                }));
         }
         return registry;
     }

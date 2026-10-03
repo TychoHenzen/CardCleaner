@@ -41,7 +41,10 @@ public class TileRegistryTest
             "Test Tile",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            allowedBiomes: ["forest", "plains"]);
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = ["forest", "plains"]
+            });
 
         AssertThat(tile.AllowedBiomes).IsNotNull();
         AssertThat(tile.AllowedBiomes!.Count).IsEqual(2);
@@ -79,14 +82,20 @@ public class TileRegistryTest
             "Forest Only",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            allowedBiomes: ["forest"]));
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = ["forest"]
+            }));
 
         _registry.RegisterTile(new TileDefinition(
             "desert_only",
             "Desert Only",
             TilePassability.Passable,
             new Vector2I(1, 0),
-            allowedBiomes: ["desert"]));
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = ["desert"]
+            }));
 
         _registry.RegisterTile(new TileDefinition(
             "universal",
@@ -123,15 +132,33 @@ public class TileRegistryTest
         _registry.Clear();
 
         _registry.RegisterTile(new TileDefinition(
-            "universal1", "Universal 1", TilePassability.Passable, new Vector2I(0, 0)));
+            "universal1",
+            "Universal 1",
+            TilePassability.Passable,
+            new Vector2I(0, 0)));
         _registry.RegisterTile(new TileDefinition(
-            "universal2", "Universal 2", TilePassability.Solid, new Vector2I(1, 0)));
+            "universal2",
+            "Universal 2",
+            TilePassability.Solid,
+            new Vector2I(1, 0)));
         _registry.RegisterTile(new TileDefinition(
-            "forest1", "Forest 1", TilePassability.Passable, new Vector2I(2, 0),
-            allowedBiomes: ["forest"]));
+            "forest1",
+            "Forest 1",
+            TilePassability.Passable,
+            new Vector2I(2, 0),
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = ["forest"]
+            }));
         _registry.RegisterTile(new TileDefinition(
-            "desert1", "Desert 1", TilePassability.Solid, new Vector2I(3, 0),
-            allowedBiomes: ["desert"]));
+            "desert1",
+            "Desert 1",
+            TilePassability.Solid,
+            new Vector2I(3, 0),
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = ["desert"]
+            }));
 
         var forestTiles = _registry.GetTilesByBiome("forest").ToList();
         var desertTiles = _registry.GetTilesByBiome("desert").ToList();
@@ -220,7 +247,10 @@ public class TileRegistryTest
             "Test Auto",
             TilePassability.Passable,
             new Vector2I(5, 5),
-            autoTileVariants: variants);
+            new TileDefinitionOptions
+            {
+                AutoTileVariants = variants
+            });
 
         // Index 0 (null) should return base coords
         AssertThat(tile.GetAutoTileCoords(0)).IsEqual(new Vector2I(5, 5));
@@ -240,7 +270,10 @@ public class TileRegistryTest
             "Test Bounds",
             TilePassability.Passable,
             new Vector2I(5, 5),
-            autoTileVariants: variants);
+            new TileDefinitionOptions
+            {
+                AutoTileVariants = variants
+            });
 
         // Out of bounds (negative)
         AssertThat(tile.GetAutoTileCoords(-1)).IsEqual(new Vector2I(5, 5));
@@ -324,7 +357,10 @@ public class TileRegistryTest
             "Test Compositable",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            outerTerrainId: "*");
+            new TileDefinitionOptions
+            {
+                OuterTerrainId = "*"
+            });
 
         AssertBool(tile.IsCompositable).IsTrue();
         AssertBool(tile.IsFixedTransition).IsFalse();
@@ -338,7 +374,10 @@ public class TileRegistryTest
             "Test Fixed",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            outerTerrainId: "dirt");
+            new TileDefinitionOptions
+            {
+                OuterTerrainId = "dirt"
+            });
 
         AssertBool(tile.IsFixedTransition).IsTrue();
         AssertBool(tile.IsCompositable).IsFalse();
@@ -352,7 +391,10 @@ public class TileRegistryTest
             "Test Null Outer",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            outerTerrainId: null);
+            new TileDefinitionOptions
+            {
+                OuterTerrainId = null
+            });
 
         AssertBool(tile.IsCompositable).IsFalse();
         AssertBool(tile.IsFixedTransition).IsFalse();
@@ -412,7 +454,10 @@ public class TileRegistryTest
             "Test Dominance",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            dominance: 42);
+            new TileDefinitionOptions
+            {
+                Dominance = 42
+            });
 
         AssertThat(tile.Dominance).IsEqual(42);
     }
@@ -439,7 +484,10 @@ public class TileRegistryTest
             "Test Corner16",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            autoTileFormatName: "corner16");
+            new TileDefinitionOptions
+            {
+                AutoTileFormatName = "corner16"
+            });
 
         AssertThat(tile.ExpectedVariantCount).IsEqual(16);
     }
@@ -452,7 +500,10 @@ public class TileRegistryTest
             "Test Edge16",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            autoTileFormatName: "edge16");
+            new TileDefinitionOptions
+            {
+                AutoTileFormatName = "edge16"
+            });
 
         AssertThat(tile.ExpectedVariantCount).IsEqual(16);
     }
@@ -465,7 +516,10 @@ public class TileRegistryTest
             "Test Blob47",
             TilePassability.Passable,
             new Vector2I(0, 0),
-            autoTileFormatName: "blob47");
+            new TileDefinitionOptions
+            {
+                AutoTileFormatName = "blob47"
+            });
 
         AssertThat(tile.ExpectedVariantCount).IsEqual(47);
     }

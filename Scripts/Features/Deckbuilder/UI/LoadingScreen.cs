@@ -5,7 +5,7 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Deckbuilder.UI;
 
 /// <summary>Displays map generation progress and hides when generation completes.</summary>
-public partial class LoadingScreen : Control
+internal sealed partial class LoadingScreen : Control
 {
     private ProgressBar? _progressBar;
     private IGameSessionService? _sessionService;

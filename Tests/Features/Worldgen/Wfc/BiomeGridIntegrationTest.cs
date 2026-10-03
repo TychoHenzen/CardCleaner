@@ -44,26 +44,29 @@ public partial class BiomeGridIntegrationTest
         _tileRegistry = new TileRegistry();
         _tileRegistry.Clear(); // Clear production tiles loaded by constructor
         _tileRegistry.RegisterTile(new TileDefinition(
-            id: "fire_tile",
-            name: "Fire Tile",
-            passability: TilePassability.Passable,
-            atlasCoords: Vector2I.Zero,
-            allowedBiomes: new HashSet<string> { "fire" }
-        ));
+            "fire_tile",
+            "Fire Tile",
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = new HashSet<string> { "fire" }
+            }));
         _tileRegistry.RegisterTile(new TileDefinition(
-            id: "water_tile",
-            name: "Water Tile",
-            passability: TilePassability.Passable,
-            atlasCoords: Vector2I.Zero,
-            allowedBiomes: new HashSet<string> { "water" }
-        ));
+            "water_tile",
+            "Water Tile",
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = new HashSet<string> { "water" }
+            }));
         // neutral_tile has no AllowedBiomes (universal/neutral)
         _tileRegistry.RegisterTile(new TileDefinition(
-            id: "neutral_tile",
-            name: "Neutral Tile",
-            passability: TilePassability.Passable,
-            atlasCoords: Vector2I.Zero
-        ));
+            "neutral_tile",
+            "Neutral Tile",
+            TilePassability.Passable,
+            Vector2I.Zero));
 
         // Create test registry with biomes that have distinct signatures
         _registry = new BiomeRegistry();
@@ -183,26 +186,29 @@ public partial class BiomeGridIntegrationTest
         var testTileRegistry = new TileRegistry();
         testTileRegistry.Clear(); // Clear production tiles loaded by constructor
         testTileRegistry.RegisterTile(new TileDefinition(
-            id: "fire_tile",
-            name: "Fire Tile",
-            passability: TilePassability.Passable,
-            atlasCoords: Vector2I.Zero,
-            allowedBiomes: new HashSet<string> { "fire" }
-        ));
+            "fire_tile",
+            "Fire Tile",
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = new HashSet<string> { "fire" }
+            }));
         testTileRegistry.RegisterTile(new TileDefinition(
-            id: "water_tile",
-            name: "Water Tile",
-            passability: TilePassability.Passable,
-            atlasCoords: Vector2I.Zero,
-            allowedBiomes: new HashSet<string> { "water" }
-        ));
+            "water_tile",
+            "Water Tile",
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = new HashSet<string> { "water" }
+            }));
         // neutral_tile has no AllowedBiomes (universal/neutral)
         testTileRegistry.RegisterTile(new TileDefinition(
-            id: "neutral_tile",
-            name: "Neutral Tile",
-            passability: TilePassability.Passable,
-            atlasCoords: Vector2I.Zero
-        ));
+            "neutral_tile",
+            "Neutral Tile",
+            TilePassability.Passable,
+            Vector2I.Zero));
 
         var generator = new WfcMapGenerator(rulesWithNeutral, testTileRegistry);
         var gradient = new FixedGradient(new CardSignature()); // Neutral signature

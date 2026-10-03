@@ -93,13 +93,7 @@ public partial class BiomeDistributionPreview : Control
             _titleLabel.Visible = hasData;
         }
 
-        // Clear existing strips
-        foreach (var strip in _strips) strip.QueueFree();
-        foreach (var label in _nameLabels) label.QueueFree();
-        foreach (var label in _percentLabels) label.QueueFree();
-        _strips.Clear();
-        _nameLabels.Clear();
-        _percentLabels.Clear();
+        ClearStrips();
 
         if (!hasData || _stripsContainer == null) return;
 
@@ -111,41 +105,54 @@ public partial class BiomeDistributionPreview : Control
 
         // Create strips for each biome
         foreach (var (biomeId, percentage) in sortedBiomes)
-        {
-            var color = BiomeColors.GetValueOrDefault(biomeId, Colors.Magenta);
-
-            // Color strip
-            var strip = new ColorRect { Color = color };
-            _stripsContainer.AddChild(strip);
-            _strips.Add(strip);
-
-            // Biome name label (at top of strip)
-            var nameLabel = new Label
-            {
-                Text = biomeId,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Top
-            };
-            nameLabel.AddThemeColorOverride("font_color", GetContrastColor(color));
-            nameLabel.AddThemeFontSizeOverride("font_size", LabelFontSize);
-            _stripsContainer.AddChild(nameLabel);
-            _nameLabels.Add(nameLabel);
-
-            // Percentage label (centered in strip)
-            var percentLabel = new Label
-            {
-                Text = $"{percentage * 100:F0}%",
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-            percentLabel.AddThemeColorOverride("font_color", GetContrastColor(color));
-            percentLabel.AddThemeFontSizeOverride("font_size", PercentageFontSize);
-            _stripsContainer.AddChild(percentLabel);
-            _percentLabels.Add(percentLabel);
-        }
+            AddBiomeStrip(_stripsContainer, biomeId, percentage);
 
         // Layout the strips
         RelayoutStrips();
+    }
+
+    private void ClearStrips()
+    {
+        foreach (var strip in _strips) strip.QueueFree();
+        foreach (var label in _nameLabels) label.QueueFree();
+        foreach (var label in _percentLabels) label.QueueFree();
+        _strips.Clear();
+        _nameLabels.Clear();
+        _percentLabels.Clear();
+    }
+
+    private void AddBiomeStrip(Control container, string biomeId, float percentage)
+    {
+        var color = BiomeColors.GetValueOrDefault(biomeId, Colors.Magenta);
+
+        // Color strip
+        var strip = new ColorRect { Color = color };
+        container.AddChild(strip);
+        _strips.Add(strip);
+
+        // Biome name label (at top of strip)
+        var nameLabel = new Label
+        {
+            Text = biomeId,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Top
+        };
+        nameLabel.AddThemeColorOverride("font_color", GetContrastColor(color));
+        nameLabel.AddThemeFontSizeOverride("font_size", LabelFontSize);
+        container.AddChild(nameLabel);
+        _nameLabels.Add(nameLabel);
+
+        // Percentage label (centered in strip)
+        var percentLabel = new Label
+        {
+            Text = $"{percentage * 100:F0}%",
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        percentLabel.AddThemeColorOverride("font_color", GetContrastColor(color));
+        percentLabel.AddThemeFontSizeOverride("font_size", PercentageFontSize);
+        container.AddChild(percentLabel);
+        _percentLabels.Add(percentLabel);
     }
 
     private void RelayoutStrips()

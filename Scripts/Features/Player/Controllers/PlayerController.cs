@@ -10,26 +10,17 @@ public partial class PlayerController : CharacterBody3D, ISaveable
 {
     private const float SafePositionRecordInterval = 1.0f; // Record safe position every 1 second
     private const float OutOfBoundsYThreshold = -50f; // Player falls below this Y and triggers reset
-    private const float StuckDetectionWindow = 5.0f; // Time window to detect stuck state
-    private const float StuckMovementThreshold = 0.5f; // Minimum cumulative movement expected in window
 
-    private readonly Color BlacklightColor = new(0.4f, 0.2f, 1.0f); // UV purple
-    private readonly Color FlashlightColor = new(1.0f, 0.95f, 0.8f); // Warm white
-    private float _cumulativeMovement;
+    private readonly StuckDetector _stuckDetector = new();
     private float _gravity;
     private Node3D? _head;
     private IInputService? _inputService;
-
-    // Stuck detection tracking
-    private Vector3 _lastPositionForStuck;
     private float _pitchDeg;
     private IPlayerResetService? _playerResetService;
     private ISafePositionTracker? _safePositionTracker;
     private IGameSettings? _settings;
-    private SpotLight3D? _spotlight;
-    private float _stuckTimer;
+    private PlayerLightController? _light;
     private float _timeSinceLastSafeRecord;
-    private float _timeWithMovementInput;
 
     public StringName UniqueID => "player";
 
@@ -73,14 +64,15 @@ public partial class PlayerController : CharacterBody3D, ISaveable
     public override void _Ready()
     {
         _head = GetNode<Node3D>("Head");
-        _spotlight = GetNode<SpotLight3D>("Head/Camera3D/SpotLight3D");
+        _light = new PlayerLightController(GetNode<SpotLight3D>("Head/Camera3D/SpotLight3D"));
 
         _gravity = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 
         ServiceLocator.Get<IGameSettings>(settings =>
         {
             _settings = settings;
-            ConfigureSpotlight();
+            _light?.UseSettings(settings);
+            _light?.Configure();
         });
 
         ServiceLocator.Get<IInputService>(input =>
@@ -109,10 +101,11 @@ public partial class PlayerController : CharacterBody3D, ISaveable
     {
         if (_inputService == null) return;
         // Register light cycling control
-        _inputService.RegisterAction(this, "cycle_light", Key.F, CycleLightMode);
-        _inputService.RegisterAction(this, "increase_light_intensity", Key.Plus, () => AdjustLightIntensity(0.2f));
-        _inputService.RegisterAction(this, "decrease_light_intensity", Key.Minus, () => AdjustLightIntensity(-0.2f));
-        _inputService.RegisterAction(this, "increase_light_intensity_alt", Key.Equal, () => AdjustLightIntensity(0.2f));
+        _inputService.RegisterAction(this, "cycle_light", Key.F, () => _light?.Cycle());
+        System.Action brighter = () => _light?.AdjustIntensity(0.2f);
+        _inputService.RegisterAction(this, "increase_light_intensity", Key.Plus, brighter);
+        _inputService.RegisterAction(this, "decrease_light_intensity", Key.Minus, () => _light?.AdjustIntensity(-0.2f));
+        _inputService.RegisterAction(this, "increase_light_intensity_alt", Key.Equal, brighter);
 
         // Register safety reset action (R key)
         _inputService.RegisterAction(this, "player_reset", Key.R, OnResetRequested);
@@ -133,91 +126,7 @@ public partial class PlayerController : CharacterBody3D, ISaveable
             _inputService.MouseMoved -= OnMouseMoved;
     }
 
-    private void ConfigureSpotlight()
-    {
-        if (_spotlight == null)
-            return;
-
-        _spotlight.SpotAngle = 60.0f; // Wide cone
-        _spotlight.SpotRange = 8.0f; // Good range for cards
-        ApplyLightMode();
-    }
-
-    private void CycleLightMode()
-    {
-        if (_settings == null) return;
-        // Cycle through the three states
-        _settings.CurrentLightMode = _settings.CurrentLightMode switch
-        {
-            LightMode.Off => LightMode.Blacklight,
-            LightMode.Blacklight => LightMode.Flashlight,
-            _ => LightMode.Off
-        };
-
-        ApplyLightMode();
-
-        var status = _settings.CurrentLightMode switch
-        {
-            LightMode.Off => "OFF",
-            LightMode.Blacklight => "BLACKLIGHT",
-            LightMode.Flashlight => "FLASHLIGHT",
-            _ => "UNKNOWN"
-        };
-
-        var emoji = _settings.CurrentLightMode switch
-        {
-            LightMode.Off => "⚫",
-            LightMode.Blacklight => "🟣",
-            LightMode.Flashlight => "🔦",
-            _ => "❓"
-        };
-
-        ILog.Print($"{emoji} Light Mode: {status}");
-    }
-
-
-    private void ApplyLightMode()
-    {
-        if (_spotlight == null || _settings == null) return;
-
-        switch (_settings.CurrentLightMode)
-        {
-            case LightMode.Off:
-                _spotlight.Visible = false;
-                break;
-
-            case LightMode.Blacklight:
-                _spotlight.Visible = true;
-                _spotlight.LightColor = BlacklightColor;
-                _spotlight.LightEnergy = _settings.LightIntensity;
-                break;
-
-            case LightMode.Flashlight:
-                _spotlight.Visible = true;
-                _spotlight.LightColor = FlashlightColor;
-                _spotlight.LightEnergy = _settings.LightIntensity;
-                break;
-        }
-    }
-
-    private void AdjustLightIntensity(float delta)
-    {
-        if (_settings == null) return;
-        _settings.LightIntensity = Mathf.Clamp(_settings.LightIntensity + delta, 0.1f, 5.0f);
-
-        // Only apply if light is currently on
-        if (_settings.CurrentLightMode != LightMode.Off)
-        {
-            ApplyLightMode();
-
-            var modeText = _settings.CurrentLightMode == LightMode.Blacklight ? "Blacklight" : "Flashlight";
-            ILog.Print($"💡 {modeText} Intensity: {_settings.LightIntensity:F1}");
-        }
-        else
-        {
-            ILog.Print($"💡 Light Intensity set to: {_settings.LightIntensity:F1} (currently off)");
-        }
-    }
+    private void ApplyLightMode() => _light?.Apply();
 
     private void OnMouseMoved(Vector2 delta)
     {
@@ -292,32 +201,7 @@ public partial class PlayerController : CharacterBody3D, ISaveable
 
     private void CheckStuck(float delta, bool hasMovementInput)
     {
-        // Track movement delta
-        var positionDelta = GlobalPosition.DistanceTo(_lastPositionForStuck);
-        _cumulativeMovement += positionDelta;
-        _lastPositionForStuck = GlobalPosition;
-
-        // Only count time when player is actively trying to move
-        if (hasMovementInput)
-            _timeWithMovementInput += delta;
-
-        _stuckTimer += delta;
-
-        // Check if detection window has elapsed
-        if (_stuckTimer < StuckDetectionWindow)
-            return;
-
-        // Only trigger stuck if player was trying to move for most of the window
-        // and didn't actually move much
-        var wasActivelyTryingToMove = _timeWithMovementInput > StuckDetectionWindow * 0.8f;
-        var isStuck = wasActivelyTryingToMove && _cumulativeMovement < StuckMovementThreshold;
-
-        // Reset tracking for next window
-        _stuckTimer = 0f;
-        _cumulativeMovement = 0f;
-        _timeWithMovementInput = 0f;
-
-        if (!isStuck)
+        if (!_stuckDetector.Update(GlobalPosition, delta, hasMovementInput))
             return;
 
         if (_playerResetService == null || _playerResetService.IsOnCooldown)

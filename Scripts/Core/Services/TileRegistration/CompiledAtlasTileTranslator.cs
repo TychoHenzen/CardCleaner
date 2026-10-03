@@ -25,27 +25,30 @@ internal sealed class CompiledAtlasTileTranslator
 
         // Create new tile definition with translated coordinates
         return new TileDefinition(
-            id: original.Id,
-            name: original.Name,
-            passability: original.Passability,
-            atlasCoords: newCoords,
-            sourceId: newSourceId,
-            layer: original.Layer,
-            elevation: original.Elevation,
-            isTransparent: original.IsTransparent,
-            allowedBiomes: original.AllowedBiomes,
-            size: original.Size,
-            decorationDensity: original.DecorationDensity,
-            autoTileVariants: TranslateAutoTileVariants(original),
-            autoTileFormatName: original.AutoTileFormatName,
-            variations: TranslateVariations(original),
-            variationMode: original.VariationMode,
-            animation: TranslateAnimation(original),
-            dominance: original.Dominance,
-            innerTerrainId: original.InnerTerrainId,
-            outerTerrainId: original.OuterTerrainId,
-            isGapTile: original.IsGapTile,
-            probability: original.Probability);
+            original.Id,
+            original.Name,
+            original.Passability,
+            newCoords,
+            new TileDefinitionOptions
+            {
+                SourceId = newSourceId,
+                Layer = original.Layer,
+                Elevation = original.Elevation,
+                IsTransparent = original.IsTransparent,
+                AllowedBiomes = original.AllowedBiomes,
+                Size = original.Size,
+                DecorationDensity = original.DecorationDensity,
+                AutoTileVariants = TranslateAutoTileVariants(original),
+                AutoTileFormatName = original.AutoTileFormatName,
+                Variations = TranslateVariations(original),
+                VariationMode = original.VariationMode,
+                Animation = TranslateAnimation(original),
+                Dominance = original.Dominance,
+                InnerTerrainId = original.InnerTerrainId,
+                OuterTerrainId = original.OuterTerrainId,
+                IsGapTile = original.IsGapTile,
+                Probability = original.Probability
+            });
     }
 
     private Vector2I TranslateCoords(int sourceId, Vector2I coords)

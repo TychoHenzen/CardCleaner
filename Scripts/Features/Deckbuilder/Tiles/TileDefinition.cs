@@ -34,50 +34,39 @@ public record TileAnimation(
 /// </summary>
 public class TileDefinition
 {
-    public TileDefinition(
+    public TileDefinition(string id, string name, TilePassability passability, Vector2I atlasCoords)
+        : this(id, name, passability, atlasCoords, new TileDefinitionOptions())
+    {
+    }
+
+    internal TileDefinition(
         string id,
         string name,
         TilePassability passability,
         Vector2I atlasCoords,
-        int sourceId = 4,
-        TileLayer layer = TileLayer.Terrain,
-        float elevation = 0f,
-        bool? isTransparent = null,
-        HashSet<string>? allowedBiomes = null,
-        Vector2I? size = null,
-        float decorationDensity = 1.0f,
-        Vector2I?[]? autoTileVariants = null,
-        string autoTileFormatName = "corner16",
-        Vector2I[]? variations = null,
-        VariationMode variationMode = VariationMode.PerInstance,
-        TileAnimation? animation = null,
-        int dominance = 0,
-        string? innerTerrainId = null,
-        string? outerTerrainId = null,
-        bool isGapTile = false,
-        float probability = 1.0f)
+        TileDefinitionOptions options)
     {
         Id = id;
         Name = name;
         Passability = passability;
         AtlasCoords = atlasCoords;
-        SourceId = sourceId;
-        Layer = layer;
-        Elevation = elevation;
-        IsTransparent = isTransparent ?? (passability == TilePassability.Passable);
-        AllowedBiomes = allowedBiomes;
-        Size = size ?? Vector2I.One;
-        DecorationDensity = decorationDensity;
-        AutoTileVariants = autoTileVariants;
-        AutoTileFormatName = autoTileFormatName;
-        Variations = variations;
-        VariationMode = variationMode;
-        Animation = animation;
-        Dominance = dominance;
-        InnerTerrainId = innerTerrainId;
-        OuterTerrainId = outerTerrainId;
-        IsGapTile = isGapTile;
-        Probability = probability;
+        SourceId = options.SourceId;
+        Layer = options.Layer;
+        Elevation = options.Elevation;
+        IsTransparent = options.IsTransparent ?? (passability == TilePassability.Passable);
+        AllowedBiomes = options.AllowedBiomes;
+        Size = options.Size ?? Vector2I.One;
+        DecorationDensity = options.DecorationDensity;
+        AutoTileVariants = options.AutoTileVariants;
+        AutoTileFormatName = options.AutoTileFormatName;
+        Variations = options.Variations;
+        VariationMode = options.VariationMode;
+        Animation = options.Animation;
+        Dominance = options.Dominance;
+        InnerTerrainId = options.InnerTerrainId;
+        OuterTerrainId = options.OuterTerrainId;
+        IsGapTile = options.IsGapTile;
+        Probability = options.Probability;
     }
 
     public string Id { get; }

@@ -485,53 +485,59 @@ public class VariationGroupTest
     private static TileDefinition CreateGrassTile(string id, float probability)
     {
         return new TileDefinition(
-            id: id,
-            name: id,
-            passability: TilePassability.Passable,
-            atlasCoords: Vector2I.Zero,
-            sourceId: 0,
-            layer: TileLayer.Terrain,
-            elevation: 0,
-            isTransparent: true,
-            allowedBiomes: null,
-            size: null,
-            decorationDensity: 1f,
-            autoTileVariants: new Vector2I?[16], // Has auto-tile variants
-            autoTileFormatName: "corner16",
-            variations: null,
-            variationMode: VariationMode.PerGeneration,
-            animation: null,
-            dominance: 0,
-            innerTerrainId: null,
-            outerTerrainId: null,
-            isGapTile: false,
-            probability: probability);
+            id,
+            id,
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                SourceId = 0,
+                Layer = TileLayer.Terrain,
+                Elevation = 0,
+                IsTransparent = true,
+                AllowedBiomes = null,
+                Size = null,
+                DecorationDensity = 1f,
+                AutoTileVariants = new Vector2I?[16], // Has auto-tile variants
+                AutoTileFormatName = "corner16",
+                Variations = null,
+                VariationMode = VariationMode.PerGeneration,
+                Animation = null,
+                Dominance = 0,
+                InnerTerrainId = null,
+                OuterTerrainId = null,
+                IsGapTile = false,
+                Probability = probability
+            });
     }
 
     private static TileDefinition CreateFlowerTile(string id, float probability)
     {
         return new TileDefinition(
-            id: id,
-            name: id,
-            passability: TilePassability.Passable,
-            atlasCoords: Vector2I.Zero,
-            sourceId: 0,
-            layer: TileLayer.Decoration,
-            elevation: 0,
-            isTransparent: true,
-            allowedBiomes: null,
-            size: null,
-            decorationDensity: 1f,
-            autoTileVariants: null, // No auto-tile variants
-            autoTileFormatName: null,
-            variations: null,
-            variationMode: VariationMode.PerInstance,
-            animation: null,
-            dominance: 0,
-            innerTerrainId: null,
-            outerTerrainId: null,
-            isGapTile: false,
-            probability: probability);
+            id,
+            id,
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                SourceId = 0,
+                Layer = TileLayer.Decoration,
+                Elevation = 0,
+                IsTransparent = true,
+                AllowedBiomes = null,
+                Size = null,
+                DecorationDensity = 1f,
+                AutoTileVariants = null, // No auto-tile variants
+                AutoTileFormatName = null,
+                Variations = null,
+                VariationMode = VariationMode.PerInstance,
+                Animation = null,
+                Dominance = 0,
+                InnerTerrainId = null,
+                OuterTerrainId = null,
+                IsGapTile = false,
+                Probability = probability
+            });
     }
 
     private static WfcConstraintContext CreateMockContext(string tileId)

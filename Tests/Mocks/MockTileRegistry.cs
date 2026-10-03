@@ -87,11 +87,14 @@ public class MockTileRegistry : ITileRegistry, ITileMetadataProvider
         // Non-null autoTileVariants array makes HasAutoTileVariants return true
         var variants = new Vector2I?[16];
         return new TileDefinition(
-            id: id,
-            name: string.IsNullOrEmpty(name) ? id : name,
-            passability: TilePassability.Passable,
-            atlasCoords: Vector2I.Zero,
-            autoTileVariants: variants);
+            id,
+            string.IsNullOrEmpty(name) ? id : name,
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                AutoTileVariants = variants
+            });
     }
 
     /// <summary>
@@ -101,10 +104,10 @@ public class MockTileRegistry : ITileRegistry, ITileMetadataProvider
     {
         // No autoTileVariants = gap tile
         return new TileDefinition(
-            id: id,
-            name: string.IsNullOrEmpty(name) ? id : name,
-            passability: TilePassability.Passable,
-            atlasCoords: Vector2I.Zero);
+            id,
+            string.IsNullOrEmpty(name) ? id : name,
+            TilePassability.Passable,
+            Vector2I.Zero);
     }
 
     /// <summary>

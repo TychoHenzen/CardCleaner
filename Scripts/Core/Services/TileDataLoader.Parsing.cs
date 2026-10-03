@@ -100,27 +100,30 @@ public static partial class TileDataLoader
         var formatName = NormalizeAutoTileFormatName(data.AutoTileFormat);
 
         return new TileDefinition(
-            id: data.Id!,
-            name: data.Name!,
-            passability: ParsePassability(data.Passability),
-            atlasCoords: GetVector2OrDefault(data.AtlasCoords, Vector2I.Zero),
-            sourceId: GetValueOrDefault(data.SourceId, 4),
-            layer: ParseLayer(data.Layer),
-            elevation: GetValueOrDefault(data.Elevation, 0f),
-            isTransparent: data.IsTransparent,
-            allowedBiomes: ParseBiomes(data.Biomes),
-            size: ToVector2I(data.Size),
-            decorationDensity: GetValueOrDefault(data.DecorationDensity, 1.0f),
-            autoTileVariants: ParseAutoTileVariants(data.AutoTileVariants, formatName),
-            autoTileFormatName: formatName,
-            variations: ParseVariations(data.Variations),
-            variationMode: ParseVariationMode(data.VariationMode),
-            animation: ParseAnimation(data.Animation),
-            dominance: GetValueOrDefault(data.Dominance, fileIndex),
-            innerTerrainId: data.InnerTerrain,
-            outerTerrainId: data.OuterTerrain,
-            isGapTile: GetValueOrDefault(data.IsGapTile, false),
-            probability: GetValueOrDefault(data.Probability, 1.0f));
+            data.Id!,
+            data.Name!,
+            ParsePassability(data.Passability),
+            GetVector2OrDefault(data.AtlasCoords, Vector2I.Zero),
+            new TileDefinitionOptions
+            {
+                SourceId = GetValueOrDefault(data.SourceId, 4),
+                Layer = ParseLayer(data.Layer),
+                Elevation = GetValueOrDefault(data.Elevation, 0f),
+                IsTransparent = data.IsTransparent,
+                AllowedBiomes = ParseBiomes(data.Biomes),
+                Size = ToVector2I(data.Size),
+                DecorationDensity = GetValueOrDefault(data.DecorationDensity, 1.0f),
+                AutoTileVariants = ParseAutoTileVariants(data.AutoTileVariants, formatName),
+                AutoTileFormatName = formatName,
+                Variations = ParseVariations(data.Variations),
+                VariationMode = ParseVariationMode(data.VariationMode),
+                Animation = ParseAnimation(data.Animation),
+                Dominance = GetValueOrDefault(data.Dominance, fileIndex),
+                InnerTerrainId = data.InnerTerrain,
+                OuterTerrainId = data.OuterTerrain,
+                IsGapTile = GetValueOrDefault(data.IsGapTile, false),
+                Probability = GetValueOrDefault(data.Probability, 1.0f)
+            });
     }
 
     private static Vector2I? ToVector2I(Vector2IData? data)

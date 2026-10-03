@@ -30,26 +30,29 @@ public partial class BiomeAffinityConstraintTest
         // Create tile registry with tiles that have AllowedBiomes set
         _tileRegistry = new TileRegistry();
         _tileRegistry.RegisterTile(new TileDefinition(
-            id: "fire_tile",
-            name: "Fire Tile",
-            passability: TilePassability.Passable,
-            atlasCoords: Vector2I.Zero,
-            allowedBiomes: new HashSet<string> { "fire" }
-        ));
+            "fire_tile",
+            "Fire Tile",
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = new HashSet<string> { "fire" }
+            }));
         _tileRegistry.RegisterTile(new TileDefinition(
-            id: "water_tile",
-            name: "Water Tile",
-            passability: TilePassability.Passable,
-            atlasCoords: Vector2I.Zero,
-            allowedBiomes: new HashSet<string> { "water" }
-        ));
+            "water_tile",
+            "Water Tile",
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = new HashSet<string> { "water" }
+            }));
         // neutral_tile has no AllowedBiomes (universal/neutral)
         _tileRegistry.RegisterTile(new TileDefinition(
-            id: "neutral_tile",
-            name: "Neutral Tile",
-            passability: TilePassability.Passable,
-            atlasCoords: Vector2I.Zero
-        ));
+            "neutral_tile",
+            "Neutral Tile",
+            TilePassability.Passable,
+            Vector2I.Zero));
 
         // Create test biomes with tiles
         var fireSignature = new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f });

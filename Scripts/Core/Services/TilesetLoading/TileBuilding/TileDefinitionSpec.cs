@@ -28,26 +28,29 @@ internal sealed class TileDefinitionSpec
     internal TileDefinition ToDefinition()
     {
         return new TileDefinition(
-            id: Id,
-            name: Name,
-            passability: Common.Passability,
-            atlasCoords: AtlasCoords,
-            sourceId: SourceId,
-            layer: Common.Layer,
-            elevation: Common.Elevation,
-            isTransparent: Common.IsTransparent,
-            allowedBiomes: Biomes,
-            size: Size,
-            decorationDensity: Common.DecorationDensity,
-            autoTileVariants: AutoTileVariants,
-            autoTileFormatName: AutoTileFormat,
-            variations: Variations,
-            variationMode: VariationMode,
-            animation: Animation,
-            dominance: Common.Dominance,
-            innerTerrainId: Common.InnerTerrain,
-            outerTerrainId: Common.OuterTerrain,
-            isGapTile: IsGapTile,
-            probability: Probability);
+            Id,
+            Name,
+            Common.Passability,
+            AtlasCoords,
+            new TileDefinitionOptions
+            {
+                SourceId = SourceId,
+                Layer = Common.Layer,
+                Elevation = Common.Elevation,
+                IsTransparent = Common.IsTransparent,
+                AllowedBiomes = Biomes,
+                Size = Size,
+                DecorationDensity = Common.DecorationDensity,
+                AutoTileVariants = AutoTileVariants,
+                AutoTileFormatName = AutoTileFormat,
+                Variations = Variations,
+                VariationMode = VariationMode,
+                Animation = Animation,
+                Dominance = Common.Dominance,
+                InnerTerrainId = Common.InnerTerrain,
+                OuterTerrainId = Common.OuterTerrain,
+                IsGapTile = IsGapTile,
+                Probability = Probability
+            });
     }
 }

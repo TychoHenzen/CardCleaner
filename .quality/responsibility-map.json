@@ -672,6 +672,58 @@
       {
         "responsibility": "ExpandNeighbors",
         "owner": "Pathfinder"
+      },
+      {
+        "responsibility": "EndCombat",
+        "owner": "WorldMapRuntime"
+      },
+      {
+        "responsibility": "HandleCombatStart",
+        "owner": "WorldMapRuntime"
+      },
+      {
+        "responsibility": "HandleExplorationStart",
+        "owner": "WorldMapRuntime"
+      },
+      {
+        "responsibility": "OnLootGenerated",
+        "owner": "WorldMapRuntime"
+      },
+      {
+        "responsibility": "OnMapGenerated",
+        "owner": "WorldMapRuntime"
+      },
+      {
+        "responsibility": "OnServiceEnemyDefeated",
+        "owner": "WorldMapRuntime"
+      },
+      {
+        "responsibility": "OnServicePlayerMoved",
+        "owner": "WorldMapRuntime"
+      },
+      {
+        "responsibility": "RenderMap",
+        "owner": "WorldMapRuntime"
+      },
+      {
+        "responsibility": "Configure",
+        "owner": "PlayerLightController"
+      },
+      {
+        "responsibility": "Cycle",
+        "owner": "PlayerLightController"
+      },
+      {
+        "responsibility": "Apply",
+        "owner": "PlayerLightController"
+      },
+      {
+        "responsibility": "AdjustIntensity",
+        "owner": "PlayerLightController"
+      },
+      {
+        "responsibility": "Update",
+        "owner": "StuckDetector"
       }
     ],
     "boundaries": [

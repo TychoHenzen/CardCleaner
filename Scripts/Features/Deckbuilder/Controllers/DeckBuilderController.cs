@@ -10,15 +10,6 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 
 /// <summary>
-/// Enum to select between map generation types.
-/// </summary>
-public enum MapGenerationType
-{
-    RegularGrid,
-    IrregularMesh
-}
-
-/// <summary>
 /// Updated DeckBuilder Controller that spawns 3D world screens.
 /// </summary>
 public partial class DeckBuilderController : Node
