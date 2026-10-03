@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 505,
+  "fileCount": 509,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
@@ -1808,6 +1808,26 @@
       "classification": "production"
     },
     {
+      "path": "Scripts/Features/Worldgen/Wfc/Selectors/WfcConstraintModifierApplier.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/Wfc/Selectors/WfcTileWeightContext.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedTileChooser.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "Scripts/Features/Worldgen/Wfc/WfcAdjacencyRules.cs",
       "language": "cs",
       "classification": "production"
@@ -2529,27 +2549,27 @@
     }
   ],
   "summary": {
-    "total": 7072,
-    "errors": 285,
+    "total": 7067,
+    "errors": 280,
     "warnings": 6787,
     "byRule": {
       "dead-export": 13,
-      "duplicate-block": 166,
+      "duplicate-block": 168,
       "types-per-file": 40,
       "file-length": 291,
-      "complexity": 292,
-      "function-length": 323,
+      "complexity": 291,
+      "function-length": 322,
       "nesting-depth": 29,
       "param-count": 157,
       "unnamed-tuple": 38,
       "test-only-export": 13,
-      "else-branch": 120,
-      "stateless-method": 1301,
+      "else-branch": 118,
+      "stateless-method": 1302,
       "comment-bloat": 53,
-      "comment-restates-code": 127,
+      "comment-restates-code": 126,
       "output-parameter": 27,
-      "flag-parameter": 58,
-      "line-length": 4024
+      "flag-parameter": 59,
+      "line-length": 4020
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
@@ -2633,7 +2653,6 @@
       "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs": 40,
       "Scripts/Features/Worldgen/Wfc/WfcGrid.cs": 45,
       "Scripts/Features/Worldgen/Wfc/WfcSolver.cs": 41,
-      "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs": 42,
       "Tests/Core/PropertyTesting/StatisticalAssertions.cs": 43,
       "Tests/Core/Services/CompiledAtlasLoaderTest.cs": 44,
       "Tests/Core/Services/TileRegistryTest.cs": 31,
@@ -2698,6 +2717,7 @@
       "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs": 21,
       "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainWfcRunner.cs": 21,
       "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs": 17,
+      "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs": 26,
       "Tests/Core/Services/TiledTilesetLoaderTest.cs": 22,
       "Tests/Features/Card/Services/SignatureCardGeneratorTest.cs": 23,
       "Tests/Features/Worldgen/Biomes/BiomeAffinityConstraintTest.cs": 33,
@@ -2872,6 +2892,7 @@
       "Scripts/Features/Conveyor/Components/ConveyorBelt.cs": 4,
       "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs": 10,
       "Scripts/Features/Worldgen/Wfc/Constraints/TileProbabilityConstraint.cs": 16,
+      "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs": 9,
       "Tests/Features/Deckbuilder/Services/TilePassabilityDiagnosticTest.cs": 8,
       "addons/tile_editor/TileAtlas/TileAtlasTransitionValidator.cs": 6,
       "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs": 9,
@@ -2980,6 +3001,7 @@
       "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs": 10,
       "Scripts/Features/Worldgen/Wfc/Constraints/IWfcConstraint.cs": 1,
       "Scripts/Features/Worldgen/Wfc/Modifiers/Soft/NoveltySoftModifier.cs": 4,
+      "Scripts/Features/Worldgen/Wfc/Selectors/WfcConstraintModifierApplier.cs": 2,
       "Tests/Core/Data/GameSettingsTest.cs": 2,
       "Tests/Core/PropertyTesting/SeedManager.cs": 7,
       "Tests/Core/ServiceProviders/CardServiceProviderTest.cs": 5,
@@ -3897,14 +3919,6 @@
       "metric": 367
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 331 lines",
-      "metric": 331
-    },
-    {
       "file": "Tests/Core/PropertyTesting/StatisticalAssertions.cs",
       "line": 1,
       "rule": "file-length",
@@ -4505,22 +4519,6 @@
       "metric": 15
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 71,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "SelectTile() cyclomatic complexity 18",
-      "metric": 18
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 219,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "ComputeWeights() cyclomatic complexity 11",
-      "metric": 11
-    },
-    {
       "file": "Tests/Features/Deckbuilder/Services/GameSessionServiceTest.cs",
       "line": 353,
       "rule": "complexity",
@@ -4799,22 +4797,6 @@
       "severity": "error",
       "message": "Solve() is 173 lines",
       "metric": 173
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 71,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "SelectTile() is 109 lines",
-      "metric": 109
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 219,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "ComputeWeights() is 63 lines",
-      "metric": 63
     },
     {
       "file": "Tests/Features/Deckbuilder/Services/FrontierExplorationBehaviorTest.cs",
@@ -5714,18 +5696,34 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 72,
+      "line": 73,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:72, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:220",
+      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:73, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:145",
       "metric": 2
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 220,
+      "line": 92,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:72, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:220",
+      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:92, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:156",
+      "metric": 2
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+      "line": 145,
+      "rule": "duplicate-block",
+      "severity": "warn",
+      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:73, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:145",
+      "metric": 2
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+      "line": 156,
+      "rule": "duplicate-block",
+      "severity": "warn",
+      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:92, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:156",
       "metric": 2
     },
     {
@@ -7185,12 +7183,20 @@
       "metric": 207
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 206 lines",
+      "metric": 206
+    },
+    {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 157 lines",
-      "metric": 157
+      "message": "file is 160 lines",
+      "metric": 160
     },
     {
       "file": "Tests/Core/Data/CardTemplateTest.cs",
@@ -9127,6 +9133,14 @@
       "severity": "warn",
       "message": "FloodFill() cyclomatic complexity 8",
       "metric": 8
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 10,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "BuildCollapsedNeighbors() cyclomatic complexity 6",
+      "metric": 6
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcCellState.cs",
@@ -11113,8 +11127,16 @@
       "metric": 43
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+      "line": 72,
+      "rule": "function-length",
+      "severity": "warn",
+      "message": "SelectTile() is 33 lines",
+      "metric": 33
+    },
+    {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 63,
+      "line": 64,
       "rule": "function-length",
       "severity": "warn",
       "message": "PluginRegistrationAndToolbarActionsWorkHeadlessly() is 47 lines",
@@ -13450,7 +13472,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 71,
+      "line": 72,
       "rule": "param-count",
       "severity": "warn",
       "message": "SelectTile() takes 6 parameters",
@@ -13458,7 +13480,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 219,
+      "line": 144,
       "rule": "param-count",
       "severity": "warn",
       "message": "ComputeWeights() takes 6 parameters",
@@ -13466,10 +13488,10 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 283,
+      "line": 168,
       "rule": "param-count",
       "severity": "warn",
-      "message": "ApplyConstraintModifiers() takes 6 parameters",
+      "message": "CreateWeightContext() takes 6 parameters",
       "metric": 6
     },
     {
@@ -14401,24 +14423,8 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 71,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "SelectTile() has 2 else branch(es) — prefer guard clauses",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 219,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "ComputeWeights() has 1 else branch(es) — prefer guard clauses",
-      "metric": 1
-    },
-    {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 29,
+      "line": 30,
       "rule": "else-branch",
       "severity": "warn",
       "message": "BeforeTest() has 1 else branch(es) — prefer guard clauses",
@@ -14426,7 +14432,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 46,
+      "line": 47,
       "rule": "else-branch",
       "severity": "warn",
       "message": "AfterTest() has 1 else branch(es) — prefer guard clauses",
@@ -16666,7 +16672,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 185,
+      "line": 72,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "SelectTile() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+      "line": 110,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "SelectUniform() never touches instance state — make it a free function",
@@ -16674,15 +16688,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 313,
+      "line": 144,
       "rule": "stateless-method",
       "severity": "warn",
-      "message": "BuildBiomeWeightLookup() never touches instance state — make it a free function",
+      "message": "ComputeWeights() never touches instance state — make it a free function",
       "metric": 1
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 111,
+      "line": 112,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "WriteInvalidFixture() never touches instance state — make it a free function",
@@ -16690,7 +16704,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 122,
+      "line": 123,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "WriteValidFixture() never touches instance state — make it a free function",
@@ -26249,14 +26263,6 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 99,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
       "file": "Tests/Core/DependencyInjection/ServiceLocatorTest.cs",
       "line": 76,
       "rule": "comment-restates-code",
@@ -27150,6 +27156,14 @@
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "PropagationResult() takes a boolean flag; split the behavior or name the policy",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+      "line": 168,
+      "rule": "flag-parameter",
+      "severity": "warn",
+      "message": "CreateWeightContext() takes a boolean flag; split the behavior or name the policy",
       "metric": 1
     },
     {
@@ -41937,6 +41951,86 @@
       "metric": 111
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcConstraintModifierApplier.cs",
+      "line": 7,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 109 chars",
+      "metric": 109
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcConstraintModifierApplier.cs",
+      "line": 9,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 18,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 26,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 32,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 52,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 73,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 76,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 79,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 82,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/WfcAdjacencyRules.cs",
       "line": 33,
       "rule": "line-length",
@@ -42906,7 +43000,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 11,
+      "line": 12,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -42914,7 +43008,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 22,
+      "line": 23,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -42922,7 +43016,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 28,
+      "line": 29,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 114 chars",
@@ -42930,7 +43024,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 41,
+      "line": 42,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -42938,7 +43032,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 57,
+      "line": 58,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -42946,7 +43040,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 61,
+      "line": 62,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -42954,7 +43048,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 64,
+      "line": 65,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -42962,7 +43056,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 67,
+      "line": 68,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 120 chars",
@@ -42970,87 +43064,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 94,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 108 chars",
-      "metric": 108
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 107,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
       "line": 110,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 111,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 118,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 131,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 132,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 155,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 105 chars",
-      "metric": 105
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 161,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 162,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 185,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -43058,7 +43072,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 215,
+      "line": 140,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -43066,31 +43080,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 239,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 242,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 243,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 250,
+      "line": 176,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -43098,7 +43088,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 259,
+      "line": 177,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -43106,23 +43096,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 275,
+      "line": 201,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 105 chars",
-      "metric": 105
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 313,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
+      "message": "line is 104 chars",
+      "metric": 104
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 33,
+      "line": 34,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -43130,7 +43112,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 35,
+      "line": 36,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -43138,7 +43120,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 41,
+      "line": 42,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -43146,7 +43128,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 50,
+      "line": 51,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -43154,7 +43136,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 51,
+      "line": 52,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -43162,7 +43144,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 53,
+      "line": 54,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -43170,7 +43152,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 66,
+      "line": 67,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 106 chars",
@@ -43178,7 +43160,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 67,
+      "line": 68,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 115 chars",
@@ -43186,7 +43168,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 69,
+      "line": 70,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -43194,7 +43176,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 70,
+      "line": 71,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -43202,7 +43184,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 108,
+      "line": 109,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -43210,7 +43192,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 115,
+      "line": 116,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 106 chars",
@@ -43218,7 +43200,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 125,
+      "line": 126,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -43226,7 +43208,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 128,
+      "line": 129,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 106 chars",
@@ -43234,7 +43216,7 @@
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-      "line": 136,
+      "line": 137,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -63713,360 +63695,6 @@
           "severity": "warn",
           "message": "line is 100 chars",
           "metric": 100
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "errors": 5,
-      "warnings": 37,
-      "rules": {
-        "file-length": 1,
-        "complexity": 2,
-        "function-length": 2,
-        "duplicate-block": 2,
-        "param-count": 3,
-        "else-branch": 2,
-        "stateless-method": 2,
-        "comment-restates-code": 1,
-        "line-length": 27
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 331 lines",
-          "metric": 331
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 71,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "SelectTile() cyclomatic complexity 18",
-          "metric": 18
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 219,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "ComputeWeights() cyclomatic complexity 11",
-          "metric": 11
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 71,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "SelectTile() is 109 lines",
-          "metric": 109
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 219,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "ComputeWeights() is 63 lines",
-          "metric": 63
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 72,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:72, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:220",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 220,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:72, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:220",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 71,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "SelectTile() takes 6 parameters",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 219,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "ComputeWeights() takes 6 parameters",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 283,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "ApplyConstraintModifiers() takes 6 parameters",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 71,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "SelectTile() has 2 else branch(es) — prefer guard clauses",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 219,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "ComputeWeights() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 185,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "SelectUniform() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 313,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "BuildBiomeWeightLookup() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 99,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 11,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 22,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 28,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 41,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 57,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 61,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 64,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 67,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 120 chars",
-          "metric": 120
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 94,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 107,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 110,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 111,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 118,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 131,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 132,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 155,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 161,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 162,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 185,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 215,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 239,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 242,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 243,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 250,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 259,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 275,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 313,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
         }
       ]
     },
@@ -97179,6 +96807,230 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+      "errors": 0,
+      "warnings": 26,
+      "rules": {
+        "duplicate-block": 4,
+        "file-length": 1,
+        "function-length": 1,
+        "param-count": 3,
+        "stateless-method": 3,
+        "flag-parameter": 1,
+        "line-length": 13
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 73,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:73, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:145",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 92,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:92, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:156",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 145,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:73, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:145",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 156,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:92, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:156",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 206 lines",
+          "metric": 206
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 72,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "SelectTile() is 33 lines",
+          "metric": 33
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 72,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "SelectTile() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 144,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "ComputeWeights() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 168,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "CreateWeightContext() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 72,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SelectTile() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 110,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SelectUniform() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 144,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ComputeWeights() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 168,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "CreateWeightContext() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 12,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 23,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 29,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 42,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 58,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 62,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 65,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 68,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 120 chars",
+          "metric": 120
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 110,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 140,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 176,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 177,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 201,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TmxAtlas/TmxTransitionComposer.cs",
       "errors": 0,
       "warnings": 26,
@@ -101573,12 +101425,12 @@
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 157 lines",
-          "metric": 157
+          "message": "file is 160 lines",
+          "metric": 160
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 63,
+          "line": 64,
           "rule": "function-length",
           "severity": "warn",
           "message": "PluginRegistrationAndToolbarActionsWorkHeadlessly() is 47 lines",
@@ -101586,7 +101438,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 29,
+          "line": 30,
           "rule": "else-branch",
           "severity": "warn",
           "message": "BeforeTest() has 1 else branch(es) — prefer guard clauses",
@@ -101594,7 +101446,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 46,
+          "line": 47,
           "rule": "else-branch",
           "severity": "warn",
           "message": "AfterTest() has 1 else branch(es) — prefer guard clauses",
@@ -101602,7 +101454,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 111,
+          "line": 112,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "WriteInvalidFixture() never touches instance state — make it a free function",
@@ -101610,7 +101462,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 122,
+          "line": 123,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "WriteValidFixture() never touches instance state — make it a free function",
@@ -101618,7 +101470,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 33,
+          "line": 34,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 86 chars",
@@ -101626,7 +101478,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 35,
+          "line": 36,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 87 chars",
@@ -101634,7 +101486,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 41,
+          "line": 42,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 84 chars",
@@ -101642,7 +101494,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 50,
+          "line": 51,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 86 chars",
@@ -101650,7 +101502,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 51,
+          "line": 52,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 83 chars",
@@ -101658,7 +101510,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 53,
+          "line": 54,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 97 chars",
@@ -101666,7 +101518,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 66,
+          "line": 67,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 106 chars",
@@ -101674,7 +101526,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 67,
+          "line": 68,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 115 chars",
@@ -101682,7 +101534,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 69,
+          "line": 70,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 98 chars",
@@ -101690,7 +101542,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 70,
+          "line": 71,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 94 chars",
@@ -101698,7 +101550,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 108,
+          "line": 109,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 101 chars",
@@ -101706,7 +101558,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 115,
+          "line": 116,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 106 chars",
@@ -101714,7 +101566,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 125,
+          "line": 126,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 92 chars",
@@ -101722,7 +101574,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 128,
+          "line": 129,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 106 chars",
@@ -101730,7 +101582,7 @@
         },
         {
           "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
-          "line": 136,
+          "line": 137,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 81 chars",
@@ -115223,6 +115075,89 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "errors": 0,
+      "warnings": 9,
+      "rules": {
+        "complexity": 1,
+        "line-length": 8
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 10,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "BuildCollapsedNeighbors() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 18,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 26,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 32,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 52,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 73,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 76,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 79,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 82,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TileAtlas/TransitionCoveragePanelRendering.cs",
       "errors": 0,
       "warnings": 9,
@@ -121203,6 +121138,32 @@
           "severity": "warn",
           "message": "line is 85 chars",
           "metric": 85
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcConstraintModifierApplier.cs",
+      "errors": 0,
+      "warnings": 2,
+      "rules": {
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcConstraintModifierApplier.cs",
+          "line": 7,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcConstraintModifierApplier.cs",
+          "line": 9,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
         }
       ]
     },

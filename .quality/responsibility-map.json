@@ -35,7 +35,7 @@
       },
       {
         "responsibility": "ApplyConstraintModifiers",
-        "owner": "WfcTileSelector"
+        "owner": "WfcConstraintModifierApplier"
       },
       {
         "responsibility": "ParseCommonProperties",
@@ -80,6 +80,18 @@
       {
         "responsibility": "SelectTerrains",
         "owner": "SimpleMapGenerator"
+      },
+      {
+        "responsibility": "BuildWeightedCandidates",
+        "owner": "WfcWeightedCandidateBuilder"
+      },
+      {
+        "responsibility": "BuildCollapsedNeighbors",
+        "owner": "WfcWeightedCandidateBuilder"
+      },
+      {
+        "responsibility": "SelectWeightedTile",
+        "owner": "WfcWeightedTileChooser"
       }
     ],
     "boundaries": [
