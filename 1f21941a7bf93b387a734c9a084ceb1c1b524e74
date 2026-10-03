@@ -16,5 +16,14 @@
     "reason": "Pure type move: VariantWeight struct moved unchanged out of VariationGroup.cs (types-per-file). It is part of the public VariationGroup.Variants signature so it must stay public; namespace unchanged (member: VariantWeight.get)",
     "author": "Tycho",
     "time": "2026-10-03T21:39:10.190Z"
+  },
+  {
+    "findingId": "218895e4f5a1665fc3a22cb3f3d0355caaa63c9594045fdfe341a0628a9fb79f",
+    "fingerprint": "5678a58154db0434d54e72ff668e93b0ffe1e9f1669926e1d4d3891dc0982b42",
+    "baseSha": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetSha": "1f21941a7bf93b387a734c9a084ceb1c1b524e74",
+    "reason": "Pure type move: public Godot resource RadialGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: RadialGradient._PropertyGetRevert)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:39:58.833Z"
   }
 ]
