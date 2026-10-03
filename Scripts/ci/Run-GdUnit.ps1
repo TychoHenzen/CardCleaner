@@ -21,6 +21,8 @@ if ((Test-Path -LiteralPath $consolePath -PathType Leaf) -and $godotPath -ne $co
 }
 $repositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 $reportRoot = Join-Path $repositoryRoot 'reports\ci'
+$stdoutPath = Join-Path $reportRoot 'godot.stdout.log'
+$stderrPath = Join-Path $reportRoot 'godot.stderr.log'
 $startedAt = [DateTime]::UtcNow
 $godotArguments = @(
     '--headless'
@@ -37,8 +39,9 @@ $godotArguments = @(
 )
 
 New-Item -ItemType Directory -Path $reportRoot -Force | Out-Null
+Write-Host "Using Godot executable: $godotPath"
 
-$godotProcess = Start-Process -FilePath $godotPath -ArgumentList $godotArguments -WorkingDirectory $repositoryRoot -Wait -PassThru
+$godotProcess = Start-Process -FilePath $godotPath -ArgumentList $godotArguments -WorkingDirectory $repositoryRoot -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath -Wait -PassThru
 $godotExitCode = $godotProcess.ExitCode
 
 $latestResult = Get-ChildItem -LiteralPath $reportRoot -Filter results.xml -File -Recurse |
@@ -47,7 +50,9 @@ $latestResult = Get-ChildItem -LiteralPath $reportRoot -Filter results.xml -File
     Select-Object -Last 1
 
 if ($null -eq $latestResult) {
-    throw "GdUnit did not produce a results.xml report under $reportRoot"
+    $stdout = if (Test-Path -LiteralPath $stdoutPath) { (Get-Content -LiteralPath $stdoutPath -Tail 40) -join [Environment]::NewLine } else { '<missing>' }
+    $stderr = if (Test-Path -LiteralPath $stderrPath) { (Get-Content -LiteralPath $stderrPath -Tail 40) -join [Environment]::NewLine } else { '<missing>' }
+    throw "GdUnit did not produce a results.xml report under $reportRoot (exit=$godotExitCode). stdout=$stdout stderr=$stderr"
 }
 
 try {
