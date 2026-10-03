@@ -64,6 +64,10 @@
       {
         "responsibility": "SolveWithRetry",
         "owner": "WfcSolver"
+      },
+      {
+        "responsibility": "GenerateTwoPhaseWfc",
+        "owner": "SimpleMapGenerator"
       }
     ],
     "boundaries": [

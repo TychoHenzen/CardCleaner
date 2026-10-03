@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 369,
+  "fileCount": 372,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
@@ -738,6 +738,11 @@
       "classification": "production"
     },
     {
+      "path": "Scripts/Features/Deckbuilder/Services/TwoPhaseWfcResult.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
       "language": "cs",
       "classification": "production"
@@ -1093,7 +1098,17 @@
       "classification": "production"
     },
     {
+      "path": "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveAttempt.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -1849,21 +1864,21 @@
     }
   ],
   "summary": {
-    "total": 7437,
-    "errors": 703,
-    "warnings": 6734,
+    "total": 7431,
+    "errors": 699,
+    "warnings": 6732,
     "byRule": {
-      "dead-export": 35,
+      "dead-export": 34,
       "duplicate-block": 148,
-      "types-per-file": 54,
+      "types-per-file": 52,
       "file-length": 222,
       "complexity": 331,
       "function-length": 374,
       "nesting-depth": 40,
       "param-count": 111,
-      "unnamed-tuple": 65,
+      "unnamed-tuple": 64,
       "comment-bloat": 133,
-      "line-length": 4532,
+      "line-length": 4530,
       "test-only-export": 13,
       "else-branch": 148,
       "stateless-method": 898,
@@ -1889,7 +1904,6 @@
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMesh.cs": 20,
       "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs": 12,
       "Scripts/Features/Worldgen/Wfc/RegionAnalyzer.cs": 18,
-      "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs": 66,
       "addons/tile_editor/AutoTileFormatEditorPanel.cs": 79,
       "addons/tile_editor/AutoTilePreviewPanel.cs": 94,
       "addons/tile_editor/BiomePoolPanel.cs": 57,
@@ -1904,6 +1918,7 @@
       "gdunit4_testadapter_v5/GdUnit4TestRunnerScene.cs": 1,
       "Scripts/Core/Services/TileDataLoader.cs": 85,
       "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs": 89,
+      "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs": 60,
       "Tests/Features/Deckbuilder/Services/ConnectivityVerificationTest.cs": 39,
       "Tests/Features/Deckbuilder/Services/SimpleMapGeneratorTest.cs": 49,
       "Tests/Features/Worldgen/AutoTiling/BlackTileReproductionTest.cs": 66,
@@ -1942,7 +1957,6 @@
       "Scripts/Features/Worldgen/Biomes/TilePool.cs": 5,
       "Scripts/Features/Worldgen/IrregularMesh/StructurePlacement.cs": 13,
       "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs": 28,
-      "Scripts/Features/Worldgen/Wfc/WfcSolver.cs": 48,
       "Tests/Core/DependencyInjection/ServiceLocatorTest.cs": 32,
       "Tests/Core/PropertyTesting/Generators/BiomeConfigArbitrary.cs": 13,
       "Tests/Core/PropertyTesting/Generators/CardSignatureArbitrary.cs": 13,
@@ -1959,7 +1973,7 @@
       "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs": 41,
       "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs": 57,
       "Scripts/Features/Deckbuilder/Services/GameSessionService.cs": 72,
-      "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs": 92,
+      "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs": 91,
       "Scripts/Features/Player/Controllers/PlayerController.cs": 39,
       "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionResolver.cs": 63,
       "Scripts/Features/Worldgen/AutoTiling/DualGridAutoTile.cs": 62,
@@ -1974,6 +1988,7 @@
       "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraph.cs": 40,
       "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs": 50,
       "Scripts/Features/Worldgen/Wfc/WfcGrid.cs": 45,
+      "Scripts/Features/Worldgen/Wfc/WfcSolver.cs": 42,
       "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs": 43,
       "Tests/Core/PropertyTesting/StatisticalAssertions.cs": 43,
       "Tests/Core/Services/CompiledAtlasLoaderTest.cs": 36,
@@ -2143,6 +2158,8 @@
       "Scripts/Features/Deckbuilder/Components/WorldMapCombatUI.cs": 5,
       "Scripts/Features/Worldgen/AutoTiling/VariantDefinition.cs": 5,
       "Scripts/Features/Worldgen/Biomes/BiomeDefinition.cs": 6,
+      "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs": 4,
+      "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs": 5,
       "Scripts/Core/Interfaces/ILog.cs": 3,
       "Scripts/Core/Data/GameSettings.cs": 8,
       "Scripts/Core/Data/LayerData.cs": 3,
@@ -2178,7 +2195,6 @@
       "Scripts/Core/Interfaces/ICardGenerator.cs": 1,
       "Scripts/Core/Interfaces/IInputService.cs": 2,
       "Scripts/Core/Interfaces/IPlayerResetService.cs": 3,
-      "Scripts/Core/Services/CompiledAtlas/AtlasCoordinateTranslation.cs": 1,
       "Scripts/Core/Services/SafePositionTracker.cs": 4,
       "Scripts/Features/Card/Components/CardDropper.cs": 2,
       "Scripts/Features/Card/Components/CardShaderRenderer.cs": 2,
@@ -2189,7 +2205,6 @@
       "Scripts/Features/Worldgen/Biomes/BiomeMapGenerator.cs": 4,
       "Scripts/Features/Worldgen/CardBasedGradient.cs": 2,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularGeneratedMap.cs": 1,
-      "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveAttempt.cs": 1,
       "Tests/Core/Data/GameSettingsTest.cs": 2,
       "Tests/Core/PropertyTesting/SeedManager.cs": 7,
       "Tests/Core/ServiceProviders/CardServiceProviderTest.cs": 5,
@@ -2357,14 +2372,6 @@
       "rule": "dead-export",
       "severity": "error",
       "message": "DistributionMetrics is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 416,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "WfcGenerationResult is exported but never referenced anywhere",
       "metric": 1
     },
     {
@@ -3088,27 +3095,11 @@
       "metric": 4
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 416,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: WfcMapGenerator, WfcGenerationResult",
-      "metric": 2
-    },
-    {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
       "line": 30,
       "rule": "types-per-file",
       "severity": "error",
       "message": "2 types in one file: PropagationResult, WfcPropagator",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 40,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: WfcSolveResult, WfcSolver",
       "metric": 2
     },
     {
@@ -3356,8 +3347,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "error",
-      "message": "file is 610 lines",
-      "metric": 610
+      "message": "file is 613 lines",
+      "metric": 613
     },
     {
       "file": "Scripts/Features/Player/Controllers/PlayerController.cs",
@@ -3500,16 +3491,16 @@
       "line": 1,
       "rule": "file-length",
       "severity": "error",
-      "message": "file is 437 lines",
-      "metric": 437
+      "message": "file is 415 lines",
+      "metric": 415
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
       "line": 1,
       "rule": "file-length",
       "severity": "error",
-      "message": "file is 375 lines",
-      "metric": 375
+      "message": "file is 352 lines",
+      "metric": 352
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
@@ -4081,15 +4072,15 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 185,
+      "line": 188,
       "rule": "complexity",
       "severity": "error",
-      "message": "private() cyclomatic complexity 23",
+      "message": "GenerateTwoPhaseWfc() cyclomatic complexity 23",
       "metric": 23
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 472,
+      "line": 475,
       "rule": "complexity",
       "severity": "error",
       "message": "private() cyclomatic complexity 18",
@@ -4289,7 +4280,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 100,
+      "line": 77,
       "rule": "complexity",
       "severity": "error",
       "message": "Solve() cyclomatic complexity 18",
@@ -4297,7 +4288,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 331,
+      "line": 308,
       "rule": "complexity",
       "severity": "error",
       "message": "ReserveMultiCellVariant() cyclomatic complexity 15",
@@ -4756,15 +4747,15 @@
       "line": 68,
       "rule": "function-length",
       "severity": "error",
-      "message": "GenerateMap() is 110 lines",
-      "metric": 110
+      "message": "GenerateMap() is 113 lines",
+      "metric": 113
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 185,
+      "line": 188,
       "rule": "function-length",
       "severity": "error",
-      "message": "private() is 105 lines",
+      "message": "GenerateTwoPhaseWfc() is 105 lines",
       "metric": 105
     },
     {
@@ -4873,7 +4864,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 100,
+      "line": 77,
       "rule": "function-length",
       "severity": "error",
       "message": "Solve() is 163 lines",
@@ -5377,15 +5368,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 185,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (string[,] backgroundLayer, string[,] foregroundLayer, string[,] mergedGrid) GenerateTwoPhaseWfc( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 472,
+      "line": 475,
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (string BaseTerrain, string TopTerrain) SelectTerrains( — replace it with a named type",
@@ -6681,7 +6664,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 157,
+      "line": 160,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 122 chars",
@@ -6689,7 +6672,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 524,
+      "line": 527,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 123 chars",
@@ -6697,7 +6680,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 561,
+      "line": 564,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 121 chars",
@@ -6705,7 +6688,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 563,
+      "line": 566,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 163 chars",
@@ -6713,7 +6696,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 567,
+      "line": 570,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 153 chars",
@@ -6721,7 +6704,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 586,
+      "line": 589,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 128 chars",
@@ -6977,7 +6960,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 56,
+      "line": 33,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 198 chars",
@@ -6985,7 +6968,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 203,
+      "line": 180,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 169 chars",
@@ -6993,7 +6976,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 231,
+      "line": 208,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 141 chars",
@@ -7001,7 +6984,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 237,
+      "line": 214,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 127 chars",
@@ -7009,7 +6992,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 252,
+      "line": 229,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 180 chars",
@@ -10353,7 +10336,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 347,
+      "line": 350,
       "rule": "complexity",
       "severity": "warn",
       "message": "GenerateTerrainTransitions() cyclomatic complexity 9",
@@ -12225,7 +12208,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 347,
+      "line": 350,
       "rule": "function-length",
       "severity": "warn",
       "message": "GenerateTerrainTransitions() is 46 lines",
@@ -12233,7 +12216,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 472,
+      "line": 475,
       "rule": "function-length",
       "severity": "warn",
       "message": "private() is 41 lines",
@@ -12241,7 +12224,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 575,
+      "line": 578,
       "rule": "function-length",
       "severity": "warn",
       "message": "ValidateBitmaskConsistency() is 34 lines",
@@ -12785,7 +12768,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 273,
+      "line": 250,
       "rule": "function-length",
       "severity": "warn",
       "message": "SolveWithRetry() is 32 lines",
@@ -12793,7 +12776,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 331,
+      "line": 308,
       "rule": "function-length",
       "severity": "warn",
       "message": "ReserveMultiCellVariant() is 43 lines",
@@ -14345,7 +14328,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 100,
+      "line": 77,
       "rule": "nesting-depth",
       "severity": "warn",
       "message": "Solve() nests 4 levels deep",
@@ -14761,7 +14744,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 446,
+      "line": 449,
       "rule": "param-count",
       "severity": "warn",
       "message": "GetCellSafe() takes 4 parameters",
@@ -14769,7 +14752,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 517,
+      "line": 520,
       "rule": "param-count",
       "severity": "warn",
       "message": "ComputeBitmask() takes 5 parameters",
@@ -14777,7 +14760,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 528,
+      "line": 531,
       "rule": "param-count",
       "severity": "warn",
       "message": "SampleTerrainCell() takes 5 parameters",
@@ -14785,7 +14768,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 546,
+      "line": 549,
       "rule": "param-count",
       "severity": "warn",
       "message": "IsTerrainAtPosition() takes 5 parameters",
@@ -15032,6 +15015,22 @@
       "metric": 5
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs",
+      "line": 12,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "WfcGenerationResult() takes 4 parameters",
+      "metric": 4
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs",
+      "line": 13,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "WfcSolveResult() takes 4 parameters",
+      "metric": 4
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/RegionAnalyzer.cs",
       "line": 134,
       "rule": "param-count",
@@ -15072,24 +15071,8 @@
       "metric": 6
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 423,
-      "rule": "param-count",
-      "severity": "warn",
-      "message": "WfcGenerationResult() takes 4 parameters",
-      "metric": 4
-    },
-    {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 23,
-      "rule": "param-count",
-      "severity": "warn",
-      "message": "WfcSolveResult() takes 4 parameters",
-      "metric": 4
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 56,
+      "line": 33,
       "rule": "param-count",
       "severity": "warn",
       "message": "WfcSolver() takes 5 parameters",
@@ -15097,7 +15080,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 70,
+      "line": 47,
       "rule": "param-count",
       "severity": "warn",
       "message": "WfcSolver() takes 7 parameters",
@@ -15105,7 +15088,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 273,
+      "line": 250,
       "rule": "param-count",
       "severity": "warn",
       "message": "SolveWithRetry() takes 4 parameters",
@@ -15569,15 +15552,15 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 185,
+      "line": 188,
       "rule": "else-branch",
       "severity": "warn",
-      "message": "private() has 3 else branch(es) — prefer guard clauses",
+      "message": "GenerateTwoPhaseWfc() has 3 else branch(es) — prefer guard clauses",
       "metric": 3
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 575,
+      "line": 578,
       "rule": "else-branch",
       "severity": "warn",
       "message": "ValidateBitmaskConsistency() has 1 else branch(es) — prefer guard clauses",
@@ -15873,7 +15856,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 100,
+      "line": 77,
       "rule": "else-branch",
       "severity": "warn",
       "message": "Solve() has 1 else branch(es) — prefer guard clauses",
@@ -17633,7 +17616,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 557,
+      "line": 560,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ValidateSpatialCoherence() never touches instance state — make it a free function",
@@ -18329,7 +18312,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 273,
+      "line": 250,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "SolveWithRetry() never touches instance state — make it a free function",
@@ -24513,7 +24496,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 142,
+      "line": 145,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -24801,7 +24784,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 234,
+      "line": 211,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -26536,11 +26519,19 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 423,
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs",
+      "line": 12,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "WfcGenerationResult() takes a boolean flag; split the behavior or name the policy",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs",
+      "line": 13,
+      "rule": "flag-parameter",
+      "severity": "warn",
+      "message": "WfcSolveResult() takes a boolean flag; split the behavior or name the policy",
       "metric": 1
     },
     {
@@ -26549,14 +26540,6 @@
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "PropagationResult() takes a boolean flag; split the behavior or name the policy",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 23,
-      "rule": "flag-parameter",
-      "severity": "warn",
-      "message": "WfcSolveResult() takes a boolean flag; split the behavior or name the policy",
       "metric": 1
     },
     {
@@ -27606,14 +27589,6 @@
       "severity": "warn",
       "message": "line is 92 chars",
       "metric": 92
-    },
-    {
-      "file": "Scripts/Core/Services/CompiledAtlas/AtlasCoordinateTranslation.cs",
-      "line": 5,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
     },
     {
       "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
@@ -34025,22 +34000,6 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 102,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 131,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
       "line": 134,
       "rule": "line-length",
       "severity": "warn",
@@ -34049,95 +34008,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 135,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 115 chars",
-      "metric": 115
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 136,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 117 chars",
-      "metric": 117
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 139,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 154,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 185,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 109 chars",
-      "metric": 109
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 199,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 220,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 229,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 115 chars",
-      "metric": 115
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 237,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 238,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 249,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 256,
+      "line": 137,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -34145,31 +34016,23 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 267,
+      "line": 138,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
+      "message": "line is 115 chars",
+      "metric": 115
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 271,
+      "line": 139,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 106 chars",
-      "metric": 106
+      "message": "line is 117 chars",
+      "metric": 117
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 304,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 306,
+      "line": 142,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -34177,7 +34040,119 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 312,
+      "line": 157,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 202,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 207,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 223,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 232,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 115 chars",
+      "metric": 115
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 240,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 241,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 252,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 259,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 270,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 274,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 106 chars",
+      "metric": 106
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 291,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 307,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 309,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 315,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -34185,7 +34160,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 330,
+      "line": 333,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -34193,7 +34168,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 334,
+      "line": 337,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 119 chars",
@@ -34201,7 +34176,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 343,
+      "line": 346,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -34209,7 +34184,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 344,
+      "line": 347,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -34217,7 +34192,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 345,
+      "line": 348,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -34225,7 +34200,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 347,
+      "line": 350,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -34233,7 +34208,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 352,
+      "line": 355,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
@@ -34241,7 +34216,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 374,
+      "line": 377,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -34249,7 +34224,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 383,
+      "line": 386,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -34257,7 +34232,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 384,
+      "line": 387,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -34265,7 +34240,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 385,
+      "line": 388,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -34273,7 +34248,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 386,
+      "line": 389,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -34281,7 +34256,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 403,
+      "line": 406,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -34289,7 +34264,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 432,
+      "line": 435,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -34297,7 +34272,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 446,
+      "line": 449,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -34305,7 +34280,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 462,
+      "line": 465,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -34313,7 +34288,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 486,
+      "line": 489,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -34321,7 +34296,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 497,
+      "line": 500,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -34329,7 +34304,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 515,
+      "line": 518,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -34337,7 +34312,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 517,
+      "line": 520,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 110 chars",
@@ -34345,7 +34320,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 521,
+      "line": 524,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 119 chars",
@@ -34353,7 +34328,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 522,
+      "line": 525,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 115 chars",
@@ -34361,7 +34336,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 523,
+      "line": 526,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 119 chars",
@@ -34369,7 +34344,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 528,
+      "line": 531,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -34377,7 +34352,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 546,
+      "line": 549,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 117 chars",
@@ -34385,7 +34360,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 554,
+      "line": 557,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -34393,7 +34368,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 562,
+      "line": 565,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -34401,7 +34376,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 573,
+      "line": 576,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -34409,7 +34384,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 576,
+      "line": 579,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -34417,7 +34392,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 580,
+      "line": 583,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -34425,7 +34400,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 582,
+      "line": 585,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -34433,7 +34408,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 591,
+      "line": 594,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 106 chars",
@@ -34441,7 +34416,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 594,
+      "line": 597,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 114 chars",
@@ -34449,7 +34424,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 601,
+      "line": 604,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -34457,7 +34432,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 606,
+      "line": 609,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 105 chars",
@@ -41072,12 +41047,44 @@
       "metric": 85
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveAttempt.cs",
-      "line": 5,
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs",
+      "line": 12,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs",
+      "line": 20,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs",
+      "line": 13,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 111 chars",
+      "metric": 111
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs",
+      "line": 21,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs",
+      "line": 22,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/EntropyCache.cs",
@@ -42016,22 +42023,6 @@
       "metric": 101
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 423,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 431,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
-    },
-    {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
       "line": 14,
       "rule": "line-length",
@@ -42129,31 +42120,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 23,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 111 chars",
-      "metric": 111
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 31,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 32,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 37,
+      "line": 14,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -42161,7 +42128,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 38,
+      "line": 15,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -42169,7 +42136,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 66,
+      "line": 43,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -42177,7 +42144,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 84,
+      "line": 61,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -42185,7 +42152,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 94,
+      "line": 71,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -42193,7 +42160,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 100,
+      "line": 77,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 105 chars",
@@ -42201,7 +42168,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 139,
+      "line": 116,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -42209,7 +42176,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 145,
+      "line": 122,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -42217,7 +42184,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 148,
+      "line": 125,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 108 chars",
@@ -42225,7 +42192,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 178,
+      "line": 155,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 110 chars",
@@ -42233,7 +42200,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 186,
+      "line": 163,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -42241,7 +42208,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 220,
+      "line": 197,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 117 chars",
@@ -42249,7 +42216,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 224,
+      "line": 201,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -42257,7 +42224,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 228,
+      "line": 205,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -42265,7 +42232,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 229,
+      "line": 206,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -42273,7 +42240,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 241,
+      "line": 218,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -42281,7 +42248,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 248,
+      "line": 225,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -42289,7 +42256,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 254,
+      "line": 231,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -42297,7 +42264,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 260,
+      "line": 237,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -42305,7 +42272,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 268,
+      "line": 245,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -42313,7 +42280,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 272,
+      "line": 249,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -42321,7 +42288,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 300,
+      "line": 277,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -42329,7 +42296,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 310,
+      "line": 287,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -42337,7 +42304,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 331,
+      "line": 308,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -71416,13 +71383,13 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "errors": 13,
+      "errors": 12,
       "warnings": 79,
       "rules": {
         "file-length": 1,
         "complexity": 4,
         "function-length": 5,
-        "unnamed-tuple": 2,
+        "unnamed-tuple": 1,
         "line-length": 70,
         "param-count": 5,
         "else-branch": 2,
@@ -71436,20 +71403,20 @@
           "line": 1,
           "rule": "file-length",
           "severity": "error",
-          "message": "file is 610 lines",
-          "metric": 610
+          "message": "file is 613 lines",
+          "metric": 613
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 185,
+          "line": 188,
           "rule": "complexity",
           "severity": "error",
-          "message": "private() cyclomatic complexity 23",
+          "message": "GenerateTwoPhaseWfc() cyclomatic complexity 23",
           "metric": 23
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 472,
+          "line": 475,
           "rule": "complexity",
           "severity": "error",
           "message": "private() cyclomatic complexity 18",
@@ -71460,28 +71427,20 @@
           "line": 68,
           "rule": "function-length",
           "severity": "error",
-          "message": "GenerateMap() is 110 lines",
-          "metric": 110
+          "message": "GenerateMap() is 113 lines",
+          "metric": 113
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 185,
+          "line": 188,
           "rule": "function-length",
           "severity": "error",
-          "message": "private() is 105 lines",
+          "message": "GenerateTwoPhaseWfc() is 105 lines",
           "metric": 105
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 185,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (string[,] backgroundLayer, string[,] foregroundLayer, string[,] mergedGrid) GenerateTwoPhaseWfc( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 472,
+          "line": 475,
           "rule": "unnamed-tuple",
           "severity": "error",
           "message": "tuple (string BaseTerrain, string TopTerrain) SelectTerrains( — replace it with a named type",
@@ -71489,7 +71448,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 157,
+          "line": 160,
           "rule": "line-length",
           "severity": "error",
           "message": "line is 122 chars",
@@ -71497,7 +71456,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 524,
+          "line": 527,
           "rule": "line-length",
           "severity": "error",
           "message": "line is 123 chars",
@@ -71505,7 +71464,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 561,
+          "line": 564,
           "rule": "line-length",
           "severity": "error",
           "message": "line is 121 chars",
@@ -71513,7 +71472,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 563,
+          "line": 566,
           "rule": "line-length",
           "severity": "error",
           "message": "line is 163 chars",
@@ -71521,7 +71480,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 567,
+          "line": 570,
           "rule": "line-length",
           "severity": "error",
           "message": "line is 153 chars",
@@ -71529,7 +71488,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 586,
+          "line": 589,
           "rule": "line-length",
           "severity": "error",
           "message": "line is 128 chars",
@@ -71545,7 +71504,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 347,
+          "line": 350,
           "rule": "complexity",
           "severity": "warn",
           "message": "GenerateTerrainTransitions() cyclomatic complexity 9",
@@ -71553,7 +71512,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 347,
+          "line": 350,
           "rule": "function-length",
           "severity": "warn",
           "message": "GenerateTerrainTransitions() is 46 lines",
@@ -71561,7 +71520,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 472,
+          "line": 475,
           "rule": "function-length",
           "severity": "warn",
           "message": "private() is 41 lines",
@@ -71569,7 +71528,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 575,
+          "line": 578,
           "rule": "function-length",
           "severity": "warn",
           "message": "ValidateBitmaskConsistency() is 34 lines",
@@ -71585,7 +71544,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 446,
+          "line": 449,
           "rule": "param-count",
           "severity": "warn",
           "message": "GetCellSafe() takes 4 parameters",
@@ -71593,7 +71552,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 517,
+          "line": 520,
           "rule": "param-count",
           "severity": "warn",
           "message": "ComputeBitmask() takes 5 parameters",
@@ -71601,7 +71560,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 528,
+          "line": 531,
           "rule": "param-count",
           "severity": "warn",
           "message": "SampleTerrainCell() takes 5 parameters",
@@ -71609,7 +71568,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 546,
+          "line": 549,
           "rule": "param-count",
           "severity": "warn",
           "message": "IsTerrainAtPosition() takes 5 parameters",
@@ -71617,15 +71576,15 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 185,
+          "line": 188,
           "rule": "else-branch",
           "severity": "warn",
-          "message": "private() has 3 else branch(es) — prefer guard clauses",
+          "message": "GenerateTwoPhaseWfc() has 3 else branch(es) — prefer guard clauses",
           "metric": 3
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 575,
+          "line": 578,
           "rule": "else-branch",
           "severity": "warn",
           "message": "ValidateBitmaskConsistency() has 1 else branch(es) — prefer guard clauses",
@@ -71633,7 +71592,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 557,
+          "line": 560,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "ValidateSpatialCoherence() never touches instance state — make it a free function",
@@ -71649,7 +71608,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 142,
+          "line": 145,
           "rule": "comment-restates-code",
           "severity": "warn",
           "message": "comment repeats the declaration below it - say why, not what",
@@ -71729,22 +71688,6 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 102,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 131,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
           "line": 134,
           "rule": "line-length",
           "severity": "warn",
@@ -71753,95 +71696,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 135,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 136,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 139,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 154,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 185,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 199,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 220,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 229,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 237,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 238,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 249,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 256,
+          "line": 137,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 100 chars",
@@ -71849,31 +71704,23 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 267,
+          "line": 138,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
+          "message": "line is 115 chars",
+          "metric": 115
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 271,
+          "line": 139,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
+          "message": "line is 117 chars",
+          "metric": 117
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 304,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 306,
+          "line": 142,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 83 chars",
@@ -71881,7 +71728,119 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 312,
+          "line": 157,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 202,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 207,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 223,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 232,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 240,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 241,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 252,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 259,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 270,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 274,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 291,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 307,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 309,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 315,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 92 chars",
@@ -71889,7 +71848,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 330,
+          "line": 333,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 89 chars",
@@ -71897,7 +71856,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 334,
+          "line": 337,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 119 chars",
@@ -71905,7 +71864,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 343,
+          "line": 346,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 81 chars",
@@ -71913,7 +71872,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 344,
+          "line": 347,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 88 chars",
@@ -71921,7 +71880,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 345,
+          "line": 348,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 89 chars",
@@ -71929,7 +71888,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 347,
+          "line": 350,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 112 chars",
@@ -71937,7 +71896,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 352,
+          "line": 355,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 102 chars",
@@ -71945,7 +71904,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 374,
+          "line": 377,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 99 chars",
@@ -71953,7 +71912,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 383,
+          "line": 386,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 94 chars",
@@ -71961,7 +71920,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 384,
+          "line": 387,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 83 chars",
@@ -71969,7 +71928,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 385,
+          "line": 388,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 96 chars",
@@ -71977,7 +71936,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 386,
+          "line": 389,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 82 chars",
@@ -71985,7 +71944,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 403,
+          "line": 406,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 83 chars",
@@ -71993,7 +71952,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 432,
+          "line": 435,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 100 chars",
@@ -72001,7 +71960,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 446,
+          "line": 449,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 82 chars",
@@ -72009,7 +71968,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 462,
+          "line": 465,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 96 chars",
@@ -72017,7 +71976,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 486,
+          "line": 489,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 98 chars",
@@ -72025,7 +71984,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 497,
+          "line": 500,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 100 chars",
@@ -72033,7 +71992,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 515,
+          "line": 518,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 90 chars",
@@ -72041,7 +72000,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 517,
+          "line": 520,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 110 chars",
@@ -72049,7 +72008,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 521,
+          "line": 524,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 119 chars",
@@ -72057,7 +72016,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 522,
+          "line": 525,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 115 chars",
@@ -72065,7 +72024,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 523,
+          "line": 526,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 119 chars",
@@ -72073,7 +72032,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 528,
+          "line": 531,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 86 chars",
@@ -72081,7 +72040,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 546,
+          "line": 549,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 117 chars",
@@ -72089,7 +72048,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 554,
+          "line": 557,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 84 chars",
@@ -72097,7 +72056,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 562,
+          "line": 565,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 101 chars",
@@ -72105,7 +72064,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 573,
+          "line": 576,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 82 chars",
@@ -72113,7 +72072,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 576,
+          "line": 579,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 90 chars",
@@ -72121,7 +72080,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 580,
+          "line": 583,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 85 chars",
@@ -72129,7 +72088,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 582,
+          "line": 585,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 100 chars",
@@ -72137,7 +72096,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 591,
+          "line": 594,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 106 chars",
@@ -72145,7 +72104,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 594,
+          "line": 597,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 114 chars",
@@ -72153,7 +72112,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 601,
+          "line": 604,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 90 chars",
@@ -72161,7 +72120,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 606,
+          "line": 609,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 105 chars",
@@ -76317,410 +76276,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "errors": 10,
-      "warnings": 38,
-      "rules": {
-        "types-per-file": 1,
-        "file-length": 1,
-        "complexity": 2,
-        "function-length": 3,
-        "line-length": 32,
-        "nesting-depth": 1,
-        "param-count": 4,
-        "else-branch": 1,
-        "stateless-method": 1,
-        "comment-restates-code": 1,
-        "flag-parameter": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 40,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: WfcSolveResult, WfcSolver",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 375 lines",
-          "metric": 375
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 100,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "Solve() cyclomatic complexity 18",
-          "metric": 18
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 331,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "ReserveMultiCellVariant() cyclomatic complexity 15",
-          "metric": 15
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 100,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "Solve() is 163 lines",
-          "metric": 163
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 56,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 198 chars",
-          "metric": 198
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 203,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 169 chars",
-          "metric": 169
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 231,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 141 chars",
-          "metric": 141
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 237,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 127 chars",
-          "metric": 127
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 252,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 180 chars",
-          "metric": 180
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 273,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "SolveWithRetry() is 32 lines",
-          "metric": 32
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 331,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ReserveMultiCellVariant() is 43 lines",
-          "metric": 43
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 100,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "Solve() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 23,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "WfcSolveResult() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 56,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "WfcSolver() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 70,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "WfcSolver() takes 7 parameters",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 273,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "SolveWithRetry() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 100,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "Solve() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 273,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "SolveWithRetry() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 234,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 23,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "WfcSolveResult() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 23,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 31,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 32,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 37,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 38,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 66,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 84,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 94,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 100,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 139,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 145,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 148,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 178,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 186,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 220,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 224,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 228,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 229,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 241,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 248,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 254,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 260,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 268,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 272,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 300,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 310,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 331,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        }
-      ]
-    },
-    {
       "file": "Tests/Features/Worldgen/AutoTiling/RandomAutoTileReproductionTest.cs",
       "errors": 9,
       "warnings": 70,
@@ -77923,555 +77478,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "errors": 9,
-      "warnings": 57,
-      "rules": {
-        "dead-export": 1,
-        "duplicate-block": 5,
-        "types-per-file": 1,
-        "file-length": 1,
-        "unnamed-tuple": 2,
-        "line-length": 39,
-        "complexity": 5,
-        "function-length": 4,
-        "param-count": 3,
-        "else-branch": 2,
-        "stateless-method": 2,
-        "flag-parameter": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 416,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "WfcGenerationResult is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 2,
-          "rule": "duplicate-block",
-          "severity": "error",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:2, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:2, Tests/Features/Deckbuilder/Services/SimpleMapGeneratorTest.cs:1, Tests/Features/Worldgen/Properties/MapGenerationProperties.cs:1",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 416,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: WfcMapGenerator, WfcGenerationResult",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 437 lines",
-          "metric": 437
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 341,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineInitialTiles( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 366,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineMultiBiomeTiles( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 125,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 130 chars",
-          "metric": 130
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 174,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 129 chars",
-          "metric": 129
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 303,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 136 chars",
-          "metric": 136
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 1,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:1, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:1",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 3,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:3, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:3",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 4,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:4, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:4",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 5,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:5, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:5",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 113,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "WfcMapGenerator() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 226,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GenerateMultiBiome() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 283,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "CreateSolver() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 310,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ConfigureConstraints() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 366,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "DetermineMultiBiomeTiles() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 142,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ConfigureGapTileAdjacencies() is 41 lines",
-          "metric": 41
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 184,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "Generate() is 41 lines",
-          "metric": 41
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 226,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "GenerateMultiBiome() is 56 lines",
-          "metric": 56
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 366,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "DetermineMultiBiomeTiles() is 35 lines",
-          "metric": 35
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 184,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "Generate() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 226,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "GenerateMultiBiome() takes 6 parameters",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 423,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "WfcGenerationResult() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 142,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "ConfigureGapTileAdjacencies() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 283,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "CreateSolver() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 202,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "CreateGrid() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 251,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "CreateGrid() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 423,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "WfcGenerationResult() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 20,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 101,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 102,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 108,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 113,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 122,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 123,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 124,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 129,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 137,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 138,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 139,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 194,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 208,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 215,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 234,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 237,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 245,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 246,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 264,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 271,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 283,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 295,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 300,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 302,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 324,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 328,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 332,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 341,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 353,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 366,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 388,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 389,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 402,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 423,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 431,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        }
-      ]
-    },
-    {
       "file": "addons/tile_editor/TileAtlasPanel.cs",
       "errors": 9,
       "warnings": 46,
@@ -79339,6 +78345,360 @@
           "severity": "warn",
           "message": "line is 104 chars",
           "metric": 104
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+      "errors": 9,
+      "warnings": 33,
+      "rules": {
+        "file-length": 1,
+        "complexity": 2,
+        "function-length": 3,
+        "line-length": 29,
+        "nesting-depth": 1,
+        "param-count": 3,
+        "else-branch": 1,
+        "stateless-method": 1,
+        "comment-restates-code": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "error",
+          "message": "file is 352 lines",
+          "metric": 352
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 77,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "Solve() cyclomatic complexity 18",
+          "metric": 18
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 308,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "ReserveMultiCellVariant() cyclomatic complexity 15",
+          "metric": 15
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 77,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "Solve() is 163 lines",
+          "metric": 163
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 33,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 198 chars",
+          "metric": 198
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 180,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 169 chars",
+          "metric": 169
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 208,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 141 chars",
+          "metric": 141
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 214,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 127 chars",
+          "metric": 127
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 229,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 180 chars",
+          "metric": 180
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 250,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "SolveWithRetry() is 32 lines",
+          "metric": 32
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 308,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "ReserveMultiCellVariant() is 43 lines",
+          "metric": 43
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 77,
+          "rule": "nesting-depth",
+          "severity": "warn",
+          "message": "Solve() nests 4 levels deep",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 33,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "WfcSolver() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 47,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "WfcSolver() takes 7 parameters",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 250,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "SolveWithRetry() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 77,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "Solve() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 250,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SolveWithRetry() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 211,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 14,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 15,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 43,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 61,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 71,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 77,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 116,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 122,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 125,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 155,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 163,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 197,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 201,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 205,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 206,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 218,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 225,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 231,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 237,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 245,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 249,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 277,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 287,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
+          "line": 308,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
         }
       ]
     },
@@ -81308,6 +80668,504 @@
           "severity": "warn",
           "message": "line is 109 chars",
           "metric": 109
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+      "errors": 7,
+      "warnings": 53,
+      "rules": {
+        "duplicate-block": 5,
+        "file-length": 1,
+        "unnamed-tuple": 2,
+        "line-length": 37,
+        "complexity": 5,
+        "function-length": 4,
+        "param-count": 2,
+        "else-branch": 2,
+        "stateless-method": 2
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 2,
+          "rule": "duplicate-block",
+          "severity": "error",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:2, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:2, Tests/Features/Deckbuilder/Services/SimpleMapGeneratorTest.cs:1, Tests/Features/Worldgen/Properties/MapGenerationProperties.cs:1",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "error",
+          "message": "file is 415 lines",
+          "metric": 415
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 341,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineInitialTiles( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 366,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineMultiBiomeTiles( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 125,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 130 chars",
+          "metric": 130
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 174,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 129 chars",
+          "metric": 129
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 303,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 136 chars",
+          "metric": 136
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 1,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:1, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:1",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 3,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:3, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:3",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 4,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:4, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:4",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 5,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:5, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:5",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 113,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "WfcMapGenerator() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 226,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GenerateMultiBiome() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 283,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "CreateSolver() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 310,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "ConfigureConstraints() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 366,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "DetermineMultiBiomeTiles() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 142,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "ConfigureGapTileAdjacencies() is 41 lines",
+          "metric": 41
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 184,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "Generate() is 41 lines",
+          "metric": 41
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 226,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "GenerateMultiBiome() is 56 lines",
+          "metric": 56
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 366,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "DetermineMultiBiomeTiles() is 35 lines",
+          "metric": 35
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 184,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "Generate() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 226,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "GenerateMultiBiome() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 142,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "ConfigureGapTileAdjacencies() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 283,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "CreateSolver() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 202,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CreateGrid() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 251,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CreateGrid() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 20,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 101,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 102,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 108,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 113,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 122,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 123,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 124,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 129,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 137,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 138,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 139,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 194,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 208,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 215,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 234,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 237,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 245,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 246,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 264,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 271,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 283,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 295,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 300,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 302,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 324,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 328,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 332,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 341,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 353,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 366,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 388,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 389,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 402,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
         }
       ]
     },
@@ -123922,6 +123780,58 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs",
+      "errors": 0,
+      "warnings": 5,
+      "rules": {
+        "param-count": 1,
+        "flag-parameter": 1,
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs",
+          "line": 13,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "WfcSolveResult() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs",
+          "line": 13,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "WfcSolveResult() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs",
+          "line": 13,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs",
+          "line": 21,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs",
+          "line": 22,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        }
+      ]
+    },
+    {
       "file": "Scripts/Core/Utilities/CardSleepEnforcer.cs",
       "errors": 0,
       "warnings": 5,
@@ -124340,6 +124250,50 @@
           "severity": "warn",
           "message": "line is 90 chars",
           "metric": 90
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs",
+      "errors": 0,
+      "warnings": 4,
+      "rules": {
+        "param-count": 1,
+        "flag-parameter": 1,
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs",
+          "line": 12,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "WfcGenerationResult() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs",
+          "line": 12,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "WfcGenerationResult() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs",
+          "line": 12,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs",
+          "line": 20,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
         }
       ]
     },
@@ -125424,24 +125378,6 @@
       ]
     },
     {
-      "file": "Scripts/Core/Services/CompiledAtlas/AtlasCoordinateTranslation.cs",
-      "errors": 0,
-      "warnings": 1,
-      "rules": {
-        "line-length": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/AtlasCoordinateTranslation.cs",
-          "line": 5,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/Card/Services/SignatureCardHelper.cs",
       "errors": 0,
       "warnings": 1,
@@ -125510,24 +125446,6 @@
           "severity": "warn",
           "message": "line is 82 chars",
           "metric": 82
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveAttempt.cs",
-      "errors": 0,
-      "warnings": 1,
-      "rules": {
-        "line-length": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveAttempt.cs",
-          "line": 5,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
         }
       ]
     },

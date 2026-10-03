@@ -99,7 +99,10 @@ public class SimpleMapGenerator
         string[,] terrainGrid;
         using (_profiler.BeginScope("TwoPhaseWfcGeneration"))
         {
-            (backgroundLayer, foregroundLayer, terrainGrid) = GenerateTwoPhaseWfc(size, biomeMap);
+            var twoPhaseResult = GenerateTwoPhaseWfc(size, biomeMap);
+            backgroundLayer = twoPhaseResult.BackgroundLayer;
+            foregroundLayer = twoPhaseResult.ForegroundLayer;
+            terrainGrid = twoPhaseResult.MergedGrid;
         }
 
         // Build passable tiles list from WFC output
@@ -182,7 +185,7 @@ public class SimpleMapGenerator
     /// Phase 2: Foreground layer (auto-tiles with gap constraint)
     /// Both layers are WFC-generated and used together for transitions.
     /// </summary>
-    private (string[,] backgroundLayer, string[,] foregroundLayer, string[,] mergedGrid) GenerateTwoPhaseWfc(
+    private TwoPhaseWfcResult GenerateTwoPhaseWfc(
         Vector2I size, string[,] biomeMap)
     {
         var backgroundLayer = new string[size.Y, size.X];
@@ -201,7 +204,7 @@ public class SimpleMapGenerator
                 foregroundLayer[y, x] = "";
                 mergedGrid[y, x] = tile;
             }
-            return (backgroundLayer, foregroundLayer, mergedGrid);
+            return new TwoPhaseWfcResult(backgroundLayer, foregroundLayer, mergedGrid);
         }
 
         _wfcGenerator.MaxRetries = MaxWfcRetries;
@@ -285,7 +288,7 @@ public class SimpleMapGenerator
                 : backgroundLayer[y, x];
         }
 
-        return (backgroundLayer, foregroundLayer, mergedGrid);
+        return new TwoPhaseWfcResult(backgroundLayer, foregroundLayer, mergedGrid);
     }
 
     private bool IsPassableTile(string tileId)
