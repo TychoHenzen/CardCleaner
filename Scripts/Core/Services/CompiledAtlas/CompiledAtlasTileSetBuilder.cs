@@ -241,23 +241,27 @@ internal static class CompiledAtlasTileSetBuilder
 
     private sealed class TransitionMapData
     {
+        [JsonInclude]
         [JsonPropertyName("transitions")]
-        public Dictionary<string, TransitionEntry>? Transitions { get; set; }
+        internal Dictionary<string, TransitionEntry>? Transitions { get; set; }
     }
 
     private sealed class TransitionEntry
     {
+        [JsonInclude]
         [JsonPropertyName("variants")]
-        public VariantCoord[]?[]? Variants { get; set; }
+        internal VariantCoord[]?[]? Variants { get; set; }
     }
 
     private sealed class VariantCoord
     {
+        [JsonInclude]
         [JsonPropertyName("x")]
-        public int X { get; set; }
+        internal int X { get; set; }
 
+        [JsonInclude]
         [JsonPropertyName("y")]
-        public int Y { get; set; }
+        internal int Y { get; set; }
 
         internal Vector2I GetAtlasCoordinates() => new(X, Y);
     }
