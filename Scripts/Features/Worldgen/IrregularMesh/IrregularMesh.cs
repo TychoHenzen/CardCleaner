@@ -4,6 +4,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Topology;
 
 /// <summary>
 /// An irregular quad mesh for terrain rendering.
@@ -20,8 +21,7 @@ public class IrregularMesh
     public (Vector2 Min, Vector2 Max) Bounds { get; private set; }
 
     // Spatial hash grid for O(1) quad lookup
-    private Dictionary<(int, int), List<int>> _spatialHash = new();
-    private float _gridCellSize = 50f; // Default cell size, adjusted based on mesh
+    private readonly MeshSpatialIndex _spatialIndex = new();
 
     /// <summary>
     /// Add a vertex to the mesh and return its ID.
@@ -61,54 +61,12 @@ public class IrregularMesh
     /// </summary>
     public void BuildAdjacency()
     {
-        BuildVertexAdjacency();
-        BuildQuadAdjacency();
-        IdentifyBoundaryVertices();
+        MeshAdjacencyBuilder.BuildVertexAdjacency(this);
+        MeshAdjacencyBuilder.BuildQuadAdjacency(this);
+        MeshAdjacencyBuilder.IdentifyBoundaryVertices(this);
         UpdateAllCachedProperties();
         ComputeBounds();
-        BuildSpatialHash();
-    }
-
-    /// <summary>
-    /// Build the spatial hash grid for fast quad lookup.
-    /// </summary>
-    private void BuildSpatialHash()
-    {
-        _spatialHash.Clear();
-
-        if (Quads.Count == 0)
-            return;
-
-        // Calculate grid cell size based on average quad size
-        float totalArea = Quads.Sum(q => q.Area);
-        float avgArea = totalArea / Quads.Count;
-        _gridCellSize = Mathf.Max(10f, Mathf.Sqrt(avgArea) * 2f);
-
-        // Insert each quad into all grid cells it overlaps
-        foreach (var quad in Quads)
-        {
-            var corners = quad.GetCornerPositions();
-            float minX = corners.Min(c => c.X);
-            float maxX = corners.Max(c => c.X);
-            float minY = corners.Min(c => c.Y);
-            float maxY = corners.Max(c => c.Y);
-
-            int startGridX = (int)Mathf.Floor(minX / _gridCellSize);
-            int endGridX = (int)Mathf.Floor(maxX / _gridCellSize);
-            int startGridY = (int)Mathf.Floor(minY / _gridCellSize);
-            int endGridY = (int)Mathf.Floor(maxY / _gridCellSize);
-
-            for (int gx = startGridX; gx <= endGridX; gx++)
-            {
-                for (int gy = startGridY; gy <= endGridY; gy++)
-                {
-                    var cell = (gx, gy);
-                    if (!_spatialHash.ContainsKey(cell))
-                        _spatialHash[cell] = new List<int>();
-                    _spatialHash[cell].Add(quad.Id);
-                }
-            }
-        }
+        _spatialIndex.Rebuild(Quads);
     }
 
     /// <summary>
@@ -124,13 +82,9 @@ public class IrregularMesh
             return null;
         }
 
-        // Find grid cell for position
-        int gridX = (int)Mathf.Floor(worldPos.X / _gridCellSize);
-        int gridY = (int)Mathf.Floor(worldPos.Y / _gridCellSize);
-        var cell = (gridX, gridY);
-
         // Check quads in this grid cell only
-        if (_spatialHash.TryGetValue(cell, out var quadIds))
+        var quadIds = _spatialIndex.GetCandidates(worldPos);
+        if (quadIds != null)
         {
             foreach (int quadId in quadIds)
             {
@@ -213,119 +167,7 @@ public class IrregularMesh
             quad.UpdateCachedProperties();
         }
         ComputeBounds();
-        BuildSpatialHash();
-    }
-
-    private void BuildVertexAdjacency()
-    {
-        // Clear existing adjacency
-        foreach (var vertex in Vertices)
-        {
-            vertex.AdjacentVertexIds.Clear();
-        }
-
-        // Two vertices are adjacent if they share a quad edge
-        // For each quad, add edges between consecutive vertices
-        var processedEdges = new HashSet<(int, int)>();
-
-        foreach (var quad in Quads)
-        {
-            var vids = quad.VertexIds;
-            for (int i = 0; i < 4; i++)
-            {
-                int v1 = vids[i];
-                int v2 = vids[(i + 1) % 4];
-
-                // Normalize edge direction for deduplication
-                var edge = v1 < v2 ? (v1, v2) : (v2, v1);
-
-                if (processedEdges.Add(edge))
-                {
-                    Vertices[v1].AdjacentVertexIds.Add(v2);
-                    Vertices[v2].AdjacentVertexIds.Add(v1);
-                }
-            }
-        }
-    }
-
-    private void BuildQuadAdjacency()
-    {
-        // Clear existing adjacency
-        foreach (var quad in Quads)
-        {
-            quad.AdjacentQuadIds.Clear();
-        }
-
-        // Build edge-to-quads map
-        var edgeToQuads = new Dictionary<(int, int), List<int>>();
-
-        foreach (var quad in Quads)
-        {
-            var vids = quad.VertexIds;
-            for (int i = 0; i < 4; i++)
-            {
-                int v1 = vids[i];
-                int v2 = vids[(i + 1) % 4];
-
-                // Normalize edge direction
-                var edge = v1 < v2 ? (v1, v2) : (v2, v1);
-
-                if (!edgeToQuads.ContainsKey(edge))
-                    edgeToQuads[edge] = new List<int>();
-
-                edgeToQuads[edge].Add(quad.Id);
-            }
-        }
-
-        // Quads sharing an edge are adjacent
-        foreach (var quadList in edgeToQuads.Values)
-        {
-            if (quadList.Count == 2)
-            {
-                int q1 = quadList[0];
-                int q2 = quadList[1];
-
-                if (!Quads[q1].AdjacentQuadIds.Contains(q2))
-                    Quads[q1].AdjacentQuadIds.Add(q2);
-
-                if (!Quads[q2].AdjacentQuadIds.Contains(q1))
-                    Quads[q2].AdjacentQuadIds.Add(q1);
-            }
-        }
-    }
-
-    private void IdentifyBoundaryVertices()
-    {
-        // A vertex is on the boundary if it belongs to an edge that's only in one quad
-        var edgeFaceCount = new Dictionary<(int, int), int>();
-
-        foreach (var quad in Quads)
-        {
-            var vids = quad.VertexIds;
-            for (int i = 0; i < 4; i++)
-            {
-                int v1 = vids[i];
-                int v2 = vids[(i + 1) % 4];
-                var edge = v1 < v2 ? (v1, v2) : (v2, v1);
-
-                edgeFaceCount[edge] = edgeFaceCount.GetValueOrDefault(edge, 0) + 1;
-            }
-        }
-
-        // Mark boundary vertices
-        foreach (var vertex in Vertices)
-        {
-            vertex.IsBoundary = false;
-        }
-
-        foreach (var (edge, count) in edgeFaceCount)
-        {
-            if (count == 1)
-            {
-                Vertices[edge.Item1].IsBoundary = true;
-                Vertices[edge.Item2].IsBoundary = true;
-            }
-        }
+        _spatialIndex.Rebuild(Quads);
     }
 
     private void ComputeBounds()
@@ -378,24 +220,4 @@ public class IrregularMesh
         float sumSquares = values.Sum(v => (v - avg) * (v - avg));
         return Mathf.Sqrt(sumSquares / values.Count);
     }
-}
-
-/// <summary>
-/// Statistics about the mesh for debugging and validation.
-/// </summary>
-internal struct MeshStatistics
-{
-    public int VertexCount;
-    public int QuadCount;
-    public int BoundaryVertexCount;
-    public float MinArea;
-    public float MaxArea;
-    public double AvgArea;
-    public float AreaStdDev;
-    public (Vector2 Min, Vector2 Max) Bounds;
-
-    public override readonly string ToString() =>
-        $"Vertices: {VertexCount}, Quads: {QuadCount}, Boundary: {BoundaryVertexCount}\n" +
-        $"Area: min={MinArea:F4}, max={MaxArea:F4}, avg={AvgArea:F4}, std={AreaStdDev:F4}\n" +
-        $"Bounds: {Bounds.Min} to {Bounds.Max}";
 }

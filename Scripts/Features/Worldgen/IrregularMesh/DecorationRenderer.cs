@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Decoration;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -13,11 +14,9 @@ public partial class DecorationRenderer : Node2D
 {
     private IrregularMesh? _mesh;
     private readonly Dictionary<int, DecorationData> _decorations = new();
-    private readonly Dictionary<string, MultiMesh> _multiMeshes = new();
-    private readonly Dictionary<string, MultiMeshInstance2D> _multiMeshInstances = new();
+    private readonly DecorationMultiMeshLayer _multiMeshLayer = new();
 
     private Node2D? _spriteContainer;
-    private readonly Random _rng = new();
 
     /// <summary>
     /// Z-index for decoration layer (above terrain at Z=0).
@@ -65,7 +64,7 @@ public partial class DecorationRenderer : Node2D
             return false;
 
         // Check if quad is passable for non-blocking decorations
-        if (!IsTerrainCompatible(quad, type))
+        if (!DecorationTerrainRules.IsCompatible(_mesh, quad, type))
             return false;
 
         return true;
@@ -186,53 +185,7 @@ public partial class DecorationRenderer : Node2D
     /// <param name="texture">The texture to apply.</param>
     public void RenderAsMultiMesh(DecorationType type, Mesh mesh, Texture2D texture)
     {
-        var decorationsOfType = _decorations.Values
-            .Where(d => d.Type == type)
-            .ToList();
-
-        if (decorationsOfType.Count == 0)
-            return;
-
-        var key = type.ToString();
-
-        // Create or update MultiMesh
-        if (!_multiMeshes.TryGetValue(key, out var multiMesh))
-        {
-            multiMesh = new MultiMesh
-            {
-                TransformFormat = MultiMesh.TransformFormatEnum.Transform2D,
-                Mesh = mesh
-            };
-            _multiMeshes[key] = multiMesh;
-        }
-
-        multiMesh.InstanceCount = decorationsOfType.Count;
-
-        for (int i = 0; i < decorationsOfType.Count; i++)
-        {
-            var data = decorationsOfType[i];
-            var transform = Transform2D.Identity
-                .Scaled(data.Scale)
-                .Rotated(data.Rotation)
-                .Translated(data.Position);
-
-            multiMesh.SetInstanceTransform2D(i, transform);
-        }
-
-        // Create or update MultiMeshInstance2D
-        if (!_multiMeshInstances.TryGetValue(key, out var instance))
-        {
-            instance = new MultiMeshInstance2D
-            {
-                Name = $"MultiMesh_{key}",
-                ZIndex = DecorationZIndex
-            };
-            AddChild(instance);
-            _multiMeshInstances[key] = instance;
-        }
-
-        instance.Multimesh = multiMesh;
-        instance.Texture = texture;
+        _multiMeshLayer.Render(this, _decorations.Values, type, mesh, texture, DecorationZIndex);
     }
 
     /// <summary>
@@ -281,11 +234,7 @@ public partial class DecorationRenderer : Node2D
                 child.QueueFree();
         }
 
-        foreach (var instance in _multiMeshInstances.Values)
-            instance.QueueFree();
-
-        _multiMeshes.Clear();
-        _multiMeshInstances.Clear();
+        _multiMeshLayer.Clear();
     }
 
     /// <summary>
@@ -297,35 +246,6 @@ public partial class DecorationRenderer : Node2D
     /// Get decoration count.
     /// </summary>
     public int DecorationCount => _decorations.Count;
-
-    private bool IsTerrainCompatible(MeshQuad quad, DecorationType type)
-    {
-        // Get terrain types from corners
-        var terrainTypes = quad.VertexIds
-            .Select(vid => _mesh!.Vertices[vid].TerrainType)
-            .ToHashSet();
-
-        return type switch
-        {
-            // Trees need solid ground (terrainType > 0) at all corners
-            DecorationType.Tree => terrainTypes.All(t => t > 0),
-
-            // Rocks can be anywhere except water
-            DecorationType.Rock => terrainTypes.Any(t => t > 0),
-
-            // Bushes need solid ground
-            DecorationType.Bush => terrainTypes.All(t => t > 0),
-
-            // Water lilies need water (terrainType == 0)
-            DecorationType.WaterLily => terrainTypes.Any(t => t == 0),
-
-            // Grass overlays work on any ground
-            DecorationType.Grass => terrainTypes.Any(t => t > 0),
-
-            // Props are flexible
-            _ => true
-        };
-    }
 }
 
 /// <summary>
@@ -339,50 +259,4 @@ public class DecorationData
     public Vector2 Position { get; init; }
     public float Rotation { get; init; }
     public Vector2 Scale { get; init; }
-}
-
-/// <summary>
-/// Types of decorations that can be placed on quads.
-/// </summary>
-public enum DecorationType
-{
-    /// <summary>
-    /// Tree (various types based on variation).
-    /// </summary>
-    Tree,
-
-    /// <summary>
-    /// Rock/boulder.
-    /// </summary>
-    Rock,
-
-    /// <summary>
-    /// Bush/shrub.
-    /// </summary>
-    Bush,
-
-    /// <summary>
-    /// Grass overlay/patch.
-    /// </summary>
-    Grass,
-
-    /// <summary>
-    /// Water lily/aquatic plant.
-    /// </summary>
-    WaterLily,
-
-    /// <summary>
-    /// Generic prop.
-    /// </summary>
-    Prop,
-
-    /// <summary>
-    /// Chest/container.
-    /// </summary>
-    Chest,
-
-    /// <summary>
-    /// Signpost/marker.
-    /// </summary>
-    Sign
 }

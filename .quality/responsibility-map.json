@@ -368,6 +368,90 @@
       {
         "responsibility": "FindAll",
         "owner": "ArticulationPointFinder"
+      },
+      {
+        "responsibility": "FindForegroundTileId",
+        "owner": "TerrainQuadResolver"
+      },
+      {
+        "responsibility": "ComputeBitmask",
+        "owner": "TerrainQuadResolver"
+      },
+      {
+        "responsibility": "ResolveAtlasCoords",
+        "owner": "TerrainQuadResolver"
+      },
+      {
+        "responsibility": "ResolveBackground",
+        "owner": "TerrainQuadResolver"
+      },
+      {
+        "responsibility": "AddQuad",
+        "owner": "TerrainQuadMeshWriter"
+      },
+      {
+        "responsibility": "GetTileUvRect",
+        "owner": "TerrainQuadMeshWriter"
+      },
+      {
+        "responsibility": "ComputeUvCorners",
+        "owner": "TerrainQuadMeshWriter"
+      },
+      {
+        "responsibility": "AddTriangle",
+        "owner": "TerrainQuadMeshWriter"
+      },
+      {
+        "responsibility": "GetBitmaskColor",
+        "owner": "SolidColorMeshBuilder"
+      },
+      {
+        "responsibility": "AddColoredVertex",
+        "owner": "SolidColorMeshBuilder"
+      },
+      {
+        "responsibility": "IsCompatible",
+        "owner": "DecorationTerrainRules"
+      },
+      {
+        "responsibility": "GetOrCreateMultiMesh",
+        "owner": "DecorationMultiMeshLayer"
+      },
+      {
+        "responsibility": "WriteInstanceTransforms",
+        "owner": "DecorationMultiMeshLayer"
+      },
+      {
+        "responsibility": "GetOrCreateInstance",
+        "owner": "DecorationMultiMeshLayer"
+      },
+      {
+        "responsibility": "BuildVertexAdjacency",
+        "owner": "MeshAdjacencyBuilder"
+      },
+      {
+        "responsibility": "BuildQuadAdjacency",
+        "owner": "MeshAdjacencyBuilder"
+      },
+      {
+        "responsibility": "IdentifyBoundaryVertices",
+        "owner": "MeshAdjacencyBuilder"
+      },
+      {
+        "responsibility": "LinkQuads",
+        "owner": "MeshAdjacencyBuilder"
+      },
+      {
+        "responsibility": "EnumerateEdges",
+        "owner": "MeshAdjacencyBuilder"
+      },
+      {
+        "responsibility": "GetCandidates",
+        "owner": "MeshSpatialIndex"
+      },
+      {
+        "responsibility": "InsertQuad",
+        "owner": "MeshSpatialIndex"
       }
     ],
     "boundaries": [

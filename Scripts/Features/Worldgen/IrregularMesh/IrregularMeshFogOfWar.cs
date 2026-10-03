@@ -252,7 +252,7 @@ public class IrregularMeshFogOfWar : IActiveFogOfWar
     /// <summary>
     /// Get visibility statistics.
     /// </summary>
-    public (int hidden, int revealed, int visible) GetStatistics()
+    internal FogStatistics GetStatistics()
     {
         int hidden = 0, revealed = 0, visible = 0;
 
@@ -266,7 +266,7 @@ public class IrregularMeshFogOfWar : IActiveFogOfWar
             }
         }
 
-        return (hidden, revealed, visible);
+        return new FogStatistics(hidden, revealed, visible);
     }
 
     private bool CanSeeCell(int fromCellId, int toCellId, Vector2 fromPos)

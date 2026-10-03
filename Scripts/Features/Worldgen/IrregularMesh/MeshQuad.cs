@@ -289,27 +289,5 @@ public class MeshQuad
             ?? tileCounts.MaxBy(kv => kv.Value).Key;
     }
 
-    /// <summary>
-    /// Computes bitmask for the quad's dominant terrain type.
-    /// Automatically determines which terrain type to use based on corner tiles.
-    /// </summary>
-    public (int Bitmask, string? TileId) ComputeDominantBitmask()
-    {
-        var tileId = GetDominantTileId();
-        if (tileId == null)
-            return (0, null);
-
-        // Find the terrain type for this tile
-        var sortedCorners = GetSortedCorners();
-        var targetTerrainType = sortedCorners
-            .Where(v => v.TileId == tileId)
-            .Select(v => v.TerrainType)
-            .FirstOrDefault();
-
-        // Compute bitmask for this terrain type
-        var bitmask = ComputeCorner16Bitmask(targetTerrainType);
-        return (bitmask, tileId);
-    }
-
     public override string ToString() => $"Quad[{Id}] vertices={string.Join(",", VertexIds)}";
 }

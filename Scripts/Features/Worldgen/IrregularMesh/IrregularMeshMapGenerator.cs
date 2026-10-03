@@ -74,54 +74,7 @@ public class IrregularMeshMapGenerator : IMapGenerator
         progress?.Report(0.1f);
         cancellationToken.ThrowIfCancellationRequested();
 
-        // Calculate mesh rings based on size hint
-        // Approximate: each ring adds ~6 quads, we want roughly size.X * size.Y / 100 quads
-        var targetQuads = config.Size.X * config.Size.Y / 100;
-        var rings = Math.Max(3, (int)Math.Sqrt(targetQuads / 6.0) + 2);
-
-        GD.Print($"[IrregularMeshMapGenerator] Generating mesh with {rings} rings for target size {config.Size}");
-
-        // Generate mesh geometry
-        IrregularMesh mesh;
-        if (_adjacencyRules != null && _tileToTerrainType != null)
-        {
-            // Use WFC terrain generation
-            progress?.Report(0.2f);
-            var terrainGen = new MeshTerrainGenerator(_adjacencyRules, _tileToTerrainType);
-
-            // Set biome registry for card-based generation
-            if (config.BiomeRegistry != null)
-            {
-                terrainGen.SetBiomeRegistry(config.BiomeRegistry);
-            }
-
-            // Use card-based gradient if cards are provided
-            if (config.MapSeeds.Length > 0)
-            {
-                GD.Print($"[IrregularMeshMapGenerator] Using card-based gradient with {config.MapSeeds.Length} cards");
-                mesh = terrainGen.GenerateWithCards(rings, config.MapSeeds, (int)config.Seed);
-            }
-            else
-            {
-                mesh = terrainGen.Generate(rings, config.BiomeRegistry?.GetBiome("plains"), (int)config.Seed);
-            }
-        }
-        else
-        {
-            // Use default terrain generation
-            progress?.Report(0.2f);
-            var meshConfig = new MeshGenerator.GenerationConfig
-            {
-                Rings = rings,
-                Seed = (int)config.Seed,
-                RelaxationIterations = 15
-            };
-            mesh = MeshGenerator.Generate(meshConfig);
-
-            // Assign default terrain (70% passable, 30% impassable)
-            progress?.Report(0.4f);
-            AssignDefaultTerrain(mesh, rng);
-        }
+        var mesh = BuildMesh(config, rng, progress);
 
         cancellationToken.ThrowIfCancellationRequested();
         progress?.Report(0.6f);
@@ -133,31 +86,7 @@ public class IrregularMeshMapGenerator : IMapGenerator
             PassableTerrainType = 1 // Terrain type 1 is passable
         };
 
-        // Find passable cells for spawn placement
-        var passableCells = new List<int>();
-        for (int i = 0; i < mapData.CellCount; i++)
-        {
-            if (mapData.IsPassable(i))
-                passableCells.Add(i);
-        }
-
-        if (passableCells.Count == 0)
-        {
-            GD.PrintErr("[IrregularMeshMapGenerator] No passable cells found!");
-            // Make at least some cells passable as fallback
-            for (int i = 0; i < Math.Min(10, mesh.Vertices.Count); i++)
-            {
-                mesh.Vertices[i].TerrainType = 1;
-            }
-            mesh.UpdateAllCachedProperties();
-
-            passableCells.Clear();
-            for (int i = 0; i < mapData.CellCount; i++)
-            {
-                if (mapData.IsPassable(i))
-                    passableCells.Add(i);
-            }
-        }
+        var passableCells = FindPassableCellsWithFallback(mesh, mapData);
 
         progress?.Report(0.7f);
         cancellationToken.ThrowIfCancellationRequested();
@@ -186,7 +115,100 @@ public class IrregularMeshMapGenerator : IMapGenerator
         return new IrregularGeneratedMap(mesh, mapData);
     }
 
-    private void AssignDefaultTerrain(IrregularMesh mesh, RandomNumberGenerator rng)
+    /// <summary>
+    /// Calculate mesh rings based on size hint.
+    /// Approximate: each ring adds ~6 quads, we want roughly size.X * size.Y / 100 quads.
+    /// </summary>
+    private static int CalculateRings(MapGenerationConfig config)
+    {
+        var targetQuads = config.Size.X * config.Size.Y / 100;
+        var rings = Math.Max(3, (int)Math.Sqrt(targetQuads / 6.0) + 2);
+
+        GD.Print($"[IrregularMeshMapGenerator] Generating mesh with {rings} rings for target size {config.Size}");
+        return rings;
+    }
+
+    private IrregularMesh BuildMesh(MapGenerationConfig config, RandomNumberGenerator rng, IProgress<float>? progress)
+    {
+        var rings = CalculateRings(config);
+        progress?.Report(0.2f);
+
+        if (_adjacencyRules != null && _tileToTerrainType != null)
+        {
+            var terrainGen = new MeshTerrainGenerator(_adjacencyRules, _tileToTerrainType);
+            return BuildWfcMesh(terrainGen, config, rings);
+        }
+
+        var mesh = GenerateDefaultGeometry(config, rings);
+
+        // Assign default terrain (70% passable, 30% impassable)
+        progress?.Report(0.4f);
+        AssignDefaultTerrain(mesh, rng);
+        return mesh;
+    }
+
+    private static IrregularMesh BuildWfcMesh(MeshTerrainGenerator terrainGen, MapGenerationConfig config, int rings)
+    {
+        // Set biome registry for card-based generation
+        if (config.BiomeRegistry != null)
+        {
+            terrainGen.SetBiomeRegistry(config.BiomeRegistry);
+        }
+
+        // Use card-based gradient if cards are provided
+        if (config.MapSeeds.Length > 0)
+        {
+            GD.Print($"[IrregularMeshMapGenerator] Using card-based gradient with {config.MapSeeds.Length} cards");
+            return terrainGen.GenerateWithCards(rings, config.MapSeeds, (int)config.Seed);
+        }
+
+        return terrainGen.Generate(rings, config.BiomeRegistry?.GetBiome("plains"), (int)config.Seed);
+    }
+
+    private static IrregularMesh GenerateDefaultGeometry(MapGenerationConfig config, int rings)
+    {
+        var meshConfig = new MeshGenerator.GenerationConfig
+        {
+            Rings = rings,
+            Seed = (int)config.Seed,
+            RelaxationIterations = 15
+        };
+        return MeshGenerator.Generate(meshConfig);
+    }
+
+    /// <summary>
+    /// Collects passable cells; if there are none, makes the first vertices passable and collects again.
+    /// </summary>
+    private static List<int> FindPassableCellsWithFallback(IrregularMesh mesh, IrregularMeshMapData mapData)
+    {
+        var passableCells = CollectPassableCells(mapData);
+        if (passableCells.Count > 0)
+            return passableCells;
+
+        GD.PrintErr("[IrregularMeshMapGenerator] No passable cells found!");
+        // Make at least some cells passable as fallback
+        for (int i = 0; i < Math.Min(10, mesh.Vertices.Count); i++)
+        {
+            mesh.Vertices[i].TerrainType = 1;
+        }
+        mesh.UpdateAllCachedProperties();
+
+        return CollectPassableCells(mapData);
+    }
+
+    private static List<int> CollectPassableCells(IrregularMeshMapData mapData)
+    {
+        var passableCells = new List<int>();
+        for (int i = 0; i < mapData.CellCount; i++)
+        {
+            if (mapData.IsPassable(i))
+                passableCells.Add(i);
+        }
+
+        return passableCells;
+    }
+
+    private static void AssignDefaultTerrain(IrregularMesh mesh, RandomNumberGenerator rng)
     {
         foreach (var vertex in mesh.Vertices)
         {
