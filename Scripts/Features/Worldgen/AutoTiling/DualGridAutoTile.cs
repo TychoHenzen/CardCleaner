@@ -107,28 +107,27 @@ public static class DualGridAutoTile
     /// <returns>8-bit bitmask for Blob47 format</returns>
     public static int CornersToFull8Bitmask(bool hasNE, bool hasSE, bool hasSW, bool hasNW)
     {
-        // Derive edges from adjacent corners
         // An edge is set if EITHER adjacent corner has terrain
-        var hasN = hasNW || hasNE;
-        var hasE = hasNE || hasSE;
-        var hasS = hasSE || hasSW;
-        var hasW = hasSW || hasNW;
-
-        // Build bitmask - edges first
-        var mask = 0;
-        if (hasN) mask |= NeighborBitmask8.North;     // 1
-        if (hasE) mask |= NeighborBitmask8.East;      // 4
-        if (hasS) mask |= NeighborBitmask8.South;     // 16
-        if (hasW) mask |= NeighborBitmask8.West;      // 64
+        var hasN = hasNW | hasNE;
+        var hasE = hasNE | hasSE;
+        var hasS = hasSE | hasSW;
+        var hasW = hasSW | hasNW;
 
         // Corners only valid when both adjacent edges are set (blob constraint)
         // AND the actual corner data cell is filled
-        if (hasNE && hasN && hasE) mask |= NeighborBitmask8.NorthEast;  // 2
-        if (hasSE && hasE && hasS) mask |= NeighborBitmask8.SouthEast;  // 8
-        if (hasSW && hasS && hasW) mask |= NeighborBitmask8.SouthWest;  // 32
-        if (hasNW && hasW && hasN) mask |= NeighborBitmask8.NorthWest;  // 128
+        return BitIf(hasN, NeighborBitmask8.North)
+               | BitIf(hasE, NeighborBitmask8.East)
+               | BitIf(hasS, NeighborBitmask8.South)
+               | BitIf(hasW, NeighborBitmask8.West)
+               | BitIf(hasNE & hasN & hasE, NeighborBitmask8.NorthEast)
+               | BitIf(hasSE & hasE & hasS, NeighborBitmask8.SouthEast)
+               | BitIf(hasSW & hasS & hasW, NeighborBitmask8.SouthWest)
+               | BitIf(hasNW & hasW & hasN, NeighborBitmask8.NorthWest);
+    }
 
-        return mask;
+    private static int BitIf(bool condition, int bit)
+    {
+        return condition ? bit : 0;
     }
 
     /// <summary>

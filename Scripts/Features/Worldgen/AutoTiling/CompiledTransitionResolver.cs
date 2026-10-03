@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
-using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling.Transitions;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.AutoTiling;
@@ -16,11 +13,6 @@ public class CompiledTransitionResolver : ITransitionResolver
 {
     private const string DefaultTransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";
     private const int DefaultCompiledAtlasSourceId = 0;
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
 
     private readonly CompiledTransitionMap _transitionMap;
     private readonly int _compiledAtlasSourceId;
@@ -45,7 +37,7 @@ public class CompiledTransitionResolver : ITransitionResolver
     public CompiledTransitionResolver(string transitionMapPath, int compiledAtlasSourceId)
     {
         _compiledAtlasSourceId = compiledAtlasSourceId;
-        _transitionMap = LoadTransitionMap(transitionMapPath);
+        _transitionMap = TransitionMapLoader.Load(transitionMapPath);
     }
 
     /// <summary>
@@ -129,23 +121,8 @@ public class CompiledTransitionResolver : ITransitionResolver
         int fallbackSourceId,
         Vector2I fallbackCoords)
     {
-        // Try compiled transition map first (bitmask is already Corner16)
         var coords = ResolveTransition(innerTerrainId, outerTerrainId, bitmask);
-        if (coords.HasValue)
-            return new TransitionResolveResult(_compiledAtlasSourceId, coords.Value);
-
-        // Try to find ANY transition with this inner terrain to get valid compiled atlas coords
-        var anyVariant = ResolveAnyVariant(innerTerrainId, bitmask);
-        if (anyVariant.HasValue)
-            return new TransitionResolveResult(_compiledAtlasSourceId, anyVariant.Value);
-
-        // Ultimate fallback: if fallbackSourceId matches compiled atlas, use it
-        // Otherwise return a known-safe position (first tile at 0,0)
-        if (fallbackSourceId == _compiledAtlasSourceId)
-            return new TransitionResolveResult(fallbackSourceId, fallbackCoords);
-
-        // Can't find valid coords - return error marker position (atlas 0,0 is typically valid)
-        return new TransitionResolveResult(_compiledAtlasSourceId, Vector2I.Zero);
+        return ResolveOrFallback(coords, innerTerrainId, bitmask, fallbackSourceId, fallbackCoords);
     }
 
     /// <summary>
@@ -163,10 +140,19 @@ public class CompiledTransitionResolver : ITransitionResolver
         int tileX,
         int tileY)
     {
-        // Try compiled transition map first with variant selection (bitmask is already Corner16)
         var coords = ResolveTransitionWithVariant(innerTerrainId, outerTerrainId, bitmask, tileX, tileY);
-        if (coords.HasValue)
-            return new TransitionResolveResult(_compiledAtlasSourceId, coords.Value);
+        return ResolveOrFallback(coords, innerTerrainId, bitmask, fallbackSourceId, fallbackCoords);
+    }
+
+    private TransitionResolveResult ResolveOrFallback(
+        Vector2I? primaryCoords,
+        string innerTerrainId,
+        int bitmask,
+        int fallbackSourceId,
+        Vector2I fallbackCoords)
+    {
+        if (primaryCoords.HasValue)
+            return new TransitionResolveResult(_compiledAtlasSourceId, primaryCoords.Value);
 
         // Try to find ANY transition with this inner terrain to get valid compiled atlas coords
         var anyVariant = ResolveAnyVariant(innerTerrainId, bitmask);
@@ -174,7 +160,6 @@ public class CompiledTransitionResolver : ITransitionResolver
             return new TransitionResolveResult(_compiledAtlasSourceId, anyVariant.Value);
 
         // Ultimate fallback: if fallbackSourceId matches compiled atlas, use it
-        // Otherwise return a known-safe position (first tile at 0,0)
         if (fallbackSourceId == _compiledAtlasSourceId)
             return new TransitionResolveResult(fallbackSourceId, fallbackCoords);
 
@@ -235,13 +220,12 @@ public class CompiledTransitionResolver : ITransitionResolver
         // Find any transition that uses this terrain as the outer (background) terrain
         foreach (var (key, entry) in _transitionMap.Transitions)
         {
-            var (_, outerTerrain) = CompiledTransitionMap.ParseKey(key);
-            if (outerTerrain == terrainId && entry.Variants.Length > bitmask)
-            {
-                var variants = entry.Variants[bitmask];
-                if (variants != null && variants.Length > 0)
-                    return new Vector2I(variants[0].X, variants[0].Y);
-            }
+            if (CompiledTransitionMap.ParseKey(key).OuterTerrain != terrainId)
+                continue;
+
+            var coords = FirstVariantCoords(entry, bitmask);
+            if (coords.HasValue)
+                return coords;
         }
 
         return null;
@@ -255,8 +239,8 @@ public class CompiledTransitionResolver : ITransitionResolver
     {
         foreach (var key in _transitionMap.Transitions.Keys)
         {
-            var (borderId, outerTerrain) = CompiledTransitionMap.ParseKey(key);
-            yield return (borderId, outerTerrain);
+            var parsed = CompiledTransitionMap.ParseKey(key);
+            yield return (parsed.BorderId, parsed.OuterTerrain);
         }
     }
 
@@ -273,45 +257,26 @@ public class CompiledTransitionResolver : ITransitionResolver
         // Find any transition that uses this terrain as the inner (border) terrain
         foreach (var (key, entry) in _transitionMap.Transitions)
         {
-            var (borderId, _) = CompiledTransitionMap.ParseKey(key);
-            if (borderId == terrainId && entry.Variants.Length > bitmask)
-            {
-                var variants = entry.Variants[bitmask];
-                if (variants != null && variants.Length > 0)
-                    return new Vector2I(variants[0].X, variants[0].Y);
-            }
+            if (CompiledTransitionMap.ParseKey(key).BorderId != terrainId)
+                continue;
+
+            var coords = FirstVariantCoords(entry, bitmask);
+            if (coords.HasValue)
+                return coords;
         }
 
         return null;
     }
 
-    private static CompiledTransitionMap LoadTransitionMap(string path)
+    private static Vector2I? FirstVariantCoords(TransitionEntry entry, int bitmask)
     {
-        try
-        {
-            var absolutePath = ProjectSettings.GlobalizePath(path);
-            if (!File.Exists(absolutePath))
-            {
-                ILog.Print($"[CompiledTransitionResolver] Transition map not found: {absolutePath}");
-                return new CompiledTransitionMap();
-            }
+        if (entry.Variants.Length <= bitmask)
+            return null;
 
-            var json = File.ReadAllText(absolutePath);
-            var map = JsonSerializer.Deserialize<CompiledTransitionMap>(json, JsonOptions);
+        var variants = entry.Variants[bitmask];
+        if (variants == null || variants.Length == 0)
+            return null;
 
-            if (map == null)
-            {
-                ILog.Print("[CompiledTransitionResolver] Failed to deserialize transition map");
-                return new CompiledTransitionMap();
-            }
-
-            ILog.Print($"[CompiledTransitionResolver] Loaded {map.Transitions.Count} transitions from {path}");
-            return map;
-        }
-        catch (Exception ex)
-        {
-            ILog.Print($"[CompiledTransitionResolver] Error loading transition map: {ex.Message}");
-            return new CompiledTransitionMap();
-        }
+        return new Vector2I(variants[0].X, variants[0].Y);
     }
 }

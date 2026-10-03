@@ -112,25 +112,11 @@ public static class NeighborBitmask8
     /// <returns>Blob-normalized mask (one of 47 valid values)</returns>
     public static int NormalizeToBlobMask(int rawMask)
     {
-        var result = rawMask & AllEdges; // Start with just edges
-
-        // NE corner valid only if N and E are set
-        if ((rawMask & NorthEast) != 0 && (rawMask & North) != 0 && (rawMask & East) != 0)
-            result |= NorthEast;
-
-        // SE corner valid only if E and S are set
-        if ((rawMask & SouthEast) != 0 && (rawMask & East) != 0 && (rawMask & South) != 0)
-            result |= SouthEast;
-
-        // SW corner valid only if S and W are set
-        if ((rawMask & SouthWest) != 0 && (rawMask & South) != 0 && (rawMask & West) != 0)
-            result |= SouthWest;
-
-        // NW corner valid only if W and N are set
-        if ((rawMask & NorthWest) != 0 && (rawMask & West) != 0 && (rawMask & North) != 0)
-            result |= NorthWest;
-
-        return result;
+        return (rawMask & AllEdges)
+               | KeepCornerIfEdgesSet(rawMask, NorthEast, North, East)
+               | KeepCornerIfEdgesSet(rawMask, SouthEast, East, South)
+               | KeepCornerIfEdgesSet(rawMask, SouthWest, South, West)
+               | KeepCornerIfEdgesSet(rawMask, NorthWest, West, North);
     }
 
     /// <summary>
@@ -138,17 +124,13 @@ public static class NeighborBitmask8
     /// </summary>
     public static bool IsValidBlobMask(int mask)
     {
-        // Check each corner - if set, both adjacent edges must be set
-        if ((mask & NorthEast) != 0 && ((mask & North) == 0 || (mask & East) == 0))
-            return false;
-        if ((mask & SouthEast) != 0 && ((mask & East) == 0 || (mask & South) == 0))
-            return false;
-        if ((mask & SouthWest) != 0 && ((mask & South) == 0 || (mask & West) == 0))
-            return false;
-        if ((mask & NorthWest) != 0 && ((mask & West) == 0 || (mask & North) == 0))
-            return false;
+        return NormalizeToBlobMask(mask) == (mask & All);
+    }
 
-        return true;
+    private static int KeepCornerIfEdgesSet(int mask, int corner, int edgeA, int edgeB)
+    {
+        var required = corner | edgeA | edgeB;
+        return (mask & required) == required ? corner : 0;
     }
 
     /// <summary>

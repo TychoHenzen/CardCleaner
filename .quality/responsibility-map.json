@@ -724,6 +724,10 @@
       {
         "responsibility": "Update",
         "owner": "StuckDetector"
+      },
+      {
+        "responsibility": "Load",
+        "owner": "TransitionMapLoader"
       }
     ],
     "boundaries": [

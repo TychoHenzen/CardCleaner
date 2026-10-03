@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling.Transitions;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.AutoTiling;
@@ -33,10 +34,10 @@ public class CompiledTransitionMap
     /// <summary>
     /// Parses a lookup key back into its components.
     /// </summary>
-    public static (string borderId, string outerTerrain) ParseKey(string key)
+    internal static TransitionKey ParseKey(string key)
     {
         var parts = key.Split('|', 2);
-        return parts.Length == 2 ? (parts[0], parts[1]) : (key, "");
+        return parts.Length == 2 ? new TransitionKey(parts[0], parts[1]) : new TransitionKey(key, "");
     }
 
     /// <summary>
@@ -158,7 +159,7 @@ public class CompiledTransitionMap
         var seen = new HashSet<string>();
         foreach (var key in Transitions.Keys)
         {
-            var (borderId, _) = ParseKey(key);
+            var borderId = ParseKey(key).BorderId;
             if (seen.Add(borderId))
                 yield return borderId;
         }

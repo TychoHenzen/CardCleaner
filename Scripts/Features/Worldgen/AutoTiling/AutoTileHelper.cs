@@ -92,33 +92,43 @@ public static class AutoTileHelper
         int sourceId = 4)
     {
         var variantsApplied = 0;
-
-        Func<Vector2I, string?> getTileId = pos =>
-        {
-            if (pos.X < 0 || pos.X >= mapSize.X || pos.Y < 0 || pos.Y >= mapSize.Y)
-                return null;
-            return tileIds[pos.Y, pos.X];
-        };
+        Func<Vector2I, string?> getTileId = pos => TileIdAt(tileIds, mapSize, pos);
 
         for (var y = 0; y < mapSize.Y; y++)
         {
             for (var x = 0; x < mapSize.X; x++)
             {
                 var position = new Vector2I(x, y);
-                var tileId = tileIds[y, x];
-                if (string.IsNullOrEmpty(tileId))
-                    continue;
-
-                var tileDef = tileRegistry.GetTile(tileId);
-                if (tileDef == null || !tileDef.HasAutoTileVariants)
-                    continue;
-
-                var coords = GetAutoTileCoords(position, tileDef, getTileId);
-                tileMap.SetCell(position, sourceId, coords);
-                variantsApplied++;
+                if (TryApplyVariant(tileMap, tileRegistry, tileIds[y, x], position, sourceId, getTileId))
+                    variantsApplied++;
             }
         }
 
         return variantsApplied;
+    }
+
+    private static string? TileIdAt(string[,] tileIds, Vector2I mapSize, Vector2I pos)
+    {
+        var outOfBounds = pos.X < 0 || pos.X >= mapSize.X || pos.Y < 0 || pos.Y >= mapSize.Y;
+        return outOfBounds ? null : tileIds[pos.Y, pos.X];
+    }
+
+    private static bool TryApplyVariant(
+        TileMapLayer tileMap,
+        ITileRegistry tileRegistry,
+        string? tileId,
+        Vector2I position,
+        int sourceId,
+        Func<Vector2I, string?> getTileId)
+    {
+        if (string.IsNullOrEmpty(tileId))
+            return false;
+
+        var tileDef = tileRegistry.GetTile(tileId);
+        if (tileDef == null || !tileDef.HasAutoTileVariants)
+            return false;
+
+        tileMap.SetCell(position, sourceId, GetAutoTileCoords(position, tileDef, getTileId));
+        return true;
     }
 }
