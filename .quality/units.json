@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 374,
+  "fileCount": 376,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
@@ -39,6 +39,11 @@
     },
     {
       "path": "addons/tile_editor/TileEditorDock.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/TileEditorDock.TestHooks.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -1203,6 +1208,11 @@
       "classification": "production"
     },
     {
+      "path": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "language": "cs",
+      "classification": "test"
+    },
+    {
       "path": "Tests/Core/Data/CardTemplateTest.cs",
       "language": "cs",
       "classification": "test"
@@ -1874,27 +1884,27 @@
     }
   ],
   "summary": {
-    "total": 7205,
-    "errors": 435,
-    "warnings": 6770,
+    "total": 7226,
+    "errors": 439,
+    "warnings": 6787,
     "byRule": {
       "dead-export": 21,
       "duplicate-block": 160,
       "types-per-file": 51,
-      "file-length": 222,
+      "file-length": 223,
       "complexity": 330,
       "function-length": 381,
       "nesting-depth": 40,
       "param-count": 111,
       "unnamed-tuple": 59,
+      "line-length": 4398,
       "test-only-export": 13,
-      "else-branch": 148,
-      "stateless-method": 898,
+      "else-branch": 151,
+      "stateless-method": 901,
       "comment-bloat": 55,
       "comment-restates-code": 261,
       "output-parameter": 15,
-      "flag-parameter": 56,
-      "line-length": 4384
+      "flag-parameter": 56
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
@@ -2023,7 +2033,7 @@
       "Tests/Features/Worldgen/Wfc/Constraints/ConnectivityConstraintTest.cs": 33,
       "Tests/Features/Worldgen/Wfc/WfcPropagatorTest.cs": 38,
       "addons/tile_editor/BitmaskConfigGrid.cs": 20,
-      "addons/tile_editor/TileEditorDock.cs": 35,
+      "addons/tile_editor/TileEditorDock.cs": 30,
       "addons/tile_editor/TilePropertiesPanel.cs": 221,
       "Scripts/Core/Services/Pathfinder.cs": 7,
       "Scripts/Core/Services/SimpleVisibilityChecker.cs": 19,
@@ -2052,6 +2062,7 @@
       "Tests/Core/Services/SimpleVisibilityCheckerTest.cs": 7,
       "Tests/Core/Services/TerrainCollisionShapeGeneratorTest.cs": 33,
       "Tests/Features/Deckbuilder/Services/Exploration/ExplorationStrategyTest.cs": 19,
+      "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs": 25,
       "Scripts/Core/Services/MapGenerationProfiler.cs": 2,
       "Scripts/Features/Worldgen/Wfc/Constraints/AdjacencyConstraint.cs": 2,
       "Scripts/Core/Services/TsxPropertyWriter.cs": 11,
@@ -2157,6 +2168,7 @@
       "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs": 4,
       "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs": 5,
       "Scripts/Core/Interfaces/ILog.cs": 3,
+      "addons/tile_editor/TileEditorDock.TestHooks.cs": 1,
       "Scripts/Core/Data/GameSettings.cs": 8,
       "Scripts/Core/Data/LayerData.cs": 3,
       "Scripts/Core/DependencyInjection/ServiceContainer.cs": 4,
@@ -3741,8 +3753,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "error",
-      "message": "file is 428 lines",
-      "metric": 428
+      "message": "file is 425 lines",
+      "metric": 425
     },
     {
       "file": "addons/tile_editor/TileEditorService.cs",
@@ -5705,6 +5717,38 @@
       "metric": 1
     },
     {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 89,
+      "rule": "line-length",
+      "severity": "error",
+      "message": "line is 130 chars",
+      "metric": 130
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 94,
+      "rule": "line-length",
+      "severity": "error",
+      "message": "line is 126 chars",
+      "metric": 126
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 95,
+      "rule": "line-length",
+      "severity": "error",
+      "message": "line is 129 chars",
+      "metric": 129
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 99,
+      "rule": "line-length",
+      "severity": "error",
+      "message": "line is 134 chars",
+      "metric": 134
+    },
+    {
       "file": "Scripts/Core/Services/MapGenerationProfiler.cs",
       "line": 8,
       "rule": "test-only-export",
@@ -7351,6 +7395,14 @@
       "severity": "warn",
       "message": "file is 207 lines",
       "metric": 207
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 149 lines",
+      "metric": 149
     },
     {
       "file": "Tests/Core/Data/CardTemplateTest.cs",
@@ -10793,6 +10845,14 @@
       "metric": 43
     },
     {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 63,
+      "rule": "function-length",
+      "severity": "warn",
+      "message": "PluginRegistrationAndToolbarActionsWorkHeadlessly() is 39 lines",
+      "metric": 39
+    },
+    {
       "file": "Tests/Core/DependencyInjection/ServiceLocatorTest.cs",
       "line": 108,
       "rule": "function-length",
@@ -11858,15 +11918,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 308,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "DoCompileTmx() is 32 lines",
-      "metric": 32
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 341,
+      "line": 338,
       "rule": "function-length",
       "severity": "warn",
       "message": "OnInsertTsxPropsPressed() is 36 lines",
@@ -11874,7 +11926,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 378,
+      "line": 375,
       "rule": "function-length",
       "severity": "warn",
       "message": "DoInsertTsxProps() is 31 lines",
@@ -13905,6 +13957,22 @@
       "metric": 1
     },
     {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 29,
+      "rule": "else-branch",
+      "severity": "warn",
+      "message": "BeforeTest() has 1 else branch(es) — prefer guard clauses",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 46,
+      "rule": "else-branch",
+      "severity": "warn",
+      "message": "AfterTest() has 1 else branch(es) — prefer guard clauses",
+      "metric": 1
+    },
+    {
       "file": "Tests/Core/Services/TilesJsonValidationTest.cs",
       "line": 227,
       "rule": "else-branch",
@@ -14193,6 +14261,14 @@
       "metric": 1
     },
     {
+      "file": "addons/tile_editor/TileEditorDock.TestHooks.cs",
+      "line": 16,
+      "rule": "else-branch",
+      "severity": "warn",
+      "message": "ShowToolDialog() has 1 else branch(es) — prefer guard clauses",
+      "metric": 1
+    },
+    {
       "file": "addons/tile_editor/TileEditorDock.cs",
       "line": 248,
       "rule": "else-branch",
@@ -14210,7 +14286,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 308,
+      "line": 307,
       "rule": "else-branch",
       "severity": "warn",
       "message": "DoCompileTmx() has 1 else branch(es) — prefer guard clauses",
@@ -14218,7 +14294,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 378,
+      "line": 375,
       "rule": "else-branch",
       "severity": "warn",
       "message": "DoInsertTsxProps() has 1 else branch(es) — prefer guard clauses",
@@ -16358,6 +16434,22 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "BuildBiomeWeightLookup() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 103,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "WriteInvalidFixture() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 114,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "WriteValidFixture() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -21486,6 +21578,14 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ShowErrorState() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/TileEditorDock.cs",
+      "line": 338,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnInsertTsxPropsPressed() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -40457,6 +40557,126 @@
       "metric": 84
     },
     {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 33,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 35,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 41,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 50,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 51,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 53,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 66,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 106 chars",
+      "metric": 106
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 67,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 115 chars",
+      "metric": 115
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 69,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 70,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 100,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 107,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 106 chars",
+      "metric": 106
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 117,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 120,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 106 chars",
+      "metric": 106
+    },
+    {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "line": 128,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
       "file": "Tests/Core/Data/CardTemplateTest.cs",
       "line": 82,
       "rule": "line-length",
@@ -54314,7 +54534,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 319,
+      "line": 318,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -54322,47 +54542,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 346,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 353,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 365,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 390,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 391,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 393,
+      "line": 392,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 111 chars",
@@ -54370,7 +54550,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 401,
+      "line": 399,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -54378,7 +54558,7 @@
     },
     {
       "file": "addons/tile_editor/TileEditorDock.cs",
-      "line": 403,
+      "line": 401,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -83018,6 +83198,220 @@
       ]
     },
     {
+      "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+      "errors": 4,
+      "warnings": 21,
+      "rules": {
+        "line-length": 19,
+        "file-length": 1,
+        "function-length": 1,
+        "else-branch": 2,
+        "stateless-method": 2
+      },
+      "items": [
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 89,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 130 chars",
+          "metric": 130
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 94,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 126 chars",
+          "metric": 126
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 95,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 129 chars",
+          "metric": 129
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 99,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 134 chars",
+          "metric": 134
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 149 lines",
+          "metric": 149
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 63,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "PluginRegistrationAndToolbarActionsWorkHeadlessly() is 39 lines",
+          "metric": 39
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 29,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "BeforeTest() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 46,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "AfterTest() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 103,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "WriteInvalidFixture() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 114,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "WriteValidFixture() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 33,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 35,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 50,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 51,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 53,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 66,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 67,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 69,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 70,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 100,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 107,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 117,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 120,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
+          "line": 128,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        }
+      ]
+    },
+    {
       "file": "Tests/Core/PropertyTesting/Generators/MapGridArbitrary.cs",
       "errors": 4,
       "warnings": 15,
@@ -89639,302 +90033,6 @@
       ]
     },
     {
-      "file": "addons/tile_editor/TileEditorDock.cs",
-      "errors": 2,
-      "warnings": 33,
-      "rules": {
-        "file-length": 1,
-        "function-length": 4,
-        "complexity": 1,
-        "else-branch": 4,
-        "stateless-method": 1,
-        "comment-restates-code": 7,
-        "line-length": 17
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 428 lines",
-          "metric": 428
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 100,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "SetupUI() is 93 lines",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 264,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "_UnhandledKeyInput() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 308,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "DoCompileTmx() is 32 lines",
-          "metric": 32
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 341,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "OnInsertTsxPropsPressed() is 36 lines",
-          "metric": 36
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 378,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "DoInsertTsxProps() is 31 lines",
-          "metric": 31
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 248,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "OnSavePressed() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 279,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "OnReloadPressed() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 308,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "DoCompileTmx() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 378,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "DoInsertTsxProps() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 50,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ShowErrorState() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 142,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 155,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 165,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 170,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 175,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 183,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 188,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 57,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 73,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 96,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 137,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 145,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 245,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 266,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 283,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 319,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 346,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 353,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 365,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 390,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 391,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 393,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 401,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/TileEditorDock.cs",
-          "line": 403,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        }
-      ]
-    },
-    {
       "file": "Tests/Features/Worldgen/Wfc/Constraints/ConnectivityConstraintTest.cs",
       "errors": 2,
       "warnings": 31,
@@ -91003,6 +91101,262 @@
           "severity": "warn",
           "message": "line is 89 chars",
           "metric": 89
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/TileEditorDock.cs",
+      "errors": 2,
+      "warnings": 28,
+      "rules": {
+        "file-length": 1,
+        "function-length": 3,
+        "complexity": 1,
+        "else-branch": 4,
+        "stateless-method": 2,
+        "comment-restates-code": 7,
+        "line-length": 12
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "error",
+          "message": "file is 425 lines",
+          "metric": 425
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 100,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "SetupUI() is 93 lines",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 264,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "_UnhandledKeyInput() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 338,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "OnInsertTsxPropsPressed() is 36 lines",
+          "metric": 36
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 375,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "DoInsertTsxProps() is 31 lines",
+          "metric": 31
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 248,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "OnSavePressed() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 279,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "OnReloadPressed() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 307,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "DoCompileTmx() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 375,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "DoInsertTsxProps() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 50,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ShowErrorState() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 338,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnInsertTsxPropsPressed() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 142,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 155,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 165,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 170,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 175,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 183,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 188,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 57,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 73,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 96,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 137,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 145,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 245,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 266,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 283,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 318,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 392,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 399,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/TileEditorDock.cs",
+          "line": 401,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
         }
       ]
     },
@@ -121531,6 +121885,24 @@
           "severity": "warn",
           "message": "line is 88 chars",
           "metric": 88
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/TileEditorDock.TestHooks.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "else-branch": 1
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/TileEditorDock.TestHooks.cs",
+          "line": 16,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "ShowToolDialog() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
         }
       ]
     },

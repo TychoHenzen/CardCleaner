@@ -118,21 +118,21 @@ public partial class TileEditorDock : Control
         toolbar.AddChild(new VSeparator());
 
         // TMX tools
-        var compileTmxButton = new Button
+        _compileTmxButton = new Button
         {
             Text = "Compile from TMX",
             TooltipText = "Compile atlas from TMX/TSX files"
         };
-        compileTmxButton.Pressed += OnCompileTmxPressed;
-        toolbar.AddChild(compileTmxButton);
+        _compileTmxButton.Pressed += OnCompileTmxPressed;
+        toolbar.AddChild(_compileTmxButton);
 
-        var insertPropsButton = new Button
+        _insertPropsButton = new Button
         {
             Text = "Insert TSX Props",
             TooltipText = "Insert default properties into TSX files"
         };
-        insertPropsButton.Pressed += OnInsertTsxPropsPressed;
-        toolbar.AddChild(insertPropsButton);
+        _insertPropsButton.Pressed += OnInsertTsxPropsPressed;
+        toolbar.AddChild(_insertPropsButton);
 
         toolbar.AddChild(new HSeparator { SizeFlagsHorizontal = SizeFlags.Expand });
 
@@ -298,11 +298,10 @@ public partial class TileEditorDock : Control
 
     private void OnCompileTmxPressed()
     {
-        const string tiledDir = "res://Data/Tiled";
         _statusLabel!.Text = "Compiling from TMX...";
 
         // Run compilation asynchronously to avoid blocking UI
-        CallDeferred(MethodName.DoCompileTmx, tiledDir);
+        CallDeferred(MethodName.DoCompileTmx, TiledDirectory);
     }
 
     private void DoCompileTmx(string tiledDir)
@@ -318,8 +317,7 @@ public partial class TileEditorDock : Control
             // Show success dialog
             var dialog = new AcceptDialog { DialogText = message, Title = "TMX Compilation Complete" };
             dialog.Confirmed += () => dialog.QueueFree();
-            AddChild(dialog);
-            dialog.PopupCentered();
+            ShowToolDialog(dialog);
         }
         else
         {
@@ -333,46 +331,45 @@ public partial class TileEditorDock : Control
                 Title = "TMX Compilation Error"
             };
             dialog.Confirmed += () => dialog.QueueFree();
-            AddChild(dialog);
-            dialog.PopupCentered();
+            ShowToolDialog(dialog);
         }
     }
 
     private void OnInsertTsxPropsPressed()
     {
-        const string tiledDir = "res://Data/Tiled";
-
         // First analyze what would be changed
-        var reports = TsxPropertyInserter.AnalyzePropertiesInDirectory(tiledDir);
+        var reports = TsxPropertyInserter
+            .AnalyzePropertiesInDirectory(TiledDirectory);
         var filesWithMissing = reports.Count(r => r.HasMissingProperties);
 
         if (filesWithMissing == 0)
         {
             var noChangesDialog = new AcceptDialog
             {
-                DialogText = "All TSX files already have the required properties.",
+                DialogText =
+                    "All TSX files already have the required properties.",
                 Title = "No Changes Needed"
             };
             noChangesDialog.Confirmed += () => noChangesDialog.QueueFree();
-            AddChild(noChangesDialog);
-            noChangesDialog.PopupCentered();
+            ShowToolDialog(noChangesDialog);
             return;
         }
 
         // Confirm with user
         var dialog = new ConfirmationDialog
         {
-            DialogText = $"Insert default properties into {filesWithMissing} TSX file(s)?",
+            DialogText =
+                $"Insert default properties into {filesWithMissing} " +
+                "TSX file(s)?",
             Title = "Insert TSX Properties"
         };
         dialog.Confirmed += () =>
         {
-            DoInsertTsxProps(tiledDir);
+            DoInsertTsxProps(TiledDirectory);
             dialog.QueueFree();
         };
         dialog.Canceled += () => dialog.QueueFree();
-        AddChild(dialog);
-        dialog.PopupCentered();
+        ShowToolDialog(dialog);
     }
 
     private void DoInsertTsxProps(string tiledDir)
@@ -387,13 +384,14 @@ public partial class TileEditorDock : Control
             var resultMessage = $"Updated {filesModified} file(s):\n" +
                                $"- {totalTiles} tile(s) modified\n" +
                                $"- {totalWangSets} wang set(s) modified";
-            _statusLabel!.Text = $"Inserted properties into {filesModified} files";
-            GD.Print($"[TileEditorDock] TSX properties inserted: {resultMessage}");
+            _statusLabel!.Text =
+                $"Inserted properties into {filesModified} files";
+            GD.Print(
+                $"[TileEditorDock] TSX properties inserted: {resultMessage}");
 
             var successDialog = new AcceptDialog { DialogText = resultMessage, Title = "Properties Inserted" };
             successDialog.Confirmed += () => successDialog.QueueFree();
-            AddChild(successDialog);
-            successDialog.PopupCentered();
+            ShowToolDialog(successDialog);
         }
         else
         {
@@ -402,8 +400,7 @@ public partial class TileEditorDock : Control
 
             var errorDialog = new AcceptDialog { DialogText = $"Failed:\n{message}", Title = "Error" };
             errorDialog.Confirmed += () => errorDialog.QueueFree();
-            AddChild(errorDialog);
-            errorDialog.PopupCentered();
+            ShowToolDialog(errorDialog);
         }
     }
 
