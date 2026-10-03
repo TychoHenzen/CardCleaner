@@ -4,24 +4,7 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.UI;
 
-/// <summary>
-/// Loading screen UI that displays map generation progress.
-/// </summary>
-/// <remarks>
-/// This control automatically shows during map generation and hides when complete.
-/// Requires a ProgressBar child node named "ProgressBar".
-///
-/// Scene Structure:
-/// LoadingScreen (Control)
-///   └─ ProgressBar (ProgressBar)
-///   └─ Label (optional, for "Generating Map..." text)
-///
-/// Usage:
-/// 1. Create a Control node and attach this script
-/// 2. Add a ProgressBar child node
-/// 3. Add the LoadingScreen to your main scene
-/// 4. It will automatically show/hide based on game session state
-/// </remarks>
+/// <summary>Displays map generation progress and hides when generation completes.</summary>
 public partial class LoadingScreen : Control
 {
     private ProgressBar? _progressBar;

@@ -76,7 +76,9 @@ public class IrregularMapEnemyManager
             _mapData.AddEnemySpawn(eligibleCells[i]);
         }
 
-        GD.Print($"[IrregularMapEnemyManager] Placed {enemyCount} enemies on map (min distance: {minDistanceFromPlayer})");
+        GD.Print(
+            $"[IrregularMapEnemyManager] Placed {enemyCount} enemies on map " +
+            $"(min distance: {minDistanceFromPlayer})");
     }
 
     /// <summary>

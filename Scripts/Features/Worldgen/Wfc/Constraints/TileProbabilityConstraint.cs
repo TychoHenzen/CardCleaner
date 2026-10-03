@@ -20,11 +20,7 @@ public class TileProbabilityConstraint : IWfcConstraint
     // Maps group base name → selected tile ID for this generation
     private Dictionary<string, string>? _selectedVariants;
 
-    /// <summary>
-    /// Minimum probability modifier to prevent complete exclusion.
-    /// Default 0.01 ensures even low-probability tiles have a chance.
-    /// Note: This does NOT apply to non-selected PerGeneration variants, which always get 0.0f.
-    /// </summary>
+    /// <summary>Sets the minimum probability modifier for eligible tiles.</summary>
     public float MinModifier { get; set; } = 0.01f;
 
     public TileProbabilityConstraint(TileRegistry tileRegistry)

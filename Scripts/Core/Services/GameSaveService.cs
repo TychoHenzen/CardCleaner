@@ -225,7 +225,9 @@ public partial class GameSaveService : Node, ISaveable
                 if (isHeld && cardInstance is CardController controller)
                 {
                     // Find player camera and reparent if card was held
-                    var playerCamera = GetTree().GetFirstNodeInGroup("player")?.GetNodeOrNull<Camera3D>("Head/Camera3D");
+                    var playerCamera = GetTree()
+                        .GetFirstNodeInGroup("player")
+                        ?.GetNodeOrNull<Camera3D>("Head/Camera3D");
                     if (playerCamera != null)
                     {
                         CallDeferred(MethodName.ReparentToCamera, controller, playerCamera);

@@ -74,7 +74,11 @@ public class NoSolidFillConstraint : IWfcConstraint
         return 1.0f;
     }
 
-    private bool WouldCompleteSolidRegion(WfcConstraintContext context, WfcGrid grid, Vector2I position, Vector2I[] neighborOffsets)
+    private bool WouldCompleteSolidRegion(
+        WfcConstraintContext context,
+        WfcGrid grid,
+        Vector2I position,
+        Vector2I[] neighborOffsets)
     {
         string? matchingTileId = null;
 

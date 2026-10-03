@@ -8,21 +8,9 @@ namespace CardCleaner.Scripts.Core.Interfaces;
 /// </summary>
 public interface IVisibilityChecker
 {
-    /// <summary>
-    /// Check if there's a clear line of sight between two cells.
-    /// </summary>
-    /// <param name="fromCellId">Source cell ID.</param>
-    /// <param name="toCellId">Target cell ID.</param>
-    /// <param name="mapData">Map data for transparency checks.</param>
-    /// <returns>True if the target is visible from the source.</returns>
+    /// <summary>Checks whether there is a clear line of sight between two cells.</summary>
     bool CanSee(int fromCellId, int toCellId, IMapData mapData);
 
-    /// <summary>
-    /// Check if there's a clear line of sight between two world positions.
-    /// </summary>
-    /// <param name="from">Source world position.</param>
-    /// <param name="to">Target world position.</param>
-    /// <param name="mapData">Map data for transparency checks.</param>
-    /// <returns>True if the target is visible from the source.</returns>
+    /// <summary>Checks whether there is a clear line of sight between two world positions.</summary>
     bool CanSee(Vector2 from, Vector2 to, IMapData mapData);
 }

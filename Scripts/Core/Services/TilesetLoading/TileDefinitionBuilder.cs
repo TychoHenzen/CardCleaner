@@ -55,7 +55,8 @@ internal static class TileDefinitionBuilder
                 continue;
 
             var atlasCoords = ParseHelpers.TileIdToAtlasCoords(tileId, columns);
-            var tile = BuildTileDefinitionFromProperties(id, tileId, atlasCoords, propData, wangData, columns, sourceId);
+            var tile = BuildTileDefinitionFromProperties(
+                id, tileId, atlasCoords, propData, wangData, columns, sourceId);
             tiles.Add(tile);
         }
 
@@ -239,7 +240,8 @@ internal static class TileDefinitionBuilder
             variations = ParseHelpers.ParseVariationsString(variationsStr, columns);
         }
 
-        var variationMode = ParseHelpers.ParseVariationMode(ParseHelpers.GetString(props, "variationmode", "perinstance"));
+        var variationMode = ParseHelpers.ParseVariationMode(
+            ParseHelpers.GetString(props, "variationmode", "perinstance"));
 
         // Animation
         TileAnimation? animation = null;

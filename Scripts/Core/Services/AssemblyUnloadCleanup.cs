@@ -63,10 +63,13 @@ public static class AssemblyUnloadCleanup
             if (updateHandlerType == null)
             {
                 // Try alternative name used in some .NET versions
-                updateHandlerType = assembly.GetType("System.Text.Json.Serialization.Metadata.JsonSerializerOptionsUpdateHandler");
+                updateHandlerType = assembly.GetType(
+                    "System.Text.Json.Serialization.Metadata.JsonSerializerOptionsUpdateHandler");
             }
 
-            var clearCacheMethod = updateHandlerType?.GetMethod("ClearCache", BindingFlags.Static | BindingFlags.Public);
+            var clearCacheMethod = updateHandlerType?.GetMethod(
+                "ClearCache",
+                BindingFlags.Static | BindingFlags.Public);
             clearCacheMethod?.Invoke(null, new object?[] { null });
         }
         catch (Exception)

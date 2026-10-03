@@ -23,7 +23,9 @@ public class RaycastVisibilityChecker : IVisibilityChecker
     /// </summary>
     /// <param name="spaceState">The physics space state to use for raycasting.</param>
     /// <param name="collisionMask">Collision mask for opaque terrain. Defaults to OpaqueTerrainCollisionLayer.</param>
-    public RaycastVisibilityChecker(PhysicsDirectSpaceState2D spaceState, uint collisionMask = OpaqueTerrainCollisionLayer)
+    public RaycastVisibilityChecker(
+        PhysicsDirectSpaceState2D spaceState,
+        uint collisionMask = OpaqueTerrainCollisionLayer)
     {
         _spaceState = spaceState;
         _collisionMask = collisionMask;

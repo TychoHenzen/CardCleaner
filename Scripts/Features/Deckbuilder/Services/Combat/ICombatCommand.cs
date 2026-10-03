@@ -40,18 +40,10 @@ public interface ICombatCommand
     /// </summary>
     string Description { get; }
 
-    /// <summary>
-    /// Check if this command can be executed in the current context.
-    /// </summary>
-    /// <param name="context">The combat context.</param>
-    /// <returns>True if the command can be executed.</returns>
+    /// <summary>Checks whether this command can execute in the current context.</summary>
     bool CanExecute(CombatContext context);
 
-    /// <summary>
-    /// Execute the command, applying its effects to the context.
-    /// </summary>
-    /// <param name="context">The combat context.</param>
-    /// <returns>A log message describing what happened.</returns>
+    /// <summary>Executes the command and returns a log message.</summary>
     string Execute(CombatContext context);
 
     /// <summary>

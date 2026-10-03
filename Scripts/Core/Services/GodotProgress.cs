@@ -4,31 +4,7 @@ using Godot;
 
 namespace CardCleaner.Scripts.Core.Services;
 
-/// <summary>
-/// Thread-safe IProgress implementation that marshals progress updates to Godot's main thread via signals.
-/// </summary>
-/// <remarks>
-/// This Node-based progress reporter ensures that progress updates from background threads
-/// are safely delivered to the main thread using Godot's CallDeferred mechanism.
-///
-/// Lifecycle:
-/// 1. Create and AddChild to scene tree before starting async operation
-/// 2. Connect to ProgressUpdated signal
-/// 3. Pass as IProgress parameter to async method
-/// 4. QueueFree() when operation completes
-///
-/// Example:
-/// <code>
-/// var progress = new GodotProgress();
-/// AddChild(progress);
-/// progress.ProgressUpdated += OnProgressUpdate;
-/// try {
-///     await asyncOperation(progress, ct);
-/// } finally {
-///     progress.QueueFree();
-/// }
-/// </code>
-/// </remarks>
+/// <summary>Thread-safe progress reporter that dispatches updates to Godot's main thread.</summary>
 public partial class GodotProgress : Node, IProgress<float>
 {
     private readonly CancellationToken _cancellationToken;

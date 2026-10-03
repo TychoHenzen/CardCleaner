@@ -89,10 +89,6 @@ public interface IActiveFogOfWar : IFogOfWar
 /// </summary>
 public interface IPassiveFogOfWar : IFogOfWar
 {
-    /// <summary>
-    /// Update visibility based on externally computed seen and visible sets.
-    /// </summary>
-    /// <param name="seenCellIds">All cells that have been seen.</param>
-    /// <param name="visibleCellIds">Currently visible cells.</param>
+    /// <summary>Updates visibility from externally computed seen and visible sets.</summary>
     void UpdateVisibility(IReadOnlySet<int> seenCellIds, IReadOnlySet<int> visibleCellIds);
 }

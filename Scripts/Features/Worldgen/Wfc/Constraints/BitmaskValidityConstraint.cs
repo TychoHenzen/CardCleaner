@@ -5,26 +5,7 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
-/// <summary>
-/// WFC constraint that ensures auto-tile placements don't create disallowed bitmask patterns.
-/// Works with the dual-grid auto-tile system where each visual tile samples 4 data cells.
-/// </summary>
-/// <remarks>
-/// When an auto-tile format has disabled bitmasks (e.g., "walled" format disables 5, 10, 15),
-/// this constraint prevents tile configurations that would result in those bitmask patterns.
-///
-/// For corner4 bitmasks:
-/// - NE=1, SE=2, SW=4, NW=8
-/// - Bitmask 5 (NE+SW) = diagonal corners only
-/// - Bitmask 10 (SE+NW) = opposite diagonal corners
-/// - Bitmask 15 = all corners filled (interior)
-///
-/// A data cell at (dx, dy) affects visual tiles at:
-/// - Visual (dx, dy): data cell is SE corner
-/// - Visual (dx+1, dy): data cell is SW corner
-/// - Visual (dx, dy+1): data cell is NE corner
-/// - Visual (dx+1, dy+1): data cell is NW corner
-/// </remarks>
+/// <summary>Prevents auto-tile placements from creating disallowed bitmask patterns.</summary>
 public class BitmaskValidityConstraint : IWfcConstraint
 {
     private readonly ITileRegistry _tileRegistry;

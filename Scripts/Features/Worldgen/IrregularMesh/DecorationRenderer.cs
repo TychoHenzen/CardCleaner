@@ -239,7 +239,8 @@ public partial class DecorationRenderer : Node2D
     /// Auto-populate decorations based on terrain types.
     /// </summary>
     /// <param name="terrainToDecoration">Mapping of terrain type to decoration type and probability.</param>
-    public void AutoPopulate(Dictionary<int, (DecorationType type, float probability, int maxVariations)> terrainToDecoration)
+    public void AutoPopulate(
+        Dictionary<int, (DecorationType type, float probability, int maxVariations)> terrainToDecoration)
     {
         if (_mesh == null)
             return;

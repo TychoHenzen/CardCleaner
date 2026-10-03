@@ -7,11 +7,7 @@ public interface IJack
     ICable? ConnectedCable { get; }
     bool IsCompatibleWith(IJack other);
 
-    /// <summary>
-    /// Establishes a logical connection to another jack.
-    /// The output jack subscribes to forward data to the input jack.
-    /// </summary>
-    /// <returns>True if connection succeeded, false if types don't match.</returns>
+    /// <summary>Establishes a logical connection to another compatible jack.</summary>
     bool TryConnect(IJack other);
 
     /// <summary>

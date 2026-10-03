@@ -255,10 +255,5 @@ public static class VariationPatternDetector
     }
 }
 
-/// <summary>
-/// Information about a tile's membership in a variation group.
-/// </summary>
-/// <param name="BaseName">The base tile name without variant suffix (e.g., "grass" for grass1).</param>
-/// <param name="VariantIndex">The variant index (0-based for letters, 1-based for numbers).</param>
-/// <param name="Mode">How variants should be selected: PerGeneration (one for whole map) or PerInstance (per tile).</param>
+/// <summary>Describes a tile's membership in a variation group.</summary>
 public record VariationGroupInfo(string BaseName, int VariantIndex, VariationMode Mode);

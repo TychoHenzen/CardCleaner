@@ -18,10 +18,6 @@ public enum BitmaskType
     /// </summary>
     Edge4 = 1,
 
-    /// <summary>
-    /// 8-bit full format checking all 8 neighbors (N, NE, E, SE, S, SW, W, NW).
-    /// Produces bitmask values 0-255, with only 47 valid blob combinations.
-    /// Maps to <see cref="NeighborBitmask8"/>.
-    /// </summary>
+    /// <summary>8-bit format checking all eight neighbors for Blob47 combinations.</summary>
     Full8 = 2
 }

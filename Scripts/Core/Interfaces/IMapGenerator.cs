@@ -49,11 +49,7 @@ public interface IGeneratedMap
     /// </summary>
     int EnemyCount { get; }
 
-    /// <summary>
-    /// Removes an enemy at the specified cell.
-    /// </summary>
-    /// <param name="cellId">Cell ID where enemy is located.</param>
-    /// <returns>True if enemy was removed, false if no enemy at that cell.</returns>
+    /// <summary>Removes an enemy at the specified cell.</summary>
     bool RemoveEnemyAt(int cellId);
 
     /// <summary>

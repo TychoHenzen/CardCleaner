@@ -228,18 +228,10 @@ public class MeshQuad
         return true;
     }
 
-    /// <summary>
-    /// Check terrain passability by type.
-    /// MeshTerrainGenerator assigns terrain types based on TileDefinition.IsPassable:
-    /// 0 = impassable (water, walls), 1+ = passable terrain.
-    /// </summary>
+    /// <summary>Checks terrain passability by type.</summary>
     private static bool IsTerrainPassable(int terrainType) => terrainType > 0;
 
-    /// <summary>
-    /// Check terrain transparency for line-of-sight.
-    /// Currently all terrain is transparent (no tall walls in terrain layer).
-    /// Structures block LOS and are checked separately via HasStructure.
-    /// </summary>
+    /// <summary>Checks terrain transparency for line-of-sight.</summary>
     private static bool IsTerrainTransparent(int terrainType) => true;
 
     /// <summary>

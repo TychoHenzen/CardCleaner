@@ -205,7 +205,9 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
                     RegisterTile(translated);
                 }
 
-                ILog.Print($"[TileRegistry] SUCCESS: Registered {_tiles.Count} tiles, using compiled atlas for auto-tiles");
+                ILog.Print(
+                    $"[TileRegistry] SUCCESS: Registered {_tiles.Count} tiles, " +
+                    "using compiled atlas for auto-tiles");
                 BuildVariationGroups();
                 return;
             }

@@ -23,11 +23,7 @@ public class BiomeAffinityConstraint : IWfcConstraint
     private readonly ITileRegistry? _tileRegistry;
     private readonly Dictionary<string, List<string>> _tileToBiomes;
 
-    /// <summary>
-    /// Factor controlling how much biome strength affects probability.
-    /// Default 2.0 means: +1 strength → 3.0x probability, -1 strength → 0.1x penalty (MinModifier clamp).
-    /// Increased from 0.5 to overcome continuity bias and create coherent biome regions.
-    /// </summary>
+    /// <summary>Controls how biome strength scales tile probability.</summary>
     public float BoostFactor { get; set; } = 2.0f;
 
     /// <summary>

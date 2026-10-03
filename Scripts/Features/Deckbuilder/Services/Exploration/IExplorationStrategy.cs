@@ -22,10 +22,6 @@ public class ExplorationContext
 /// </summary>
 public interface IExplorationStrategy
 {
-    /// <summary>
-    /// Determine the next target cell to move towards.
-    /// </summary>
-    /// <param name="context">The exploration context with current state.</param>
-    /// <returns>The target cell ID to path to, or null if no valid target exists.</returns>
+    /// <summary>Determines the next target cell to move towards.</summary>
     int? GetNextTarget(ExplorationContext context);
 }

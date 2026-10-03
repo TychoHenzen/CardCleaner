@@ -156,7 +156,9 @@ public partial class IrregularMeshPreview : Node2D
         try
         {
             _tileRegistry = new TileRegistry();
-            GD.Print($"[IrregularMeshPreview] Loaded TileRegistry with {((TileRegistry)_tileRegistry).GetAllTiles().GetEnumerator().MoveNext()} tiles");
+            GD.Print(
+                $"[IrregularMeshPreview] Loaded TileRegistry with " +
+                $"{((TileRegistry)_tileRegistry).GetAllTiles().GetEnumerator().MoveNext()} tiles");
         }
         catch (Exception ex)
         {

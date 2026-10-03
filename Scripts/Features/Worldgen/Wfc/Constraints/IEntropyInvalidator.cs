@@ -10,13 +10,6 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// </summary>
 public interface IEntropyInvalidator
 {
-    /// <summary>
-    /// Returns additional cells (beyond immediate neighbors) whose entropy is affected
-    /// by this collapse. Called after a cell is collapsed but before the next selection.
-    /// </summary>
-    /// <param name="collapsedPos">Position of the cell that was just collapsed</param>
-    /// <param name="collapsedTile">The tile that was placed</param>
-    /// <param name="grid">The current grid state</param>
-    /// <returns>Cells that need entropy recalculation due to this constraint</returns>
+    /// <summary>Returns additional cells whose entropy is affected by a collapse.</summary>
     IEnumerable<Vector2I> GetInvalidatedCells(Vector2I collapsedPos, string collapsedTile, WfcGrid grid);
 }

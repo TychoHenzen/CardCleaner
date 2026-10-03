@@ -2,25 +2,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
-/// <summary>
-/// Enforces 1-tile gaps between different auto-tile terrain types.
-/// Auto-tiles cannot be adjacent to different auto-tiles;
-/// they must have a gap tile (non-auto-tile) between them.
-///
-/// For rectangular grids: uses 8-neighbor check (cardinal + diagonal)
-/// because dual-grid rendering samples 4 data corners for each visual tile.
-///
-/// For irregular meshes: uses all quad-sharing neighbors because
-/// any vertices in the same quad affect that quad's bitmask.
-///
-/// This eliminates bitmask conflicts by ensuring any visual face
-/// sees at most ONE auto-tile type. The other corners will be gap tiles.
-///
-/// Rules:
-/// - Auto-tile A adjacent to same Auto-tile A: ALLOWED (region growth)
-/// - Auto-tile A adjacent to different Auto-tile B: BANNED
-/// - Gap tile adjacent to any tile: ALLOWED
-/// </summary>
+/// <summary>Enforces one-tile gaps between different auto-tile terrain types.</summary>
 public class AutoTileGapConstraint : IWfcConstraint
 {
     private readonly ITileRegistry _tileRegistry;

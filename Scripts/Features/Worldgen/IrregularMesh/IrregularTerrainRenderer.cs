@@ -70,7 +70,9 @@ public partial class IrregularTerrainRenderer : Node2D
     {
         if (_tileRegistry == null)
         {
-            GD.PrintErr("[IrregularTerrainRenderer] CRITICAL: TileRegistry not set! Call SetTileRegistry() before rendering.");
+            GD.PrintErr(
+                "[IrregularTerrainRenderer] CRITICAL: TileRegistry not set! " +
+                "Call SetTileRegistry() before rendering.");
             return;
         }
 
@@ -413,7 +415,9 @@ public partial class IrregularTerrainRenderer : Node2D
         // UV rect: position is top-left (SW in our Y-up world)
         var uvCorners = new Vector2[4];
         uvCorners[0] = new Vector2(uvRect.Position.X, uvRect.Position.Y + uvRect.Size.Y); // SW (bottom-left in UV)
-        uvCorners[1] = new Vector2(uvRect.Position.X + uvRect.Size.X, uvRect.Position.Y + uvRect.Size.Y); // SE (bottom-right)
+        uvCorners[1] = new Vector2(
+            uvRect.Position.X + uvRect.Size.X,
+            uvRect.Position.Y + uvRect.Size.Y); // SE (bottom-right)
         uvCorners[2] = new Vector2(uvRect.Position.X + uvRect.Size.X, uvRect.Position.Y); // NE (top-right)
         uvCorners[3] = new Vector2(uvRect.Position.X, uvRect.Position.Y); // NW (top-left)
 

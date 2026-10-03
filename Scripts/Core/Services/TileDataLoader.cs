@@ -58,7 +58,9 @@ public static class TileDataLoader
                     : LoadFromTsx(DefaultTiledPath);
             }
 
-            ILog.Print($"[TileDataLoader] JSON FALLBACK: No Tiled file at {DefaultTiledPath}, using {DefaultTilesPath}");
+            ILog.Print(
+                $"[TileDataLoader] JSON FALLBACK: No Tiled file at {DefaultTiledPath}, " +
+                $"using {DefaultTilesPath}");
             path = DefaultTilesPath;
         }
 

@@ -73,18 +73,13 @@ public class CompiledTransitionResolver : ITransitionResolver
         return null;
     }
 
-    /// <summary>
-    /// Resolves the atlas coordinates for a terrain transition with random variant selection.
-    /// Uses position-based seeding for consistent re-renders.
-    /// Note: Input bitmask is Full8 format, converted to Corner16 for transition map lookup.
-    /// </summary>
-    /// <param name="innerTerrainId">Inner terrain ID.</param>
-    /// <param name="outerTerrainId">Outer terrain ID.</param>
-    /// <param name="bitmask">Corner16 bitmask value (NE=1, SE=2, SW=4, NW=8).</param>
-    /// <param name="x">X position for seed generation.</param>
-    /// <param name="y">Y position for seed generation.</param>
-    /// <returns>Atlas coordinates for a randomly selected variant, or null if not found.</returns>
-    public Vector2I? ResolveTransitionWithVariant(string innerTerrainId, string outerTerrainId, int bitmask, int x, int y)
+    /// <summary>Resolves transition coordinates with deterministic position-based variant selection.</summary>
+    public Vector2I? ResolveTransitionWithVariant(
+        string innerTerrainId,
+        string outerTerrainId,
+        int bitmask,
+        int x,
+        int y)
     {
         // Bitmask is already in Corner16 format from dual-grid
 

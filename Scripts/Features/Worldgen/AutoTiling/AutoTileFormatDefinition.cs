@@ -73,11 +73,7 @@ public sealed class AutoTileFormatDefinition
         return _variantMappings.TryGetValue(bitmask, out var variant) ? variant : null;
     }
 
-    /// <summary>
-    /// Checks if a bitmask value is allowed in this format.
-    /// </summary>
-    /// <param name="bitmask">The bitmask value to check.</param>
-    /// <returns>True if the bitmask is allowed; false if forbidden.</returns>
+    /// <summary>Checks whether a bitmask value is allowed in this format.</summary>
     public bool IsBitmaskAllowed(int bitmask) => _allowedBitmasks.Contains(bitmask);
 
     /// <summary>

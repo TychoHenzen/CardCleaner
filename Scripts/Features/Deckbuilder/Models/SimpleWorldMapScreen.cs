@@ -180,7 +180,9 @@ public partial class SimpleWorldMapScreen : Node3D
             return;
         }
 
-        ILog.Print($"Initializing simple map screen with {mapSeed.Length} seed card(s) and {abilities.Length} abilities");
+        ILog.Print(
+            $"Initializing simple map screen with {mapSeed.Length} seed card(s) " +
+            $"and {abilities.Length} abilities");
 
         if (_serviceReady && _gameSession != null)
         {

@@ -51,7 +51,11 @@ public class FrontierExplorationBehavior
     /// </summary>
     public IReadOnlySet<int> CurrentlyVisibleCells => _fogOfWar?.CurrentlyVisibleCells ?? _localCurrentlyVisibleCells;
 
-    public FrontierExplorationBehavior(IMapData mapData, IVisibilityChecker visibilityChecker, int visionRange = 5, IFogOfWar? fogOfWar = null)
+    public FrontierExplorationBehavior(
+        IMapData mapData,
+        IVisibilityChecker visibilityChecker,
+        int visionRange = 5,
+        IFogOfWar? fogOfWar = null)
     {
         _mapData = mapData;
         _visibilityChecker = visibilityChecker;
@@ -178,7 +182,9 @@ public class FrontierExplorationBehavior
         }
         catch (Exception ex)
         {
-            ILog.Error($"Exception in MarkTriviallyVisibleCells (iteration {iteration}): {ex.Message}\n{ex.StackTrace}");
+            ILog.Error(
+                $"Exception in MarkTriviallyVisibleCells (iteration {iteration}): " +
+                $"{ex.Message}\n{ex.StackTrace}");
             throw;
         }
     }

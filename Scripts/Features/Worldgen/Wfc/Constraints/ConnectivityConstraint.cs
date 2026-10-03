@@ -23,11 +23,7 @@ public class ConnectivityConstraint : IWfcConstraint, IEntropyInvalidator
     /// </summary>
     public int CorridorTolerance { get; set; } = 1;
 
-    /// <summary>
-    /// Whether to enable proactive corridor forcing between disconnected regions.
-    /// When false, only reactive bridge detection is used (much faster).
-    /// Default false for performance - reactive detection is usually sufficient.
-    /// </summary>
+    /// <summary>Enables proactive corridor forcing between disconnected regions.</summary>
     public bool EnableProactiveCorridors { get; set; } = false;
 
     public ConnectivityConstraint(PassabilityGraph graph, Func<string, bool> isPassable)

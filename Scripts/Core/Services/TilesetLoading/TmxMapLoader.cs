@@ -100,7 +100,11 @@ public class TmxMapData
     public int ChunkSize { get; }
     private readonly Dictionary<Vector2I, TmxChunk> _chunks;
 
-    public TmxMapData(Vector2I mapSize, List<TmxTilesetReference> tilesets, Dictionary<Vector2I, TmxChunk> chunks, int chunkSize = 16)
+    public TmxMapData(
+        Vector2I mapSize,
+        List<TmxTilesetReference> tilesets,
+        Dictionary<Vector2I, TmxChunk> chunks,
+        int chunkSize = 16)
     {
         MapSize = mapSize;
         Tilesets = tilesets;

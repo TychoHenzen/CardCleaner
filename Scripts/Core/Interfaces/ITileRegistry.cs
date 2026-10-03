@@ -46,11 +46,7 @@ public interface ITileRegistry
     /// </summary>
     VariationGroup? GetVariationGroupByBaseName(string baseName);
 
-    /// <summary>
-    /// Determines if two tile IDs represent the same terrain type.
-    /// Tiles are considered equivalent if they are in the same variation group,
-    /// or if they have the same ID.
-    /// </summary>
+    /// <summary>Determines whether two tile IDs represent the same terrain type.</summary>
     bool AreSameTerrainType(string? tileId1, string? tileId2);
 
     /// <summary>

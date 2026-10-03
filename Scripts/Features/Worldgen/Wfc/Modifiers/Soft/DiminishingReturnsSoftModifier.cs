@@ -2,29 +2,12 @@ using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 
-/// <summary>
-/// Applies diminishing returns to tile weights based on connected blob size.
-/// Prevents single tile type from dominating the entire map.
-///
-/// Formula: multiplier = 1 / (1 + (size - MinimumBlobSize) * DecayFactor)
-///
-/// IMPORTANT: MinimumBlobSize should match target region size (e.g., 30-50 tiles).
-/// Regions below this size grow freely; decay only applies to oversized regions.
-///
-/// With MinimumBlobSize=30 and DecayFactor=0.05:
-/// - Size 30: 1.0x (no penalty - at target)
-/// - Size 50: 1/(1 + 20*0.05) = 0.5x (moderate decay)
-/// - Size 100: 1/(1 + 70*0.05) = 0.22x (strong decay)
-/// </summary>
+/// <summary>Applies diminishing returns as connected blob size exceeds the target.</summary>
 public class DiminishingReturnsSoftModifier : IWfcConstraint
 {
     private readonly BlobSizeTracker _blobTracker;
 
-    /// <summary>
-    /// Decay factor controlling how quickly weights diminish for oversized regions.
-    /// Lower values = gentler decay, allowing larger regions before strong penalty.
-    /// With 0.05: Regions can grow to ~50 tiles before 50% penalty.
-    /// </summary>
+    /// <summary>Controls decay strength for oversized regions.</summary>
     public float DecayFactor { get; set; } = 0.05f;
 
     /// <summary>

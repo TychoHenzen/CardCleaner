@@ -5,15 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-/// <summary>
-/// Generates an irregular quad mesh from a hexagonal base grid.
-///
-/// Algorithm:
-/// 1. Generate hexagonal grid as connected triangle mesh
-/// 2. Randomly merge adjacent triangles into quads
-/// 3. Subdivide: quads → 4 quads, triangles → 3 quads
-/// 4. Run Lloyd relaxation to equalize quad sizes
-/// </summary>
+/// <summary>Generates an irregular quad mesh from a hexagonal base grid.</summary>
 public static class MeshGenerator
 {
     /// <summary>
@@ -427,7 +419,9 @@ public static class MeshGenerator
                 var areas = mesh.Faces.Where(f => f.IsQuad).Select(f => ComputeFaceArea(f, mesh)).ToList();
                 if (areas.Count > 0)
                 {
-                    GD.Print($"Relaxation iter {iter}: area min={areas.Min():F4}, max={areas.Max():F4}, ratio={areas.Max() / areas.Min():F2}x");
+                    GD.Print(
+                        $"Relaxation iter {iter}: area min={areas.Min():F4}, " +
+                        $"max={areas.Max():F4}, ratio={areas.Max() / areas.Min():F2}x");
                 }
             }
         }

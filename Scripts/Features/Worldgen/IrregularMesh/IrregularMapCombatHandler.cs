@@ -23,7 +23,10 @@ public class IrregularMapCombatHandler
     /// </summary>
     public event Action<int, bool>? CombatEnded;
 
-    public IrregularMapCombatHandler(IrregularMeshMapData mapData, RandomNumberGenerator rng, List<CardSignature>? abilityCards = null)
+    public IrregularMapCombatHandler(
+        IrregularMeshMapData mapData,
+        RandomNumberGenerator rng,
+        List<CardSignature>? abilityCards = null)
     {
         _mapData = mapData;
         _rng = rng;
@@ -59,7 +62,9 @@ public class IrregularMapCombatHandler
         var enemyRng = new RandomNumberGenerator { Seed = (ulong)positionSeed };
         var enemySignature = CardSignature.Random(enemyRng);
 
-        GD.Print($"[IrregularMapCombatHandler] Starting combat at cell {enemyCellId} with {_abilityCards.Count} ability cards");
+        GD.Print(
+            $"[IrregularMapCombatHandler] Starting combat at cell {enemyCellId} " +
+            $"with {_abilityCards.Count} ability cards");
 
         // Create combat system
         _combatSystem = new SimpleCombatSystem(_abilityCards, enemySignature, _rng);
