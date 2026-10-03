@@ -6,26 +6,8 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
 /// <summary>
 /// Encourages spatial coherence by boosting tiles that extend existing regions.
-/// During WFC collapse, tracks regions of identical tiles and applies probability modifiers
-/// to encourage region growth up to target size.
+/// Linear tiles use distance-based repulsion instead.
 /// </summary>
-/// <remarks>
-/// Region tracking strategy:
-/// - Scans collapsed neighbors (4-directional) to detect existing regions
-/// - Full boost given for ANY matching neighbor (encourages region growth from size 1)
-/// - Boost tapers off for oversized regions to encourage tile diversity
-///
-/// Probability calculation for regular tiles:
-/// - If tile matches any neighbor region below target: modifier = 1.0 + BoostFactor
-/// - If tile matches oversized region: modifier tapers toward 1.0
-/// - If no neighbors collapsed: modifier = 1.0 (neutral)
-///
-/// Linear tiles (without bitmask 15, e.g., hedges) use repulsion instead of attraction:
-/// - Same-type tiles within LinearRepulsionRadius apply a distance-weighted penalty
-/// - Closer tiles apply stronger penalties, diminishing with distance
-/// - This creates sparse, spread-out hedge structures instead of dense clusters
-/// The NoSolidFillConstraint separately ensures they remain 1-tile wide.
-/// </remarks>
 public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
 {
     private const int SolidFillBitmask = 15;
@@ -36,16 +18,12 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
         _tileRegistry = tileRegistry;
     }
     /// <summary>
-    /// Target size for coherent regions (in tiles).
-    /// Regions below this receive full boost; regions above start tapering.
-    /// For ~3600-tile maps, 50 tiles = ~1.4% per region, allowing 20-70 regions.
+    /// Target size for coherent regions; larger regions receive a tapered boost.
     /// </summary>
     public int TargetRegionSize { get; set; } = 50;
 
     /// <summary>
-    /// Factor controlling how much regional coherence affects probability.
-    /// With BoostFactor=10.0, matching tiles get 11x weight boost.
-    /// This ensures extending a region strongly dominates over starting new ones.
+    /// Probability multiplier applied to tiles matching an existing region.
     /// </summary>
     public float BoostFactor { get; set; } = 10.0f;
 
@@ -56,9 +34,7 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
     public int LinearRepulsionRadius { get; set; } = 10;
 
     /// <summary>
-    /// Maximum penalty factor for linear tiles at distance 1.
-    /// A value of 0.9 means a same-type tile at distance 1 reduces probability by 90%.
-    /// Penalty diminishes linearly with distance up to LinearRepulsionRadius.
+    /// Maximum distance-1 penalty factor for nearby same-type linear tiles.
     /// </summary>
     public float LinearRepulsionStrength { get; set; } = 0.5f;
 
@@ -86,7 +62,9 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
         {
             var matchRate = _callsWithMatch * 100f / _totalCalls;
             var avgBoost = _callsWithMatch > 0 ? _totalBoostApplied / _callsWithMatch : 0;
-            GD.Print($"[SpatialCoherence] Stats: {_totalCalls} calls, {_callsWithMatch} with match ({matchRate:F1}%), {_callsNoCollapsedNeighbor} no collapsed neighbor, avg boost {avgBoost:F2}x");
+            GD.Print(
+                $"[SpatialCoherence] Stats: {_totalCalls} calls, {_callsWithMatch} with match ({matchRate:F1}%), " +
+                $"{_callsNoCollapsedNeighbor} no collapsed neighbor, avg boost {avgBoost:F2}x");
         }
 
         _regionTracker ??= new RegionTracker(width, height);
@@ -188,7 +166,9 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
         // Debug: log first few boosts to verify spatial coherence is working
         if (_callsWithMatch <= 5)
         {
-            GD.Print($"[SpatialCoherence] Match #{_callsWithMatch}: tile={context.TileId}, regionSize={largestMatchingRegion}, isLinear={isLinearTile}");
+            GD.Print(
+                $"[SpatialCoherence] Match #{_callsWithMatch}: tile={context.TileId}, " +
+                $"regionSize={largestMatchingRegion}, isLinear={isLinearTile}");
         }
 
         float modifier;

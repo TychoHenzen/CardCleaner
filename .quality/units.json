@@ -1864,9 +1864,9 @@
     }
   ],
   "summary": {
-    "total": 7421,
-    "errors": 671,
-    "warnings": 6750,
+    "total": 7391,
+    "errors": 650,
+    "warnings": 6741,
     "byRule": {
       "dead-export": 34,
       "duplicate-block": 158,
@@ -1877,8 +1877,8 @@
       "nesting-depth": 40,
       "param-count": 111,
       "unnamed-tuple": 63,
-      "comment-bloat": 132,
-      "line-length": 4511,
+      "comment-bloat": 114,
+      "line-length": 4499,
       "test-only-export": 13,
       "else-branch": 148,
       "stateless-method": 898,
@@ -1950,7 +1950,7 @@
       "Scripts/Features/Deckbuilder/Services/ExplorationAI.cs": 49,
       "Scripts/Features/Deckbuilder/Services/IAsyncMapGenerator.cs": 10,
       "Scripts/Features/Deckbuilder/Services/IGameSessionService.cs": 3,
-      "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs": 37,
+      "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs": 30,
       "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs": 35,
       "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs": 18,
       "Scripts/Features/Worldgen/BaselineGradient.cs": 18,
@@ -1986,7 +1986,7 @@
       "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs": 61,
       "Scripts/Features/Worldgen/IrregularMesh/MeshQuad.cs": 35,
       "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraph.cs": 40,
-      "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs": 50,
+      "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs": 40,
       "Scripts/Features/Worldgen/Wfc/WfcGrid.cs": 45,
       "Scripts/Features/Worldgen/Wfc/WfcSolver.cs": 42,
       "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs": 43,
@@ -2023,7 +2023,7 @@
       "Scripts/Core/Services/SimpleVisibilityChecker.cs": 19,
       "Scripts/Core/Services/TerrainCollisionShapeGenerator.cs": 24,
       "Scripts/Core/Services/TiledTilesetLoader.cs": 30,
-      "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs": 34,
+      "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs": 25,
       "Scripts/Features/Worldgen/AutoTiling/AutoTileFormatDefinition.cs": 21,
       "Scripts/Features/Worldgen/AutoTiling/AutoTileHelper.cs": 16,
       "Scripts/Features/Worldgen/AutoTiling/BuiltInAutoTileFormats.cs": 9,
@@ -2052,7 +2052,6 @@
       "Scripts/Core/Services/GodotProgress.cs": 10,
       "Scripts/Features/Deckbuilder/Tiles/VariationMode.cs": 3,
       "Scripts/Features/Worldgen/AutoTiling/BitmaskType.cs": 4,
-      "Scripts/Features/Worldgen/IrregularMesh/MeshVertex.cs": 4,
       "Scripts/Features/Worldgen/Wfc/Constraints/BiomeAffinityConstraint.cs": 15,
       "Scripts/Features/Worldgen/Wfc/Constraints/ConnectivityConstraint.cs": 24,
       "Scripts/Features/Worldgen/Wfc/Constraints/IEntropyInvalidator.cs": 10,
@@ -3475,8 +3474,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "error",
-      "message": "file is 325 lines",
-      "metric": 325
+      "message": "file is 305 lines",
+      "metric": 305
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
@@ -4056,7 +4055,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 79,
+      "line": 66,
       "rule": "complexity",
       "severity": "error",
       "message": "IsPassable() cyclomatic complexity 14",
@@ -4064,7 +4063,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 105,
+      "line": 92,
       "rule": "complexity",
       "severity": "error",
       "message": "IsTransparent() cyclomatic complexity 15",
@@ -4224,7 +4223,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 111,
+      "line": 89,
       "rule": "complexity",
       "severity": "error",
       "message": "GetProbabilityModifier() cyclomatic complexity 18",
@@ -4232,7 +4231,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 258,
+      "line": 238,
       "rule": "complexity",
       "severity": "error",
       "message": "CalculateLinearRepulsion() cyclomatic complexity 13",
@@ -4848,11 +4847,11 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 111,
+      "line": 89,
       "rule": "function-length",
       "severity": "error",
-      "message": "GetProbabilityModifier() is 111 lines",
-      "metric": 111
+      "message": "GetProbabilityModifier() is 113 lines",
+      "metric": 113
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/EntropyCache.cs",
@@ -5959,86 +5958,6 @@
       "metric": 5
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 23,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 42,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 49,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 56,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "7-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 7
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 65,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 105,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "6-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 6
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 146,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 158,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 171,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "6-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 6
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 213,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "6-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 6
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Tiles/VariationMode.cs",
       "line": 14,
       "rule": "comment-bloat",
@@ -6159,38 +6078,6 @@
       "metric": 5
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshVertex.cs",
-      "line": 16,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshVertex.cs",
-      "line": 23,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshVertex.cs",
-      "line": 30,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshVertex.cs",
-      "line": 37,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/AutoTileGapConstraint.cs",
       "line": 5,
       "rule": "comment-bloat",
@@ -6241,38 +6128,6 @@
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/IWfcConstraint.cs",
       "line": 20,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 7,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "22-line comment over 4 line(s) of code - keep the why, cut the rest",
-      "metric": 22
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 38,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 45,
-      "rule": "comment-bloat",
-      "severity": "error",
-      "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 58,
       "rule": "comment-bloat",
       "severity": "error",
       "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
@@ -6655,14 +6510,6 @@
       "metric": 121
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 63,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 125 chars",
-      "metric": 125
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
       "line": 160,
       "rule": "line-length",
@@ -6893,22 +6740,6 @@
       "severity": "error",
       "message": "line is 132 chars",
       "metric": 132
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 89,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 196 chars",
-      "metric": 196
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 191,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 153 chars",
-      "metric": 153
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapDataAdapter.cs",
@@ -8899,16 +8730,16 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 216 lines",
-      "metric": 216
+      "message": "file is 203 lines",
+      "metric": 203
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 277 lines",
-      "metric": 277
+      "message": "file is 264 lines",
+      "metric": 264
     },
     {
       "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
@@ -10168,7 +9999,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 72,
+      "line": 59,
       "rule": "complexity",
       "severity": "warn",
       "message": "GetBiomeAt() cyclomatic complexity 6",
@@ -10176,7 +10007,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 154,
+      "line": 141,
       "rule": "complexity",
       "severity": "warn",
       "message": "HasEdgeTileOverlay() cyclomatic complexity 6",
@@ -10200,7 +10031,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 264,
+      "line": 251,
       "rule": "complexity",
       "severity": "warn",
       "message": "GetAutoTileCoords() cyclomatic complexity 6",
@@ -12056,7 +11887,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 154,
+      "line": 141,
       "rule": "function-length",
       "severity": "warn",
       "message": "HasEdgeTileOverlay() is 39 lines",
@@ -12480,7 +12311,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 258,
+      "line": 238,
       "rule": "function-length",
       "severity": "warn",
       "message": "CalculateLinearRepulsion() is 49 lines",
@@ -14128,7 +13959,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 111,
+      "line": 89,
       "rule": "nesting-depth",
       "severity": "warn",
       "message": "GetProbabilityModifier() nests 4 levels deep",
@@ -14136,7 +13967,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 227,
+      "line": 207,
       "rule": "nesting-depth",
       "severity": "warn",
       "message": "GetInvalidatedCells() nests 4 levels deep",
@@ -15392,7 +15223,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 154,
+      "line": 141,
       "rule": "else-branch",
       "severity": "warn",
       "message": "HasEdgeTileOverlay() has 1 else branch(es) — prefer guard clauses",
@@ -15600,7 +15431,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 111,
+      "line": 89,
       "rule": "else-branch",
       "severity": "warn",
       "message": "GetProbabilityModifier() has 4 else branch(es) — prefer guard clauses",
@@ -17472,7 +17303,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 134,
+      "line": 131,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetVariantDefinition() never touches instance state — make it a free function",
@@ -17992,7 +17823,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 227,
+      "line": 207,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetInvalidatedCells() never touches instance state — make it a free function",
@@ -33608,23 +33439,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 37,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 38,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 44,
+      "line": 23,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -33632,15 +33447,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 47,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 50,
+      "line": 34,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -33648,7 +33455,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 51,
+      "line": 41,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -33656,47 +33463,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 58,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 59,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 66,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 74,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 93,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 107 chars",
-      "metric": 107
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 97,
+      "line": 44,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -33704,7 +33471,31 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 121,
+      "line": 49,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+      "line": 51,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+      "line": 61,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+      "line": 80,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 107 chars",
@@ -33712,7 +33503,23 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 125,
+      "line": 84,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+      "line": 108,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 107 chars",
+      "metric": 107
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+      "line": 112,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -33720,7 +33527,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 134,
+      "line": 121,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -33728,7 +33535,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 167,
+      "line": 154,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -33736,7 +33543,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 178,
+      "line": 165,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -33744,7 +33551,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 179,
+      "line": 166,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -33752,7 +33559,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 180,
+      "line": 167,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -33760,7 +33567,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 181,
+      "line": 168,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -33768,7 +33575,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "line": 209,
+      "line": 196,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -34304,15 +34111,15 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 109,
+      "line": 106,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
+      "message": "line is 108 chars",
+      "metric": 108
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 114,
+      "line": 111,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -34320,7 +34127,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 125,
+      "line": 122,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -34328,7 +34135,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 132,
+      "line": 129,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -34336,15 +34143,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 141,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 149,
+      "line": 138,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -34352,7 +34151,15 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 159,
+      "line": 143,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+      "line": 153,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -34360,15 +34167,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 160,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 166,
+      "line": 158,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -34376,15 +34175,15 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 173,
+      "line": 164,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
+      "message": "line is 111 chars",
+      "metric": 111
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 181,
+      "line": 171,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -34392,7 +34191,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 186,
+      "line": 176,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -34400,7 +34199,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 189,
+      "line": 179,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -34408,7 +34207,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 199,
+      "line": 189,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -34416,39 +34215,31 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 205,
+      "line": 195,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
       "metric": 92
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+      "line": 199,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+      "line": 204,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 113 chars",
+      "metric": 113
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
       "line": 209,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 216,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 217,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 222,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -34456,7 +34247,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 223,
+      "line": 210,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -34464,7 +34255,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 225,
+      "line": 212,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -34472,7 +34263,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 245,
+      "line": 232,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 109 chars",
@@ -34480,7 +34271,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 248,
+      "line": 235,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -34488,7 +34279,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 261,
+      "line": 248,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -40472,47 +40263,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 9,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 15,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 19,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 23,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 24,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 41,
+      "line": 21,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -40520,15 +40271,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 48,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 54,
+      "line": 32,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -40536,15 +40279,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 60,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 88,
+      "line": 64,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -40552,7 +40287,23 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 115,
+      "line": 66,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 116 chars",
+      "metric": 116
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 67,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 93,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -40560,7 +40311,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 116,
+      "line": 94,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -40568,7 +40319,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 118,
+      "line": 96,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 108 chars",
@@ -40576,7 +40327,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 122,
+      "line": 100,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -40584,7 +40335,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 130,
+      "line": 108,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -40592,7 +40343,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 144,
+      "line": 122,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -40600,7 +40351,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 151,
+      "line": 129,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -40608,7 +40359,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 166,
+      "line": 144,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -40616,7 +40367,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 168,
+      "line": 146,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -40624,111 +40375,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 199,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 207,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 212,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 214,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 215,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 225,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 227,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 111 chars",
-      "metric": 111
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 231,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 241,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 244,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 256,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 270,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 279,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 286,
+      "line": 170,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -40736,7 +40383,79 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 288,
+      "line": 179,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 187,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 192,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 194,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 195,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 205,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 207,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 111 chars",
+      "metric": 111
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 211,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 221,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 224,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -40744,7 +40463,47 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "line": 298,
+      "line": 236,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 250,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 259,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 266,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 268,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "line": 278,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -75698,423 +75457,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-      "errors": 10,
-      "warnings": 40,
-      "rules": {
-        "file-length": 1,
-        "complexity": 2,
-        "function-length": 2,
-        "comment-bloat": 4,
-        "line-length": 37,
-        "nesting-depth": 2,
-        "else-branch": 1,
-        "stateless-method": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 325 lines",
-          "metric": 325
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 111,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "GetProbabilityModifier() cyclomatic complexity 18",
-          "metric": 18
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 258,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "CalculateLinearRepulsion() cyclomatic complexity 13",
-          "metric": 13
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 111,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "GetProbabilityModifier() is 111 lines",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 7,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "22-line comment over 4 line(s) of code - keep the why, cut the rest",
-          "metric": 22
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 38,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 45,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 58,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 89,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 196 chars",
-          "metric": 196
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 191,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 153 chars",
-          "metric": 153
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 258,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "CalculateLinearRepulsion() is 49 lines",
-          "metric": 49
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 111,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "GetProbabilityModifier() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 227,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "GetInvalidatedCells() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 111,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "GetProbabilityModifier() has 4 else branch(es) — prefer guard clauses",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 227,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetInvalidatedCells() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 9,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 15,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 19,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 23,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 24,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 41,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 48,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 54,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 60,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 88,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 115,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 116,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 118,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 122,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 130,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 144,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 151,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 166,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 168,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 199,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 207,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 212,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 214,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 215,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 225,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 227,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 231,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 241,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 244,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 256,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 270,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 279,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 286,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 288,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
-          "line": 298,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        }
-      ]
-    },
-    {
       "file": "Tests/Features/Worldgen/AutoTiling/RandomAutoTileReproductionTest.cs",
       "errors": 9,
       "warnings": 70,
@@ -79014,293 +78356,6 @@
           "severity": "warn",
           "message": "line is 89 chars",
           "metric": 89
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-      "errors": 8,
-      "warnings": 26,
-      "rules": {
-        "complexity": 4,
-        "comment-bloat": 5,
-        "line-length": 22,
-        "file-length": 1,
-        "function-length": 1,
-        "else-branch": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 79,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "IsPassable() cyclomatic complexity 14",
-          "metric": 14
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 105,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "IsTransparent() cyclomatic complexity 15",
-          "metric": 15
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 23,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 42,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 49,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 56,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "7-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 65,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 63,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 125 chars",
-          "metric": 125
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 216 lines",
-          "metric": 216
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 72,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GetBiomeAt() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 154,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "HasEdgeTileOverlay() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 154,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "HasEdgeTileOverlay() is 39 lines",
-          "metric": 39
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 154,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "HasEdgeTileOverlay() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 37,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 38,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 44,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 47,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 50,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 51,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 58,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 59,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 66,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 74,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 93,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 97,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 121,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 125,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 134,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 167,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 178,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 179,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 180,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 181,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
-          "line": 209,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
         }
       ]
     },
@@ -82650,319 +81705,6 @@
           "severity": "warn",
           "message": "line is 87 chars",
           "metric": 87
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "errors": 7,
-      "warnings": 30,
-      "rules": {
-        "types-per-file": 1,
-        "param-count": 1,
-        "comment-bloat": 5,
-        "file-length": 1,
-        "complexity": 1,
-        "function-length": 1,
-        "stateless-method": 1,
-        "line-length": 26
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 35,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: TileAnimation, TileDefinition",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 37,
-          "rule": "param-count",
-          "severity": "error",
-          "message": "TileDefinition() takes 21 parameters",
-          "metric": 21
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 105,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "6-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 146,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 158,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 171,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "6-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 213,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "6-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 277 lines",
-          "metric": 277
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 264,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GetAutoTileCoords() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 37,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "TileDefinition() is 45 lines",
-          "metric": 45
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 134,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetVariantDefinition() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 67,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 100,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 109,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 114,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 125,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 132,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 141,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 149,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 159,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 160,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 166,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 173,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 181,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 186,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 189,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 199,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 205,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 209,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 216,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 217,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 222,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 223,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 225,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 245,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 248,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 261,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
         }
       ]
     },
@@ -89789,6 +88531,342 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+      "errors": 4,
+      "warnings": 36,
+      "rules": {
+        "file-length": 1,
+        "complexity": 2,
+        "function-length": 2,
+        "nesting-depth": 2,
+        "else-branch": 1,
+        "stateless-method": 1,
+        "line-length": 31
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "error",
+          "message": "file is 305 lines",
+          "metric": 305
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 89,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "GetProbabilityModifier() cyclomatic complexity 18",
+          "metric": 18
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 238,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "CalculateLinearRepulsion() cyclomatic complexity 13",
+          "metric": 13
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 89,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "GetProbabilityModifier() is 113 lines",
+          "metric": 113
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 238,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "CalculateLinearRepulsion() is 49 lines",
+          "metric": 49
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 89,
+          "rule": "nesting-depth",
+          "severity": "warn",
+          "message": "GetProbabilityModifier() nests 4 levels deep",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 207,
+          "rule": "nesting-depth",
+          "severity": "warn",
+          "message": "GetInvalidatedCells() nests 4 levels deep",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 89,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "GetProbabilityModifier() has 4 else branch(es) — prefer guard clauses",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 207,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetInvalidatedCells() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 21,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 32,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 64,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 66,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 116 chars",
+          "metric": 116
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 67,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 93,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 94,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 96,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 100,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 108,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 122,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 129,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 144,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 146,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 170,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 179,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 187,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 192,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 194,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 195,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 205,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 207,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 211,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 221,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 224,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 236,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 250,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 259,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 266,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 268,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs",
+          "line": 278,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshQuad.cs",
       "errors": 4,
       "warnings": 31,
@@ -91339,48 +90417,6 @@
           "severity": "warn",
           "message": "line is 87 chars",
           "metric": 87
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshVertex.cs",
-      "errors": 4,
-      "warnings": 0,
-      "rules": {
-        "comment-bloat": 4
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshVertex.cs",
-          "line": 16,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshVertex.cs",
-          "line": 23,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshVertex.cs",
-          "line": 30,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshVertex.cs",
-          "line": 37,
-          "rule": "comment-bloat",
-          "severity": "error",
-          "message": "5-line comment over 1 line(s) of code - keep the why, cut the rest",
-          "metric": 5
         }
       ]
     },
@@ -98797,6 +97833,262 @@
       ]
     },
     {
+      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+      "errors": 2,
+      "warnings": 28,
+      "rules": {
+        "types-per-file": 1,
+        "param-count": 1,
+        "file-length": 1,
+        "complexity": 1,
+        "function-length": 1,
+        "stateless-method": 1,
+        "line-length": 24
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 35,
+          "rule": "types-per-file",
+          "severity": "error",
+          "message": "2 types in one file: TileAnimation, TileDefinition",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 37,
+          "rule": "param-count",
+          "severity": "error",
+          "message": "TileDefinition() takes 21 parameters",
+          "metric": 21
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 264 lines",
+          "metric": 264
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 251,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GetAutoTileCoords() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 37,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "TileDefinition() is 45 lines",
+          "metric": 45
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 131,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetVariantDefinition() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 67,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 100,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 106,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 111,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 122,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 129,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 138,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 143,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 153,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 158,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 164,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 171,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 176,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 179,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 189,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 195,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 199,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 204,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 113 chars",
+          "metric": 113
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 209,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 210,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 212,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 232,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 235,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 248,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        }
+      ]
+    },
+    {
       "file": "Scripts/Core/Services/TiledTilesetLoader.cs",
       "errors": 2,
       "warnings": 28,
@@ -99754,6 +99046,220 @@
           "severity": "warn",
           "message": "line is 85 chars",
           "metric": 85
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+      "errors": 2,
+      "warnings": 23,
+      "rules": {
+        "complexity": 4,
+        "file-length": 1,
+        "function-length": 1,
+        "else-branch": 1,
+        "line-length": 18
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 66,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "IsPassable() cyclomatic complexity 14",
+          "metric": 14
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 92,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "IsTransparent() cyclomatic complexity 15",
+          "metric": 15
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 203 lines",
+          "metric": 203
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 59,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GetBiomeAt() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 141,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "HasEdgeTileOverlay() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 141,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "HasEdgeTileOverlay() is 39 lines",
+          "metric": 39
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 141,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "HasEdgeTileOverlay() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 23,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 34,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 44,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 49,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 51,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 61,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 80,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 84,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 108,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 112,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 121,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 154,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 165,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 166,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 167,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 168,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs",
+          "line": 196,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
         }
       ]
     },

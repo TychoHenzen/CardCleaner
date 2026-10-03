@@ -14,30 +14,22 @@ public class MeshVertex
     public Vector2 Position { get; set; }
 
     /// <summary>
-    /// Terrain type at this vertex (integer for bitmask computation).
-    /// 0 = impassable, 1+ = passable terrain.
-    /// Used by adjacent quads to compute Corner16 bitmasks.
+    /// Terrain type for Corner16 masks (0 = impassable, 1+ = passable).
     /// </summary>
     public int TerrainType { get; set; }
 
     /// <summary>
-    /// The tile ID assigned to this vertex (for backward compatibility).
-    /// For foreground vertices, this is the auto-tile ID.
-    /// For gap vertices, this may be used by legacy code.
+    /// Tile ID retained for compatibility; foreground uses auto-tile IDs.
     /// </summary>
     public string? TileId { get; set; }
 
     /// <summary>
-    /// Foreground tile ID (auto-tile from WFC phase 2).
-    /// May be null/empty for "gap" vertices where no auto-tile is present.
-    /// Quads compute bitmasks based on which corners have a foreground tile.
+    /// WFC phase 2 auto-tile ID; null or empty for gap vertices.
     /// </summary>
     public string? ForegroundTileId { get; set; }
 
     /// <summary>
-    /// Variant index for this vertex's terrain type.
-    /// -1 = use position-based hash for per-vertex variation
-    /// >= 0 = use this specific variant index (for per-generation consistency)
+    /// Variant index; -1 hashes position, nonnegative values select explicitly.
     /// </summary>
     public int VariantIndex { get; set; } = -1;
 
