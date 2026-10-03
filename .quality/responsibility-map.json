@@ -44,6 +44,18 @@
       {
         "responsibility": "Build",
         "owner": "CompiledAtlasTileSetBuilder"
+      },
+      {
+        "responsibility": "FindDominantAutoTile",
+        "owner": "SimpleMapGenerator"
+      },
+      {
+        "responsibility": "FindDominantBaseTile",
+        "owner": "SimpleMapGenerator"
+      },
+      {
+        "responsibility": "ComputeTransitionBitmask",
+        "owner": "SimpleMapGenerator"
       }
     ],
     "boundaries": [

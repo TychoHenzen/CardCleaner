@@ -1839,8 +1839,8 @@
     }
   ],
   "summary": {
-    "total": 7435,
-    "errors": 707,
+    "total": 7433,
+    "errors": 705,
     "warnings": 6728,
     "byRule": {
       "dead-export": 35,
@@ -1849,11 +1849,11 @@
       "file-length": 222,
       "complexity": 331,
       "function-length": 373,
-      "nesting-depth": 41,
+      "nesting-depth": 40,
       "param-count": 111,
       "unnamed-tuple": 67,
       "comment-bloat": 133,
-      "line-length": 4528,
+      "line-length": 4527,
       "test-only-export": 13,
       "else-branch": 148,
       "stateless-method": 898,
@@ -1949,7 +1949,7 @@
       "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs": 41,
       "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs": 57,
       "Scripts/Features/Deckbuilder/Services/GameSessionService.cs": 72,
-      "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs": 94,
+      "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs": 92,
       "Scripts/Features/Player/Controllers/PlayerController.cs": 39,
       "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionResolver.cs": 63,
       "Scripts/Features/Worldgen/AutoTiling/DualGridAutoTile.cs": 62,
@@ -3344,8 +3344,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "error",
-      "message": "file is 588 lines",
-      "metric": 588
+      "message": "file is 610 lines",
+      "metric": 610
     },
     {
       "file": "Scripts/Features/Player/Controllers/PlayerController.cs",
@@ -4077,15 +4077,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 347,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "GenerateTerrainTransitions() cyclomatic complexity 19",
-      "metric": 19
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 450,
+      "line": 472,
       "rule": "complexity",
       "severity": "error",
       "message": "private() cyclomatic complexity 18",
@@ -4764,14 +4756,6 @@
       "metric": 105
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 347,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "GenerateTerrainTransitions() is 76 lines",
-      "metric": 76
-    },
-    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshExplorationController.cs",
       "line": 246,
       "rule": "function-length",
@@ -5397,7 +5381,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 450,
+      "line": 472,
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (string BaseTerrain, string TopTerrain) SelectTerrains( — replace it with a named type",
@@ -6709,7 +6693,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 502,
+      "line": 524,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 123 chars",
@@ -6717,7 +6701,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 539,
+      "line": 561,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 121 chars",
@@ -6725,7 +6709,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 541,
+      "line": 563,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 163 chars",
@@ -6733,7 +6717,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 545,
+      "line": 567,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 153 chars",
@@ -6741,7 +6725,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 564,
+      "line": 586,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 128 chars",
@@ -10372,6 +10356,14 @@
       "metric": 8
     },
     {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 347,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "GenerateTerrainTransitions() cyclomatic complexity 9",
+      "metric": 9
+    },
+    {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
       "line": 264,
       "rule": "complexity",
@@ -12237,7 +12229,15 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 450,
+      "line": 347,
+      "rule": "function-length",
+      "severity": "warn",
+      "message": "GenerateTerrainTransitions() is 46 lines",
+      "metric": 46
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 472,
       "rule": "function-length",
       "severity": "warn",
       "message": "private() is 41 lines",
@@ -12245,7 +12245,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 553,
+      "line": 575,
       "rule": "function-length",
       "severity": "warn",
       "message": "ValidateBitmaskConsistency() is 34 lines",
@@ -14220,14 +14220,6 @@
       "metric": 4
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 347,
-      "rule": "nesting-depth",
-      "severity": "warn",
-      "message": "GenerateTerrainTransitions() nests 4 levels deep",
-      "metric": 4
-    },
-    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/Debug/IrregularMeshPreview.cs",
       "line": 282,
       "rule": "nesting-depth",
@@ -14765,7 +14757,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 424,
+      "line": 446,
       "rule": "param-count",
       "severity": "warn",
       "message": "GetCellSafe() takes 4 parameters",
@@ -14773,7 +14765,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 495,
+      "line": 517,
       "rule": "param-count",
       "severity": "warn",
       "message": "ComputeBitmask() takes 5 parameters",
@@ -14781,7 +14773,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 506,
+      "line": 528,
       "rule": "param-count",
       "severity": "warn",
       "message": "SampleTerrainCell() takes 5 parameters",
@@ -14789,7 +14781,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 524,
+      "line": 546,
       "rule": "param-count",
       "severity": "warn",
       "message": "IsTerrainAtPosition() takes 5 parameters",
@@ -15581,7 +15573,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 553,
+      "line": 575,
       "rule": "else-branch",
       "severity": "warn",
       "message": "ValidateBitmaskConsistency() has 1 else branch(es) — prefer guard clauses",
@@ -17637,7 +17629,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 535,
+      "line": 557,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ValidateSpatialCoherence() never touches instance state — make it a free function",
@@ -34213,7 +34205,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 371,
+      "line": 374,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -34221,7 +34213,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 409,
+      "line": 383,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -34229,7 +34221,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 410,
+      "line": 384,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -34237,7 +34229,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 411,
+      "line": 385,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -34245,39 +34237,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 413,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 111 chars",
-      "metric": 111
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 414,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 111 chars",
-      "metric": 111
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 415,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 111 chars",
-      "metric": 111
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 416,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 111 chars",
-      "metric": 111
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 424,
+      "line": 386,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -34285,7 +34245,31 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 440,
+      "line": 403,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 432,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 446,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "line": 462,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -34293,7 +34277,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 464,
+      "line": 486,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -34301,7 +34285,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 475,
+      "line": 497,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -34309,7 +34293,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 493,
+      "line": 515,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -34317,7 +34301,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 495,
+      "line": 517,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 110 chars",
@@ -34325,7 +34309,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 499,
+      "line": 521,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 119 chars",
@@ -34333,7 +34317,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 500,
+      "line": 522,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 115 chars",
@@ -34341,7 +34325,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 501,
+      "line": 523,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 119 chars",
@@ -34349,7 +34333,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 506,
+      "line": 528,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -34357,7 +34341,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 524,
+      "line": 546,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 117 chars",
@@ -34365,7 +34349,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 532,
+      "line": 554,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -34373,7 +34357,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 540,
+      "line": 562,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -34381,7 +34365,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 551,
+      "line": 573,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -34389,7 +34373,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 554,
+      "line": 576,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -34397,7 +34381,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 558,
+      "line": 580,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -34405,7 +34389,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 560,
+      "line": 582,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -34413,7 +34397,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 569,
+      "line": 591,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 106 chars",
@@ -34421,7 +34405,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 572,
+      "line": 594,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 114 chars",
@@ -34429,7 +34413,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 579,
+      "line": 601,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -34437,7 +34421,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "line": 584,
+      "line": 606,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 105 chars",
@@ -67506,778 +67490,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-      "errors": 15,
-      "warnings": 79,
-      "rules": {
-        "file-length": 1,
-        "complexity": 4,
-        "function-length": 5,
-        "unnamed-tuple": 2,
-        "line-length": 71,
-        "nesting-depth": 1,
-        "param-count": 5,
-        "else-branch": 2,
-        "stateless-method": 1,
-        "comment-bloat": 1,
-        "comment-restates-code": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 588 lines",
-          "metric": 588
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 185,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "private() cyclomatic complexity 23",
-          "metric": 23
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 347,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "GenerateTerrainTransitions() cyclomatic complexity 19",
-          "metric": 19
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 450,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "private() cyclomatic complexity 18",
-          "metric": 18
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 68,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "GenerateMap() is 110 lines",
-          "metric": 110
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 185,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "private() is 105 lines",
-          "metric": 105
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 347,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "GenerateTerrainTransitions() is 76 lines",
-          "metric": 76
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 185,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (string[,] backgroundLayer, string[,] foregroundLayer, string[,] mergedGrid) GenerateTwoPhaseWfc( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 450,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (string BaseTerrain, string TopTerrain) SelectTerrains( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 157,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 122 chars",
-          "metric": 122
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 502,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 123 chars",
-          "metric": 123
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 539,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 121 chars",
-          "metric": 121
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 541,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 163 chars",
-          "metric": 163
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 545,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 153 chars",
-          "metric": 153
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 564,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 128 chars",
-          "metric": 128
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 68,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GenerateMap() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 450,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "private() is 41 lines",
-          "metric": 41
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 553,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ValidateBitmaskConsistency() is 34 lines",
-          "metric": 34
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 347,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "GenerateTerrainTransitions() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 40,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "SimpleMapGenerator() takes 7 parameters",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 424,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "GetCellSafe() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 495,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "ComputeBitmask() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 506,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "SampleTerrainCell() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 524,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "IsTerrainAtPosition() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 185,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "private() has 3 else branch(es) — prefer guard clauses",
-          "metric": 3
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 553,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "ValidateBitmaskConsistency() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 535,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ValidateSpatialCoherence() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 15,
-          "rule": "comment-bloat",
-          "severity": "warn",
-          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 142,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 16,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 17,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 40,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 42,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 58,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 59,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 72,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 80,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 92,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 102,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 131,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 134,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 135,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 136,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 139,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 154,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 185,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 199,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 220,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 229,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 237,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 238,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 249,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 256,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 267,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 271,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 304,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 306,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 312,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 330,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 334,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 119 chars",
-          "metric": 119
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 343,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 344,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 345,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 347,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 352,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 371,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 409,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 410,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 411,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 413,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 414,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 415,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 416,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 424,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 440,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 464,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 475,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 493,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 495,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 499,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 119 chars",
-          "metric": 119
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 500,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 501,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 119 chars",
-          "metric": 119
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 506,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 524,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 532,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 540,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 551,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 554,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 558,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 560,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 569,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 572,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 579,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
-          "line": 584,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        }
-      ]
-    },
-    {
       "file": "addons/tile_editor/TmxPreviewPanel.cs",
       "errors": 14,
       "warnings": 85,
@@ -72155,6 +71367,761 @@
           "severity": "warn",
           "message": "line is 106 chars",
           "metric": 106
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+      "errors": 13,
+      "warnings": 79,
+      "rules": {
+        "file-length": 1,
+        "complexity": 4,
+        "function-length": 5,
+        "unnamed-tuple": 2,
+        "line-length": 70,
+        "param-count": 5,
+        "else-branch": 2,
+        "stateless-method": 1,
+        "comment-bloat": 1,
+        "comment-restates-code": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "error",
+          "message": "file is 610 lines",
+          "metric": 610
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 185,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "private() cyclomatic complexity 23",
+          "metric": 23
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 472,
+          "rule": "complexity",
+          "severity": "error",
+          "message": "private() cyclomatic complexity 18",
+          "metric": 18
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 68,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "GenerateMap() is 110 lines",
+          "metric": 110
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 185,
+          "rule": "function-length",
+          "severity": "error",
+          "message": "private() is 105 lines",
+          "metric": 105
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 185,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (string[,] backgroundLayer, string[,] foregroundLayer, string[,] mergedGrid) GenerateTwoPhaseWfc( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 472,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (string BaseTerrain, string TopTerrain) SelectTerrains( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 157,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 122 chars",
+          "metric": 122
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 524,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 123 chars",
+          "metric": 123
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 561,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 121 chars",
+          "metric": 121
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 563,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 163 chars",
+          "metric": 163
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 567,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 153 chars",
+          "metric": 153
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 586,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 128 chars",
+          "metric": 128
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 68,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GenerateMap() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 347,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GenerateTerrainTransitions() cyclomatic complexity 9",
+          "metric": 9
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 347,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "GenerateTerrainTransitions() is 46 lines",
+          "metric": 46
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 472,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "private() is 41 lines",
+          "metric": 41
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 575,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "ValidateBitmaskConsistency() is 34 lines",
+          "metric": 34
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 40,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "SimpleMapGenerator() takes 7 parameters",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 446,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "GetCellSafe() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 517,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "ComputeBitmask() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 528,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "SampleTerrainCell() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 546,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "IsTerrainAtPosition() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 185,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "private() has 3 else branch(es) — prefer guard clauses",
+          "metric": 3
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 575,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "ValidateBitmaskConsistency() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 557,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ValidateSpatialCoherence() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 15,
+          "rule": "comment-bloat",
+          "severity": "warn",
+          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 142,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 16,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 17,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 42,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 58,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 59,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 72,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 80,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 92,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 102,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 131,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 134,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 135,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 136,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 139,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 154,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 185,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 199,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 220,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 229,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 237,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 238,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 249,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 256,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 267,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 271,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 304,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 306,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 312,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 330,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 334,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 119 chars",
+          "metric": 119
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 343,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 344,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 345,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 347,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 352,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 374,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 383,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 384,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 385,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 386,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 403,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 432,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 446,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 462,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 486,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 497,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 515,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 517,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 521,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 119 chars",
+          "metric": 119
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 522,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 523,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 119 chars",
+          "metric": 119
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 528,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 546,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 554,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 562,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 573,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 576,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 580,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 582,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 591,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 594,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 601,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs",
+          "line": 606,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
         }
       ]
     },

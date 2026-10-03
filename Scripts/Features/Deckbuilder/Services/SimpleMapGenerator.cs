@@ -368,39 +368,13 @@ public class SimpleMapGenerator
             var bgSW = GetCellSafe(backgroundLayer, size, vx - 1, vy);
             var bgSE = GetCellSafe(backgroundLayer, size, vx, vy);
 
-            // Find the auto-tile in this window (should be at most one type due to gap constraint)
-            string? topTerrain = null;
-            int topDominance = -1;
-            foreach (var fg in new[] { fgNW, fgNE, fgSW, fgSE })
-            {
-                if (string.IsNullOrEmpty(fg)) continue;
-                var tile = _tileRegistry.GetTile(fg);
-                if (tile?.HasAutoTileVariants == true)
-                {
-                    if (tile.Dominance > topDominance)
-                    {
-                        topTerrain = fg;
-                        topDominance = tile.Dominance;
-                    }
-                }
-            }
+            var foregroundCorners = new[] { fgNW, fgNE, fgSW, fgSE };
+            var backgroundCorners = new[] { bgNW, bgNE, bgSW, bgSE };
 
-            // Find the base terrain from background layer
-            string? baseTerrain = null;
-            int baseDominance = int.MaxValue;
-            foreach (var bg in new[] { bgNW, bgNE, bgSW, bgSE })
-            {
-                if (string.IsNullOrEmpty(bg)) continue;
-                var tile = _tileRegistry.GetTile(bg);
-                if (tile != null)
-                {
-                    if (tile.Dominance < baseDominance)
-                    {
-                        baseTerrain = bg;
-                        baseDominance = tile.Dominance;
-                    }
-                }
-            }
+            // Find the auto-tile in this window (should be at most one type due to gap constraint)
+            string? topTerrain = FindDominantAutoTile(foregroundCorners);
+
+            string? baseTerrain = FindDominantBaseTile(backgroundCorners);
 
             // Fallback to default passable tile if no base terrain found
             baseTerrain ??= _defaultPassableTileId;
@@ -409,16 +383,64 @@ public class SimpleMapGenerator
             // Compute bitmask based on which corners have the same terrain type as topTerrain
             // Use AreSameTerrainType to handle variations (e.g., grass1 vs grass2)
             // Use Corner16 format: NE=1, SE=2, SW=4, NW=8 (dual-grid samples exactly 4 corners)
-            var bitmask = 0;
-            if (_tileRegistry.AreSameTerrainType(fgNE, topTerrain)) bitmask |= NeighborBitmaskCorner.NorthEast;
-            if (_tileRegistry.AreSameTerrainType(fgSE, topTerrain)) bitmask |= NeighborBitmaskCorner.SouthEast;
-            if (_tileRegistry.AreSameTerrainType(fgSW, topTerrain)) bitmask |= NeighborBitmaskCorner.SouthWest;
-            if (_tileRegistry.AreSameTerrainType(fgNW, topTerrain)) bitmask |= NeighborBitmaskCorner.NorthWest;
+            var bitmask = ComputeTransitionBitmask(foregroundCorners, topTerrain);
 
             overlays[visualPosition] = (baseTerrain, topTerrain, bitmask);
         }
 
         return overlays;
+    }
+
+    private string? FindDominantAutoTile(IReadOnlyList<string> corners)
+    {
+        string? topTerrain = null;
+        var topDominance = -1;
+
+        foreach (var corner in corners)
+        {
+            if (string.IsNullOrEmpty(corner)) continue;
+            var tile = _tileRegistry.GetTile(corner);
+            if (tile?.HasAutoTileVariants == true && tile.Dominance > topDominance)
+            {
+                topTerrain = corner;
+                topDominance = tile.Dominance;
+            }
+        }
+
+        return topTerrain;
+    }
+
+    private string? FindDominantBaseTile(IReadOnlyList<string> corners)
+    {
+        string? baseTerrain = null;
+        var baseDominance = int.MaxValue;
+
+        foreach (var corner in corners)
+        {
+            if (string.IsNullOrEmpty(corner)) continue;
+            var tile = _tileRegistry.GetTile(corner);
+            if (tile != null && tile.Dominance < baseDominance)
+            {
+                baseTerrain = corner;
+                baseDominance = tile.Dominance;
+            }
+        }
+
+        return baseTerrain;
+    }
+
+    private int ComputeTransitionBitmask(IReadOnlyList<string> foregroundCorners, string topTerrain)
+    {
+        var bitmask = 0;
+        if (_tileRegistry.AreSameTerrainType(foregroundCorners[1], topTerrain))
+            bitmask |= NeighborBitmaskCorner.NorthEast;
+        if (_tileRegistry.AreSameTerrainType(foregroundCorners[3], topTerrain))
+            bitmask |= NeighborBitmaskCorner.SouthEast;
+        if (_tileRegistry.AreSameTerrainType(foregroundCorners[2], topTerrain))
+            bitmask |= NeighborBitmaskCorner.SouthWest;
+        if (_tileRegistry.AreSameTerrainType(foregroundCorners[0], topTerrain))
+            bitmask |= NeighborBitmaskCorner.NorthWest;
+        return bitmask;
     }
 
     private static string GetCellSafe(string[,] grid, Vector2I size, int x, int y)
