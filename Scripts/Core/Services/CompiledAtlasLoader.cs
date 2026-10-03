@@ -74,7 +74,14 @@ public static class CompiledAtlasLoader
             var json = File.ReadAllText(absolutePath);
             ILog.Print($"[CompiledAtlasLoader] Read {json.Length} chars from mapping file");
 
-            _cachedMapping = JsonSerializer.Deserialize<AtlasMappingData>(json, CreateJsonOptions());
+            var loadedMapping = JsonSerializer.Deserialize<AtlasMappingData>(json, CreateJsonOptions());
+            if (loadedMapping?.Atlas == null)
+            {
+                ILog.Print("[CompiledAtlasLoader] Mapping JSON has no atlas root");
+                return null;
+            }
+
+            _cachedMapping = loadedMapping;
             _cachedAtlasPath = mappingPath;
 
             if (_cachedMapping != null)

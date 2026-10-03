@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -24,6 +26,7 @@ public class CompiledAtlasLoaderTest
     private CompiledAtlasLoader.AtlasMappingData? _mapping;
     private JsonDocument? _transitionDoc;
     private Image? _atlasImage;
+    private readonly List<string> _temporaryPaths = new();
 
     [BeforeTest]
     public void Setup()
@@ -50,6 +53,15 @@ public class CompiledAtlasLoaderTest
     {
         _transitionDoc?.Dispose();
         CompiledAtlasLoader.ClearCache();
+
+        foreach (var path in _temporaryPaths)
+        {
+            var absolutePath = ProjectSettings.GlobalizePath(path);
+            if (File.Exists(absolutePath))
+                File.Delete(absolutePath);
+        }
+
+        _temporaryPaths.Clear();
     }
 
     // ==================== File Existence ====================
@@ -323,6 +335,101 @@ public class CompiledAtlasLoaderTest
 
         // Both should be valid (not testing reference equality since cache may differ)
         AssertThat(mapping1!.Sources!.Count).IsEqual(mapping2!.Sources!.Count);
+    }
+
+    [TestCase]
+    public void TestMissingMappingCanBeRetriedWithoutStaleCache()
+    {
+        var mappingPath = CreateTemporaryPath(".json");
+
+        AssertThat(CompiledAtlasLoader.LoadMapping(mappingPath)).IsNull();
+
+        WriteMapping(mappingPath, "user://missing-atlas.png");
+
+        var mapping = CompiledAtlasLoader.LoadMapping(mappingPath);
+        AssertThat(mapping).IsNotNull();
+        AssertThat(mapping!.Atlas).IsNotNull();
+    }
+
+    [TestCase]
+    public void TestMappingWithoutAtlasRootCanBeRetriedWithoutStaleCache()
+    {
+        var mappingPath = CreateTemporaryPath(".json");
+        File.WriteAllText(ProjectSettings.GlobalizePath(mappingPath), "{\"version\":\"test\"}");
+
+        AssertThat(CompiledAtlasLoader.LoadMapping(mappingPath)).IsNull();
+
+        WriteMapping(mappingPath, "user://missing-atlas.png");
+
+        var mapping = CompiledAtlasLoader.LoadMapping(mappingPath);
+        AssertThat(mapping).IsNotNull();
+        AssertThat(mapping!.Atlas).IsNotNull();
+    }
+
+    [TestCase]
+    public void TestMalformedMappingCanBeRetriedWithoutStaleCache()
+    {
+        var mappingPath = CreateTemporaryPath(".json");
+        File.WriteAllText(ProjectSettings.GlobalizePath(mappingPath), "not-json");
+
+        AssertThat(CompiledAtlasLoader.LoadMapping(mappingPath)).IsNull();
+
+        WriteMapping(mappingPath, "user://missing-atlas.png");
+
+        var mapping = CompiledAtlasLoader.LoadMapping(mappingPath);
+        AssertThat(mapping).IsNotNull();
+        AssertThat(mapping!.Atlas).IsNotNull();
+    }
+
+    [TestCase]
+    public void TestMissingAtlasCanBeRetriedAfterAtlasAppears()
+    {
+        var mappingPath = CreateTemporaryPath(".json");
+        var atlasPath = CreateTemporaryPath(".png");
+        var sourceMapping = JsonSerializer.Deserialize<CompiledAtlasLoader.AtlasMappingData>(
+            File.ReadAllText(ProjectSettings.GlobalizePath(AtlasMappingPath)))!;
+        sourceMapping.Atlas!.Path = atlasPath;
+        File.WriteAllText(
+            ProjectSettings.GlobalizePath(mappingPath),
+            JsonSerializer.Serialize(sourceMapping));
+
+        AssertThat(CompiledAtlasLoader.LoadCompiledTileSet(mappingPath)).IsNull();
+
+        File.Copy(
+            ProjectSettings.GlobalizePath(AtlasPngPath),
+            ProjectSettings.GlobalizePath(atlasPath),
+            overwrite: true);
+
+        var tileSet = CompiledAtlasLoader.LoadCompiledTileSet(mappingPath);
+        AssertThat(tileSet).IsNotNull();
+        AssertThat(tileSet!.GetSourceCount()).IsGreater(0);
+    }
+
+    private string CreateTemporaryPath(string extension)
+    {
+        var path = $"user://compiled-atlas-test-{Guid.NewGuid():N}{extension}";
+        _temporaryPaths.Add(path);
+        return path;
+    }
+
+    private static void WriteMapping(string mappingPath, string atlasPath)
+    {
+        var mapping = new CompiledAtlasLoader.AtlasMappingData
+        {
+            Version = "test",
+            Atlas = new CompiledAtlasLoader.AtlasInfo
+            {
+                Path = atlasPath,
+                Width = 16,
+                Height = 16,
+                TileSize = 16
+            },
+            Sources = new Dictionary<string, Dictionary<string, CompiledAtlasLoader.TileAtlasRect>>()
+        };
+
+        File.WriteAllText(
+            ProjectSettings.GlobalizePath(mappingPath),
+            JsonSerializer.Serialize(mapping));
     }
 
     // ==================== Statistics ====================

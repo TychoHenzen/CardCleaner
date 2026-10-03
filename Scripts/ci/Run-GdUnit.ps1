@@ -68,13 +68,13 @@ $importArguments = @(
     '.'
     '--quit'
 )
-$importProcess = Start-Process -FilePath $godotPath -ArgumentList $importArguments -WorkingDirectory $repositoryRoot -RedirectStandardOutput $importStdoutPath -RedirectStandardError $importStderrPath -Wait -PassThru
+$importProcess = Start-Process -WindowStyle Hidden -FilePath $godotPath -ArgumentList $importArguments -WorkingDirectory $repositoryRoot -RedirectStandardOutput $importStdoutPath -RedirectStandardError $importStderrPath -Wait -PassThru
 if ($importProcess.ExitCode -ne 0) {
     $importStderr = if (Test-Path -LiteralPath $importStderrPath) { (Get-Content -LiteralPath $importStderrPath -Tail 40) -join [Environment]::NewLine } else { '<missing>' }
     throw "Godot project import failed with exit code $($importProcess.ExitCode): $importStderr"
 }
 
-$godotProcess = Start-Process -FilePath $godotPath -ArgumentList $godotArguments -WorkingDirectory $repositoryRoot -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath -Wait -PassThru
+$godotProcess = Start-Process -WindowStyle Hidden -FilePath $godotPath -ArgumentList $godotArguments -WorkingDirectory $repositoryRoot -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath -Wait -PassThru
 $godotExitCode = $godotProcess.ExitCode
 
 $latestResult = Get-ChildItem -LiteralPath $reportRoot -Filter results.xml -File -Recurse |
