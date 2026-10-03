@@ -1,3 +1,5 @@
+using CardCleaner.Scripts.Core.Services.TilesetLoading.WangSets;
+
 namespace CardCleaner.Scripts.Core.Services.TilesetLoading.TileBuilding;
 
 /// <summary>

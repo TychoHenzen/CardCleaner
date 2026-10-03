@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using CardCleaner.Scripts.Core.Services.TilesetLoading.TileProperties;
 
 namespace CardCleaner.Scripts.Core.Services.TilesetLoading;
 
@@ -74,13 +75,3 @@ internal static class TilePropertyParser
         return frames.Count > 0 ? frames : null;
     }
 }
-
-/// <summary>
-/// Container for parsed tile properties.
-/// </summary>
-internal record TilePropertyData(string? Type, Dictionary<string, string> Properties, List<AnimationFrame>? Animation);
-
-/// <summary>
-/// Animation frame data.
-/// </summary>
-internal record AnimationFrame(int TileId, float Duration);

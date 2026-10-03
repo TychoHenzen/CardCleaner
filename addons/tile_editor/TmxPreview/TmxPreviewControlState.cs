@@ -9,14 +9,14 @@ namespace CardCleaner.Addons.TileEditor;
 
 public partial class TmxPreviewControl
 {
-    public void SetBaseTile(TileDefinition? baseTile, TmxTilesetReference? tilesetRef)
+    internal void SetBaseTile(TileDefinition? baseTile, TmxTilesetReference? tilesetRef)
     {
         _baseTileDef = baseTile;
         _baseTilesetRef = tilesetRef;
         QueueRedraw();
     }
 
-    public void LoadTmxMap(TmxMapData mapData, float scale)
+    internal void LoadTmxMap(TmxMapData mapData, float scale)
     {
         _mapData = mapData;
         _scale = scale;
@@ -59,7 +59,7 @@ public partial class TmxPreviewControl
         EmitSignal(SignalName.InfoChanged, "No TMX file loaded.");
     }
 
-    public void SetAutoTilePreview(
+    internal void SetAutoTilePreview(
         TileDefinition tileDef,
         TmxTilesetReference tilesetRef,
         float scale,

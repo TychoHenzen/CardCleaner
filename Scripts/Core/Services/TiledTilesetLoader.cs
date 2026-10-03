@@ -147,6 +147,6 @@ public static class TiledTilesetLoader
     /// <summary>
     /// Loads a TMX map file with full tile resolution support.
     /// </summary>
-    public static TmxMapData? LoadTmxMap(string tmxPath)
+    internal static TmxMapData? LoadTmxMap(string tmxPath)
         => TmxMapLoader.LoadTmxMap(tmxPath);
 }

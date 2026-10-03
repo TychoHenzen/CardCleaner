@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Services.TilesetLoading.TileProperties;
 using CardCleaner.Scripts.Core.Services.TilesetLoading.TileBuilding;
+using CardCleaner.Scripts.Core.Services.TilesetLoading.WangSets;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
 namespace CardCleaner.Scripts.Core.Services.TilesetLoading;

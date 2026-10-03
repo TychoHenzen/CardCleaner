@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 516,
+  "fileCount": 532,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
@@ -983,7 +983,22 @@
       "classification": "production"
     },
     {
+      "path": "Scripts/Core/Services/TilesetLoading/TileProperties/AnimationFrame.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TilesetLoading/TileProperties/TilePropertyData.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -993,7 +1008,72 @@
       "classification": "production"
     },
     {
+      "path": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxBounds.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunk.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTileResolution.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TilesetLoading/TmxTilesetReference.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TilesetLoading/VariationGroupInfo.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TilesetLoading/WangSets/WangId.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TilesetLoading/WangSets/WangSetContext.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TilesetLoading/WangSets/WangSetData.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TilesetLoading/WangSets/WangSetInfo.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/TilesetLoading/WangSets/WangTileInfo.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -2584,27 +2664,27 @@
     }
   ],
   "summary": {
-    "total": 7048,
-    "errors": 276,
-    "warnings": 6772,
+    "total": 7018,
+    "errors": 267,
+    "warnings": 6751,
     "byRule": {
       "dead-export": 13,
-      "duplicate-block": 152,
-      "types-per-file": 40,
-      "file-length": 290,
-      "complexity": 289,
-      "function-length": 321,
-      "nesting-depth": 29,
+      "duplicate-block": 148,
+      "types-per-file": 36,
+      "file-length": 289,
+      "complexity": 288,
+      "function-length": 318,
+      "nesting-depth": 28,
       "param-count": 155,
-      "unnamed-tuple": 38,
+      "unnamed-tuple": 37,
       "test-only-export": 13,
       "else-branch": 118,
       "stateless-method": 1301,
       "comment-bloat": 53,
-      "comment-restates-code": 125,
+      "comment-restates-code": 124,
       "output-parameter": 27,
       "flag-parameter": 58,
-      "line-length": 4026
+      "line-length": 4012
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
@@ -2639,10 +2719,6 @@
       "Scripts/Core/Interfaces/IFogOfWar.cs": 4,
       "Scripts/Core/Interfaces/IMapGenerator.cs": 2,
       "Scripts/Core/Interfaces/IProfiler.cs": 6,
-      "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs": 40,
-      "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs": 9,
-      "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs": 38,
-      "Scripts/Core/Services/TilesetLoading/WangSetParser.cs": 38,
       "Scripts/Core/Services/VariationGroup.cs": 8,
       "Scripts/Features/Card/Services/ResidualEnergyModifier.cs": 18,
       "Scripts/Features/Deckbuilder/Services/Combat/ICombatCommand.cs": 2,
@@ -2744,9 +2820,6 @@
       "Tests/Features/Deckbuilder/Services/Exploration/ExplorationStrategyTest.cs": 19,
       "Scripts/Core/Services/MapGenerationProfiler.cs": 2,
       "Scripts/Features/Worldgen/Wfc/Constraints/AdjacencyConstraint.cs": 2,
-      "Scripts/Core/Services/TileDataLoader.Parsing.cs": 22,
-      "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs": 14,
-      "Scripts/Core/Services/TsxPropertyWriter.cs": 11,
       "Scripts/Features/Card/Services/SignatureCardGenerator.cs": 23,
       "Scripts/Features/Deckbuilder/Services/ExplorationAI.cs": 18,
       "Scripts/Features/ModularDevices/ScreenDeviceBase.cs": 11,
@@ -2784,7 +2857,10 @@
       "Scripts/Core/Services/CompiledAtlasLoader.cs": 40,
       "Scripts/Core/Services/InputService.cs": 33,
       "Scripts/Core/Services/TileDataLoader.Models.cs": 26,
+      "Scripts/Core/Services/TileDataLoader.Parsing.cs": 21,
       "Scripts/Core/Services/TileDataLoader.cs": 32,
+      "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs": 29,
+      "Scripts/Core/Services/TilesetLoading/TmxMapData.cs": 8,
       "Scripts/Core/Utilities/CsgBaker.cs": 13,
       "Scripts/Features/Card/Components/CardDesigner.cs": 23,
       "Scripts/Features/Card/Components/CardHighlighter.cs": 13,
@@ -2925,6 +3001,9 @@
       "addons/tile_editor/VariantMappingEditor.cs": 10,
       "Scripts/Core/Services/PlayerResetService.cs": 9,
       "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs": 12,
+      "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs": 9,
+      "Scripts/Core/Services/TilesetLoading/WangSetParser.cs": 15,
+      "Scripts/Core/Services/TilesetLoading/WangSets/WangId.cs": 5,
       "Scripts/Features/Conveyor/Components/ConveyorBelt.cs": 4,
       "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs": 10,
       "Scripts/Features/Worldgen/Wfc/Constraints/TileProbabilityConstraint.cs": 16,
@@ -2936,6 +3015,7 @@
       "addons/tile_editor/TileProperties/TilePropertiesPanelAdvancedVariants.cs": 12,
       "addons/tile_editor/TmxAtlas/TmxTsxSourceReader.cs": 4,
       "addons/tile_editor/TmxPreview/TmxPreviewControlTextureCache.cs": 5,
+      "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs": 13,
       "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs": 11,
       "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs": 9,
       "Scripts/Features/Card/Components/CardMaterialManager.cs": 6,
@@ -2943,6 +3023,9 @@
       "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapDiagnostics.cs": 13,
       "Scripts/Features/Worldgen/Wfc/Modifiers/Soft/DiminishingReturnsSoftModifier.cs": 3,
       "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLeft.cs": 2,
+      "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunk.cs": 2,
+      "Scripts/Core/Services/TilesetLoading/TmxTilesetReference.cs": 4,
+      "Scripts/Core/Services/TsxPropertyWriter.cs": 10,
       "Scripts/Features/Deckbuilder/Components/WorldMapCombatUI.cs": 5,
       "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs": 6,
       "Scripts/Features/Worldgen/AutoTiling/VariantDefinition.cs": 5,
@@ -3016,6 +3099,14 @@
       "Scripts/Core/Services/TileRegistryResult.cs": 1,
       "Scripts/Core/Services/TilesetLoading/TileBuilding/TileDefinitionSpec.cs": 2,
       "Scripts/Core/Services/TilesetLoading/TileBuilding/TilePropertyReader.cs": 7,
+      "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs": 7,
+      "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs": 3,
+      "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs": 6,
+      "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs": 6,
+      "Scripts/Core/Services/TilesetLoading/VariationGroupInfo.cs": 1,
+      "Scripts/Core/Services/TilesetLoading/WangSets/WangSetContext.cs": 1,
+      "Scripts/Core/Services/TilesetLoading/WangSets/WangSetData.cs": 1,
+      "Scripts/Core/Services/TilesetLoading/WangSets/WangSetInfo.cs": 1,
       "Scripts/Features/Card/Components/CardDropper.cs": 2,
       "Scripts/Features/Card/Components/CardShaderRenderer.cs": 2,
       "Scripts/Features/Card/Services/SignatureCardHelper.cs": 1,
@@ -3501,38 +3592,6 @@
       "severity": "error",
       "message": "3 types in one file: IProfiler, ProfileStats, NoOpProfiler",
       "metric": 3
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 202,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "3 types in one file: ParseHelpers, VariationPatternDetector, VariationGroupInfo",
-      "metric": 3
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-      "line": 81,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "3 types in one file: TilePropertyParser, TilePropertyData, AnimationFrame",
-      "metric": 3
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 41,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "5 types in one file: TmxChunk, TmxTilesetReference, TmxTileResolution, TmxMapData, TmxMapLoader",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 179,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "4 types in one file: WangSetParser, WangSetData, WangSetInfo, WangTileInfo",
-      "metric": 4
     },
     {
       "file": "Scripts/Core/Services/VariationGroup.cs",
@@ -4319,22 +4378,6 @@
       "metric": 11
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 203,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "LoadTmxMap() cyclomatic complexity 11",
-      "metric": 11
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 20,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "ParseWangSets() cyclomatic complexity 20",
-      "metric": 20
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Services/FrontierExplorationBehavior.cs",
       "line": 296,
       "rule": "complexity",
@@ -4687,22 +4730,6 @@
       "metric": 84
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 203,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "LoadTmxMap() is 88 lines",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 20,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "ParseWangSets() is 71 lines",
-      "metric": 71
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Components/BiomeDistributionPreview.cs",
       "line": 82,
       "rule": "function-length",
@@ -4964,14 +4991,6 @@
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (Vector3? start, Vector3? end) GetEndpoints( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 173,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (Vector2I Min, Vector2I Max) GetBounds( — replace it with a named type",
       "metric": 1
     },
     {
@@ -5365,38 +5384,6 @@
       "severity": "warn",
       "message": "AdjacencyConstraint is only referenced by tests — delete it and its tests",
       "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-      "line": 2,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TileDataLoader.Parsing.cs:2, Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs:1",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "line": 1,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TileDataLoader.Parsing.cs:2, Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs:1",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 1,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs:1, Scripts/Core/Services/TsxPropertyWriter.cs:1",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 1,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs:1, Scripts/Core/Services/TsxPropertyWriter.cs:1",
-      "metric": 2
     },
     {
       "file": "Scripts/Features/Card/Services/SignatureCardGenerator.cs",
@@ -6419,24 +6406,16 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 260 lines",
-      "metric": 260
+      "message": "file is 197 lines",
+      "metric": 197
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 292 lines",
-      "metric": 292
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "warn",
-      "message": "file is 212 lines",
-      "metric": 212
+      "message": "file is 109 lines",
+      "metric": 109
     },
     {
       "file": "Scripts/Core/Services/VariationGroup.cs",
@@ -8019,16 +7998,16 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 186 lines",
-      "metric": 186
+      "message": "file is 187 lines",
+      "metric": 187
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 128 lines",
-      "metric": 128
+      "message": "file is 129 lines",
+      "metric": 129
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlState.cs",
@@ -8272,7 +8251,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 91,
+      "line": 90,
       "rule": "complexity",
       "severity": "warn",
       "message": "ToSnakeCase() cyclomatic complexity 6",
@@ -8280,7 +8259,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 111,
+      "line": 110,
       "rule": "complexity",
       "severity": "warn",
       "message": "ParseVariationsString() cyclomatic complexity 6",
@@ -8288,51 +8267,59 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 157,
+      "line": 156,
       "rule": "complexity",
       "severity": "warn",
       "message": "ParseBiomeBooleans() cyclomatic complexity 10",
       "metric": 10
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 221,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "DetectVariationPattern() cyclomatic complexity 7",
-      "metric": 7
-    },
-    {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-      "line": 36,
+      "line": 37,
       "rule": "complexity",
       "severity": "warn",
       "message": "BuildAutoTileVariants() cyclomatic complexity 6",
       "metric": 6
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 118,
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+      "line": 33,
       "rule": "complexity",
       "severity": "warn",
       "message": "GetTileAt() cyclomatic complexity 6",
       "metric": 6
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 95,
+      "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+      "line": 28,
       "rule": "complexity",
       "severity": "warn",
-      "message": "WangIdToBitmask() cyclomatic complexity 9",
-      "metric": 9
+      "message": "DetectVariationPattern() cyclomatic complexity 7",
+      "metric": 7
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 149,
+      "line": 37,
       "rule": "complexity",
       "severity": "warn",
-      "message": "IsBlobCompliant() cyclomatic complexity 9",
-      "metric": 9
+      "message": "RegisterWangSet() cyclomatic complexity 10",
+      "metric": 10
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+      "line": 66,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "RegisterWangTile() cyclomatic complexity 10",
+      "metric": 10
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangId.cs",
+      "line": 63,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "IsBlobCompliant() cyclomatic complexity 8",
+      "metric": 8
     },
     {
       "file": "Scripts/Features/Card/Components/CardDesigner.cs",
@@ -10176,7 +10163,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 111,
+      "line": 110,
       "rule": "function-length",
       "severity": "warn",
       "message": "ParseVariationsString() is 31 lines",
@@ -10184,23 +10171,15 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 157,
+      "line": 156,
       "rule": "function-length",
       "severity": "warn",
       "message": "ParseBiomeBooleans() is 40 lines",
       "metric": 40
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 221,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "DetectVariationPattern() is 35 lines",
-      "metric": 35
-    },
-    {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "line": 15,
+      "line": 16,
       "rule": "function-length",
       "severity": "warn",
       "message": "Build() is 40 lines",
@@ -10208,7 +10187,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-      "line": 13,
+      "line": 15,
       "rule": "function-length",
       "severity": "warn",
       "message": "Build() is 32 lines",
@@ -10216,27 +10195,27 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 16,
+      "line": 18,
       "rule": "function-length",
       "severity": "warn",
       "message": "BuildTileDefinitions() is 33 lines",
       "metric": 33
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 118,
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+      "line": 33,
       "rule": "function-length",
       "severity": "warn",
       "message": "GetTileAt() is 32 lines",
       "metric": 32
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 95,
+      "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+      "line": 28,
       "rule": "function-length",
       "severity": "warn",
-      "message": "WangIdToBitmask() is 49 lines",
-      "metric": 49
+      "message": "DetectVariationPattern() is 35 lines",
+      "metric": 35
     },
     {
       "file": "Scripts/Features/Card/Components/CardDesigner.cs",
@@ -12359,14 +12338,6 @@
       "metric": 4
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 203,
-      "rule": "nesting-depth",
-      "severity": "warn",
-      "message": "LoadTmxMap() nests 4 levels deep",
-      "metric": 4
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Services/FrontierExplorationBehavior.cs",
       "line": 71,
       "rule": "nesting-depth",
@@ -12656,7 +12627,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "line": 15,
+      "line": 16,
       "rule": "param-count",
       "severity": "warn",
       "message": "Build() takes 4 parameters",
@@ -12664,7 +12635,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-      "line": 13,
+      "line": 15,
       "rule": "param-count",
       "severity": "warn",
       "message": "Build() takes 4 parameters",
@@ -12672,35 +12643,35 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 16,
+      "line": 18,
       "rule": "param-count",
       "severity": "warn",
       "message": "BuildTileDefinitions() takes 4 parameters",
       "metric": 4
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 22,
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+      "line": 18,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "TmxMapData() takes 4 parameters",
+      "metric": 4
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunk.cs",
+      "line": 15,
       "rule": "param-count",
       "severity": "warn",
       "message": "TmxChunk() takes 4 parameters",
       "metric": 4
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 50,
+      "file": "Scripts/Core/Services/TilesetLoading/TmxTilesetReference.cs",
+      "line": 19,
       "rule": "param-count",
       "severity": "warn",
       "message": "TmxTilesetReference() takes 5 parameters",
       "metric": 5
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 103,
-      "rule": "param-count",
-      "severity": "warn",
-      "message": "TmxMapData() takes 4 parameters",
-      "metric": 4
     },
     {
       "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
@@ -13744,7 +13715,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-      "line": 41,
+      "line": 42,
       "rule": "param-count",
       "severity": "warn",
       "message": "DrawMapTile() takes 6 parameters",
@@ -13752,7 +13723,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-      "line": 74,
+      "line": 75,
       "rule": "param-count",
       "severity": "warn",
       "message": "DrawTransparentTileBase() takes 4 parameters",
@@ -13872,7 +13843,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 111,
+      "line": 110,
       "rule": "else-branch",
       "severity": "warn",
       "message": "ParseVariationsString() has 1 else branch(es) — prefer guard clauses",
@@ -14648,7 +14619,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-      "line": 74,
+      "line": 75,
       "rule": "else-branch",
       "severity": "warn",
       "message": "DrawTransparentTileBase() has 1 else branch(es) — prefer guard clauses",
@@ -15136,7 +15107,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 26,
+      "line": 25,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ToLowerInvariant() never touches instance state — make it a free function",
@@ -15144,7 +15115,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 57,
+      "line": 56,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ToLowerInvariant() never touches instance state — make it a free function",
@@ -15152,7 +15123,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 68,
+      "line": 67,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ToLowerInvariant() never touches instance state — make it a free function",
@@ -15160,7 +15131,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 80,
+      "line": 79,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ToLowerInvariant() never touches instance state — make it a free function",
@@ -24360,7 +24331,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 12,
+      "line": 13,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "_GuiInput() never touches instance state — make it a free function",
@@ -24368,7 +24339,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 27,
+      "line": 28,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "HandleAutoTileModeInput() never touches instance state — make it a free function",
@@ -24376,7 +24347,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 40,
+      "line": 41,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ToggleAutoTileCell() never touches instance state — make it a free function",
@@ -24384,7 +24355,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 56,
+      "line": 57,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "UpdateAutoTileTooltip() never touches instance state — make it a free function",
@@ -24392,7 +24363,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 71,
+      "line": 72,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetHoveredAutoTileBitmask() never touches instance state — make it a free function",
@@ -24400,7 +24371,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 78,
+      "line": 79,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetBlobHoveredBitmask() never touches instance state — make it a free function",
@@ -24408,7 +24379,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 90,
+      "line": 91,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetDualGridHoveredBitmask() never touches instance state — make it a free function",
@@ -24416,7 +24387,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 101,
+      "line": 102,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetScaledTileSize() never touches instance state — make it a free function",
@@ -24424,7 +24395,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 106,
+      "line": 107,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "BuildAutoTileTooltip() never touches instance state — make it a free function",
@@ -24432,7 +24403,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 131,
+      "line": 132,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "HasVariantForBitmask() never touches instance state — make it a free function",
@@ -24440,7 +24411,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 142,
+      "line": 143,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetVariantIndex() never touches instance state — make it a free function",
@@ -24448,7 +24419,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 149,
+      "line": 150,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "UpdateTooltip() never touches instance state — make it a free function",
@@ -24456,7 +24427,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-      "line": 10,
+      "line": 11,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "DrawMapBackground() never touches instance state — make it a free function",
@@ -24464,7 +24435,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-      "line": 17,
+      "line": 18,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "DrawMapTiles() never touches instance state — make it a free function",
@@ -24472,7 +24443,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-      "line": 26,
+      "line": 27,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetBaseMapTexture() never touches instance state — make it a free function",
@@ -24480,7 +24451,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-      "line": 33,
+      "line": 34,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetBaseMapSourceRect() never touches instance state — make it a free function",
@@ -24488,7 +24459,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-      "line": 41,
+      "line": 42,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "DrawMapTile() never touches instance state — make it a free function",
@@ -24496,7 +24467,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-      "line": 74,
+      "line": 75,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "DrawTransparentTileBase() never touches instance state — make it a free function",
@@ -24504,7 +24475,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-      "line": 86,
+      "line": 87,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "DrawMapGrid() never touches instance state — make it a free function",
@@ -24512,7 +24483,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-      "line": 109,
+      "line": 110,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "DrawCheckerboard() never touches instance state — make it a free function",
@@ -25176,7 +25147,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 152,
+      "line": 151,
       "rule": "comment-bloat",
       "severity": "warn",
       "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
@@ -25681,14 +25652,6 @@
     {
       "file": "Scripts/Core/Services/TiledTilesetLoader.cs",
       "line": 119,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 42,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -26776,7 +26739,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 23,
+      "line": 22,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "ParseBool() takes a boolean flag; split the behavior or name the policy",
@@ -26784,7 +26747,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 46,
+      "line": 45,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "GetBool() takes a boolean flag; split the behavior or name the policy",
@@ -30064,7 +30027,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 21,
+      "line": 20,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -30072,7 +30035,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 34,
+      "line": 33,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -30080,7 +30043,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 37,
+      "line": 36,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -30088,7 +30051,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 40,
+      "line": 39,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -30096,7 +30059,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 41,
+      "line": 40,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -30104,7 +30067,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 43,
+      "line": 42,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -30112,7 +30075,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 44,
+      "line": 43,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -30120,7 +30083,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 46,
+      "line": 45,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -30128,7 +30091,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 47,
+      "line": 46,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -30136,7 +30099,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 61,
+      "line": 60,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -30144,7 +30107,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 89,
+      "line": 88,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -30152,7 +30115,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 154,
+      "line": 153,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 111 chars",
@@ -30160,7 +30123,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 155,
+      "line": 154,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -30168,7 +30131,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 157,
+      "line": 156,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -30176,79 +30139,15 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 190,
+      "line": 189,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
       "metric": 94
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 206,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 119 chars",
-      "metric": 119
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 216,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 217,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 233,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 236,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 99 chars",
-      "metric": 99
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 240,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 250,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "line": 259,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "line": 11,
+      "line": 12,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -30256,7 +30155,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "line": 24,
+      "line": 25,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -30264,7 +30163,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "line": 25,
+      "line": 26,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -30272,7 +30171,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "line": 26,
+      "line": 27,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -30280,7 +30179,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "line": 31,
+      "line": 32,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 106 chars",
@@ -30288,7 +30187,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "line": 33,
+      "line": 34,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -30296,7 +30195,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "line": 40,
+      "line": 41,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -30304,7 +30203,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "line": 56,
+      "line": 57,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -30312,7 +30211,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "line": 67,
+      "line": 68,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -30320,7 +30219,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "line": 69,
+      "line": 70,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -30328,7 +30227,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "line": 75,
+      "line": 76,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -30408,7 +30307,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-      "line": 7,
+      "line": 8,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -30416,7 +30315,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-      "line": 11,
+      "line": 12,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -30424,7 +30323,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-      "line": 16,
+      "line": 17,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
@@ -30432,7 +30331,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-      "line": 18,
+      "line": 19,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -30440,7 +30339,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-      "line": 20,
+      "line": 21,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 114 chars",
@@ -30448,7 +30347,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-      "line": 34,
+      "line": 35,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -30456,7 +30355,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-      "line": 36,
+      "line": 37,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -30464,14 +30363,6 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-      "line": 38,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
       "line": 39,
       "rule": "line-length",
       "severity": "warn",
@@ -30480,7 +30371,15 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-      "line": 51,
+      "line": 40,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
+      "line": 52,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 108 chars",
@@ -30488,7 +30387,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-      "line": 55,
+      "line": 56,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 107 chars",
@@ -30496,7 +30395,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-      "line": 9,
+      "line": 11,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -30504,7 +30403,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-      "line": 19,
+      "line": 21,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -30512,7 +30411,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-      "line": 22,
+      "line": 24,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -30520,7 +30419,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-      "line": 26,
+      "line": 28,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -30528,7 +30427,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-      "line": 32,
+      "line": 34,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -30536,7 +30435,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-      "line": 40,
+      "line": 42,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -30544,7 +30443,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-      "line": 47,
+      "line": 49,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -30552,7 +30451,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-      "line": 54,
+      "line": 56,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -30560,7 +30459,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-      "line": 55,
+      "line": 57,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -30568,7 +30467,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 14,
+      "line": 16,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 107 chars",
@@ -30576,7 +30475,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 22,
+      "line": 24,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 107 chars",
@@ -30584,7 +30483,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 26,
+      "line": 28,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -30592,7 +30491,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 29,
+      "line": 31,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -30600,7 +30499,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 37,
+      "line": 39,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -30608,7 +30507,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 44,
+      "line": 46,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -30616,7 +30515,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 51,
+      "line": 53,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -30624,7 +30523,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-      "line": 17,
+      "line": 18,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -30632,7 +30531,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-      "line": 26,
+      "line": 27,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -30640,7 +30539,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-      "line": 39,
+      "line": 40,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -30648,7 +30547,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-      "line": 41,
+      "line": 42,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -30656,7 +30555,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-      "line": 67,
+      "line": 68,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -30664,7 +30563,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-      "line": 68,
+      "line": 69,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -30672,47 +30571,39 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-      "line": 71,
+      "line": 72,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
       "metric": 95
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-      "line": 81,
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+      "line": 35,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 119 chars",
-      "metric": 119
+      "message": "line is 81 chars",
+      "metric": 81
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 50,
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+      "line": 59,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 118 chars",
-      "metric": 118
+      "message": "line is 95 chars",
+      "metric": 95
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 67,
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+      "line": 69,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
+      "message": "line is 86 chars",
+      "metric": 86
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 71,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 99 chars",
-      "metric": 99
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 120,
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+      "line": 106,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -30720,119 +30611,15 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 144,
+      "line": 49,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
+      "message": "line is 81 chars",
+      "metric": 81
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 154,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 218,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 223,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 224,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 230,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 237,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 240,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 247,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 248,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 252,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 254,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 112 chars",
-      "metric": 112
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 266,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 267,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 268,
+      "line": 54,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -30840,167 +30627,207 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 269,
+      "line": 55,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 105 chars",
-      "metric": 105
+      "message": "line is 83 chars",
+      "metric": 83
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 272,
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunk.cs",
+      "line": 15,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 107 chars",
-      "metric": 107
+      "message": "line is 81 chars",
+      "metric": 81
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 276,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 277,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 278,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 282,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 107 chars",
-      "metric": 107
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "line": 283,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 29,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 30,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 107 chars",
-      "metric": 107
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 37,
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs",
+      "line": 20,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
       "metric": 85
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 38,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 52,
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs",
+      "line": 34,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
       "metric": 82
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 53,
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs",
+      "line": 35,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs",
+      "line": 36,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 107 chars",
+      "metric": 107
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs",
+      "line": 37,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 109 chars",
+      "metric": 109
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs",
+      "line": 45,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs",
+      "line": 13,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs",
+      "line": 26,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs",
+      "line": 28,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs",
+      "line": 44,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs",
+      "line": 45,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs",
+      "line": 49,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxTilesetReference.cs",
+      "line": 19,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 120 chars",
+      "metric": 120
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxTilesetReference.cs",
+      "line": 36,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxTilesetReference.cs",
+      "line": 40,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/VariationGroupInfo.cs",
+      "line": 6,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
       "metric": 88
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 57,
+      "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+      "line": 13,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
+      "message": "line is 119 chars",
+      "metric": 119
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 59,
+      "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+      "line": 23,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 104 chars",
-      "metric": 104
+      "message": "line is 88 chars",
+      "metric": 88
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 63,
+      "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+      "line": 24,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
+      "message": "line is 93 chars",
+      "metric": 93
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 65,
+      "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+      "line": 40,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
+      "message": "line is 85 chars",
+      "metric": 85
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 66,
+      "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+      "line": 43,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
+      "message": "line is 99 chars",
+      "metric": 99
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 74,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 75,
+      "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+      "line": 47,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
       "metric": 82
     },
     {
+      "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+      "line": 57,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
       "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 76,
+      "line": 37,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -31008,15 +30835,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 77,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 85,
+      "line": 40,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -31024,15 +30843,31 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 95,
+      "line": 41,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
+      "message": "line is 103 chars",
+      "metric": 103
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 97,
+      "line": 44,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+      "line": 45,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+      "line": 46,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -31040,79 +30875,47 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 104,
+      "line": 53,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
+      "message": "line is 84 chars",
+      "metric": 84
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 105,
+      "line": 55,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 99 chars",
-      "metric": 99
+      "message": "line is 83 chars",
+      "metric": 83
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 106,
+      "line": 66,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 102 chars",
-      "metric": 102
+      "message": "line is 103 chars",
+      "metric": 103
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 107,
+      "line": 68,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
+      "message": "line is 84 chars",
+      "metric": 84
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 108,
+      "line": 72,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
+      "message": "line is 96 chars",
+      "metric": 96
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 111,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 133,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 139,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 146,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 147,
+      "line": 80,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -31120,19 +30923,67 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 185,
+      "line": 81,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 105 chars",
-      "metric": 105
+      "message": "line is 89 chars",
+      "metric": 89
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "line": 206,
+      "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangId.cs",
+      "line": 7,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 105 chars",
-      "metric": 105
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangId.cs",
+      "line": 30,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangId.cs",
+      "line": 48,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangId.cs",
+      "line": 60,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 107 chars",
+      "metric": 107
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangSetContext.cs",
+      "line": 8,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 117 chars",
+      "metric": 117
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangSetData.cs",
+      "line": 15,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 107 chars",
+      "metric": 107
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangSetInfo.cs",
+      "line": 9,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 112 chars",
+      "metric": 112
     },
     {
       "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
@@ -58392,7 +58243,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 31,
+      "line": 32,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -58400,7 +58251,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 84,
+      "line": 85,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -58408,7 +58259,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 117,
+      "line": 118,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -58416,7 +58267,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 167,
+      "line": 168,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -58424,7 +58275,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 172,
+      "line": 173,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -58432,7 +58283,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 178,
+      "line": 179,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -58440,7 +58291,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-      "line": 179,
+      "line": 180,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -58448,7 +58299,7 @@
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-      "line": 23,
+      "line": 24,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -58459,8 +58310,8 @@
       "line": 12,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
+      "message": "line is 88 chars",
+      "metric": 88
     },
     {
       "file": "addons/tile_editor/TmxPreview/TmxPreviewControlState.cs",
@@ -66353,328 +66204,6 @@
       ]
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-      "errors": 4,
-      "warnings": 34,
-      "rules": {
-        "types-per-file": 1,
-        "complexity": 2,
-        "function-length": 2,
-        "unnamed-tuple": 1,
-        "duplicate-block": 1,
-        "file-length": 1,
-        "nesting-depth": 1,
-        "param-count": 3,
-        "line-length": 26
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 41,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "5 types in one file: TmxChunk, TmxTilesetReference, TmxTileResolution, TmxMapData, TmxMapLoader",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 203,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "LoadTmxMap() cyclomatic complexity 11",
-          "metric": 11
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 203,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "LoadTmxMap() is 88 lines",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 173,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (Vector2I Min, Vector2I Max) GetBounds( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 1,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs:1, Scripts/Core/Services/TsxPropertyWriter.cs:1",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 292 lines",
-          "metric": 292
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 118,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GetTileAt() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 118,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "GetTileAt() is 32 lines",
-          "metric": 32
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 203,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "LoadTmxMap() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 22,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "TmxChunk() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 50,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "TmxTilesetReference() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 103,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "TmxMapData() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 50,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 118 chars",
-          "metric": 118
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 67,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 71,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 120,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 144,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 154,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 218,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 223,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 224,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 230,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 237,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 240,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 247,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 248,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 252,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 254,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 266,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 267,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 268,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 269,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 272,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 276,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 277,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 278,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 282,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
-          "line": 283,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Services/FrontierExplorationBehavior.cs",
       "errors": 4,
       "warnings": 30,
@@ -70173,325 +69702,6 @@
           "severity": "warn",
           "message": "line is 85 chars",
           "metric": 85
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-      "errors": 3,
-      "warnings": 35,
-      "rules": {
-        "types-per-file": 1,
-        "complexity": 3,
-        "function-length": 2,
-        "file-length": 1,
-        "comment-restates-code": 1,
-        "line-length": 30
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 179,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "4 types in one file: WangSetParser, WangSetData, WangSetInfo, WangTileInfo",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 20,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "ParseWangSets() cyclomatic complexity 20",
-          "metric": 20
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 20,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "ParseWangSets() is 71 lines",
-          "metric": 71
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 212 lines",
-          "metric": 212
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 95,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "WangIdToBitmask() cyclomatic complexity 9",
-          "metric": 9
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 149,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "IsBlobCompliant() cyclomatic complexity 9",
-          "metric": 9
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 95,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "WangIdToBitmask() is 49 lines",
-          "metric": 49
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 42,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 29,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 30,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 37,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 38,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 52,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 53,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 57,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 59,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 63,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 65,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 66,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 74,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 75,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 76,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 77,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 85,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 95,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 97,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 104,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 105,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 106,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 107,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 108,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 111,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 133,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 139,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 146,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 147,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 185,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
-          "line": 206,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
         }
       ]
     },
@@ -83573,344 +82783,6 @@
       ]
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-      "errors": 1,
-      "warnings": 39,
-      "rules": {
-        "types-per-file": 1,
-        "file-length": 1,
-        "complexity": 4,
-        "function-length": 3,
-        "else-branch": 1,
-        "stateless-method": 4,
-        "comment-bloat": 1,
-        "flag-parameter": 2,
-        "line-length": 23
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 202,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "3 types in one file: ParseHelpers, VariationPatternDetector, VariationGroupInfo",
-          "metric": 3
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 260 lines",
-          "metric": 260
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 91,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ToSnakeCase() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 111,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ParseVariationsString() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 157,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ParseBiomeBooleans() cyclomatic complexity 10",
-          "metric": 10
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 221,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "DetectVariationPattern() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 111,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ParseVariationsString() is 31 lines",
-          "metric": 31
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 157,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ParseBiomeBooleans() is 40 lines",
-          "metric": 40
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 221,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "DetectVariationPattern() is 35 lines",
-          "metric": 35
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 111,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "ParseVariationsString() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 26,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ToLowerInvariant() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 57,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ToLowerInvariant() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 68,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ToLowerInvariant() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 80,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ToLowerInvariant() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 152,
-          "rule": "comment-bloat",
-          "severity": "warn",
-          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 23,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "ParseBool() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 46,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "GetBool() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 21,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 34,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 37,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 40,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 41,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 43,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 44,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 46,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 47,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 61,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 89,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 154,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 155,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 157,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 190,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 206,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 119 chars",
-          "metric": 119
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 216,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 217,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 233,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 236,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 240,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 250,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
-          "line": 259,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        }
-      ]
-    },
-    {
       "file": "Tests/Features/Deckbuilder/Services/ConnectivityVerificationTest.cs",
       "errors": 1,
       "warnings": 38,
@@ -90956,89 +89828,6 @@
       ]
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-      "errors": 1,
-      "warnings": 8,
-      "rules": {
-        "types-per-file": 1,
-        "line-length": 8
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-          "line": 81,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "3 types in one file: TilePropertyParser, TilePropertyData, AnimationFrame",
-          "metric": 3
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-          "line": 17,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-          "line": 26,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-          "line": 39,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-          "line": 41,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-          "line": 67,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-          "line": 68,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-          "line": 71,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
-          "line": 81,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 119 chars",
-          "metric": 119
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/Worldgen/AutoTiling/BuiltInAutoTileFormats.cs",
       "errors": 1,
       "warnings": 8,
@@ -95374,6 +94163,255 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+      "errors": 0,
+      "warnings": 29,
+      "rules": {
+        "file-length": 1,
+        "complexity": 3,
+        "function-length": 2,
+        "else-branch": 1,
+        "stateless-method": 4,
+        "comment-bloat": 1,
+        "flag-parameter": 2,
+        "line-length": 15
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 197 lines",
+          "metric": 197
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 90,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "ToSnakeCase() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 110,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "ParseVariationsString() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 156,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "ParseBiomeBooleans() cyclomatic complexity 10",
+          "metric": 10
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 110,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "ParseVariationsString() is 31 lines",
+          "metric": 31
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 156,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "ParseBiomeBooleans() is 40 lines",
+          "metric": 40
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 110,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "ParseVariationsString() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 25,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToLowerInvariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 56,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToLowerInvariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 67,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToLowerInvariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 79,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToLowerInvariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 151,
+          "rule": "comment-bloat",
+          "severity": "warn",
+          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 22,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "ParseBool() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 45,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "GetBool() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 20,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 33,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 39,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 42,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 43,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 45,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 46,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 60,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 88,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 153,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 154,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 156,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/ParseHelpers.cs",
+          "line": 189,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
       "errors": 0,
       "warnings": 28,
@@ -99003,197 +98041,6 @@
       ]
     },
     {
-      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-      "errors": 0,
-      "warnings": 22,
-      "rules": {
-        "duplicate-block": 1,
-        "file-length": 1,
-        "complexity": 1,
-        "stateless-method": 4,
-        "comment-restates-code": 1,
-        "line-length": 14
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 2,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TileDataLoader.Parsing.cs:2, Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs:1",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 250 lines",
-          "metric": 250
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 226,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ParseAutoTileVariants() cyclomatic complexity 9",
-          "metric": 9
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 32,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ToLowerInvariant() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 151,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ToLowerInvariant() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 189,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ToLowerInvariant() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 200,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ToLowerInvariant() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 231,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 13,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 55,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 62,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 75,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 81,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 90,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 98,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 114,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 131,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 136,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 142,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 146,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 226,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
-          "line": 233,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        }
-      ]
-    },
-    {
       "file": "Tests/Core/Services/TiledTilesetLoaderTest.cs",
       "errors": 0,
       "warnings": 22,
@@ -100112,8 +98959,8 @@
           "line": 12,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
+          "message": "line is 88 chars",
+          "metric": 88
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlState.cs",
@@ -100680,6 +99527,188 @@
         {
           "file": "Scripts/Core/DependencyInjection/AutoServiceProvider.cs",
           "line": 122,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+      "errors": 0,
+      "warnings": 21,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "stateless-method": 4,
+        "comment-restates-code": 1,
+        "line-length": 14
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 250 lines",
+          "metric": 250
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 226,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "ParseAutoTileVariants() cyclomatic complexity 9",
+          "metric": 9
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 32,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToLowerInvariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 151,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToLowerInvariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 189,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToLowerInvariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 200,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToLowerInvariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 231,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 13,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 55,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 62,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 75,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 81,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 90,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 98,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 114,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 131,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 136,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 142,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 146,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 226,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Core/Services/TileDataLoader.Parsing.cs",
+          "line": 233,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 88 chars",
@@ -102471,12 +101500,12 @@
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 186 lines",
-          "metric": 186
+          "message": "file is 187 lines",
+          "metric": 187
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 12,
+          "line": 13,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "_GuiInput() never touches instance state — make it a free function",
@@ -102484,7 +101513,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 27,
+          "line": 28,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "HandleAutoTileModeInput() never touches instance state — make it a free function",
@@ -102492,7 +101521,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 40,
+          "line": 41,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "ToggleAutoTileCell() never touches instance state — make it a free function",
@@ -102500,7 +101529,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 56,
+          "line": 57,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "UpdateAutoTileTooltip() never touches instance state — make it a free function",
@@ -102508,7 +101537,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 71,
+          "line": 72,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "GetHoveredAutoTileBitmask() never touches instance state — make it a free function",
@@ -102516,7 +101545,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 78,
+          "line": 79,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "GetBlobHoveredBitmask() never touches instance state — make it a free function",
@@ -102524,7 +101553,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 90,
+          "line": 91,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "GetDualGridHoveredBitmask() never touches instance state — make it a free function",
@@ -102532,7 +101561,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 101,
+          "line": 102,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "GetScaledTileSize() never touches instance state — make it a free function",
@@ -102540,7 +101569,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 106,
+          "line": 107,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "BuildAutoTileTooltip() never touches instance state — make it a free function",
@@ -102548,7 +101577,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 131,
+          "line": 132,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "HasVariantForBitmask() never touches instance state — make it a free function",
@@ -102556,7 +101585,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 142,
+          "line": 143,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "GetVariantIndex() never touches instance state — make it a free function",
@@ -102564,7 +101593,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 149,
+          "line": 150,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "UpdateTooltip() never touches instance state — make it a free function",
@@ -102572,7 +101601,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 31,
+          "line": 32,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 83 chars",
@@ -102580,7 +101609,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 84,
+          "line": 85,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 93 chars",
@@ -102588,7 +101617,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 117,
+          "line": 118,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 93 chars",
@@ -102596,7 +101625,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 167,
+          "line": 168,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 93 chars",
@@ -102604,7 +101633,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 172,
+          "line": 173,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 88 chars",
@@ -102612,7 +101641,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 178,
+          "line": 179,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 84 chars",
@@ -102620,7 +101649,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlInput.cs",
-          "line": 179,
+          "line": 180,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 87 chars",
@@ -106636,6 +105665,137 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+      "errors": 0,
+      "warnings": 15,
+      "rules": {
+        "complexity": 2,
+        "line-length": 13
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 37,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "RegisterWangSet() cyclomatic complexity 10",
+          "metric": 10
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 66,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "RegisterWangTile() cyclomatic complexity 10",
+          "metric": 10
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 44,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 45,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 46,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 53,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 55,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 66,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 68,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 72,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 80,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
+          "line": 81,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        }
+      ]
+    },
+    {
       "file": "Tests/Features/Card/Models/BaseCardTypeTest.cs",
       "errors": 0,
       "warnings": 15,
@@ -106763,131 +105923,6 @@
           "severity": "warn",
           "message": "line is 100 chars",
           "metric": 100
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-      "errors": 0,
-      "warnings": 14,
-      "rules": {
-        "duplicate-block": 1,
-        "function-length": 1,
-        "param-count": 1,
-        "line-length": 11
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-          "line": 1,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TileDataLoader.Parsing.cs:2, Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs:1",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-          "line": 15,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "Build() is 40 lines",
-          "metric": 40
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-          "line": 15,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "Build() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-          "line": 11,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-          "line": 24,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-          "line": 25,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-          "line": 26,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-          "line": 31,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-          "line": 33,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-          "line": 40,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-          "line": 56,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-          "line": 67,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-          "line": 69,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
-          "line": 75,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
         }
       ]
     },
@@ -108993,12 +108028,12 @@
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 128 lines",
-          "metric": 128
+          "message": "file is 129 lines",
+          "metric": 129
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-          "line": 41,
+          "line": 42,
           "rule": "param-count",
           "severity": "warn",
           "message": "DrawMapTile() takes 6 parameters",
@@ -109006,7 +108041,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-          "line": 74,
+          "line": 75,
           "rule": "param-count",
           "severity": "warn",
           "message": "DrawTransparentTileBase() takes 4 parameters",
@@ -109014,7 +108049,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-          "line": 74,
+          "line": 75,
           "rule": "else-branch",
           "severity": "warn",
           "message": "DrawTransparentTileBase() has 1 else branch(es) — prefer guard clauses",
@@ -109022,7 +108057,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-          "line": 10,
+          "line": 11,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "DrawMapBackground() never touches instance state — make it a free function",
@@ -109030,7 +108065,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-          "line": 17,
+          "line": 18,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "DrawMapTiles() never touches instance state — make it a free function",
@@ -109038,7 +108073,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-          "line": 26,
+          "line": 27,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "GetBaseMapTexture() never touches instance state — make it a free function",
@@ -109046,7 +108081,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-          "line": 33,
+          "line": 34,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "GetBaseMapSourceRect() never touches instance state — make it a free function",
@@ -109054,7 +108089,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-          "line": 41,
+          "line": 42,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "DrawMapTile() never touches instance state — make it a free function",
@@ -109062,7 +108097,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-          "line": 74,
+          "line": 75,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "DrawTransparentTileBase() never touches instance state — make it a free function",
@@ -109070,7 +108105,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-          "line": 86,
+          "line": 87,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "DrawMapGrid() never touches instance state — make it a free function",
@@ -109078,7 +108113,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-          "line": 109,
+          "line": 110,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "DrawCheckerboard() never touches instance state — make it a free function",
@@ -109086,7 +108121,7 @@
         },
         {
           "file": "addons/tile_editor/TmxPreview/TmxPreviewControlMapRendering.cs",
-          "line": 23,
+          "line": 24,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 93 chars",
@@ -109324,6 +108359,122 @@
           "severity": "warn",
           "message": "line is 92 chars",
           "metric": 92
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
+      "errors": 0,
+      "warnings": 13,
+      "rules": {
+        "function-length": 1,
+        "param-count": 1,
+        "line-length": 11
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
+          "line": 16,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "Build() is 40 lines",
+          "metric": 40
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
+          "line": 16,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "Build() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
+          "line": 12,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
+          "line": 25,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
+          "line": 26,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
+          "line": 27,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
+          "line": 32,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
+          "line": 34,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
+          "line": 57,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
+          "line": 68,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
+          "line": 70,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/PropertyTileDefinitionBuilder.cs",
+          "line": 76,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
         }
       ]
     },
@@ -110985,7 +110136,7 @@
       "items": [
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-          "line": 36,
+          "line": 37,
           "rule": "complexity",
           "severity": "warn",
           "message": "BuildAutoTileVariants() cyclomatic complexity 6",
@@ -110993,7 +110144,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-          "line": 7,
+          "line": 8,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 81 chars",
@@ -111001,7 +110152,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-          "line": 11,
+          "line": 12,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 89 chars",
@@ -111009,7 +110160,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-          "line": 16,
+          "line": 17,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 102 chars",
@@ -111017,7 +110168,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-          "line": 18,
+          "line": 19,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 94 chars",
@@ -111025,7 +110176,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-          "line": 20,
+          "line": 21,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 114 chars",
@@ -111033,7 +110184,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-          "line": 34,
+          "line": 35,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 90 chars",
@@ -111041,19 +110192,11 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-          "line": 36,
+          "line": 37,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 100 chars",
           "metric": 100
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-          "line": 38,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
@@ -111065,7 +110208,15 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-          "line": 51,
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
+          "line": 52,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 108 chars",
@@ -111073,7 +110224,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangSetTileLookup.cs",
-          "line": 55,
+          "line": 56,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 107 chars",
@@ -111296,107 +110447,6 @@
           "severity": "warn",
           "message": "line is 84 chars",
           "metric": 84
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "errors": 0,
-      "warnings": 11,
-      "rules": {
-        "duplicate-block": 1,
-        "param-count": 1,
-        "flag-parameter": 1,
-        "line-length": 8
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 1,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs:1, Scripts/Core/Services/TsxPropertyWriter.cs:1",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 27,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "TsxProperty() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 40,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "Bool() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 27,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 36,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 37,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 39,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 40,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 118 chars",
-          "metric": 118
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 45,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 51,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 57,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
         }
       ]
     },
@@ -112527,7 +111577,7 @@
       "items": [
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-          "line": 13,
+          "line": 15,
           "rule": "function-length",
           "severity": "warn",
           "message": "Build() is 32 lines",
@@ -112535,7 +111585,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-          "line": 13,
+          "line": 15,
           "rule": "param-count",
           "severity": "warn",
           "message": "Build() takes 4 parameters",
@@ -112543,7 +111593,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-          "line": 9,
+          "line": 11,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 86 chars",
@@ -112551,7 +111601,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-          "line": 19,
+          "line": 21,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 95 chars",
@@ -112559,7 +111609,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-          "line": 22,
+          "line": 24,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 93 chars",
@@ -112567,7 +111617,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-          "line": 26,
+          "line": 28,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 84 chars",
@@ -112575,7 +111625,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-          "line": 32,
+          "line": 34,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 99 chars",
@@ -112583,7 +111633,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-          "line": 40,
+          "line": 42,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 87 chars",
@@ -112591,7 +111641,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-          "line": 47,
+          "line": 49,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 81 chars",
@@ -112599,7 +111649,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-          "line": 54,
+          "line": 56,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 112 chars",
@@ -112607,7 +111657,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileBuilding/WangTileDefinitionBuilder.cs",
-          "line": 55,
+          "line": 57,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 84 chars",
@@ -113829,6 +112879,98 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+      "errors": 0,
+      "warnings": 10,
+      "rules": {
+        "param-count": 1,
+        "flag-parameter": 1,
+        "line-length": 8
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 27,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "TsxProperty() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 40,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "Bool() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 27,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 39,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 118 chars",
+          "metric": 118
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 45,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 51,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 57,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
       "errors": 0,
       "warnings": 10,
@@ -114686,6 +113828,90 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+      "errors": 0,
+      "warnings": 9,
+      "rules": {
+        "complexity": 1,
+        "function-length": 1,
+        "line-length": 7
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+          "line": 28,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "DetectVariationPattern() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+          "line": 28,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "DetectVariationPattern() is 35 lines",
+          "metric": 35
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+          "line": 13,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 119 chars",
+          "metric": 119
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+          "line": 23,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+          "line": 24,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+          "line": 43,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+          "line": 47,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/VariationPatternDetector.cs",
+          "line": 57,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
       "errors": 0,
       "warnings": 9,
@@ -114864,7 +114090,7 @@
       "items": [
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 16,
+          "line": 18,
           "rule": "function-length",
           "severity": "warn",
           "message": "BuildTileDefinitions() is 33 lines",
@@ -114872,7 +114098,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 16,
+          "line": 18,
           "rule": "param-count",
           "severity": "warn",
           "message": "BuildTileDefinitions() takes 4 parameters",
@@ -114880,7 +114106,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 14,
+          "line": 16,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 107 chars",
@@ -114888,7 +114114,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 22,
+          "line": 24,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 107 chars",
@@ -114896,7 +114122,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 26,
+          "line": 28,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 88 chars",
@@ -114904,7 +114130,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 29,
+          "line": 31,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 96 chars",
@@ -114912,7 +114138,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 37,
+          "line": 39,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 98 chars",
@@ -114920,7 +114146,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 44,
+          "line": 46,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 90 chars",
@@ -114928,7 +114154,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 51,
+          "line": 53,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 86 chars",
@@ -115252,6 +114478,84 @@
         {
           "file": "addons/tile_editor/TileAtlas/TileAtlasOutputWriter.cs",
           "line": 45,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+      "errors": 0,
+      "warnings": 8,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "function-length": 1,
+        "param-count": 1,
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 109 lines",
+          "metric": 109
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+          "line": 33,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GetTileAt() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+          "line": 33,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "GetTileAt() is 32 lines",
+          "metric": 32
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+          "line": 18,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "TmxMapData() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+          "line": 35,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+          "line": 59,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+          "line": 69,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapData.cs",
+          "line": 106,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 81 chars",
@@ -117116,6 +116420,72 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
+      "errors": 0,
+      "warnings": 7,
+      "rules": {
+        "line-length": 7
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
+          "line": 18,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
+          "line": 27,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
+          "line": 42,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
+          "line": 68,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
+          "line": 69,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TilePropertyParser.cs",
+          "line": 72,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        }
+      ]
+    },
+    {
       "file": "Tests/Core/PropertyTesting/SeedManager.cs",
       "errors": 0,
       "warnings": 7,
@@ -117956,6 +117326,122 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs",
+      "errors": 0,
+      "warnings": 6,
+      "rules": {
+        "line-length": 6
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs",
+          "line": 20,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs",
+          "line": 34,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs",
+          "line": 35,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunkReader.cs",
+          "line": 45,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs",
+      "errors": 0,
+      "warnings": 6,
+      "rules": {
+        "line-length": 6
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs",
+          "line": 13,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs",
+          "line": 26,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs",
+          "line": 28,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs",
+          "line": 44,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs",
+          "line": 45,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxTilesetReferenceReader.cs",
+          "line": 49,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TmxAtlas/CompilerModels.cs",
       "errors": 0,
       "warnings": 5,
@@ -118316,6 +117802,57 @@
           "severity": "warn",
           "message": "TestTilePoolEntryProperties() never touches instance state — make it a free function",
           "metric": 1
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangId.cs",
+      "errors": 0,
+      "warnings": 5,
+      "rules": {
+        "complexity": 1,
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangId.cs",
+          "line": 63,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "IsBlobCompliant() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangId.cs",
+          "line": 7,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangId.cs",
+          "line": 30,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangId.cs",
+          "line": 48,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangId.cs",
+          "line": 60,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
         }
       ]
     },
@@ -119143,6 +118680,49 @@
           "severity": "warn",
           "message": "line is 87 chars",
           "metric": 87
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxTilesetReference.cs",
+      "errors": 0,
+      "warnings": 4,
+      "rules": {
+        "param-count": 1,
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxTilesetReference.cs",
+          "line": 19,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "TmxTilesetReference() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxTilesetReference.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 120 chars",
+          "metric": 120
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxTilesetReference.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxTilesetReference.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
         }
       ]
     },
@@ -120251,6 +119831,40 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
+      "errors": 0,
+      "warnings": 3,
+      "rules": {
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
+          "line": 49,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
+          "line": 54,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
+          "line": 55,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Deckbuilder/Tiles/VariationMode.cs",
       "errors": 0,
       "warnings": 3,
@@ -120558,6 +120172,33 @@
           "severity": "warn",
           "message": "SetupLeftPanel() never touches instance state — make it a free function",
           "metric": 1
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunk.cs",
+      "errors": 0,
+      "warnings": 2,
+      "rules": {
+        "param-count": 1,
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunk.cs",
+          "line": 15,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "TmxChunk() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunk.cs",
+          "line": 15,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
         }
       ]
     },
@@ -121237,6 +120878,78 @@
           "severity": "warn",
           "message": "line is 110 chars",
           "metric": 110
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/VariationGroupInfo.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/VariationGroupInfo.cs",
+          "line": 6,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangSetContext.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangSetContext.cs",
+          "line": 8,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangSetData.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangSetData.cs",
+          "line": 15,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangSetInfo.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/WangSets/WangSetInfo.cs",
+          "line": 9,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
         }
       ]
     },

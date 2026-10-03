@@ -1,5 +1,6 @@
 #if TOOLS
 using CardCleaner.Scripts.Core.Services.TilesetLoading;
+using CardCleaner.Scripts.Core.Services.TilesetLoading.TmxMapping;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
@@ -41,7 +42,7 @@ public partial class TmxPreviewControl
     private void DrawMapTile(
         Vector2I coord,
         TmxTileResolution resolution,
-        (Vector2I Min, Vector2I Max) bounds,
+        TmxBounds bounds,
         Vector2 scaledTileSize,
         Texture2D? baseTexture,
         Rect2? baseSrcRect)

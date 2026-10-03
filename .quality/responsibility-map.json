@@ -112,6 +112,22 @@
       {
         "responsibility": "SelectWeightedTile",
         "owner": "WfcWeightedTileChooser"
+      },
+      {
+        "responsibility": "ToBitmask",
+        "owner": "WangId"
+      },
+      {
+        "responsibility": "IsBlobCompliant",
+        "owner": "WangId"
+      },
+      {
+        "responsibility": "ReadChunks",
+        "owner": "TmxChunkReader"
+      },
+      {
+        "responsibility": "ReadReferences",
+        "owner": "TmxTilesetReferenceReader"
       }
     ],
     "boundaries": [
