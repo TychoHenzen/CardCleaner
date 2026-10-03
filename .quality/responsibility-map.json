@@ -30,6 +30,12 @@
         "owner": "repository root"
       }
     ],
-    "boundaries": []
+    "boundaries": [
+      {
+        "from": "TsxPropertyWriter",
+        "to": "ProjectSettings",
+        "allowed": false
+      }
+    ]
   }
 }

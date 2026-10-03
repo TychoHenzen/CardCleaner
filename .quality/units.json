@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 369,
+  "fileCount": 366,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
@@ -383,11 +383,6 @@
       "classification": "production"
     },
     {
-      "path": "Scripts/Core/Services/JsonConverters.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
       "path": "Scripts/Core/Services/LoggingService.cs",
       "language": "cs",
       "classification": "production"
@@ -489,11 +484,6 @@
     },
     {
       "path": "Scripts/Core/Utilities/EleAspects.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Core/Utilities/VectorHelpers.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -924,11 +914,6 @@
     },
     {
       "path": "Scripts/Features/Worldgen/CardGradientCore.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Features/Worldgen/IrregularMesh/Biomes/MeshCardBasedGradient.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -1849,38 +1834,35 @@
     }
   ],
   "summary": {
-    "total": 7574,
-    "errors": 740,
-    "warnings": 6834,
+    "total": 7473,
+    "errors": 721,
+    "warnings": 6752,
     "byRule": {
-      "dead-export": 42,
+      "dead-export": 36,
       "duplicate-block": 176,
-      "types-per-file": 56,
-      "file-length": 222,
-      "complexity": 340,
-      "function-length": 379,
-      "nesting-depth": 47,
-      "param-count": 106,
-      "unnamed-tuple": 74,
-      "comment-bloat": 135,
-      "line-length": 4590,
+      "types-per-file": 54,
+      "file-length": 221,
+      "complexity": 334,
+      "function-length": 374,
+      "nesting-depth": 45,
+      "param-count": 105,
+      "unnamed-tuple": 67,
+      "comment-bloat": 133,
+      "line-length": 4546,
       "test-only-export": 13,
-      "else-branch": 151,
-      "stateless-method": 909,
-      "comment-restates-code": 265,
-      "output-parameter": 9,
-      "flag-parameter": 60
+      "else-branch": 149,
+      "stateless-method": 897,
+      "comment-restates-code": 262,
+      "output-parameter": 6,
+      "flag-parameter": 55
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
       "Scripts/Core/Interfaces/IMapData.cs": 9,
       "Scripts/Core/Services/AssemblyUnloadCleanup.cs": 16,
       "Scripts/Core/Services/CompiledAtlasLoader.cs": 66,
-      "Scripts/Core/Services/JsonConverters.cs": 21,
       "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs": 41,
-      "Scripts/Core/Services/TsxPropertyWriter.cs": 86,
       "Scripts/Core/Utilities/EleAspects.cs": 1,
-      "Scripts/Core/Utilities/VectorHelpers.cs": 1,
       "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs": 27,
       "Scripts/Features/Deckbuilder/Services/FrontierExplorationBehavior.cs": 36,
       "Scripts/Features/Deckbuilder/UI/LoadingScreen.cs": 6,
@@ -1889,7 +1871,6 @@
       "Scripts/Features/ModularDevices/HexScreenDevice.cs": 1,
       "Scripts/Features/ModularDevices/RectScreenDevice.cs": 2,
       "Scripts/Features/Worldgen/AutoTiling/BitmaskConsistencyValidator.cs": 37,
-      "Scripts/Features/Worldgen/IrregularMesh/Biomes/MeshCardBasedGradient.cs": 4,
       "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs": 21,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMesh.cs": 20,
       "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs": 12,
@@ -2062,6 +2043,7 @@
       "addons/tile_editor/TileShapePreview.cs": 14,
       "Scripts/Features/Worldgen/Wfc/Constraints/AdjacencyConstraint.cs": 2,
       "Scripts/Core/Data/CardTemplate.cs": 33,
+      "Scripts/Core/Services/TsxPropertyWriter.cs": 11,
       "Scripts/Features/ModularDevices/ScreenDeviceBase.cs": 11,
       "Tests/Features/Card/Services/SignatureCardGeneratorTest.cs": 23,
       "Tests/Features/Worldgen/Biomes/BiomeAffinityConstraintTest.cs": 33,
@@ -2232,30 +2214,6 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 9,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "Vector2IJsonConverter is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 34,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "Vector3IJsonConverter is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 62,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "GodotArrayJsonConverter is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
       "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
       "line": 15,
       "rule": "dead-export",
@@ -2272,27 +2230,11 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 66,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "TsxPropertyWriter is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
       "file": "Scripts/Core/Utilities/EleAspects.cs",
       "line": 6,
       "rule": "dead-export",
       "severity": "error",
       "message": "EleAspects is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Utilities/VectorHelpers.cs",
-      "line": 5,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "VectorHelpers is exported but never referenced anywhere",
       "metric": 1
     },
     {
@@ -2357,14 +2299,6 @@
       "rule": "dead-export",
       "severity": "error",
       "message": "Violation is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/Biomes/MeshCardBasedGradient.cs",
-      "line": 11,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "MeshCardBasedGradient is exported but never referenced anywhere",
       "metric": 1
     },
     {
@@ -2952,14 +2886,6 @@
       "metric": 3
     },
     {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 34,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "3 types in one file: Vector2IJsonConverter, Vector3IJsonConverter, GodotArrayJsonConverter",
-      "metric": 3
-    },
-    {
       "file": "Scripts/Core/Services/TileDataLoader.cs",
       "line": 25,
       "rule": "types-per-file",
@@ -2998,14 +2924,6 @@
       "severity": "error",
       "message": "4 types in one file: WangSetParser, WangSetData, WangSetInfo, WangTileInfo",
       "metric": 4
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 66,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: TsxProperty, TsxPropertyWriter",
-      "metric": 2
     },
     {
       "file": "Scripts/Core/Services/VariationGroup.cs",
@@ -3390,14 +3308,6 @@
       "severity": "error",
       "message": "file is 353 lines",
       "metric": 353
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 471 lines",
-      "metric": 471
     },
     {
       "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
@@ -5496,62 +5406,6 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 76,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (bool success, string message) ModifyTsxProperties( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 136,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (bool success, string backupPath) CreateBackup( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 162,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (Dictionary<int, List<TsxProperty>> tileProperties, Dictionary<string, List<TsxProperty>> wangSetProperties)\n        ReadTsxProperties( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 220,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (bool success, string message) SetTileType( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 232,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (bool success, string message) SetWangSetClass( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 240,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (bool success, string message) ModifyTileAttribute( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 283,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (bool success, string message) ModifyWangSetAttribute( — replace it with a named type",
-      "metric": 1
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
       "line": 122,
       "rule": "unnamed-tuple",
@@ -6822,30 +6676,6 @@
       "severity": "error",
       "message": "line is 134 chars",
       "metric": 134
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 162,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 126 chars",
-      "metric": 126
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 240,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 132 chars",
-      "metric": 132
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 283,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 143 chars",
-      "metric": 143
     },
     {
       "file": "Scripts/Features/Card/Models/BaseCardType.cs",
@@ -10616,54 +10446,6 @@
       "metric": 9
     },
     {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 76,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "ModifyTsxProperties() cyclomatic complexity 8",
-      "metric": 8
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 162,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "static() cyclomatic complexity 7",
-      "metric": 7
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 240,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "static() cyclomatic complexity 6",
-      "metric": 6
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 283,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "static() cyclomatic complexity 7",
-      "metric": 7
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 373,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "UpdatePropertiesElement() cyclomatic complexity 6",
-      "metric": 6
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 447,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "ParsePropertiesTyped() cyclomatic complexity 7",
-      "metric": 7
-    },
-    {
       "file": "Scripts/Features/Card/Components/CardDesigner.cs",
       "line": 101,
       "rule": "complexity",
@@ -12566,46 +12348,6 @@
       "severity": "warn",
       "message": "WangIdToBitmask() is 49 lines",
       "metric": 49
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 76,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "ModifyTsxProperties() is 56 lines",
-      "metric": 56
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 162,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "static() is 50 lines",
-      "metric": 50
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 240,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "static() is 39 lines",
-      "metric": 39
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 283,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "static() is 43 lines",
-      "metric": 43
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 373,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "UpdatePropertiesElement() is 42 lines",
-      "metric": 42
     },
     {
       "file": "Scripts/Features/Card/Components/CardDesigner.cs",
@@ -14776,22 +14518,6 @@
       "metric": 4
     },
     {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 76,
-      "rule": "nesting-depth",
-      "severity": "warn",
-      "message": "ModifyTsxProperties() nests 4 levels deep",
-      "metric": 4
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 162,
-      "rule": "nesting-depth",
-      "severity": "warn",
-      "message": "static() nests 4 levels deep",
-      "metric": 4
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Services/FrontierExplorationBehavior.cs",
       "line": 67,
       "rule": "nesting-depth",
@@ -15213,14 +14939,6 @@
       "rule": "param-count",
       "severity": "warn",
       "message": "TsxProperty() takes 4 parameters",
-      "metric": 4
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 344,
-      "rule": "param-count",
-      "severity": "warn",
-      "message": "ModifyTileProperties() takes 4 parameters",
       "metric": 4
     },
     {
@@ -16006,22 +15724,6 @@
       "severity": "warn",
       "message": "ParseVariationsString() has 1 else branch(es) — prefer guard clauses",
       "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 373,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "UpdatePropertiesElement() has 1 else branch(es) — prefer guard clauses",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 416,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "InsertTileInOrder() has 2 else branch(es) — prefer guard clauses",
-      "metric": 2
     },
     {
       "file": "Scripts/Features/Card/Components/CardHighlighter.cs",
@@ -17384,54 +17086,6 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 11,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "Read() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 25,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "Write() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 36,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "Read() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 52,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "Write() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 64,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "Read() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 81,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "Write() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
       "file": "Scripts/Core/Services/LoggingService.cs",
       "line": 13,
       "rule": "stateless-method",
@@ -17581,54 +17235,6 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ToLowerInvariant() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 136,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "static() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 162,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "static() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 220,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "static() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 232,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "static() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 240,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "static() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 283,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "static() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -24432,22 +24038,6 @@
       "metric": 5
     },
     {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 213,
-      "rule": "comment-bloat",
-      "severity": "warn",
-      "message": "7-line comment over 3 line(s) of code - keep the why, cut the rest",
-      "metric": 7
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 225,
-      "rule": "comment-bloat",
-      "severity": "warn",
-      "message": "7-line comment over 3 line(s) of code - keep the why, cut the rest",
-      "metric": 7
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Components/ViewportScreenSetup.cs",
       "line": 12,
       "rule": "comment-bloat",
@@ -24978,30 +24568,6 @@
     {
       "file": "Scripts/Core/Services/TilesetLoading/WangSetParser.cs",
       "line": 42,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 107,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 262,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 351,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -26960,30 +26526,6 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 11,
-      "rule": "output-parameter",
-      "severity": "warn",
-      "message": "Read() exposes an output parameter; return a value instead",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 36,
-      "rule": "output-parameter",
-      "severity": "warn",
-      "message": "Read() exposes an output parameter; return a value instead",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 64,
-      "rule": "output-parameter",
-      "severity": "warn",
-      "message": "Read() exposes an output parameter; return a value instead",
-      "metric": 1
-    },
-    {
       "file": "Scripts/Features/Worldgen/AutoTiling/AutoTileFormatRegistry.cs",
       "line": 66,
       "rule": "output-parameter",
@@ -27053,46 +26595,6 @@
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "Bool() takes a boolean flag; split the behavior or name the policy",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 136,
-      "rule": "flag-parameter",
-      "severity": "warn",
-      "message": "static() takes a boolean flag; split the behavior or name the policy",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 220,
-      "rule": "flag-parameter",
-      "severity": "warn",
-      "message": "static() takes a boolean flag; split the behavior or name the policy",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 232,
-      "rule": "flag-parameter",
-      "severity": "warn",
-      "message": "static() takes a boolean flag; split the behavior or name the policy",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 240,
-      "rule": "flag-parameter",
-      "severity": "warn",
-      "message": "static() takes a boolean flag; split the behavior or name the policy",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 283,
-      "rule": "flag-parameter",
-      "severity": "warn",
-      "message": "static() takes a boolean flag; split the behavior or name the policy",
       "metric": 1
     },
     {
@@ -29062,70 +28564,6 @@
       "severity": "warn",
       "message": "line is 81 chars",
       "metric": 81
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 11,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 111 chars",
-      "metric": 111
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 25,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 36,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 111 chars",
-      "metric": 111
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 52,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 62,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 64,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 111 chars",
-      "metric": 111
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 81,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "line": 84,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
     },
     {
       "file": "Scripts/Core/Services/LoggingService.cs",
@@ -31550,246 +30988,6 @@
       "severity": "warn",
       "message": "line is 92 chars",
       "metric": 92
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 63,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 70,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 73,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 74,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 103 chars",
-      "metric": 103
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 121,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 106 chars",
-      "metric": 106
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 147,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 160,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 186,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 199,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 208,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 219,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 220,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 106 chars",
-      "metric": 106
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 226,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 231,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 232,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 119 chars",
-      "metric": 119
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 234,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 258,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 263,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 269,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 106 chars",
-      "metric": 106
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 316,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 106 chars",
-      "metric": 106
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 319,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 338,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 344,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 117 chars",
-      "metric": 117
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 347,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 359,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 116 chars",
-      "metric": 116
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 366,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 373,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 416,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 424,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "line": 447,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
     },
     {
       "file": "Scripts/Core/Services/VariationGroup.cs",
@@ -38574,30 +37772,6 @@
       "severity": "warn",
       "message": "line is 90 chars",
       "metric": 90
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/Biomes/MeshCardBasedGradient.cs",
-      "line": 19,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/Biomes/MeshCardBasedGradient.cs",
-      "line": 20,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/Biomes/MeshCardBasedGradient.cs",
-      "line": 22,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 106 chars",
-      "metric": 106
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/Debug/IrregularMeshDebugRenderer.cs",
@@ -73828,718 +73002,6 @@
       ]
     },
     {
-      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-      "errors": 13,
-      "warnings": 73,
-      "rules": {
-        "dead-export": 1,
-        "types-per-file": 1,
-        "file-length": 1,
-        "unnamed-tuple": 7,
-        "line-length": 41,
-        "duplicate-block": 1,
-        "complexity": 6,
-        "function-length": 5,
-        "nesting-depth": 2,
-        "param-count": 2,
-        "else-branch": 2,
-        "stateless-method": 6,
-        "comment-bloat": 2,
-        "comment-restates-code": 3,
-        "flag-parameter": 6
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 66,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "TsxPropertyWriter is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 66,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: TsxProperty, TsxPropertyWriter",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 471 lines",
-          "metric": 471
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 76,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) ModifyTsxProperties( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 136,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string backupPath) CreateBackup( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 162,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (Dictionary<int, List<TsxProperty>> tileProperties, Dictionary<string, List<TsxProperty>> wangSetProperties)\n        ReadTsxProperties( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 220,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) SetTileType( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 232,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) SetWangSetClass( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 240,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) ModifyTileAttribute( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 283,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (bool success, string message) ModifyWangSetAttribute( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 162,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 126 chars",
-          "metric": 126
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 240,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 132 chars",
-          "metric": 132
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 283,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 143 chars",
-          "metric": 143
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 1,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs:1, Scripts/Core/Services/TsxPropertyWriter.cs:1",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 76,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ModifyTsxProperties() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 162,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "static() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 240,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "static() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 283,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "static() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 373,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "UpdatePropertiesElement() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 447,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ParsePropertiesTyped() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 76,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ModifyTsxProperties() is 56 lines",
-          "metric": 56
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 162,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "static() is 50 lines",
-          "metric": 50
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 240,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "static() is 39 lines",
-          "metric": 39
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 283,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "static() is 43 lines",
-          "metric": 43
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 373,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "UpdatePropertiesElement() is 42 lines",
-          "metric": 42
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 76,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "ModifyTsxProperties() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 162,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "static() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 27,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "TsxProperty() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 344,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "ModifyTileProperties() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 373,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "UpdatePropertiesElement() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 416,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "InsertTileInOrder() has 2 else branch(es) — prefer guard clauses",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 136,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "static() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 162,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "static() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 220,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "static() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 232,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "static() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 240,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "static() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 283,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "static() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 213,
-          "rule": "comment-bloat",
-          "severity": "warn",
-          "message": "7-line comment over 3 line(s) of code - keep the why, cut the rest",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 225,
-          "rule": "comment-bloat",
-          "severity": "warn",
-          "message": "7-line comment over 3 line(s) of code - keep the why, cut the rest",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 107,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 262,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 351,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 40,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "Bool() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 136,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "static() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 220,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "static() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 232,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "static() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 240,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "static() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 283,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "static() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 27,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 36,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 37,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 39,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 40,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 118 chars",
-          "metric": 118
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 45,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 51,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 57,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 63,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 70,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 73,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 74,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 121,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 147,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 160,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 186,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 199,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 208,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 219,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 220,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 226,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 231,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 232,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 119 chars",
-          "metric": 119
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 234,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 258,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 263,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 269,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 316,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 319,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 338,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 344,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 347,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 359,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 116 chars",
-          "metric": 116
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 366,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 373,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 416,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 424,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
-          "line": 447,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        }
-      ]
-    },
-    {
       "file": "addons/tile_editor/TsxPropertyInserter.cs",
       "errors": 12,
       "warnings": 37,
@@ -93441,188 +91903,6 @@
           "severity": "warn",
           "message": "line is 95 chars",
           "metric": 95
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Services/JsonConverters.cs",
-      "errors": 4,
-      "warnings": 17,
-      "rules": {
-        "dead-export": 3,
-        "types-per-file": 1,
-        "stateless-method": 6,
-        "output-parameter": 3,
-        "line-length": 8
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 9,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "Vector2IJsonConverter is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 34,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "Vector3IJsonConverter is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 62,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "GodotArrayJsonConverter is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 34,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "3 types in one file: Vector2IJsonConverter, Vector3IJsonConverter, GodotArrayJsonConverter",
-          "metric": 3
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 11,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "Read() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 25,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "Write() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 36,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "Read() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 52,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "Write() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 64,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "Read() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 81,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "Write() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 11,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "Read() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 36,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "Read() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 64,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "Read() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 11,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 25,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 36,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 52,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 62,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 64,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 81,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Core/Services/JsonConverters.cs",
-          "line": 84,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
         }
       ]
     },
@@ -116489,49 +114769,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/Biomes/MeshCardBasedGradient.cs",
-      "errors": 1,
-      "warnings": 3,
-      "rules": {
-        "dead-export": 1,
-        "line-length": 3
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/Biomes/MeshCardBasedGradient.cs",
-          "line": 11,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "MeshCardBasedGradient is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/Biomes/MeshCardBasedGradient.cs",
-          "line": 19,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/Biomes/MeshCardBasedGradient.cs",
-          "line": 20,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/Biomes/MeshCardBasedGradient.cs",
-          "line": 22,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        }
-      ]
-    },
-    {
       "file": "addons/tile_editor/TileEditorPlugin.cs",
       "errors": 1,
       "warnings": 3,
@@ -116926,24 +115163,6 @@
           "rule": "dead-export",
           "severity": "error",
           "message": "EleAspects is exported but never referenced anywhere",
-          "metric": 1
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Utilities/VectorHelpers.cs",
-      "errors": 1,
-      "warnings": 0,
-      "rules": {
-        "dead-export": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Utilities/VectorHelpers.cs",
-          "line": 5,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "VectorHelpers is exported but never referenced anywhere",
           "metric": 1
         }
       ]
@@ -122717,6 +120936,107 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+      "errors": 0,
+      "warnings": 11,
+      "rules": {
+        "duplicate-block": 1,
+        "param-count": 1,
+        "flag-parameter": 1,
+        "line-length": 8
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 1,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs:1, Scripts/Core/Services/TsxPropertyWriter.cs:1",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 27,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "TsxProperty() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 40,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "Bool() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 27,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 39,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 118 chars",
+          "metric": 118
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 45,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 51,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
+          "line": 57,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
       "errors": 0,
       "warnings": 11,
@@ -127777,28 +126097,5 @@
         }
       ]
     }
-  ],
-  "scanEvidence": {
-    "repositoryRoot": "C:\\Development\\Projects\\cardcleaner",
-    "profile": "default",
-    "exclusions": [
-      ".venv-poc",
-      ".godot",
-      "reports",
-      "addons/gdUnit4",
-      "addons/saveable",
-      "Data/Tiled",
-      "tools"
-    ],
-    "command": "node C:\\Users\\siriu\\.codex\\plugins\\cache\\dod-guard-monorepo\\quality-guard\\0.5.15\\skills\\quality-refactor\\scripts\\quality-scan.mjs . --root=C:\\Development\\Projects\\cardcleaner --profile=default --format=units --top=20 --fail-on=none --exclude=.venv-poc --exclude=.godot --exclude=reports --exclude=addons/gdUnit4 --exclude=addons/saveable --exclude=Data/Tiled --exclude=tools",
-    "generator": "C:\\Users\\siriu\\.codex\\plugins\\cache\\dod-guard-monorepo\\quality-guard\\0.5.15\\skills\\quality-refactor\\scripts\\quality-scan.mjs",
-    "scannerExitCode": 0,
-    "evidence": {
-      "fileCount": 369,
-      "violationCount": 7574,
-      "errorCount": 740,
-      "warningCount": 6834,
-      "unitCount": 323
-    }
-  }
+  ]
 }
