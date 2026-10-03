@@ -1,7 +1,62 @@
 {
   "profile": "default",
-  "fileCount": 441,
+  "fileCount": 452,
   "files": [
+    {
+      "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLeft.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLifecycle.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelPersistence.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTileFormatEditor/EditableAutoTileFormat.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTileFormatEditor/EditableFormatVariant.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+      "language": "cs",
+      "classification": "production"
+    },
     {
       "path": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
       "language": "cs",
@@ -2209,27 +2264,27 @@
     }
   ],
   "summary": {
-    "total": 7110,
-    "errors": 352,
-    "warnings": 6758,
+    "total": 7115,
+    "errors": 346,
+    "warnings": 6769,
     "byRule": {
-      "dead-export": 19,
+      "dead-export": 18,
       "duplicate-block": 171,
-      "types-per-file": 48,
-      "file-length": 265,
-      "complexity": 311,
-      "function-length": 354,
+      "types-per-file": 47,
+      "file-length": 269,
+      "complexity": 309,
+      "function-length": 351,
       "nesting-depth": 33,
       "param-count": 136,
       "unnamed-tuple": 44,
       "test-only-export": 13,
       "else-branch": 130,
-      "stateless-method": 1212,
+      "stateless-method": 1245,
       "comment-bloat": 54,
-      "comment-restates-code": 180,
+      "comment-restates-code": 164,
       "output-parameter": 20,
-      "flag-parameter": 54,
-      "line-length": 4066
+      "flag-parameter": 56,
+      "line-length": 4055
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
@@ -2243,7 +2298,6 @@
       "Scripts/Features/ModularDevices/RectScreenDevice.cs": 2,
       "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs": 21,
       "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs": 12,
-      "addons/tile_editor/AutoTileFormatEditorPanel.cs": 77,
       "addons/tile_editor/BiomePoolPanel.cs": 55,
       "addons/tile_editor/TileAtlasPanel.cs": 53,
       "addons/tile_editor/TileEditorPlugin.cs": 4,
@@ -2484,6 +2538,11 @@
       "Tests/Features/Worldgen/Wfc/WfcEntropyTest.cs": 14,
       "Tests/Features/Worldgen/Wfc/WfcGridTest.cs": 15,
       "Tests/Mocks/MockTileRegistry.cs": 23,
+      "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs": 15,
+      "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs": 10,
+      "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs": 12,
+      "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs": 17,
+      "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs": 8,
       "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs": 13,
       "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs": 20,
       "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs": 13,
@@ -2534,6 +2593,7 @@
       "Scripts/Features/Card/Components/CardMaterialManager.cs": 6,
       "Scripts/Features/Deckbuilder/Components/ViewportScreenSetup.cs": 12,
       "Scripts/Features/Worldgen/Wfc/Modifiers/Soft/DiminishingReturnsSoftModifier.cs": 3,
+      "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLeft.cs": 2,
       "Scripts/Features/Deckbuilder/Components/WorldMapCombatUI.cs": 5,
       "Scripts/Features/Worldgen/AutoTiling/VariantDefinition.cs": 5,
       "Scripts/Features/Worldgen/Biomes/BiomeDefinition.cs": 6,
@@ -2569,6 +2629,9 @@
       "Tests/Features/Card/Services/SignatureCardHelperTest.cs": 28,
       "Tests/Features/Conveyor/Components/ConveyorBeltTest.cs": 1,
       "Tests/Features/Worldgen/Wfc/Constraints/WfcConstraintContextTest.cs": 2,
+      "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs": 8,
+      "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLifecycle.cs": 4,
+      "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelPersistence.cs": 3,
       "addons/tile_editor/TileProperties/TilePropertiesPanelAtlasInitialization.cs": 4,
       "addons/tile_editor/TmxPreview/TmxPreviewControlRendering.cs": 4,
       "addons/tile_editor/TmxPreview/TmxPreviewPanelLoading.cs": 5,
@@ -2612,6 +2675,8 @@
       "Tests/Core/ServiceProviders/CardServiceProviderTest.cs": 5,
       "Tests/Mocking/MockCardShaderRenderer.cs": 1,
       "Tests/TestUtilities/Helpers/GodotTestHelpers.cs": 1,
+      "addons/tile_editor/AutoTileFormatEditor/EditableAutoTileFormat.cs": 1,
+      "addons/tile_editor/AutoTileFormatEditorPanel.cs": 2,
       "addons/tile_editor/TmxPreview/TmxPreviewControl.cs": 1
     }
   },
@@ -2703,14 +2768,6 @@
       "rule": "dead-export",
       "severity": "error",
       "message": "CollapsedNeighborInfo is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 905,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "VariantConfigRow is exported but never referenced anywhere",
       "metric": 1
     },
     {
@@ -3410,14 +3467,6 @@
       "metric": 3
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 860,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "4 types in one file: AutoTileFormatEditorPanel, EditableAutoTileFormat, EditableFormatVariant, VariantConfigRow",
-      "metric": 4
-    },
-    {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
       "line": 244,
       "rule": "types-per-file",
@@ -3984,14 +4033,6 @@
       "severity": "error",
       "message": "file is 436 lines",
       "metric": 436
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 1032 lines",
-      "metric": 1032
     },
     {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
@@ -4920,30 +4961,6 @@
       "severity": "error",
       "message": "TestTileDistributionDiversity() is 74 lines",
       "metric": 74
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 141,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "SetupRightPanel() is 142 lines",
-      "metric": 142
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 663,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "OnNewFormatConfirmed() is 68 lines",
-      "metric": 68
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 923,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "VariantConfigRow() is 75 lines",
-      "metric": 75
     },
     {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
@@ -7706,6 +7723,46 @@
       "metric": 192
     },
     {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 155 lines",
+      "metric": 155
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 131 lines",
+      "metric": 131
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 106 lines",
+      "metric": 106
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 143 lines",
+      "metric": 143
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 144 lines",
+      "metric": 144
+    },
+    {
       "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
       "line": 1,
       "rule": "file-length",
@@ -9570,35 +9627,19 @@
       "metric": 8
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 371,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "ShowFormatDetails() cyclomatic complexity 6",
-      "metric": 6
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 431,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 100,
       "rule": "complexity",
       "severity": "warn",
       "message": "RebuildVariantConfigRows() cyclomatic complexity 6",
       "metric": 6
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 465,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 127,
       "rule": "complexity",
       "severity": "warn",
       "message": "OnVariantConfigChanged() cyclomatic complexity 7",
-      "metric": 7
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 663,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "OnNewFormatConfirmed() cyclomatic complexity 7",
       "metric": 7
     },
     {
@@ -11978,44 +12019,44 @@
       "metric": 31
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 86,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 45,
       "rule": "function-length",
       "severity": "warn",
-      "message": "SetupLeftPanel() is 54 lines",
-      "metric": 54
+      "message": "AddFormatIdentityFields() is 39 lines",
+      "metric": 39
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 371,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 85,
       "rule": "function-length",
       "severity": "warn",
-      "message": "ShowFormatDetails() is 59 lines",
-      "metric": 59
+      "message": "AddBitmaskConfiguration() is 35 lines",
+      "metric": 35
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 431,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 121,
       "rule": "function-length",
       "severity": "warn",
-      "message": "RebuildVariantConfigRows() is 33 lines",
-      "metric": 33
+      "message": "AddVariantConfiguration() is 32 lines",
+      "metric": 32
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 615,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+      "line": 20,
       "rule": "function-length",
       "severity": "warn",
-      "message": "CreateNewFormatDialog() is 47 lines",
-      "metric": 47
+      "message": "CreateNewFormatDialog() is 43 lines",
+      "metric": 43
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 732,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLeft.cs",
+      "line": 8,
       "rule": "function-length",
       "severity": "warn",
-      "message": "OnDeletePressed() is 33 lines",
-      "metric": 33
+      "message": "SetupLeftPanel() is 48 lines",
+      "metric": 48
     },
     {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
@@ -13442,8 +13483,8 @@
       "metric": 4
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 923,
+      "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+      "line": 30,
       "rule": "param-count",
       "severity": "warn",
       "message": "VariantConfigRow() takes 4 parameters",
@@ -14514,8 +14555,8 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 577,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+      "line": 83,
       "rule": "else-branch",
       "severity": "warn",
       "message": "ConvertToVariantMappings() has 1 else branch(es) — prefer guard clauses",
@@ -21666,27 +21707,291 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 284,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+      "line": 9,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnNewFormatConfirmed() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+      "line": 28,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ValidateNewFormatName() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+      "line": 51,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetNewFormatBitmaskType() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+      "line": 61,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "RegisterNewFormat() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+      "line": 78,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "SelectCreatedFormat() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 9,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "SetupRightPanel() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 17,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "CreateDetailsPanel() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 45,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddFormatIdentityFields() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 85,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddBitmaskConfiguration() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 121,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddVariantConfiguration() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+      "line": 10,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnAddPressed() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+      "line": 20,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "CreateNewFormatDialog() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+      "line": 64,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnDeletePressed() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+      "line": 80,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "DeleteSelectedFormat() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+      "line": 96,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ShowError() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+      "line": 11,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnNameChanged() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+      "line": 17,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnBitmaskTypeChanged() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+      "line": 31,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnAllowedBitmasksChanged() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+      "line": 46,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "UpdateCustomFormat() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+      "line": 68,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ReregisterCustomFormat() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLeft.cs",
+      "line": 8,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "SetupLeftPanel() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLifecycle.cs",
+      "line": 9,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "_Ready() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLifecycle.cs",
+      "line": 25,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "OnTilesLoaded() never touches instance state — make it a free function",
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 289,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLifecycle.cs",
+      "line": 30,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "OnAutoTileFormatsLoaded() never touches instance state — make it a free function",
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 766,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLifecycle.cs",
+      "line": 36,
       "rule": "stateless-method",
       "severity": "warn",
-      "message": "ShowError() never touches instance state — make it a free function",
+      "message": "LoadCustomFormatsFromService() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelPersistence.cs",
+      "line": 9,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetCustomFormats() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelPersistence.cs",
+      "line": 14,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "LoadCustomFormats() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelPersistence.cs",
+      "line": 37,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "Refresh() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 10,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "PopulateFormatList() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 28,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnFormatSelected() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 34,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "SelectFormat() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 48,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ShowNoSelection() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 55,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ShowFormatDetails() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 86,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "UpdateBuiltInNote() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 100,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "RebuildVariantConfigRows() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 127,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnVariantConfigChanged() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -25970,134 +26275,6 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 106,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 150,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 170,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 181,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 194,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 226,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 237,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 323,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 384,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 409,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 504,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 513,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 627,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 645,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 936,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 951,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
       "line": 21,
       "rule": "comment-restates-code",
@@ -26762,11 +26939,27 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 923,
+      "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+      "line": 30,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "VariantConfigRow() takes a boolean flag; split the behavior or name the policy",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+      "line": 78,
+      "rule": "flag-parameter",
+      "severity": "warn",
+      "message": "AddSizeControls() takes a boolean flag; split the behavior or name the policy",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+      "line": 97,
+      "rule": "flag-parameter",
+      "severity": "warn",
+      "message": "CreateSizeSpin() takes a boolean flag; split the behavior or name the policy",
       "metric": 1
     },
     {
@@ -54642,280 +54835,216 @@
       "metric": 105
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 43,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 56,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 187,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 188,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 189,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+      "line": 16,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
       "metric": 83
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 253,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 259,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 105 chars",
-      "metric": 105
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 260,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 324,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 108 chars",
-      "metric": 108
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 338,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 353,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+      "line": 17,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
       "metric": 89
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 395,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 450,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 467,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 470,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 486,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 489,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 495,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 510,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 514,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 517,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 523,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 104 chars",
-      "metric": 104
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 534,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 535,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 536,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 573,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 577,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 117 chars",
-      "metric": 117
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 583,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 620,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 674,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 676,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+      "line": 38,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
       "metric": 91
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 694,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 62,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 63,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 64,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
       "metric": 83
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 695,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 124,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
+      "message": "line is 83 chars",
+      "metric": 83
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 738,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 130,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 103 chars",
+      "metric": 103
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "line": 131,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+      "line": 25,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+      "line": 71,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
       "metric": 94
     },
     {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 778,
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+      "line": 108,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+      "line": 42,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+      "line": 57,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+      "line": 58,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+      "line": 80,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+      "line": 89,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 24,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 37,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 73,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 88,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 113,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "line": 133,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/EditableAutoTileFormat.cs",
+      "line": 15,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+      "line": 10,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+      "line": 90,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+      "line": 115,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -54923,23 +55052,7 @@
     },
     {
       "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 825,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 107 chars",
-      "metric": 107
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 870,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 902,
+      "line": 41,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -54947,19 +55060,11 @@
     },
     {
       "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 981,
+      "line": 54,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "line": 1005,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
+      "message": "line is 87 chars",
+      "metric": 87
     },
     {
       "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
@@ -63708,642 +63813,6 @@
           "severity": "warn",
           "message": "line is 94 chars",
           "metric": 94
-        }
-      ]
-    },
-    {
-      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-      "errors": 6,
-      "warnings": 71,
-      "rules": {
-        "dead-export": 1,
-        "types-per-file": 1,
-        "file-length": 1,
-        "function-length": 8,
-        "complexity": 4,
-        "param-count": 1,
-        "else-branch": 1,
-        "stateless-method": 3,
-        "comment-restates-code": 16,
-        "flag-parameter": 1,
-        "line-length": 40
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 905,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "VariantConfigRow is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 860,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "4 types in one file: AutoTileFormatEditorPanel, EditableAutoTileFormat, EditableFormatVariant, VariantConfigRow",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 1032 lines",
-          "metric": 1032
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 141,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "SetupRightPanel() is 142 lines",
-          "metric": 142
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 663,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "OnNewFormatConfirmed() is 68 lines",
-          "metric": 68
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 923,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "VariantConfigRow() is 75 lines",
-          "metric": 75
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 371,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ShowFormatDetails() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 431,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "RebuildVariantConfigRows() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 465,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "OnVariantConfigChanged() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 663,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "OnNewFormatConfirmed() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 86,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "SetupLeftPanel() is 54 lines",
-          "metric": 54
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 371,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ShowFormatDetails() is 59 lines",
-          "metric": 59
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 431,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "RebuildVariantConfigRows() is 33 lines",
-          "metric": 33
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 615,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "CreateNewFormatDialog() is 47 lines",
-          "metric": 47
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 732,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "OnDeletePressed() is 33 lines",
-          "metric": 33
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 923,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "VariantConfigRow() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 577,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "ConvertToVariantMappings() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 284,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "OnTilesLoaded() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 289,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "OnAutoTileFormatsLoaded() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 766,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ShowError() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 106,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 150,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 170,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 181,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 194,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 226,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 237,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 323,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 384,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 409,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 504,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 513,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 627,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 645,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 936,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 951,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 923,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "VariantConfigRow() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 43,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 56,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 187,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 188,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 189,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 253,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 259,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 260,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 324,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 338,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 353,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 395,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 450,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 467,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 470,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 486,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 489,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 495,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 510,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 514,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 517,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 523,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 534,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 535,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 536,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 573,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 577,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 583,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 620,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 674,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 676,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 694,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 695,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 738,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 778,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 825,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 870,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 902,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 981,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
-          "line": 1005,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
         }
       ]
     },
@@ -108966,6 +108435,155 @@
       ]
     },
     {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+      "errors": 0,
+      "warnings": 17,
+      "rules": {
+        "file-length": 1,
+        "complexity": 2,
+        "stateless-method": 8,
+        "line-length": 6
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 143 lines",
+          "metric": 143
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 100,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "RebuildVariantConfigRows() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 127,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "OnVariantConfigChanged() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 10,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "PopulateFormatList() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 28,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnFormatSelected() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 34,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SelectFormat() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 48,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ShowNoSelection() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 55,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ShowFormatDetails() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 86,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "UpdateBuiltInNote() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 100,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "RebuildVariantConfigRows() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 127,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnVariantConfigChanged() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 24,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 73,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 88,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 113,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelSelection.cs",
+          "line": 133,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TmxAtlas/TmxTsxLoader.cs",
       "errors": 0,
       "warnings": 17,
@@ -110357,6 +109975,139 @@
           "severity": "warn",
           "message": "line is 84 chars",
           "metric": 84
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+      "errors": 0,
+      "warnings": 15,
+      "rules": {
+        "file-length": 1,
+        "function-length": 3,
+        "stateless-method": 5,
+        "line-length": 6
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 155 lines",
+          "metric": 155
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 45,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "AddFormatIdentityFields() is 39 lines",
+          "metric": 39
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 85,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "AddBitmaskConfiguration() is 35 lines",
+          "metric": 35
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 121,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "AddVariantConfiguration() is 32 lines",
+          "metric": 32
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 9,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SetupRightPanel() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 17,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CreateDetailsPanel() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 45,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddFormatIdentityFields() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 85,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddBitmaskConfiguration() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 121,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddVariantConfiguration() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 62,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 63,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 64,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 124,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 130,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDetails.cs",
+          "line": 131,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
         }
       ]
     },
@@ -113111,6 +112862,115 @@
       ]
     },
     {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+      "errors": 0,
+      "warnings": 12,
+      "rules": {
+        "file-length": 1,
+        "else-branch": 1,
+        "stateless-method": 5,
+        "line-length": 5
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 106 lines",
+          "metric": 106
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+          "line": 83,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "ConvertToVariantMappings() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+          "line": 11,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnNameChanged() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+          "line": 17,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnBitmaskTypeChanged() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+          "line": 31,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnAllowedBitmasksChanged() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+          "line": 46,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "UpdateCustomFormat() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+          "line": 68,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ReregisterCustomFormat() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+          "line": 42,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+          "line": 57,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+          "line": 58,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+          "line": 80,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelEditing.cs",
+          "line": 89,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TileAtlas/TileAtlasPacker.cs",
       "errors": 0,
       "warnings": 12,
@@ -115333,6 +115193,99 @@
       ]
     },
     {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+      "errors": 0,
+      "warnings": 10,
+      "rules": {
+        "file-length": 1,
+        "function-length": 1,
+        "stateless-method": 5,
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 131 lines",
+          "metric": 131
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+          "line": 20,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "CreateNewFormatDialog() is 43 lines",
+          "metric": 43
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+          "line": 10,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnAddPressed() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+          "line": 20,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CreateNewFormatDialog() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+          "line": 64,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnDeletePressed() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+          "line": 80,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "DeleteSelectedFormat() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+          "line": 96,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ShowError() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+          "line": 25,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+          "line": 71,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelDialogs.cs",
+          "line": 108,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TileEditorFormatLoading.cs",
       "errors": 0,
       "warnings": 10,
@@ -116494,6 +116447,83 @@
       ]
     },
     {
+      "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+      "errors": 0,
+      "warnings": 8,
+      "rules": {
+        "file-length": 1,
+        "param-count": 1,
+        "flag-parameter": 3,
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 144 lines",
+          "metric": 144
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+          "line": 30,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "VariantConfigRow() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+          "line": 30,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "VariantConfigRow() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+          "line": 78,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "AddSizeControls() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+          "line": 97,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "CreateSizeSpin() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+          "line": 10,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+          "line": 90,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/VariantConfigRow.cs",
+          "line": 115,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TmxAtlas/TmxWangSetReader.cs",
       "errors": 0,
       "warnings": 8,
@@ -116795,6 +116825,81 @@
           "severity": "warn",
           "message": "line is 85 chars",
           "metric": 85
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+      "errors": 0,
+      "warnings": 8,
+      "rules": {
+        "stateless-method": 5,
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+          "line": 9,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnNewFormatConfirmed() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+          "line": 28,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ValidateNewFormatName() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+          "line": 51,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetNewFormatBitmaskType() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+          "line": 61,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "RegisterNewFormat() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+          "line": 78,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SelectCreatedFormat() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+          "line": 16,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+          "line": 17,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
+          "line": 38,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
         }
       ]
     },
@@ -119702,6 +119807,48 @@
       ]
     },
     {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLifecycle.cs",
+      "errors": 0,
+      "warnings": 4,
+      "rules": {
+        "stateless-method": 4
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLifecycle.cs",
+          "line": 9,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "_Ready() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLifecycle.cs",
+          "line": 25,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnTilesLoaded() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLifecycle.cs",
+          "line": 30,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnAutoTileFormatsLoaded() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLifecycle.cs",
+          "line": 36,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "LoadCustomFormatsFromService() never touches instance state — make it a free function",
+          "metric": 1
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TileProperties/TilePropertiesPanelAtlasInitialization.cs",
       "errors": 0,
       "warnings": 4,
@@ -120480,6 +120627,40 @@
       ]
     },
     {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelPersistence.cs",
+      "errors": 0,
+      "warnings": 3,
+      "rules": {
+        "stateless-method": 3
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelPersistence.cs",
+          "line": 9,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetCustomFormats() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelPersistence.cs",
+          "line": 14,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "LoadCustomFormats() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelPersistence.cs",
+          "line": 37,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Refresh() never touches instance state — make it a free function",
+          "metric": 1
+        }
+      ]
+    },
+    {
       "file": "Scripts/Core/Interfaces/IPlayerResetService.cs",
       "errors": 0,
       "warnings": 3,
@@ -120759,6 +120940,33 @@
           "rule": "stateless-method",
           "severity": "warn",
           "message": "DefaultValues_AreReasonable() never touches instance state — make it a free function",
+          "metric": 1
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLeft.cs",
+      "errors": 0,
+      "warnings": 2,
+      "rules": {
+        "function-length": 1,
+        "stateless-method": 1
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLeft.cs",
+          "line": 8,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "SetupLeftPanel() is 48 lines",
+          "metric": 48
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLeft.cs",
+          "line": 8,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SetupLeftPanel() never touches instance state — make it a free function",
           "metric": 1
         }
       ]
@@ -121075,6 +121283,32 @@
           "severity": "warn",
           "message": "line is 88 chars",
           "metric": 88
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
+      "errors": 0,
+      "warnings": 2,
+      "rules": {
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
+          "line": 54,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
         }
       ]
     },
@@ -121417,6 +121651,24 @@
           "severity": "warn",
           "message": "line is 105 chars",
           "metric": 105
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/AutoTileFormatEditor/EditableAutoTileFormat.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTileFormatEditor/EditableAutoTileFormat.cs",
+          "line": 15,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
         }
       ]
     },
