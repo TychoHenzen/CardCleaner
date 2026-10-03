@@ -1,9 +1,49 @@
 {
   "profile": "default",
-  "fileCount": 422,
+  "fileCount": 430,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreview.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/AutoTilePreview/VariantPreviewInfo.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -2114,27 +2154,27 @@
     }
   ],
   "summary": {
-    "total": 7083,
-    "errors": 372,
-    "warnings": 6711,
+    "total": 7082,
+    "errors": 362,
+    "warnings": 6720,
     "byRule": {
-      "dead-export": 21,
-      "duplicate-block": 171,
-      "types-per-file": 50,
-      "file-length": 256,
-      "complexity": 318,
-      "function-length": 366,
+      "dead-export": 20,
+      "duplicate-block": 169,
+      "types-per-file": 49,
+      "file-length": 260,
+      "complexity": 316,
+      "function-length": 359,
       "nesting-depth": 33,
-      "param-count": 133,
-      "unnamed-tuple": 45,
+      "param-count": 134,
+      "unnamed-tuple": 44,
       "test-only-export": 13,
-      "else-branch": 139,
-      "stateless-method": 1088,
+      "else-branch": 135,
+      "stateless-method": 1142,
       "comment-bloat": 54,
-      "comment-restates-code": 193,
-      "output-parameter": 19,
-      "flag-parameter": 55,
-      "line-length": 4129
+      "comment-restates-code": 186,
+      "output-parameter": 20,
+      "flag-parameter": 54,
+      "line-length": 4094
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
@@ -2149,7 +2189,6 @@
       "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs": 21,
       "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs": 12,
       "addons/tile_editor/AutoTileFormatEditorPanel.cs": 77,
-      "addons/tile_editor/AutoTilePreviewPanel.cs": 94,
       "addons/tile_editor/BiomePoolPanel.cs": 55,
       "addons/tile_editor/TileAtlasPanel.cs": 53,
       "addons/tile_editor/TileEditorPlugin.cs": 4,
@@ -2389,6 +2428,11 @@
       "Tests/Features/Worldgen/Wfc/WfcEntropyTest.cs": 14,
       "Tests/Features/Worldgen/Wfc/WfcGridTest.cs": 15,
       "Tests/Mocks/MockTileRegistry.cs": 23,
+      "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs": 13,
+      "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs": 20,
+      "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs": 13,
+      "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs": 16,
+      "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs": 22,
       "addons/tile_editor/FoldoutContainer.cs": 4,
       "addons/tile_editor/TileAtlas/TileAtlasPacker.cs": 12,
       "addons/tile_editor/TileAtlas/TileAtlasTerrainSelector.cs": 7,
@@ -2434,6 +2478,7 @@
       "Scripts/Features/Worldgen/Biomes/BiomeDefinition.cs": 6,
       "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs": 4,
       "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs": 5,
+      "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs": 9,
       "Scripts/Core/Interfaces/ILog.cs": 3,
       "addons/tile_editor/TileEditorDock.TestHooks.cs": 1,
       "Scripts/Core/Data/GameSettings.cs": 8,
@@ -2602,14 +2647,6 @@
       "rule": "dead-export",
       "severity": "error",
       "message": "VariantConfigRow is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 321,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "DualGridAutoTilePreview is exported but never referenced anywhere",
       "metric": 1
     },
     {
@@ -3325,14 +3362,6 @@
       "metric": 4
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 321,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: AutoTilePreviewPanel, DualGridAutoTilePreview",
-      "metric": 2
-    },
-    {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
       "line": 244,
       "rule": "types-per-file",
@@ -3917,14 +3946,6 @@
       "metric": 1032
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 830 lines",
-      "metric": 830
-    },
-    {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
       "line": 1,
       "rule": "file-length",
@@ -4461,38 +4482,6 @@
       "metric": 14
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 268,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "RefreshPreview() cyclomatic complexity 12",
-      "metric": 12
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 523,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "_Draw() cyclomatic complexity 21",
-      "metric": 21
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 681,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "private() cyclomatic complexity 20",
-      "metric": 20
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 769,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "UpdateTooltip() cyclomatic complexity 17",
-      "metric": 17
-    },
-    {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
       "line": 322,
       "rule": "complexity",
@@ -4939,22 +4928,6 @@
       "severity": "error",
       "message": "VariantConfigRow() is 75 lines",
       "metric": 75
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 37,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "_Ready() is 109 lines",
-      "metric": 109
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 523,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "_Draw() is 151 lines",
-      "metric": 151
     },
     {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
@@ -5450,14 +5423,6 @@
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (8, 15)\n            select ( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 681,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (Vector2I AtlasCoords, Vector2I Size, Vector2I Offset, bool IsValid) GetVariantInfo( — replace it with a named type",
       "metric": 1
     },
     {
@@ -6394,22 +6359,6 @@
       "rule": "duplicate-block",
       "severity": "warn",
       "message": "6-line block duplicated at Tests/Features/Worldgen/Wfc/WfcMapGeneratorIntegrationTest.cs:7, Tests/Features/Worldgen/Wfc/WfcPerformanceBenchmarkTest.cs:4",
-      "metric": 2
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 586,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at addons/tile_editor/AutoTilePreviewPanel.cs:586, addons/tile_editor/AutoTilePreviewPanel.cs:615",
-      "metric": 2
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 615,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at addons/tile_editor/AutoTilePreviewPanel.cs:586, addons/tile_editor/AutoTilePreviewPanel.cs:615",
       "metric": 2
     },
     {
@@ -7755,6 +7704,46 @@
       "severity": "warn",
       "message": "file is 192 lines",
       "metric": 192
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 163 lines",
+      "metric": 163
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 175 lines",
+      "metric": 175
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 108 lines",
+      "metric": 108
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 163 lines",
+      "metric": 163
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 182 lines",
+      "metric": 182
     },
     {
       "file": "addons/tile_editor/FoldoutContainer.cs",
@@ -9565,35 +9554,51 @@
       "metric": 7
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 434,
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 121,
       "rule": "complexity",
       "severity": "warn",
-      "message": "_GuiInput() cyclomatic complexity 10",
-      "metric": 10
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 468,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "RecomputeVisualBitmasks() cyclomatic complexity 9",
+      "message": "RefreshPreview() cyclomatic complexity 9",
       "metric": 9
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 505,
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "line": 9,
       "rule": "complexity",
       "severity": "warn",
-      "message": "EmitInfo() cyclomatic complexity 6",
+      "message": "_GuiInput() cyclomatic complexity 6",
       "metric": 6
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 745,
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "line": 53,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "RecomputeBlobBitmasks() cyclomatic complexity 8",
+      "metric": 8
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 10,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "GetVariantInfo() cyclomatic complexity 10",
+      "metric": 10
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 102,
       "rule": "complexity",
       "severity": "warn",
       "message": "IsBitmaskAllowed() cyclomatic complexity 6",
+      "metric": 6
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 168,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "BuildTooltip() cyclomatic complexity 6",
       "metric": 6
     },
     {
@@ -11981,46 +11986,6 @@
       "metric": 33
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 268,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "RefreshPreview() is 34 lines",
-      "metric": 34
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 434,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "_GuiInput() is 33 lines",
-      "metric": 33
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 468,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "RecomputeVisualBitmasks() is 36 lines",
-      "metric": 36
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 681,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "private() is 60 lines",
-      "metric": 60
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 769,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "UpdateTooltip() is 59 lines",
-      "metric": 59
-    },
-    {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
       "line": 40,
       "rule": "function-length",
@@ -13461,19 +13426,27 @@
       "metric": 4
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 387,
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 66,
       "rule": "param-count",
       "severity": "warn",
-      "message": "SetTiles() takes 4 parameters",
+      "message": "DrawBlobOverlay() takes 4 parameters",
       "metric": 4
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 681,
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 111,
       "rule": "param-count",
       "severity": "warn",
-      "message": "private() takes 4 parameters",
+      "message": "DrawVariant() takes 4 parameters",
+      "metric": 4
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+      "line": 34,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "SetTiles() takes 4 parameters",
       "metric": 4
     },
     {
@@ -14509,52 +14482,20 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 243,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "OnBaseTileSelected() has 1 else branch(es) — prefer guard clauses",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 434,
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "line": 9,
       "rule": "else-branch",
       "severity": "warn",
       "message": "_GuiInput() has 1 else branch(es) — prefer guard clauses",
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 468,
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 51,
       "rule": "else-branch",
       "severity": "warn",
-      "message": "RecomputeVisualBitmasks() has 1 else branch(es) — prefer guard clauses",
+      "message": "DrawOverlayTiles() has 1 else branch(es) — prefer guard clauses",
       "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 523,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "_Draw() has 1 else branch(es) — prefer guard clauses",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 681,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "private() has 1 else branch(es) — prefer guard clauses",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 769,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "UpdateTooltip() has 2 else branch(es) — prefer guard clauses",
-      "metric": 2
     },
     {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
@@ -21749,11 +21690,443 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 158,
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "line": 8,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "_Ready() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "line": 24,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ConfigurePanelLayout() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "line": 31,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "CreateMainContainer() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "line": 54,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddTileSelectors() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "line": 78,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddFormatSelector() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "line": 97,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddScaleSelector() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "line": 124,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddOptions() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "line": 138,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddPreview() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 9,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnInfoChanged() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 15,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnShowDataGridToggled() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 20,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "PopulateDropdowns() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 27,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "PopulateFormatDropdown() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 46,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnFormatOverrideSelected() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 56,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "PopulateTileSelector() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 72,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "PopulateBaseTileSelector() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 88,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnTileSelected() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 101,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnBaseTileSelected() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 109,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnScaleChanged() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 115,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ClearPreview() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 121,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "RefreshPreview() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 152,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "UpdatePreviewInfo() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 160,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetSelectedBaseTile() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 167,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "Refresh() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "line": 9,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "_GuiInput() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "line": 26,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ToggleDataCell() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "line": 41,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "RecomputeVisualBitmasks() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "line": 53,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "RecomputeBlobBitmasks() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "line": 79,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "EmitInfo() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "line": 94,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "CountFilledCells() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 8,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "_Draw() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 22,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetBaseTexture() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 27,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "DrawBaseTiles() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 51,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "DrawOverlayTiles() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 66,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "DrawBlobOverlay() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 89,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "DrawDualGridOverlay() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 111,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "DrawVariant() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 125,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetActualTileSize() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 132,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "DrawDataGrid() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 150,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "DrawGridBoundary() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+      "line": 8,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "InitializeSamplePattern() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+      "line": 21,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "SetScale() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+      "line": 28,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "SetShowDataGrid() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+      "line": 34,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "SetTiles() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+      "line": 51,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetEffectiveFormat() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+      "line": 58,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ClearPreview() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+      "line": 66,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "UpdateSize() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 10,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetVariantInfo() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 55,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetCustomVariantInfo() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 72,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetAutoTileVariantInfo() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 102,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "IsBitmaskAllowed() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 123,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "UpdateTooltip() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 135,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetHoveredBitmask() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 142,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetBlobHoveredBitmask() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 153,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetDualGridHoveredBitmask() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 168,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "BuildTooltip() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -25165,62 +25538,6 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 64,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 72,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 80,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 93,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 110,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 119,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 129,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
       "line": 21,
       "rule": "comment-restates-code",
@@ -25637,6 +25954,14 @@
       "metric": 1
     },
     {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "line": 65,
+      "rule": "output-parameter",
+      "severity": "warn",
+      "message": "CreateSelectorRow() exposes an output parameter; return a value instead",
+      "metric": 1
+    },
+    {
       "file": "addons/tile_editor/TileAtlas/TileAtlasCompilationResult.cs",
       "line": 15,
       "rule": "output-parameter",
@@ -25933,27 +26258,19 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 153,
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 15,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "OnShowDataGridToggled() takes a boolean flag; split the behavior or name the policy",
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 381,
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+      "line": 28,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "SetShowDataGrid() takes a boolean flag; split the behavior or name the policy",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 681,
-      "rule": "flag-parameter",
-      "severity": "warn",
-      "message": "private() takes a boolean flag; split the behavior or name the policy",
       "metric": 1
     },
     {
@@ -54133,436 +54450,156 @@
       "metric": 83
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 10,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 66,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 104 chars",
-      "metric": 104
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 67,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 74,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 75,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 82,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 86,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 95,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 106,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 112,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 103 chars",
-      "metric": 103
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 191,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 221,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 251,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 285,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 287,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 104 chars",
-      "metric": 104
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 291,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 113 chars",
-      "metric": 113
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 292,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 300,
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "line": 65,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
       "metric": 91
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 316,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 317,
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "line": 73,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
       "metric": 83
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 387,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 119 chars",
-      "metric": 119
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 427,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 453,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 474,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 483,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 489,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 500,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 518,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 542,
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "line": 89,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
       "metric": 87
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 557,
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 51,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
+      "message": "line is 86 chars",
+      "metric": 86
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 608,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 625,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 626,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 627,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 663,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 672,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 676,
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "line": 79,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
       "metric": 82
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 678,
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "line": 66,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 110 chars",
-      "metric": 110
+      "message": "line is 94 chars",
+      "metric": 94
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 679,
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "line": 69,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
+      "message": "line is 84 chars",
+      "metric": 84
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 681,
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "line": 89,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 108 chars",
-      "metric": 108
+      "message": "line is 91 chars",
+      "metric": 91
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 683,
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 16,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
+      "message": "line is 90 chars",
+      "metric": 90
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 698,
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "line": 146,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 18,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
       "metric": 92
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 705,
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 23,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
       "metric": 92
     },
     {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 707,
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 27,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 38,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 49,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 55,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 72,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 89,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "line": 158,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
       "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 712,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 717,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 109 chars",
-      "metric": 109
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 723,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 725,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 727,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 733,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 736,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 106 chars",
-      "metric": 106
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 752,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 790,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "line": 801,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
     },
     {
       "file": "addons/tile_editor/BiomePoolPanel.cs",
@@ -60577,780 +60614,6 @@
           "severity": "warn",
           "message": "line is 101 chars",
           "metric": 101
-        }
-      ]
-    },
-    {
-      "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-      "errors": 10,
-      "warnings": 84,
-      "rules": {
-        "dead-export": 1,
-        "types-per-file": 1,
-        "file-length": 1,
-        "complexity": 8,
-        "function-length": 7,
-        "unnamed-tuple": 1,
-        "duplicate-block": 2,
-        "param-count": 2,
-        "else-branch": 6,
-        "stateless-method": 1,
-        "comment-restates-code": 7,
-        "flag-parameter": 3,
-        "line-length": 54
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 321,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "DualGridAutoTilePreview is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 321,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: AutoTilePreviewPanel, DualGridAutoTilePreview",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 830 lines",
-          "metric": 830
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 268,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "RefreshPreview() cyclomatic complexity 12",
-          "metric": 12
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 523,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "_Draw() cyclomatic complexity 21",
-          "metric": 21
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 681,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "private() cyclomatic complexity 20",
-          "metric": 20
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 769,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "UpdateTooltip() cyclomatic complexity 17",
-          "metric": 17
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 37,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "_Ready() is 109 lines",
-          "metric": 109
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 523,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "_Draw() is 151 lines",
-          "metric": 151
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 681,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (Vector2I AtlasCoords, Vector2I Size, Vector2I Offset, bool IsValid) GetVariantInfo( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 586,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at addons/tile_editor/AutoTilePreviewPanel.cs:586, addons/tile_editor/AutoTilePreviewPanel.cs:615",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 615,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at addons/tile_editor/AutoTilePreviewPanel.cs:586, addons/tile_editor/AutoTilePreviewPanel.cs:615",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 434,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "_GuiInput() cyclomatic complexity 10",
-          "metric": 10
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 468,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "RecomputeVisualBitmasks() cyclomatic complexity 9",
-          "metric": 9
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 505,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "EmitInfo() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 745,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "IsBitmaskAllowed() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 268,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "RefreshPreview() is 34 lines",
-          "metric": 34
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 434,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "_GuiInput() is 33 lines",
-          "metric": 33
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 468,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "RecomputeVisualBitmasks() is 36 lines",
-          "metric": 36
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 681,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "private() is 60 lines",
-          "metric": 60
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 769,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "UpdateTooltip() is 59 lines",
-          "metric": 59
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 387,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "SetTiles() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 681,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "private() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 243,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "OnBaseTileSelected() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 434,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "_GuiInput() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 468,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "RecomputeVisualBitmasks() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 523,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "_Draw() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 681,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "private() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 769,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "UpdateTooltip() has 2 else branch(es) — prefer guard clauses",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 158,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "PopulateDropdowns() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 64,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 72,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 80,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 93,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 110,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 119,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 129,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 153,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "OnShowDataGridToggled() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 381,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "SetShowDataGrid() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 681,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "private() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 10,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 66,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 67,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 74,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 75,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 82,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 86,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 95,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 106,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 112,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 191,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 221,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 251,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 285,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 287,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 291,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 113 chars",
-          "metric": 113
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 292,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 300,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 316,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 317,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 387,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 119 chars",
-          "metric": 119
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 427,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 453,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 474,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 483,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 489,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 500,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 518,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 542,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 557,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 608,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 625,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 626,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 627,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 663,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 672,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 676,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 678,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 679,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 681,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 683,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 698,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 705,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 707,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 712,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 717,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 723,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 725,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 727,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 733,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 736,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 752,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 790,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/AutoTilePreviewPanel.cs",
-          "line": 801,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
         }
       ]
     },
@@ -106586,6 +105849,195 @@
       ]
     },
     {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+      "errors": 0,
+      "warnings": 22,
+      "rules": {
+        "file-length": 1,
+        "complexity": 3,
+        "stateless-method": 9,
+        "line-length": 9
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 182 lines",
+          "metric": 182
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 10,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GetVariantInfo() cyclomatic complexity 10",
+          "metric": 10
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 102,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "IsBitmaskAllowed() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 168,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "BuildTooltip() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 10,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetVariantInfo() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 55,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetCustomVariantInfo() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 72,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetAutoTileVariantInfo() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 102,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "IsBitmaskAllowed() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 123,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "UpdateTooltip() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 135,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetHoveredBitmask() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 142,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetBlobHoveredBitmask() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 153,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetDualGridHoveredBitmask() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 168,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "BuildTooltip() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 18,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 23,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 27,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 38,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 49,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 55,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 72,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 89,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewVariants.cs",
+          "line": 158,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        }
+      ]
+    },
+    {
       "file": "Scripts/Core/DependencyInjection/AutoServiceProvider.cs",
       "errors": 0,
       "warnings": 21,
@@ -107301,6 +106753,180 @@
           "severity": "warn",
           "message": "line is 89 chars",
           "metric": 89
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+      "errors": 0,
+      "warnings": 20,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "stateless-method": 15,
+        "flag-parameter": 1,
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 175 lines",
+          "metric": 175
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 121,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "RefreshPreview() cyclomatic complexity 9",
+          "metric": 9
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 9,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnInfoChanged() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 15,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnShowDataGridToggled() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 20,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "PopulateDropdowns() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 27,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "PopulateFormatDropdown() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 46,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnFormatOverrideSelected() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 56,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "PopulateTileSelector() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 72,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "PopulateBaseTileSelector() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 88,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnTileSelected() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 101,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnBaseTileSelected() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 109,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnScaleChanged() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 115,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ClearPreview() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 121,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "RefreshPreview() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 152,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "UpdatePreviewInfo() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 160,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetSelectedBaseTile() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 167,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Refresh() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 15,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "OnShowDataGridToggled() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 51,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelSelection.cs",
+          "line": 79,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
         }
       ]
     },
@@ -109673,6 +109299,148 @@
           "severity": "warn",
           "message": "line is 83 chars",
           "metric": 83
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+      "errors": 0,
+      "warnings": 16,
+      "rules": {
+        "file-length": 1,
+        "param-count": 2,
+        "else-branch": 1,
+        "stateless-method": 10,
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 163 lines",
+          "metric": 163
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 66,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "DrawBlobOverlay() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 111,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "DrawVariant() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 51,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "DrawOverlayTiles() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 8,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "_Draw() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 22,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetBaseTexture() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 27,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "DrawBaseTiles() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 51,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "DrawOverlayTiles() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 66,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "DrawBlobOverlay() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 89,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "DrawDualGridOverlay() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 111,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "DrawVariant() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 125,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetActualTileSize() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 132,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "DrawDataGrid() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 150,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "DrawGridBoundary() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 16,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewRendering.cs",
+          "line": 146,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
         }
       ]
     },
@@ -112097,6 +111865,241 @@
           "severity": "warn",
           "message": "line is 110 chars",
           "metric": 110
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+      "errors": 0,
+      "warnings": 13,
+      "rules": {
+        "file-length": 1,
+        "stateless-method": 8,
+        "output-parameter": 1,
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 163 lines",
+          "metric": 163
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+          "line": 8,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "_Ready() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+          "line": 24,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ConfigurePanelLayout() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+          "line": 31,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CreateMainContainer() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+          "line": 54,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddTileSelectors() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+          "line": 78,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddFormatSelector() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+          "line": 97,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddScaleSelector() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+          "line": 124,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddOptions() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+          "line": 138,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddPreview() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+          "line": 65,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "CreateSelectorRow() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+          "line": 65,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+          "line": 73,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/AutoTilePreviewPanelInitialization.cs",
+          "line": 89,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+      "errors": 0,
+      "warnings": 13,
+      "rules": {
+        "file-length": 1,
+        "complexity": 2,
+        "else-branch": 1,
+        "stateless-method": 6,
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 108 lines",
+          "metric": 108
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+          "line": 9,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "_GuiInput() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+          "line": 53,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "RecomputeBlobBitmasks() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+          "line": 9,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "_GuiInput() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+          "line": 9,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "_GuiInput() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+          "line": 26,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ToggleDataCell() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+          "line": 41,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "RecomputeVisualBitmasks() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+          "line": 53,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "RecomputeBlobBitmasks() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+          "line": 79,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "EmitInfo() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+          "line": 94,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CountFilledCells() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+          "line": 66,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+          "line": 69,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewInput.cs",
+          "line": 89,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
         }
       ]
     },
@@ -115563,6 +115566,90 @@
           "severity": "warn",
           "message": "line is 117 chars",
           "metric": 117
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+      "errors": 0,
+      "warnings": 9,
+      "rules": {
+        "param-count": 1,
+        "stateless-method": 7,
+        "flag-parameter": 1
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+          "line": 34,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "SetTiles() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+          "line": 8,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "InitializeSamplePattern() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+          "line": 21,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SetScale() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+          "line": 28,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SetShowDataGrid() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+          "line": 34,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SetTiles() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+          "line": 51,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetEffectiveFormat() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+          "line": 58,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ClearPreview() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+          "line": 66,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "UpdateSize() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs",
+          "line": 28,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "SetShowDataGrid() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
         }
       ]
     },
