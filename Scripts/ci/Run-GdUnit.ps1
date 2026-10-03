@@ -21,6 +21,8 @@ if ((Test-Path -LiteralPath $consolePath -PathType Leaf) -and $godotPath -ne $co
 }
 $repositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 $reportRoot = Join-Path $repositoryRoot 'reports\ci'
+$importStdoutPath = Join-Path $reportRoot 'godot-import.stdout.log'
+$importStderrPath = Join-Path $reportRoot 'godot-import.stderr.log'
 $stdoutPath = Join-Path $reportRoot 'godot.stdout.log'
 $stderrPath = Join-Path $reportRoot 'godot.stderr.log'
 $startedAt = [DateTime]::UtcNow
@@ -40,6 +42,18 @@ $godotArguments = @(
 
 New-Item -ItemType Directory -Path $reportRoot -Force | Out-Null
 Write-Host "Using Godot executable: $godotPath"
+
+$importArguments = @(
+    '--headless'
+    '--path'
+    '.'
+    '--quit'
+)
+$importProcess = Start-Process -FilePath $godotPath -ArgumentList $importArguments -WorkingDirectory $repositoryRoot -RedirectStandardOutput $importStdoutPath -RedirectStandardError $importStderrPath -Wait -PassThru
+if ($importProcess.ExitCode -ne 0) {
+    $importStderr = if (Test-Path -LiteralPath $importStderrPath) { (Get-Content -LiteralPath $importStderrPath -Tail 40) -join [Environment]::NewLine } else { '<missing>' }
+    throw "Godot project import failed with exit code $($importProcess.ExitCode): $importStderr"
+}
 
 $godotProcess = Start-Process -FilePath $godotPath -ArgumentList $godotArguments -WorkingDirectory $repositoryRoot -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath -Wait -PassThru
 $godotExitCode = $godotProcess.ExitCode
