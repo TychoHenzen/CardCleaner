@@ -223,5 +223,14 @@
     "reason": "Pure type move: public Godot resource RadialGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: RadialGradient.get)",
     "author": "Tycho",
     "time": "2026-10-03T21:57:56.116Z"
+  },
+  {
+    "findingId": "b8aa737798deaaa460d17de40b10ce9d4aa014e6ebbcbe34c54917594c55a35e",
+    "fingerprint": "5678a58154db0434d54e72ff668e93b0ffe1e9f1669926e1d4d3891dc0982b42",
+    "baseSha": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetSha": "1f21941a7bf93b387a734c9a084ceb1c1b524e74",
+    "reason": "Pure type move: NoOpProfiler moved unchanged out of IProfiler.cs (types-per-file) and narrowed to internal sealed since it is only constructed inside the assembly (private fields and a property initializer); the flagged public members are its IProfiler interface implementations and do not widen the public surface; namespace unchanged (member: NoOpProfiler.RecordDuration)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:58:46.099Z"
   }
 ]
