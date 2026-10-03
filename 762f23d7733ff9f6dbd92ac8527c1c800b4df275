@@ -16,5 +16,14 @@
     "reason": "Pure type move: CollapsedNeighborInfo struct moved unchanged from WfcConstraintContext.cs to Constraints/CollapsedNeighborInfo.cs to satisfy types-per-file. It is the type of the public WfcConstraintContext.NeighborInfo property, so it must stay public; members and namespace unchanged.",
     "author": "Tycho",
     "time": "2026-10-03T20:30:17.502Z"
+  },
+  {
+    "findingId": "ff099209654c2d409141be274a37344192ff0d369a4dedb029fd2fdc6a5fd9c2",
+    "fingerprint": "14d2f0254707f4696f242f08185c95b934730c782c7626d46dea59ec688e69d1",
+    "baseSha": "c4edf4be6ef3cbe354bf959d8f1bd4f4fbaf9bf2",
+    "targetSha": "762f23d7733ff9f6dbd92ac8527c1c800b4df275",
+    "reason": "Pure type move: CollapsedNeighborInfo.int is the synthesized constructor-signature entry of the same unchanged struct moved from WfcConstraintContext.cs; see the CollapsedNeighborInfo acknowledgement.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:31:06.306Z"
   }
 ]
