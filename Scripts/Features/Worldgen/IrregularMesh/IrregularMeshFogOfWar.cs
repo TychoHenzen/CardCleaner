@@ -202,12 +202,16 @@ public class IrregularMeshFogOfWar : IActiveFogOfWar
 
         for (int i = 0; i < _mapData.CellCount; i++)
         {
-            if (_fogStates[i] == FogState.Hidden)
-            {
-                _fogStates[i] = FogState.Revealed;
-                changedCells.Add(i);
+            var previousState = _fogStates[i];
+            if (previousState == FogState.Visible)
+                continue;
+
+            _fogStates[i] = FogState.Visible;
+            _currentlyVisible.Add(i);
+            changedCells.Add(i);
+
+            if (previousState == FogState.Hidden)
                 CellRevealed?.Invoke(i);
-            }
         }
 
         if (changedCells.Count > 0)

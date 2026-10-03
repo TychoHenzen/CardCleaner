@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
@@ -121,6 +122,9 @@ public partial class IrregularMeshMovementController : Node2D
             return false;
 
         if (!_mapData.IsPassable(targetCellId))
+            return false;
+
+        if (!_mapData.GetAdjacentCells(_currentCellId).Contains(targetCellId))
             return false;
 
         StartMovement(targetCellId);

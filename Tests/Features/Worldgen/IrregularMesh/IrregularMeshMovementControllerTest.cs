@@ -121,6 +121,18 @@ public class IrregularMeshMovementControllerTest
     }
 
     [TestCase]
+    public void TestMoveToNonAdjacentCellReturnsFalse()
+    {
+        _controller.Initialize(_mapData, 0);
+
+        // Cell 3 only touches cell 0 at a corner, so it is not an adjacent cell
+        var result = _controller.MoveToCell(3);
+
+        AssertBool(result).IsFalse();
+        AssertBool(_controller.IsMoving).IsFalse();
+    }
+
+    [TestCase]
     public void TestMoveToImpassableCellReturnsFalse()
     {
         // Make cell 1 impassable by setting vertex terrain to 0

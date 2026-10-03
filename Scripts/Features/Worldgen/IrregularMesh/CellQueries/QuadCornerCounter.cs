@@ -21,6 +21,20 @@ internal static class QuadCornerCounter
     }
 
     /// <summary>
+    /// True when any corner of the quad carries a structure.
+    /// </summary>
+    internal static bool HasStructureCorner(IrregularMesh mesh, MeshQuad quad)
+    {
+        foreach (var vid in quad.VertexIds)
+        {
+            if (mesh.Vertices[vid].HasStructure)
+                return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Filled corners that do not carry a blocking structure.
     /// </summary>
     internal static int CountPassableCorners(IrregularMesh mesh, MeshQuad quad)

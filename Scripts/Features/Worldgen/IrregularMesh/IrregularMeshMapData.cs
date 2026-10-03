@@ -100,6 +100,10 @@ public class IrregularMeshMapData : IMapData
         if (_structureCells.Contains(cellId))
             return false;
 
+        // A structure on any corner vertex blocks the quad, as MeshQuad.IsPassable does
+        if (QuadCornerCounter.HasStructureCorner(_mesh, _mesh.Quads[cellId]))
+            return false;
+
         // Cell is passable if MAJORITY (at least 2 of 4) corner vertices have passable terrain
         // This allows traversal near terrain edges and provides better connectivity
         // NOTE: Terrain type 0 = impassable, any terrain type > 0 = passable

@@ -135,6 +135,19 @@ public class IrregularMeshFogOfWarTest
     }
 
     [TestCase]
+    public void TestRevealAllMakesEveryCellVisible()
+    {
+        _fogOfWar.RevealAll();
+
+        for (int i = 0; i < _mapData.CellCount; i++)
+        {
+            AssertThat(_fogOfWar.GetFogState(i)).IsEqual(FogState.Visible);
+        }
+
+        AssertThat(_fogOfWar.CurrentlyVisibleCells.Count).IsEqual(_mapData.CellCount);
+    }
+
+    [TestCase]
     public void TestResetClearsAllVisibility()
     {
         _fogOfWar.VisionRange = 100f;
