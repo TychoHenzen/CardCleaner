@@ -5320,8 +5320,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 265 lines",
-      "metric": 265
+      "message": "file is 269 lines",
+      "metric": 269
     },
     {
       "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
@@ -69656,8 +69656,8 @@
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 265 lines",
-          "metric": 265
+          "message": "file is 269 lines",
+          "metric": 269
         },
         {
           "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
