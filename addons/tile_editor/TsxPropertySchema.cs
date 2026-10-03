@@ -10,19 +10,7 @@ namespace CardCleaner.Addons.TileEditor;
 /// </summary>
 public static class TsxPropertySchema
 {
-    /// <summary>
-    /// Properties required for individual tiles in the TSX tileset.
-    /// These are applied to tile elements based on their position in the tileset.
-    ///
-    /// NOTE: The tile ID is set via the 'type' attribute on the tile element,
-    /// e.g., &lt;tile id="507" type="dirt"/&gt;. The 'type' attribute serves as the tile ID.
-    /// (Wang sets use the 'class' attribute instead.)
-    ///
-    /// Custom enum types are defined in Data/Tiled/Tiles.tiled-project:
-    /// - Passability: passable, solid, partially_passable
-    /// - Layer: terrain, decoration, structure, effects
-    /// - Biome: flags enum (plains, forest, desert, tundra, swamp, mountains, water, cave, volcanic, magical)
-    /// </summary>
+    /// <summary>Defines TSX tile properties and their Tiled attribute conventions.</summary>
     public static readonly List<TsxProperty> TileProperties = new()
     {
         // Display name - shown in UI (the 'type' attribute is the tile ID)

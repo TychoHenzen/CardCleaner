@@ -342,7 +342,13 @@ public partial class BiomeSection : VBoxContainer
 
             foreach (var tile in universalTiles.OrderBy(t => t.Id))
             {
-                var entry = new BiomeTileEntry(tile, _biomeId, _service, isUniversal: true, weight: 0, isBlocked: false);
+                var entry = new BiomeTileEntry(
+                    tile,
+                    _biomeId,
+                    _service,
+                    isUniversal: true,
+                    weight: 0,
+                    isBlocked: false);
                 _passableContainer.AddChild(entry);
             }
 
@@ -372,7 +378,13 @@ public partial class BiomeSection : VBoxContainer
                 var tile = _service.GetTile(tileId);
                 if (tile != null)
                 {
-                    var entry = new BiomeTileEntry(tile, _biomeId, _service, isUniversal: false, weight, isBlocked: false);
+                    var entry = new BiomeTileEntry(
+                        tile,
+                        _biomeId,
+                        _service,
+                        isUniversal: false,
+                        weight,
+                        isBlocked: false);
                     _passableContainer.AddChild(entry);
                 }
             }
@@ -390,7 +402,13 @@ public partial class BiomeSection : VBoxContainer
                     var tile = _service.GetTile(tileId);
                     if (tile != null)
                     {
-                        var entry = new BiomeTileEntry(tile, _biomeId, _service, isUniversal: false, weight, isBlocked: true);
+                        var entry = new BiomeTileEntry(
+                            tile,
+                            _biomeId,
+                            _service,
+                            isUniversal: false,
+                            weight,
+                            isBlocked: true);
                         _blockedContainer.AddChild(entry);
                     }
                 }
@@ -480,7 +498,13 @@ public partial class BiomeTileEntry : HBoxContainer
     // Required by Godot for [Tool] classes
     public BiomeTileEntry() { }
 
-    public BiomeTileEntry(EditableTile tile, string biomeId, TileEditorService service, bool isUniversal, float weight, bool isBlocked)
+    public BiomeTileEntry(
+        EditableTile tile,
+        string biomeId,
+        TileEditorService service,
+        bool isUniversal,
+        float weight,
+        bool isBlocked)
     {
         _tile = tile;
         _biomeId = biomeId;

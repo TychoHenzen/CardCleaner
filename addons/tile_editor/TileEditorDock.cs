@@ -118,11 +118,19 @@ public partial class TileEditorDock : Control
         toolbar.AddChild(new VSeparator());
 
         // TMX tools
-        var compileTmxButton = new Button { Text = "Compile from TMX", TooltipText = "Compile atlas from TMX/TSX files" };
+        var compileTmxButton = new Button
+        {
+            Text = "Compile from TMX",
+            TooltipText = "Compile atlas from TMX/TSX files"
+        };
         compileTmxButton.Pressed += OnCompileTmxPressed;
         toolbar.AddChild(compileTmxButton);
 
-        var insertPropsButton = new Button { Text = "Insert TSX Props", TooltipText = "Insert default properties into TSX files" };
+        var insertPropsButton = new Button
+        {
+            Text = "Insert TSX Props",
+            TooltipText = "Insert default properties into TSX files"
+        };
         insertPropsButton.Pressed += OnInsertTsxPropsPressed;
         toolbar.AddChild(insertPropsButton);
 
@@ -319,7 +327,11 @@ public partial class TileEditorDock : Control
             GD.PrintErr($"[TileEditorDock] TMX compilation failed: {message}");
 
             // Show error dialog
-            var dialog = new AcceptDialog { DialogText = $"Compilation failed:\n{message}", Title = "TMX Compilation Error" };
+            var dialog = new AcceptDialog
+            {
+                DialogText = $"Compilation failed:\n{message}",
+                Title = "TMX Compilation Error"
+            };
             dialog.Confirmed += () => dialog.QueueFree();
             AddChild(dialog);
             dialog.PopupCentered();

@@ -575,7 +575,9 @@ public partial class TilePropertiesPanel : ScrollContainer
 
         var modeNote = new Label
         {
-            Text = "Per Instance: Each tile placement uses random variant.\nPer Generation: One variant chosen at map start.",
+            Text =
+                "Per Instance: Each tile placement uses random variant.\n" +
+                "Per Generation: One variant chosen at map start.",
             AutowrapMode = TextServer.AutowrapMode.Word,
             Modulate = new Color(0.7f, 0.7f, 0.7f)
         };

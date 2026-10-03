@@ -361,7 +361,11 @@ public partial class TmxPreviewPanel : VBoxContainer
     {
         if (_selectedAutoTile != null && _selectedAutoTileTileset != null)
         {
-            _previewControl?.SetAutoTilePreview(_selectedAutoTile, _selectedAutoTileTileset, (float)_scaleSlider!.Value, _formatOverride);
+            _previewControl?.SetAutoTilePreview(
+                _selectedAutoTile,
+                _selectedAutoTileTileset,
+                (float)_scaleSlider!.Value,
+                _formatOverride);
         }
     }
 
@@ -496,7 +500,10 @@ public partial class TmxPreviewControl : Control
         GD.Print($"[TmxPreviewControl] LoadTmxMap: {mapData.Tilesets.Count} tilesets, tileSize={_tileSize}");
         foreach (var ts in mapData.Tilesets)
         {
-            GD.Print($"[TmxPreviewControl]   Tileset: {ts.TsxPath}, TilesetPath='{ts.TilesetData.TilesetPath}', Tiles={ts.TilesetData.Tiles.Count}");
+            GD.Print(
+                $"[TmxPreviewControl]   Tileset: {ts.TsxPath}, " +
+                $"TilesetPath='{ts.TilesetData.TilesetPath}', " +
+                $"Tiles={ts.TilesetData.Tiles.Count}");
         }
 
         UpdateSize();
@@ -524,7 +531,11 @@ public partial class TmxPreviewControl : Control
     /// <summary>
     /// Switch to interactive auto-tile preview mode for the given tile definition.
     /// </summary>
-    public void SetAutoTilePreview(TileDefinition tileDef, TmxTilesetReference tilesetRef, float scale, string? formatOverride = null)
+    public void SetAutoTilePreview(
+        TileDefinition tileDef,
+        TmxTilesetReference tilesetRef,
+        float scale,
+        string? formatOverride = null)
     {
         _autoTileDef = tileDef;
         _currentTilesetRef = tilesetRef;
@@ -1017,7 +1028,9 @@ public partial class TmxPreviewControl : Control
                 if (image != null)
                 {
                     texture = ImageTexture.CreateFromImage(image);
-                    GD.Print($"[TmxPreviewControl] Texture loaded successfully: {texture.GetWidth()}x{texture.GetHeight()}");
+                    GD.Print(
+                        $"[TmxPreviewControl] Texture loaded successfully: " +
+                        $"{texture.GetWidth()}x{texture.GetHeight()}");
                 }
                 else
                 {

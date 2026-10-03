@@ -81,7 +81,9 @@ public static class TsxPropertyInserter
                 using var writer = new StreamWriter(absolutePath, false, new System.Text.UTF8Encoding(false));
                 doc.Save(writer, SaveOptions.None);
 
-                GD.Print($"[TsxPropertyInserter] Updated {tsxPath}: {tilesModified} tiles, {wangSetsModified} wang sets");
+                GD.Print(
+                    $"[TsxPropertyInserter] Updated {tsxPath}: " +
+                    $"{tilesModified} tiles, {wangSetsModified} wang sets");
             }
 
             return (true, "", tilesModified, wangSetsModified);
@@ -95,7 +97,13 @@ public static class TsxPropertyInserter
     /// <summary>
     /// Inserts missing properties into all TSX files in a directory.
     /// </summary>
-    public static (bool success, string message, int filesModified, int totalTiles, int totalWangSets) InsertPropertiesInDirectory(
+    public static (
+        bool success,
+        string message,
+        int filesModified,
+        int totalTiles,
+        int totalWangSets)
+        InsertPropertiesInDirectory(
         string directoryPath,
         bool insertTileProperties = true,
         bool insertWangSetProperties = true)

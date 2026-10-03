@@ -190,7 +190,9 @@ public partial class UnusedSourcesPanel : ScrollContainer
 
         var dialog = new ConfirmationDialog
         {
-            DialogText = $"Remove {_currentUnusedSources.Count} unused source(s) from the TileSet?\n\n{sourceNames}\n\nThis will modify and save the TileSet resource.",
+            DialogText =
+                $"Remove {_currentUnusedSources.Count} unused source(s) from the TileSet?\n\n" +
+                $"{sourceNames}\n\nThis will modify and save the TileSet resource.",
             Title = "Confirm Removal",
             Size = new Vector2I(450, 300)
         };

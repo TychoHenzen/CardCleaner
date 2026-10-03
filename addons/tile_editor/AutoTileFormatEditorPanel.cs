@@ -255,7 +255,9 @@ public partial class AutoTileFormatEditorPanel : HSplitContainer
 
         var variantInfo = new Label
         {
-            Text = "Configure default size for each variant (for multi-cell tiles like tall platforms).\nOffset and atlas coords are configured per-tile in the tile properties panel.",
+            Text =
+                "Configure default size for each variant (for multi-cell tiles like tall platforms).\n" +
+                "Offset and atlas coords are configured per-tile in the tile properties panel.",
             AutowrapMode = TextServer.AutowrapMode.Word,
             Modulate = new Color(0.8f, 0.8f, 0.8f)
         };
@@ -449,7 +451,11 @@ public partial class AutoTileFormatEditorPanel : HSplitContainer
 
         foreach (var bitmask in sortedBitmasks)
         {
-            var row = new VariantConfigRow(bitmask, _selectedFormat.BitmaskType, editableFormat, _selectedFormat.IsBuiltIn);
+            var row = new VariantConfigRow(
+                bitmask,
+                _selectedFormat.BitmaskType,
+                editableFormat,
+                _selectedFormat.IsBuiltIn);
             row.VariantChanged += OnVariantConfigChanged;
             _variantConfigContainer.AddChild(row);
             _variantConfigRows[bitmask] = row;
@@ -914,7 +920,11 @@ public partial class VariantConfigRow : HBoxContainer
     // Required by Godot
     public VariantConfigRow() { }
 
-    public VariantConfigRow(int bitmask, BitmaskType bitmaskType, EditableAutoTileFormat? editableFormat, bool isReadOnly)
+    public VariantConfigRow(
+        int bitmask,
+        BitmaskType bitmaskType,
+        EditableAutoTileFormat? editableFormat,
+        bool isReadOnly)
     {
         _bitmask = bitmask;
         _editableFormat = editableFormat;
@@ -949,7 +959,12 @@ public partial class VariantConfigRow : HBoxContainer
         AddChild(_bitmaskLabel);
 
         // Size label
-        AddChild(new Label { Text = "Size:", CustomMinimumSize = new Vector2(35, 0), VerticalAlignment = VerticalAlignment.Center });
+        AddChild(new Label
+        {
+            Text = "Size:",
+            CustomMinimumSize = new Vector2(35, 0),
+            VerticalAlignment = VerticalAlignment.Center
+        });
 
         // Size X
         _sizeXSpin = new SpinBox

@@ -424,7 +424,9 @@ public partial class TileAtlasPanel : Control
             AddChild(_deleteDialog);
         }
 
-        _deleteDialog.DialogText = $"Are you sure you want to delete tile '{tile.Name}' ({tile.Id})?\n\nThis action cannot be undone.";
+        _deleteDialog.DialogText =
+            $"Are you sure you want to delete tile '{tile.Name}' ({tile.Id})?\n\n" +
+            "This action cannot be undone.";
         _deleteDialog.PopupCentered();
     }
 
@@ -475,7 +477,9 @@ public partial class TileButton : Button
         CustomMinimumSize = new Vector2(totalWidth, totalHeight + 16);
 
         var sizeLabel = (tile.SizeX > 1 || tile.SizeY > 1) ? $" [{tile.SizeX}x{tile.SizeY}]" : "";
-        TooltipText = $"{tile.Name}{sizeLabel}\n{tile.Id}\n{tile.Passability}\nSource: {tile.SourceId}, Atlas: ({tile.AtlasX},{tile.AtlasY})";
+        TooltipText =
+            $"{tile.Name}{sizeLabel}\n{tile.Id}\n{tile.Passability}\n" +
+            $"Source: {tile.SourceId}, Atlas: ({tile.AtlasX},{tile.AtlasY})";
         Flat = true;
         TextureFilter = TextureFilterEnum.Nearest;
 
@@ -542,7 +546,9 @@ public partial class TileButton : Button
 
     public void UpdateTile(EditableTile tile)
     {
-        TooltipText = $"{tile.Name}\n{tile.Id}\n{tile.Passability}\nSource: {tile.SourceId}, Atlas: ({tile.AtlasX},{tile.AtlasY})";
+        TooltipText =
+            $"{tile.Name}\n{tile.Id}\n{tile.Passability}\n" +
+            $"Source: {tile.SourceId}, Atlas: ({tile.AtlasX},{tile.AtlasY})";
         QueueRedraw();
     }
 

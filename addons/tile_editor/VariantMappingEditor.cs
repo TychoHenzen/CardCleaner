@@ -361,7 +361,9 @@ public partial class VariantCell : VBoxContainer
         // If tile has no custom variant definition for this bitmask,
         // check the format's VariantMappings for Size defaults (format only stores size, not offset)
         var hasCustomDefinition = _tile.CustomVariantDefinitions?.ContainsKey(_bitmask) ?? false;
-        if (!hasCustomDefinition && _format != null && _format.VariantMappings.TryGetValue(_bitmask, out var formatVariant))
+        if (!hasCustomDefinition &&
+            _format != null &&
+            _format.VariantMappings.TryGetValue(_bitmask, out var formatVariant))
         {
             // Use format's Size as default, but keep tile's atlas coords and offset defaults
             _currentDefinition.SizeX = formatVariant.Size.X > 0 ? formatVariant.Size.X : 1;
@@ -450,7 +452,9 @@ public partial class VariantCell : VBoxContainer
         else
         {
             _validationLabel.Text = "";
-            TooltipText = $"Bitmask {_bitmask}: {_currentDefinition.SizeX}x{_currentDefinition.SizeY} at ({_currentDefinition.AtlasX}, {_currentDefinition.AtlasY})";
+            TooltipText =
+                $"Bitmask {_bitmask}: {_currentDefinition.SizeX}x{_currentDefinition.SizeY} " +
+                $"at ({_currentDefinition.AtlasX}, {_currentDefinition.AtlasY})";
         }
     }
 
@@ -469,13 +473,25 @@ public partial class VariantCell : VBoxContainer
 
         var xRow = new HBoxContainer();
         xRow.AddChild(new Label { Text = "X:", CustomMinimumSize = new Vector2(30, 0) });
-        var xSpin = new SpinBox { MinValue = 0, MaxValue = 99, Value = _currentDefinition.AtlasX, SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        var xSpin = new SpinBox
+        {
+            MinValue = 0,
+            MaxValue = 99,
+            Value = _currentDefinition.AtlasX,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
         xRow.AddChild(xSpin);
         vbox.AddChild(xRow);
 
         var yRow = new HBoxContainer();
         yRow.AddChild(new Label { Text = "Y:", CustomMinimumSize = new Vector2(30, 0) });
-        var ySpin = new SpinBox { MinValue = 0, MaxValue = 99, Value = _currentDefinition.AtlasY, SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        var ySpin = new SpinBox
+        {
+            MinValue = 0,
+            MaxValue = 99,
+            Value = _currentDefinition.AtlasY,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
         yRow.AddChild(ySpin);
         vbox.AddChild(yRow);
 
