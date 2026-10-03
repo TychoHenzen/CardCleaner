@@ -35,29 +35,24 @@ public partial class CardTemplate : Resource
     public LayerData EnergyFill2 { get; } =
         new() { RenderOnFront = true, Region = new Rect2(0.8f, 0, 0.2f, 0.15f) };
 
-    public LayerData[] GemSockets { get; } =
-    {
-        new() { RenderOnFront = true, Region = new Rect2(0.9f, 0.25f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Rect2(0.9f, 0.4f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Rect2(0.9f, 0.55f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Rect2(0.9f, 0.7f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Rect2(0.0f, 0.25f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Rect2(0.0f, 0.4f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Rect2(0.0f, 0.55f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Rect2(0.0f, 0.7f, 0.1f, 0.075f) }
-    };
+    public LayerData[] GemSockets { get; } = CreateGemLayers();
 
-    public LayerData[] Gems { get; } =
+    public LayerData[] Gems { get; } = CreateGemLayers();
+
+    private static LayerData[] CreateGemLayers()
     {
-        new() { RenderOnFront = true, Region = new Rect2(0.9f, 0.25f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Rect2(0.9f, 0.4f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Rect2(0.9f, 0.55f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Rect2(0.9f, 0.7f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Rect2(0.0f, 0.25f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Rect2(0.0f, 0.4f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Rect2(0.0f, 0.55f, 0.1f, 0.075f) },
-        new() { RenderOnFront = true, Region = new Rect2(0.0f, 0.7f, 0.1f, 0.075f) }
-    };
+        return new[]
+        {
+            new LayerData { RenderOnFront = true, Region = new Rect2(0.9f, 0.25f, 0.1f, 0.075f) },
+            new LayerData { RenderOnFront = true, Region = new Rect2(0.9f, 0.4f, 0.1f, 0.075f) },
+            new LayerData { RenderOnFront = true, Region = new Rect2(0.9f, 0.55f, 0.1f, 0.075f) },
+            new LayerData { RenderOnFront = true, Region = new Rect2(0.9f, 0.7f, 0.1f, 0.075f) },
+            new LayerData { RenderOnFront = true, Region = new Rect2(0.0f, 0.25f, 0.1f, 0.075f) },
+            new LayerData { RenderOnFront = true, Region = new Rect2(0.0f, 0.4f, 0.1f, 0.075f) },
+            new LayerData { RenderOnFront = true, Region = new Rect2(0.0f, 0.55f, 0.1f, 0.075f) },
+            new LayerData { RenderOnFront = true, Region = new Rect2(0.0f, 0.7f, 0.1f, 0.075f) }
+        };
+    }
 
     public LayerData[] GatherAllLayers()
     {

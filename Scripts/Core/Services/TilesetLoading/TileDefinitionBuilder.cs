@@ -107,27 +107,12 @@ internal static class TileDefinitionBuilder
         // Build auto-tile variants
         var autoTileVariants = BuildAutoTileVariants(setId, wangData, columns, setInfo.BitmaskType);
 
-        // Parse other properties
-        var passability = ParseHelpers.ParsePassability(ParseHelpers.GetString(props, "passability", "passable"));
-        var layer = ParseHelpers.ParseLayer(ParseHelpers.GetString(props, "layer", "terrain"));
-        var elevation = ParseHelpers.GetFloat(props, "elevation", 0f);
-        var isTransparent = ParseHelpers.GetBool(props, "istransparent", passability == TilePassability.Passable);
-        var dominance = ParseHelpers.GetInt(props, "dominance", 0);
-        var decorationDensity = ParseHelpers.GetFloat(props, "decorationdensity", 1f);
-        var outerTerrain = ParseHelpers.GetStringOrNull(props, "outerterrain");
-        var innerTerrain = ParseHelpers.GetStringOrNull(props, "innerterrain");
+        var (passability, layer, elevation, isTransparent, dominance, decorationDensity, outerTerrain, innerTerrain) =
+            ParseCommonProperties(props);
         var isGapTile = ParseHelpers.GetBool(props, "isgaptile", false);
         var biomes = ParseHelpers.ParseBiomeBooleans(props);
 
-        // Size (for multi-cell tiles)
-        Vector2I? size = null;
-        var sizeStr = ParseHelpers.GetStringOrNull(props, "size");
-        if (!string.IsNullOrEmpty(sizeStr))
-        {
-            var sizeParts = sizeStr.Split(',', 'x');
-            if (sizeParts.Length == 2)
-                size = new Vector2I(ParseHelpers.ParseInt(sizeParts[0], 1), ParseHelpers.ParseInt(sizeParts[1], 1));
-        }
+        var size = ParseTileSize(props);
 
         // Get probability from the wang set (for variation group weighting)
         var probability = GetWangSetProbability(setId, wangData);
@@ -213,29 +198,14 @@ internal static class TileDefinitionBuilder
     {
         var props = propData.Properties;
 
-        // Basic properties
         var name = ParseHelpers.GetString(props, "name", id);
-        var passability = ParseHelpers.ParsePassability(ParseHelpers.GetString(props, "passability", "passable"));
-        var layer = ParseHelpers.ParseLayer(ParseHelpers.GetString(props, "layer", "terrain"));
-        var elevation = ParseHelpers.GetFloat(props, "elevation", 0f);
-        var isTransparent = ParseHelpers.GetBool(props, "istransparent", passability == TilePassability.Passable);
-        var dominance = ParseHelpers.GetInt(props, "dominance", 0);
-        var decorationDensity = ParseHelpers.GetFloat(props, "decorationdensity", 1f);
-        var outerTerrain = ParseHelpers.GetStringOrNull(props, "outerterrain");
-        var innerTerrain = ParseHelpers.GetStringOrNull(props, "innerterrain");
+        var (passability, layer, elevation, isTransparent, dominance, decorationDensity, outerTerrain, innerTerrain) =
+            ParseCommonProperties(props);
         // Tiles without Wang set membership are gap tiles by default (base tiles for background layer)
         var hasWangSet = wangData.TileToWangSet.ContainsKey(baseTileId);
         var isGapTile = ParseHelpers.GetBool(props, "isgaptile", !hasWangSet);
 
-        // Size (for multi-cell tiles)
-        Vector2I? size = null;
-        var sizeStr = ParseHelpers.GetStringOrNull(props, "size");
-        if (!string.IsNullOrEmpty(sizeStr))
-        {
-            var sizeParts = sizeStr.Split(',', 'x');
-            if (sizeParts.Length == 2)
-                size = new Vector2I(ParseHelpers.ParseInt(sizeParts[0], 1), ParseHelpers.ParseInt(sizeParts[1], 1));
-        }
+        var size = ParseTileSize(props);
 
         // Biomes from boolean properties (biome_forest, biome_desert, etc.)
         var biomes = ParseHelpers.ParseBiomeBooleans(props);
@@ -307,6 +277,40 @@ internal static class TileDefinitionBuilder
             outerTerrainId: outerTerrain,
             isGapTile: isGapTile,
             probability: probability);
+    }
+
+    private static (
+        TilePassability Passability,
+        TileLayer Layer,
+        float Elevation,
+        bool IsTransparent,
+        int Dominance,
+        float DecorationDensity,
+        string? OuterTerrain,
+        string? InnerTerrain) ParseCommonProperties(Dictionary<string, string> props)
+    {
+        var passability = ParseHelpers.ParsePassability(ParseHelpers.GetString(props, "passability", "passable"));
+        var layer = ParseHelpers.ParseLayer(ParseHelpers.GetString(props, "layer", "terrain"));
+        var elevation = ParseHelpers.GetFloat(props, "elevation", 0f);
+        var isTransparent = ParseHelpers.GetBool(props, "istransparent", passability == TilePassability.Passable);
+        var dominance = ParseHelpers.GetInt(props, "dominance", 0);
+        var decorationDensity = ParseHelpers.GetFloat(props, "decorationdensity", 1f);
+        var outerTerrain = ParseHelpers.GetStringOrNull(props, "outerterrain");
+        var innerTerrain = ParseHelpers.GetStringOrNull(props, "innerterrain");
+
+        return (passability, layer, elevation, isTransparent, dominance, decorationDensity, outerTerrain, innerTerrain);
+    }
+
+    private static Vector2I? ParseTileSize(Dictionary<string, string> props)
+    {
+        var sizeStr = ParseHelpers.GetStringOrNull(props, "size");
+        if (string.IsNullOrEmpty(sizeStr))
+            return null;
+
+        var sizeParts = sizeStr.Split(',', 'x');
+        return sizeParts.Length == 2
+            ? new Vector2I(ParseHelpers.ParseInt(sizeParts[0], 1), ParseHelpers.ParseInt(sizeParts[1], 1))
+            : null;
     }
 
     /// <summary>

@@ -106,26 +106,8 @@ public class WfcMapGenerator
     }
 
     public WfcMapGenerator(CompiledTransitionResolver transitionResolver, ITileRegistry? tileRegistry = null)
+        : this(new WfcAdjacencyRules(transitionResolver), tileRegistry)
     {
-        _adjacencyRules = new WfcAdjacencyRules(transitionResolver);
-        _tileRegistry = tileRegistry;
-        _blobTracker = new BlobSizeTracker();
-        _diminishingReturns = new DiminishingReturnsSoftModifier(_blobTracker);
-        _novelty = new NoveltySoftModifier();
-        _compactness = new CompactnessSoftModifier(tileRegistry);
-        _spatialCoherence = new SpatialCoherenceConstraint(tileRegistry);
-        _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
-        _noSolidFill = tileRegistry != null ? new NoSolidFillConstraint(tileRegistry) : null;
-        _bitmaskValidity = tileRegistry != null ? new BitmaskValidityConstraint(tileRegistry) : null;
-        _tileProbability = tileRegistry is TileRegistry concreteRegistry ? new TileProbabilityConstraint(concreteRegistry) : null;
-        _selector = new WfcTileSelector();
-        _adapter = new WfcMapDataAdapter();
-
-        // Allow all non-auto-tiles to be adjacent to each other (for background layer WFC)
-        if (tileRegistry != null)
-        {
-            ConfigureGapTileAdjacencies(tileRegistry);
-        }
     }
 
     public WfcMapGenerator(WfcAdjacencyRules adjacencyRules, ITileRegistry? tileRegistry = null)

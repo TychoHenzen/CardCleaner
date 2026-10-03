@@ -28,6 +28,18 @@
       {
         "responsibility": "repository-wide quality evidence scope",
         "owner": "repository root"
+      },
+      {
+        "responsibility": "CreateGemLayers",
+        "owner": "CardTemplate"
+      },
+      {
+        "responsibility": "ApplyConstraintModifiers",
+        "owner": "WfcTileSelector"
+      },
+      {
+        "responsibility": "ParseCommonProperties",
+        "owner": "TileDefinitionBuilder"
       }
     ],
     "boundaries": [

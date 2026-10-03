@@ -157,27 +157,7 @@ public class WfcTileSelector
                 weight *= ContinuityBiasMultiplier;
             }
 
-            // Apply registered constraints with precomputed neighbor info
-            if (cellId.HasValue && topology != null && _constraints.Count > 0)
-            {
-                var constraintContext = WfcConstraintContext.Create(
-                    cellId.Value,
-                    tileId,
-                    topology,
-                    rng,
-                    collapsedNeighbors!);
-
-                foreach (var constraint in _constraints)
-                {
-                    var modifier = constraint.GetProbabilityModifier(constraintContext);
-                    if (modifier == 0f)
-                    {
-                        weight = 0f;
-                        break;
-                    }
-                    weight *= modifier;
-                }
-            }
+            weight = ApplyConstraintModifiers(weight, tileId, rng, cellId, topology, collapsedNeighbors);
 
             weights.Add((tileId, weight));
             totalWeight += weight;
@@ -297,32 +277,42 @@ public class WfcTileSelector
                 weight *= ContinuityBiasMultiplier;
             }
 
-            // Apply constraints with precomputed neighbor info
-            if (cellId.HasValue && topology != null && _constraints.Count > 0)
-            {
-                var constraintContext = WfcConstraintContext.Create(
-                    cellId.Value,
-                    tileId,
-                    topology,
-                    rng,
-                    collapsedNeighbors!);
-
-                foreach (var constraint in _constraints)
-                {
-                    var modifier = constraint.GetProbabilityModifier(constraintContext);
-                    if (modifier == 0f)
-                    {
-                        weight = 0f;
-                        break;
-                    }
-                    weight *= modifier;
-                }
-            }
+            weight = ApplyConstraintModifiers(weight, tileId, rng, cellId, topology, collapsedNeighbors);
 
             weights[tileId] = weight;
         }
 
         return weights;
+    }
+
+    private float ApplyConstraintModifiers(
+        float weight,
+        string tileId,
+        RandomNumberGenerator rng,
+        int? cellId,
+        IWfcTopology? topology,
+        Dictionary<int, string>? collapsedNeighbors)
+    {
+        if (!cellId.HasValue || topology == null || _constraints.Count == 0)
+            return weight;
+
+        var constraintContext = WfcConstraintContext.Create(
+            cellId.Value,
+            tileId,
+            topology,
+            rng,
+            collapsedNeighbors!);
+
+        foreach (var constraint in _constraints)
+        {
+            var modifier = constraint.GetProbabilityModifier(constraintContext);
+            if (modifier == 0f)
+                return 0f;
+
+            weight *= modifier;
+        }
+
+        return weight;
     }
 
     private Dictionary<string, float> BuildBiomeWeightLookup(BiomeDefinition? biome)

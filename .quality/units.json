@@ -1834,27 +1834,27 @@
     }
   ],
   "summary": {
-    "total": 7473,
-    "errors": 721,
-    "warnings": 6752,
+    "total": 7431,
+    "errors": 720,
+    "warnings": 6711,
     "byRule": {
       "dead-export": 36,
-      "duplicate-block": 176,
+      "duplicate-block": 148,
       "types-per-file": 54,
       "file-length": 221,
-      "complexity": 334,
+      "complexity": 332,
       "function-length": 374,
-      "nesting-depth": 45,
-      "param-count": 105,
+      "nesting-depth": 43,
+      "param-count": 107,
       "unnamed-tuple": 67,
       "comment-bloat": 133,
-      "line-length": 4546,
+      "line-length": 4532,
       "test-only-export": 13,
       "else-branch": 149,
-      "stateless-method": 897,
+      "stateless-method": 898,
       "comment-restates-code": 262,
       "output-parameter": 6,
-      "flag-parameter": 55
+      "flag-parameter": 56
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
@@ -1875,7 +1875,7 @@
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMesh.cs": 20,
       "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs": 12,
       "Scripts/Features/Worldgen/Wfc/RegionAnalyzer.cs": 18,
-      "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs": 86,
+      "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs": 66,
       "addons/tile_editor/AutoTileFormatEditorPanel.cs": 79,
       "addons/tile_editor/AutoTilePreviewPanel.cs": 94,
       "addons/tile_editor/BiomePoolPanel.cs": 57,
@@ -1941,7 +1941,7 @@
       "Tests/Mocking/ITestService.cs": 2,
       "Scripts/Core/Services/GameSaveService.cs": 29,
       "Scripts/Core/Services/TileRegistry.cs": 56,
-      "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs": 82,
+      "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs": 77,
       "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs": 41,
       "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs": 57,
       "Scripts/Features/Deckbuilder/Services/GameSessionService.cs": 72,
@@ -1960,7 +1960,7 @@
       "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraph.cs": 40,
       "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs": 50,
       "Scripts/Features/Worldgen/Wfc/WfcGrid.cs": 45,
-      "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs": 46,
+      "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs": 43,
       "Tests/Core/PropertyTesting/StatisticalAssertions.cs": 43,
       "Tests/Core/Services/CompiledAtlasLoaderTest.cs": 36,
       "Tests/Core/Services/TileRegistryTest.cs": 33,
@@ -2042,7 +2042,6 @@
       "Tests/Mocks/MockTileRegistry.cs": 24,
       "addons/tile_editor/TileShapePreview.cs": 14,
       "Scripts/Features/Worldgen/Wfc/Constraints/AdjacencyConstraint.cs": 2,
-      "Scripts/Core/Data/CardTemplate.cs": 33,
       "Scripts/Core/Services/TsxPropertyWriter.cs": 11,
       "Scripts/Features/ModularDevices/ScreenDeviceBase.cs": 11,
       "Tests/Features/Card/Services/SignatureCardGeneratorTest.cs": 23,
@@ -2155,6 +2154,7 @@
       "Tests/Features/Worldgen/Wfc/Constraints/WfcConstraintContextTest.cs": 2,
       "Scripts/Features/Deckbuilder/Services/AsyncMapGeneratorAdapter.cs": 11,
       "Scripts/Features/Worldgen/Wfc/Modifiers/Soft/CompactnessSoftModifier.cs": 7,
+      "Scripts/Core/Data/CardTemplate.cs": 19,
       "Scripts/Features/Card/Services/CardSpawningService.cs": 6,
       "Scripts/Features/Card/Components/DropPreview.cs": 4,
       "Scripts/Core/Data/InputAction.cs": 1,
@@ -2351,7 +2351,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 434,
+      "line": 416,
       "rule": "dead-export",
       "severity": "error",
       "message": "WfcGenerationResult is exported but never referenced anywhere",
@@ -3079,7 +3079,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 434,
+      "line": 416,
       "rule": "types-per-file",
       "severity": "error",
       "message": "2 types in one file: WfcMapGenerator, WfcGenerationResult",
@@ -3306,8 +3306,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "error",
-      "message": "file is 353 lines",
-      "metric": 353
+      "message": "file is 357 lines",
+      "metric": 357
     },
     {
       "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
@@ -3498,8 +3498,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "error",
-      "message": "file is 455 lines",
-      "metric": 455
+      "message": "file is 437 lines",
+      "metric": 437
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
@@ -3514,8 +3514,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "error",
-      "message": "file is 346 lines",
-      "metric": 346
+      "message": "file is 336 lines",
+      "metric": 336
     },
     {
       "file": "Tests/Core/PropertyTesting/StatisticalAssertions.cs",
@@ -4006,14 +4006,6 @@
       "metric": 11
     },
     {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 205,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "BuildTileDefinitionFromProperties() cyclomatic complexity 12",
-      "metric": 12
-    },
-    {
       "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
       "line": 199,
       "rule": "complexity",
@@ -4330,16 +4322,16 @@
       "line": 76,
       "rule": "complexity",
       "severity": "error",
-      "message": "SelectTile() cyclomatic complexity 22",
-      "metric": 22
+      "message": "SelectTile() cyclomatic complexity 18",
+      "metric": 18
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 244,
+      "line": 224,
       "rule": "complexity",
       "severity": "error",
-      "message": "ComputeWeights() cyclomatic complexity 15",
-      "metric": 15
+      "message": "ComputeWeights() cyclomatic complexity 11",
+      "metric": 11
     },
     {
       "file": "Tests/Features/Deckbuilder/Services/GameSessionServiceTest.cs",
@@ -4706,16 +4698,16 @@
       "line": 69,
       "rule": "function-length",
       "severity": "error",
-      "message": "BuildTileDefinitionFromWangSet() is 89 lines",
-      "metric": 89
+      "message": "BuildTileDefinitionFromWangSet() is 74 lines",
+      "metric": 74
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 205,
+      "line": 190,
       "rule": "function-length",
       "severity": "error",
-      "message": "BuildTileDefinitionFromProperties() is 106 lines",
-      "metric": 106
+      "message": "BuildTileDefinitionFromProperties() is 91 lines",
+      "metric": 91
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TmxMapLoader.cs",
@@ -4930,16 +4922,16 @@
       "line": 76,
       "rule": "function-length",
       "severity": "error",
-      "message": "SelectTile() is 129 lines",
-      "metric": 129
+      "message": "SelectTile() is 109 lines",
+      "metric": 109
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 244,
+      "line": 224,
       "rule": "function-length",
       "severity": "error",
-      "message": "ComputeWeights() is 83 lines",
-      "metric": 83
+      "message": "ComputeWeights() is 63 lines",
+      "metric": 63
     },
     {
       "file": "Tests/Features/Deckbuilder/Services/FrontierExplorationBehaviorTest.cs",
@@ -5334,6 +5326,14 @@
       "metric": 6
     },
     {
+      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+      "line": 282,
+      "rule": "param-count",
+      "severity": "error",
+      "message": "static() takes 8 parameters",
+      "metric": 8
+    },
+    {
       "file": "Scripts/Features/Deckbuilder/Services/GameSessionService.cs",
       "line": 363,
       "rule": "param-count",
@@ -5503,7 +5503,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 359,
+      "line": 341,
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineInitialTiles( — replace it with a named type",
@@ -5511,7 +5511,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 384,
+      "line": 366,
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineMultiBiomeTiles( — replace it with a named type",
@@ -6663,7 +6663,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 272,
+      "line": 242,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 123 chars",
@@ -7071,7 +7071,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 120,
+      "line": 125,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 130 chars",
@@ -7079,15 +7079,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 143,
-      "rule": "line-length",
-      "severity": "error",
-      "message": "line is 130 chars",
-      "metric": 130
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 192,
+      "line": 174,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 129 chars",
@@ -7095,7 +7087,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 321,
+      "line": 303,
       "rule": "line-length",
       "severity": "error",
       "message": "line is 136 chars",
@@ -8054,243 +8046,147 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 40,
+      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+      "line": 120,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Data/CardTemplate.cs:40, Scripts/Core/Data/CardTemplate.cs:52",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 41,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Data/CardTemplate.cs:41, Scripts/Core/Data/CardTemplate.cs:53",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 42,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Data/CardTemplate.cs:42, Scripts/Core/Data/CardTemplate.cs:54",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 52,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Data/CardTemplate.cs:40, Scripts/Core/Data/CardTemplate.cs:52",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 53,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Data/CardTemplate.cs:41, Scripts/Core/Data/CardTemplate.cs:53",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 54,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Data/CardTemplate.cs:42, Scripts/Core/Data/CardTemplate.cs:54",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:120, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:258",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 111,
+      "line": 121,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:111, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:218",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:121, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:259",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 112,
+      "line": 122,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:112, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:219",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:122, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:260",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 113,
+      "line": 123,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:113, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:220",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:123, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:261",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 135,
+      "line": 124,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:135, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:288",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:124, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:262",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 136,
+      "line": 125,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:136, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:289",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:125, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:263",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 137,
+      "line": 126,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:137, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:290",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:126, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:264",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 138,
+      "line": 127,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:138, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:291",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:127, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:265",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 139,
+      "line": 128,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:139, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:292",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:128, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:266",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 140,
+      "line": 258,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:140, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:293",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:120, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:258",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 141,
+      "line": 259,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:141, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:294",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:121, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:259",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 142,
+      "line": 260,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:142, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:295",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:122, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:260",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 143,
+      "line": 261,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:143, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:296",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:123, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:261",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 218,
+      "line": 262,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:111, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:218",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:124, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:262",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 219,
+      "line": 263,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:112, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:219",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:125, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:263",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 220,
+      "line": 264,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:113, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:220",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:126, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:264",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 288,
+      "line": 265,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:135, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:288",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:127, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:265",
       "metric": 2
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 289,
+      "line": 266,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:136, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:289",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 290,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:137, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:290",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 291,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:138, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:291",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 292,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:139, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:292",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 293,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:140, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:293",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 294,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:141, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:294",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 295,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:142, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:295",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 296,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:143, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:296",
+      "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:128, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:266",
       "metric": 2
     },
     {
@@ -8478,147 +8374,19 @@
       "metric": 2
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 111,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:111, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:134",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 112,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:112, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:135",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 113,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:113, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:136",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 114,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:114, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:137",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 115,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:115, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:138",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 116,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:116, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:139",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 117,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:117, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:140",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 134,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:111, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:134",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 135,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:112, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:135",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 136,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:113, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:136",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 137,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:114, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:137",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 138,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:115, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:138",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 139,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:116, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:139",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 140,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:117, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:140",
-      "metric": 2
-    },
-    {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
       "line": 77,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:77, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:245",
+      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:77, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:225",
       "metric": 2
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 163,
+      "line": 225,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:163, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:303",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 245,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:77, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:245",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 303,
-      "rule": "duplicate-block",
-      "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:163, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:303",
+      "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:77, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:225",
       "metric": 2
     },
     {
@@ -10407,15 +10175,15 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 69,
+      "line": 190,
       "rule": "complexity",
       "severity": "warn",
-      "message": "BuildTileDefinitionFromWangSet() cyclomatic complexity 7",
-      "metric": 7
+      "message": "BuildTileDefinitionFromProperties() cyclomatic complexity 9",
+      "metric": 9
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 316,
+      "line": 320,
       "rule": "complexity",
       "severity": "warn",
       "message": "BuildAutoTileVariants() cyclomatic complexity 6",
@@ -11143,7 +10911,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 108,
+      "line": 113,
       "rule": "complexity",
       "severity": "warn",
       "message": "WfcMapGenerator() cyclomatic complexity 6",
@@ -11151,15 +10919,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 131,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "WfcMapGenerator() cyclomatic complexity 6",
-      "metric": 6
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 244,
+      "line": 226,
       "rule": "complexity",
       "severity": "warn",
       "message": "GenerateMultiBiome() cyclomatic complexity 7",
@@ -11167,7 +10927,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 301,
+      "line": 283,
       "rule": "complexity",
       "severity": "warn",
       "message": "CreateSolver() cyclomatic complexity 6",
@@ -11175,7 +10935,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 328,
+      "line": 310,
       "rule": "complexity",
       "severity": "warn",
       "message": "ConfigureConstraints() cyclomatic complexity 8",
@@ -11183,7 +10943,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 384,
+      "line": 366,
       "rule": "complexity",
       "severity": "warn",
       "message": "DetermineMultiBiomeTiles() cyclomatic complexity 6",
@@ -12327,7 +12087,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 316,
+      "line": 320,
       "rule": "function-length",
       "severity": "warn",
       "message": "BuildAutoTileVariants() is 36 lines",
@@ -13047,7 +12807,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 160,
+      "line": 142,
       "rule": "function-length",
       "severity": "warn",
       "message": "ConfigureGapTileAdjacencies() is 41 lines",
@@ -13055,7 +12815,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 202,
+      "line": 184,
       "rule": "function-length",
       "severity": "warn",
       "message": "Generate() is 41 lines",
@@ -13063,7 +12823,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 244,
+      "line": 226,
       "rule": "function-length",
       "severity": "warn",
       "message": "GenerateMultiBiome() is 56 lines",
@@ -13071,7 +12831,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 384,
+      "line": 366,
       "rule": "function-length",
       "severity": "warn",
       "message": "DetermineMultiBiomeTiles() is 35 lines",
@@ -14670,22 +14430,6 @@
       "metric": 4
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 76,
-      "rule": "nesting-depth",
-      "severity": "warn",
-      "message": "SelectTile() nests 4 levels deep",
-      "metric": 4
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 244,
-      "rule": "nesting-depth",
-      "severity": "warn",
-      "message": "ComputeWeights() nests 4 levels deep",
-      "metric": 4
-    },
-    {
       "file": "Tests/Core/Services/CompiledAtlasLoaderTest.cs",
       "line": 208,
       "rule": "nesting-depth",
@@ -14895,7 +14639,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 205,
+      "line": 190,
       "rule": "param-count",
       "severity": "warn",
       "message": "BuildTileDefinitionFromProperties() takes 7 parameters",
@@ -14903,7 +14647,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 316,
+      "line": 320,
       "rule": "param-count",
       "severity": "warn",
       "message": "BuildAutoTileVariants() takes 4 parameters",
@@ -15359,7 +15103,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 202,
+      "line": 184,
       "rule": "param-count",
       "severity": "warn",
       "message": "Generate() takes 4 parameters",
@@ -15367,7 +15111,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 244,
+      "line": 226,
       "rule": "param-count",
       "severity": "warn",
       "message": "GenerateMultiBiome() takes 6 parameters",
@@ -15375,7 +15119,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 441,
+      "line": 423,
       "rule": "param-count",
       "severity": "warn",
       "message": "WfcGenerationResult() takes 4 parameters",
@@ -15423,10 +15167,18 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 244,
+      "line": 224,
       "rule": "param-count",
       "severity": "warn",
       "message": "ComputeWeights() takes 6 parameters",
+      "metric": 6
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+      "line": 288,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "ApplyConstraintModifiers() takes 6 parameters",
       "metric": 6
     },
     {
@@ -16151,7 +15903,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 160,
+      "line": 142,
       "rule": "else-branch",
       "severity": "warn",
       "message": "ConfigureGapTileAdjacencies() has 1 else branch(es) — prefer guard clauses",
@@ -16159,7 +15911,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 301,
+      "line": 283,
       "rule": "else-branch",
       "severity": "warn",
       "message": "CreateSolver() has 1 else branch(es) — prefer guard clauses",
@@ -16191,7 +15943,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 244,
+      "line": 224,
       "rule": "else-branch",
       "severity": "warn",
       "message": "ComputeWeights() has 1 else branch(es) — prefer guard clauses",
@@ -17235,6 +16987,14 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "ToLowerInvariant() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+      "line": 282,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "static() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -18591,7 +18351,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 220,
+      "line": 202,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "CreateGrid() never touches instance state — make it a free function",
@@ -18599,7 +18359,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 269,
+      "line": 251,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "CreateGrid() never touches instance state — make it a free function",
@@ -18631,7 +18391,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 210,
+      "line": 190,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "SelectUniform() never touches instance state — make it a free function",
@@ -18639,7 +18399,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 328,
+      "line": 318,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "BuildBiomeWeightLookup() never touches instance state — make it a free function",
@@ -26590,6 +26350,14 @@
       "metric": 1
     },
     {
+      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+      "line": 282,
+      "rule": "flag-parameter",
+      "severity": "warn",
+      "message": "static() takes a boolean flag; split the behavior or name the policy",
+      "metric": 1
+    },
+    {
       "file": "Scripts/Core/Services/TsxPropertyWriter.cs",
       "line": 40,
       "rule": "flag-parameter",
@@ -26751,7 +26519,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 441,
+      "line": 423,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "WfcGenerationResult() takes a boolean flag; split the behavior or name the policy",
@@ -27079,135 +26847,71 @@
     },
     {
       "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 40,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 41,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 42,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 43,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 44,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 45,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
       "line": 46,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
+      "message": "line is 98 chars",
+      "metric": 98
     },
     {
       "file": "Scripts/Core/Data/CardTemplate.cs",
       "line": 47,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
+      "file": "Scripts/Core/Data/CardTemplate.cs",
+      "line": 48,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
+      "file": "Scripts/Core/Data/CardTemplate.cs",
+      "line": 49,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
+      "file": "Scripts/Core/Data/CardTemplate.cs",
+      "line": 50,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
+      "file": "Scripts/Core/Data/CardTemplate.cs",
+      "line": 51,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
     },
     {
       "file": "Scripts/Core/Data/CardTemplate.cs",
       "line": 52,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
+      "message": "line is 98 chars",
+      "metric": 98
     },
     {
       "file": "Scripts/Core/Data/CardTemplate.cs",
       "line": 53,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
+      "message": "line is 96 chars",
+      "metric": 96
     },
     {
       "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 54,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 55,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 56,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 57,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 58,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 59,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "line": 66,
+      "line": 61,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 109 chars",
@@ -30175,47 +29879,15 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 111,
+      "line": 110,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 114 chars",
-      "metric": 114
+      "message": "line is 118 chars",
+      "metric": 118
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 112,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 114,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 114 chars",
-      "metric": 114
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 116,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 129,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 116 chars",
-      "metric": 116
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 160,
+      "line": 145,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 108 chars",
@@ -30223,7 +29895,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 163,
+      "line": 148,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -30231,7 +29903,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 165,
+      "line": 150,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -30239,7 +29911,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 168,
+      "line": 153,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -30247,7 +29919,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 182,
+      "line": 167,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -30255,7 +29927,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 184,
+      "line": 169,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -30263,7 +29935,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 189,
+      "line": 174,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -30271,7 +29943,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 203,
+      "line": 188,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -30279,39 +29951,15 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 218,
+      "line": 202,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 114 chars",
-      "metric": 114
+      "message": "line is 118 chars",
+      "metric": 118
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 219,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 221,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 114 chars",
-      "metric": 114
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 223,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 226,
+      "line": 204,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -30319,15 +29967,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 237,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 116 chars",
-      "metric": 116
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 244,
+      "line": 214,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -30335,7 +29975,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 250,
+      "line": 220,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 106 chars",
@@ -30343,7 +29983,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 261,
+      "line": 231,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -30351,7 +29991,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 269,
+      "line": 239,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -30359,7 +29999,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 279,
+      "line": 249,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -30367,31 +30007,23 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 314,
+      "line": 290,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
+      "message": "line is 85 chars",
+      "metric": 85
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 322,
+      "line": 292,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
+      "message": "line is 114 chars",
+      "metric": 114
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 323,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 338,
+      "line": 293,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -30399,7 +30031,71 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 341,
+      "line": 295,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 114 chars",
+      "metric": 114
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+      "line": 297,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+      "line": 301,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 120 chars",
+      "metric": 120
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+      "line": 312,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 106 chars",
+      "metric": 106
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+      "line": 318,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+      "line": 326,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+      "line": 327,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+      "line": 342,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+      "line": 345,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 107 chars",
@@ -30407,7 +30103,7 @@
     },
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-      "line": 346,
+      "line": 350,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -42015,39 +41711,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 117,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 118,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 119,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 124,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 131,
+      "line": 113,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -42055,7 +41719,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 140,
+      "line": 122,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -42063,7 +41727,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 141,
+      "line": 123,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -42071,7 +41735,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 142,
+      "line": 124,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -42079,7 +41743,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 147,
+      "line": 129,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -42087,7 +41751,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 155,
+      "line": 137,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 104 chars",
@@ -42095,7 +41759,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 156,
+      "line": 138,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -42103,7 +41767,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 157,
+      "line": 139,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -42111,7 +41775,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 212,
+      "line": 194,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -42119,7 +41783,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 226,
+      "line": 208,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -42127,7 +41791,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 233,
+      "line": 215,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -42135,7 +41799,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 252,
+      "line": 234,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -42143,7 +41807,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 255,
+      "line": 237,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -42151,7 +41815,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 263,
+      "line": 245,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -42159,7 +41823,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 264,
+      "line": 246,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 114 chars",
@@ -42167,7 +41831,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 282,
+      "line": 264,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -42175,7 +41839,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 289,
+      "line": 271,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -42183,7 +41847,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 301,
+      "line": 283,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -42191,7 +41855,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 313,
+      "line": 295,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 106 chars",
@@ -42199,7 +41863,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 318,
+      "line": 300,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -42207,7 +41871,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 320,
+      "line": 302,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -42215,7 +41879,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 342,
+      "line": 324,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -42223,7 +41887,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 346,
+      "line": 328,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -42231,7 +41895,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 350,
+      "line": 332,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -42239,7 +41903,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 359,
+      "line": 341,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 114 chars",
@@ -42247,7 +41911,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 371,
+      "line": 353,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -42255,7 +41919,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 384,
+      "line": 366,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -42263,7 +41927,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 406,
+      "line": 388,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -42271,7 +41935,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 407,
+      "line": 389,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -42279,7 +41943,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 420,
+      "line": 402,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -42287,7 +41951,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 441,
+      "line": 423,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -42295,7 +41959,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "line": 449,
+      "line": 431,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -42735,15 +42399,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 172,
+      "line": 160,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
+      "message": "line is 105 chars",
+      "metric": 105
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 186,
+      "line": 166,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -42751,7 +42415,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 187,
+      "line": 167,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -42759,7 +42423,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 210,
+      "line": 190,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -42767,7 +42431,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 240,
+      "line": 220,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -42775,7 +42439,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 264,
+      "line": 244,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -42783,7 +42447,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 267,
+      "line": 247,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -42791,7 +42455,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 268,
+      "line": 248,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -42799,7 +42463,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 275,
+      "line": 255,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -42807,7 +42471,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 284,
+      "line": 264,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -42815,15 +42479,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 312,
+      "line": 280,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
+      "message": "line is 105 chars",
+      "metric": 105
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 328,
+      "line": 318,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -76485,715 +76149,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-      "errors": 10,
-      "warnings": 76,
-      "rules": {
-        "dead-export": 1,
-        "duplicate-block": 19,
-        "types-per-file": 1,
-        "file-length": 1,
-        "unnamed-tuple": 2,
-        "line-length": 44,
-        "complexity": 6,
-        "function-length": 4,
-        "param-count": 3,
-        "else-branch": 2,
-        "stateless-method": 2,
-        "flag-parameter": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 434,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "WfcGenerationResult is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 2,
-          "rule": "duplicate-block",
-          "severity": "error",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:2, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:2, Tests/Features/Deckbuilder/Services/SimpleMapGeneratorTest.cs:1, Tests/Features/Worldgen/Properties/MapGenerationProperties.cs:1",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 434,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: WfcMapGenerator, WfcGenerationResult",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 455 lines",
-          "metric": 455
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 359,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineInitialTiles( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 384,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineMultiBiomeTiles( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 120,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 130 chars",
-          "metric": 130
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 143,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 130 chars",
-          "metric": 130
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 192,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 129 chars",
-          "metric": 129
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 321,
-          "rule": "line-length",
-          "severity": "error",
-          "message": "line is 136 chars",
-          "metric": 136
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 1,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:1, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:1",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 3,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:3, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:3",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 4,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:4, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:4",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 5,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:5, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:5",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 111,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:111, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:134",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 112,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:112, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:135",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 113,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:113, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:136",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 114,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:114, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:137",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 115,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:115, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:138",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 116,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:116, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:139",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 117,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:117, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:140",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 134,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:111, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:134",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 135,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:112, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:135",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 136,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:113, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:136",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 137,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:114, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:137",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 138,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:115, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:138",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 139,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:116, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:139",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 140,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:117, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:140",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 108,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "WfcMapGenerator() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 131,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "WfcMapGenerator() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 244,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GenerateMultiBiome() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 301,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "CreateSolver() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 328,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ConfigureConstraints() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 384,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "DetermineMultiBiomeTiles() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 160,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ConfigureGapTileAdjacencies() is 41 lines",
-          "metric": 41
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 202,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "Generate() is 41 lines",
-          "metric": 41
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 244,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "GenerateMultiBiome() is 56 lines",
-          "metric": 56
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 384,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "DetermineMultiBiomeTiles() is 35 lines",
-          "metric": 35
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 202,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "Generate() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 244,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "GenerateMultiBiome() takes 6 parameters",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 441,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "WfcGenerationResult() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 160,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "ConfigureGapTileAdjacencies() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 301,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "CreateSolver() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 220,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "CreateGrid() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 269,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "CreateGrid() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 441,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "WfcGenerationResult() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 20,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 101,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 102,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 108,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 117,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 118,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 119,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 124,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 131,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 140,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 141,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 142,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 147,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 155,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 156,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 157,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 212,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 226,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 233,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 252,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 255,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 263,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 264,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 282,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 289,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 301,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 313,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 318,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 320,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 342,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 346,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 350,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 359,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 371,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 384,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 406,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 407,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 420,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 441,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
-          "line": 449,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        }
-      ]
-    },
-    {
       "file": "addons/tile_editor/AutoTileFormatEditorPanel.cs",
       "errors": 10,
       "warnings": 69,
@@ -79461,6 +78416,555 @@
           "severity": "warn",
           "message": "line is 100 chars",
           "metric": 100
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+      "errors": 9,
+      "warnings": 57,
+      "rules": {
+        "dead-export": 1,
+        "duplicate-block": 5,
+        "types-per-file": 1,
+        "file-length": 1,
+        "unnamed-tuple": 2,
+        "line-length": 39,
+        "complexity": 5,
+        "function-length": 4,
+        "param-count": 3,
+        "else-branch": 2,
+        "stateless-method": 2,
+        "flag-parameter": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 416,
+          "rule": "dead-export",
+          "severity": "error",
+          "message": "WfcGenerationResult is exported but never referenced anywhere",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 2,
+          "rule": "duplicate-block",
+          "severity": "error",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:2, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:2, Tests/Features/Deckbuilder/Services/SimpleMapGeneratorTest.cs:1, Tests/Features/Worldgen/Properties/MapGenerationProperties.cs:1",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 416,
+          "rule": "types-per-file",
+          "severity": "error",
+          "message": "2 types in one file: WfcMapGenerator, WfcGenerationResult",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "error",
+          "message": "file is 437 lines",
+          "metric": 437
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 341,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineInitialTiles( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 366,
+          "rule": "unnamed-tuple",
+          "severity": "error",
+          "message": "tuple (HashSet<string> allTiles, HashSet<string> passableTiles) DetermineMultiBiomeTiles( — replace it with a named type",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 125,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 130 chars",
+          "metric": 130
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 174,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 129 chars",
+          "metric": 129
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 303,
+          "rule": "line-length",
+          "severity": "error",
+          "message": "line is 136 chars",
+          "metric": 136
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 1,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:1, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:1",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 3,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:3, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:3",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 4,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:4, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:4",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 5,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:5, Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs:5",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 113,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "WfcMapGenerator() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 226,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GenerateMultiBiome() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 283,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "CreateSolver() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 310,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "ConfigureConstraints() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 366,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "DetermineMultiBiomeTiles() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 142,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "ConfigureGapTileAdjacencies() is 41 lines",
+          "metric": 41
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 184,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "Generate() is 41 lines",
+          "metric": 41
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 226,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "GenerateMultiBiome() is 56 lines",
+          "metric": 56
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 366,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "DetermineMultiBiomeTiles() is 35 lines",
+          "metric": 35
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 184,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "Generate() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 226,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "GenerateMultiBiome() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 423,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "WfcGenerationResult() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 142,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "ConfigureGapTileAdjacencies() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 283,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "CreateSolver() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 202,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CreateGrid() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 251,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CreateGrid() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 423,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "WfcGenerationResult() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 20,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 101,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 102,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 108,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 113,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 122,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 123,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 124,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 129,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 137,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 138,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 139,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 194,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 208,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 215,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 234,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 237,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 245,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 246,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 264,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 271,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 283,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 295,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 300,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 302,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 324,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 328,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 332,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 341,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 353,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 366,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 388,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 389,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 402,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 423,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs",
+          "line": 431,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
         }
       ]
     },
@@ -84572,15 +84076,17 @@
     {
       "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
       "errors": 6,
-      "warnings": 76,
+      "warnings": 71,
       "rules": {
         "file-length": 1,
-        "complexity": 4,
         "function-length": 4,
-        "line-length": 44,
-        "duplicate-block": 24,
-        "param-count": 4,
-        "comment-restates-code": 1
+        "param-count": 5,
+        "line-length": 43,
+        "duplicate-block": 18,
+        "complexity": 3,
+        "stateless-method": 1,
+        "comment-restates-code": 1,
+        "flag-parameter": 1
       },
       "items": [
         {
@@ -84588,32 +84094,32 @@
           "line": 1,
           "rule": "file-length",
           "severity": "error",
-          "message": "file is 353 lines",
-          "metric": 353
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 205,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "BuildTileDefinitionFromProperties() cyclomatic complexity 12",
-          "metric": 12
+          "message": "file is 357 lines",
+          "metric": 357
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
           "line": 69,
           "rule": "function-length",
           "severity": "error",
-          "message": "BuildTileDefinitionFromWangSet() is 89 lines",
-          "metric": 89
+          "message": "BuildTileDefinitionFromWangSet() is 74 lines",
+          "metric": 74
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 205,
+          "line": 190,
           "rule": "function-length",
           "severity": "error",
-          "message": "BuildTileDefinitionFromProperties() is 106 lines",
-          "metric": 106
+          "message": "BuildTileDefinitionFromProperties() is 91 lines",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+          "line": 282,
+          "rule": "param-count",
+          "severity": "error",
+          "message": "static() takes 8 parameters",
+          "metric": 8
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
@@ -84625,7 +84131,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 272,
+          "line": 242,
           "rule": "line-length",
           "severity": "error",
           "message": "line is 123 chars",
@@ -84633,194 +84139,146 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 111,
+          "line": 120,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:111, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:218",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:120, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:258",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 112,
+          "line": 121,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:112, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:219",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:121, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:259",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 113,
+          "line": 122,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:113, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:220",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:122, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:260",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 135,
+          "line": 123,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:135, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:288",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:123, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:261",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 136,
+          "line": 124,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:136, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:289",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:124, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:262",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 137,
+          "line": 125,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:137, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:290",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:125, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:263",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 138,
+          "line": 126,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:138, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:291",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:126, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:264",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 139,
+          "line": 127,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:139, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:292",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:127, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:265",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 140,
+          "line": 128,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:140, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:293",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:128, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:266",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 141,
+          "line": 258,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:141, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:294",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:120, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:258",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 142,
+          "line": 259,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:142, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:295",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:121, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:259",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 143,
+          "line": 260,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:143, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:296",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:122, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:260",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 218,
+          "line": 261,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:111, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:218",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:123, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:261",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 219,
+          "line": 262,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:112, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:219",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:124, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:262",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 220,
+          "line": 263,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:113, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:220",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:125, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:263",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 288,
+          "line": 264,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:135, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:288",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:126, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:264",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 289,
+          "line": 265,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:136, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:289",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:127, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:265",
           "metric": 2
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 290,
+          "line": 266,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:137, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:290",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 291,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:138, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:291",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 292,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:139, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:292",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 293,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:140, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:293",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 294,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:141, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:294",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 295,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:142, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:295",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 296,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:143, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:296",
+          "message": "6-line block duplicated at Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:128, Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs:266",
           "metric": 2
         },
         {
@@ -84833,15 +84291,15 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 69,
+          "line": 190,
           "rule": "complexity",
           "severity": "warn",
-          "message": "BuildTileDefinitionFromWangSet() cyclomatic complexity 7",
-          "metric": 7
+          "message": "BuildTileDefinitionFromProperties() cyclomatic complexity 9",
+          "metric": 9
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 316,
+          "line": 320,
           "rule": "complexity",
           "severity": "warn",
           "message": "BuildAutoTileVariants() cyclomatic complexity 6",
@@ -84857,7 +84315,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 316,
+          "line": 320,
           "rule": "function-length",
           "severity": "warn",
           "message": "BuildAutoTileVariants() is 36 lines",
@@ -84881,7 +84339,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 205,
+          "line": 190,
           "rule": "param-count",
           "severity": "warn",
           "message": "BuildTileDefinitionFromProperties() takes 7 parameters",
@@ -84889,7 +84347,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 316,
+          "line": 320,
           "rule": "param-count",
           "severity": "warn",
           "message": "BuildAutoTileVariants() takes 4 parameters",
@@ -84897,10 +84355,26 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+          "line": 282,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "static() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
           "line": 107,
           "rule": "comment-restates-code",
           "severity": "warn",
           "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+          "line": 282,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "static() takes a boolean flag; split the behavior or name the policy",
           "metric": 1
         },
         {
@@ -85001,47 +84475,15 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 111,
+          "line": 110,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
+          "message": "line is 118 chars",
+          "metric": 118
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 112,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 114,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 116,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 129,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 116 chars",
-          "metric": 116
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 160,
+          "line": 145,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 108 chars",
@@ -85049,7 +84491,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 163,
+          "line": 148,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 84 chars",
@@ -85057,7 +84499,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 165,
+          "line": 150,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 89 chars",
@@ -85065,7 +84507,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 168,
+          "line": 153,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 99 chars",
@@ -85073,7 +84515,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 182,
+          "line": 167,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 95 chars",
@@ -85081,7 +84523,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 184,
+          "line": 169,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 83 chars",
@@ -85089,7 +84531,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 189,
+          "line": 174,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 99 chars",
@@ -85097,7 +84539,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 203,
+          "line": 188,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 82 chars",
@@ -85105,39 +84547,15 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 218,
+          "line": 202,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
+          "message": "line is 118 chars",
+          "metric": 118
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 219,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 221,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 223,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 226,
+          "line": 204,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 103 chars",
@@ -85145,15 +84563,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 237,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 116 chars",
-          "metric": 116
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 244,
+          "line": 214,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 89 chars",
@@ -85161,7 +84571,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 250,
+          "line": 220,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 106 chars",
@@ -85169,7 +84579,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 261,
+          "line": 231,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 98 chars",
@@ -85177,7 +84587,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 269,
+          "line": 239,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 84 chars",
@@ -85185,7 +84595,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 279,
+          "line": 249,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 81 chars",
@@ -85193,31 +84603,23 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 314,
+          "line": 290,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
+          "message": "line is 85 chars",
+          "metric": 85
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 322,
+          "line": 292,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
+          "message": "line is 114 chars",
+          "metric": 114
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 323,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 338,
+          "line": 293,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 95 chars",
@@ -85225,7 +84627,71 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 341,
+          "line": 295,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+          "line": 297,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+          "line": 301,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 120 chars",
+          "metric": 120
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+          "line": 312,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+          "line": 318,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+          "line": 326,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+          "line": 327,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+          "line": 342,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
+          "line": 345,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 107 chars",
@@ -85233,7 +84699,7 @@
         },
         {
           "file": "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs",
-          "line": 346,
+          "line": 350,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 83 chars",
@@ -85733,15 +85199,14 @@
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
       "errors": 6,
-      "warnings": 40,
+      "warnings": 37,
       "rules": {
         "file-length": 1,
         "complexity": 2,
         "function-length": 2,
         "comment-bloat": 1,
-        "duplicate-block": 4,
-        "nesting-depth": 2,
-        "param-count": 2,
+        "duplicate-block": 2,
+        "param-count": 3,
         "else-branch": 2,
         "stateless-method": 2,
         "comment-restates-code": 1,
@@ -85753,40 +85218,40 @@
           "line": 1,
           "rule": "file-length",
           "severity": "error",
-          "message": "file is 346 lines",
-          "metric": 346
+          "message": "file is 336 lines",
+          "metric": 336
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
           "line": 76,
           "rule": "complexity",
           "severity": "error",
-          "message": "SelectTile() cyclomatic complexity 22",
-          "metric": 22
+          "message": "SelectTile() cyclomatic complexity 18",
+          "metric": 18
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 244,
+          "line": 224,
           "rule": "complexity",
           "severity": "error",
-          "message": "ComputeWeights() cyclomatic complexity 15",
-          "metric": 15
+          "message": "ComputeWeights() cyclomatic complexity 11",
+          "metric": 11
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
           "line": 76,
           "rule": "function-length",
           "severity": "error",
-          "message": "SelectTile() is 129 lines",
-          "metric": 129
+          "message": "SelectTile() is 109 lines",
+          "metric": 109
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 244,
+          "line": 224,
           "rule": "function-length",
           "severity": "error",
-          "message": "ComputeWeights() is 83 lines",
-          "metric": 83
+          "message": "ComputeWeights() is 63 lines",
+          "metric": 63
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
@@ -85801,48 +85266,16 @@
           "line": 77,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:77, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:245",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:77, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:225",
           "metric": 2
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 163,
+          "line": 225,
           "rule": "duplicate-block",
           "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:163, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:303",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:77, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:225",
           "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 245,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:77, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:245",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 303,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:163, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:303",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 76,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "SelectTile() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 244,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "ComputeWeights() nests 4 levels deep",
-          "metric": 4
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
@@ -85854,10 +85287,18 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 244,
+          "line": 224,
           "rule": "param-count",
           "severity": "warn",
           "message": "ComputeWeights() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 288,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "ApplyConstraintModifiers() takes 6 parameters",
           "metric": 6
         },
         {
@@ -85870,7 +85311,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 244,
+          "line": 224,
           "rule": "else-branch",
           "severity": "warn",
           "message": "ComputeWeights() has 1 else branch(es) — prefer guard clauses",
@@ -85878,7 +85319,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 210,
+          "line": 190,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "SelectUniform() never touches instance state — make it a free function",
@@ -85886,7 +85327,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 328,
+          "line": 318,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "BuildBiomeWeightLookup() never touches instance state — make it a free function",
@@ -86022,15 +85463,15 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 172,
+          "line": 160,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
+          "message": "line is 105 chars",
+          "metric": 105
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 186,
+          "line": 166,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 81 chars",
@@ -86038,7 +85479,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 187,
+          "line": 167,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 82 chars",
@@ -86046,7 +85487,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 210,
+          "line": 190,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 99 chars",
@@ -86054,7 +85495,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 240,
+          "line": 220,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 96 chars",
@@ -86062,7 +85503,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 264,
+          "line": 244,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 88 chars",
@@ -86070,7 +85511,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 267,
+          "line": 247,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 81 chars",
@@ -86078,7 +85519,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 268,
+          "line": 248,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 84 chars",
@@ -86086,7 +85527,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 275,
+          "line": 255,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 85 chars",
@@ -86094,7 +85535,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 284,
+          "line": 264,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 85 chars",
@@ -86102,15 +85543,15 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 312,
+          "line": 280,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
+          "message": "line is 105 chars",
+          "metric": 105
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 328,
+          "line": 318,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 84 chars",
@@ -115513,282 +114954,6 @@
       ]
     },
     {
-      "file": "Scripts/Core/Data/CardTemplate.cs",
-      "errors": 0,
-      "warnings": 33,
-      "rules": {
-        "duplicate-block": 6,
-        "comment-restates-code": 1,
-        "line-length": 26
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 40,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Data/CardTemplate.cs:40, Scripts/Core/Data/CardTemplate.cs:52",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 41,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Data/CardTemplate.cs:41, Scripts/Core/Data/CardTemplate.cs:53",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 42,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Data/CardTemplate.cs:42, Scripts/Core/Data/CardTemplate.cs:54",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 52,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Data/CardTemplate.cs:40, Scripts/Core/Data/CardTemplate.cs:52",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 53,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Data/CardTemplate.cs:41, Scripts/Core/Data/CardTemplate.cs:53",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 54,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Core/Data/CardTemplate.cs:42, Scripts/Core/Data/CardTemplate.cs:54",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 8,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 9,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 10,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 11,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 15,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 18,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 27,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 30,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 33,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 36,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 40,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 41,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 42,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 43,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 44,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 45,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 46,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 47,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 52,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 53,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 54,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 55,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 56,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 57,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 58,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 59,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Data/CardTemplate.cs",
-          "line": 66,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        }
-      ]
-    },
-    {
       "file": "Tests/Features/Worldgen/Biomes/BiomeAffinityConstraintTest.cs",
       "errors": 0,
       "warnings": 33,
@@ -117898,6 +117063,169 @@
           "severity": "warn",
           "message": "line is 98 chars",
           "metric": 98
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Data/CardTemplate.cs",
+      "errors": 0,
+      "warnings": 19,
+      "rules": {
+        "comment-restates-code": 1,
+        "line-length": 18
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 8,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 9,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 10,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 15,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 18,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 27,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 30,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 33,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 46,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 47,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 48,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 49,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 50,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 51,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 52,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 53,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Core/Data/CardTemplate.cs",
+          "line": 61,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
         }
       ]
     },
