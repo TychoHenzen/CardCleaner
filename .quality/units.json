@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 785,
+  "fileCount": 799,
   "files": [
     {
       "path": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
@@ -918,6 +918,26 @@
       "classification": "production"
     },
     {
+      "path": "Scripts/Core/Interfaces/MapGeneration/IGeneratedMap.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Interfaces/MapGeneration/MapGenerationConfig.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Interfaces/Profiling/NoOpProfiler.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Interfaces/Profiling/ProfileStats.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "Scripts/Core/ServiceProviders/CardServiceProvider.cs",
       "language": "cs",
       "classification": "production"
@@ -1224,6 +1244,16 @@
     },
     {
       "path": "Scripts/Core/Services/TsxPropertyWriter.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/Variation/VariantWeight.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Core/Services/Variation/VariationGroupCollection.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -1763,6 +1793,11 @@
       "classification": "production"
     },
     {
+      "path": "Scripts/Features/Deckbuilder/Tiles/Animation/TileAnimation.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "Scripts/Features/Deckbuilder/Tiles/Options/TileDefinitionOptions.cs",
       "language": "cs",
       "classification": "production"
@@ -1908,12 +1943,27 @@
       "classification": "production"
     },
     {
+      "path": "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionEntry.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionKey.cs",
       "language": "cs",
       "classification": "production"
     },
     {
       "path": "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionMapLoader.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionResolveResult.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/AutoTiling/Transitions/VariantCoord.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -1973,6 +2023,11 @@
       "classification": "production"
     },
     {
+      "path": "Scripts/Features/Worldgen/Biomes/Pools/TilePoolEntry.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "Scripts/Features/Worldgen/Biomes/TilePool.cs",
       "language": "cs",
       "classification": "production"
@@ -1984,6 +2039,16 @@
     },
     {
       "path": "Scripts/Features/Worldgen/CardGradientCore.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/Gradients/RadialGradient.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -2024,6 +2089,11 @@
     },
     {
       "path": "Scripts/Features/Worldgen/IrregularMesh/Debug/Painting/PreviewMeshPainter.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/IrregularMesh/Decoration/DecorationData.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -3929,15 +3999,14 @@
     }
   ],
   "summary": {
-    "total": 7461,
-    "errors": 13,
-    "warnings": 7448,
+    "total": 7448,
+    "errors": 4,
+    "warnings": 7444,
     "byRule": {
       "dead-export": 4,
-      "types-per-file": 9,
-      "test-only-export": 10,
+      "test-only-export": 9,
       "duplicate-block": 70,
-      "file-length": 351,
+      "file-length": 348,
       "complexity": 231,
       "function-length": 263,
       "nesting-depth": 11,
@@ -3955,17 +4024,11 @@
       "Scripts/Features/ModularDevices/CardSlotDevice.cs": 5,
       "Scripts/Features/ModularDevices/HexScreenDevice.cs": 1,
       "Scripts/Features/ModularDevices/RectScreenDevice.cs": 2,
-      "Scripts/Core/Interfaces/IMapGenerator.cs": 2,
-      "Scripts/Core/Interfaces/IProfiler.cs": 6,
-      "Scripts/Core/Services/VariationGroup.cs": 8,
-      "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs": 31,
-      "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs": 30,
-      "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs": 12,
-      "Scripts/Features/Worldgen/BaselineGradient.cs": 18,
-      "Scripts/Features/Worldgen/Biomes/TilePool.cs": 5,
-      "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs": 18,
       "Scripts/Core/Services/MapGenerationProfiler.cs": 2,
       "Scripts/Features/Worldgen/AutoTiling/AutoTileHelper.cs": 15,
+      "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs": 9,
+      "Scripts/Features/Worldgen/Gradients/RadialGradient.cs": 6,
+      "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs": 17,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapGenerator.cs": 27,
       "Scripts/Features/Worldgen/IrregularMesh/StructurePlacement.cs": 11,
       "Scripts/Features/Worldgen/Wfc/Constraints/AdjacencyConstraint.cs": 2,
@@ -4059,12 +4122,14 @@
       "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapGenerationPipeline.cs": 20,
       "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs": 37,
       "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapWfcGenerator.cs": 11,
+      "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs": 30,
       "Scripts/Features/Player/Controllers/InteractionSystem.cs": 23,
       "Scripts/Features/Player/Controllers/Lighting/PlayerLightController.cs": 10,
       "Scripts/Features/Player/Controllers/PlayerController.cs": 25,
       "Scripts/Features/Worldgen/AutoTiling/AutoTileFormatDefinition.cs": 19,
       "Scripts/Features/Worldgen/AutoTiling/AutoTileFormatRegistry.cs": 11,
       "Scripts/Features/Worldgen/AutoTiling/BitmaskConsistencyValidator.cs": 32,
+      "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs": 26,
       "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionResolver.cs": 50,
       "Scripts/Features/Worldgen/AutoTiling/DualGridAutoTile.cs": 57,
       "Scripts/Features/Worldgen/AutoTiling/NeighborBitmask.cs": 12,
@@ -4399,10 +4464,12 @@
       "Scripts/Core/Data/GameSettings.cs": 8,
       "Scripts/Core/Data/LayerData.cs": 3,
       "Scripts/Core/DependencyInjection/ServiceContainer.cs": 4,
+      "Scripts/Core/Interfaces/Profiling/NoOpProfiler.cs": 5,
       "Scripts/Core/ServiceProviders/CardServiceProvider.cs": 2,
       "Scripts/Core/Services/GodotProgress.cs": 7,
       "Scripts/Core/Services/LoggingService.cs": 6,
       "Scripts/Core/Services/RaycastVisibilityChecker.cs": 7,
+      "Scripts/Core/Services/Variation/VariationGroupCollection.cs": 1,
       "Scripts/Core/Utilities/CardSleepEnforcer.cs": 5,
       "Scripts/Features/Card/Controllers/BlacklightController.cs": 7,
       "Scripts/Features/Card/Models/GemVisual.cs": 13,
@@ -4413,6 +4480,7 @@
       "Scripts/Features/Deckbuilder/Services/Exploration/PathToEnemyStrategy.cs": 1,
       "Scripts/Features/Deckbuilder/Services/Session/Generation/GenerationProgressBinding.cs": 3,
       "Scripts/Features/Worldgen/Biomes/BiomeRegistry.cs": 3,
+      "Scripts/Features/Worldgen/Biomes/Pools/TilePoolEntry.cs": 2,
       "Scripts/Features/Worldgen/Wfc/Generation/WfcTileSetBuilder.cs": 6,
       "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs": 10,
       "Tests/Core/Data/LayerDataTest.cs": 2,
@@ -4457,6 +4525,8 @@
       "Scripts/Features/Deckbuilder/Services/AsyncMapGeneratorAdapter.cs": 11,
       "Scripts/Features/Deckbuilder/Services/IAsyncMapGenerator.cs": 8,
       "Scripts/Features/Worldgen/AutoTiling/BuiltInAutoTileFormats.cs": 5,
+      "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs": 11,
+      "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionEntry.cs": 3,
       "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs": 1,
       "Scripts/Features/Worldgen/Wfc/Constraints/IEntropyInvalidator.cs": 6,
       "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs": 7,
@@ -4487,6 +4557,7 @@
       "Scripts/Core/Interfaces/ISafePositionTracker.cs": 1,
       "Scripts/Core/Interfaces/ITileRegistry.cs": 6,
       "Scripts/Core/Interfaces/IVisibilityChecker.cs": 2,
+      "Scripts/Core/Interfaces/MapGeneration/MapGenerationConfig.cs": 1,
       "Scripts/Core/Services/CollisionShapes/RowSpan.cs": 1,
       "Scripts/Core/Services/SafePositionTracker.cs": 4,
       "Scripts/Core/Services/SaveGame/SavedCardReader.cs": 6,
@@ -4502,6 +4573,8 @@
       "Scripts/Core/Services/TilesetLoading/WangSets/WangSetContext.cs": 1,
       "Scripts/Core/Services/TilesetLoading/WangSets/WangSetData.cs": 1,
       "Scripts/Core/Services/TilesetLoading/WangSets/WangSetInfo.cs": 1,
+      "Scripts/Core/Services/Variation/VariantWeight.cs": 2,
+      "Scripts/Core/Services/VariationGroup.cs": 3,
       "Scripts/Features/Card/Components/CardDropper.cs": 2,
       "Scripts/Features/Card/Components/CardShaderRenderer.cs": 2,
       "Scripts/Features/Card/Services/SignatureCardHelper.cs": 1,
@@ -4541,6 +4614,7 @@
       "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionMapLoader.cs": 6,
       "Scripts/Features/Worldgen/AutoTiling/Validation/ConsistencyStats.cs": 1,
       "Scripts/Features/Worldgen/AutoTiling/Validation/SharedCorner.cs": 2,
+      "Scripts/Features/Worldgen/BaselineGradient.cs": 1,
       "Scripts/Features/Worldgen/Biomes/BiomeMapGenerator.cs": 4,
       "Scripts/Features/Worldgen/CardBasedGradient.cs": 2,
       "Scripts/Features/Worldgen/IrregularMesh/CellQueries/PassableCellFinder.cs": 3,
@@ -4655,78 +4729,6 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Interfaces/IMapGenerator.cs",
-      "line": 40,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "3 types in one file: MapGenerationConfig, IGeneratedMap, IMapGenerator",
-      "metric": 3
-    },
-    {
-      "file": "Scripts/Core/Interfaces/IProfiler.cs",
-      "line": 14,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "3 types in one file: IProfiler, ProfileStats, NoOpProfiler",
-      "metric": 3
-    },
-    {
-      "file": "Scripts/Core/Services/VariationGroup.cs",
-      "line": 36,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "3 types in one file: VariantWeight, VariationGroup, VariationGroupCollection",
-      "metric": 3
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 35,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: TileAnimation, TileDefinition",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-      "line": 203,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "3 types in one file: CompiledTransitionMap, TransitionEntry, VariantCoord",
-      "metric": 3
-    },
-    {
-      "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-      "line": 16,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: TransitionResolveResult, ITransitionResolver",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 13,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "3 types in one file: BaselineGradient, RadialGradient, NoiseGradient",
-      "metric": 3
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Biomes/TilePool.cs",
-      "line": 49,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: TilePoolEntry, TilePool",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-      "line": 254,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: DecorationRenderer, DecorationData",
-      "metric": 2
-    },
-    {
       "file": "Scripts/Core/Services/MapGenerationProfiler.cs",
       "line": 8,
       "rule": "test-only-export",
@@ -4743,27 +4745,19 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 13,
-      "rule": "test-only-export",
-      "severity": "warn",
-      "message": "RadialGradient is only referenced by tests — delete it and its tests",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 66,
+      "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+      "line": 8,
       "rule": "test-only-export",
       "severity": "warn",
       "message": "NoiseGradient is only referenced by tests — delete it and its tests",
       "metric": 1
     },
     {
-      "file": "Scripts/Features/Worldgen/Biomes/TilePool.cs",
-      "line": 9,
+      "file": "Scripts/Features/Worldgen/Gradients/RadialGradient.cs",
+      "line": 8,
       "rule": "test-only-export",
       "severity": "warn",
-      "message": "TilePoolEntry is only referenced by tests — delete it and its tests",
+      "message": "RadialGradient is only referenced by tests — delete it and its tests",
       "metric": 1
     },
     {
@@ -5535,14 +5529,6 @@
       "metric": 109
     },
     {
-      "file": "Scripts/Core/Services/VariationGroup.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "warn",
-      "message": "file is 169 lines",
-      "metric": 169
-    },
-    {
       "file": "Scripts/Core/Utilities/CsgBaker.cs",
       "line": 1,
       "rule": "file-length",
@@ -5859,8 +5845,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 253 lines",
-      "metric": 253
+      "message": "file is 230 lines",
+      "metric": 230
     },
     {
       "file": "Scripts/Features/ModularDevices/ScreenDeviceBase.cs",
@@ -5931,8 +5917,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 234 lines",
-      "metric": 234
+      "message": "file is 199 lines",
+      "metric": 199
     },
     {
       "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionResolver.cs",
@@ -5975,14 +5961,6 @@
       "metric": 144
     },
     {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "warn",
-      "message": "file is 118 lines",
-      "metric": 118
-    },
-    {
       "file": "Scripts/Features/Worldgen/Biomes/BiomeDistributionCalculator.cs",
       "line": 1,
       "rule": "file-length",
@@ -5997,14 +5975,6 @@
       "severity": "warn",
       "message": "file is 119 lines",
       "metric": 119
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Biomes/TilePool.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "warn",
-      "message": "file is 115 lines",
-      "metric": 115
     },
     {
       "file": "Scripts/Features/Worldgen/CardGradientCore.cs",
@@ -6043,8 +6013,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 263 lines",
-      "metric": 263
+      "message": "file is 250 lines",
+      "metric": 250
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/Exploration/ExplorationStepLoop.cs",
@@ -8656,7 +8626,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 240,
+      "line": 217,
       "rule": "complexity",
       "severity": "warn",
       "message": "GetAutoTileCoords() cyclomatic complexity 6",
@@ -12632,7 +12602,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 37,
+      "line": 14,
       "rule": "param-count",
       "severity": "warn",
       "message": "TileDefinition() takes 4 parameters",
@@ -12640,7 +12610,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 42,
+      "line": 19,
       "rule": "param-count",
       "severity": "warn",
       "message": "TileDefinition() takes 5 parameters",
@@ -14487,32 +14457,32 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Interfaces/IProfiler.cs",
-      "line": 36,
+      "file": "Scripts/Core/Interfaces/Profiling/NoOpProfiler.cs",
+      "line": 10,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "Dispose() never touches instance state — make it a free function",
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Interfaces/IProfiler.cs",
-      "line": 42,
+      "file": "Scripts/Core/Interfaces/Profiling/NoOpProfiler.cs",
+      "line": 16,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "RecordDuration() never touches instance state — make it a free function",
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Interfaces/IProfiler.cs",
-      "line": 43,
+      "file": "Scripts/Core/Interfaces/Profiling/NoOpProfiler.cs",
+      "line": 17,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetStatistics() never touches instance state — make it a free function",
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Interfaces/IProfiler.cs",
-      "line": 44,
+      "file": "Scripts/Core/Interfaces/Profiling/NoOpProfiler.cs",
+      "line": 18,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "Clear() never touches instance state — make it a free function",
@@ -14887,8 +14857,8 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Core/Services/VariationGroup.cs",
-      "line": 141,
+      "file": "Scripts/Core/Services/Variation/VariationGroupCollection.cs",
+      "line": 50,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetVariantsFor() never touches instance state — make it a free function",
@@ -15584,7 +15554,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 120,
+      "line": 97,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetVariantDefinition() never touches instance state — make it a free function",
@@ -15671,62 +15641,6 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 28,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "nameof() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 29,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "nameof() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 30,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "nameof() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 85,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "nameof() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 86,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "nameof() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 87,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "nameof() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 88,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "nameof() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
       "file": "Scripts/Features/Worldgen/Biomes/BiomeDefinition.cs",
       "line": 69,
       "rule": "stateless-method",
@@ -15759,7 +15673,7 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Features/Worldgen/Biomes/TilePool.cs",
+      "file": "Scripts/Features/Worldgen/Biomes/Pools/TilePoolEntry.cs",
       "line": 30,
       "rule": "stateless-method",
       "severity": "warn",
@@ -15767,8 +15681,64 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Features/Worldgen/Biomes/TilePool.cs",
+      "file": "Scripts/Features/Worldgen/Biomes/Pools/TilePoolEntry.cs",
       "line": 31,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "nameof() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+      "line": 27,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "nameof() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+      "line": 28,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "nameof() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+      "line": 29,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "nameof() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+      "line": 30,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "nameof() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Gradients/RadialGradient.cs",
+      "line": 23,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "nameof() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Gradients/RadialGradient.cs",
+      "line": 24,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "nameof() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Gradients/RadialGradient.cs",
+      "line": 25,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "nameof() never touches instance state — make it a free function",
@@ -26807,14 +26777,6 @@
       "metric": 5
     },
     {
-      "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-      "line": 211,
-      "rule": "comment-bloat",
-      "severity": "warn",
-      "message": "7-line comment over 2 line(s) of code - keep the why, cut the rest",
-      "metric": 7
-    },
-    {
       "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionResolver.cs",
       "line": 43,
       "rule": "comment-bloat",
@@ -26864,7 +26826,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-      "line": 11,
+      "line": 5,
       "rule": "comment-bloat",
       "severity": "warn",
       "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
@@ -26893,6 +26855,14 @@
       "severity": "warn",
       "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
       "metric": 5
+    },
+    {
+      "file": "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionEntry.cs",
+      "line": 16,
+      "rule": "comment-bloat",
+      "severity": "warn",
+      "message": "7-line comment over 2 line(s) of code - keep the why, cut the rest",
+      "metric": 7
     },
     {
       "file": "Scripts/Features/Worldgen/AutoTiling/VariantDefinition.cs",
@@ -29215,14 +29185,6 @@
       "metric": 84
     },
     {
-      "file": "Scripts/Core/Interfaces/IMapGenerator.cs",
-      "line": 29,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
       "file": "Scripts/Core/Interfaces/IPlayerResetService.cs",
       "line": 7,
       "rule": "line-length",
@@ -29245,14 +29207,6 @@
       "severity": "warn",
       "message": "line is 92 chars",
       "metric": 92
-    },
-    {
-      "file": "Scripts/Core/Interfaces/IProfiler.cs",
-      "line": 39,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
     },
     {
       "file": "Scripts/Core/Interfaces/ISafePositionTracker.cs",
@@ -29349,6 +29303,22 @@
       "severity": "warn",
       "message": "line is 101 chars",
       "metric": 101
+    },
+    {
+      "file": "Scripts/Core/Interfaces/MapGeneration/MapGenerationConfig.cs",
+      "line": 27,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Core/Interfaces/Profiling/NoOpProfiler.cs",
+      "line": 13,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
     },
     {
       "file": "Scripts/Core/ServiceProviders/CardServiceProvider.cs",
@@ -32935,16 +32905,16 @@
       "metric": 92
     },
     {
-      "file": "Scripts/Core/Services/VariationGroup.cs",
-      "line": 9,
+      "file": "Scripts/Core/Services/Variation/VariantWeight.cs",
+      "line": 5,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
       "metric": 90
     },
     {
-      "file": "Scripts/Core/Services/VariationGroup.cs",
-      "line": 26,
+      "file": "Scripts/Core/Services/Variation/VariantWeight.cs",
+      "line": 22,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
@@ -32952,7 +32922,7 @@
     },
     {
       "file": "Scripts/Core/Services/VariationGroup.cs",
-      "line": 41,
+      "line": 17,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -32960,7 +32930,7 @@
     },
     {
       "file": "Scripts/Core/Services/VariationGroup.cs",
-      "line": 55,
+      "line": 31,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -32968,7 +32938,7 @@
     },
     {
       "file": "Scripts/Core/Services/VariationGroup.cs",
-      "line": 78,
+      "line": 54,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -37272,7 +37242,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 37,
+      "line": 14,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -37280,7 +37250,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 56,
+      "line": 33,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -37288,7 +37258,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 89,
+      "line": 66,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -37296,7 +37266,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 95,
+      "line": 72,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 108 chars",
@@ -37304,7 +37274,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 100,
+      "line": 77,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -37312,7 +37282,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 111,
+      "line": 88,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -37320,7 +37290,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 118,
+      "line": 95,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -37328,7 +37298,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 127,
+      "line": 104,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -37336,7 +37306,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 132,
+      "line": 109,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -37344,7 +37314,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 142,
+      "line": 119,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -37352,7 +37322,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 147,
+      "line": 124,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -37360,7 +37330,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 153,
+      "line": 130,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 111 chars",
@@ -37368,7 +37338,39 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 160,
+      "line": 137,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+      "line": 142,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+      "line": 145,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+      "line": 155,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+      "line": 161,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
@@ -37379,44 +37381,12 @@
       "line": 165,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 168,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 178,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 184,
-      "rule": "line-length",
-      "severity": "warn",
       "message": "line is 92 chars",
       "metric": 92
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 188,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 193,
+      "line": 170,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 113 chars",
@@ -37424,7 +37394,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 198,
+      "line": 175,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -37432,7 +37402,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 199,
+      "line": 176,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -37440,7 +37410,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 201,
+      "line": 178,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -37448,7 +37418,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 221,
+      "line": 198,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 109 chars",
@@ -37456,7 +37426,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 224,
+      "line": 201,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -37464,7 +37434,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "line": 237,
+      "line": 214,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -38719,22 +38689,6 @@
       "metric": 106
     },
     {
-      "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-      "line": 201,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-      "line": 216,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
       "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionResolver.cs",
       "line": 14,
       "rule": "line-length",
@@ -39416,7 +39370,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-      "line": 18,
+      "line": 12,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -39424,11 +39378,43 @@
     },
     {
       "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-      "line": 19,
+      "line": 13,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
       "metric": 91
+    },
+    {
+      "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+      "line": 17,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+      "line": 19,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+      "line": 21,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+      "line": 22,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
     },
     {
       "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
@@ -39440,39 +39426,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-      "line": 25,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-      "line": 27,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-      "line": 28,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 99 chars",
-      "metric": 99
-    },
-    {
-      "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-      "line": 29,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-      "line": 30,
+      "line": 24,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -39480,7 +39434,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-      "line": 38,
+      "line": 32,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -39488,7 +39442,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-      "line": 47,
+      "line": 41,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -39791,6 +39745,22 @@
       "metric": 82
     },
     {
+      "file": "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionEntry.cs",
+      "line": 6,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionEntry.cs",
+      "line": 21,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
       "file": "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionKey.cs",
       "line": 6,
       "rule": "line-length",
@@ -39901,54 +39871,6 @@
       "severity": "warn",
       "message": "line is 86 chars",
       "metric": 86
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 46,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 59,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 105,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 107,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 112,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "line": 113,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
     },
     {
       "file": "Scripts/Features/Worldgen/Biomes/BiomeDefinition.cs",
@@ -40269,6 +40191,54 @@
       "severity": "warn",
       "message": "line is 90 chars",
       "metric": 90
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+      "line": 47,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+      "line": 49,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+      "line": 54,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+      "line": 55,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Gradients/RadialGradient.cs",
+      "line": 41,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Gradients/RadialGradient.cs",
+      "line": 54,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/CellQueries/PassableCellFinder.cs",
@@ -64313,1085 +64283,6 @@
   ],
   "units": [
     {
-      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-      "errors": 1,
-      "warnings": 30,
-      "rules": {
-        "types-per-file": 1,
-        "file-length": 1,
-        "complexity": 1,
-        "param-count": 2,
-        "stateless-method": 1,
-        "line-length": 25
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 35,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: TileAnimation, TileDefinition",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 253 lines",
-          "metric": 253
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 240,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GetAutoTileCoords() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 37,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "TileDefinition() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 42,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "TileDefinition() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 120,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetVariantDefinition() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 37,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 56,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 89,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 95,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 100,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 111,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 118,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 127,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 132,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 142,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 147,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 153,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 160,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 165,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 168,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 178,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 184,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 188,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 193,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 113 chars",
-          "metric": 113
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 198,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 199,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 201,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 221,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 224,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
-          "line": 237,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-      "errors": 1,
-      "warnings": 29,
-      "rules": {
-        "types-per-file": 1,
-        "file-length": 1,
-        "complexity": 3,
-        "param-count": 3,
-        "comment-bloat": 1,
-        "line-length": 21
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 203,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "3 types in one file: CompiledTransitionMap, TransitionEntry, VariantCoord",
-          "metric": 3
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 234 lines",
-          "metric": 234
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 88,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GetVariantCoords() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 115,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GetVariantCoordsWithRandom() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 179,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ConvertToVariantData() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 51,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "AddTransition() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 68,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "AddTransitionWithVariants() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 115,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "GetVariantCoordsWithRandom() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 211,
-          "rule": "comment-bloat",
-          "severity": "warn",
-          "message": "7-line comment over 2 line(s) of code - keep the why, cut the rest",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 9,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 24,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 40,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 49,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 50,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 51,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 62,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 66,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 67,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 120 chars",
-          "metric": 120
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 88,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 111,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 115,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 116 chars",
-          "metric": 116
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 134,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 139,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 141,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 173,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 174,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 179,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 193,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 201,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
-          "line": 216,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-      "errors": 1,
-      "warnings": 17,
-      "rules": {
-        "types-per-file": 1,
-        "test-only-export": 2,
-        "file-length": 1,
-        "stateless-method": 7,
-        "line-length": 7
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 13,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "3 types in one file: BaselineGradient, RadialGradient, NoiseGradient",
-          "metric": 3
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 13,
-          "rule": "test-only-export",
-          "severity": "warn",
-          "message": "RadialGradient is only referenced by tests — delete it and its tests",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 66,
-          "rule": "test-only-export",
-          "severity": "warn",
-          "message": "NoiseGradient is only referenced by tests — delete it and its tests",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 118 lines",
-          "metric": 118
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 28,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "nameof() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 29,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "nameof() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 30,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "nameof() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 85,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "nameof() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 86,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "nameof() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 87,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "nameof() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 88,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "nameof() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 8,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 46,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 59,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 105,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 107,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 112,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
-          "line": 113,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-      "errors": 1,
-      "warnings": 17,
-      "rules": {
-        "types-per-file": 1,
-        "test-only-export": 1,
-        "file-length": 1,
-        "complexity": 1,
-        "line-length": 14
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 254,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: DecorationRenderer, DecorationData",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 13,
-          "rule": "test-only-export",
-          "severity": "warn",
-          "message": "DecorationRenderer is only referenced by tests — delete it and its tests",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 263 lines",
-          "metric": 263
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 55,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "CanPlaceDecoration() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 11,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 78,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 80,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 103,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 111,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 150,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 151,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 186,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 188,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 194,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 196,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 210,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 214,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
-          "line": 220,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-      "errors": 1,
-      "warnings": 11,
-      "rules": {
-        "types-per-file": 1,
-        "comment-bloat": 1,
-        "line-length": 10
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-          "line": 16,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: TransitionResolveResult, ITransitionResolver",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-          "line": 11,
-          "rule": "comment-bloat",
-          "severity": "warn",
-          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-          "line": 18,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-          "line": 19,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-          "line": 23,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-          "line": 25,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-          "line": 27,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-          "line": 28,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-          "line": 29,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-          "line": 30,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-          "line": 38,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
-          "line": 47,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Services/VariationGroup.cs",
-      "errors": 1,
-      "warnings": 7,
-      "rules": {
-        "types-per-file": 1,
-        "file-length": 1,
-        "stateless-method": 1,
-        "line-length": 5
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/VariationGroup.cs",
-          "line": 36,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "3 types in one file: VariantWeight, VariationGroup, VariationGroupCollection",
-          "metric": 3
-        },
-        {
-          "file": "Scripts/Core/Services/VariationGroup.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 169 lines",
-          "metric": 169
-        },
-        {
-          "file": "Scripts/Core/Services/VariationGroup.cs",
-          "line": 141,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetVariantsFor() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/VariationGroup.cs",
-          "line": 9,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Services/VariationGroup.cs",
-          "line": 26,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "Scripts/Core/Services/VariationGroup.cs",
-          "line": 41,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Core/Services/VariationGroup.cs",
-          "line": 55,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Core/Services/VariationGroup.cs",
-          "line": 78,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Interfaces/IProfiler.cs",
-      "errors": 1,
-      "warnings": 5,
-      "rules": {
-        "types-per-file": 1,
-        "stateless-method": 4,
-        "line-length": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Interfaces/IProfiler.cs",
-          "line": 14,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "3 types in one file: IProfiler, ProfileStats, NoOpProfiler",
-          "metric": 3
-        },
-        {
-          "file": "Scripts/Core/Interfaces/IProfiler.cs",
-          "line": 36,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "Dispose() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Interfaces/IProfiler.cs",
-          "line": 42,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "RecordDuration() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Interfaces/IProfiler.cs",
-          "line": 43,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetStatistics() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Interfaces/IProfiler.cs",
-          "line": 44,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "Clear() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Interfaces/IProfiler.cs",
-          "line": 39,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/ModularDevices/CardSlotDevice.cs",
       "errors": 1,
       "warnings": 4,
@@ -65440,59 +64331,6 @@
           "severity": "warn",
           "message": "line is 85 chars",
           "metric": 85
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Biomes/TilePool.cs",
-      "errors": 1,
-      "warnings": 4,
-      "rules": {
-        "types-per-file": 1,
-        "test-only-export": 1,
-        "file-length": 1,
-        "stateless-method": 2
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Biomes/TilePool.cs",
-          "line": 49,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: TilePoolEntry, TilePool",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Biomes/TilePool.cs",
-          "line": 9,
-          "rule": "test-only-export",
-          "severity": "warn",
-          "message": "TilePoolEntry is only referenced by tests — delete it and its tests",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Biomes/TilePool.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 115 lines",
-          "metric": 115
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Biomes/TilePool.cs",
-          "line": 30,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "nameof() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Biomes/TilePool.cs",
-          "line": 31,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "nameof() never touches instance state — make it a free function",
-          "metric": 1
         }
       ]
     },
@@ -65555,33 +64393,6 @@
           "severity": "warn",
           "message": "ValidateInputs() never touches instance state — make it a free function",
           "metric": 1
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Interfaces/IMapGenerator.cs",
-      "errors": 1,
-      "warnings": 1,
-      "rules": {
-        "types-per-file": 1,
-        "line-length": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Interfaces/IMapGenerator.cs",
-          "line": 40,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "3 types in one file: MapGenerationConfig, IGeneratedMap, IMapGenerator",
-          "metric": 3
-        },
-        {
-          "file": "Scripts/Core/Interfaces/IMapGenerator.cs",
-          "line": 29,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
         }
       ]
     },
@@ -74340,6 +73151,260 @@
       ]
     },
     {
+      "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+      "errors": 0,
+      "warnings": 30,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "param-count": 2,
+        "stateless-method": 1,
+        "line-length": 25
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 230 lines",
+          "metric": 230
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 217,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GetAutoTileCoords() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 14,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "TileDefinition() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 19,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "TileDefinition() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 97,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetVariantDefinition() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 14,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 33,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 66,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 72,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 77,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 88,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 95,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 104,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 109,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 119,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 124,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 130,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 137,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 142,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 145,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 155,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 161,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 165,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 170,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 113 chars",
+          "metric": 113
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 175,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 176,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 178,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 198,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 201,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
+          "line": 214,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        }
+      ]
+    },
+    {
       "file": "Tests/Features/Deckbuilder/Services/ExplorationAIScenarios/ExplorationAIMovementTest.cs",
       "errors": 0,
       "warnings": 30,
@@ -79254,6 +78319,227 @@
           "severity": "warn",
           "message": "line is 92 chars",
           "metric": 92
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+      "errors": 0,
+      "warnings": 26,
+      "rules": {
+        "file-length": 1,
+        "complexity": 3,
+        "param-count": 3,
+        "line-length": 19
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 199 lines",
+          "metric": 199
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 88,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GetVariantCoords() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 115,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GetVariantCoordsWithRandom() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 179,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "ConvertToVariantData() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 51,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "AddTransition() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 68,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "AddTransitionWithVariants() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 115,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "GetVariantCoordsWithRandom() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 9,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 24,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 49,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 50,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 51,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 62,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 66,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 67,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 120 chars",
+          "metric": 120
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 88,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 111,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 115,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 116 chars",
+          "metric": 116
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 134,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 139,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 141,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 173,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 174,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 179,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
+          "line": 193,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
         }
       ]
     },
@@ -96700,6 +95986,155 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+      "errors": 0,
+      "warnings": 17,
+      "rules": {
+        "test-only-export": 1,
+        "file-length": 1,
+        "complexity": 1,
+        "line-length": 14
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 13,
+          "rule": "test-only-export",
+          "severity": "warn",
+          "message": "DecorationRenderer is only referenced by tests — delete it and its tests",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 250 lines",
+          "metric": 250
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 55,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "CanPlaceDecoration() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 78,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 80,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 103,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 111,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 150,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 151,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 186,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 188,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 194,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 196,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 210,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 214,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
+          "line": 220,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
       "errors": 0,
       "warnings": 17,
@@ -113961,6 +113396,105 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+      "errors": 0,
+      "warnings": 11,
+      "rules": {
+        "comment-bloat": 1,
+        "line-length": 10
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+          "line": 5,
+          "rule": "comment-bloat",
+          "severity": "warn",
+          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+          "line": 12,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+          "line": 13,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+          "line": 17,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+          "line": 21,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+          "line": 22,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+          "line": 23,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+          "line": 24,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+          "line": 32,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        }
+      ]
+    },
+    {
       "file": "Tests/Features/Worldgen/AutoTiling/AutoTileHelperScenarios/AutoTileHelperNeighborRuleTest.cs",
       "errors": 0,
       "warnings": 10,
@@ -116630,6 +116164,90 @@
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
           "line": 66,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+      "errors": 0,
+      "warnings": 9,
+      "rules": {
+        "test-only-export": 1,
+        "stateless-method": 4,
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+          "line": 8,
+          "rule": "test-only-export",
+          "severity": "warn",
+          "message": "NoiseGradient is only referenced by tests — delete it and its tests",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+          "line": 27,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "nameof() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+          "line": 28,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "nameof() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+          "line": 29,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "nameof() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+          "line": 30,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "nameof() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+          "line": 47,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+          "line": 49,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+          "line": 54,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/NoiseGradient.cs",
+          "line": 55,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 92 chars",
@@ -123012,6 +122630,66 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/Gradients/RadialGradient.cs",
+      "errors": 0,
+      "warnings": 6,
+      "rules": {
+        "test-only-export": 1,
+        "stateless-method": 3,
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/RadialGradient.cs",
+          "line": 8,
+          "rule": "test-only-export",
+          "severity": "warn",
+          "message": "RadialGradient is only referenced by tests — delete it and its tests",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/RadialGradient.cs",
+          "line": 23,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "nameof() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/RadialGradient.cs",
+          "line": 24,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "nameof() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/RadialGradient.cs",
+          "line": 25,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "nameof() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/RadialGradient.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Gradients/RadialGradient.cs",
+          "line": 54,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        }
+      ]
+    },
+    {
       "file": "Scripts/Core/Services/Pathfinder.cs",
       "errors": 0,
       "warnings": 6,
@@ -126148,6 +125826,57 @@
       ]
     },
     {
+      "file": "Scripts/Core/Interfaces/Profiling/NoOpProfiler.cs",
+      "errors": 0,
+      "warnings": 5,
+      "rules": {
+        "stateless-method": 4,
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Interfaces/Profiling/NoOpProfiler.cs",
+          "line": 10,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Dispose() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Interfaces/Profiling/NoOpProfiler.cs",
+          "line": 16,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "RecordDuration() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Interfaces/Profiling/NoOpProfiler.cs",
+          "line": 17,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetStatistics() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Interfaces/Profiling/NoOpProfiler.cs",
+          "line": 18,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Clear() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Interfaces/Profiling/NoOpProfiler.cs",
+          "line": 13,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        }
+      ]
+    },
+    {
       "file": "Scripts/Core/Utilities/CardSleepEnforcer.cs",
       "errors": 0,
       "warnings": 5,
@@ -128931,6 +128660,41 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionEntry.cs",
+      "errors": 0,
+      "warnings": 3,
+      "rules": {
+        "comment-bloat": 1,
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionEntry.cs",
+          "line": 16,
+          "rule": "comment-bloat",
+          "severity": "warn",
+          "message": "7-line comment over 2 line(s) of code - keep the why, cut the rest",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionEntry.cs",
+          "line": 6,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionEntry.cs",
+          "line": 21,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/Contracts/PropagationResult.cs",
       "errors": 0,
       "warnings": 3,
@@ -129030,6 +128794,40 @@
           "severity": "warn",
           "message": "line is 83 chars",
           "metric": 83
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/VariationGroup.cs",
+      "errors": 0,
+      "warnings": 3,
+      "rules": {
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/VariationGroup.cs",
+          "line": 17,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Core/Services/VariationGroup.cs",
+          "line": 31,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Core/Services/VariationGroup.cs",
+          "line": 54,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
         }
       ]
     },
@@ -129841,6 +129639,32 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/Biomes/Pools/TilePoolEntry.cs",
+      "errors": 0,
+      "warnings": 2,
+      "rules": {
+        "stateless-method": 2
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Biomes/Pools/TilePoolEntry.cs",
+          "line": 30,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "nameof() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Biomes/Pools/TilePoolEntry.cs",
+          "line": 31,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "nameof() never touches instance state — make it a free function",
+          "metric": 1
+        }
+      ]
+    },
+    {
       "file": "Tests/Core/Data/LayerDataTest.cs",
       "errors": 0,
       "warnings": 2,
@@ -130046,6 +129870,32 @@
           "severity": "warn",
           "message": "line is 84 chars",
           "metric": 84
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/Variation/VariantWeight.cs",
+      "errors": 0,
+      "warnings": 2,
+      "rules": {
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/Variation/VariantWeight.cs",
+          "line": 5,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Core/Services/Variation/VariantWeight.cs",
+          "line": 22,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
         }
       ]
     },
@@ -130894,6 +130744,24 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/Variation/VariationGroupCollection.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "stateless-method": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/Variation/VariationGroupCollection.cs",
+          "line": 50,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetVariantsFor() never touches instance state — make it a free function",
+          "metric": 1
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Card/Models/RarityVisual.cs",
       "errors": 0,
       "warnings": 1,
@@ -131214,6 +131082,24 @@
           "severity": "warn",
           "message": "line is 90 chars",
           "metric": 90
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Interfaces/MapGeneration/MapGenerationConfig.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Interfaces/MapGeneration/MapGenerationConfig.cs",
+          "line": 27,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
         }
       ]
     },
@@ -131664,6 +131550,24 @@
           "severity": "warn",
           "message": "line is 81 chars",
           "metric": 81
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/BaselineGradient.cs",
+          "line": 8,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
         }
       ]
     },

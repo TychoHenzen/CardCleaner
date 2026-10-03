@@ -3,12 +3,6 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 
 /// <summary>
-/// Result of resolving a terrain transition.
-/// Contains the atlas coordinates and source ID for rendering.
-/// </summary>
-public record TransitionResolveResult(int SourceId, Vector2I AtlasCoords);
-
-/// <summary>
 /// Resolves terrain transition atlas coordinates at runtime.
 /// Used by map generators to look up the correct composite tile
 /// for a given inner/outer terrain pair and neighbor bitmask.
