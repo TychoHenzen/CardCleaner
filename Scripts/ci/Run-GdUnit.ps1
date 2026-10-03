@@ -21,6 +21,8 @@ if ((Test-Path -LiteralPath $consolePath -PathType Leaf) -and $godotPath -ne $co
 }
 $repositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 $reportRoot = Join-Path $repositoryRoot 'reports\ci'
+$buildStdoutPath = Join-Path $reportRoot 'dotnet-debug.stdout.log'
+$buildStderrPath = Join-Path $reportRoot 'dotnet-debug.stderr.log'
 $importStdoutPath = Join-Path $reportRoot 'godot-import.stdout.log'
 $importStderrPath = Join-Path $reportRoot 'godot-import.stderr.log'
 $stdoutPath = Join-Path $reportRoot 'godot.stdout.log'
@@ -43,11 +45,24 @@ $godotArguments = @(
 New-Item -ItemType Directory -Path $reportRoot -Force | Out-Null
 Write-Host "Using Godot executable: $godotPath"
 
+$dotnetPath = (Get-Command dotnet -CommandType Application).Source
+$buildArguments = @(
+    'build'
+    'CardCleaner.csproj'
+    '--configuration'
+    'Debug'
+    '--no-restore'
+)
+$buildProcess = Start-Process -FilePath $dotnetPath -ArgumentList $buildArguments -WorkingDirectory $repositoryRoot -RedirectStandardOutput $buildStdoutPath -RedirectStandardError $buildStderrPath -Wait -PassThru
+if ($buildProcess.ExitCode -ne 0) {
+    $buildStderr = if (Test-Path -LiteralPath $buildStderrPath) { (Get-Content -LiteralPath $buildStderrPath -Tail 40) -join [Environment]::NewLine } else { '<missing>' }
+    throw "Godot test solution build failed with exit code $($buildProcess.ExitCode): $buildStderr"
+}
+
 $importArguments = @(
     '--headless'
     '--editor'
     '--recovery-mode'
-    '--build-solutions'
     '--import'
     '--path'
     '.'
