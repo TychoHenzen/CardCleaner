@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 791,
+  "fileCount": 790,
   "files": [
     {
       "path": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
@@ -1764,11 +1764,6 @@
     },
     {
       "path": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/WfcLayerBuffers.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Features/Deckbuilder/Services/TerrainSelection.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -3959,24 +3954,24 @@
     }
   ],
   "summary": {
-    "total": 7425,
+    "total": 7403,
     "errors": 0,
-    "warnings": 7425,
+    "warnings": 7403,
     "byRule": {
       "test-only-export": 9,
       "duplicate-block": 68,
       "file-length": 347,
-      "complexity": 231,
+      "complexity": 230,
       "function-length": 263,
       "nesting-depth": 11,
-      "param-count": 177,
-      "else-branch": 91,
-      "stateless-method": 1538,
+      "param-count": 170,
+      "else-branch": 90,
+      "stateless-method": 1534,
       "comment-bloat": 49,
       "comment-restates-code": 95,
-      "output-parameter": 29,
+      "output-parameter": 25,
       "flag-parameter": 72,
-      "line-length": 4445
+      "line-length": 4440
     },
     "byFile": {
       "Scripts/Core/Services/MapGenerationProfiler.cs": 2,
@@ -4025,7 +4020,7 @@
       "Scripts/Core/Interfaces/ITileMetadataProvider.cs": 5,
       "Scripts/Core/Services/AssemblyUnloadCleanup.cs": 14,
       "Scripts/Core/Services/CancellableProgressProfiler.cs": 7,
-      "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs": 33,
+      "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs": 32,
       "Scripts/Core/Services/CompiledAtlasLoader.cs": 40,
       "Scripts/Core/Services/GameSaveService.cs": 15,
       "Scripts/Core/Services/InputService.cs": 33,
@@ -4056,7 +4051,7 @@
       "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs": 11,
       "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs": 8,
       "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs": 15,
-      "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs": 25,
+      "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs": 26,
       "Scripts/Features/Deckbuilder/Models/DeckSlot.cs": 19,
       "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs": 9,
       "Scripts/Features/Deckbuilder/Services/Combat/CombatCommand.cs": 8,
@@ -4074,7 +4069,7 @@
       "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs": 18,
       "Scripts/Features/Deckbuilder/Services/SimpleMapData.cs": 21,
       "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapGenerationPipeline.cs": 20,
-      "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs": 37,
+      "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs": 18,
       "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapWfcGenerator.cs": 11,
       "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs": 30,
       "Scripts/Features/Player/Controllers/InteractionSystem.cs": 23,
@@ -4109,9 +4104,9 @@
       "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs": 16,
       "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs": 20,
       "Scripts/Features/Worldgen/IrregularMesh/MeshQuad.cs": 29,
-      "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs": 14,
+      "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs": 12,
       "Scripts/Features/Worldgen/IrregularMesh/Topology/MeshAdjacencyBuilder.cs": 5,
-      "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs": 11,
+      "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs": 10,
       "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs": 17,
       "Scripts/Features/Worldgen/Wfc/Connectivity/Graph/UnionFind.cs": 4,
       "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraph.cs": 15,
@@ -4422,7 +4417,7 @@
       "Scripts/Core/ServiceProviders/CardServiceProvider.cs": 2,
       "Scripts/Core/Services/GodotProgress.cs": 7,
       "Scripts/Core/Services/LoggingService.cs": 6,
-      "Scripts/Core/Services/RaycastVisibilityChecker.cs": 7,
+      "Scripts/Core/Services/RaycastVisibilityChecker.cs": 8,
       "Scripts/Core/Services/Variation/VariationGroupCollection.cs": 1,
       "Scripts/Core/Utilities/CardSleepEnforcer.cs": 5,
       "Scripts/Features/Card/Controllers/BlacklightController.cs": 7,
@@ -4557,7 +4552,6 @@
       "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapGenerationContext.cs": 1,
       "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/VariantSelection.cs": 1,
       "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/WfcLayerBuffers.cs": 1,
-      "Scripts/Features/Deckbuilder/Services/TerrainSelection.cs": 1,
       "Scripts/Features/Deckbuilder/Tiles/Options/TileDefinitionOptions.cs": 3,
       "Scripts/Features/Deckbuilder/Tiles/TileMode.cs": 5,
       "Scripts/Features/Deckbuilder/Tiles/TilesetConfig.cs": 1,
@@ -5326,8 +5320,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 273 lines",
-      "metric": 273
+      "message": "file is 265 lines",
+      "metric": 265
     },
     {
       "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
@@ -5598,8 +5592,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 131 lines",
-      "metric": 131
+      "message": "file is 132 lines",
+      "metric": 132
     },
     {
       "file": "Scripts/Features/Deckbuilder/Models/WorldMap/WorldMapRuntime.cs",
@@ -5734,8 +5728,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 261 lines",
-      "metric": 261
+      "message": "file is 125 lines",
+      "metric": 125
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapWfcGenerator.cs",
@@ -5886,8 +5880,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 229 lines",
-      "metric": 229
+      "message": "file is 227 lines",
+      "metric": 227
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/Debug/IrregularMeshPreview.cs",
@@ -6030,16 +6024,16 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 195 lines",
-      "metric": 195
+      "message": "file is 196 lines",
+      "metric": 196
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 142 lines",
-      "metric": 142
+      "message": "file is 143 lines",
+      "metric": 143
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshQuad.cs",
@@ -6102,8 +6096,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 108 lines",
-      "metric": 108
+      "message": "file is 107 lines",
+      "metric": 107
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
@@ -6182,8 +6176,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 257 lines",
-      "metric": 257
+      "message": "file is 251 lines",
+      "metric": 251
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/RegionAnalyzer.cs",
@@ -8514,14 +8508,6 @@
       "metric": 7
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 136,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "SelectTerrains() cyclomatic complexity 10",
-      "metric": 10
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
       "line": 217,
       "rule": "complexity",
@@ -8619,7 +8605,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/Debug/IrregularMeshDebugRenderer.cs",
-      "line": 186,
+      "line": 184,
       "rule": "complexity",
       "severity": "warn",
       "message": "_Draw() cyclomatic complexity 10",
@@ -8715,7 +8701,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 46,
+      "line": 47,
       "rule": "complexity",
       "severity": "warn",
       "message": "TryMerge() cyclomatic complexity 8",
@@ -8723,7 +8709,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 105,
+      "line": 106,
       "rule": "complexity",
       "severity": "warn",
       "message": "MergeTrianglesToQuad() cyclomatic complexity 7",
@@ -8771,7 +8757,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-      "line": 29,
+      "line": 28,
       "rule": "complexity",
       "severity": "warn",
       "message": "Build() cyclomatic complexity 6",
@@ -10347,7 +10333,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/Debug/IrregularMeshDebugRenderer.cs",
-      "line": 186,
+      "line": 184,
       "rule": "function-length",
       "severity": "warn",
       "message": "_Draw() is 42 lines",
@@ -10427,7 +10413,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 46,
+      "line": 47,
       "rule": "function-length",
       "severity": "warn",
       "message": "TryMerge() is 33 lines",
@@ -12442,62 +12428,6 @@
       "metric": 4
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 161,
-      "rule": "param-count",
-      "severity": "warn",
-      "message": "SelectTopTerrain() takes 4 parameters",
-      "metric": 4
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 174,
-      "rule": "param-count",
-      "severity": "warn",
-      "message": "SelectBaseTerrain() takes 4 parameters",
-      "metric": 4
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 187,
-      "rule": "param-count",
-      "severity": "warn",
-      "message": "ShouldReplaceTopTerrain() takes 4 parameters",
-      "metric": 4
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 199,
-      "rule": "param-count",
-      "severity": "warn",
-      "message": "ShouldReplaceBaseTerrain() takes 4 parameters",
-      "metric": 4
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 211,
-      "rule": "param-count",
-      "severity": "warn",
-      "message": "ComputeBitmask() takes 5 parameters",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 230,
-      "rule": "param-count",
-      "severity": "warn",
-      "message": "SampleTerrainCell() takes 5 parameters",
-      "metric": 5
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 249,
-      "rule": "param-count",
-      "severity": "warn",
-      "message": "IsTerrainAtPosition() takes 5 parameters",
-      "metric": 5
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Tiles/TileDefinition.cs",
       "line": 14,
       "rule": "param-count",
@@ -12715,7 +12645,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-      "line": 74,
+      "line": 75,
       "rule": "param-count",
       "severity": "warn",
       "message": "BuildNewPositions() takes 5 parameters",
@@ -12723,7 +12653,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-      "line": 97,
+      "line": 98,
       "rule": "param-count",
       "severity": "warn",
       "message": "RelaxVertex() takes 5 parameters",
@@ -12731,7 +12661,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-      "line": 112,
+      "line": 113,
       "rule": "param-count",
       "severity": "warn",
       "message": "ComputeAreaCorrection() takes 5 parameters",
@@ -12739,7 +12669,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 46,
+      "line": 47,
       "rule": "param-count",
       "severity": "warn",
       "message": "TryMerge() takes 6 parameters",
@@ -13666,14 +13596,6 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 136,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "SelectTerrains() has 1 else branch(es) — prefer guard clauses",
-      "metric": 1
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapWfcGenerator.cs",
       "line": 92,
       "rule": "else-branch",
@@ -13811,7 +13733,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
-      "line": 236,
+      "line": 230,
       "rule": "else-branch",
       "severity": "warn",
       "message": "Union() has 1 else branch(es) — prefer guard clauses",
@@ -14551,14 +14473,6 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "CanSee() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Core/Services/SimpleVisibilityChecker.cs",
-      "line": 56,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "CanSeeBresenham() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -15347,7 +15261,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-      "line": 43,
+      "line": 44,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "nameof() never touches instance state — make it a free function",
@@ -15439,14 +15353,6 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "Dispose() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 51,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "SampleCorners() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -15706,22 +15612,6 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-      "line": 22,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "MapBackgroundToQuads() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-      "line": 74,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "ClearForeground() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
       "line": 117,
       "rule": "stateless-method",
@@ -15851,7 +15741,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
-      "line": 217,
+      "line": 211,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "Clear() never touches instance state — make it a free function",
@@ -27802,38 +27692,6 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 161,
-      "rule": "output-parameter",
-      "severity": "warn",
-      "message": "SelectTopTerrain() exposes an output parameter; return a value instead",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 161,
-      "rule": "output-parameter",
-      "severity": "warn",
-      "message": "SelectTopTerrain() exposes an output parameter; return a value instead",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 174,
-      "rule": "output-parameter",
-      "severity": "warn",
-      "message": "SelectBaseTerrain() exposes an output parameter; return a value instead",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 174,
-      "rule": "output-parameter",
-      "severity": "warn",
-      "message": "SelectBaseTerrain() exposes an output parameter; return a value instead",
-      "metric": 1
-    },
-    {
       "file": "Scripts/Features/Worldgen/AutoTiling/AutoTileFormatRegistry.cs",
       "line": 67,
       "rule": "output-parameter",
@@ -28003,7 +27861,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-      "line": 127,
+      "line": 128,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "EndCombat() takes a boolean flag; split the behavior or name the policy",
@@ -29458,14 +29316,6 @@
       "metric": 94
     },
     {
-      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-      "line": 248,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
       "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
       "line": 18,
       "rule": "line-length",
@@ -30115,11 +29965,19 @@
     },
     {
       "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+      "line": 51,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
       "line": 56,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
+      "message": "line is 97 chars",
+      "metric": 97
     },
     {
       "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
@@ -30243,6 +30101,14 @@
     },
     {
       "file": "Scripts/Core/Services/SimpleVisibilityChecker.cs",
+      "line": 29,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Core/Services/SimpleVisibilityChecker.cs",
       "line": 54,
       "rule": "line-length",
       "severity": "warn",
@@ -30254,8 +30120,8 @@
       "line": 56,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
+      "message": "line is 98 chars",
+      "metric": 98
     },
     {
       "file": "Scripts/Core/Services/SimpleVisibilityChecker.cs",
@@ -34299,6 +34165,14 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "line": 29,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
       "line": 31,
       "rule": "line-length",
       "severity": "warn",
@@ -34499,7 +34373,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-      "line": 9,
+      "line": 10,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -34507,7 +34381,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-      "line": 10,
+      "line": 11,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 108 chars",
@@ -34515,7 +34389,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-      "line": 33,
+      "line": 34,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -34523,7 +34397,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-      "line": 87,
+      "line": 88,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -34531,7 +34405,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-      "line": 94,
+      "line": 95,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -34539,7 +34413,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-      "line": 97,
+      "line": 98,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -36886,8 +36760,8 @@
       "line": 51,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
+      "message": "line is 88 chars",
+      "metric": 88
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
@@ -36944,46 +36818,6 @@
       "severity": "warn",
       "message": "line is 82 chars",
       "metric": 82
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 129,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 148,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 152,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 167,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "line": 180,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapWfcGenerator.cs",
@@ -37072,14 +36906,6 @@
       "severity": "warn",
       "message": "line is 86 chars",
       "metric": 86
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/TerrainSelection.cs",
-      "line": 3,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
     },
     {
       "file": "Scripts/Features/Deckbuilder/Tiles/Options/TileDefinitionOptions.cs",
@@ -40043,7 +39869,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/Debug/IrregularMeshDebugRenderer.cs",
-      "line": 140,
+      "line": 139,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 107 chars",
@@ -41739,7 +41565,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-      "line": 91,
+      "line": 92,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -41747,7 +41573,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-      "line": 107,
+      "line": 108,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -41755,7 +41581,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-      "line": 140,
+      "line": 141,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -41763,7 +41589,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-      "line": 148,
+      "line": 149,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -41771,7 +41597,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-      "line": 187,
+      "line": 188,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -41875,7 +41701,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 75,
+      "line": 76,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -41883,7 +41709,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 80,
+      "line": 81,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 115 chars",
@@ -41891,7 +41717,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 91,
+      "line": 92,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -41899,7 +41725,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 93,
+      "line": 94,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
@@ -41907,7 +41733,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 105,
+      "line": 106,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 119 chars",
@@ -41915,7 +41741,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 110,
+      "line": 111,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -41923,7 +41749,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 112,
+      "line": 113,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -41931,7 +41757,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 116,
+      "line": 117,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -41939,7 +41765,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 119,
+      "line": 120,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -41947,7 +41773,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 122,
+      "line": 123,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -41955,7 +41781,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 125,
+      "line": 126,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -41963,7 +41789,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-      "line": 130,
+      "line": 131,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 104 chars",
@@ -42398,8 +42224,8 @@
       "line": 53,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
+      "message": "line is 91 chars",
+      "metric": 91
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainWfcRunner.cs",
@@ -42907,7 +42733,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-      "line": 7,
+      "line": 8,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 106 chars",
@@ -42915,7 +42741,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-      "line": 19,
+      "line": 18,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 109 chars",
@@ -42923,7 +42749,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-      "line": 27,
+      "line": 26,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -42931,15 +42757,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-      "line": 35,
+      "line": 34,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
+      "message": "line is 88 chars",
+      "metric": 88
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-      "line": 72,
+      "line": 69,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -42947,23 +42773,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-      "line": 82,
+      "line": 83,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
+      "message": "line is 89 chars",
+      "metric": 89
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-      "line": 84,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-      "line": 98,
+      "line": 97,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
@@ -42971,7 +42789,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-      "line": 99,
+      "line": 98,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -44827,7 +44645,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
-      "line": 57,
+      "line": 53,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -44835,7 +44653,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
-      "line": 120,
+      "line": 114,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -44843,7 +44661,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
-      "line": 162,
+      "line": 156,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -44851,7 +44669,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
-      "line": 191,
+      "line": 185,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -47862,8 +47680,8 @@
       "line": 19,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 99 chars",
-      "metric": 99
+      "message": "line is 98 chars",
+      "metric": 98
     },
     {
       "file": "Tests/Core/Services/TerrainCollisionShapeGeneratorTest.cs",
@@ -66926,318 +66744,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-      "errors": 0,
-      "warnings": 37,
-      "rules": {
-        "file-length": 1,
-        "complexity": 2,
-        "param-count": 9,
-        "else-branch": 1,
-        "stateless-method": 1,
-        "output-parameter": 4,
-        "line-length": 19
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 261 lines",
-          "metric": 261
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 23,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GenerateTerrainTransitions() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 136,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "SelectTerrains() cyclomatic complexity 10",
-          "metric": 10
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 51,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "SampleCorners() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 118,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "GetCellSafe() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 161,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "SelectTopTerrain() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 174,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "SelectBaseTerrain() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 187,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "ShouldReplaceTopTerrain() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 199,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "ShouldReplaceBaseTerrain() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 211,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "ComputeBitmask() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 230,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "SampleTerrainCell() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 249,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "IsTerrainAtPosition() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 136,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "SelectTerrains() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 51,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "SampleCorners() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 161,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "SelectTopTerrain() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 161,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "SelectTopTerrain() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 174,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "SelectBaseTerrain() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 174,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "SelectBaseTerrain() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 11,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 22,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 30,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 36,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 37,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 44,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 51,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 73,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 104,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 107,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 109,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 111,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 113,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 118,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 129,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 148,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 152,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 167,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
-          "line": 180,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        }
-      ]
-    },
-    {
       "file": "Tests/Core/Services/InputServiceTest.cs",
       "errors": 0,
       "warnings": 37,
@@ -69031,283 +68537,6 @@
       ]
     },
     {
-      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-      "errors": 0,
-      "warnings": 33,
-      "rules": {
-        "file-length": 1,
-        "param-count": 4,
-        "output-parameter": 9,
-        "line-length": 19
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 273 lines",
-          "metric": 273
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 68,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "AddMappedTile() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 180,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "AddTransitionEntryTiles() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 200,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "AddTransitionVariantTiles() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 215,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "AddTransitionTile() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 68,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "AddMappedTile() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 68,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "AddMappedTile() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 127,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "TryReadTransitionMap() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 180,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "AddTransitionEntryTiles() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 180,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "AddTransitionEntryTiles() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 200,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "AddTransitionVariantTiles() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 200,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "AddTransitionVariantTiles() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 215,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "AddTransitionTile() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 215,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "AddTransitionTile() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 14,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 35,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 37,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 46,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 61,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 91,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 99,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 107,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 110,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 114,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 120,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 137,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 142,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 157,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 171,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 175,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 211,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 237,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
-          "line": 248,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        }
-      ]
-    },
-    {
       "file": "Scripts/Core/Services/InputService.cs",
       "errors": 0,
       "warnings": 33,
@@ -70408,6 +69637,275 @@
           "severity": "warn",
           "message": "line is 89 chars",
           "metric": 89
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+      "errors": 0,
+      "warnings": 32,
+      "rules": {
+        "file-length": 1,
+        "param-count": 4,
+        "output-parameter": 9,
+        "line-length": 18
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 265 lines",
+          "metric": 265
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 68,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "AddMappedTile() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 180,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "AddTransitionEntryTiles() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 200,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "AddTransitionVariantTiles() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 215,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "AddTransitionTile() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 68,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddMappedTile() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 68,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddMappedTile() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 127,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "TryReadTransitionMap() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 180,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddTransitionEntryTiles() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 180,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddTransitionEntryTiles() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 200,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddTransitionVariantTiles() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 200,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddTransitionVariantTiles() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 215,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddTransitionTile() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 215,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "AddTransitionTile() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 14,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 35,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 46,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 61,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 91,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 99,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 107,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 110,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 114,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 120,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 137,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 142,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 157,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 171,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 175,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 211,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
+          "line": 237,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
         }
       ]
     },
@@ -72141,8 +71639,8 @@
           "line": 19,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
+          "message": "line is 98 chars",
+          "metric": 98
         },
         {
           "file": "Tests/Core/Services/TerrainCollisionShapeGeneratorTest.cs",
@@ -77960,6 +77458,229 @@
       ]
     },
     {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "errors": 0,
+      "warnings": 26,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "function-length": 1,
+        "stateless-method": 3,
+        "comment-restates-code": 2,
+        "line-length": 18
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 260 lines",
+          "metric": 260
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 136,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "OnButtonPressed() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 136,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "OnButtonPressed() is 52 lines",
+          "metric": 52
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 37,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "nameof() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 38,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "nameof() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 104,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnSlotsUpdated() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 163,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 216,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 28,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 29,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 31,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 47,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 60,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 111,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 123,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 127,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 148,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 173,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 177,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 190,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 192,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 204,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 208,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 224,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 237,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
       "errors": 0,
       "warnings": 26,
@@ -79289,221 +79010,6 @@
           "severity": "warn",
           "message": "line is 99 chars",
           "metric": 99
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "errors": 0,
-      "warnings": 25,
-      "rules": {
-        "file-length": 1,
-        "complexity": 1,
-        "function-length": 1,
-        "stateless-method": 3,
-        "comment-restates-code": 2,
-        "line-length": 17
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 260 lines",
-          "metric": 260
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 136,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "OnButtonPressed() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 136,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "OnButtonPressed() is 52 lines",
-          "metric": 52
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 37,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "nameof() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 38,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "nameof() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 104,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "OnSlotsUpdated() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 163,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 216,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 19,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 28,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 31,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 47,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 60,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 111,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 123,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 127,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 148,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 173,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 177,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 190,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 192,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 204,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 208,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 224,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 237,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
         }
       ]
     },
@@ -86915,8 +86421,8 @@
           "line": 53,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
+          "message": "line is 91 chars",
+          "metric": 91
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainWfcRunner.cs",
@@ -87324,9 +86830,9 @@
         "complexity": 3,
         "function-length": 2,
         "param-count": 1,
-        "stateless-method": 3,
+        "stateless-method": 2,
         "comment-restates-code": 1,
-        "line-length": 10
+        "line-length": 11
       },
       "items": [
         {
@@ -87403,19 +86909,19 @@
         },
         {
           "file": "Scripts/Core/Services/SimpleVisibilityChecker.cs",
-          "line": 56,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "CanSeeBresenham() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/SimpleVisibilityChecker.cs",
           "line": 130,
           "rule": "comment-restates-code",
           "severity": "warn",
           "message": "comment repeats the declaration below it - say why, not what",
           "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/SimpleVisibilityChecker.cs",
+          "line": 29,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
         },
         {
           "file": "Scripts/Core/Services/SimpleVisibilityChecker.cs",
@@ -87430,8 +86936,8 @@
           "line": 56,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
+          "message": "line is 98 chars",
+          "metric": 98
         },
         {
           "file": "Scripts/Core/Services/SimpleVisibilityChecker.cs",
@@ -90039,12 +89545,12 @@
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 142 lines",
-          "metric": 142
+          "message": "file is 143 lines",
+          "metric": 143
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 46,
+          "line": 47,
           "rule": "complexity",
           "severity": "warn",
           "message": "TryMerge() cyclomatic complexity 8",
@@ -90052,7 +89558,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 105,
+          "line": 106,
           "rule": "complexity",
           "severity": "warn",
           "message": "MergeTrianglesToQuad() cyclomatic complexity 7",
@@ -90060,7 +89566,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 46,
+          "line": 47,
           "rule": "function-length",
           "severity": "warn",
           "message": "TryMerge() is 33 lines",
@@ -90068,7 +89574,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 46,
+          "line": 47,
           "rule": "param-count",
           "severity": "warn",
           "message": "TryMerge() takes 6 parameters",
@@ -90100,7 +89606,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 75,
+          "line": 76,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 84 chars",
@@ -90108,7 +89614,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 80,
+          "line": 81,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 115 chars",
@@ -90116,7 +89622,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 91,
+          "line": 92,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 90 chars",
@@ -90124,7 +89630,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 93,
+          "line": 94,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 102 chars",
@@ -90132,7 +89638,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 105,
+          "line": 106,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 119 chars",
@@ -90140,7 +89646,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 110,
+          "line": 111,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 89 chars",
@@ -90148,7 +89654,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 112,
+          "line": 113,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 89 chars",
@@ -90156,7 +89662,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 116,
+          "line": 117,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 98 chars",
@@ -90164,7 +89670,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 119,
+          "line": 120,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 112 chars",
@@ -90172,7 +89678,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 122,
+          "line": 123,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 98 chars",
@@ -90180,7 +89686,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 125,
+          "line": 126,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 112 chars",
@@ -90188,7 +89694,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
-          "line": 130,
+          "line": 131,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 104 chars",
@@ -94360,6 +93866,163 @@
           "severity": "warn",
           "message": "line is 100 chars",
           "metric": 100
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+      "errors": 0,
+      "warnings": 18,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "param-count": 2,
+        "line-length": 14
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 125 lines",
+          "metric": 125
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 23,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GenerateTerrainTransitions() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 51,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "SampleCorners() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 118,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "GetCellSafe() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 22,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 30,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 44,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 51,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 73,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 104,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 107,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 109,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 111,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 113,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapTerrainGenerator.cs",
+          "line": 118,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
         }
       ]
     },
@@ -99038,12 +98701,12 @@
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 195 lines",
-          "metric": 195
+          "message": "file is 196 lines",
+          "metric": 196
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-          "line": 74,
+          "line": 75,
           "rule": "param-count",
           "severity": "warn",
           "message": "BuildNewPositions() takes 5 parameters",
@@ -99051,7 +98714,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-          "line": 97,
+          "line": 98,
           "rule": "param-count",
           "severity": "warn",
           "message": "RelaxVertex() takes 5 parameters",
@@ -99059,7 +98722,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-          "line": 112,
+          "line": 113,
           "rule": "param-count",
           "severity": "warn",
           "message": "ComputeAreaCorrection() takes 5 parameters",
@@ -99123,7 +98786,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-          "line": 91,
+          "line": 92,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 99 chars",
@@ -99131,7 +98794,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-          "line": 107,
+          "line": 108,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 97 chars",
@@ -99139,7 +98802,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-          "line": 140,
+          "line": 141,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 95 chars",
@@ -99147,7 +98810,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-          "line": 148,
+          "line": 149,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 84 chars",
@@ -99155,7 +98818,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
-          "line": 187,
+          "line": 188,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 82 chars",
@@ -104120,133 +103783,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-      "errors": 0,
-      "warnings": 14,
-      "rules": {
-        "file-length": 1,
-        "function-length": 1,
-        "param-count": 1,
-        "else-branch": 1,
-        "stateless-method": 2,
-        "line-length": 8
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 126 lines",
-          "metric": 126
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-          "line": 39,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "MapForegroundToVertices() is 34 lines",
-          "metric": 34
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-          "line": 113,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "ToGridPosition() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-          "line": 39,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "MapForegroundToVertices() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-          "line": 22,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "MapBackgroundToQuads() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-          "line": 74,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ClearForeground() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-          "line": 32,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-          "line": 33,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-          "line": 36,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-          "line": 50,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-          "line": 70,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-          "line": 87,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-          "line": 121,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
-          "line": 122,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        }
-      ]
-    },
-    {
       "file": "Tests/Core/Services/TileRegistryScenarios/TileRegistryLookupTest.cs",
       "errors": 0,
       "warnings": 14,
@@ -108849,6 +108385,116 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
+      "errors": 0,
+      "warnings": 12,
+      "rules": {
+        "file-length": 1,
+        "function-length": 1,
+        "param-count": 1,
+        "else-branch": 1,
+        "line-length": 8
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 126 lines",
+          "metric": 126
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
+          "line": 39,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "MapForegroundToVertices() is 34 lines",
+          "metric": 34
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
+          "line": 113,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "ToGridPosition() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
+          "line": 39,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "MapForegroundToVertices() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
+          "line": 32,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
+          "line": 33,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
+          "line": 50,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
+          "line": 70,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
+          "line": 87,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
+          "line": 121,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
+          "line": 122,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/BiomeAffinityConstraint.cs",
       "errors": 0,
       "warnings": 12,
@@ -111521,106 +111167,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-      "errors": 0,
-      "warnings": 11,
-      "rules": {
-        "file-length": 1,
-        "complexity": 1,
-        "line-length": 9
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 108 lines",
-          "metric": 108
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-          "line": 29,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "Build() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-          "line": 7,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 106 chars",
-          "metric": 106
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-          "line": 19,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-          "line": 27,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-          "line": 35,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-          "line": 72,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-          "line": 82,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-          "line": 84,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-          "line": 98,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
-          "line": 99,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/Worldgen/Wfc/WfcAdjacencyRules.cs",
       "errors": 0,
       "warnings": 11,
@@ -113960,6 +113506,98 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
+      "errors": 0,
+      "warnings": 10,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "line-length": 8
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 107 lines",
+          "metric": 107
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
+          "line": 28,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "Build() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
+          "line": 8,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
+          "line": 18,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
+          "line": 26,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
+          "line": 34,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
+          "line": 69,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
+          "line": 83,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
+          "line": 97,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs",
+          "line": 98,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        }
+      ]
+    },
+    {
       "file": "Tests/Features/Card/Controllers/BlacklightControllerTest.cs",
       "errors": 0,
       "warnings": 10,
@@ -115807,12 +115445,12 @@
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 131 lines",
-          "metric": 131
+          "message": "file is 132 lines",
+          "metric": 132
         },
         {
           "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-          "line": 43,
+          "line": 44,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "nameof() never touches instance state — make it a free function",
@@ -115820,7 +115458,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-          "line": 127,
+          "line": 128,
           "rule": "flag-parameter",
           "severity": "warn",
           "message": "EndCombat() takes a boolean flag; split the behavior or name the policy",
@@ -115828,7 +115466,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-          "line": 9,
+          "line": 10,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 86 chars",
@@ -115836,7 +115474,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-          "line": 10,
+          "line": 11,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 108 chars",
@@ -115844,7 +115482,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-          "line": 33,
+          "line": 34,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 82 chars",
@@ -115852,7 +115490,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-          "line": 87,
+          "line": 88,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 83 chars",
@@ -115860,7 +115498,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-          "line": 94,
+          "line": 95,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 82 chars",
@@ -115868,7 +115506,7 @@
         },
         {
           "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
-          "line": 97,
+          "line": 98,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 97 chars",
@@ -116233,12 +115871,12 @@
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 257 lines",
-          "metric": 257
+          "message": "file is 251 lines",
+          "metric": 251
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
-          "line": 236,
+          "line": 230,
           "rule": "else-branch",
           "severity": "warn",
           "message": "Union() has 1 else branch(es) — prefer guard clauses",
@@ -116246,7 +115884,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
-          "line": 217,
+          "line": 211,
           "rule": "stateless-method",
           "severity": "warn",
           "message": "Clear() never touches instance state — make it a free function",
@@ -116270,7 +115908,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
-          "line": 57,
+          "line": 53,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 85 chars",
@@ -116278,7 +115916,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
-          "line": 120,
+          "line": 114,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 82 chars",
@@ -116286,7 +115924,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
-          "line": 162,
+          "line": 156,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 83 chars",
@@ -116294,7 +115932,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
-          "line": 191,
+          "line": 185,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 85 chars",
@@ -119560,6 +119198,82 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+      "errors": 0,
+      "warnings": 8,
+      "rules": {
+        "stateless-method": 1,
+        "comment-bloat": 1,
+        "line-length": 6
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 42,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CanSee() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 6,
+          "rule": "comment-bloat",
+          "severity": "warn",
+          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 8,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 24,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 25,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 119 chars",
+          "metric": 119
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 51,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 56,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 70,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        }
+      ]
+    },
+    {
       "file": "Tests/Core/PropertyTesting/Generators/GradientArbitraries.cs",
       "errors": 0,
       "warnings": 8,
@@ -121032,74 +120746,6 @@
           "severity": "warn",
           "message": "line is 96 chars",
           "metric": 96
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-      "errors": 0,
-      "warnings": 7,
-      "rules": {
-        "stateless-method": 1,
-        "comment-bloat": 1,
-        "line-length": 5
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 42,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "CanSee() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 6,
-          "rule": "comment-bloat",
-          "severity": "warn",
-          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 8,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 24,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 25,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 119 chars",
-          "metric": 119
-        },
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 56,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 70,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
         }
       ]
     },
@@ -126164,12 +125810,12 @@
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 229 lines",
-          "metric": 229
+          "message": "file is 227 lines",
+          "metric": 227
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/Debug/IrregularMeshDebugRenderer.cs",
-          "line": 186,
+          "line": 184,
           "rule": "complexity",
           "severity": "warn",
           "message": "_Draw() cyclomatic complexity 10",
@@ -126177,7 +125823,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/Debug/IrregularMeshDebugRenderer.cs",
-          "line": 186,
+          "line": 184,
           "rule": "function-length",
           "severity": "warn",
           "message": "_Draw() is 42 lines",
@@ -126185,7 +125831,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/Debug/IrregularMeshDebugRenderer.cs",
-          "line": 140,
+          "line": 139,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 107 chars",
@@ -130996,24 +130642,6 @@
           "severity": "warn",
           "message": "line is 86 chars",
           "metric": 86
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/TerrainSelection.cs",
-      "errors": 0,
-      "warnings": 1,
-      "rules": {
-        "line-length": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/TerrainSelection.cs",
-          "line": 3,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
         }
       ]
     },
