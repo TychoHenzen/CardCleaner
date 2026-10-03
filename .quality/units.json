@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 471,
+  "fileCount": 477,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
@@ -1104,6 +1104,36 @@
     },
     {
       "path": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderCoordinates.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfo.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfoResolver.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -2359,27 +2389,27 @@
     }
   ],
   "summary": {
-    "total": 7082,
-    "errors": 320,
-    "warnings": 6762,
+    "total": 7092,
+    "errors": 312,
+    "warnings": 6780,
     "byRule": {
       "dead-export": 13,
       "duplicate-block": 169,
       "types-per-file": 42,
-      "file-length": 278,
-      "complexity": 303,
-      "function-length": 339,
+      "file-length": 280,
+      "complexity": 304,
+      "function-length": 336,
       "nesting-depth": 31,
-      "param-count": 138,
-      "unnamed-tuple": 42,
+      "param-count": 141,
+      "unnamed-tuple": 39,
       "test-only-export": 13,
-      "else-branch": 126,
-      "stateless-method": 1303,
+      "else-branch": 124,
+      "stateless-method": 1304,
       "comment-bloat": 54,
       "comment-restates-code": 141,
-      "output-parameter": 20,
-      "flag-parameter": 55,
-      "line-length": 4015
+      "output-parameter": 23,
+      "flag-parameter": 57,
+      "line-length": 4021
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
@@ -2451,7 +2481,6 @@
       "Scripts/Core/Services/GameSaveService.cs": 28,
       "Scripts/Core/Services/TileRegistry.cs": 56,
       "Scripts/Core/Services/TilesetLoading/TileDefinitionBuilder.cs": 75,
-      "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs": 42,
       "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs": 57,
       "Scripts/Features/Deckbuilder/Services/GameSessionService.cs": 73,
       "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs": 88,
@@ -2572,6 +2601,9 @@
       "Scripts/Features/Deckbuilder/Components/InteractableButton.cs": 14,
       "Scripts/Features/Deckbuilder/Components/WorldMapBiomeOverlay.cs": 5,
       "Scripts/Features/Deckbuilder/Components/WorldMapFogManager.cs": 16,
+      "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs": 11,
+      "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs": 8,
+      "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs": 15,
       "Scripts/Features/Deckbuilder/Models/DeckSlot.cs": 19,
       "Scripts/Features/Deckbuilder/Services/Combat/CombatCommand.cs": 8,
       "Scripts/Features/Deckbuilder/Services/GridCellEventAdapter.cs": 4,
@@ -2687,6 +2719,7 @@
       "addons/tile_editor/VariantMappingEditor.cs": 10,
       "Scripts/Core/Services/PlayerResetService.cs": 9,
       "Scripts/Features/Conveyor/Components/ConveyorBelt.cs": 4,
+      "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs": 10,
       "Scripts/Features/Worldgen/Wfc/Constraints/TileProbabilityConstraint.cs": 16,
       "Tests/Features/Deckbuilder/Services/TilePassabilityDiagnosticTest.cs": 8,
       "addons/tile_editor/TileAtlas/TileAtlasTransitionValidator.cs": 6,
@@ -2720,6 +2753,7 @@
       "Scripts/Features/Card/Controllers/BlacklightController.cs": 7,
       "Scripts/Features/Card/Models/GemVisual.cs": 13,
       "Scripts/Features/Card/Models/RarityVisual.cs": 1,
+      "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfoResolver.cs": 5,
       "Scripts/Features/Deckbuilder/Services/Combat/CombatCommandInvoker.cs": 3,
       "Scripts/Features/Deckbuilder/Services/Exploration/FrontierExplorationStrategy.cs": 2,
       "Scripts/Features/Deckbuilder/Services/Exploration/PathToEnemyStrategy.cs": 1,
@@ -2769,6 +2803,8 @@
       "Scripts/Features/Card/Components/CardDropper.cs": 2,
       "Scripts/Features/Card/Components/CardShaderRenderer.cs": 2,
       "Scripts/Features/Card/Services/SignatureCardHelper.cs": 1,
+      "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderCoordinates.cs": 2,
+      "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfo.cs": 1,
       "Scripts/Features/Deckbuilder/Services/SimpleGeneratedMap.cs": 1,
       "Scripts/Features/Deckbuilder/Services/TerrainSelection.cs": 1,
       "Scripts/Features/Deckbuilder/Tiles/TileMode.cs": 5,
@@ -3577,14 +3613,6 @@
       "metric": 359
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 337 lines",
-      "metric": 337
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
       "line": 1,
       "rule": "file-length",
@@ -4177,30 +4205,6 @@
       "metric": 20
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 65,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "RenderTerrainTransitions() cyclomatic complexity 11",
-      "metric": 11
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 124,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "private() cyclomatic complexity 17",
-      "metric": 17
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 210,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "RenderNonTerrainTiles() cyclomatic complexity 16",
-      "metric": 16
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Services/ExplorationAI.cs",
       "line": 263,
       "rule": "complexity",
@@ -4665,14 +4669,6 @@
       "metric": 68
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 124,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "private() is 82 lines",
-      "metric": 82
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs",
       "line": 93,
       "rule": "function-length",
@@ -5030,30 +5026,6 @@
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (Vector2I Min, Vector2I Max) GetBounds( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 124,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (int sourceId, Vector2I atlasCoords) ResolveTransitionCoords( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 273,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (int sourceId, Vector2I atlasCoords, TileLayer layer, Vector2I size) GetTileRenderInfoFull( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 296,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (int sourceId, Vector2I atlasCoords) GetTileRenderInfo( — replace it with a named type",
       "metric": 1
     },
     {
@@ -6759,6 +6731,30 @@
       "severity": "warn",
       "message": "file is 222 lines",
       "metric": 222
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 130 lines",
+      "metric": 130
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 105 lines",
+      "metric": 105
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 122 lines",
+      "metric": 122
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
@@ -8482,11 +8478,43 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 305,
+      "line": 98,
       "rule": "complexity",
       "severity": "warn",
       "message": "LogTileRenderingSample() cyclomatic complexity 7",
       "metric": 7
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+      "line": 46,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "RenderTile() cyclomatic complexity 7",
+      "metric": 7
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+      "line": 26,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "Render() cyclomatic complexity 6",
+      "metric": 6
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+      "line": 54,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "RenderOverlay() cyclomatic complexity 6",
+      "metric": 6
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 22,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "Resolve() cyclomatic complexity 6",
+      "metric": 6
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
@@ -10386,23 +10414,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 65,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "RenderTerrainTransitions() is 58 lines",
-      "metric": 58
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 210,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "RenderNonTerrainTiles() is 59 lines",
-      "metric": 59
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 305,
+      "line": 98,
       "rule": "function-length",
       "severity": "warn",
       "message": "LogTileRenderingSample() is 31 lines",
@@ -12858,19 +12870,43 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 28,
+      "line": 26,
       "rule": "param-count",
       "severity": "warn",
       "message": "WorldMapTerrainRenderer() takes 6 parameters",
       "metric": 6
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 273,
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+      "line": 15,
       "rule": "param-count",
       "severity": "warn",
-      "message": "public() takes 4 parameters",
+      "message": "NonTerrainTileRenderer() takes 4 parameters",
       "metric": 4
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+      "line": 54,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "RenderOverlay() takes 5 parameters",
+      "metric": 5
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 22,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "Resolve() takes 6 parameters",
+      "metric": 6
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 97,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "ResolveTransition() takes 6 parameters",
+      "metric": 6
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/Combat/CombatCommand.cs",
@@ -13855,22 +13891,6 @@
       "severity": "warn",
       "message": "UpdateVisibility() has 2 else branch(es) — prefer guard clauses",
       "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 65,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "RenderTerrainTransitions() has 1 else branch(es) — prefer guard clauses",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 124,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "private() has 6 else branch(es) — prefer guard clauses",
-      "metric": 6
     },
     {
       "file": "Scripts/Features/Deckbuilder/Models/DeckSlot.cs",
@@ -15689,11 +15709,19 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 296,
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+      "line": 27,
       "rule": "stateless-method",
       "severity": "warn",
-      "message": "public() never touches instance state — make it a free function",
+      "message": "Render() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfoResolver.cs",
+      "line": 31,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "Resolve() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -26809,6 +26837,30 @@
       "metric": 1
     },
     {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 22,
+      "rule": "output-parameter",
+      "severity": "warn",
+      "message": "Resolve() exposes an output parameter; return a value instead",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 73,
+      "rule": "output-parameter",
+      "severity": "warn",
+      "message": "ResolveSolidFill() exposes an output parameter; return a value instead",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 97,
+      "rule": "output-parameter",
+      "severity": "warn",
+      "message": "ResolveTransition() exposes an output parameter; return a value instead",
+      "metric": 1
+    },
+    {
       "file": "Scripts/Features/Worldgen/AutoTiling/AutoTileFormatRegistry.cs",
       "line": 67,
       "rule": "output-parameter",
@@ -26962,10 +27014,26 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 28,
+      "line": 26,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "WorldMapTerrainRenderer() takes a boolean flag; split the behavior or name the policy",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+      "line": 16,
+      "rule": "flag-parameter",
+      "severity": "warn",
+      "message": "TerrainTransitionRenderer() takes a boolean flag; split the behavior or name the policy",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 13,
+      "rule": "flag-parameter",
+      "severity": "warn",
+      "message": "TerrainTransitionResolver() takes a boolean flag; split the behavior or name the policy",
       "metric": 1
     },
     {
@@ -32554,103 +32622,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 72,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 94 chars",
-      "metric": 94
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 83,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 95,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 115,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 117,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 104 chars",
-      "metric": 104
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 121,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 99 chars",
-      "metric": 99
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 144,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 147,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 155,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 156,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 164,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 171,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 173,
+      "line": 4,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -32658,15 +32630,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 195,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 208,
+      "line": 72,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -32674,7 +32638,23 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 212,
+      "line": 104,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+      "line": 105,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+      "line": 112,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -32682,67 +32662,203 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 226,
+      "line": 125,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
+      "message": "line is 109 chars",
+      "metric": 109
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 251,
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+      "line": 6,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
+      "message": "line is 93 chars",
+      "metric": 93
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 266,
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+      "line": 46,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 104 chars",
-      "metric": 104
+      "message": "line is 90 chars",
+      "metric": 90
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 273,
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+      "line": 60,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+      "line": 63,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+      "line": 8,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+      "line": 33,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+      "line": 40,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+      "line": 47,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 116 chars",
       "metric": 116
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 311,
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+      "line": 51,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
+      "message": "line is 105 chars",
+      "metric": 105
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 312,
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+      "line": 80,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
+      "message": "line is 94 chars",
+      "metric": 94
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 319,
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 6,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
+      "message": "line is 93 chars",
+      "metric": 93
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "line": 332,
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 37,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 109 chars",
-      "metric": 109
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 60,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 65,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 70,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 83,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "line": 94,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderCoordinates.cs",
+      "line": 3,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderCoordinates.cs",
+      "line": 5,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfo.cs",
+      "line": 4,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfoResolver.cs",
+      "line": 4,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfoResolver.cs",
+      "line": 22,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfoResolver.cs",
+      "line": 27,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfoResolver.cs",
+      "line": 28,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
@@ -61495,360 +61611,6 @@
           "severity": "warn",
           "message": "line is 81 chars",
           "metric": 81
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-      "errors": 8,
-      "warnings": 34,
-      "rules": {
-        "file-length": 1,
-        "complexity": 4,
-        "function-length": 4,
-        "unnamed-tuple": 3,
-        "param-count": 2,
-        "else-branch": 2,
-        "stateless-method": 1,
-        "flag-parameter": 1,
-        "line-length": 24
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 337 lines",
-          "metric": 337
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 65,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "RenderTerrainTransitions() cyclomatic complexity 11",
-          "metric": 11
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 124,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "private() cyclomatic complexity 17",
-          "metric": 17
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 210,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "RenderNonTerrainTiles() cyclomatic complexity 16",
-          "metric": 16
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 124,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "private() is 82 lines",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 124,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (int sourceId, Vector2I atlasCoords) ResolveTransitionCoords( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 273,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (int sourceId, Vector2I atlasCoords, TileLayer layer, Vector2I size) GetTileRenderInfoFull( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 296,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (int sourceId, Vector2I atlasCoords) GetTileRenderInfo( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 305,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "LogTileRenderingSample() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 65,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "RenderTerrainTransitions() is 58 lines",
-          "metric": 58
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 210,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "RenderNonTerrainTiles() is 59 lines",
-          "metric": 59
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 305,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "LogTileRenderingSample() is 31 lines",
-          "metric": 31
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 28,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "WorldMapTerrainRenderer() takes 6 parameters",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 273,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "public() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 65,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "RenderTerrainTransitions() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 124,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "private() has 6 else branch(es) — prefer guard clauses",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 296,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "public() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 28,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "WorldMapTerrainRenderer() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 72,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 83,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 95,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 115,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 117,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 121,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 144,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 147,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 155,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 156,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 164,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 171,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 173,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 195,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 208,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 212,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 226,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 251,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 266,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 273,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 116 chars",
-          "metric": 116
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 311,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 312,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 319,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
-          "line": 332,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
         }
       ]
     },
@@ -107992,6 +107754,141 @@
       ]
     },
     {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+      "errors": 0,
+      "warnings": 15,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "param-count": 2,
+        "output-parameter": 3,
+        "flag-parameter": 1,
+        "line-length": 7
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 122 lines",
+          "metric": 122
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 22,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "Resolve() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 22,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "Resolve() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 97,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "ResolveTransition() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 22,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "Resolve() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 73,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "ResolveSolidFill() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 97,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "ResolveTransition() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 13,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "TerrainTransitionResolver() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 6,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 60,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 65,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 70,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 83,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs",
+          "line": 94,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/WfcCellState.cs",
       "errors": 0,
       "warnings": 15,
@@ -112803,6 +112700,109 @@
       ]
     },
     {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+      "errors": 0,
+      "warnings": 11,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "function-length": 1,
+        "param-count": 1,
+        "flag-parameter": 1,
+        "line-length": 6
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 130 lines",
+          "metric": 130
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+          "line": 98,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "LogTileRenderingSample() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+          "line": 98,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "LogTileRenderingSample() is 31 lines",
+          "metric": 31
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+          "line": 26,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "WorldMapTerrainRenderer() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+          "line": 26,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "WorldMapTerrainRenderer() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+          "line": 4,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+          "line": 72,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+          "line": 104,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+          "line": 105,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+          "line": 112,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs",
+          "line": 125,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/AutoTiling/AutoTileFormatRegistry.cs",
       "errors": 0,
       "warnings": 11,
@@ -114734,6 +114734,99 @@
       ]
     },
     {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+      "errors": 0,
+      "warnings": 10,
+      "rules": {
+        "complexity": 2,
+        "param-count": 1,
+        "flag-parameter": 1,
+        "line-length": 6
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+          "line": 26,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "Render() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+          "line": 54,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "RenderOverlay() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+          "line": 54,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "RenderOverlay() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+          "line": 16,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "TerrainTransitionRenderer() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+          "line": 8,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+          "line": 33,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+          "line": 47,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 116 chars",
+          "metric": 116
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+          "line": 51,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionRenderer.cs",
+          "line": 80,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
       "errors": 0,
       "warnings": 9,
@@ -115728,6 +115821,84 @@
           "severity": "warn",
           "message": "line is 81 chars",
           "metric": 81
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+      "errors": 0,
+      "warnings": 8,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "param-count": 1,
+        "stateless-method": 1,
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 105 lines",
+          "metric": 105
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+          "line": 46,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "RenderTile() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+          "line": 15,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "NonTerrainTileRenderer() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+          "line": 27,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Render() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+          "line": 6,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+          "line": 46,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+          "line": 60,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs",
+          "line": 63,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
         }
       ]
     },
@@ -118796,6 +118967,57 @@
       ]
     },
     {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfoResolver.cs",
+      "errors": 0,
+      "warnings": 5,
+      "rules": {
+        "stateless-method": 1,
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfoResolver.cs",
+          "line": 31,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Resolve() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfoResolver.cs",
+          "line": 4,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfoResolver.cs",
+          "line": 22,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfoResolver.cs",
+          "line": 27,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfoResolver.cs",
+          "line": 28,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        }
+      ]
+    },
+    {
       "file": "Tests/Core/Utilities/CardSleepEnforcerTest.cs",
       "errors": 0,
       "warnings": 5,
@@ -120957,6 +121179,32 @@
       ]
     },
     {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderCoordinates.cs",
+      "errors": 0,
+      "warnings": 2,
+      "rules": {
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderCoordinates.cs",
+          "line": 3,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderCoordinates.cs",
+          "line": 5,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/CardBasedGradient.cs",
       "errors": 0,
       "warnings": 2,
@@ -121265,6 +121513,24 @@
           "severity": "warn",
           "message": "line is 103 chars",
           "metric": 103
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfo.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TileRenderInfo.cs",
+          "line": 4,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
         }
       ]
     },
