@@ -1,0 +1,29 @@
+[
+  {
+    "findingId": "87bcb072752ead62e42cb9f5aac3889e701167abe3271a0625f013a05bc9a7ea",
+    "fingerprint": "09290c348d179c4eaaa755a3d801b520b1cc344291bc8b9ceee8b2b0712e5ce9",
+    "baseIdentity": "c4edf4be6ef3cbe354bf959d8f1bd4f4fbaf9bf2",
+    "targetIdentity": "4d0908b464bc968415f1f99cc6899fa19aac7e6fda40ca8f7c8fb36d9879eb83",
+    "reason": "Pure type move: PropagationResult struct moved unchanged from WfcPropagator.cs to Contracts/PropagationResult.cs to satisfy types-per-file. It is the return type of public WfcPropagator methods, so it must stay public; members and namespace unchanged.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:22:02.555Z"
+  },
+  {
+    "findingId": "aeede1a68d149d76423d71ca1d1af313e04f230edff8f9bf4e6e11215f33e335",
+    "fingerprint": "09290c348d179c4eaaa755a3d801b520b1cc344291bc8b9ceee8b2b0712e5ce9",
+    "baseIdentity": "c4edf4be6ef3cbe354bf959d8f1bd4f4fbaf9bf2",
+    "targetIdentity": "4d0908b464bc968415f1f99cc6899fa19aac7e6fda40ca8f7c8fb36d9879eb83",
+    "reason": "Pure type move: CollapsedNeighborInfo struct moved unchanged from WfcConstraintContext.cs to Constraints/CollapsedNeighborInfo.cs to satisfy types-per-file. It is the type of the public WfcConstraintContext.NeighborInfo property, so it must stay public; members and namespace unchanged.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:22:52.660Z"
+  },
+  {
+    "findingId": "ff099209654c2d409141be274a37344192ff0d369a4dedb029fd2fdc6a5fd9c2",
+    "fingerprint": "09290c348d179c4eaaa755a3d801b520b1cc344291bc8b9ceee8b2b0712e5ce9",
+    "baseIdentity": "c4edf4be6ef3cbe354bf959d8f1bd4f4fbaf9bf2",
+    "targetIdentity": "4d0908b464bc968415f1f99cc6899fa19aac7e6fda40ca8f7c8fb36d9879eb83",
+    "reason": "Pure type move: CollapsedNeighborInfo.int is the synthesized constructor-signature entry of the same unchanged struct moved from WfcConstraintContext.cs; see the CollapsedNeighborInfo acknowledgement.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:23:42.026Z"
+  }
+]

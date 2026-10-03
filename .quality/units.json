@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 780,
+  "fileCount": 781,
   "files": [
     {
       "path": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
@@ -639,11 +639,6 @@
     },
     {
       "path": "addons/tile_editor/VariantMappingEditor.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "gdunit4_testadapter_v5/GdUnit4TestRunnerScene.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -2353,6 +2348,11 @@
       "classification": "production"
     },
     {
+      "path": "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "Scripts/Features/Worldgen/Wfc/Constraints/ConnectivityConstraint.cs",
       "language": "cs",
       "classification": "production"
@@ -2409,6 +2409,11 @@
     },
     {
       "path": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/Wfc/Contracts/PropagationResult.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -3904,16 +3909,16 @@
     }
   ],
   "summary": {
-    "total": 7470,
-    "errors": 19,
-    "warnings": 7451,
+    "total": 7466,
+    "errors": 16,
+    "warnings": 7450,
     "byRule": {
-      "dead-export": 5,
-      "types-per-file": 13,
+      "dead-export": 4,
+      "types-per-file": 11,
       "unnamed-tuple": 1,
       "test-only-export": 10,
       "duplicate-block": 70,
-      "file-length": 352,
+      "file-length": 351,
       "complexity": 231,
       "function-length": 263,
       "nesting-depth": 11,
@@ -3931,7 +3936,6 @@
       "Scripts/Features/ModularDevices/CardSlotDevice.cs": 5,
       "Scripts/Features/ModularDevices/HexScreenDevice.cs": 1,
       "Scripts/Features/ModularDevices/RectScreenDevice.cs": 2,
-      "gdunit4_testadapter_v5/GdUnit4TestRunnerScene.cs": 1,
       "Scripts/Core/Interfaces/IMapGenerator.cs": 2,
       "Scripts/Core/Interfaces/IProfiler.cs": 6,
       "Scripts/Core/Services/VariationGroup.cs": 8,
@@ -3943,8 +3947,6 @@
       "Scripts/Features/Worldgen/BaselineGradient.cs": 18,
       "Scripts/Features/Worldgen/Biomes/TilePool.cs": 5,
       "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs": 18,
-      "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs": 9,
-      "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs": 27,
       "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs": 21,
       "Scripts/Core/Services/MapGenerationProfiler.cs": 2,
       "Scripts/Features/Worldgen/AutoTiling/AutoTileHelper.cs": 15,
@@ -4091,6 +4093,7 @@
       "Scripts/Features/Worldgen/Wfc/WfcGrid.cs": 33,
       "Scripts/Features/Worldgen/Wfc/WfcMapDataAdapter.cs": 15,
       "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs": 35,
+      "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs": 23,
       "Scripts/Features/Worldgen/Wfc/WfcSolver.cs": 24,
       "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs": 21,
       "Tests/Core/Data/CardTemplateTest.cs": 4,
@@ -4358,6 +4361,7 @@
       "Scripts/Features/Worldgen/Biomes/BiomeDefinition.cs": 6,
       "Scripts/Features/Worldgen/IrregularMesh/Decoration/DecorationMultiMeshLayer.cs": 6,
       "Scripts/Features/Worldgen/IrregularMesh/Rendering/TerrainQuadMeshWriter.cs": 8,
+      "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs": 6,
       "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs": 4,
       "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs": 5,
       "Tests/Core/PropertyTesting/Generators/MapGridArbitrary.cs": 4,
@@ -4436,6 +4440,7 @@
       "Scripts/Features/Deckbuilder/Services/AsyncMapGeneratorAdapter.cs": 11,
       "Scripts/Features/Deckbuilder/Services/IAsyncMapGenerator.cs": 8,
       "Scripts/Features/Worldgen/AutoTiling/BuiltInAutoTileFormats.cs": 5,
+      "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs": 1,
       "Scripts/Features/Worldgen/Wfc/Constraints/IEntropyInvalidator.cs": 6,
       "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs": 7,
       "Scripts/Features/Worldgen/Wfc/Modifiers/Soft/CompactnessSoftModifier.cs": 7,
@@ -4448,6 +4453,7 @@
       "Scripts/Features/Card/Components/DropPreview.cs": 4,
       "Scripts/Features/Player/Controllers/Movement/StuckDetector.cs": 8,
       "Scripts/Features/Worldgen/Wfc/Constraints/Spatial/SpatialCoherenceStats.cs": 7,
+      "Scripts/Features/Worldgen/Wfc/Contracts/PropagationResult.cs": 3,
       "Scripts/Core/Data/InputAction.cs": 1,
       "Scripts/Core/DependencyInjection/ServiceAttribute.cs": 1,
       "Scripts/Core/Devices/Cabling/CableEndpoints.cs": 1,
@@ -4631,14 +4637,6 @@
       "metric": 1
     },
     {
-      "file": "gdunit4_testadapter_v5/GdUnit4TestRunnerScene.cs",
-      "line": 12,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "GdUnit4TestRunnerScene is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
       "file": "Scripts/Core/Interfaces/IMapGenerator.cs",
       "line": 40,
       "rule": "types-per-file",
@@ -4724,22 +4722,6 @@
       "rule": "types-per-file",
       "severity": "error",
       "message": "2 types in one file: DecorationRenderer, DecorationData",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-      "line": 35,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: CollapsedNeighborInfo, WfcConstraintContext",
-      "metric": 2
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 30,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: PropagationResult, WfcPropagator",
       "metric": 2
     },
     {
@@ -6327,14 +6309,6 @@
       "metric": 176
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "warn",
-      "message": "file is 112 lines",
-      "metric": 112
-    },
-    {
       "file": "Scripts/Features/Worldgen/Wfc/EntropyCache.cs",
       "line": 1,
       "rule": "file-length",
@@ -6411,8 +6385,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 186 lines",
-      "metric": 186
+      "message": "file is 166 lines",
+      "metric": 166
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
@@ -9104,7 +9078,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 87,
+      "line": 67,
       "rule": "complexity",
       "severity": "warn",
       "message": "DrainQueue() cyclomatic complexity 6",
@@ -9112,7 +9086,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 144,
+      "line": 124,
       "rule": "complexity",
       "severity": "warn",
       "message": "ComputeValidTiles() cyclomatic complexity 6",
@@ -10784,7 +10758,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 87,
+      "line": 67,
       "rule": "function-length",
       "severity": "warn",
       "message": "DrainQueue() is 31 lines",
@@ -10792,7 +10766,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 144,
+      "line": 124,
       "rule": "function-length",
       "severity": "warn",
       "message": "ComputeValidTiles() is 41 lines",
@@ -12192,7 +12166,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 144,
+      "line": 124,
       "rule": "nesting-depth",
       "severity": "warn",
       "message": "ComputeValidTiles() nests 4 levels deep",
@@ -13064,7 +13038,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-      "line": 82,
+      "line": 58,
       "rule": "param-count",
       "severity": "warn",
       "message": "Create() takes 5 parameters",
@@ -13176,7 +13150,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 122,
+      "line": 102,
       "rule": "param-count",
       "severity": "warn",
       "message": "EnqueueOpenNeighbors() takes 4 parameters",
@@ -14032,7 +14006,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 144,
+      "line": 124,
       "rule": "else-branch",
       "severity": "warn",
       "message": "ComputeValidTiles() has 2 else branch(es) — prefer guard clauses",
@@ -16192,7 +16166,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 46,
+      "line": 26,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "Propagate() never touches instance state — make it a free function",
@@ -16200,7 +16174,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 65,
+      "line": 45,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "PropagateAll() never touches instance state — make it a free function",
@@ -16208,7 +16182,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 87,
+      "line": 67,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "DrainQueue() never touches instance state — make it a free function",
@@ -26999,6 +26973,14 @@
       "metric": 8
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs",
+      "line": 5,
+      "rule": "comment-bloat",
+      "severity": "warn",
+      "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
+      "metric": 5
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/ConnectivityConstraint.cs",
       "line": 121,
       "rule": "comment-bloat",
@@ -27029,14 +27011,6 @@
       "severity": "warn",
       "message": "9-line comment over 3 line(s) of code - keep the why, cut the rest",
       "metric": 9
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-      "line": 7,
-      "rule": "comment-bloat",
-      "severity": "warn",
-      "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
-      "metric": 5
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/EntropyCache.cs",
@@ -28407,6 +28381,14 @@
       "metric": 1
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/PropagationResult.cs",
+      "line": 12,
+      "rule": "flag-parameter",
+      "severity": "warn",
+      "message": "PropagationResult() takes a boolean flag; split the behavior or name the policy",
+      "metric": 1
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs",
       "line": 12,
       "rule": "flag-parameter",
@@ -28420,14 +28402,6 @@
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "WfcSolveResult() takes a boolean flag; split the behavior or name the policy",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 14,
-      "rule": "flag-parameter",
-      "severity": "warn",
-      "message": "PropagationResult() takes a boolean flag; split the behavior or name the policy",
       "metric": 1
     },
     {
@@ -44640,7 +44614,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-      "line": 33,
+      "line": 9,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -44648,7 +44622,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-      "line": 67,
+      "line": 43,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -44656,7 +44630,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-      "line": 74,
+      "line": 50,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -44664,7 +44638,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-      "line": 76,
+      "line": 52,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -44672,11 +44646,27 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-      "line": 80,
+      "line": 56,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
       "metric": 85
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/PropagationResult.cs",
+      "line": 12,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/PropagationResult.cs",
+      "line": 19,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs",
@@ -46024,15 +46014,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 14,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 21,
+      "line": 8,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -46040,15 +46022,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 28,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 45,
+      "line": 25,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -46056,7 +46030,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 46,
+      "line": 26,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -46064,7 +46038,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 85,
+      "line": 65,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -46072,7 +46046,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 87,
+      "line": 67,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 107 chars",
@@ -46080,7 +46054,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 102,
+      "line": 82,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -46088,7 +46062,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 120,
+      "line": 100,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -46096,7 +46070,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 131,
+      "line": 111,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -46104,7 +46078,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 155,
+      "line": 135,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -46112,7 +46086,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 157,
+      "line": 137,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -46120,7 +46094,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 161,
+      "line": 141,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -46128,7 +46102,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "line": 165,
+      "line": 145,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -64879,241 +64853,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-      "errors": 1,
-      "warnings": 26,
-      "rules": {
-        "types-per-file": 1,
-        "file-length": 1,
-        "complexity": 2,
-        "function-length": 2,
-        "nesting-depth": 1,
-        "param-count": 1,
-        "else-branch": 1,
-        "stateless-method": 3,
-        "flag-parameter": 1,
-        "line-length": 14
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 30,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: PropagationResult, WfcPropagator",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 186 lines",
-          "metric": 186
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 87,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "DrainQueue() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 144,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "ComputeValidTiles() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 87,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "DrainQueue() is 31 lines",
-          "metric": 31
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 144,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ComputeValidTiles() is 41 lines",
-          "metric": 41
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 144,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "ComputeValidTiles() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 122,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "EnqueueOpenNeighbors() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 144,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "ComputeValidTiles() has 2 else branch(es) — prefer guard clauses",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 46,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "Propagate() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 65,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "PropagateAll() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 87,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "DrainQueue() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 14,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "PropagationResult() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 14,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 21,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 28,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 45,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 46,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 85,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 87,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 102,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 120,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 131,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 155,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 157,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 161,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
-          "line": 165,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Services/SimpleCombatSystem.cs",
       "errors": 1,
       "warnings": 20,
@@ -65722,92 +65461,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-      "errors": 1,
-      "warnings": 8,
-      "rules": {
-        "types-per-file": 1,
-        "file-length": 1,
-        "param-count": 1,
-        "comment-bloat": 1,
-        "line-length": 5
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-          "line": 35,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: CollapsedNeighborInfo, WfcConstraintContext",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 112 lines",
-          "metric": 112
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-          "line": 82,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "Create() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-          "line": 7,
-          "rule": "comment-bloat",
-          "severity": "warn",
-          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-          "line": 33,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-          "line": 67,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-          "line": 74,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-          "line": 76,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-          "line": 80,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        }
-      ]
-    },
-    {
       "file": "Scripts/Core/Services/VariationGroup.cs",
       "errors": 1,
       "warnings": 7,
@@ -66179,24 +65832,6 @@
           "rule": "dead-export",
           "severity": "error",
           "message": "HexScreenDevice is exported but never referenced anywhere",
-          "metric": 1
-        }
-      ]
-    },
-    {
-      "file": "gdunit4_testadapter_v5/GdUnit4TestRunnerScene.cs",
-      "errors": 1,
-      "warnings": 0,
-      "rules": {
-        "dead-export": 1
-      },
-      "items": [
-        {
-          "file": "gdunit4_testadapter_v5/GdUnit4TestRunnerScene.cs",
-          "line": 12,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "GdUnit4TestRunnerScene is exported but never referenced anywhere",
           "metric": 1
         }
       ]
@@ -85970,6 +85605,207 @@
           "severity": "warn",
           "message": "line is 89 chars",
           "metric": 89
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+      "errors": 0,
+      "warnings": 23,
+      "rules": {
+        "file-length": 1,
+        "complexity": 2,
+        "function-length": 2,
+        "nesting-depth": 1,
+        "param-count": 1,
+        "else-branch": 1,
+        "stateless-method": 3,
+        "line-length": 12
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 166 lines",
+          "metric": 166
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 67,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "DrainQueue() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 124,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "ComputeValidTiles() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 67,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "DrainQueue() is 31 lines",
+          "metric": 31
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 124,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "ComputeValidTiles() is 41 lines",
+          "metric": 41
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 124,
+          "rule": "nesting-depth",
+          "severity": "warn",
+          "message": "ComputeValidTiles() nests 4 levels deep",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 102,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "EnqueueOpenNeighbors() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 124,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "ComputeValidTiles() has 2 else branch(es) — prefer guard clauses",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 26,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Propagate() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 45,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "PropagateAll() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 67,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "DrainQueue() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 8,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 25,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 26,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 65,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 67,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 82,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 100,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 111,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 135,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 137,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 141,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs",
+          "line": 145,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
         }
       ]
     },
@@ -124288,6 +124124,65 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+      "errors": 0,
+      "warnings": 6,
+      "rules": {
+        "param-count": 1,
+        "line-length": 5
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+          "line": 58,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "Create() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+          "line": 9,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+          "line": 43,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+          "line": 50,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+          "line": 52,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+          "line": 56,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/Connectivity/Graph/ArticulationPointFinder.cs",
       "errors": 0,
       "warnings": 6,
@@ -129129,6 +129024,41 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Contracts/PropagationResult.cs",
+      "errors": 0,
+      "warnings": 3,
+      "rules": {
+        "flag-parameter": 1,
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Contracts/PropagationResult.cs",
+          "line": 12,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "PropagationResult() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Contracts/PropagationResult.cs",
+          "line": 12,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Contracts/PropagationResult.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        }
+      ]
+    },
+    {
       "file": "Scripts/Core/Interfaces/IPlayerResetService.cs",
       "errors": 0,
       "warnings": 3,
@@ -131179,6 +131109,24 @@
           "severity": "warn",
           "message": "GetValue() never touches instance state — make it a free function",
           "metric": 1
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "comment-bloat": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs",
+          "line": 5,
+          "rule": "comment-bloat",
+          "severity": "warn",
+          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
+          "metric": 5
         }
       ]
     },

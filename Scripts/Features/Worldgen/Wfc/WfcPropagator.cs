@@ -3,26 +3,6 @@ using System.Collections.Generic;
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
-/// Result of a propagation operation.
-/// </summary>
-public readonly struct PropagationResult
-{
-    public bool Success { get; }
-    public int? ContradictionCellId { get; }
-    public int CellsUpdated { get; }
-
-    public PropagationResult(bool success, int cellsUpdated, int? contradictionCellId = null)
-    {
-        Success = success;
-        CellsUpdated = cellsUpdated;
-        ContradictionCellId = contradictionCellId;
-    }
-
-    public static PropagationResult Succeeded(int cellsUpdated) => new(true, cellsUpdated);
-    public static PropagationResult Failed(int cellId) => new(false, 0, cellId);
-}
-
-/// <summary>
 /// Propagates constraints through the WFC topology after a cell collapse.
 /// Uses work queue to iteratively reduce neighbor possibilities.
 /// Topology-agnostic: works with rectangular grids, irregular meshes, or any IWfcTopology.
