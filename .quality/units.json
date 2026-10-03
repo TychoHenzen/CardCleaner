@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 495,
+  "fileCount": 505,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
@@ -1598,6 +1598,56 @@
       "classification": "production"
     },
     {
+      "path": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexCoordinate.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshConverter.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshEdge.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshPositionKey.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/WorkingFace.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/WorkingMesh.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
       "language": "cs",
       "classification": "production"
@@ -2479,27 +2529,27 @@
     }
   ],
   "summary": {
-    "total": 7051,
-    "errors": 290,
-    "warnings": 6761,
+    "total": 7072,
+    "errors": 285,
+    "warnings": 6787,
     "byRule": {
       "dead-export": 13,
-      "duplicate-block": 164,
+      "duplicate-block": 166,
       "types-per-file": 40,
-      "file-length": 289,
-      "complexity": 294,
-      "function-length": 327,
-      "nesting-depth": 31,
-      "param-count": 151,
-      "unnamed-tuple": 39,
+      "file-length": 291,
+      "complexity": 292,
+      "function-length": 323,
+      "nesting-depth": 29,
+      "param-count": 157,
+      "unnamed-tuple": 38,
       "test-only-export": 13,
-      "else-branch": 121,
-      "stateless-method": 1304,
+      "else-branch": 120,
+      "stateless-method": 1301,
       "comment-bloat": 53,
-      "comment-restates-code": 134,
+      "comment-restates-code": 127,
       "output-parameter": 27,
       "flag-parameter": 58,
-      "line-length": 3993
+      "line-length": 4024
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
@@ -2578,7 +2628,6 @@
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs": 8,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularTerrainRenderer.cs": 57,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs": 48,
-      "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs": 61,
       "Scripts/Features/Worldgen/IrregularMesh/MeshQuad.cs": 32,
       "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraph.cs": 40,
       "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs": 40,
@@ -2646,6 +2695,7 @@
       "Scripts/Features/Card/Services/SignatureCardGenerator.cs": 23,
       "Scripts/Features/Deckbuilder/Services/ExplorationAI.cs": 18,
       "Scripts/Features/ModularDevices/ScreenDeviceBase.cs": 11,
+      "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs": 21,
       "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainWfcRunner.cs": 21,
       "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs": 17,
       "Tests/Core/Services/TiledTilesetLoaderTest.cs": 22,
@@ -2715,6 +2765,8 @@
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshFogRenderer.cs": 16,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs": 8,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshWfcTopology.cs": 6,
+      "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs": 16,
+      "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs": 20,
       "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs": 12,
       "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs": 14,
       "Scripts/Features/Worldgen/Wfc/Constraints/BiomeAffinityConstraint.cs": 12,
@@ -2842,6 +2894,7 @@
       "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs": 9,
       "addons/tile_editor/VariantMapping/VariantCell.cs": 1,
       "Scripts/Core/Interfaces/ILog.cs": 3,
+      "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs": 10,
       "addons/tile_editor/TileEditorDock.TestHooks.cs": 1,
       "Scripts/Core/Data/GameSettings.cs": 8,
       "Scripts/Core/Data/LayerData.cs": 3,
@@ -2921,6 +2974,10 @@
       "Scripts/Features/Worldgen/Biomes/BiomeMapGenerator.cs": 4,
       "Scripts/Features/Worldgen/CardBasedGradient.cs": 2,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularGeneratedMap.cs": 1,
+      "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshConverter.cs": 3,
+      "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/WorkingFace.cs": 1,
+      "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/WorkingMesh.cs": 1,
+      "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs": 10,
       "Scripts/Features/Worldgen/Wfc/Constraints/IWfcConstraint.cs": 1,
       "Scripts/Features/Worldgen/Wfc/Modifiers/Soft/NoveltySoftModifier.cs": 4,
       "Tests/Core/Data/GameSettingsTest.cs": 2,
@@ -3792,14 +3849,6 @@
       "metric": 569
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 591 lines",
-      "metric": 591
-    },
-    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshQuad.cs",
       "line": 1,
       "rule": "file-length",
@@ -4352,14 +4401,6 @@
       "metric": 25
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 322,
-      "rule": "complexity",
-      "severity": "error",
-      "message": "LloydRelaxation() cyclomatic complexity 12",
-      "metric": 12
-    },
-    {
       "file": "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraph.cs",
       "line": 438,
       "rule": "complexity",
@@ -4712,22 +4753,6 @@
       "metric": 61
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 152,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "MergeAdjacentTriangles() is 62 lines",
-      "metric": 62
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 322,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "LloydRelaxation() is 107 lines",
-      "metric": 107
-    },
-    {
       "file": "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraph.cs",
       "line": 438,
       "rule": "function-length",
@@ -4989,14 +5014,6 @@
       "rule": "unnamed-tuple",
       "severity": "error",
       "message": "tuple (int hidden, int revealed, int visible) GetStatistics( — replace it with a named type",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 215,
-      "rule": "unnamed-tuple",
-      "severity": "error",
-      "message": "tuple (int, int) NormalizeEdge( — replace it with a named type",
       "metric": 1
     },
     {
@@ -5629,6 +5646,22 @@
       "rule": "duplicate-block",
       "severity": "warn",
       "message": "6-line block duplicated at Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs:2, Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs:3",
+      "metric": 2
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 46,
+      "rule": "duplicate-block",
+      "severity": "warn",
+      "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs:46, Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs:73",
+      "metric": 2
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 73,
+      "rule": "duplicate-block",
+      "severity": "warn",
+      "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs:46, Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs:73",
       "metric": 2
     },
     {
@@ -6982,6 +7015,30 @@
       "severity": "warn",
       "message": "file is 188 lines",
       "metric": 188
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 115 lines",
+      "metric": 115
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 195 lines",
+      "metric": 195
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 142 lines",
+      "metric": 142
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
@@ -8928,28 +8985,20 @@
       "metric": 7
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 82,
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 46,
       "rule": "complexity",
       "severity": "warn",
-      "message": "GenerateHexTriangleMesh() cyclomatic complexity 10",
-      "metric": 10
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 152,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "MergeAdjacentTriangles() cyclomatic complexity 10",
-      "metric": 10
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 232,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "MergeTrianglesToQuad() cyclomatic complexity 8",
+      "message": "TryMerge() cyclomatic complexity 8",
       "metric": 8
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 105,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "MergeTrianglesToQuad() cyclomatic complexity 7",
+      "metric": 7
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshQuad.cs",
@@ -10752,28 +10801,12 @@
       "metric": 33
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
       "line": 46,
       "rule": "function-length",
       "severity": "warn",
-      "message": "Generate() is 33 lines",
+      "message": "TryMerge() is 33 lines",
       "metric": 33
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 82,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "GenerateHexTriangleMesh() is 59 lines",
-      "metric": 59
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 508,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "Classes() is 55 lines",
-      "metric": 55
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshQuad.cs",
@@ -12480,22 +12513,6 @@
       "metric": 4
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 82,
-      "rule": "nesting-depth",
-      "severity": "warn",
-      "message": "GenerateHexTriangleMesh() nests 4 levels deep",
-      "metric": 4
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 322,
-      "rule": "nesting-depth",
-      "severity": "warn",
-      "message": "LloydRelaxation() nests 4 levels deep",
-      "metric": 4
-    },
-    {
       "file": "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraph.cs",
       "line": 261,
       "rule": "nesting-depth",
@@ -13190,6 +13207,54 @@
       "severity": "warn",
       "message": "ResolveTransition() takes 4 parameters",
       "metric": 4
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 45,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "AddFirstTriangle() takes 6 parameters",
+      "metric": 6
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 72,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "AddSecondTriangle() takes 6 parameters",
+      "metric": 6
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 74,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "BuildNewPositions() takes 5 parameters",
+      "metric": 5
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 97,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "RelaxVertex() takes 5 parameters",
+      "metric": 5
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 112,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "ComputeAreaCorrection() takes 5 parameters",
+      "metric": 5
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 46,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "TryMerge() takes 6 parameters",
+      "metric": 6
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
@@ -14168,16 +14233,8 @@
       "metric": 2
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 232,
-      "rule": "else-branch",
-      "severity": "warn",
-      "message": "MergeTrianglesToQuad() has 1 else branch(es) — prefer guard clauses",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 263,
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+      "line": 7,
       "rule": "else-branch",
       "severity": "warn",
       "message": "SubdivideAllFaces() has 2 else branch(es) — prefer guard clauses",
@@ -16349,30 +16406,6 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "AddTriangle() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 90,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "AxialToCartesian() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 215,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "static() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 218,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "static() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -26144,62 +26177,6 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 56,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 62,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 73,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 193,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 198,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 365,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 486,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/BitmaskValidityConstraint.cs",
       "line": 44,
       "rule": "comment-restates-code",
@@ -27120,11 +27097,11 @@
       "metric": 1
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 322,
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 9,
       "rule": "flag-parameter",
       "severity": "warn",
-      "message": "LloydRelaxation() takes a boolean flag; split the behavior or name the policy",
+      "message": "Relax() takes a boolean flag; split the behavior or name the policy",
       "metric": 1
     },
     {
@@ -39552,6 +39529,454 @@
       "metric": 88
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 21,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 116 chars",
+      "metric": 116
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 22,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 117 chars",
+      "metric": 117
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 55,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 66,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 110 chars",
+      "metric": 110
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 67,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 114 chars",
+      "metric": 114
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 68,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 114 chars",
+      "metric": 114
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 69,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 80,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 82,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 93,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 110 chars",
+      "metric": 110
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 94,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 114 chars",
+      "metric": 114
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 95,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 114 chars",
+      "metric": 114
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 96,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 99,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 112 chars",
+      "metric": 112
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 106,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 104 chars",
+      "metric": 104
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "line": 112,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 102 chars",
+      "metric": 102
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshConverter.cs",
+      "line": 19,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshConverter.cs",
+      "line": 39,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshConverter.cs",
+      "line": 43,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 16,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 22,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 103 chars",
+      "metric": 103
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 23,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 24,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 109 chars",
+      "metric": 109
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 38,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 55,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 91,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 107,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 140,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 148,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "line": 187,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+      "line": 29,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+      "line": 38,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+      "line": 39,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+      "line": 40,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+      "line": 41,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+      "line": 44,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+      "line": 52,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+      "line": 53,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+      "line": 54,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 9,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 19,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 26,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 75,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 80,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 115 chars",
+      "metric": 115
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 91,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 93,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 102 chars",
+      "metric": 102
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 105,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 119 chars",
+      "metric": 119
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 110,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 112,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 116,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 119,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 112 chars",
+      "metric": 112
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 122,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 125,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 112 chars",
+      "metric": 112
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "line": 130,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 104 chars",
+      "metric": 104
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/WorkingFace.cs",
+      "line": 23,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/WorkingMesh.cs",
+      "line": 46,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
       "line": 8,
       "rule": "line-length",
@@ -39593,63 +40018,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 53,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 54,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 114 chars",
-      "metric": 114
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 60,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 65,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 105 chars",
-      "metric": 105
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 70,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 90,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 126,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 132,
+      "line": 52,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -39657,55 +40026,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 134,
+      "line": 53,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
+      "message": "line is 114 chars",
+      "metric": 114
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 142,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 144,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 152,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 103 chars",
-      "metric": 103
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 220,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 232,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 110 chars",
-      "metric": 110
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 280,
+      "line": 58,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -39713,123 +40042,19 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 300,
+      "line": 62,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
+      "message": "line is 105 chars",
+      "metric": 105
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 322,
+      "line": 66,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 335,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 348,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 366,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 367,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 376,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 419,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 107 chars",
-      "metric": 107
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 424,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 88 chars",
-      "metric": 88
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 448,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 467,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 478,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 482,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 528,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 110 chars",
-      "metric": 110
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "line": 529,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 109 chars",
-      "metric": 109
+      "message": "line is 92 chars",
+      "metric": 92
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshQuad.cs",
@@ -63080,513 +63305,6 @@
           "severity": "warn",
           "message": "line is 100 chars",
           "metric": 100
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-      "errors": 5,
-      "warnings": 56,
-      "rules": {
-        "file-length": 1,
-        "complexity": 4,
-        "function-length": 5,
-        "unnamed-tuple": 1,
-        "nesting-depth": 2,
-        "else-branch": 2,
-        "stateless-method": 3,
-        "comment-restates-code": 7,
-        "flag-parameter": 1,
-        "line-length": 35
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 591 lines",
-          "metric": 591
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 322,
-          "rule": "complexity",
-          "severity": "error",
-          "message": "LloydRelaxation() cyclomatic complexity 12",
-          "metric": 12
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 152,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "MergeAdjacentTriangles() is 62 lines",
-          "metric": 62
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 322,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "LloydRelaxation() is 107 lines",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 215,
-          "rule": "unnamed-tuple",
-          "severity": "error",
-          "message": "tuple (int, int) NormalizeEdge( — replace it with a named type",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 82,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GenerateHexTriangleMesh() cyclomatic complexity 10",
-          "metric": 10
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 152,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "MergeAdjacentTriangles() cyclomatic complexity 10",
-          "metric": 10
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 232,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "MergeTrianglesToQuad() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 46,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "Generate() is 33 lines",
-          "metric": 33
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 82,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "GenerateHexTriangleMesh() is 59 lines",
-          "metric": 59
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 508,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "Classes() is 55 lines",
-          "metric": 55
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 82,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "GenerateHexTriangleMesh() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 322,
-          "rule": "nesting-depth",
-          "severity": "warn",
-          "message": "LloydRelaxation() nests 4 levels deep",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 232,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "MergeTrianglesToQuad() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 263,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "SubdivideAllFaces() has 2 else branch(es) — prefer guard clauses",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 90,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "AxialToCartesian() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 215,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "static() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 218,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "static() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 56,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 62,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 73,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 193,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 198,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 365,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 486,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 322,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "LloydRelaxation() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 8,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 16,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 22,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 28,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 31,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 53,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 54,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 60,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 65,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 70,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 90,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 126,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 132,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 134,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 142,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 144,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 152,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 220,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 232,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 280,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 300,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 322,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 335,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 348,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 366,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 367,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 376,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 419,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 424,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 448,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 467,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 478,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 482,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 528,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
-          "line": 529,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
         }
       ]
     },
@@ -101111,6 +100829,187 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+      "errors": 0,
+      "warnings": 21,
+      "rules": {
+        "duplicate-block": 2,
+        "file-length": 1,
+        "param-count": 2,
+        "line-length": 16
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 46,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs:46, Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs:73",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 73,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs:46, Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs:73",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 115 lines",
+          "metric": 115
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 45,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "AddFirstTriangle() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 72,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "AddSecondTriangle() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 21,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 116 chars",
+          "metric": 116
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 22,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 55,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 66,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 67,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 68,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 69,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 80,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 82,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 93,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 94,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 95,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 96,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 99,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 106,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs",
+          "line": 112,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainWfcRunner.cs",
       "errors": 0,
       "warnings": 21,
@@ -102727,6 +102626,180 @@
           "severity": "warn",
           "message": "line is 94 chars",
           "metric": 94
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+      "errors": 0,
+      "warnings": 20,
+      "rules": {
+        "file-length": 1,
+        "complexity": 2,
+        "function-length": 1,
+        "param-count": 1,
+        "line-length": 15
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 142 lines",
+          "metric": 142
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 46,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "TryMerge() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 105,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "MergeTrianglesToQuad() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 46,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "TryMerge() is 33 lines",
+          "metric": 33
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 46,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "TryMerge() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 9,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 26,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 75,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 80,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 91,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 93,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 105,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 119 chars",
+          "metric": 119
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 110,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 112,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 116,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 119,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 122,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 125,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/TriangleMerger.cs",
+          "line": 130,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
         }
       ]
     },
@@ -106063,6 +106136,147 @@
           "severity": "warn",
           "message": "line is 83 chars",
           "metric": 83
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+      "errors": 0,
+      "warnings": 16,
+      "rules": {
+        "file-length": 1,
+        "param-count": 3,
+        "flag-parameter": 1,
+        "line-length": 11
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 195 lines",
+          "metric": 195
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 74,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "BuildNewPositions() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 97,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "RelaxVertex() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 112,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "ComputeAreaCorrection() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 9,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "Relax() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 16,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 22,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 23,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 24,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 38,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 55,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 91,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 107,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 140,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 148,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs",
+          "line": 187,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
         }
       ]
     },
@@ -114152,6 +114366,187 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+      "errors": 0,
+      "warnings": 10,
+      "rules": {
+        "else-branch": 1,
+        "line-length": 9
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+          "line": 7,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "SubdivideAllFaces() has 2 else branch(es) — prefer guard clauses",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+          "line": 29,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+          "line": 38,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+          "line": 39,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+          "line": 44,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+          "line": 52,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+          "line": 53,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs",
+          "line": 54,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
+      "errors": 0,
+      "warnings": 10,
+      "rules": {
+        "line-length": 10
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
+          "line": 8,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
+          "line": 16,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
+          "line": 22,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
+          "line": 28,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
+          "line": 31,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
+          "line": 52,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
+          "line": 53,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
+          "line": 58,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
+          "line": 62,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs",
+          "line": 66,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Deckbuilder/Services/ExplorationAI/VisibleEnemyTracker.cs",
       "errors": 0,
       "warnings": 9,
@@ -120194,6 +120589,40 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshConverter.cs",
+      "errors": 0,
+      "warnings": 3,
+      "rules": {
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshConverter.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshConverter.cs",
+          "line": 39,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshConverter.cs",
+          "line": 43,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        }
+      ]
+    },
+    {
       "file": "Scripts/Core/Services/MapGenerationProfiler.cs",
       "errors": 0,
       "warnings": 2,
@@ -121240,6 +121669,42 @@
           "severity": "warn",
           "message": "line is 82 chars",
           "metric": 82
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/WorkingFace.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/WorkingFace.cs",
+          "line": 23,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/WorkingMesh.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/WorkingMesh.cs",
+          "line": 46,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
         }
       ]
     },
