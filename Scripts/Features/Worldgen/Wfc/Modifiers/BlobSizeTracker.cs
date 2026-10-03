@@ -21,10 +21,8 @@ public class BlobSizeTracker
     private int[]? _size;
     private string?[]? _tileType;
     private int _width;
-    private int _height;
     private int _cellCount;
     private bool _initialized;
-    private bool _isGridMode;
 
     /// <summary>
     /// Initializes the tracker for a grid of the given size.
@@ -36,9 +34,7 @@ public class BlobSizeTracker
         if (height <= 0) throw new ArgumentOutOfRangeException(nameof(height));
 
         _width = width;
-        _height = height;
         _cellCount = width * height;
-        _isGridMode = true;
 
         _parent = new int[_cellCount];
         _size = new int[_cellCount];
@@ -57,9 +53,7 @@ public class BlobSizeTracker
         if (cellCount <= 0) throw new ArgumentOutOfRangeException(nameof(cellCount));
 
         _width = 0;
-        _height = 0;
         _cellCount = cellCount;
-        _isGridMode = false;
 
         _parent = new int[_cellCount];
         _size = new int[_cellCount];

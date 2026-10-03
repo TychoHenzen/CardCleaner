@@ -26,13 +26,13 @@ public class SimpleVisibilityChecker : IVisibilityChecker
         return CanSee(from, to, mapData);
     }
 
-    public bool CanSee(Vector2 from, Vector2 to, IMapData mapData)
+    public bool CanSee(Vector2 fromPosition, Vector2 toPosition, IMapData mapData)
     {
-        if (from.IsEqualApprox(to)) return true;
+        if (fromPosition.IsEqualApprox(toPosition)) return true;
 
         // Check if both positions are in valid cells
-        var fromCell = mapData.GetCellAtPosition(from);
-        var toCell = mapData.GetCellAtPosition(to);
+        var fromCell = mapData.GetCellAtPosition(fromPosition);
+        var toCell = mapData.GetCellAtPosition(toPosition);
 
         if (!fromCell.HasValue || !toCell.HasValue)
             return false;
@@ -47,13 +47,13 @@ public class SimpleVisibilityChecker : IVisibilityChecker
         }
 
         // For irregular grids, use line sampling approach
-        return CanSeeSampled(from, to, fromCell.Value, mapData);
+        return CanSeeSampled(fromPosition, toPosition, fromCell.Value, mapData);
     }
 
     /// <summary>
     /// Optimized visibility check for regular grids using Bresenham's algorithm.
     /// </summary>
-    private bool CanSeeBresenham(int fromCellId, int toCellId, RegularGridMapData gridData)
+    private static bool CanSeeBresenham(int fromCellId, int toCellId, RegularGridMapData gridData)
     {
         var from = gridData.GetGridPosition(fromCellId);
         var to = gridData.GetGridPosition(toCellId);

@@ -31,12 +31,13 @@ internal static class TriangleMerger
             foreach (var edge in face.GetEdges())
             {
                 var key = edge.Normalize();
-                if (!edgeToFaces.ContainsKey(key))
+                if (!edgeToFaces.TryGetValue(key, out var faces))
                 {
-                    edgeToFaces[key] = new List<WorkingFace>();
+                    faces = new List<WorkingFace>();
+                    edgeToFaces[key] = faces;
                 }
 
-                edgeToFaces[key].Add(face);
+                faces.Add(face);
             }
         }
 

@@ -11,7 +11,6 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug;
 public partial class IrregularMeshDebugRenderer : Node2D
 {
     private IrregularMesh? _mesh;
-    private IrregularMeshMapData? _mapData;
     private float _worldScale = 1f;
 
     private bool _showWireframe = true;
@@ -140,7 +139,6 @@ public partial class IrregularMeshDebugRenderer : Node2D
     public void Initialize(IrregularMesh mesh, IrregularMeshMapData? mapData = null, float worldScale = 1f)
     {
         _mesh = mesh;
-        _mapData = mapData;
         _worldScale = worldScale;
         QueueRedraw();
     }

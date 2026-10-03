@@ -1,8 +1,9 @@
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
-using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using Godot;
+
+namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 
 /// <summary>
 /// Enhanced world map screen with visual feedback for exploration and combat.

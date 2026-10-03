@@ -3,7 +3,7 @@ using Godot;
 
 namespace CardCleaner.Scripts.Core.Devices;
 
-internal partial class Cable : Node3D, ICable
+internal sealed partial class Cable : Node3D, ICable
 {
     private const float CableRadius = 0.02f;
     private static readonly Color CableColor = new(0.2f, 0.2f, 0.2f);

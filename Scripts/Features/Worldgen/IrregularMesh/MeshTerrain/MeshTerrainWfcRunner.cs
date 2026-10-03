@@ -50,7 +50,7 @@ internal sealed class MeshTerrainWfcRunner
         }
 
         GD.Print($"[MeshTerrainGen] Background WFC succeeded in {backgroundResult.Iterations} iterations");
-        _projection.MapBackgroundToQuads(mesh, backgroundResult.MapData, bounds);
+        MeshTerrainProjection.MapBackgroundToQuads(mesh, backgroundResult.MapData, bounds);
         GenerateForeground(
             mesh,
             biomeRegistry,
@@ -82,7 +82,7 @@ internal sealed class MeshTerrainWfcRunner
             if (!_foregroundWfc.Generate(mesh, biomeRegistry, seed))
             {
                 GD.PrintErr("[MeshTerrainGen] Direct mesh foreground WFC failed, clearing foreground");
-                _projection.ClearForeground(mesh);
+                MeshTerrainProjection.ClearForeground(mesh);
             }
 
             return;
@@ -115,7 +115,7 @@ internal sealed class MeshTerrainWfcRunner
         if (!foregroundResult.Success || foregroundResult.MapData == null)
         {
             GD.PrintErr($"[MeshTerrainGen] Foreground WFC failed: {foregroundResult.ErrorMessage}");
-            _projection.ClearForeground(mesh);
+            MeshTerrainProjection.ClearForeground(mesh);
             return;
         }
 

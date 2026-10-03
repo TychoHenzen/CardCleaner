@@ -114,7 +114,7 @@ internal static class CompiledAtlasTileSetBuilder
         if (!TryReadTransitionMap(absolutePath, jsonOptions, out var transitionMap))
             return 0;
 
-        var transitions = transitionMap?.GetTransitions();
+        var transitions = transitionMap?.Transitions;
         if (transitions == null)
         {
             ILog.Print("[CompiledAtlasLoader] Transition map has no transitions");
@@ -183,7 +183,7 @@ internal static class CompiledAtlasTileSetBuilder
         ref int tilesCreated,
         ref int tilesSkipped)
     {
-        var variants = entry.GetVariants();
+        var variants = entry.Variants;
         if (variants == null)
             return;
 
@@ -241,32 +241,24 @@ internal static class CompiledAtlasTileSetBuilder
 
     private sealed class TransitionMapData
     {
-        [JsonInclude]
         [JsonPropertyName("transitions")]
-        private Dictionary<string, TransitionEntry>? _transitions;
-
-        internal Dictionary<string, TransitionEntry>? GetTransitions() => _transitions;
+        public Dictionary<string, TransitionEntry>? Transitions { get; set; }
     }
 
     private sealed class TransitionEntry
     {
-        [JsonInclude]
         [JsonPropertyName("variants")]
-        private VariantCoord[]?[]? _variants;
-
-        internal VariantCoord[]?[]? GetVariants() => _variants;
+        public VariantCoord[]?[]? Variants { get; set; }
     }
 
     private sealed class VariantCoord
     {
-        [JsonInclude]
         [JsonPropertyName("x")]
-        private int _x;
+        public int X { get; set; }
 
-        [JsonInclude]
         [JsonPropertyName("y")]
-        private int _y;
+        public int Y { get; set; }
 
-        internal Vector2I GetAtlasCoordinates() => new(_x, _y);
+        internal Vector2I GetAtlasCoordinates() => new(X, Y);
     }
 }

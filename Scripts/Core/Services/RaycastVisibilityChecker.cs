@@ -48,12 +48,12 @@ public class RaycastVisibilityChecker : IVisibilityChecker
         return CanSee(from, to, mapData);
     }
 
-    public bool CanSee(Vector2 from, Vector2 to, IMapData mapData)
+    public bool CanSee(Vector2 fromPosition, Vector2 toPosition, IMapData mapData)
     {
-        if (from.IsEqualApprox(to)) return true;
+        if (fromPosition.IsEqualApprox(toPosition)) return true;
 
         // Create raycast query
-        var query = PhysicsRayQueryParameters2D.Create(from, to, _collisionMask);
+        var query = PhysicsRayQueryParameters2D.Create(fromPosition, toPosition, _collisionMask);
 
         // Exclude the source and destination areas if needed
         // (they might have collision shapes but we want to see from/to them)
@@ -69,8 +69,8 @@ public class RaycastVisibilityChecker : IVisibilityChecker
         // Check if the intersection point is past the target
         // (this handles the case where we're looking at an opaque cell - we should see it)
         var hitPosition = (Vector2)result["position"];
-        var toTarget = to - from;
-        var toHit = hitPosition - from;
+        var toTarget = toPosition - fromPosition;
+        var toHit = hitPosition - fromPosition;
 
         // If we hit something after the target, we can see the target
         return toHit.LengthSquared() >= toTarget.LengthSquared() - 0.01f;

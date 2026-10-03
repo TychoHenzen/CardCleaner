@@ -26,7 +26,7 @@ public partial class DeckBuilderController : Node
     [Export] public InteractableButton ActivateButton { get; set; } = null!;
     [Export] public PackedScene BattleScreenScene { get; set; } = null!;
     [Export] public SimpleWorldMapScreen WorldTileMapScreenScene { get; set; } = null!;
-    [Export] public IrregularWorldMapScreen IrregularMapScreen { get; set; }
+    [Export] public IrregularWorldMapScreen IrregularMapScreen { get; set; } = null!;
     [Export] public MapGenerationType MapType { get; set; } = DefaultMapType;
     [Export] public Vector3 ScreenSpawnPosition { get; set; } = DefaultScreenSpawnPosition;
 

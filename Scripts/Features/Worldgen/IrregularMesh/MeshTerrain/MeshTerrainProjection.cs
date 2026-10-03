@@ -19,7 +19,7 @@ internal sealed class MeshTerrainProjection
         _tileToTerrainType = tileToTerrainType;
     }
 
-    public void MapBackgroundToQuads(
+    public static void MapBackgroundToQuads(
         IrregularMesh mesh,
         SimpleMapData backgroundData,
         (Vector2 Min, Vector2 Max) bounds)
@@ -71,7 +71,7 @@ internal sealed class MeshTerrainProjection
             "with auto-tiles (legacy projection)");
     }
 
-    public void ClearForeground(IrregularMesh mesh)
+    public static void ClearForeground(IrregularMesh mesh)
     {
         foreach (var vertex in mesh.Vertices)
         {

@@ -16,7 +16,7 @@ public class TerrainCollisionShapeGeneratorTest
 {
     private const string Wall = "wall";
 
-    private static int GetShapeOwnerCount(CollisionObject2D body) => body.GetShapeOwners().Count();
+    private static int GetShapeOwnerCount(CollisionObject2D body) => body.GetShapeOwners().Length;
 
     [TestCase]
     public void TestGeneratesShapesForOpaqueCell()

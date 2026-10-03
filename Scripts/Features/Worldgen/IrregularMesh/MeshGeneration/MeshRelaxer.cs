@@ -59,12 +59,13 @@ internal static class MeshRelaxer
         {
             foreach (int vertexId in face.VertexIds)
             {
-                if (!vertexFaces.ContainsKey(vertexId))
+                if (!vertexFaces.TryGetValue(vertexId, out var faces))
                 {
-                    vertexFaces[vertexId] = new List<WorkingFace>();
+                    faces = new List<WorkingFace>();
+                    vertexFaces[vertexId] = faces;
                 }
 
-                vertexFaces[vertexId].Add(face);
+                faces.Add(face);
             }
         }
 

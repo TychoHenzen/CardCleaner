@@ -12,5 +12,5 @@ public interface IVisibilityChecker
     bool CanSee(int fromCellId, int toCellId, IMapData mapData);
 
     /// <summary>Checks whether there is a clear line of sight between two world positions.</summary>
-    bool CanSee(Vector2 from, Vector2 to, IMapData mapData);
+    bool CanSee(Vector2 fromPosition, Vector2 toPosition, IMapData mapData);
 }

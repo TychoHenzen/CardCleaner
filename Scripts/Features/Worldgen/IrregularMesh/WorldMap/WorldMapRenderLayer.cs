@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Services;
 using Godot;
 
@@ -12,9 +13,7 @@ internal sealed class WorldMapRenderLayer
     private readonly IrregularMesh _mesh;
     private readonly IrregularMeshMapData _mapData;
 
-    private IrregularTerrainRenderer? _terrainRenderer;
-    private IrregularMeshFogRenderer? _fogRenderer;
-    private StaticBody2D? _terrainCollisionBody;
+    private readonly List<Node> _ownedNodes = new();
 
     internal WorldMapRenderLayer(WorldMapSettings settings, IrregularMesh mesh, IrregularMeshMapData mapData)
     {
@@ -32,14 +31,15 @@ internal sealed class WorldMapRenderLayer
         if (viewport == null) return;
 
         var scale = _settings.WorldScale;
-        _terrainRenderer = new IrregularTerrainRenderer { Name = "TerrainRenderer" };
-        viewport.AddChild(_terrainRenderer);
-        viewport.MoveChild(_terrainRenderer, 0);
+        var terrainRenderer = new IrregularTerrainRenderer { Name = "TerrainRenderer" };
+        _ownedNodes.Add(terrainRenderer);
+        viewport.AddChild(terrainRenderer);
+        viewport.MoveChild(terrainRenderer, 0);
 
-        _terrainRenderer.Scale = new Vector2(scale, scale);
+        terrainRenderer.Scale = new Vector2(scale, scale);
         if (_settings.TileRegistry != null)
-            _terrainRenderer.SetTileRegistry(_settings.TileRegistry);
-        _terrainRenderer.RenderTerrain(_mesh);
+            terrainRenderer.SetTileRegistry(_settings.TileRegistry);
+        terrainRenderer.RenderTerrain(_mesh);
 
         if (_settings.FogOfWarEnabled && fogOfWar != null)
             BuildFogRenderer(viewport, fogOfWar);
@@ -56,32 +56,31 @@ internal sealed class WorldMapRenderLayer
     /// </summary>
     internal void Clear()
     {
-        _terrainRenderer?.QueueFree();
-        _terrainRenderer = null;
-        _fogRenderer?.QueueFree();
-        _fogRenderer = null;
-
-        if (_terrainCollisionBody != null)
+        foreach (var node in _ownedNodes)
         {
-            TerrainCollisionShapeGenerator.ClearShapes(_terrainCollisionBody);
-            _terrainCollisionBody.QueueFree();
-            _terrainCollisionBody = null;
+            if (node is StaticBody2D collisionBody)
+                TerrainCollisionShapeGenerator.ClearShapes(collisionBody);
+            node.QueueFree();
         }
+
+        _ownedNodes.Clear();
     }
 
     private void BuildFogRenderer(SubViewport viewport, IrregularMeshFogOfWar fogOfWar)
     {
-        _fogRenderer = new IrregularMeshFogRenderer { Name = "FogRenderer" };
-        _fogRenderer.SetWorldTransform(_settings.WorldScale, Vector2.Zero);
-        viewport.AddChild(_fogRenderer);
-        _fogRenderer.Initialize(_mesh, fogOfWar);
+        var fogRenderer = new IrregularMeshFogRenderer { Name = "FogRenderer" };
+        _ownedNodes.Add(fogRenderer);
+        fogRenderer.SetWorldTransform(_settings.WorldScale, Vector2.Zero);
+        viewport.AddChild(fogRenderer);
+        fogRenderer.Initialize(_mesh, fogOfWar);
     }
 
     private void BuildCollisionShapes(SubViewport viewport)
     {
-        _terrainCollisionBody = new StaticBody2D { Name = "TerrainCollisionBody" };
-        viewport.AddChild(_terrainCollisionBody);
-        TerrainCollisionShapeGenerator.GenerateForIrregularMesh(_mapData, _terrainCollisionBody);
+        var collisionBody = new StaticBody2D { Name = "TerrainCollisionBody" };
+        _ownedNodes.Add(collisionBody);
+        viewport.AddChild(collisionBody);
+        TerrainCollisionShapeGenerator.GenerateForIrregularMesh(_mapData, collisionBody);
     }
 
     private void ConfigureViewportAndCamera(SubViewport viewport)
