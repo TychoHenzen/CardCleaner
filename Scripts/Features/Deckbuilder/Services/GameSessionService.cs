@@ -63,6 +63,9 @@ public partial class GameSessionService : Node, IGameSessionService
     private SimpleCombatSystem? _combatSystem;
     private CancellationTokenSource? _generationCts;
     private Task? _currentGenerationTask;
+    private TaskCompletionSource<bool>? _pendingGenerationTaskSource;
+    private long _pendingGenerationId;
+    private long _generationId;
 
     #endregion
 
@@ -152,12 +155,17 @@ public partial class GameSessionService : Node, IGameSessionService
         _mapSeeds = new List<CardSignature>(mapSeeds);
         _abilityCards = new List<CardSignature>(abilityCards);
         _currentGenerationTask = null; // Clear any stale task from previous session
+        var generationId = ++_generationId;
+        _pendingGenerationId = generationId;
+        _pendingGenerationTaskSource = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        _currentGenerationTask = _pendingGenerationTaskSource.Task;
         CurrentState = SessionState.GeneratingMap;
 
         ILog.Print($"Started session with {_mapSeeds.Count} map seed(s) and {_abilityCards.Count} ability cards");
 
         // Start the game loop
-        CallDeferred(MethodName.AdvanceSession);
+        CallDeferred(MethodName.AdvanceSessionForGeneration, generationId);
     }
 
     public void AdvanceSession()
@@ -187,6 +195,14 @@ public partial class GameSessionService : Node, IGameSessionService
 
     public void ResetSession()
     {
+        _generationId++;
+        _pendingGenerationTaskSource?.TrySetCanceled();
+        _pendingGenerationTaskSource = null;
+        _pendingGenerationId = 0;
+        var generationCts = _generationCts;
+        _generationCts = null;
+        generationCts?.Cancel();
+
         _gameTimer.Stop();
         _mapSeeds.Clear();
         _abilityCards.Clear();
@@ -226,110 +242,177 @@ public partial class GameSessionService : Node, IGameSessionService
         ILog.Print("GameSessionService ready and initialized");
     }
 
-    private async void GenerateMap()
+    private async void GenerateMap(TaskCompletionSource<bool>? generationTaskSource = null)
     {
-        // Capture the task synchronously to avoid race conditions in tests
-        // Task remains set after completion so tests can await it and check status
-        _currentGenerationTask = GenerateMapAsync();
-        await _currentGenerationTask;
+        var generationTask = GenerateMapAsync();
+        _currentGenerationTask = generationTask;
+        try
+        {
+            await generationTask;
+            generationTaskSource?.TrySetResult(true);
+        }
+        catch (Exception ex)
+        {
+            generationTaskSource?.TrySetException(ex);
+            ILog.Error($"Map generation task failed: {ex.Message}");
+        }
     }
 
     private async Task GenerateMapAsync()
     {
-        ILog.Print($"Starting async map generation from {_mapSeeds.Count} seed signature(s)...");
+        var generationId = ++_generationId;
+        var generationCts = new CancellationTokenSource();
+        var previousGenerationCts = _generationCts;
+        _generationCts = generationCts;
+        previousGenerationCts?.Cancel();
 
-        // Cancel any previous generation in progress
-        _generationCts?.Cancel();
-        _generationCts?.Dispose();
-        _generationCts = new CancellationTokenSource();
+        var mapSeeds = _mapSeeds.ToArray();
+        var mapGenerator = _mapGenerator;
+        ILog.Print($"Starting async map generation from {mapSeeds.Length} seed signature(s)...");
 
         // Create progress reporter for loading UI
-        var progress = new GodotProgress();
+        var progress = new GodotProgress(generationCts.Token);
         AddChild(progress);
-        progress.ProgressUpdated += OnMapGenerationProgress;
+        GodotProgress.ProgressUpdatedEventHandler progressHandler =
+            value => OnMapGenerationProgress(generationId, value);
+        progress.ProgressUpdated += progressHandler;
 
         try
         {
             // Compute deterministic seed from card signatures
-            var seed = ComputeSeedFromCards(_mapSeeds);
-            _rng.Seed = seed;
+            var seed = ComputeSeedFromCards(mapSeeds.ToList());
+            var generationRng = new RandomNumberGenerator { Seed = seed };
             ILog.Print($"Map seed: {seed}");
 
             // Use first signature to influence map size (could blend in future)
-            var mapSize = CalculateMapSize(_mapSeeds[0]);
+            var mapSize = CalculateMapSize(mapSeeds[0]);
 
             // Check if a custom map generator is set
-            if (_mapGenerator != null)
+            if (mapGenerator != null)
             {
                 // Use the pluggable map generator (e.g., IrregularMeshMapGenerator)
-                await GenerateWithCustomGenerator(seed, mapSize, progress);
+                await GenerateWithCustomGenerator(
+                    generationId,
+                    generationCts,
+                    generationRng,
+                    seed,
+                    mapSize,
+                    mapSeeds,
+                    mapGenerator,
+                    progress);
             }
             else
             {
                 // Use the default SimpleMapGenerator
-                await GenerateWithDefaultGenerator(seed, mapSize, progress);
+                await GenerateWithDefaultGenerator(
+                    generationId,
+                    generationCts,
+                    generationRng,
+                    seed,
+                    mapSize,
+                    mapSeeds,
+                    progress);
             }
 
+            if (!IsCurrentGeneration(generationId, generationCts))
+                return;
+
             CurrentState = SessionState.Exploring;
-            CallDeferred(MethodName.AdvanceSession);
+            CallDeferred(MethodName.AdvanceSessionForGeneration, generationId);
         }
         catch (MapGenerationCancelledException ex)
         {
             ILog.Warning($"Map generation cancelled: {ex.Message}");
-            CurrentState = SessionState.WaitingForCards;
+            if (IsCurrentGeneration(generationId, generationCts))
+                CurrentState = SessionState.WaitingForCards;
         }
         catch (OperationCanceledException ex)
         {
             ILog.Warning($"Map generation cancelled: {ex.Message}");
-            CurrentState = SessionState.WaitingForCards;
+            if (IsCurrentGeneration(generationId, generationCts))
+                CurrentState = SessionState.WaitingForCards;
         }
         catch (Exception ex)
         {
             ILog.Error($"Map generation failed: {ex.Message}");
             ILog.Error($"Stack trace: {ex.StackTrace}");
-            CurrentState = SessionState.WaitingForCards;
+            if (IsCurrentGeneration(generationId, generationCts))
+                CurrentState = SessionState.WaitingForCards;
         }
         finally
         {
-            progress.QueueFree();
-            _generationCts?.Dispose();
-            _generationCts = null;
+            progress.ProgressUpdated -= progressHandler;
+            if (GodotObject.IsInstanceValid(progress))
+            {
+                try
+                {
+                    progress.QueueFree();
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+            }
+
+            if (ReferenceEquals(_generationCts, generationCts))
+                _generationCts = null;
+
+            generationCts.Dispose();
         }
     }
 
-    private async Task GenerateWithCustomGenerator(ulong seed, Vector2I mapSize, IProgress<float> progress)
+    private async Task GenerateWithCustomGenerator(
+        long generationId,
+        CancellationTokenSource generationCts,
+        RandomNumberGenerator generationRng,
+        ulong seed,
+        Vector2I mapSize,
+        CardSignature[] mapSeeds,
+        IMapGenerator mapGenerator,
+        IProgress<float> progress)
     {
         // Create generation config from current session state
         var config = new MapGenerationConfig
         {
             Size = mapSize,
             Seed = seed,
-            MapSeeds = _mapSeeds.ToArray(),
+            MapSeeds = mapSeeds,
             BiomeRegistry = _biomeRegistry
         };
 
         // Generate using the custom generator
-        _generatedMap = await _mapGenerator!.GenerateAsync(config, progress, _generationCts!.Token);
-        _currentMapData = _generatedMap.GetMapData();
+        var generatedMap = await mapGenerator.GenerateAsync(config, progress, generationCts.Token);
+        if (!IsCurrentGeneration(generationId, generationCts))
+            return;
+
+        _rng = generationRng;
+        _generatedMap = generatedMap;
+        _currentMapData = generatedMap.GetMapData();
 
         // Clear regular grid fields (not used with custom generator)
         _currentMap = null;
         _currentGridMapData = null;
         _eventAdapter.SetGridMapData(null);
 
-        ILog.Print($"Custom map generated: {_generatedMap.EnemyCount} enemies");
+        ILog.Print($"Custom map generated: {generatedMap.EnemyCount} enemies");
 
         // Notify listeners with the new event
-        GeneratedMapReady?.Invoke(_generatedMap);
+        GeneratedMapReady?.Invoke(generatedMap);
     }
 
-    private async Task GenerateWithDefaultGenerator(ulong seed, Vector2I mapSize, IProgress<float> progress)
+    private async Task GenerateWithDefaultGenerator(
+        long generationId,
+        CancellationTokenSource generationCts,
+        RandomNumberGenerator generationRng,
+        ulong seed,
+        Vector2I mapSize,
+        CardSignature[] mapSeeds,
+        IProgress<float> progress)
     {
         // Ensure tile registry is available (fallback if async callback hasn't run yet)
         _tileRegistry ??= new TileRegistry();
 
         // Create gradient from all map seeds for biome placement
-        var gradient = new CardBasedGradient(_mapSeeds.ToArray(), _rng);
+        var gradient = new CardBasedGradient(mapSeeds, generationRng);
 
         // Create biome provider that maps gradient signatures to biomes
         var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, mapSize);
@@ -341,34 +424,79 @@ public partial class GameSessionService : Node, IGameSessionService
 
         // Create map generator with WFC for terrain generation
         var mapGenerator = new SimpleMapGenerator(
-            _rng, biomeProvider, _tileRegistry, _metadataProvider, wfcGenerator, _biomeRegistry, gradient);
+            generationRng, biomeProvider, _tileRegistry, _metadataProvider, wfcGenerator, _biomeRegistry, gradient);
 
         // Wrap in async adapter and generate on background thread
         var asyncGenerator = new AsyncMapGeneratorAdapter(mapGenerator);
-        _currentMap = await asyncGenerator.GenerateMapAsync(mapSize, progress, _generationCts!.Token);
+        var generatedMap = await asyncGenerator.GenerateMapAsync(mapSize, progress, generationCts.Token);
+        if (!IsCurrentGeneration(generationId, generationCts))
+            return;
+
+        _rng = generationRng;
+        _currentMap = generatedMap;
 
         // Create the IMapData adapter for exploration
-        _currentGridMapData = new RegularGridMapData(_currentMap);
+        _currentGridMapData = new RegularGridMapData(generatedMap);
         _currentMapData = _currentGridMapData;
         _eventAdapter.SetGridMapData(_currentGridMapData);
 
         // Wrap in IGeneratedMap for unified interface
-        _generatedMap = new SimpleGeneratedMap(_currentMap);
+        _generatedMap = new SimpleGeneratedMap(generatedMap);
 
         // Log biome distribution for debugging
         biomeProvider.LogBiomeStats();
 
-        ILog.Print($"Map generated: {mapSize.X}x{mapSize.Y}, {_currentMap.EnemyPositions.Count} enemies");
+        ILog.Print($"Map generated: {mapSize.X}x{mapSize.Y}, {generatedMap.EnemyPositions.Count} enemies");
 
         // Notify listeners about the generated map (backward compatible event)
-        MapGenerated?.Invoke(_currentMap);
+        MapGenerated?.Invoke(generatedMap);
+        if (!IsCurrentGeneration(generationId, generationCts))
+            return;
+
         GeneratedMapReady?.Invoke(_generatedMap);
     }
 
-    private void OnMapGenerationProgress(float value)
+    private void OnMapGenerationProgress(long generationId, float value)
     {
+        if (!IsCurrentGeneration(generationId))
+            return;
+
         ProgressUpdated?.Invoke(value);
+        if (!IsCurrentGeneration(generationId))
+            return;
+
         ILog.Print($"Map generation: {value * 100:F0}%");
+    }
+
+    private bool IsCurrentGeneration(long generationId, CancellationTokenSource? generationCts = null)
+    {
+        if (!GodotObject.IsInstanceValid(this))
+            return false;
+
+        if (_generationId != generationId)
+            return false;
+
+        if (generationCts != null && !ReferenceEquals(_generationCts, generationCts))
+            return false;
+
+        return generationCts == null || !generationCts.IsCancellationRequested;
+    }
+
+    private void AdvanceSessionForGeneration(long generationId)
+    {
+        if (!IsCurrentGeneration(generationId))
+            return;
+
+        if (_pendingGenerationId == generationId && _pendingGenerationTaskSource != null)
+        {
+            var generationTaskSource = _pendingGenerationTaskSource;
+            _pendingGenerationTaskSource = null;
+            _pendingGenerationId = 0;
+            GenerateMap(generationTaskSource);
+            return;
+        }
+
+        AdvanceSession();
     }
 
     private void StartExploration()

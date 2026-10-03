@@ -231,7 +231,7 @@ public static class TileDataLoader
     /// </summary>
     private static AutoTileFormatDefinition? ParseCustomAutoTileFormat(AutoTileFormatData data)
     {
-        if (string.IsNullOrWhiteSpace(data.Name) || data.Variants == null || data.Variants.Count == 0)
+        if (string.IsNullOrWhiteSpace(data.Name))
             return null;
 
         var bitmaskType = data.BitmaskType?.ToLowerInvariant() switch
@@ -241,29 +241,46 @@ public static class TileDataLoader
             _ => BitmaskType.Corner4
         };
 
-        var allowedBitmasks = new HashSet<int>();
+        var allowedBitmasks = data.AllowedBitmasks?.ToHashSet()
+            ?? data.Variants?
+                .Where(variant => variant.AtlasCoords != null)
+                .Select(variant => variant.Bitmask)
+                .ToHashSet();
+
+        if (allowedBitmasks == null || allowedBitmasks.Count == 0)
+            return null;
+
         var variantMappings = new Dictionary<int, VariantDefinition>();
 
-        foreach (var variant in data.Variants)
+        foreach (var bitmask in allowedBitmasks)
         {
-            if (variant.AtlasCoords == null)
-                continue;
+            var size = Vector2I.One;
+            if (data.VariantSizes?.TryGetValue(bitmask.ToString(), out var sizeData) == true && sizeData != null)
+                size = new Vector2I(sizeData.X, sizeData.Y);
 
-            var bitmask = variant.Bitmask;
-            allowedBitmasks.Add(bitmask);
+            variantMappings[bitmask] = new VariantDefinition(Vector2I.Zero, size);
+        }
 
-            var atlasCoords = new Vector2I(variant.AtlasCoords.X, variant.AtlasCoords.Y);
-            var size = variant.Size != null
-                ? new Vector2I(variant.Size.X, variant.Size.Y)
-                : Vector2I.One;
-            var offset = variant.Offset != null
-                ? new Vector2I(variant.Offset.X, variant.Offset.Y)
-                : Vector2I.Zero;
-            var atlasRegionSize = variant.AtlasRegionSize != null
-                ? new Vector2I(variant.AtlasRegionSize.X, variant.AtlasRegionSize.Y)
-                : (Vector2I?)null;
+        if (data.Variants != null)
+        {
+            foreach (var variant in data.Variants)
+            {
+                if (variant.AtlasCoords == null || !allowedBitmasks.Contains(variant.Bitmask))
+                    continue;
 
-            variantMappings[bitmask] = new VariantDefinition(atlasCoords, size, offset, atlasRegionSize);
+                var atlasCoords = new Vector2I(variant.AtlasCoords.X, variant.AtlasCoords.Y);
+                var size = variant.Size != null
+                    ? new Vector2I(variant.Size.X, variant.Size.Y)
+                    : variantMappings[variant.Bitmask].Size;
+                var offset = variant.Offset != null
+                    ? new Vector2I(variant.Offset.X, variant.Offset.Y)
+                    : Vector2I.Zero;
+                var atlasRegionSize = variant.AtlasRegionSize != null
+                    ? new Vector2I(variant.AtlasRegionSize.X, variant.AtlasRegionSize.Y)
+                    : (Vector2I?)null;
+
+                variantMappings[variant.Bitmask] = new VariantDefinition(atlasCoords, size, offset, atlasRegionSize);
+            }
         }
 
         return new AutoTileFormatDefinition(
@@ -453,6 +470,10 @@ public static class TileDataLoader
         [JsonPropertyName("name")] public string? Name { get; set; }
 
         [JsonPropertyName("bitmaskType")] public string? BitmaskType { get; set; }
+
+        [JsonPropertyName("allowedBitmasks")] public List<int>? AllowedBitmasks { get; set; }
+
+        [JsonPropertyName("variantSizes")] public Dictionary<string, Vector2IData>? VariantSizes { get; set; }
 
         [JsonPropertyName("variants")] public List<FormatVariantData>? Variants { get; set; }
     }

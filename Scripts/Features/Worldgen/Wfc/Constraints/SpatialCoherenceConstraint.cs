@@ -47,7 +47,7 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
     /// With BoostFactor=10.0, matching tiles get 11x weight boost.
     /// This ensures extending a region strongly dominates over starting new ones.
     /// </summary>
-    public float BoostFactor { get; set; } = 500.0f;
+    public float BoostFactor { get; set; } = 10.0f;
 
     /// <summary>
     /// Radius within which linear tiles (hedges) repel each other.
@@ -127,54 +127,38 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
         var hasAnyCollapsedNeighbor = false;
         var sameTypeNeighborCount = 0;
 
-        // Use precomputed neighbor info if available (optimization)
-        if (context.NeighborInfo.HasValue)
+        // Spatial coherence grows regions through face neighbors. WFC topology adjacency
+        // remains separate because it also covers cells sharing 2x2 windows.
+        if (context.Topology is WfcGrid grid)
         {
-            var neighborInfo = context.NeighborInfo.Value;
-            hasAnyCollapsedNeighbor = neighborInfo.HasCollapsedNeighbor;
-            sameTypeNeighborCount = neighborInfo.SameTypeCount;
-
-            // For region tracking, convert cell IDs to positions (grid-specific)
-            if (context.Topology is WfcGrid grid)
+            var position = grid.CellIdToPosition(context.CellId);
+            foreach (var neighbor in grid.GetNeighbors(position))
             {
-                foreach (var kvp in neighborInfo.Neighbors)
-                {
-                    if (kvp.Value == context.TileId)
-                    {
-                        var neighborPos = grid.CellIdToPosition(kvp.Key);
-                        var regionSize = _regionTracker.GetRegionSize(neighborPos);
-                        if (regionSize > largestMatchingRegion)
-                            largestMatchingRegion = regionSize;
-                    }
-                }
-            }
-            else
-            {
-                // Non-grid topology: use same-type count as region size estimate
-                // This is a simplification for mesh topologies
-                if (sameTypeNeighborCount > 0)
-                    largestMatchingRegion = sameTypeNeighborCount;
-            }
-        }
-        else if (context.Topology is WfcGrid gridFallback)
-        {
-            // Fallback: iterate neighbors directly (for grid topology)
-            var position = gridFallback.CellIdToPosition(context.CellId);
-            foreach (var neighbor in gridFallback.GetNeighbors(position))
-            {
-                var neighborTile = gridFallback.GetCollapsedTileAt(neighbor);
+                var neighborTile = grid.GetCollapsedTileAt(neighbor);
                 if (neighborTile != null)
                 {
                     hasAnyCollapsedNeighbor = true;
                     if (neighborTile == context.TileId)
                     {
                         sameTypeNeighborCount++;
-                        var regionSize = _regionTracker.GetRegionSize(neighbor);
+                        var regionSize = _regionTracker!.GetRegionSize(neighbor);
                         if (regionSize > largestMatchingRegion)
                             largestMatchingRegion = regionSize;
                     }
                 }
             }
+        }
+        // Use precomputed neighbor info if available (optimization) for non-grid topologies.
+        else if (context.NeighborInfo.HasValue)
+        {
+            var neighborInfo = context.NeighborInfo.Value;
+            hasAnyCollapsedNeighbor = neighborInfo.HasCollapsedNeighbor;
+            sameTypeNeighborCount = neighborInfo.SameTypeCount;
+
+            // Non-grid topology: use same-type count as region size estimate
+            // This is a simplification for mesh topologies
+            if (sameTypeNeighborCount > 0)
+                largestMatchingRegion = sameTypeNeighborCount;
         }
         else
         {

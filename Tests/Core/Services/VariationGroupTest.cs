@@ -20,6 +20,7 @@ namespace CardCleaner.Tests.Core.Services;
 /// - Probability weight handling and normalization
 /// </summary>
 [TestSuite]
+[RequireGodotRuntime]
 public class VariationGroupTest
 {
     // ==================== Name Pattern Detection Tests ====================

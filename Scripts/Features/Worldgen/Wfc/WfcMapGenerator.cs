@@ -58,6 +58,8 @@ public class WfcMapGenerator
     public bool EnableDiminishingReturns { get; set; } = true;
     public bool EnableNovelty { get; set; } = true;
 
+    public bool EnableSpatialCoherence { get; set; } = true;
+
     public float NoveltyBoost
     {
         get => _novelty.NoveltyBoost;
@@ -76,6 +78,12 @@ public class WfcMapGenerator
     {
         get => _compactness.GapFillBoost;
         set => _compactness.GapFillBoost = value;
+    }
+
+    public float ContinuityBiasMultiplier
+    {
+        get => _selector.ContinuityBiasMultiplier;
+        set => _selector.ContinuityBiasMultiplier = value;
     }
 
     public bool EnableConnectivity { get; set; } = true;
@@ -324,7 +332,8 @@ public class WfcMapGenerator
         if (EnableDiminishingReturns)
             _selector.AddConstraint(_diminishingReturns);
 
-        _selector.AddConstraint(_spatialCoherence);
+        if (EnableSpatialCoherence)
+            _selector.AddConstraint(_spatialCoherence);
 
         // Encourage compact blob shapes (boosts corner/gap fills)
         if (EnableCompactness)

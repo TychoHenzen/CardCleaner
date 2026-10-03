@@ -334,7 +334,22 @@ public class TilesJsonValidationTest
         AssertThat(_tilesDoc).IsNotNull();
         var tiles = _tilesDoc!.RootElement.GetProperty("tiles");
 
-        var validFormats = new[] { "corner16", "edge16", "blob47" };
+        var validFormats = new System.Collections.Generic.HashSet<string>(
+            new[] { "corner16", "edge16", "blob47" },
+            System.StringComparer.OrdinalIgnoreCase);
+        if (_tilesDoc!.RootElement.TryGetProperty("autoTileFormats", out var customFormats) &&
+            customFormats.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var customFormat in customFormats.EnumerateArray())
+            {
+                if (customFormat.TryGetProperty("name", out var nameProperty) &&
+                    !string.IsNullOrWhiteSpace(nameProperty.GetString()))
+                {
+                    validFormats.Add(nameProperty.GetString()!);
+                }
+            }
+        }
+
         var invalidFormats = new System.Collections.Generic.List<string>();
 
         foreach (var tile in tiles.EnumerateArray())

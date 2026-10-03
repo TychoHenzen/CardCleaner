@@ -448,6 +448,11 @@ public class WfcMapGeneratorIntegrationTest
         // Create tile registry with test tiles
         var tileRegistry = CreateTestTileRegistry("test", "A", "B", "C", "D");
         var generator = new WfcMapGenerator(rules, tileRegistry);
+        generator.EnableSpatialCoherence = false;
+        generator.EnableDiminishingReturns = false;
+        generator.EnableCompactness = false;
+        generator.EnableConnectivity = false;
+        generator.ContinuityBiasMultiplier = 1.0f;
 
         var passable = new TilePool();
         passable.Add("A", 1.0f);

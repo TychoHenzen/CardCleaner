@@ -10,6 +10,7 @@ namespace CardCleaner.Tests.Features.Worldgen.AutoTiling;
 /// Validates that each built-in format is correctly configured.
 /// </summary>
 [TestSuite]
+[RequireGodotRuntime]
 public class BuiltInAutoTileFormatsTest
 {
     // ==================== CreateCorner16 ====================

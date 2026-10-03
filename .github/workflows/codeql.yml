@@ -1,0 +1,35 @@
+name: CodeQL
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  analyze:
+    name: Analyze C#
+    runs-on: windows-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 8.0.410
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@fbcef3fba75224ed6476919775448de80b23cb15 # v3.32.0
+        with:
+          languages: csharp
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@fbcef3fba75224ed6476919775448de80b23cb15 # v3.32.0
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@fbcef3fba75224ed6476919775448de80b23cb15 # v3.32.0

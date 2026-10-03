@@ -18,17 +18,26 @@ public class IrregularWorldMapScreenTest
 {
     private IrregularMeshNs.IrregularWorldMapScreen _screen = null!;
 
-    [BeforeTest]
-    public async Task Setup()
+    private static IrregularMeshNs.IrregularWorldMapScreen CreateScreen(bool fogOfWarEnabled = true)
     {
-        _screen = new IrregularMeshNs.IrregularWorldMapScreen
+        var viewport = new SubViewport { Name = "Viewport" };
+        var screen = new IrregularMeshNs.IrregularWorldMapScreen
         {
             MeshRings = 2,
             WorldScale = 16f,
             VisionRange = 3f,
-            FogOfWarEnabled = true,
-            ShowDebug = false
+            FogOfWarEnabled = fogOfWarEnabled,
+            ShowDebug = false,
+            Viewport = viewport
         };
+        screen.AddChild(viewport);
+        return screen;
+    }
+
+    [BeforeTest]
+    public async Task Setup()
+    {
+        _screen = CreateScreen();
         AddNode(_screen);
         await ISceneRunner.SyncProcessFrame;
     }
@@ -94,8 +103,8 @@ public class IrregularWorldMapScreenTest
     [TestCase]
     public async Task TestGenerateMapWithSameSeedProducesSameMesh()
     {
-        var screen1 = new IrregularMeshNs.IrregularWorldMapScreen { MeshRings = 2 };
-        var screen2 = new IrregularMeshNs.IrregularWorldMapScreen { MeshRings = 2 };
+        var screen1 = CreateScreen();
+        var screen2 = CreateScreen();
 
         AddNode(screen1);
         AddNode(screen2);
@@ -149,11 +158,7 @@ public class IrregularWorldMapScreenTest
     [TestCase]
     public async Task TestFogOfWarCanBeDisabled()
     {
-        var screen = new IrregularMeshNs.IrregularWorldMapScreen
-        {
-            MeshRings = 2,
-            FogOfWarEnabled = false
-        };
+        var screen = CreateScreen(fogOfWarEnabled: false);
 
         AddNode(screen);
         await ISceneRunner.SyncProcessFrame;

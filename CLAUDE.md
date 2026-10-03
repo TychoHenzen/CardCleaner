@@ -201,3 +201,12 @@ Code is organized by feature under `Scripts/Features/`:
 - **Pause/**: Pause menu controller
 
 Core utilities and interfaces are in `Scripts/Core/`.
+
+## Canonical dod-guard Workflow
+
+- `/add-backlog-idea` creates an issue in **Backlog**.
+- `/refine-backlog-item` researches the issue and moves it to **Todo** when it is ready.
+- `/next-ticket` implements exactly one issue on one issue branch.
+- `/submit-draft-pr` publishes the branch as a draft pull request.
+- Review remains read-only until the user explicitly accepts the findings or requests remediation.
+- `/complete-pr` owns the ready-to-merge check, merge, linked-issue confirmation, and remote branch deletion.

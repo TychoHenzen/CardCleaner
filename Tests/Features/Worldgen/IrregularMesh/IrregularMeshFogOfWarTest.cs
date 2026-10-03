@@ -12,6 +12,7 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 /// Verifies fog state tracking, visibility updates, and events.
 /// </summary>
 [TestSuite]
+[RequireGodotRuntime]
 public class IrregularMeshFogOfWarTest
 {
     private IrregularMeshNs.IrregularMesh _testMesh = null!;

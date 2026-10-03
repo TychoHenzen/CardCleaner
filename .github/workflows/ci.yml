@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and test (Windows)
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 8.0.410
+
+      - name: Restore dependencies
+        run: dotnet restore CardCleaner.csproj
+
+      - name: Build with analyzers
+        run: dotnet build CardCleaner.csproj --no-restore --configuration Release /p:EnableNETAnalyzers=true /p:EnforceCodeStyleInBuild=true
+
+      - name: Download Godot 4.7.1 .NET
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $archiveName = 'Godot_v4.7.1-stable_mono_win64.zip'
+          $archivePath = Join-Path $env:RUNNER_TEMP $archiveName
+          $extractPath = Join-Path $env:RUNNER_TEMP 'godot-4.7.1-stable-mono'
+          $downloadUrl = 'https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_win64.zip'
+
+          Invoke-WebRequest -Uri $downloadUrl -OutFile $archivePath
+          Expand-Archive -LiteralPath $archivePath -DestinationPath $extractPath -Force
+
+          $godotBinary = Join-Path $extractPath 'Godot_v4.7.1-stable_mono_win64.exe'
+          if (-not (Test-Path -LiteralPath $godotBinary -PathType Leaf)) {
+            throw "Godot binary was not found at $godotBinary"
+          }
+
+          "GODOT_BIN=$godotBinary" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Run GdUnit tests
+        shell: pwsh
+        run: ./scripts/ci/Run-GdUnit.ps1 -GodotBinary $env:GODOT_BIN
+
+      - name: Upload GdUnit reports
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: gdunit-reports
+          path: reports/ci
+          if-no-files-found: warn
+
+  dependency-audit:
+    name: NuGet vulnerability check
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 8.0.410
+
+      - name: Restore dependencies
+        run: dotnet restore CardCleaner.csproj
+
+      - name: Check vulnerable packages
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $output = dotnet list CardCleaner.csproj package --vulnerable --include-transitive 2>&1 | Out-String
+          $exitCode = $LASTEXITCODE
+          $output | Tee-Object -FilePath dependency-audit.txt
+
+          if ($exitCode -ne 0) {
+            throw "dotnet list package failed with exit code $exitCode"
+          }
+
+          $vulnerablePackageLine = '(?im)^\s*>\s+\S+.*\b(Critical|High|Moderate|Low)\b\s+https?://'
+          if ($output -match $vulnerablePackageLine) {
+            throw 'NuGet vulnerabilities were reported. See dependency-audit.txt for details.'
+          }
+
+          Write-Host 'No vulnerable NuGet packages were reported.'
+
+  actionlint:
+    name: GitHub Actions lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: 1.24.0
+
+      - name: Run actionlint
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12

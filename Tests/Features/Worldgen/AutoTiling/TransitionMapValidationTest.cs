@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -10,7 +12,7 @@ using static GdUnit4.Assertions;
 namespace CardCleaner.Tests.Features.Worldgen.AutoTiling;
 
 /// <summary>
-/// Validates transition_map.json structure, data integrity, and cross-references with tiles.json.
+/// Validates transition_map.json structure, data integrity, and cross-references with the Tiled tileset source.
 /// This is critical for auto-tile rendering - invalid entries cause black/missing tiles.
 /// </summary>
 [TestSuite]
@@ -19,6 +21,11 @@ public class TransitionMapValidationTest
 {
     private const string TransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";
     private const string AtlasMappingPath = "res://Data/CompiledAtlas/atlas_mapping.json";
+    private static readonly HashSet<string> TransitionOnlyBorderIds = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "mound6"
+    };
+
     // Default values - will be read from atlas_mapping.json if available
     private const int DefaultAtlasWidth = 4096;
     private const int DefaultAtlasHeight = 2048;  // Must match atlas_mapping.json
@@ -41,10 +48,10 @@ public class TransitionMapValidationTest
                 PropertyNameCaseInsensitive = true
             });
         }
-        // Load from JSON to match transition_map.json source
+        // Load from Tiled source to match transition_map.json source
         _registry = new TileRegistry();
         _registry.Clear();
-        _registry.LoadFromData("res://Data/Tiles/tiles.json");
+        _registry.LoadFromData("res://Data/Tiled/tileset.tmx");
     }
 
     [AfterTest]
@@ -221,6 +228,9 @@ public class TransitionMapValidationTest
 
         foreach (var borderId in _transitionMap!.GetAllBorderIds())
         {
+            if (TransitionOnlyBorderIds.Contains(borderId))
+                continue;
+
             if (!allTileIds.Contains(borderId))
                 missingBorders.Add(borderId);
         }

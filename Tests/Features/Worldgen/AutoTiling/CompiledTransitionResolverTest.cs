@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
@@ -16,6 +18,11 @@ namespace CardCleaner.Tests.Features.Worldgen.AutoTiling;
 [RequireGodotRuntime]
 public class CompiledTransitionResolverTest
 {
+    private static readonly HashSet<string> TransitionOnlyBorderIds = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "mound6"
+    };
+
     private CompiledTransitionResolver _resolver = null!;
     private TileRegistry _registry = null!;
     private CompiledTransitionMap _transitionMap = null!;
@@ -24,10 +31,10 @@ public class CompiledTransitionResolverTest
     public void Setup()
     {
         _resolver = new CompiledTransitionResolver();
-        // Load from JSON to match transition_map.json source
+        // Load from Tiled source to match transition_map.json source
         _registry = new TileRegistry();
         _registry.Clear();
-        _registry.LoadFromData("res://Data/Tiles/tiles.json");
+        _registry.LoadFromData("res://Data/Tiled/tileset.tmx");
 
         // Load transition map for direct inspection
         var json = System.IO.File.ReadAllText(
@@ -342,6 +349,9 @@ public class CompiledTransitionResolverTest
 
         foreach (var borderId in _transitionMap.GetAllBorderIds())
         {
+            if (TransitionOnlyBorderIds.Contains(borderId))
+                continue;
+
             // Border ID might be the tile ID directly, or "{tileId}_border"
             var baseTileId = borderId.EndsWith("_border")
                 ? borderId[..^"_border".Length]

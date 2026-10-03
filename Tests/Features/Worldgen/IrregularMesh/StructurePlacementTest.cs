@@ -11,6 +11,7 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 /// Verifies structure placement, passability updates, and visual spawning.
 /// </summary>
 [TestSuite]
+[RequireGodotRuntime]
 public class StructurePlacementTest
 {
     private IrregularMeshNs.IrregularMesh _testMesh = null!;
