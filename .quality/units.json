@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 464,
+  "fileCount": 471,
   "files": [
     {
       "path": "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs",
@@ -533,7 +533,42 @@
       "classification": "production"
     },
     {
+      "path": "addons/tile_editor/UnusedSources/UnusedSourceEntry.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/UnusedSources/UnusedSourcesPanelSetup.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "addons/tile_editor/UnusedSourcesPanel.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/VariantMapping/VariantCell.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -2324,27 +2359,27 @@
     }
   ],
   "summary": {
-    "total": 7086,
-    "errors": 328,
-    "warnings": 6758,
+    "total": 7082,
+    "errors": 320,
+    "warnings": 6762,
     "byRule": {
-      "dead-export": 15,
+      "dead-export": 13,
       "duplicate-block": 169,
-      "types-per-file": 44,
-      "file-length": 274,
-      "complexity": 305,
-      "function-length": 345,
+      "types-per-file": 42,
+      "file-length": 278,
+      "complexity": 303,
+      "function-length": 339,
       "nesting-depth": 31,
       "param-count": 138,
       "unnamed-tuple": 42,
       "test-only-export": 13,
       "else-branch": 126,
-      "stateless-method": 1274,
+      "stateless-method": 1303,
       "comment-bloat": 54,
-      "comment-restates-code": 151,
+      "comment-restates-code": 141,
       "output-parameter": 20,
       "flag-parameter": 55,
-      "line-length": 4030
+      "line-length": 4015
     },
     "byFile": {
       "Scripts/Core/Devices/Cable.cs": 14,
@@ -2359,8 +2394,6 @@
       "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs": 21,
       "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs": 12,
       "addons/tile_editor/TileEditorPlugin.cs": 4,
-      "addons/tile_editor/UnusedSourcesPanel.cs": 51,
-      "addons/tile_editor/VariantMappingEditor.cs": 56,
       "gdunit4_testadapter_v5/GdUnit4TestRunnerScene.cs": 1,
       "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs": 86,
       "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs": 53,
@@ -2646,6 +2679,12 @@
       "addons/tile_editor/TmxPreview/TmxPreviewPanelSelection.cs": 25,
       "addons/tile_editor/TransitionCoveragePanel.cs": 13,
       "addons/tile_editor/TsxPropertySchema.cs": 20,
+      "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs": 13,
+      "addons/tile_editor/UnusedSourcesPanel.cs": 28,
+      "addons/tile_editor/VariantMapping/VariantCellInteraction.cs": 11,
+      "addons/tile_editor/VariantMapping/VariantCellState.cs": 21,
+      "addons/tile_editor/VariantMapping/VariantCellUi.cs": 11,
+      "addons/tile_editor/VariantMappingEditor.cs": 10,
       "Scripts/Core/Services/PlayerResetService.cs": 9,
       "Scripts/Features/Conveyor/Components/ConveyorBelt.cs": 4,
       "Scripts/Features/Worldgen/Wfc/Constraints/TileProbabilityConstraint.cs": 16,
@@ -2667,6 +2706,7 @@
       "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs": 5,
       "addons/tile_editor/AutoTilePreview/DualGridAutoTilePreviewState.cs": 9,
       "addons/tile_editor/TileAtlas/TransitionCoveragePanelCoverage.cs": 9,
+      "addons/tile_editor/VariantMapping/VariantCell.cs": 1,
       "Scripts/Core/Interfaces/ILog.cs": 3,
       "addons/tile_editor/TileEditorDock.TestHooks.cs": 1,
       "Scripts/Core/Data/GameSettings.cs": 8,
@@ -2703,6 +2743,8 @@
       "addons/tile_editor/TileProperties/TilePropertiesPanelAtlasInitialization.cs": 4,
       "addons/tile_editor/TmxPreview/TmxPreviewControlRendering.cs": 4,
       "addons/tile_editor/TmxPreview/TmxPreviewPanelLoading.cs": 5,
+      "addons/tile_editor/UnusedSources/UnusedSourceEntry.cs": 4,
+      "addons/tile_editor/UnusedSources/UnusedSourcesPanelSetup.cs": 4,
       "Scripts/Features/Deckbuilder/Services/AsyncMapGeneratorAdapter.cs": 11,
       "Scripts/Features/Worldgen/Wfc/Constraints/IEntropyInvalidator.cs": 6,
       "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs": 7,
@@ -2844,22 +2886,6 @@
       "rule": "dead-export",
       "severity": "error",
       "message": "TileEditorPlugin is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 418,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "UnusedSourceEntry is exported but never referenced anywhere",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 228,
-      "rule": "dead-export",
-      "severity": "error",
-      "message": "VariantCell is exported but never referenced anywhere",
       "metric": 1
     },
     {
@@ -3519,22 +3545,6 @@
       "metric": 2
     },
     {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 418,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: UnusedSourcesPanel, UnusedSourceEntry",
-      "metric": 2
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 228,
-      "rule": "types-per-file",
-      "severity": "error",
-      "message": "2 types in one file: VariantMappingEditor, VariantCell",
-      "metric": 2
-    },
-    {
       "file": "Scripts/Core/Services/GameSaveService.cs",
       "line": 1,
       "rule": "file-length",
@@ -4077,22 +4087,6 @@
       "severity": "error",
       "message": "file is 396 lines",
       "metric": 396
-    },
-    {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 475 lines",
-      "metric": 475
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "error",
-      "message": "file is 562 lines",
-      "metric": 562
     },
     {
       "file": "Scripts/Core/Services/GameSaveService.cs",
@@ -4973,22 +4967,6 @@
       "severity": "error",
       "message": "AnalyzeTsxFile() is 69 lines",
       "metric": 69
-    },
-    {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 90,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "RefreshDisplay() is 89 lines",
-      "metric": 89
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 271,
-      "rule": "function-length",
-      "severity": "error",
-      "message": "BuildUI() is 82 lines",
-      "metric": 82
     },
     {
       "file": "Tests/Features/Deckbuilder/Services/GameSessionServiceTest.cs",
@@ -8151,6 +8129,54 @@
       "metric": 176
     },
     {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 106 lines",
+      "metric": 106
+    },
+    {
+      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 269 lines",
+      "metric": 269
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 103 lines",
+      "metric": 103
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 111 lines",
+      "metric": 111
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 137 lines",
+      "metric": 137
+    },
+    {
+      "file": "addons/tile_editor/VariantMappingEditor.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 216 lines",
+      "metric": 216
+    },
+    {
       "file": "Scripts/Core/Devices/Cable.cs",
       "line": 26,
       "rule": "complexity",
@@ -10055,36 +10081,20 @@
       "metric": 7
     },
     {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 90,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "RefreshDisplay() cyclomatic complexity 9",
-      "metric": 9
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 354,
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 8,
       "rule": "complexity",
       "severity": "warn",
       "message": "LoadFromTile() cyclomatic complexity 9",
       "metric": 9
     },
     {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 393,
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 78,
       "rule": "complexity",
       "severity": "warn",
-      "message": "UpdatePreview() cyclomatic complexity 7",
+      "message": "Validate() cyclomatic complexity 7",
       "metric": 7
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 425,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "Validate() cyclomatic complexity 9",
-      "metric": 9
     },
     {
       "file": "Scripts/Core/DependencyInjection/ServiceLocator.cs",
@@ -12376,15 +12386,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 34,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "_Ready() is 55 lines",
-      "metric": 55
-    },
-    {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 227,
+      "line": 81,
       "rule": "function-length",
       "severity": "warn",
       "message": "OnCompactIdsPressed() is 38 lines",
@@ -12392,7 +12394,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 266,
+      "line": 120,
       "rule": "function-length",
       "severity": "warn",
       "message": "ExecuteCompactIds() is 48 lines",
@@ -12400,7 +12402,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 315,
+      "line": 169,
       "rule": "function-length",
       "severity": "warn",
       "message": "OnRemoveDuplicatesPressed() is 49 lines",
@@ -12408,51 +12410,27 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 365,
+      "line": 219,
       "rule": "function-length",
       "severity": "warn",
       "message": "ExecuteRemoveDuplicates() is 47 lines",
       "metric": 47
     },
     {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 429,
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 78,
       "rule": "function-length",
       "severity": "warn",
-      "message": "_Ready() is 44 lines",
-      "metric": 44
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 52,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "InitializeUI() is 48 lines",
-      "metric": 48
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 393,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "UpdatePreview() is 31 lines",
+      "message": "Validate() is 31 lines",
       "metric": 31
     },
     {
       "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 425,
+      "line": 49,
       "rule": "function-length",
       "severity": "warn",
-      "message": "Validate() is 35 lines",
-      "metric": 35
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 461,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "OnAtlasButtonPressed() is 53 lines",
-      "metric": 53
+      "message": "InitializeUI() is 44 lines",
+      "metric": 44
     },
     {
       "file": "Scripts/Core/Services/GameSaveService.cs",
@@ -13751,8 +13729,8 @@
       "metric": 4
     },
     {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 257,
+      "file": "addons/tile_editor/VariantMapping/VariantCell.cs",
+      "line": 34,
       "rule": "param-count",
       "severity": "warn",
       "message": "VariantCell() takes 4 parameters",
@@ -14727,8 +14705,8 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 90,
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "line": 9,
       "rule": "else-branch",
       "severity": "warn",
       "message": "RefreshDisplay() has 1 else branch(es) — prefer guard clauses",
@@ -14736,7 +14714,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 209,
+      "line": 63,
       "rule": "else-branch",
       "severity": "warn",
       "message": "RemoveAllUnusedSources() has 1 else branch(es) — prefer guard clauses",
@@ -14744,7 +14722,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 266,
+      "line": 120,
       "rule": "else-branch",
       "severity": "warn",
       "message": "ExecuteCompactIds() has 1 else branch(es) — prefer guard clauses",
@@ -14752,15 +14730,15 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 365,
+      "line": 219,
       "rule": "else-branch",
       "severity": "warn",
       "message": "ExecuteRemoveDuplicates() has 1 else branch(es) — prefer guard clauses",
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 425,
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 78,
       "rule": "else-branch",
       "severity": "warn",
       "message": "Validate() has 1 else branch(es) — prefer guard clauses",
@@ -24951,8 +24929,240 @@
       "metric": 1
     },
     {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourceEntry.cs",
+      "line": 64,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddStatusLabel() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "line": 9,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "RefreshDisplay() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "line": 28,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "UpdateActionButtonStates() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "line": 51,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ClearSourceEntries() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "line": 58,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ShowNoUnusedSources() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "line": 72,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ShowUnusedSources() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "line": 91,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddRemoveAllButton() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelSetup.cs",
+      "line": 8,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "_Ready() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelSetup.cs",
+      "line": 33,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddActionButtons() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+      "line": 8,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnAtlasButtonPressed() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+      "line": 54,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnSizeChanged() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+      "line": 66,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnOffsetChanged() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+      "line": 76,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "EmitVariantChanged() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+      "line": 81,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "SetReadOnly() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+      "line": 91,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetVariantDefinition() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+      "line": 96,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "SetVariantDefinition() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 8,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "LoadFromTile() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 26,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "UpdateUIFromDefinition() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 42,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "UpdatePreview() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 69,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetActualTileSize() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 78,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "Validate() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+      "line": 9,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "BuildUI() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+      "line": 20,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddShapePreview() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+      "line": 38,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddBitmaskLabel() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+      "line": 49,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddAtlasButton() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+      "line": 61,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddSizeControls() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+      "line": 86,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddOffsetControls() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+      "line": 111,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddVariantPreview() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+      "line": 124,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "AddValidationLabel() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
       "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 47,
+      "line": 44,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "_Ready() never touches instance state — make it a free function",
@@ -26519,86 +26729,6 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 77,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 160,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 451,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 69,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 90,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 289,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 308,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 320,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 332,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 343,
-      "rule": "comment-restates-code",
-      "severity": "warn",
-      "message": "comment repeats the declaration below it - say why, not what",
-      "metric": 1
-    },
-    {
       "file": "Scripts/Core/DependencyInjection/AutoServiceProvider.cs",
       "line": 52,
       "rule": "output-parameter",
@@ -27191,8 +27321,8 @@
       "metric": 1
     },
     {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 540,
+      "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+      "line": 81,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "SetReadOnly() takes a boolean flag; split the behavior or name the policy",
@@ -58903,64 +59033,88 @@
       "metric": 96
     },
     {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 71,
+      "file": "addons/tile_editor/UnusedSources/UnusedSourceEntry.cs",
+      "line": 46,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 108 chars",
-      "metric": 108
+      "message": "line is 81 chars",
+      "metric": 81
     },
     {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 81,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 108 chars",
-      "metric": 108
-    },
-    {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 101,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 112,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 116,
+      "file": "addons/tile_editor/UnusedSources/UnusedSourceEntry.cs",
+      "line": 52,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
       "metric": 86
     },
     {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 138,
+      "file": "addons/tile_editor/UnusedSources/UnusedSourceEntry.cs",
+      "line": 53,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 104 chars",
-      "metric": 104
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "line": 36,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "line": 46,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "line": 64,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "line": 74,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "line": 78,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelSetup.cs",
+      "line": 44,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelSetup.cs",
+      "line": 53,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 147,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
-    },
-    {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 152,
+      "line": 48,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -58968,31 +59122,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 163,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 166,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 194,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
-    },
-    {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 195,
+      "line": 49,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -59000,7 +59130,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 223,
+      "line": 77,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -59008,7 +59138,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 243,
+      "line": 97,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 116 chars",
@@ -59016,7 +59146,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 247,
+      "line": 101,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -59024,7 +59154,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 251,
+      "line": 105,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -59032,7 +59162,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 274,
+      "line": 128,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -59040,7 +59170,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 290,
+      "line": 144,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -59048,7 +59178,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 292,
+      "line": 146,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 101 chars",
@@ -59056,7 +59186,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 304,
+      "line": 158,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -59064,7 +59194,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 322,
+      "line": 176,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -59072,7 +59202,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 338,
+      "line": 192,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -59080,7 +59210,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 339,
+      "line": 193,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
@@ -59088,7 +59218,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 347,
+      "line": 201,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -59096,7 +59226,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 348,
+      "line": 202,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -59104,7 +59234,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 350,
+      "line": 204,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -59112,7 +59242,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 373,
+      "line": 227,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -59120,7 +59250,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 389,
+      "line": 243,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -59128,7 +59258,7 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 390,
+      "line": 244,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 96 chars",
@@ -59136,35 +59266,131 @@
     },
     {
       "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 402,
+      "line": 256,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
       "metric": 94
     },
     {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 448,
+      "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+      "line": 38,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+      "line": 41,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 14,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 17,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
       "metric": 81
     },
     {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 452,
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 19,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
+      "message": "line is 91 chars",
+      "metric": 91
     },
     {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "line": 453,
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 20,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 30,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 92,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 93,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 95,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 99,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 110 chars",
+      "metric": 110
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 105,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "line": 106,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+      "line": 64,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+      "line": 89,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
     },
     {
       "file": "addons/tile_editor/VariantMappingEditor.cs",
@@ -59176,7 +59402,7 @@
     },
     {
       "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 49,
+      "line": 46,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 105 chars",
@@ -59184,7 +59410,7 @@
     },
     {
       "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 120,
+      "line": 113,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
@@ -59192,7 +59418,7 @@
     },
     {
       "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 175,
+      "line": 168,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -59200,7 +59426,7 @@
     },
     {
       "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 180,
+      "line": 173,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 110 chars",
@@ -59208,7 +59434,7 @@
     },
     {
       "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 183,
+      "line": 175,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -59216,227 +59442,11 @@
     },
     {
       "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 194,
+      "line": 186,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
       "metric": 87
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 225,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 257,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 114 chars",
-      "metric": 114
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 310,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 311,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 115 chars",
-      "metric": 115
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 315,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 115 chars",
-      "metric": 115
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 322,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 99 chars",
-      "metric": 99
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 323,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 120 chars",
-      "metric": 120
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 327,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 120 chars",
-      "metric": 120
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 358,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 362,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 363,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 97 chars",
-      "metric": 97
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 366,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 368,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 369,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 370,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 381,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 395,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 427,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 443,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 100 chars",
-      "metric": 100
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 444,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 101 chars",
-      "metric": 101
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 446,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 450,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 110 chars",
-      "metric": 110
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 456,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 457,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 465,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 93 chars",
-      "metric": 93
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 475,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
-    },
-    {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "line": 487,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
     }
   ],
   "units": [
@@ -69553,474 +69563,6 @@
       ]
     },
     {
-      "file": "addons/tile_editor/VariantMappingEditor.cs",
-      "errors": 4,
-      "warnings": 52,
-      "rules": {
-        "dead-export": 1,
-        "types-per-file": 1,
-        "file-length": 1,
-        "function-length": 5,
-        "complexity": 3,
-        "param-count": 1,
-        "else-branch": 1,
-        "stateless-method": 1,
-        "comment-restates-code": 7,
-        "flag-parameter": 1,
-        "line-length": 34
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 228,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "VariantCell is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 228,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: VariantMappingEditor, VariantCell",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 562 lines",
-          "metric": 562
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 271,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "BuildUI() is 82 lines",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 354,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "LoadFromTile() cyclomatic complexity 9",
-          "metric": 9
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 393,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "UpdatePreview() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 425,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "Validate() cyclomatic complexity 9",
-          "metric": 9
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 52,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "InitializeUI() is 48 lines",
-          "metric": 48
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 393,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "UpdatePreview() is 31 lines",
-          "metric": 31
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 425,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "Validate() is 35 lines",
-          "metric": 35
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 461,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "OnAtlasButtonPressed() is 53 lines",
-          "metric": 53
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 257,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "VariantCell() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 425,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "Validate() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 47,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "_Ready() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 69,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 90,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 289,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 308,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 320,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 332,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 343,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 540,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "SetReadOnly() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 12,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 49,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 105 chars",
-          "metric": 105
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 120,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 175,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 180,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 183,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 194,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 225,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 257,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 310,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 311,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 315,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 322,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 323,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 120 chars",
-          "metric": 120
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 327,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 120 chars",
-          "metric": 120
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 358,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 362,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 363,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 366,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 368,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 369,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 370,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 381,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 395,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 427,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 443,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 444,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 446,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 450,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 456,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 457,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 465,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 475,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/VariantMappingEditor.cs",
-          "line": 487,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        }
-      ]
-    },
-    {
       "file": "Scripts/Core/Services/TileRegistry.cs",
       "errors": 4,
       "warnings": 52,
@@ -70481,431 +70023,6 @@
           "severity": "warn",
           "message": "line is 84 chars",
           "metric": 84
-        }
-      ]
-    },
-    {
-      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-      "errors": 4,
-      "warnings": 47,
-      "rules": {
-        "dead-export": 1,
-        "types-per-file": 1,
-        "file-length": 1,
-        "function-length": 7,
-        "complexity": 1,
-        "else-branch": 4,
-        "comment-restates-code": 3,
-        "line-length": 33
-      },
-      "items": [
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 418,
-          "rule": "dead-export",
-          "severity": "error",
-          "message": "UnusedSourceEntry is exported but never referenced anywhere",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 418,
-          "rule": "types-per-file",
-          "severity": "error",
-          "message": "2 types in one file: UnusedSourcesPanel, UnusedSourceEntry",
-          "metric": 2
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "error",
-          "message": "file is 475 lines",
-          "metric": 475
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 90,
-          "rule": "function-length",
-          "severity": "error",
-          "message": "RefreshDisplay() is 89 lines",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 90,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "RefreshDisplay() cyclomatic complexity 9",
-          "metric": 9
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 34,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "_Ready() is 55 lines",
-          "metric": 55
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 227,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "OnCompactIdsPressed() is 38 lines",
-          "metric": 38
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 266,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ExecuteCompactIds() is 48 lines",
-          "metric": 48
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 315,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "OnRemoveDuplicatesPressed() is 49 lines",
-          "metric": 49
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 365,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "ExecuteRemoveDuplicates() is 47 lines",
-          "metric": 47
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 429,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "_Ready() is 44 lines",
-          "metric": 44
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 90,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "RefreshDisplay() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 209,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "RemoveAllUnusedSources() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 266,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "ExecuteCompactIds() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 365,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "ExecuteRemoveDuplicates() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 77,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 160,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 451,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 71,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 81,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 101,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 112,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 116,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 138,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 147,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 152,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 163,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 166,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 194,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 195,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 223,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 243,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 116 chars",
-          "metric": 116
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 247,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 251,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 274,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 290,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 292,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 304,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 322,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 338,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 339,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 347,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 348,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 350,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 373,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 389,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 390,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 402,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 448,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 452,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
-          "line": 453,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
         }
       ]
     },
@@ -100063,6 +99180,243 @@
       ]
     },
     {
+      "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+      "errors": 0,
+      "warnings": 28,
+      "rules": {
+        "file-length": 1,
+        "function-length": 4,
+        "else-branch": 3,
+        "line-length": 20
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 269 lines",
+          "metric": 269
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 81,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "OnCompactIdsPressed() is 38 lines",
+          "metric": 38
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 120,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "ExecuteCompactIds() is 48 lines",
+          "metric": 48
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 169,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "OnRemoveDuplicatesPressed() is 49 lines",
+          "metric": 49
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 219,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "ExecuteRemoveDuplicates() is 47 lines",
+          "metric": 47
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 63,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "RemoveAllUnusedSources() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 120,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "ExecuteCompactIds() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 219,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "ExecuteRemoveDuplicates() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 48,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 49,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 77,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 97,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 116 chars",
+          "metric": 116
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 101,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 105,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 128,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 144,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 146,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 158,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 176,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 192,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 193,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 201,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 202,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 204,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 227,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 243,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 244,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "addons/tile_editor/UnusedSourcesPanel.cs",
+          "line": 256,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        }
+      ]
+    },
+    {
       "file": "Tests/Features/Card/Services/SignatureCardHelperTest.cs",
       "errors": 0,
       "warnings": 28,
@@ -104693,6 +104047,189 @@
           "severity": "warn",
           "message": "line is 88 chars",
           "metric": 88
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+      "errors": 0,
+      "warnings": 21,
+      "rules": {
+        "file-length": 1,
+        "complexity": 2,
+        "function-length": 1,
+        "else-branch": 1,
+        "stateless-method": 5,
+        "line-length": 11
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 111 lines",
+          "metric": 111
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 8,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "LoadFromTile() cyclomatic complexity 9",
+          "metric": 9
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 78,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "Validate() cyclomatic complexity 7",
+          "metric": 7
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 78,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "Validate() is 31 lines",
+          "metric": 31
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 78,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "Validate() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 8,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "LoadFromTile() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 26,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "UpdateUIFromDefinition() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 42,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "UpdatePreview() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 69,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetActualTileSize() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 78,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Validate() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 14,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 17,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 20,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 30,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 92,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 93,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 95,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 99,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 105,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellState.cs",
+          "line": 106,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
         }
       ]
     },
@@ -111307,6 +110844,123 @@
       ]
     },
     {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+      "errors": 0,
+      "warnings": 13,
+      "rules": {
+        "file-length": 1,
+        "else-branch": 1,
+        "stateless-method": 6,
+        "line-length": 5
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 106 lines",
+          "metric": 106
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+          "line": 9,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "RefreshDisplay() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+          "line": 9,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "RefreshDisplay() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+          "line": 28,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "UpdateActionButtonStates() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+          "line": 51,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ClearSourceEntries() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+          "line": 58,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ShowNoUnusedSources() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+          "line": 72,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ShowUnusedSources() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+          "line": 91,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddRemoveAllButton() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+          "line": 46,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+          "line": 64,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+          "line": 74,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs",
+          "line": 78,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Card/Models/GemVisual.cs",
       "errors": 0,
       "warnings": 13,
@@ -113759,6 +113413,207 @@
       ]
     },
     {
+      "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+      "errors": 0,
+      "warnings": 11,
+      "rules": {
+        "file-length": 1,
+        "stateless-method": 7,
+        "flag-parameter": 1,
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 103 lines",
+          "metric": 103
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+          "line": 8,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnAtlasButtonPressed() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+          "line": 54,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnSizeChanged() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+          "line": 66,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnOffsetChanged() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+          "line": 76,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "EmitVariantChanged() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+          "line": 81,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SetReadOnly() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+          "line": 91,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetVariantDefinition() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+          "line": 96,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SetVariantDefinition() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+          "line": 81,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "SetReadOnly() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+          "line": 38,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellInteraction.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+      "errors": 0,
+      "warnings": 11,
+      "rules": {
+        "file-length": 1,
+        "stateless-method": 8,
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 137 lines",
+          "metric": 137
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+          "line": 9,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "BuildUI() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+          "line": 20,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddShapePreview() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+          "line": 38,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddBitmaskLabel() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+          "line": 49,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddAtlasButton() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+          "line": 61,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddSizeControls() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+          "line": 86,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddOffsetControls() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+          "line": 111,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddVariantPreview() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+          "line": 124,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddValidationLabel() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+          "line": 64,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCellUi.cs",
+          "line": 89,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Deckbuilder/Services/AsyncMapGeneratorAdapter.cs",
       "errors": 0,
       "warnings": 11,
@@ -114782,6 +114637,99 @@
           "severity": "warn",
           "message": "line is 82 chars",
           "metric": 82
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/VariantMappingEditor.cs",
+      "errors": 0,
+      "warnings": 10,
+      "rules": {
+        "file-length": 1,
+        "function-length": 1,
+        "stateless-method": 1,
+        "line-length": 7
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/VariantMappingEditor.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 216 lines",
+          "metric": 216
+        },
+        {
+          "file": "addons/tile_editor/VariantMappingEditor.cs",
+          "line": 49,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "InitializeUI() is 44 lines",
+          "metric": 44
+        },
+        {
+          "file": "addons/tile_editor/VariantMappingEditor.cs",
+          "line": 44,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "_Ready() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/VariantMappingEditor.cs",
+          "line": 12,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "addons/tile_editor/VariantMappingEditor.cs",
+          "line": 46,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "addons/tile_editor/VariantMappingEditor.cs",
+          "line": 113,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "addons/tile_editor/VariantMappingEditor.cs",
+          "line": 168,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "addons/tile_editor/VariantMappingEditor.cs",
+          "line": 173,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "addons/tile_editor/VariantMappingEditor.cs",
+          "line": 175,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "addons/tile_editor/VariantMappingEditor.cs",
+          "line": 186,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
         }
       ]
     },
@@ -119622,6 +119570,92 @@
       ]
     },
     {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourceEntry.cs",
+      "errors": 0,
+      "warnings": 4,
+      "rules": {
+        "stateless-method": 1,
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourceEntry.cs",
+          "line": 64,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddStatusLabel() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourceEntry.cs",
+          "line": 46,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourceEntry.cs",
+          "line": 52,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourceEntry.cs",
+          "line": 53,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelSetup.cs",
+      "errors": 0,
+      "warnings": 4,
+      "rules": {
+        "stateless-method": 2,
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelSetup.cs",
+          "line": 8,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "_Ready() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelSetup.cs",
+          "line": 33,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddActionButtons() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelSetup.cs",
+          "line": 44,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "addons/tile_editor/UnusedSources/UnusedSourcesPanelSetup.cs",
+          "line": 53,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TileAtlas/TileAtlasCompilationResult.cs",
       "errors": 0,
       "warnings": 4,
@@ -121015,6 +121049,24 @@
           "severity": "warn",
           "message": "file is 152 lines",
           "metric": 152
+        }
+      ]
+    },
+    {
+      "file": "addons/tile_editor/VariantMapping/VariantCell.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "param-count": 1
+      },
+      "items": [
+        {
+          "file": "addons/tile_editor/VariantMapping/VariantCell.cs",
+          "line": 34,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "VariantCell() takes 4 parameters",
+          "metric": 4
         }
       ]
     },
