@@ -18,41 +18,61 @@ internal static class RegionAnalyzer
     /// <returns>Metrics about contiguous regions in the map</returns>
     public static RegionMetrics Analyze(string[,] tileMap)
     {
-        if (tileMap == null)
-            throw new ArgumentNullException(nameof(tileMap));
+        ArgumentNullException.ThrowIfNull(tileMap);
 
-        var height = tileMap.GetLength(0);
-        var width = tileMap.GetLength(1);
-
-        if (height == 0 || width == 0)
+        var regionSizes = FindRegionSizes(tileMap);
+        if (regionSizes.Count == 0)
             return new RegionMetrics(0, 0, 0, 0, 0, 0, 0);
 
+        return Summarize(regionSizes);
+    }
+
+    /// <summary>
+    /// Analyzes tile type distribution across the map.
+    /// Returns percentage of each tile type and region counts.
+    /// </summary>
+    public static DistributionMetrics AnalyzeDistribution(string[,] tileMap)
+    {
+        ArgumentNullException.ThrowIfNull(tileMap);
+
+        var tally = TallyTiles(tileMap);
+        if (tally.TotalTiles == 0)
+            return new DistributionMetrics(0, 0, []);
+
+        return BuildDistribution(tally);
+    }
+
+    private static List<int> FindRegionSizes(string[,] tileMap)
+    {
+        var height = tileMap.GetLength(0);
+        var width = tileMap.GetLength(1);
         var visited = new bool[height, width];
         var regionSizes = new List<int>();
-        var totalTiles = 0;
 
         for (var y = 0; y < height; y++)
         {
             for (var x = 0; x < width; x++)
             {
-                if (!visited[y, x] && !string.IsNullOrEmpty(tileMap[y, x]))
-                {
-                    var regionSize = FloodFill(tileMap, visited, x, y, tileMap[y, x]);
-                    regionSizes.Add(regionSize);
-                    totalTiles += regionSize;
-                }
+                if (visited[y, x] || string.IsNullOrEmpty(tileMap[y, x]))
+                    continue;
+
+                regionSizes.Add(FloodFill(tileMap, visited, x, y, tileMap[y, x]));
             }
         }
 
-        if (regionSizes.Count == 0)
-            return new RegionMetrics(0, 0, 0, 0, 0, 0, 0);
+        return regionSizes;
+    }
 
+    private static RegionMetrics Summarize(List<int> regionSizes)
+    {
         var minSize = int.MaxValue;
         var maxSize = 0;
         var tilesInLargeRegions = 0;
+        var totalTiles = 0;
 
         foreach (var size in regionSizes)
         {
+            totalTiles += size;
             if (size < minSize) minSize = size;
             if (size > maxSize) maxSize = size;
             if (size >= 30) tilesInLargeRegions += size;
@@ -72,26 +92,12 @@ internal static class RegionAnalyzer
         );
     }
 
-    /// <summary>
-    /// Analyzes tile type distribution across the map.
-    /// Returns percentage of each tile type and region counts.
-    /// </summary>
-    public static DistributionMetrics AnalyzeDistribution(string[,] tileMap)
+    private static TileTally TallyTiles(string[,] tileMap)
     {
-        if (tileMap == null)
-            throw new ArgumentNullException(nameof(tileMap));
-
         var height = tileMap.GetLength(0);
         var width = tileMap.GetLength(1);
-
-        if (height == 0 || width == 0)
-            return new DistributionMetrics(0, 0, []);
-
-        // Count tiles per type and track regions
-        var tileCounts = new Dictionary<string, int>();
-        var tileRegions = new Dictionary<string, int>();
+        var tally = new TileTally();
         var visited = new bool[height, width];
-        var totalTiles = 0;
 
         for (var y = 0; y < height; y++)
         {
@@ -101,34 +107,32 @@ internal static class RegionAnalyzer
                 if (string.IsNullOrEmpty(tile))
                     continue;
 
-                totalTiles++;
-
-                if (!tileCounts.TryAdd(tile, 1))
-                    tileCounts[tile]++;
+                tally.RecordTile(tile);
 
                 // Count regions via flood fill
-                if (!visited[y, x])
-                {
-                    FloodFill(tileMap, visited, x, y, tile);
-                    if (!tileRegions.TryAdd(tile, 1))
-                        tileRegions[tile]++;
-                }
+                if (visited[y, x])
+                    continue;
+
+                FloodFill(tileMap, visited, x, y, tile);
+                tally.RecordRegion(tile);
             }
         }
 
-        if (totalTiles == 0)
-            return new DistributionMetrics(0, 0, []);
+        return tally;
+    }
 
-        var distributions = tileCounts
+    private static DistributionMetrics BuildDistribution(TileTally tally)
+    {
+        var distributions = tally.TileCounts
             .Select(kvp => new TileTypeDistribution(
                 kvp.Key,
                 kvp.Value,
-                kvp.Value * 100f / totalTiles,
-                tileRegions.GetValueOrDefault(kvp.Key, 0)))
+                kvp.Value * 100f / tally.TotalTiles,
+                tally.TileRegions.GetValueOrDefault(kvp.Key, 0)))
             .OrderByDescending(d => d.Percentage)
             .ToArray();
 
-        return new DistributionMetrics(totalTiles, tileCounts.Count, distributions);
+        return new DistributionMetrics(tally.TotalTiles, tally.TileCounts.Count, distributions);
     }
 
     private static int FloodFill(string[,] tileMap, bool[,] visited, int startX, int startY, string targetTile)
@@ -173,64 +177,4 @@ internal static class RegionAnalyzer
 
         return count;
     }
-}
-
-/// <summary>
-/// Statistics about contiguous regions in a tile map.
-/// </summary>
-internal record RegionMetrics(
-    int RegionCount,
-    int MinSize,
-    int MaxSize,
-    float AverageSize,
-    float PercentInLargeRegions,
-    int TilesInLargeRegions,
-    int TotalTiles
-);
-
-/// <summary>
-/// Distribution statistics for a specific tile type.
-/// </summary>
-internal record TileTypeDistribution(
-    string TileId,
-    int TileCount,
-    float Percentage,
-    int RegionCount
-);
-
-/// <summary>
-/// Complete distribution analysis of all tile types in a map.
-/// </summary>
-internal record DistributionMetrics(
-    int TotalTiles,
-    int UniqueTileTypes,
-    TileTypeDistribution[] Distributions
-)
-{
-    /// <summary>
-    /// Returns true if all tile types are within the target percentage range.
-    /// </summary>
-    public bool IsWithinRange(float minPercent, float maxPercent)
-    {
-        foreach (var dist in Distributions)
-        {
-            if (dist.Percentage < minPercent || dist.Percentage > maxPercent)
-                return false;
-        }
-        return true;
-    }
-
-    /// <summary>
-    /// Returns the maximum percentage of any single tile type.
-    /// </summary>
-    public float MaxPercentage => Distributions.Length > 0
-        ? Distributions.Max(d => d.Percentage)
-        : 0f;
-
-    /// <summary>
-    /// Returns the minimum percentage of any tile type.
-    /// </summary>
-    public float MinPercentage => Distributions.Length > 0
-        ? Distributions.Min(d => d.Percentage)
-        : 0f;
 }

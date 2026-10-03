@@ -47,7 +47,6 @@ public class WfcPropagator
     {
         var workQueue = new Queue<int>();
         var inQueue = new HashSet<int>();
-        var cellsUpdated = 0;
 
         // Start with all neighbors of the collapsed cell
         foreach (var neighbor in topology.GetNeighbors(collapsedCellId))
@@ -56,46 +55,7 @@ public class WfcPropagator
             inQueue.Add(neighbor);
         }
 
-        while (workQueue.Count > 0)
-        {
-            var currentCellId = workQueue.Dequeue();
-            inQueue.Remove(currentCellId);
-
-            var currentCell = topology.GetCell(currentCellId);
-
-            // Skip already collapsed or reserved cells
-            if (currentCell.IsCollapsed() || currentCell.IsReserved)
-                continue;
-
-            // Compute valid tiles for this cell based on all collapsed neighbors
-            var validTiles = ComputeValidTiles(topology, currentCellId);
-
-            // Intersect with current possibilities
-            var changed = currentCell.IntersectWith(validTiles);
-
-            if (currentCell.IsContradiction())
-            {
-                return PropagationResult.Failed(currentCellId);
-            }
-
-            if (changed)
-            {
-                cellsUpdated++;
-
-                // If this cell changed, all neighbors may need updating
-                foreach (var neighbor in topology.GetNeighbors(currentCellId))
-                {
-                    var neighborCell = topology.GetCell(neighbor);
-                    if (!neighborCell.IsCollapsed() && !neighborCell.IsReserved && !inQueue.Contains(neighbor))
-                    {
-                        workQueue.Enqueue(neighbor);
-                        inQueue.Add(neighbor);
-                    }
-                }
-            }
-        }
-
-        return PropagationResult.Succeeded(cellsUpdated);
+        return DrainQueue(topology, workQueue, inQueue);
     }
 
     /// <summary>
@@ -106,7 +66,6 @@ public class WfcPropagator
     {
         var workQueue = new Queue<int>();
         var inQueue = new HashSet<int>();
-        var cellsUpdated = 0;
 
         // Add all uncollapsed and unreserved cells to work queue
         foreach (var cellId in topology.GetAllCellIds())
@@ -119,6 +78,16 @@ public class WfcPropagator
             }
         }
 
+        return DrainQueue(topology, workQueue, inQueue);
+    }
+
+    /// <summary>
+    /// Processes queued cells until the queue is empty or a contradiction appears.
+    /// </summary>
+    private PropagationResult DrainQueue(IWfcTopology topology, Queue<int> workQueue, HashSet<int> inQueue)
+    {
+        var cellsUpdated = 0;
+
         while (workQueue.Count > 0)
         {
             var currentCellId = workQueue.Dequeue();
@@ -126,35 +95,45 @@ public class WfcPropagator
 
             var currentCell = topology.GetCell(currentCellId);
 
-            // Skip collapsed or reserved cells
+            // Skip already collapsed or reserved cells
             if (currentCell.IsCollapsed() || currentCell.IsReserved)
                 continue;
 
+            // Intersect current possibilities with tiles valid next to all neighbors
             var validTiles = ComputeValidTiles(topology, currentCellId);
             var changed = currentCell.IntersectWith(validTiles);
 
             if (currentCell.IsContradiction())
-            {
                 return PropagationResult.Failed(currentCellId);
-            }
 
-            if (changed)
-            {
-                cellsUpdated++;
+            if (!changed)
+                continue;
 
-                foreach (var neighbor in topology.GetNeighbors(currentCellId))
-                {
-                    var neighborCell = topology.GetCell(neighbor);
-                    if (!neighborCell.IsCollapsed() && !neighborCell.IsReserved && !inQueue.Contains(neighbor))
-                    {
-                        workQueue.Enqueue(neighbor);
-                        inQueue.Add(neighbor);
-                    }
-                }
-            }
+            cellsUpdated++;
+            EnqueueOpenNeighbors(topology, currentCellId, workQueue, inQueue);
         }
 
         return PropagationResult.Succeeded(cellsUpdated);
+    }
+
+    /// <summary>
+    /// Queues every unresolved neighbor of a changed cell that is not already queued.
+    /// </summary>
+    private static void EnqueueOpenNeighbors(
+        IWfcTopology topology,
+        int cellId,
+        Queue<int> workQueue,
+        HashSet<int> inQueue)
+    {
+        foreach (var neighbor in topology.GetNeighbors(cellId))
+        {
+            var neighborCell = topology.GetCell(neighbor);
+            if (neighborCell.IsCollapsed() || neighborCell.IsReserved || inQueue.Contains(neighbor))
+                continue;
+
+            workQueue.Enqueue(neighbor);
+            inQueue.Add(neighbor);
+        }
     }
 
     /// <summary>

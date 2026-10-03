@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -7,7 +6,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 
 /// <summary>
 /// Graph representation of passable tiles for connectivity analysis.
-/// Uses union-find for O(α(n)) amortized component queries instead of O(V) BFS.
+/// Uses union-find for O(alpha(n)) amortized component queries instead of O(V) BFS.
 /// Supports incremental updates and disconnected component tracking.
 /// </summary>
 public class PassabilityGraph
@@ -15,16 +14,13 @@ public class PassabilityGraph
     private readonly HashSet<Vector2I> _nodes = new();
     private readonly Dictionary<Vector2I, HashSet<Vector2I>> _adjacency = new();
 
-    // Union-find data structures for O(1) amortized component queries
-    private readonly Dictionary<Vector2I, Vector2I> _parent = new();
-    private readonly Dictionary<Vector2I, int> _rank = new();
-    private int _componentCount;
+    // Union-find for O(1) amortized component queries
+    private readonly UnionFind _unionFind = new();
 
     // Cached data - only invalidated when truly needed
     private List<HashSet<Vector2I>>? _cachedComponents;
-    private (Vector2I, Vector2I)? _cachedClosestPair;
-    private List<(Vector2I, Vector2I)>? _cachedAllClosestPairs;
-    private bool _closestPairDirty = true;
+    private ClosestPair? _cachedClosestPair;
+    private List<ClosestPair>? _cachedAllClosestPairs;
 
     /// <summary>
     /// Number of nodes in the graph.
@@ -50,19 +46,15 @@ public class PassabilityGraph
     /// </summary>
     public void AddNode(Vector2I position)
     {
-        if (_nodes.Add(position))
-        {
-            _adjacency[position] = new HashSet<Vector2I>();
-            // Initialize union-find: node is its own parent
-            _parent[position] = position;
-            _rank[position] = 0;
-            _componentCount++;
-            // Only invalidate component list cache, NOT closest pairs
-            // Adding a node doesn't change which existing nodes are closest
-            _cachedComponents = null;
-            // Note: closest pairs cache remains valid - new isolated node
-            // doesn't affect existing closest pairs between other components
-        }
+        if (!_nodes.Add(position))
+            return;
+
+        _adjacency[position] = new HashSet<Vector2I>();
+        _unionFind.AddNode(position);
+
+        // Only invalidate component list cache, NOT closest pairs: a new isolated node
+        // doesn't affect existing closest pairs between other components.
+        _cachedComponents = null;
     }
 
     /// <summary>
@@ -82,18 +74,16 @@ public class PassabilityGraph
             }
         }
         _adjacency.Remove(position);
-        _parent.Remove(position);
-        _rank.Remove(position);
 
         // Node removal can split components - need full rebuild
-        RebuildUnionFind();
+        _unionFind.Rebuild(_nodes, _adjacency);
         InvalidateCache();
     }
 
     /// <summary>
     /// Adds a bidirectional edge between two nodes.
     /// Implicitly adds nodes if they don't exist.
-    /// O(α(n)) amortized using union-find.
+    /// O(alpha(n)) amortized using union-find.
     /// </summary>
     public void AddEdge(Vector2I a, Vector2I b)
     {
@@ -106,94 +96,21 @@ public class PassabilityGraph
             _adjacency[b].Add(a);
 
             // Union the components - this may reduce component count
-            Union(a, b);
+            _unionFind.Union(a, b);
 
             _cachedComponents = null;
-            _closestPairDirty = true;
         }
-    }
-
-    /// <summary>
-    /// Find with path compression - O(α(n)) amortized.
-    /// </summary>
-    private Vector2I Find(Vector2I x)
-    {
-        if (!_parent.TryGetValue(x, out var p))
-            return x;
-
-        if (p != x)
-        {
-            _parent[x] = Find(p); // Path compression
-        }
-        return _parent[x];
-    }
-
-    /// <summary>
-    /// Union by rank - O(α(n)) amortized.
-    /// </summary>
-    private void Union(Vector2I a, Vector2I b)
-    {
-        var rootA = Find(a);
-        var rootB = Find(b);
-
-        if (rootA == rootB)
-            return; // Already in same component
-
-        // Union by rank
-        if (_rank[rootA] < _rank[rootB])
-        {
-            _parent[rootA] = rootB;
-        }
-        else if (_rank[rootA] > _rank[rootB])
-        {
-            _parent[rootB] = rootA;
-        }
-        else
-        {
-            _parent[rootB] = rootA;
-            _rank[rootA]++;
-        }
-
-        _componentCount--;
     }
 
     /// <summary>
     /// Checks if two nodes are in the same component.
-    /// O(α(n)) amortized.
+    /// O(alpha(n)) amortized.
     /// </summary>
     public bool AreConnected(Vector2I a, Vector2I b)
     {
         if (!_nodes.Contains(a) || !_nodes.Contains(b))
             return false;
-        return Find(a) == Find(b);
-    }
-
-    /// <summary>
-    /// Rebuilds union-find from adjacency list.
-    /// Called after node removal which can split components.
-    /// </summary>
-    private void RebuildUnionFind()
-    {
-        _parent.Clear();
-        _rank.Clear();
-        _componentCount = 0;
-
-        // Re-initialize all nodes
-        foreach (var node in _nodes)
-        {
-            _parent[node] = node;
-            _rank[node] = 0;
-            _componentCount++;
-        }
-
-        // Re-union based on edges
-        foreach (var node in _nodes)
-        {
-            foreach (var neighbor in _adjacency[node])
-            {
-                Union(node, neighbor);
-            }
-        }
+        return _unionFind.AreConnected(a, b);
     }
 
     private void InvalidateCache()
@@ -201,7 +118,6 @@ public class PassabilityGraph
         _cachedComponents = null;
         _cachedClosestPair = null;
         _cachedAllClosestPairs = null;
-        _closestPairDirty = true;
     }
 
     /// <summary>
@@ -250,7 +166,7 @@ public class PassabilityGraph
     /// </summary>
     public bool HasDisconnectedRegions()
     {
-        return _componentCount > 1;
+        return _unionFind.ComponentCount > 1;
     }
 
     /// <summary>
@@ -260,80 +176,32 @@ public class PassabilityGraph
     /// </summary>
     public (Vector2I, Vector2I)? GetClosestDisconnectedPair()
     {
-        if (_cachedClosestPair.HasValue)
-            return _cachedClosestPair;
-
-        var components = GetComponents();
-        if (components.Count < 2)
-            return null;
-
-        // Find the two closest nodes across all component pairs
-        var minDistance = float.MaxValue;
-        Vector2I closest1 = default, closest2 = default;
-
-        for (var i = 0; i < components.Count - 1; i++)
+        if (!_cachedClosestPair.HasValue)
         {
-            for (var j = i + 1; j < components.Count; j++)
-            {
-                foreach (var node1 in components[i])
-                {
-                    foreach (var node2 in components[j])
-                    {
-                        var dist = ManhattanDistance(node1, node2);
-                        if (dist < minDistance)
-                        {
-                            minDistance = dist;
-                            closest1 = node1;
-                            closest2 = node2;
-                        }
-                    }
-                }
-            }
+            var components = GetComponents();
+            if (components.Count < 2)
+                return null;
+
+            _cachedClosestPair = ComponentPairFinder.FindOverallClosest(components);
         }
 
-        _cachedClosestPair = (closest1, closest2);
-        return _cachedClosestPair;
+        var pair = _cachedClosestPair.Value;
+        return (pair.First, pair.Second);
     }
 
     /// <summary>
     /// Gets all closest pairs between disconnected components.
     /// Results are cached until the graph structure changes.
     /// </summary>
-    private List<(Vector2I, Vector2I)> GetAllClosestPairs()
+    private List<ClosestPair> GetAllClosestPairs()
     {
         if (_cachedAllClosestPairs != null)
             return _cachedAllClosestPairs;
 
-        _cachedAllClosestPairs = new List<(Vector2I, Vector2I)>();
-
         var components = GetComponents();
-        if (components.Count < 2)
-            return _cachedAllClosestPairs;
-
-        for (var i = 0; i < components.Count - 1; i++)
-        {
-            for (var j = i + 1; j < components.Count; j++)
-            {
-                var minDistance = float.MaxValue;
-                Vector2I closest1 = default, closest2 = default;
-
-                foreach (var node1 in components[i])
-                {
-                    foreach (var node2 in components[j])
-                    {
-                        var dist = ManhattanDistance(node1, node2);
-                        if (dist < minDistance)
-                        {
-                            minDistance = dist;
-                            closest1 = node1;
-                            closest2 = node2;
-                        }
-                    }
-                }
-
-                _cachedAllClosestPairs.Add((closest1, closest2));
-            }
-        }
+        _cachedAllClosestPairs = components.Count < 2
+            ? new List<ClosestPair>()
+            : ComponentPairFinder.FindClosestPerComponentPair(components);
 
         return _cachedAllClosestPairs;
     }
@@ -347,67 +215,13 @@ public class PassabilityGraph
     /// <param name="tolerance">Maximum perpendicular distance from the path (default 1 = adjacent to path)</param>
     public bool IsOnCorridorPath(Vector2I position, int tolerance = 1)
     {
-        var closestPairs = GetAllClosestPairs();
-
-        foreach (var (closest1, closest2) in closestPairs)
+        foreach (var pair in GetAllClosestPairs())
         {
-            if (IsOnManhattanPath(position, closest1, closest2, tolerance))
+            if (ManhattanCorridor.IsOnPath(position, pair.First, pair.Second, tolerance))
                 return true;
         }
 
         return false;
-    }
-
-    /// <summary>
-    /// Checks if a position is on or near the L-shaped Manhattan path between two points.
-    /// The path goes horizontal first, then vertical (or the reverse).
-    /// </summary>
-    private static bool IsOnManhattanPath(Vector2I pos, Vector2I from, Vector2I to, int tolerance)
-    {
-        // Path 1: horizontal then vertical
-        // From (from.X, from.Y) to (to.X, from.Y) to (to.X, to.Y)
-        if (IsNearLineSegment(pos, from, new Vector2I(to.X, from.Y), tolerance) ||
-            IsNearLineSegment(pos, new Vector2I(to.X, from.Y), to, tolerance))
-            return true;
-
-        // Path 2: vertical then horizontal
-        // From (from.X, from.Y) to (from.X, to.Y) to (to.X, to.Y)
-        if (IsNearLineSegment(pos, from, new Vector2I(from.X, to.Y), tolerance) ||
-            IsNearLineSegment(pos, new Vector2I(from.X, to.Y), to, tolerance))
-            return true;
-
-        return false;
-    }
-
-    /// <summary>
-    /// Checks if a position is within tolerance of an axis-aligned line segment.
-    /// </summary>
-    private static bool IsNearLineSegment(Vector2I pos, Vector2I a, Vector2I b, int tolerance)
-    {
-        // Horizontal segment
-        if (a.Y == b.Y)
-        {
-            var minX = Math.Min(a.X, b.X);
-            var maxX = Math.Max(a.X, b.X);
-            return pos.X >= minX - tolerance && pos.X <= maxX + tolerance &&
-                   Math.Abs(pos.Y - a.Y) <= tolerance;
-        }
-
-        // Vertical segment
-        if (a.X == b.X)
-        {
-            var minY = Math.Min(a.Y, b.Y);
-            var maxY = Math.Max(a.Y, b.Y);
-            return pos.Y >= minY - tolerance && pos.Y <= maxY + tolerance &&
-                   Math.Abs(pos.X - a.X) <= tolerance;
-        }
-
-        return false;
-    }
-
-    private static int ManhattanDistance(Vector2I a, Vector2I b)
-    {
-        return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
     }
 
     /// <summary>
@@ -427,76 +241,7 @@ public class PassabilityGraph
             return false;
 
         // Use Tarjan's algorithm to find all articulation points
-        var articulationPoints = FindAllArticulationPoints();
+        var articulationPoints = ArticulationPointFinder.FindAll(_nodes, _adjacency);
         return articulationPoints.Contains(position);
-    }
-
-    /// <summary>
-    /// Finds all articulation points in the graph using Tarjan's algorithm.
-    /// An articulation point is a vertex whose removal disconnects the graph.
-    /// </summary>
-    private HashSet<Vector2I> FindAllArticulationPoints()
-    {
-        var articulationPoints = new HashSet<Vector2I>();
-
-        if (_nodes.Count <= 1)
-            return articulationPoints;
-
-        var discoveryTime = new Dictionary<Vector2I, int>();
-        var lowLink = new Dictionary<Vector2I, int>();
-        var parent = new Dictionary<Vector2I, Vector2I?>();
-        var time = 0;
-
-        void Dfs(Vector2I node)
-        {
-            discoveryTime[node] = lowLink[node] = time++;
-            var childCount = 0;
-
-            foreach (var neighbor in _adjacency[node])
-            {
-                if (!discoveryTime.ContainsKey(neighbor))
-                {
-                    // Neighbor not yet visited
-                    childCount++;
-                    parent[neighbor] = node;
-                    Dfs(neighbor);
-
-                    // Update low-link value
-                    lowLink[node] = Math.Min(lowLink[node], lowLink[neighbor]);
-
-                    // Check articulation point conditions:
-                    // 1. Root of DFS tree with 2+ children
-                    if (!parent.TryGetValue(node, out var nodeParent) || nodeParent == null)
-                    {
-                        if (childCount >= 2)
-                        {
-                            articulationPoints.Add(node);
-                        }
-                    }
-                    // 2. Non-root where no descendant has back-edge to ancestor of node
-                    else if (lowLink[neighbor] >= discoveryTime[node])
-                    {
-                        articulationPoints.Add(node);
-                    }
-                }
-                else if (parent.TryGetValue(node, out var p) && neighbor != p)
-                {
-                    // Back edge (not to parent)
-                    lowLink[node] = Math.Min(lowLink[node], discoveryTime[neighbor]);
-                }
-            }
-        }
-
-        // Run DFS from all unvisited nodes to handle disconnected graphs
-        foreach (var node in _nodes)
-        {
-            if (!discoveryTime.ContainsKey(node))
-            {
-                parent[node] = null;
-                Dfs(node);
-            }
-        }
-
-        return articulationPoints;
     }
 }

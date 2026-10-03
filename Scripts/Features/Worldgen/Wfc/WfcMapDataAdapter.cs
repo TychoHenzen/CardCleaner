@@ -30,55 +30,16 @@ public class WfcMapDataAdapter
                 "passableTileIds must be provided. " +
                 "Use TileDefinition.IsPassable to build the set from a tile registry.");
 
-        var width = grid.Width;
-        var height = grid.Height;
-
-        var mapData = new SimpleMapData
+        var biomeMap = new string[grid.Height, grid.Width];
+        for (var y = 0; y < grid.Height; y++)
         {
-            Size = new Vector2I(width, height),
-            TileIds = new string[height, width],
-            BiomeMap = new string[height, width]
-        };
-
-        var passablePositions = new List<Vector2I>();
-
-        // Extract tile IDs from collapsed grid
-        for (var y = 0; y < height; y++)
-        {
-            for (var x = 0; x < width; x++)
+            for (var x = 0; x < grid.Width; x++)
             {
-                var pos = new Vector2I(x, y);
-                var cell = grid.GetCell(pos);
-
-                if (!cell.IsCollapsed())
-                {
-                    // Use first available tile as fallback (shouldn't happen in well-formed grids)
-                    var firstTile = GetFirstTile(cell);
-                    mapData.TileIds[y, x] = firstTile ?? defaultTileId ?? string.Empty;
-                }
-                else
-                {
-                    mapData.TileIds[y, x] = cell.GetCollapsedTile();
-                }
-
-                mapData.BiomeMap[y, x] = biome.Id;
-
-                // Track passable positions
-                if (passableTileIds.Contains(mapData.TileIds[y, x]))
-                {
-                    passablePositions.Add(pos);
-                }
+                biomeMap[y, x] = biome.Id;
             }
         }
 
-        mapData.PassableTiles = passablePositions;
-
-        // Set player start to first passable tile (or center if none)
-        mapData.PlayerStart = passablePositions.Count > 0
-            ? passablePositions[0]
-            : new Vector2I(width / 2, height / 2);
-
-        return mapData;
+        return BuildMapData(grid, biomeMap, passableTileIds, defaultTileId);
     }
 
     /// <summary>
@@ -94,6 +55,15 @@ public class WfcMapDataAdapter
         HashSet<string> passableTileIds,
         string? defaultTileId = null)
     {
+        return BuildMapData(grid, biomeMap, passableTileIds, defaultTileId);
+    }
+
+    private static SimpleMapData BuildMapData(
+        WfcGrid grid,
+        string[,] biomeMap,
+        HashSet<string> passableTileIds,
+        string? defaultTileId)
+    {
         var width = grid.Width;
         var height = grid.Height;
 
@@ -104,32 +74,47 @@ public class WfcMapDataAdapter
             BiomeMap = biomeMap
         };
 
-        var passablePositions = new List<Vector2I>();
-
-        for (var y = 0; y < height; y++)
-        {
-            for (var x = 0; x < width; x++)
-            {
-                var pos = new Vector2I(x, y);
-                var cell = grid.GetCell(pos);
-
-                mapData.TileIds[y, x] = cell.IsCollapsed()
-                    ? cell.GetCollapsedTile()
-                    : GetFirstTile(cell) ?? defaultTileId ?? string.Empty;
-
-                if (passableTileIds.Contains(mapData.TileIds[y, x]))
-                {
-                    passablePositions.Add(pos);
-                }
-            }
-        }
+        var passablePositions = FillTileIds(grid, mapData.TileIds, passableTileIds, defaultTileId);
 
         mapData.PassableTiles = passablePositions;
+
+        // Set player start to first passable tile (or center if none)
         mapData.PlayerStart = passablePositions.Count > 0
             ? passablePositions[0]
             : new Vector2I(width / 2, height / 2);
 
         return mapData;
+    }
+
+    /// <summary>
+    /// Copies each cell tile into tileIds and returns the positions whose tile is passable.
+    /// An uncollapsed cell (not expected in a well-formed grid) uses its first possible tile.
+    /// </summary>
+    private static List<Vector2I> FillTileIds(
+        WfcGrid grid,
+        string[,] tileIds,
+        HashSet<string> passableTileIds,
+        string? defaultTileId)
+    {
+        var passablePositions = new List<Vector2I>();
+
+        for (var y = 0; y < grid.Height; y++)
+        {
+            for (var x = 0; x < grid.Width; x++)
+            {
+                var pos = new Vector2I(x, y);
+                var cell = grid.GetCell(pos);
+
+                tileIds[y, x] = cell.IsCollapsed()
+                    ? cell.GetCollapsedTile()
+                    : GetFirstTile(cell) ?? defaultTileId ?? string.Empty;
+
+                if (passableTileIds.Contains(tileIds[y, x]))
+                    passablePositions.Add(pos);
+            }
+        }
+
+        return passablePositions;
     }
 
     private static string? GetFirstTile(WfcCellState cell)

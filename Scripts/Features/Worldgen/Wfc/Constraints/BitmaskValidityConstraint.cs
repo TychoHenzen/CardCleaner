@@ -74,36 +74,36 @@ public class BitmaskValidityConstraint : IWfcConstraint
         int visualY,
         CornerRole candidateCorner)
     {
-        // Get the 4 data cell positions for this visual tile
-        // Visual tile at (vx, vy) samples:
-        // - NW: data (vx-1, vy-1)
-        // - NE: data (vx, vy-1)
-        // - SW: data (vx-1, vy)
-        // - SE: data (vx, vy)
+        // Visual tile at (vx, vy) samples data cells NW (vx-1, vy-1), NE (vx, vy-1),
+        // SW (vx-1, vy) and SE (vx, vy). Each corner is filled, a gap, or unknown (null).
         var nwPos = new Vector2I(visualX - 1, visualY - 1);
         var nePos = new Vector2I(visualX, visualY - 1);
         var swPos = new Vector2I(visualX - 1, visualY);
         var sePos = new Vector2I(visualX, visualY);
 
-        // Determine the state of each corner
-        bool? nwFilled = GetCornerState(context, grid, nwPos, candidateCorner == CornerRole.NW);
-        bool? neFilled = GetCornerState(context, grid, nePos, candidateCorner == CornerRole.NE);
-        bool? swFilled = GetCornerState(context, grid, swPos, candidateCorner == CornerRole.SW);
-        bool? seFilled = GetCornerState(context, grid, sePos, candidateCorner == CornerRole.SE);
+        var nwFilled = GetCornerState(context, grid, nwPos, candidateCorner == CornerRole.NW);
+        var neFilled = GetCornerState(context, grid, nePos, candidateCorner == CornerRole.NE);
+        var swFilled = GetCornerState(context, grid, swPos, candidateCorner == CornerRole.SW);
+        var seFilled = GetCornerState(context, grid, sePos, candidateCorner == CornerRole.SE);
 
-        // If any corner is unknown (uncollapsed and not the candidate), we can't validate
-        if (!nwFilled.HasValue || !neFilled.HasValue || !swFilled.HasValue || !seFilled.HasValue)
+        // If any corner is unknown (uncollapsed and not the candidate), we cannot validate
+        if (nwFilled is not bool nw || neFilled is not bool ne || swFilled is not bool sw || seFilled is not bool se)
             return true; // Can't determine - allow for now
 
-        // Compute the bitmask (Corner16 format: NE=1, SE=2, SW=4, NW=8)
-        var bitmask = 0;
-        if (neFilled.Value) bitmask |= 1;  // NE
-        if (seFilled.Value) bitmask |= 2;  // SE
-        if (swFilled.Value) bitmask |= 4;  // SW
-        if (nwFilled.Value) bitmask |= 8;  // NW
+        return format.IsBitmaskAllowed(ToBitmask(nw, ne, sw, se));
+    }
 
-        // Check if this bitmask is allowed by the format
-        return format.IsBitmaskAllowed(bitmask);
+    /// <summary>
+    /// Computes the Corner16 bitmask: NE=1, SE=2, SW=4, NW=8.
+    /// </summary>
+    private static int ToBitmask(bool nwFilled, bool neFilled, bool swFilled, bool seFilled)
+    {
+        var bitmask = 0;
+        if (neFilled) bitmask |= 1;
+        if (seFilled) bitmask |= 2;
+        if (swFilled) bitmask |= 4;
+        if (nwFilled) bitmask |= 8;
+        return bitmask;
     }
 
     /// <summary>

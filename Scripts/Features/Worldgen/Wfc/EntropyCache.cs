@@ -89,19 +89,39 @@ public class EntropyCache
         Func<int, float> computeEntropy,
         RandomNumberGenerator rng)
     {
+        RefreshEntropies(topology, computeEntropy);
+
+        var candidates = FindLowestEntropyFrontierCells(topology);
+
+        // Fallback: any uncollapsed cell if no frontier (start of generation)
+        if (candidates.Count == 0)
+            AddFirstSelectableCell(topology, candidates);
+
+        if (candidates.Count == 0)
+            return null;
+
+        return candidates[rng.RandiRange(0, candidates.Count - 1)];
+    }
+
+    private void RefreshEntropies(IWfcTopology topology, Func<int, float> computeEntropy)
+    {
         // First call: build everything
         if (_needsFullRebuild)
         {
             RebuildAllCellId(topology, computeEntropy);
             _needsFullRebuild = false;
-        }
-        else
-        {
-            // Incremental: only update dirty cells
-            UpdateDirtyCellId(topology, computeEntropy);
+            return;
         }
 
-        // Find minimum entropy among frontier cells
+        // Incremental: only update dirty cells
+        UpdateDirtyCellId(topology, computeEntropy);
+    }
+
+    /// <summary>
+    /// Finds the cells tied for minimum entropy among frontier cells (adjacent to collapsed).
+    /// </summary>
+    private List<int> FindLowestEntropyFrontierCells(IWfcTopology topology)
+    {
         var minEntropy = float.MaxValue;
         var candidates = new List<int>();
 
@@ -110,8 +130,7 @@ public class EntropyCache
             var cellId = kvp.Key;
             var entropy = kvp.Value;
 
-            var cell = topology.GetCell(cellId);
-            if (cell.IsExcludedFromSelection())
+            if (topology.GetCell(cellId).IsExcludedFromSelection())
                 continue;
 
             // Only consider frontier cells (adjacent to collapsed)
@@ -130,23 +149,19 @@ public class EntropyCache
             }
         }
 
-        // Fallback: any uncollapsed cell if no frontier (start of generation)
-        if (candidates.Count == 0)
+        return candidates;
+    }
+
+    private void AddFirstSelectableCell(IWfcTopology topology, List<int> candidates)
+    {
+        foreach (var cellId in _entropyCellId.Keys)
         {
-            foreach (var kvp in _entropyCellId)
-            {
-                if (!topology.GetCell(kvp.Key).IsExcludedFromSelection())
-                {
-                    candidates.Add(kvp.Key);
-                    break;
-                }
-            }
+            if (topology.GetCell(cellId).IsExcludedFromSelection())
+                continue;
+
+            candidates.Add(cellId);
+            return;
         }
-
-        if (candidates.Count == 0)
-            return null;
-
-        return candidates[rng.RandiRange(0, candidates.Count - 1)];
     }
 
     private void RebuildAllCellId(IWfcTopology topology, Func<int, float> computeEntropy)

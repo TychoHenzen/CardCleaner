@@ -83,19 +83,19 @@
       },
       {
         "responsibility": "SolveWithRetry",
-        "owner": "WfcSolver"
+        "owner": "WfcRetrySolver"
       },
       {
         "responsibility": "GenerateTwoPhaseWfc",
         "owner": "SimpleMapGenerator"
       },
       {
-        "responsibility": "DetermineInitialTiles",
-        "owner": "WfcMapGenerator"
+        "responsibility": "ForBiome",
+        "owner": "WfcTileSetBuilder"
       },
       {
-        "responsibility": "DetermineMultiBiomeTiles",
-        "owner": "WfcMapGenerator"
+        "responsibility": "ForAllBiomes",
+        "owner": "WfcTileSetBuilder"
       },
       {
         "responsibility": "SelectTerrains",
@@ -204,6 +204,170 @@
       {
         "responsibility": "StartExploration",
         "owner": "SessionFlow"
+      },
+      {
+        "responsibility": "PrepareForSolve",
+        "owner": "WfcSolver"
+      },
+      {
+        "responsibility": "CollapseNextCell",
+        "owner": "WfcSolver"
+      },
+      {
+        "responsibility": "FindLowestEntropyCell",
+        "owner": "WfcSolver"
+      },
+      {
+        "responsibility": "SelectTileFor",
+        "owner": "WfcSolver"
+      },
+      {
+        "responsibility": "CollapseCell",
+        "owner": "WfcSolver"
+      },
+      {
+        "responsibility": "Apply",
+        "owner": "WfcCollapseEffects"
+      },
+      {
+        "responsibility": "Reserve",
+        "owner": "MultiCellReserver"
+      },
+      {
+        "responsibility": "DrainQueue",
+        "owner": "WfcPropagator"
+      },
+      {
+        "responsibility": "EnqueueOpenNeighbors",
+        "owner": "WfcPropagator"
+      },
+      {
+        "responsibility": "FindRegionSizes",
+        "owner": "RegionAnalyzer"
+      },
+      {
+        "responsibility": "Summarize",
+        "owner": "RegionAnalyzer"
+      },
+      {
+        "responsibility": "TallyTiles",
+        "owner": "RegionAnalyzer"
+      },
+      {
+        "responsibility": "BuildDistribution",
+        "owner": "RegionAnalyzer"
+      },
+      {
+        "responsibility": "RecordTile",
+        "owner": "TileTally"
+      },
+      {
+        "responsibility": "RecordRegion",
+        "owner": "TileTally"
+      },
+      {
+        "responsibility": "Configure",
+        "owner": "GapTileAdjacencyConfigurator"
+      },
+      {
+        "responsibility": "ApplyTo",
+        "owner": "WfcConstraintSet"
+      },
+      {
+        "responsibility": "SolveWithProfiling",
+        "owner": "WfcMapGenerator"
+      },
+      {
+        "responsibility": "RefreshEntropies",
+        "owner": "EntropyCache"
+      },
+      {
+        "responsibility": "FindLowestEntropyFrontierCells",
+        "owner": "EntropyCache"
+      },
+      {
+        "responsibility": "AddFirstSelectableCell",
+        "owner": "EntropyCache"
+      },
+      {
+        "responsibility": "BuildMapData",
+        "owner": "WfcMapDataAdapter"
+      },
+      {
+        "responsibility": "FillTileIds",
+        "owner": "WfcMapDataAdapter"
+      },
+      {
+        "responsibility": "HasConflictInNeighborInfo",
+        "owner": "AutoTileGapConstraint"
+      },
+      {
+        "responsibility": "HasConflictInTopology",
+        "owner": "AutoTileGapConstraint"
+      },
+      {
+        "responsibility": "ConflictsWithNeighbor",
+        "owner": "AutoTileGapConstraint"
+      },
+      {
+        "responsibility": "ToBitmask",
+        "owner": "BitmaskValidityConstraint"
+      },
+      {
+        "responsibility": "CollapsedAutoTileAt",
+        "owner": "NoSolidFillConstraint"
+      },
+      {
+        "responsibility": "Scan",
+        "owner": "CoherenceNeighborScanner"
+      },
+      {
+        "responsibility": "Calculate",
+        "owner": "LinearRepulsionCalculator"
+      },
+      {
+        "responsibility": "PrintAndClear",
+        "owner": "SpatialCoherenceStats"
+      },
+      {
+        "responsibility": "CalculateRegionBoost",
+        "owner": "SpatialCoherenceConstraint"
+      },
+      {
+        "responsibility": "Select",
+        "owner": "WfcFrontierEntropySelector"
+      },
+      {
+        "responsibility": "EnumerateNeighbors4",
+        "owner": "WfcGridGeometry"
+      },
+      {
+        "responsibility": "CollectNeighbors4",
+        "owner": "WfcGridGeometry"
+      },
+      {
+        "responsibility": "Union",
+        "owner": "UnionFind"
+      },
+      {
+        "responsibility": "Rebuild",
+        "owner": "UnionFind"
+      },
+      {
+        "responsibility": "FindOverallClosest",
+        "owner": "ComponentPairFinder"
+      },
+      {
+        "responsibility": "FindClosestPerComponentPair",
+        "owner": "ComponentPairFinder"
+      },
+      {
+        "responsibility": "IsOnPath",
+        "owner": "ManhattanCorridor"
+      },
+      {
+        "responsibility": "FindAll",
+        "owner": "ArticulationPointFinder"
       }
     ],
     "boundaries": [

@@ -26,44 +26,6 @@ public readonly struct CollapsedNeighborInfo
     /// Whether any neighbor is collapsed.
     /// </summary>
     public bool HasCollapsedNeighbor { get; init; }
-
-    // Backward compatibility aliases - will be computed lazily if needed
-    private readonly Dictionary<Vector2I, string>? _neighbors4Cache;
-    private readonly Dictionary<Vector2I, string>? _neighbors8Cache;
-
-    /// <summary>
-    /// Backward compatibility: Collapsed tiles in 4-way neighbors.
-    /// Only available when topology is WfcGrid.
-    /// </summary>
-    public IReadOnlyDictionary<Vector2I, string> Neighbors4 =>
-        _neighbors4Cache ?? new Dictionary<Vector2I, string>();
-
-    /// <summary>
-    /// Backward compatibility: Collapsed tiles in 8-way neighbors.
-    /// Only available when topology is WfcGrid. Same as Neighbors for topology-agnostic use.
-    /// </summary>
-    public IReadOnlyDictionary<Vector2I, string> Neighbors8 =>
-        _neighbors8Cache ?? new Dictionary<Vector2I, string>();
-
-    /// <summary>
-    /// Count of 4-way neighbors matching the tile (backward compat).
-    /// </summary>
-    public int SameType4Count => SameTypeCount; // Simplified - use SameTypeCount
-
-    /// <summary>
-    /// Count of 8-way neighbors matching the tile (backward compat).
-    /// </summary>
-    public int SameType8Count => SameTypeCount;
-
-    /// <summary>
-    /// Whether any 4-way neighbor is collapsed (backward compat).
-    /// </summary>
-    public bool HasCollapsedNeighbor4 => HasCollapsedNeighbor;
-
-    /// <summary>
-    /// Whether any 8-way neighbor is collapsed (backward compat).
-    /// </summary>
-    public bool HasCollapsedNeighbor8 => HasCollapsedNeighbor;
 }
 
 /// <summary>

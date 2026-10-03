@@ -84,41 +84,39 @@ public class NoSolidFillConstraint : IWfcConstraint
 
         foreach (var offset in neighborOffsets)
         {
-            var neighborPos = position + offset;
-
-            // Bounds check - if any neighbor is outside the grid, can't form a complete 2x2
-            if (neighborPos.X < 0 || neighborPos.Y < 0 ||
-                neighborPos.X >= grid.Width || neighborPos.Y >= grid.Height)
-                return false;
-
-            var neighborCell = grid.GetCell(neighborPos);
-
-            // If neighbor isn't collapsed yet, can't form a complete 2x2
-            if (!neighborCell.IsCollapsed())
-                return false;
-
-            var neighborTileId = neighborCell.GetCollapsedTile();
-            var neighborTile = _tileRegistry.GetTile(neighborTileId);
-
-            // If neighbor isn't an auto-tile, can't form a same-type 2x2
-            if (neighborTile == null || !neighborTile.HasAutoTileVariants)
+            // Outside the grid, uncollapsed, or not an auto-tile: can't form a complete same-type 2x2
+            var neighborTileId = CollapsedAutoTileAt(grid, position + offset);
+            if (neighborTileId == null)
                 return false;
 
             // Check if all neighbors are the same terrain type
             if (matchingTileId == null)
-            {
                 matchingTileId = neighborTileId;
-            }
             else if (!_tileRegistry.AreSameTerrainType(matchingTileId, neighborTileId))
-            {
                 return false; // Different terrain types - not a solid region
-            }
         }
 
         // All 3 neighbors are the same auto-tile type
         // Check if candidate is also the same type
         return matchingTileId != null &&
                _tileRegistry.AreSameTerrainType(context.TileId, matchingTileId);
+    }
+
+    /// <summary>
+    /// Returns the collapsed tile at a position when it is an auto-tile, otherwise null.
+    /// </summary>
+    private string? CollapsedAutoTileAt(WfcGrid grid, Vector2I pos)
+    {
+        if (!grid.IsInBounds(pos))
+            return null;
+
+        var cell = grid.GetCell(pos);
+        if (!cell.IsCollapsed())
+            return null;
+
+        var tileId = cell.GetCollapsedTile();
+        var tile = _tileRegistry.GetTile(tileId);
+        return tile != null && tile.HasAutoTileVariants ? tileId : null;
     }
 
     private static bool HasSolidFillVariant(Features.Deckbuilder.Tiles.TileDefinition tile)
