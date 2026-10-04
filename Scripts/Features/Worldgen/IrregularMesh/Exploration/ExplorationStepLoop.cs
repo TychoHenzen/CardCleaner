@@ -42,7 +42,8 @@ internal sealed class ExplorationStepLoop
     internal event Action<IReadOnlyList<int>>? PathUpdated;
 
     /// <summary>
-    /// Raised when the AI has no more cells to explore.
+    /// Raised when the AI has no more cells to explore. Not raised when exploration stops for an enemy encounter,
+    /// because combat resumes it afterwards.
     /// </summary>
     internal event Action? Finished;
 
@@ -107,7 +108,9 @@ internal sealed class ExplorationStepLoop
         if (!stepped || _explorationAI.HasFinishedExploration)
         {
             IsExploring = false;
-            Finished?.Invoke();
+            if (!_explorationAI.HasFoundEnemy)
+                Finished?.Invoke();
+
             return null;
         }
 

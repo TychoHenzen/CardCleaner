@@ -145,11 +145,12 @@ public partial class IrregularWorldMapScreen : Node3D
     public void GenerateMapWithWfc(
         int seed,
         Dictionary<string, HashSet<string>> adjacencyRules,
-        Dictionary<string, int> tileToTerrainType)
+        Dictionary<string, int> tileToTerrainType,
+        CardSignature[]? abilityCards = null)
     {
         if (!IsInsideTree())
         {
-            _pendingGeneration = () => GenerateMapWithWfc(seed, adjacencyRules, tileToTerrainType);
+            _pendingGeneration = () => GenerateMapWithWfc(seed, adjacencyRules, tileToTerrainType, abilityCards);
             return;
         }
 
@@ -159,7 +160,7 @@ public partial class IrregularWorldMapScreen : Node3D
         var mesh = generator.Generate(MeshRings, null, seed);
 
         var session = BeginSession(mesh);
-        var playerStartCell = session.Prepare(seed, null);
+        var playerStartCell = session.Prepare(seed, abilityCards?.ToList());
         CompleteSession(session, playerStartCell);
 
         StartExploration();
