@@ -19,6 +19,11 @@ internal sealed class PassabilityGraphUpdater
     }
 
     /// <summary>
+    /// Empties the graph so a new solve attempt starts without the previous attempt's cells.
+    /// </summary>
+    internal void Reset() => _graph.Clear();
+
+    /// <summary>
     /// Adds a collapsed passable cell to the graph and connects it to passable edge-sharing neighbors.
     /// </summary>
     internal void OnCellCollapsed(Vector2I position, string tileId, WfcGrid grid)

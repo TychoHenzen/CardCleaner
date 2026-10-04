@@ -52,9 +52,8 @@ public class PassabilityGraph
         _adjacency[position] = new HashSet<Vector2I>();
         _unionFind.AddNode(position);
 
-        // Only invalidate component list cache, NOT closest pairs: a new isolated node
-        // doesn't affect existing closest pairs between other components.
-        _cachedComponents = null;
+        // A new node is a new component, so every cached component and closest-pair result is stale.
+        InvalidateCache();
     }
 
     /// <summary>
@@ -81,6 +80,17 @@ public class PassabilityGraph
     }
 
     /// <summary>
+    /// Removes every node and edge and drops all cached results.
+    /// </summary>
+    internal void Clear()
+    {
+        _nodes.Clear();
+        _adjacency.Clear();
+        _unionFind.Rebuild(_nodes, _adjacency);
+        InvalidateCache();
+    }
+
+    /// <summary>
     /// Adds a bidirectional edge between two nodes.
     /// Implicitly adds nodes if they don't exist.
     /// O(alpha(n)) amortized using union-find.
@@ -98,7 +108,7 @@ public class PassabilityGraph
             // Union the components - this may reduce component count
             _unionFind.Union(a, b);
 
-            _cachedComponents = null;
+            InvalidateCache();
         }
     }
 

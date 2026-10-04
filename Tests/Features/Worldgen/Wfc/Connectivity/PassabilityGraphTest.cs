@@ -288,4 +288,80 @@ public class PassabilityGraphTest
         AssertBool(_graph.IsArticulationPoint(d)).IsFalse();
         AssertBool(_graph.IsArticulationPoint(e)).IsFalse();
     }
+
+    // ========== Closest-pair cache invalidation ==========
+
+    private static void AssertPair((Vector2I, Vector2I)? pair, Vector2I x, Vector2I y)
+    {
+        AssertThat(pair.HasValue).IsTrue();
+        var (first, second) = pair!.Value;
+        AssertBool((first == x && second == y) || (first == y && second == x)).IsTrue();
+    }
+
+    [TestCase]
+    public void AddEdge_InvalidatesClosestPairCache()
+    {
+        var a = new Vector2I(0, 0);
+        var b = new Vector2I(2, 0);
+        var c = new Vector2I(10, 0);
+        _graph.AddNode(a);
+        _graph.AddNode(b);
+        _graph.AddNode(c);
+        AssertPair(_graph.GetClosestDisconnectedPair(), a, b);
+
+        _graph.AddEdge(a, b);
+
+        AssertPair(_graph.GetClosestDisconnectedPair(), b, c);
+    }
+
+    [TestCase]
+    public void AddEdge_InvalidatesCorridorPairs()
+    {
+        var a = new Vector2I(0, 0);
+        var b = new Vector2I(4, 0);
+        var c = new Vector2I(0, 20);
+        _graph.AddNode(a);
+        _graph.AddNode(b);
+        _graph.AddNode(c);
+        AssertBool(_graph.IsOnCorridorPath(new Vector2I(2, 0), 0)).IsTrue();
+
+        _graph.AddEdge(a, b);
+
+        AssertBool(_graph.IsOnCorridorPath(new Vector2I(2, 0), 0)).IsFalse();
+        AssertBool(_graph.IsOnCorridorPath(new Vector2I(0, 10), 0)).IsTrue();
+    }
+
+    [TestCase]
+    public void AddNode_InvalidatesClosestPairCache()
+    {
+        var a = new Vector2I(0, 0);
+        var b = new Vector2I(10, 0);
+        var nearA = new Vector2I(1, 0);
+        _graph.AddNode(a);
+        _graph.AddNode(b);
+        AssertPair(_graph.GetClosestDisconnectedPair(), a, b);
+
+        _graph.AddNode(nearA);
+
+        AssertPair(_graph.GetClosestDisconnectedPair(), a, nearA);
+    }
+
+    [TestCase]
+    public void Clear_RemovesEveryNodeEdgeAndCachedResult()
+    {
+        var a = new Vector2I(0, 0);
+        var b = new Vector2I(5, 0);
+        _graph.AddNode(a);
+        _graph.AddNode(b);
+        _graph.AddEdge(new Vector2I(8, 8), new Vector2I(8, 9));
+        AssertThat(_graph.GetClosestDisconnectedPair().HasValue).IsTrue();
+
+        _graph.Clear();
+
+        AssertThat(_graph.NodeCount).IsEqual(0);
+        AssertBool(_graph.ContainsNode(a)).IsFalse();
+        AssertBool(_graph.HasDisconnectedRegions()).IsFalse();
+        AssertThat(_graph.GetClosestDisconnectedPair().HasValue).IsFalse();
+        AssertThat(_graph.GetComponents().Count).IsEqual(0);
+    }
 }
