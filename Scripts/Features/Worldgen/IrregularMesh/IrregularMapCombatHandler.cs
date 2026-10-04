@@ -50,7 +50,8 @@ public class IrregularMapCombatHandler
     {
         if (_abilityCards.Count == 0)
         {
-            GD.PrintErr("[IrregularMapCombatHandler] No ability cards for combat!");
+            GD.PrintErr($"[IrregularMapCombatHandler] No ability cards for combat at cell {enemyCellId}, ending as a loss");
+            CombatEnded?.Invoke(enemyCellId, false);
             return;
         }
 
