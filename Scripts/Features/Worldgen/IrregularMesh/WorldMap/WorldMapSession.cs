@@ -90,10 +90,25 @@ internal sealed class WorldMapSession
     }
 
     /// <summary>
-    /// Unsubscribes from fog of war and exploration events.
+    /// Ends the session: stops exploration, detaches from events and frees its controller, renderers and sprites.
+    /// </summary>
+    internal void Close()
+    {
+        StopExploration();
+        Detach();
+        ExplorationController?.QueueFree();
+        ExplorationController = null;
+        Reset();
+    }
+
+    /// <summary>
+    /// Unsubscribes from fog of war, exploration and combat events.
     /// </summary>
     internal void Detach()
     {
+        if (_combatHandler != null)
+            _combatHandler.CombatEnded -= OnCombatEnded;
+
         if (FogOfWar != null)
             FogOfWar.VisibilityChanged -= OnVisibilityChanged;
 
@@ -102,6 +117,8 @@ internal sealed class WorldMapSession
             ExplorationController.PlayerMoved -= OnPlayerMoved;
             ExplorationController.PositionUpdated -= OnPositionUpdated;
             ExplorationController.ExplorationFinished -= OnExplorationFinished;
+            ExplorationController.EnemyEncountered -= OnEnemyEncountered;
+            ExplorationController.EnemySpotted -= OnEnemySpotted;
         }
     }
 

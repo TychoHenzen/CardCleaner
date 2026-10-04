@@ -16,12 +16,15 @@ public class PathfinderCheaperRouteTest
     private const int Far = 2;
     private const int Goal = 3;
 
+    private Pathfinder _pathfinder = null!;
+
+    [BeforeTest]
+    public void Setup() => _pathfinder = new Pathfinder(new FourCellGraph());
+
     [TestCase]
     public void FindPathPrefersCheaperRouteDiscoveredAfterTheCellWasQueued()
     {
-        var pathfinder = new Pathfinder(new FourCellGraph());
-
-        var path = pathfinder.FindPath(Start, Goal);
+        var path = _pathfinder.FindPath(Start, Goal);
 
         AssertThat(path).IsEqual(new List<int> { Start, Near, Far, Goal });
     }

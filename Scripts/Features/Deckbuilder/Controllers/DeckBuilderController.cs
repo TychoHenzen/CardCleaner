@@ -69,6 +69,9 @@ public partial class DeckBuilderController : Node
             gameSession.StateChanged += OnSessionStateChanged;
         });
 
+        if (IrregularMapScreen != null)
+            IrregularMapScreen.ExplorationFinished += OnIrregularExplorationFinished;
+
         // Initially disable the button
         UpdateButtonState();
     }
@@ -80,6 +83,9 @@ public partial class DeckBuilderController : Node
         {
             _gameSession.StateChanged -= OnSessionStateChanged;
         }
+
+        if (IrregularMapScreen != null)
+            IrregularMapScreen.ExplorationFinished -= OnIrregularExplorationFinished;
     }
 
     /// <summary>
@@ -89,13 +95,27 @@ public partial class DeckBuilderController : Node
     private void OnSessionStateChanged(SessionState newState)
     {
         if (newState == SessionState.SessionComplete)
-        {
-            ILog.Print("Session complete - map revealed, awaiting reset");
+            AwaitMapReset();
+    }
 
-            // Enable button and flag that next press should just reset the view
-            _awaitingMapReset = true;
-            ActivateButton.SetEnabled(true);
-        }
+    /// <summary>
+    /// Called when the irregular mesh map finishes exploring (map stays visible).
+    /// </summary>
+    private void OnIrregularExplorationFinished()
+    {
+        if (MapType == MapGenerationType.IrregularMesh)
+            AwaitMapReset();
+    }
+
+    /// <summary>
+    /// Enables the button and flags that the next press should just reset the view.
+    /// </summary>
+    private void AwaitMapReset()
+    {
+        ILog.Print("Session complete - map revealed, awaiting reset");
+
+        _awaitingMapReset = true;
+        ActivateButton.SetEnabled(true);
     }
 
     /// <summary>
@@ -158,6 +178,12 @@ public partial class DeckBuilderController : Node
             return;
         }
 
+        if (MapType == MapGenerationType.IrregularMesh && IrregularMapScreen == null)
+        {
+            ILog.Error("IrregularMapScreen not assigned! Cannot generate irregular mesh map.");
+            return;
+        }
+
         ILog.Print($"Cards present - starting {MapType} map generation...");
 
         // Consume the seed cards and ability deck
@@ -203,12 +229,6 @@ public partial class DeckBuilderController : Node
     /// </summary>
     private void StartIrregularMeshGeneration(CardSignature[] mapSeeds, CardSignature[] abilities)
     {
-        if (IrregularMapScreen == null)
-        {
-            ILog.Error("IrregularMapScreen not assigned! Cannot generate irregular mesh map.");
-            return;
-        }
-
         // Show irregular screen, hide regular grid screen
         WorldTileMapScreenScene.Visible = false;
         IrregularMapScreen.Visible = true;

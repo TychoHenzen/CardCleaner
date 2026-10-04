@@ -45,7 +45,7 @@ public partial class IrregularWorldMapScreen : Node3D
     private Camera2D? _camera2D;
 
     private bool _isInitialized;
-    private int? _pendingSeed;
+    private Action? _pendingGeneration;
     private RandomNumberGenerator _rng = new();
 
     // Tile registry for terrain generation
@@ -86,10 +86,9 @@ public partial class IrregularWorldMapScreen : Node3D
 
         CreateChildNodes();
 
-        if (_pendingSeed.HasValue)
-        {
-            GenerateMap(_pendingSeed.Value);
-        }
+        var pendingGeneration = _pendingGeneration;
+        _pendingGeneration = null;
+        pendingGeneration?.Invoke();
     }
 
     protected override void Dispose(bool disposing)
@@ -111,7 +110,7 @@ public partial class IrregularWorldMapScreen : Node3D
     {
         if (!IsInsideTree())
         {
-            _pendingSeed = seed;
+            _pendingGeneration = () => GenerateMap(seed, inputCards, abilityCards);
             return;
         }
 
@@ -150,7 +149,7 @@ public partial class IrregularWorldMapScreen : Node3D
     {
         if (!IsInsideTree())
         {
-            _pendingSeed = seed;
+            _pendingGeneration = () => GenerateMapWithWfc(seed, adjacencyRules, tileToTerrainType);
             return;
         }
 
@@ -190,6 +189,7 @@ public partial class IrregularWorldMapScreen : Node3D
     /// </summary>
     private WorldMapSession BeginSession(IrregularMesh mesh)
     {
+        _session?.Close();
         _mesh = mesh;
         var session = new WorldMapSession(CreateSettings(), mesh);
         _session = session;
