@@ -37,7 +37,7 @@ public static class MapGridArbitrary
     private static Gen<string[,]> CreateTileArray(int width, int height)
     {
         var tileIdGen = Gen.Elements(DefaultTileIds.Concat(new[] { (string?)null }).ToArray());
-        return from tileIds in Gen.ArrayOf(width * height, tileIdGen)
+        return from tileIds in Gen.ArrayOf(tileIdGen, width * height)
             select ToGrid(tileIds!, width, height);
     }
 
@@ -56,7 +56,7 @@ public static class MapGridArbitrary
         return grid;
     }
 
-    public static void Register() => Arb.Register<MapGridArbitraryProvider>();
+    public static void Register() { }
 
     private sealed class MapGridArbitraryProvider
     {

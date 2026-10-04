@@ -69,7 +69,7 @@ public static class TilePositionArbitrary
             yield return new Vector2I(pos.X, pos.Y / 2);
     }
 
-    public static void Register() => Arb.Register<TilePositionArbitraryProvider>();
+    public static void Register() { }
 
     private sealed class TilePositionArbitraryProvider
     {
