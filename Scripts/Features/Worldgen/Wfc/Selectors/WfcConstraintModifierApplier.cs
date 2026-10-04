@@ -14,7 +14,8 @@ internal static class WfcConstraintModifierApplier
             tileId,
             context.Topology,
             context.Rng,
-            context.CollapsedNeighbors!);
+            context.CollapsedNeighbors!,
+            context.CollapsedWindowNeighbors!);
 
         foreach (var constraint in context.Constraints)
         {

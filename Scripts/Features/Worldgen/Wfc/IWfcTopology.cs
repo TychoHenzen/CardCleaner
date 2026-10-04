@@ -7,8 +7,8 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 /// Abstracts the topology (cell arrangement and neighbor relationships) for WFC.
 /// Allows WFC to work on different grid types (rectangular, irregular mesh, etc.).
 ///
-/// For rectangular grids: cells are arranged in a 2D array, neighbors include 8-way adjacency.
-/// For irregular meshes: cells are vertices, neighbors are all vertices sharing any quad.
+/// <see cref="GetNeighbors"/> is adjacency, where adjacency rules apply. <see cref="GetWindowNeighbors"/>
+/// adds the diagonal cells of a grid's 2x2 windows; on a mesh the two are the same.
 /// </summary>
 public interface IWfcTopology
 {
@@ -33,7 +33,7 @@ public interface IWfcTopology
     /// </summary>
     IEnumerable<int> GetAllCellIds();
 
-    /// <summary>Gets cells that share a visual face with this cell.</summary>
+    /// <summary>Gets cells adjacent to this cell, where adjacency rules apply.</summary>
     /// <param name="cellId">Cell to get neighbors for.</param>
     IEnumerable<int> GetNeighbors(int cellId);
 
@@ -43,7 +43,17 @@ public interface IWfcTopology
     /// <returns>Number of neighbors written.</returns>
     int GetNeighborsNonAlloc(int cellId, Span<int> output);
 
-    /// <summary>Gets the maximum neighbor count for buffer allocation.</summary>
+    /// <summary>Gets cells sharing a visual window with this cell (adjacent cells plus diagonals on grids).</summary>
+    /// <param name="cellId">Cell to get window neighbors for.</param>
+    IEnumerable<int> GetWindowNeighbors(int cellId) => GetNeighbors(cellId);
+
+    /// <summary>Writes window neighbors into a pre-allocated span and returns the count.</summary>
+    /// <param name="cellId">Cell to get window neighbors for.</param>
+    /// <param name="output">Span to write neighbor IDs into.</param>
+    /// <returns>Number of neighbors written.</returns>
+    int GetWindowNeighborsNonAlloc(int cellId, Span<int> output) => GetNeighborsNonAlloc(cellId, output);
+
+    /// <summary>Gets the maximum neighbor count of either neighborhood, for buffer allocation.</summary>
     int MaxNeighborCount { get; }
 
     /// <summary>

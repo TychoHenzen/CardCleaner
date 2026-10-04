@@ -56,7 +56,7 @@ public class EntropyCache
         _dirtyCellId.Remove(collapsedCellId);
 
         // Mark all neighbors as dirty (most constraints depend on neighbors)
-        foreach (var neighborId in topology.GetNeighbors(collapsedCellId))
+        foreach (var neighborId in topology.GetWindowNeighbors(collapsedCellId))
         {
             if (!topology.GetCell(neighborId).IsCollapsed())
                 _dirtyCellId.Add(neighborId);

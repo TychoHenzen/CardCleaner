@@ -10,10 +10,16 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 public readonly struct CollapsedNeighborInfo
 {
     /// <summary>
-    /// Collapsed tiles in all neighbors (topology-defined adjacency).
+    /// Collapsed tiles in adjacent cells (topology-defined adjacency; edge-sharing on grids).
     /// Key is neighbor cell ID, value is tile ID.
     /// </summary>
     public IReadOnlyDictionary<int, string> Neighbors { get; init; }
+
+    /// <summary>
+    /// Collapsed tiles in cells sharing a visual window with the cell (adds diagonals on grids).
+    /// Key is neighbor cell ID, value is tile ID.
+    /// </summary>
+    public IReadOnlyDictionary<int, string> WindowNeighbors { get; init; }
 
     /// <summary>
     /// Count of neighbors that match the candidate tile type.

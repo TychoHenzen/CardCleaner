@@ -28,8 +28,8 @@ public class WfcPropagator
         var workQueue = new Queue<int>();
         var inQueue = new HashSet<int>();
 
-        // Start with all neighbors of the collapsed cell
-        foreach (var neighbor in topology.GetNeighbors(collapsedCellId))
+        // Start with every cell sharing a window with the collapsed cell
+        foreach (var neighbor in topology.GetWindowNeighbors(collapsedCellId))
         {
             workQueue.Enqueue(neighbor);
             inQueue.Add(neighbor);
@@ -105,7 +105,7 @@ public class WfcPropagator
         Queue<int> workQueue,
         HashSet<int> inQueue)
     {
-        foreach (var neighbor in topology.GetNeighbors(cellId))
+        foreach (var neighbor in topology.GetWindowNeighbors(cellId))
         {
             var neighborCell = topology.GetCell(neighbor);
             if (neighborCell.IsCollapsed() || neighborCell.IsReserved || inQueue.Contains(neighbor))

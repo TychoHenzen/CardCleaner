@@ -60,7 +60,8 @@ public readonly struct WfcConstraintContext
         string tileId,
         IWfcTopology topology,
         RandomNumberGenerator? rng,
-        IReadOnlyDictionary<int, string> collapsedNeighbors)
+        IReadOnlyDictionary<int, string> collapsedNeighbors,
+        IReadOnlyDictionary<int, string> collapsedWindowNeighbors)
     {
         var sameTypeCount = 0;
 
@@ -79,6 +80,7 @@ public readonly struct WfcConstraintContext
             NeighborInfo = new CollapsedNeighborInfo
             {
                 Neighbors = collapsedNeighbors,
+                WindowNeighbors = collapsedWindowNeighbors,
                 SameTypeCount = sameTypeCount,
                 HasCollapsedNeighbor = collapsedNeighbors.Count > 0
             }

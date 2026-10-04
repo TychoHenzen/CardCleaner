@@ -210,27 +210,28 @@ public class WfcGrid : IWfcTopology
     }
 
     /// <summary>
-    /// Enumerates the 8-directional neighbors of a cell ID (IWfcTopology implementation).
-    /// This is the default for WFC constraints as it covers all cells sharing 2x2 windows.
+    /// Enumerates the edge-sharing neighbors of a cell ID (IWfcTopology implementation).
+    /// Adjacency rules and neighbor-based constraints apply to these cells only.
     /// </summary>
-    IEnumerable<int> IWfcTopology.GetNeighbors(int cellId) => GetNeighbors8(cellId);
+    IEnumerable<int> IWfcTopology.GetNeighbors(int cellId) => GetNeighbors4(cellId);
 
     /// <summary>
-    /// Gets 8-way neighbors into a pre-allocated span (IWfcTopology implementation).
+    /// Gets 4-way neighbors into a pre-allocated span (IWfcTopology implementation).
     /// </summary>
-    int IWfcTopology.GetNeighborsNonAlloc(int cellId, Span<int> output)
-    {
-        var pos = CellIdToPosition(cellId);
-        Span<Vector2I> posBuffer = stackalloc Vector2I[8];
-        var count = GetNeighbors8NonAlloc(pos, posBuffer);
+    int IWfcTopology.GetNeighborsNonAlloc(int cellId, Span<int> output) =>
+        _geometry.CollectNeighborIds4(cellId, output);
 
-        for (var i = 0; i < count && i < output.Length; i++)
-        {
-            output[i] = PositionToCellId(posBuffer[i]);
-        }
+    /// <summary>
+    /// Enumerates the 8 cells sharing a 2x2 window with a cell (IWfcTopology implementation).
+    /// Used to find cells to re-evaluate after a collapse and by the auto-tile gap rule.
+    /// </summary>
+    IEnumerable<int> IWfcTopology.GetWindowNeighbors(int cellId) => GetNeighbors8(cellId);
 
-        return Math.Min(count, output.Length);
-    }
+    /// <summary>
+    /// Gets 8-way window neighbors into a pre-allocated span (IWfcTopology implementation).
+    /// </summary>
+    int IWfcTopology.GetWindowNeighborsNonAlloc(int cellId, Span<int> output) =>
+        _geometry.CollectNeighborIds8(cellId, output);
 
     /// <summary>
     /// Maximum neighbors is 8 for rectangular grid (IWfcTopology implementation).

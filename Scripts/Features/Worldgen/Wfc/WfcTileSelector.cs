@@ -178,6 +178,10 @@ public class WfcTileSelector
             cellId,
             topology,
             _constraints);
+        var collapsedWindowNeighbors = WfcWeightedCandidateBuilder.BuildCollapsedWindowNeighbors(
+            cellId,
+            topology,
+            _constraints);
         return new WfcTileWeightContext(
             biomeWeights,
             rng,
@@ -185,6 +189,7 @@ public class WfcTileSelector
             cellId,
             topology,
             collapsedNeighbors,
+            collapsedWindowNeighbors,
             useUniformBaseWeight,
             _constraints,
             DefaultTileWeight,

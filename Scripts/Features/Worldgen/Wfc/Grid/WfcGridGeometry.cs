@@ -53,6 +53,10 @@ internal sealed class WfcGridGeometry
 
     internal int CollectNeighbors8(Vector2I pos, Span<Vector2I> output) => Collect(Neighbors8Offsets, pos, output);
 
+    internal int CollectNeighborIds4(int cellId, Span<int> output) => CollectIds(Neighbors4Offsets, cellId, output);
+
+    internal int CollectNeighborIds8(int cellId, Span<int> output) => CollectIds(Neighbors8Offsets, cellId, output);
+
     internal Vector2I CellIdToPosition(int cellId) => new(cellId % Width, cellId / Width);
 
     internal int PositionToCellId(Vector2I position) => position.Y * Width + position.X;
@@ -66,6 +70,22 @@ internal sealed class WfcGridGeometry
             if (IsInBounds(nx, ny))
                 yield return new Vector2I(nx, ny);
         }
+    }
+
+    private int CollectIds(Vector2I[] offsets, int cellId, Span<int> output)
+    {
+        var count = 0;
+        var pos = CellIdToPosition(cellId);
+
+        foreach (var offset in offsets)
+        {
+            var nx = pos.X + offset.X;
+            var ny = pos.Y + offset.Y;
+            if (IsInBounds(nx, ny) && count < output.Length)
+                output[count++] = ny * Width + nx;
+        }
+
+        return count;
     }
 
     private int Collect(Vector2I[] offsets, Vector2I pos, Span<Vector2I> output)

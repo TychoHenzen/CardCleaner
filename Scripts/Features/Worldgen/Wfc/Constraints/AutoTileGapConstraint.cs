@@ -35,7 +35,7 @@ public class AutoTileGapConstraint : IWfcConstraint
     // Uses precomputed neighbor info (optimization)
     private bool HasConflictInNeighborInfo(WfcConstraintContext context)
     {
-        foreach (var kvp in context.NeighborInfo!.Value.Neighbors)
+        foreach (var kvp in context.NeighborInfo!.Value.WindowNeighbors)
         {
             if (ConflictsWithNeighbor(_tileRegistry, context.TileId, kvp.Value))
                 return true;
@@ -47,7 +47,7 @@ public class AutoTileGapConstraint : IWfcConstraint
     // Fallback: iterate neighbors directly from topology
     private bool HasConflictInTopology(WfcConstraintContext context)
     {
-        foreach (var neighborId in context.Topology.GetNeighbors(context.CellId))
+        foreach (var neighborId in context.Topology.GetWindowNeighbors(context.CellId))
         {
             var neighborCell = context.Topology.GetCell(neighborId);
 

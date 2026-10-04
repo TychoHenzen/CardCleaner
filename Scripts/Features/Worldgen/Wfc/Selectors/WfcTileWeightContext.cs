@@ -14,6 +14,7 @@ internal readonly record struct WfcTileWeightContext(
     int? CellId,
     IWfcTopology? Topology,
     Dictionary<int, string>? CollapsedNeighbors,
+    Dictionary<int, string>? CollapsedWindowNeighbors,
     bool UseUniformBaseWeight,
     IReadOnlyList<IWfcConstraint> Constraints,
     float DefaultTileWeight,

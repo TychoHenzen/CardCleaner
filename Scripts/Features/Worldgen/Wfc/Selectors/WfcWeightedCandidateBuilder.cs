@@ -18,15 +18,36 @@ internal static class WfcWeightedCandidateBuilder
         var collapsedNeighbors = new Dictionary<int, string>(topology.MaxNeighborCount);
         Span<int> neighborBuffer = stackalloc int[topology.MaxNeighborCount];
         var count = topology.GetNeighborsNonAlloc(cellId.Value, neighborBuffer);
-        for (var i = 0; i < count; i++)
+        AddCollapsed(topology, neighborBuffer[..count], collapsedNeighbors);
+        return collapsedNeighbors;
+    }
+
+    internal static Dictionary<int, string>? BuildCollapsedWindowNeighbors(
+        int? cellId,
+        IWfcTopology? topology,
+        IReadOnlyList<IWfcConstraint> constraints)
+    {
+        if (!cellId.HasValue || topology == null || constraints.Count == 0)
+            return null;
+
+        var collapsedNeighbors = new Dictionary<int, string>(topology.MaxNeighborCount);
+        Span<int> neighborBuffer = stackalloc int[topology.MaxNeighborCount];
+        var count = topology.GetWindowNeighborsNonAlloc(cellId.Value, neighborBuffer);
+        AddCollapsed(topology, neighborBuffer[..count], collapsedNeighbors);
+        return collapsedNeighbors;
+    }
+
+    private static void AddCollapsed(
+        IWfcTopology topology,
+        ReadOnlySpan<int> neighborIds,
+        Dictionary<int, string> collapsedNeighbors)
+    {
+        foreach (var neighborId in neighborIds)
         {
-            var neighborId = neighborBuffer[i];
             var neighborCell = topology.GetCell(neighborId);
             if (neighborCell.IsCollapsed())
                 collapsedNeighbors[neighborId] = neighborCell.GetCollapsedTile();
         }
-
-        return collapsedNeighbors;
     }
 
     internal static Dictionary<string, float> BuildBiomeWeightLookup(BiomeDefinition? biome)
