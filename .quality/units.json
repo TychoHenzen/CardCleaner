@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 790,
+  "fileCount": 797,
   "files": [
     {
       "path": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
@@ -2828,7 +2828,17 @@
       "classification": "test"
     },
     {
+      "path": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "language": "cs",
+      "classification": "test"
+    },
+    {
       "path": "Tests/Core/Services/RaycastVisibilityCheckerTest.cs",
+      "language": "cs",
+      "classification": "test"
+    },
+    {
+      "path": "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs",
       "language": "cs",
       "classification": "test"
     },
@@ -3068,6 +3078,11 @@
       "classification": "test"
     },
     {
+      "path": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs",
+      "language": "cs",
+      "classification": "test"
+    },
+    {
       "path": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerTest.cs",
       "language": "cs",
       "classification": "test"
@@ -3164,6 +3179,11 @@
     },
     {
       "path": "Tests/Features/Deckbuilder/Services/GameSessionScenarios/GameSessionStartTest.cs",
+      "language": "cs",
+      "classification": "test"
+    },
+    {
+      "path": "Tests/Features/Deckbuilder/Services/RegularGridMapDataRectTest.cs",
       "language": "cs",
       "classification": "test"
     },
@@ -3578,6 +3598,11 @@
       "classification": "test"
     },
     {
+      "path": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMapDataStructureTest.cs",
+      "language": "cs",
+      "classification": "test"
+    },
+    {
       "path": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMapGeneratorTest.cs",
       "language": "cs",
       "classification": "test"
@@ -3589,6 +3614,11 @@
     },
     {
       "path": "Tests/Features/Worldgen/IrregularMesh/IrregularTerrainRendererTest.cs",
+      "language": "cs",
+      "classification": "test"
+    },
+    {
+      "path": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
       "language": "cs",
       "classification": "test"
     },
@@ -3918,6 +3948,11 @@
       "classification": "test"
     },
     {
+      "path": "Tests/Scenes/GameplayMapSceneContractTest.cs",
+      "language": "cs",
+      "classification": "test"
+    },
+    {
       "path": "Tests/TestUtilities/Builders/GameSettingsBuilder.cs",
       "language": "cs",
       "classification": "test"
@@ -3954,24 +3989,24 @@
     }
   ],
   "summary": {
-    "total": 7403,
+    "total": 7473,
     "errors": 0,
-    "warnings": 7403,
+    "warnings": 7473,
     "byRule": {
       "test-only-export": 9,
       "duplicate-block": 68,
-      "file-length": 347,
-      "complexity": 230,
-      "function-length": 263,
+      "file-length": 349,
+      "complexity": 231,
+      "function-length": 264,
       "nesting-depth": 11,
       "param-count": 170,
       "else-branch": 90,
-      "stateless-method": 1534,
+      "stateless-method": 1548,
       "comment-bloat": 49,
       "comment-restates-code": 95,
       "output-parameter": 25,
-      "flag-parameter": 72,
-      "line-length": 4440
+      "flag-parameter": 73,
+      "line-length": 4491
     },
     "byFile": {
       "Scripts/Core/Services/MapGenerationProfiler.cs": 2,
@@ -3985,7 +4020,7 @@
       "addons/tile_editor/TileEditorPlugin.cs": 4,
       "Scripts/Features/Card/Services/SignatureCardGenerator.cs": 23,
       "Scripts/Features/Deckbuilder/Models/WorldMap/WorldMapRuntime.cs": 26,
-      "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs": 19,
+      "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs": 23,
       "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs": 21,
       "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs": 14,
       "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainWfcRunner.cs": 21,
@@ -4024,7 +4059,7 @@
       "Scripts/Core/Services/CompiledAtlasLoader.cs": 40,
       "Scripts/Core/Services/GameSaveService.cs": 15,
       "Scripts/Core/Services/InputService.cs": 33,
-      "Scripts/Core/Services/Pathfinder.cs": 6,
+      "Scripts/Core/Services/Pathfinder.cs": 5,
       "Scripts/Core/Services/SimpleVisibilityChecker.cs": 21,
       "Scripts/Core/Services/TerrainCollisionShapeGenerator.cs": 28,
       "Scripts/Core/Services/TileDataLoader.Models.cs": 26,
@@ -4051,7 +4086,7 @@
       "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer.cs": 11,
       "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/NonTerrainTileRenderer.cs": 8,
       "Scripts/Features/Deckbuilder/Components/WorldMapTerrainRenderer/TerrainTransitionResolver.cs": 15,
-      "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs": 26,
+      "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs": 32,
       "Scripts/Features/Deckbuilder/Models/DeckSlot.cs": 19,
       "Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs": 9,
       "Scripts/Features/Deckbuilder/Services/Combat/CombatCommand.cs": 8,
@@ -4062,7 +4097,7 @@
       "Scripts/Features/Deckbuilder/Services/FrontierExplorationBehavior.cs": 25,
       "Scripts/Features/Deckbuilder/Services/GameSessionService.cs": 30,
       "Scripts/Features/Deckbuilder/Services/GridCellEventAdapter.cs": 4,
-      "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs": 10,
+      "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs": 12,
       "Scripts/Features/Deckbuilder/Services/Session/ExplorationSession.cs": 18,
       "Scripts/Features/Deckbuilder/Services/Session/Generation/MapGenerationCoordinator.cs": 16,
       "Scripts/Features/Deckbuilder/Services/Session/SessionFlow.cs": 12,
@@ -4097,8 +4132,8 @@
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshExplorationController.cs": 25,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWar.cs": 12,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshFogRenderer.cs": 16,
-      "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs": 9,
-      "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs": 8,
+      "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs": 10,
+      "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs": 9,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshWfcTopology.cs": 6,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularTerrainRenderer.cs": 19,
       "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshRelaxer.cs": 16,
@@ -4107,7 +4142,7 @@
       "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs": 12,
       "Scripts/Features/Worldgen/IrregularMesh/Topology/MeshAdjacencyBuilder.cs": 5,
       "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs": 10,
-      "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs": 17,
+      "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs": 18,
       "Scripts/Features/Worldgen/Wfc/Connectivity/Graph/UnionFind.cs": 4,
       "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraph.cs": 15,
       "Scripts/Features/Worldgen/Wfc/Constraints/BiomeAffinityConstraint.cs": 12,
@@ -4168,6 +4203,7 @@
       "Tests/Features/Card/Models/RarityVisualTest.cs": 9,
       "Tests/Features/Card/Services/CardSpawningServiceTest.cs": 7,
       "Tests/Features/Deckbuilder/Components/InteractableButtonTest.cs": 7,
+      "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs": 6,
       "Tests/Features/Deckbuilder/Services/ConnectivityVerificationTest.cs": 38,
       "Tests/Features/Deckbuilder/Services/Exploration/ExplorationStrategyTest.cs": 17,
       "Tests/Features/Deckbuilder/Services/ExplorationAIScenarios/ExplorationAIEnemyPursuitTest.cs": 27,
@@ -4231,10 +4267,11 @@
       "Tests/Features/Worldgen/Biomes/BiomeStrengthGridTest.cs": 19,
       "Tests/Features/Worldgen/Biomes/TilePoolTest.cs": 5,
       "Tests/Features/Worldgen/IrregularMesh/DecorationRendererTest.cs": 15,
-      "Tests/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWarTest.cs": 3,
+      "Tests/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWarTest.cs": 4,
       "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMapGeneratorTest.cs": 6,
       "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMovementControllerTest.cs": 3,
       "Tests/Features/Worldgen/IrregularMesh/IrregularTerrainRendererTest.cs": 3,
+      "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs": 15,
       "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenTest.cs": 9,
       "Tests/Features/Worldgen/IrregularMesh/StructurePlacementScenarios/StructureLifecycleTest.cs": 15,
       "Tests/Features/Worldgen/IrregularMesh/StructurePlacementScenarios/StructurePlacementRulesTest.cs": 21,
@@ -4380,7 +4417,7 @@
       "Tests/Features/Worldgen/Wfc/MapGeneratorScenarios/WfcMapGeneratorDistributionTest.cs": 16,
       "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelLeft.cs": 2,
       "addons/tile_editor/Dock/TileEditorToolbar.cs": 4,
-      "Scripts/Core/Services/Pathfinding/AStarSearchState.cs": 6,
+      "Scripts/Core/Services/Pathfinding/AStarSearchState.cs": 8,
       "Scripts/Core/Services/SaveGame/SavedCardRespawner.cs": 5,
       "Scripts/Core/Services/TilesetLoading/TmxMapping/TmxChunk.cs": 2,
       "Scripts/Core/Services/TilesetLoading/TmxTilesetReference.cs": 4,
@@ -4417,7 +4454,7 @@
       "Scripts/Core/ServiceProviders/CardServiceProvider.cs": 2,
       "Scripts/Core/Services/GodotProgress.cs": 7,
       "Scripts/Core/Services/LoggingService.cs": 6,
-      "Scripts/Core/Services/RaycastVisibilityChecker.cs": 8,
+      "Scripts/Core/Services/RaycastVisibilityChecker.cs": 10,
       "Scripts/Core/Services/Variation/VariationGroupCollection.cs": 1,
       "Scripts/Core/Utilities/CardSleepEnforcer.cs": 5,
       "Scripts/Features/Card/Controllers/BlacklightController.cs": 7,
@@ -4436,6 +4473,7 @@
       "Tests/Core/PropertyTesting/Generators/GradientArbitraries.cs": 8,
       "Tests/Core/Services/GodotProgressTest.cs": 2,
       "Tests/Core/Services/LoggingServiceTest.cs": 4,
+      "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs": 14,
       "Tests/Core/Services/VariationGroupScenarios/VariationPatternDetectionTest.cs": 9,
       "Tests/Core/Utilities/CardSleepEnforcerTest.cs": 5,
       "Tests/Core/Utilities/EleAspectsTest.cs": 14,
@@ -4608,9 +4646,11 @@
       "Tests/Core/PropertyTesting/SeedManager.cs": 7,
       "Tests/Core/ServiceProviders/CardServiceProviderTest.cs": 5,
       "Tests/Core/Services/CompiledAtlasLoaderScenarios/CompiledAtlasLoaderTestBase.cs": 5,
+      "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs": 6,
       "Tests/Core/Services/TilesJsonValidationScenarios/TilesJsonValidationTestBase.cs": 2,
       "Tests/Features/Deckbuilder/Services/ExplorationAIScenarios/ExplorationAITestBase.cs": 4,
       "Tests/Features/Deckbuilder/Services/GameSessionScenarios/GameSessionServiceTestBase.cs": 4,
+      "Tests/Features/Deckbuilder/Services/RegularGridMapDataRectTest.cs": 5,
       "Tests/Features/Deckbuilder/Services/SimpleMapGeneratorScenarios/ConstantBiomeGradient.cs": 2,
       "Tests/Features/Deckbuilder/Services/SimpleMapGeneratorScenarios/SimpleMapGeneratorTestBase.cs": 7,
       "Tests/Features/Worldgen/AutoTiling/BlackTile/BlackTileReproductionTestBase.cs": 3,
@@ -4620,6 +4660,7 @@
       "Tests/Features/Worldgen/AutoTiling/RandomReproduction/RandomAutoTileReproductionTestBase.cs": 3,
       "Tests/Features/Worldgen/AutoTiling/TileDataLoaderFormat/TileDataLoaderFormatTestBase.cs": 1,
       "Tests/Features/Worldgen/AutoTiling/TransitionMap/TransitionMapValidationTestBase.cs": 2,
+      "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMapDataStructureTest.cs": 1,
       "Tests/Features/Worldgen/Support/ConstantSignatureGradient.cs": 1,
       "Tests/Features/Worldgen/Support/MapRequest.cs": 1,
       "Tests/Features/Worldgen/Support/SignedMapRequest.cs": 2,
@@ -4627,6 +4668,7 @@
       "Tests/Features/Worldgen/Wfc/BiomeGridScenarios/FixedGradient.cs": 1,
       "Tests/Features/Worldgen/Wfc/Constraints/ConnectivityScenarios/ConnectivityConstraintTestBase.cs": 3,
       "Tests/Mocking/MockCardShaderRenderer.cs": 1,
+      "Tests/Scenes/GameplayMapSceneContractTest.cs": 4,
       "Tests/TestUtilities/Fixtures/OpenFloorMap.cs": 3,
       "Tests/TestUtilities/Helpers/GodotTestHelpers.cs": 1,
       "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs": 4,
@@ -5576,8 +5618,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 260 lines",
-      "metric": 260
+      "message": "file is 280 lines",
+      "metric": 280
     },
     {
       "file": "Scripts/Features/Deckbuilder/Models/DeckSlot.cs",
@@ -5672,8 +5714,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 286 lines",
-      "metric": 286
+      "message": "file is 290 lines",
+      "metric": 290
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/Session/ExplorationSession.cs",
@@ -5952,8 +5994,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 295 lines",
-      "metric": 295
+      "message": "file is 299 lines",
+      "metric": 299
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshFogRenderer.cs",
@@ -5968,8 +6010,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 293 lines",
-      "metric": 293
+      "message": "file is 297 lines",
+      "metric": 297
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapGenerator.cs",
@@ -5984,8 +6026,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 233 lines",
-      "metric": 233
+      "message": "file is 237 lines",
+      "metric": 237
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshWfcTopology.cs",
@@ -6104,8 +6146,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 220 lines",
-      "metric": 220
+      "message": "file is 237 lines",
+      "metric": 237
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Connectivity/Graph/UnionFind.cs",
@@ -6610,6 +6652,14 @@
       "severity": "warn",
       "message": "file is 278 lines",
       "metric": 278
+    },
+    {
+      "file": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 113 lines",
+      "metric": 113
     },
     {
       "file": "Tests/Features/Deckbuilder/Services/ConnectivityVerificationTest.cs",
@@ -7136,8 +7186,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 268 lines",
-      "metric": 268
+      "message": "file is 281 lines",
+      "metric": 281
     },
     {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMapGeneratorTest.cs",
@@ -7152,8 +7202,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 266 lines",
-      "metric": 266
+      "message": "file is 278 lines",
+      "metric": 278
     },
     {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularTerrainRendererTest.cs",
@@ -7162,6 +7212,14 @@
       "severity": "warn",
       "message": "file is 199 lines",
       "metric": 199
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 103 lines",
+      "metric": 103
     },
     {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenTest.cs",
@@ -8397,11 +8455,11 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 136,
+      "line": 156,
       "rule": "complexity",
       "severity": "warn",
-      "message": "OnButtonPressed() cyclomatic complexity 7",
-      "metric": 7
+      "message": "OnButtonPressed() cyclomatic complexity 9",
+      "metric": 9
     },
     {
       "file": "Scripts/Features/Deckbuilder/Models/DeckSlot.cs",
@@ -8689,6 +8747,14 @@
       "rule": "complexity",
       "severity": "warn",
       "message": "PlaceEnemies() cyclomatic complexity 6",
+      "metric": 6
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
+      "line": 116,
+      "rule": "complexity",
+      "severity": "warn",
+      "message": "MoveToCell() cyclomatic complexity 6",
       "metric": 6
     },
     {
@@ -10165,11 +10231,11 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 136,
+      "line": 156,
       "rule": "function-length",
       "severity": "warn",
-      "message": "OnButtonPressed() is 52 lines",
-      "metric": 52
+      "message": "OnButtonPressed() is 58 lines",
+      "metric": 58
     },
     {
       "file": "Scripts/Features/Deckbuilder/Models/WorldMap/WorldMapRuntime.cs",
@@ -10405,7 +10471,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-      "line": 110,
+      "line": 109,
       "rule": "function-length",
       "severity": "warn",
       "message": "GenerateMap() is 32 lines",
@@ -10818,6 +10884,14 @@
       "severity": "warn",
       "message": "Setup() is 33 lines",
       "metric": 33
+    },
+    {
+      "file": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs",
+      "line": 25,
+      "rule": "function-length",
+      "severity": "warn",
+      "message": "BuildController() is 31 lines",
+      "metric": 31
     },
     {
       "file": "Tests/Features/Deckbuilder/Services/ConnectivityVerificationTest.cs",
@@ -15205,7 +15279,15 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 104,
+      "line": 95,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnSessionStateChanged() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "line": 124,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "OnSlotsUpdated() never touches instance state — make it a free function",
@@ -15333,7 +15415,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-      "line": 277,
+      "line": 281,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetCellId() never touches instance state — make it a free function",
@@ -15341,7 +15423,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-      "line": 282,
+      "line": 286,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetGridPosition() never touches instance state — make it a free function",
@@ -15581,7 +15663,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-      "line": 230,
+      "line": 234,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "AddEnemySpawnFromPosition() never touches instance state — make it a free function",
@@ -15593,6 +15675,22 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GenerateAsync() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+      "line": 113,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "_pendingGeneration() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+      "line": 152,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "_pendingGeneration() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -16409,6 +16507,86 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "LoggingService_ImplementsILogInterface() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "line": 52,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetCellArea() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "line": 53,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetTerrainType() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "line": 54,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "IsPassable() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "line": 55,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "IsTransparent() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "line": 56,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "HasStructure() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "line": 58,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetAdjacentCells() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "line": 66,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetMovementCost() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "line": 69,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetCellAtPosition() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "line": 70,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetCellsInRadius() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "line": 71,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetCellsInRect() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -21185,6 +21363,14 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "TestIrregularMeshMapGeneratorConstruction() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 40,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ExplorationControllers() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -26653,7 +26839,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-      "line": 103,
+      "line": 107,
       "rule": "comment-bloat",
       "severity": "warn",
       "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
@@ -27021,7 +27207,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 163,
+      "line": 189,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -27029,7 +27215,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 216,
+      "line": 236,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -27189,7 +27375,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-      "line": 212,
+      "line": 216,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -27197,7 +27383,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-      "line": 123,
+      "line": 122,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -27477,7 +27663,7 @@
     },
     {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWarTest.cs",
-      "line": 256,
+      "line": 269,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -27493,7 +27679,7 @@
     },
     {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMovementControllerTest.cs",
-      "line": 254,
+      "line": 266,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -27653,7 +27839,7 @@
     },
     {
       "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
-      "line": 22,
+      "line": 24,
       "rule": "output-parameter",
       "severity": "warn",
       "message": "TryDequeue() exposes an output parameter; return a value instead",
@@ -27981,7 +28167,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-      "line": 95,
+      "line": 94,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "Dispose() takes a boolean flag; split the behavior or name the policy",
@@ -28013,7 +28199,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 195,
+      "line": 212,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "OnCombatEnded() takes a boolean flag; split the behavior or name the policy",
@@ -28105,6 +28291,14 @@
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "SetupMockCardHolderWithCards() takes a boolean flag; split the behavior or name the policy",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs",
+      "line": 25,
+      "rule": "flag-parameter",
+      "severity": "warn",
+      "message": "BuildController() takes a boolean flag; split the behavior or name the policy",
       "metric": 1
     },
     {
@@ -29868,12 +30062,12 @@
       "metric": 89
     },
     {
-      "file": "Scripts/Core/Services/Pathfinder.cs",
-      "line": 100,
+      "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
+      "line": 22,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
+      "message": "line is 104 chars",
+      "metric": 104
     },
     {
       "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
@@ -29898,6 +30092,14 @@
       "severity": "warn",
       "message": "line is 83 chars",
       "metric": 83
+    },
+    {
+      "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
+      "line": 51,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 109 chars",
+      "metric": 109
     },
     {
       "file": "Scripts/Core/Services/PlayerResetService.cs",
@@ -29981,11 +30183,27 @@
     },
     {
       "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-      "line": 70,
+      "line": 69,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
+      "message": "line is 105 chars",
+      "metric": 105
+    },
+    {
+      "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+      "line": 74,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+      "line": 86,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
     },
     {
       "file": "Scripts/Core/Services/SafePositionTracker.cs",
@@ -34197,55 +34415,7 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 111,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 123,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 127,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 112 chars",
-      "metric": 112
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 148,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 173,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 84 chars",
-      "metric": 84
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 177,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 190,
+      "line": 73,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -34253,31 +34423,55 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 192,
+      "line": 88,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
+      "message": "line is 85 chars",
+      "metric": 85
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 204,
+      "line": 102,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
+      "message": "line is 82 chars",
+      "metric": 82
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 208,
+      "line": 111,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
+      "message": "line is 84 chars",
+      "metric": 84
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 224,
+      "line": 131,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "line": 143,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "line": 147,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 112 chars",
+      "metric": 112
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "line": 168,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -34285,7 +34479,71 @@
     },
     {
       "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "line": 237,
+      "line": 181,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "line": 183,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "line": 199,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "line": 203,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "line": 216,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "line": 218,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "line": 230,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "line": 244,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "line": 257,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -35638,6 +35896,22 @@
     {
       "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
       "line": 184,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+      "line": 206,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+      "line": 207,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -40840,12 +41114,20 @@
       "line": 103,
       "rule": "line-length",
       "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
+      "line": 107,
+      "rule": "line-length",
+      "severity": "warn",
       "message": "line is 95 chars",
       "metric": 95
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-      "line": 104,
+      "line": 108,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -40853,7 +41135,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-      "line": 107,
+      "line": 111,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -40861,7 +41143,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-      "line": 108,
+      "line": 112,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -40869,7 +41151,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-      "line": 117,
+      "line": 121,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -40877,7 +41159,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-      "line": 280,
+      "line": 284,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -41037,7 +41319,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-      "line": 30,
+      "line": 31,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -41045,7 +41327,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-      "line": 46,
+      "line": 47,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -41053,7 +41335,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-      "line": 113,
+      "line": 114,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -41061,7 +41343,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-      "line": 149,
+      "line": 153,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -41069,7 +41351,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-      "line": 151,
+      "line": 155,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -41077,7 +41359,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-      "line": 218,
+      "line": 222,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -41269,7 +41551,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-      "line": 110,
+      "line": 109,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 111 chars",
@@ -41277,55 +41559,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-      "line": 121,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-      "line": 126,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-      "line": 127,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-      "line": 129,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 108 chars",
-      "metric": 108
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-      "line": 133,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 107 chars",
-      "metric": 107
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-      "line": 138,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 115 chars",
-      "metric": 115
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-      "line": 157,
+      "line": 113,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -41333,7 +41567,71 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-      "line": 159,
+      "line": 120,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+      "line": 125,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+      "line": 126,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+      "line": 128,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 108 chars",
+      "metric": 108
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+      "line": 132,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 107 chars",
+      "metric": 107
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+      "line": 137,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 115 chars",
+      "metric": 115
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+      "line": 152,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+      "line": 156,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+      "line": 158,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -41341,7 +41639,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-      "line": 189,
+      "line": 188,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -42837,7 +43135,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 112,
+      "line": 93,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 114 chars",
+      "metric": 114
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+      "line": 129,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -42845,7 +43151,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 113,
+      "line": 130,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -42853,7 +43159,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 144,
+      "line": 161,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -42861,7 +43167,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 170,
+      "line": 187,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
@@ -42869,7 +43175,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 172,
+      "line": 189,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -42877,7 +43183,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 174,
+      "line": 191,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -42885,7 +43191,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 190,
+      "line": 207,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -42893,7 +43199,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 215,
+      "line": 232,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -47628,6 +47934,38 @@
       "metric": 96
     },
     {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "line": 9,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "line": 50,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "line": 67,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "line": 70,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 98 chars",
+      "metric": 98
+    },
+    {
       "file": "Tests/Core/Services/RaycastVisibilityCheckerTest.cs",
       "line": 99,
       "rule": "line-length",
@@ -47642,6 +47980,54 @@
       "severity": "warn",
       "message": "line is 100 chars",
       "metric": 100
+    },
+    {
+      "file": "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs",
+      "line": 10,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs",
+      "line": 11,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs",
+      "line": 27,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 110 chars",
+      "metric": 110
+    },
+    {
+      "file": "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs",
+      "line": 28,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs",
+      "line": 29,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs",
+      "line": 37,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
     },
     {
       "file": "Tests/Core/Services/SafePositionTrackerTest.cs",
@@ -49884,6 +50270,30 @@
       "metric": 94
     },
     {
+      "file": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs",
+      "line": 44,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs",
+      "line": 59,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs",
+      "line": 69,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
       "file": "Tests/Features/Deckbuilder/Services/ConnectivityVerificationTest.cs",
       "line": 21,
       "rule": "line-length",
@@ -51602,6 +52012,46 @@
       "severity": "warn",
       "message": "line is 91 chars",
       "metric": 91
+    },
+    {
+      "file": "Tests/Features/Deckbuilder/Services/RegularGridMapDataRectTest.cs",
+      "line": 28,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Tests/Features/Deckbuilder/Services/RegularGridMapDataRectTest.cs",
+      "line": 30,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 120 chars",
+      "metric": 120
+    },
+    {
+      "file": "Tests/Features/Deckbuilder/Services/RegularGridMapDataRectTest.cs",
+      "line": 36,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Tests/Features/Deckbuilder/Services/RegularGridMapDataRectTest.cs",
+      "line": 44,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Tests/Features/Deckbuilder/Services/RegularGridMapDataRectTest.cs",
+      "line": 46,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 120 chars",
+      "metric": 120
     },
     {
       "file": "Tests/Features/Deckbuilder/Services/SimpleCombatScenarios/CombatCommandTest.cs",
@@ -56405,19 +56855,139 @@
     },
     {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWarTest.cs",
-      "line": 219,
+      "line": 147,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWarTest.cs",
+      "line": 232,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
       "metric": 82
     },
     {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMapDataStructureTest.cs",
+      "line": 7,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMovementControllerTest.cs",
-      "line": 202,
+      "line": 214,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
       "metric": 82
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 11,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 12,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 20,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 25,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 104 chars",
+      "metric": 104
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 38,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 117 chars",
+      "metric": 117
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 40,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 114 chars",
+      "metric": 114
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 41,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 119 chars",
+      "metric": 119
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 57,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 78,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 79,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 85,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 113 chars",
+      "metric": 113
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 98,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 82 chars",
+      "metric": 82
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "line": 101,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
     },
     {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenTest.cs",
@@ -59090,6 +59660,38 @@
       "severity": "warn",
       "message": "line is 93 chars",
       "metric": 93
+    },
+    {
+      "file": "Tests/Scenes/GameplayMapSceneContractTest.cs",
+      "line": 6,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Tests/Scenes/GameplayMapSceneContractTest.cs",
+      "line": 13,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Tests/Scenes/GameplayMapSceneContractTest.cs",
+      "line": 14,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "Tests/Scenes/GameplayMapSceneContractTest.cs",
+      "line": 33,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
     },
     {
       "file": "Tests/TestUtilities/Fixtures/OpenFloorMap.cs",
@@ -70180,6 +70782,277 @@
       ]
     },
     {
+      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+      "errors": 0,
+      "warnings": 32,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "function-length": 1,
+        "stateless-method": 4,
+        "comment-restates-code": 2,
+        "line-length": 23
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 280 lines",
+          "metric": 280
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 156,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "OnButtonPressed() cyclomatic complexity 9",
+          "metric": 9
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 156,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "OnButtonPressed() is 58 lines",
+          "metric": 58
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 37,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "nameof() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 38,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "nameof() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 95,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnSessionStateChanged() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 124,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnSlotsUpdated() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 189,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 236,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 28,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 29,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 31,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 47,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 60,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 73,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 88,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 102,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 111,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 131,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 143,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 147,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 168,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 181,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 183,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 199,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 203,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 216,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 218,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 230,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 244,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
+          "line": 257,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/AutoTiling/BitmaskConsistencyValidator.cs",
       "errors": 0,
       "warnings": 32,
@@ -77458,229 +78331,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-      "errors": 0,
-      "warnings": 26,
-      "rules": {
-        "file-length": 1,
-        "complexity": 1,
-        "function-length": 1,
-        "stateless-method": 3,
-        "comment-restates-code": 2,
-        "line-length": 18
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 260 lines",
-          "metric": 260
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 136,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "OnButtonPressed() cyclomatic complexity 7",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 136,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "OnButtonPressed() is 52 lines",
-          "metric": 52
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 37,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "nameof() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 38,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "nameof() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 104,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "OnSlotsUpdated() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 163,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 216,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 19,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 28,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 29,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 31,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 47,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 60,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 111,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 123,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 127,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 148,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 173,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 177,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 190,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 192,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 204,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 208,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 224,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs",
-          "line": 237,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/Worldgen/AutoTiling/CompiledTransitionMap.cs",
       "errors": 0,
       "warnings": 26,
@@ -82990,6 +83640,206 @@
           "severity": "warn",
           "message": "line is 99 chars",
           "metric": 99
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+      "errors": 0,
+      "warnings": 23,
+      "rules": {
+        "duplicate-block": 1,
+        "file-length": 1,
+        "function-length": 1,
+        "stateless-method": 2,
+        "comment-restates-code": 1,
+        "flag-parameter": 1,
+        "line-length": 16
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 2,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Deckbuilder/Models/WorldMap/WorldMapRuntime.cs:1, Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs:2",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 296 lines",
+          "metric": 296
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 109,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "GenerateMap() is 32 lines",
+          "metric": 32
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 113,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "_pendingGeneration() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 152,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "_pendingGeneration() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 122,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 94,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "Dispose() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 61,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 82,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 109,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 113,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 120,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 125,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 126,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 128,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 108 chars",
+          "metric": 108
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 132,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 137,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 152,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 156,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 158,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 188,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 200,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
+          "line": 260,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
         }
       ]
     },
@@ -91092,173 +91942,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-      "errors": 0,
-      "warnings": 19,
-      "rules": {
-        "duplicate-block": 1,
-        "file-length": 1,
-        "function-length": 1,
-        "comment-restates-code": 1,
-        "flag-parameter": 1,
-        "line-length": 14
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 2,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Deckbuilder/Models/WorldMap/WorldMapRuntime.cs:1, Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs:2",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 296 lines",
-          "metric": 296
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 110,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "GenerateMap() is 32 lines",
-          "metric": 32
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 123,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 95,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "Dispose() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 61,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 82,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 110,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 121,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 126,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 127,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 129,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 108 chars",
-          "metric": 108
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 133,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 138,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 157,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 159,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 189,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 200,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs",
-          "line": 260,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/Deckbuilder/Models/DeckSlot.cs",
       "errors": 0,
       "warnings": 19,
@@ -94184,6 +94867,163 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+      "errors": 0,
+      "warnings": 18,
+      "rules": {
+        "file-length": 1,
+        "stateless-method": 2,
+        "flag-parameter": 1,
+        "line-length": 14
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 237 lines",
+          "metric": 237
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 25,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "IrregularMeshMapData() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 70,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Complete() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 212,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "OnCombatEnded() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 25,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 33,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 50,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 76,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 93,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 129,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 130,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 161,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 187,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 189,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 191,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 207,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 232,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        }
+      ]
+    },
+    {
       "file": "Tests/Core/Services/TileRegistryScenarios/TileRegistryAutoTileTest.cs",
       "errors": 0,
       "warnings": 18,
@@ -95883,155 +96723,6 @@
           "severity": "warn",
           "message": "line is 94 chars",
           "metric": 94
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "errors": 0,
-      "warnings": 17,
-      "rules": {
-        "file-length": 1,
-        "stateless-method": 2,
-        "flag-parameter": 1,
-        "line-length": 13
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 220 lines",
-          "metric": 220
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 25,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "IrregularMeshMapData() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 70,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "Complete() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 195,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "OnCombatEnded() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 11,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 25,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 33,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 50,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 76,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 112,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 113,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 144,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 170,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 172,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 174,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 190,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 215,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
         }
       ]
     },
@@ -102099,6 +102790,138 @@
       ]
     },
     {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+      "errors": 0,
+      "warnings": 15,
+      "rules": {
+        "file-length": 1,
+        "stateless-method": 1,
+        "line-length": 13
+      },
+      "items": [
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 103 lines",
+          "metric": 103
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 40,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ExplorationControllers() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 12,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 20,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 25,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 38,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 119 chars",
+          "metric": 119
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 57,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 78,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 79,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 85,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 113 chars",
+          "metric": 113
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 98,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
+          "line": 101,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        }
+      ]
+    },
+    {
       "file": "Tests/Features/Worldgen/IrregularMesh/StructurePlacementScenarios/StructureLifecycleTest.cs",
       "errors": 0,
       "warnings": 15,
@@ -104897,6 +105720,129 @@
           "severity": "warn",
           "message": "line is 97 chars",
           "metric": 97
+        }
+      ]
+    },
+    {
+      "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+      "errors": 0,
+      "warnings": 14,
+      "rules": {
+        "stateless-method": 10,
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+          "line": 52,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetCellArea() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+          "line": 53,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetTerrainType() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+          "line": 54,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "IsPassable() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+          "line": 55,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "IsTransparent() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+          "line": 56,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "HasStructure() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+          "line": 58,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetAdjacentCells() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+          "line": 66,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetMovementCost() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+          "line": 69,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetCellAtPosition() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+          "line": 70,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetCellsInRadius() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+          "line": 71,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetCellsInRect() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+          "line": 9,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+          "line": 50,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+          "line": 67,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Tests/Core/Services/PathfinderScenarios/PathfinderCheaperRouteTest.cs",
+          "line": 70,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
         }
       ]
     },
@@ -107948,6 +108894,115 @@
       ]
     },
     {
+      "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+      "errors": 0,
+      "warnings": 12,
+      "rules": {
+        "file-length": 1,
+        "complexity": 2,
+        "stateless-method": 4,
+        "line-length": 5
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 290 lines",
+          "metric": 290
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+          "line": 80,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "IsValidCell() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+          "line": 174,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "GetCellsInRadius() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+          "line": 90,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetCellCenter() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+          "line": 119,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "HasStructure() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+          "line": 281,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetCellId() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+          "line": 286,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetGridPosition() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+          "line": 20,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+          "line": 77,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+          "line": 184,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+          "line": 206,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
+          "line": 207,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Deckbuilder/Services/Session/SessionFlow.cs",
       "errors": 0,
       "warnings": 12,
@@ -108291,8 +109346,8 @@
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 295 lines",
-          "metric": 295
+          "message": "file is 299 lines",
+          "metric": 299
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWar.cs",
@@ -113134,99 +114189,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-      "errors": 0,
-      "warnings": 10,
-      "rules": {
-        "file-length": 1,
-        "complexity": 2,
-        "stateless-method": 4,
-        "line-length": 3
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 286 lines",
-          "metric": 286
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-          "line": 80,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "IsValidCell() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-          "line": 174,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "GetCellsInRadius() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-          "line": 90,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetCellCenter() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-          "line": 119,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "HasStructure() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-          "line": 277,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetCellId() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-          "line": 282,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetGridPosition() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-          "line": 20,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-          "line": 77,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-          "line": 184,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/Player/Controllers/Lighting/PlayerLightController.cs",
       "errors": 0,
       "warnings": 10,
@@ -113502,6 +114464,99 @@
           "severity": "warn",
           "message": "line is 85 chars",
           "metric": 85
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
+      "errors": 0,
+      "warnings": 10,
+      "rules": {
+        "file-length": 1,
+        "stateless-method": 1,
+        "comment-bloat": 1,
+        "line-length": 7
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 297 lines",
+          "metric": 297
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
+          "line": 234,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "AddEnemySpawnFromPosition() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
+          "line": 107,
+          "rule": "comment-bloat",
+          "severity": "warn",
+          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
+          "line": 103,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
+          "line": 107,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
+          "line": 108,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
+          "line": 111,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
+          "line": 112,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
+          "line": 121,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
+          "line": 284,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
         }
       ]
     },
@@ -114891,6 +115946,98 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+      "errors": 0,
+      "warnings": 10,
+      "rules": {
+        "stateless-method": 1,
+        "comment-bloat": 1,
+        "line-length": 8
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 42,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "CanSee() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 6,
+          "rule": "comment-bloat",
+          "severity": "warn",
+          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 8,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 24,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 25,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 119 chars",
+          "metric": 119
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 51,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 56,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 69,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 74,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
+          "line": 86,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
       "errors": 0,
       "warnings": 10,
@@ -115771,87 +116918,87 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
       "errors": 0,
       "warnings": 9,
       "rules": {
         "file-length": 1,
-        "stateless-method": 1,
-        "comment-bloat": 1,
+        "complexity": 1,
+        "comment-restates-code": 1,
         "line-length": 6
       },
       "items": [
         {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 293 lines",
-          "metric": 293
+          "message": "file is 237 lines",
+          "metric": 237
         },
         {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-          "line": 230,
-          "rule": "stateless-method",
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
+          "line": 116,
+          "rule": "complexity",
           "severity": "warn",
-          "message": "AddEnemySpawnFromPosition() never touches instance state — make it a free function",
+          "message": "MoveToCell() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
+          "line": 216,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
           "metric": 1
         },
         {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-          "line": 103,
-          "rule": "comment-bloat",
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
+          "line": 31,
+          "rule": "line-length",
           "severity": "warn",
-          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
-          "metric": 5
+          "message": "line is 89 chars",
+          "metric": 89
         },
         {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-          "line": 103,
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
+          "line": 47,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 95 chars",
           "metric": 95
         },
         {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-          "line": 104,
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
+          "line": 114,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
+          "line": 153,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 84 chars",
           "metric": 84
         },
         {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-          "line": 107,
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
+          "line": 155,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
+          "message": "line is 98 chars",
+          "metric": 98
         },
         {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-          "line": 108,
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
+          "line": 222,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-          "line": 117,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMapData.cs",
-          "line": 280,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
+          "message": "line is 99 chars",
+          "metric": 99
         }
       ]
     },
@@ -118509,82 +119656,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-      "errors": 0,
-      "warnings": 8,
-      "rules": {
-        "file-length": 1,
-        "comment-restates-code": 1,
-        "line-length": 6
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 233 lines",
-          "metric": 233
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-          "line": 212,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-          "line": 30,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-          "line": 46,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-          "line": 113,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-          "line": 149,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-          "line": 151,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshMovementController.cs",
-          "line": 218,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/Worldgen/Wfc/RegionAnalyzer.cs",
       "errors": 0,
       "warnings": 8,
@@ -119047,6 +120118,82 @@
       ]
     },
     {
+      "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
+      "errors": 0,
+      "warnings": 8,
+      "rules": {
+        "param-count": 1,
+        "output-parameter": 2,
+        "line-length": 5
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
+          "line": 39,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "TryImprovePath() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
+          "line": 24,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "TryDequeue() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
+          "line": 39,
+          "rule": "output-parameter",
+          "severity": "warn",
+          "message": "TryImprovePath() exposes an output parameter; return a value instead",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
+          "line": 22,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
+          "line": 39,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
+          "line": 42,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
+          "line": 51,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 109 chars",
+          "metric": 109
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/Rendering/TerrainQuadMeshWriter.cs",
       "errors": 0,
       "warnings": 8,
@@ -119194,82 +120341,6 @@
           "severity": "warn",
           "message": "line is 99 chars",
           "metric": 99
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-      "errors": 0,
-      "warnings": 8,
-      "rules": {
-        "stateless-method": 1,
-        "comment-bloat": 1,
-        "line-length": 6
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 42,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "CanSee() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 6,
-          "rule": "comment-bloat",
-          "severity": "warn",
-          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 8,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 24,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 25,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 119 chars",
-          "metric": 119
-        },
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 51,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 56,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 97 chars",
-          "metric": 97
-        },
-        {
-          "file": "Scripts/Core/Services/RaycastVisibilityChecker.cs",
-          "line": 70,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
         }
       ]
     },
@@ -121872,66 +122943,6 @@
       ]
     },
     {
-      "file": "Scripts/Core/Services/Pathfinder.cs",
-      "errors": 0,
-      "warnings": 6,
-      "rules": {
-        "file-length": 1,
-        "complexity": 1,
-        "line-length": 4
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/Pathfinder.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 104 lines",
-          "metric": 104
-        },
-        {
-          "file": "Scripts/Core/Services/Pathfinder.cs",
-          "line": 24,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "FindPath() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Core/Services/Pathfinder.cs",
-          "line": 32,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Core/Services/Pathfinder.cs",
-          "line": 86,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Core/Services/Pathfinder.cs",
-          "line": 97,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Core/Services/Pathfinder.cs",
-          "line": 100,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        }
-      ]
-    },
-    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshWfcTopology.cs",
       "errors": 0,
       "warnings": 6,
@@ -121987,6 +122998,67 @@
           "severity": "warn",
           "message": "line is 81 chars",
           "metric": 81
+        }
+      ]
+    },
+    {
+      "file": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs",
+      "errors": 0,
+      "warnings": 6,
+      "rules": {
+        "file-length": 1,
+        "function-length": 1,
+        "flag-parameter": 1,
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 113 lines",
+          "metric": 113
+        },
+        {
+          "file": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs",
+          "line": 25,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "BuildController() is 31 lines",
+          "metric": 31
+        },
+        {
+          "file": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs",
+          "line": 25,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "BuildController() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs",
+          "line": 44,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs",
+          "line": 59,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Tests/Features/Deckbuilder/Controllers/DeckBuilderControllerIrregularMapTest.cs",
+          "line": 69,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
         }
       ]
     },
@@ -122588,66 +123660,6 @@
           "severity": "warn",
           "message": "line is 93 chars",
           "metric": 93
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
-      "errors": 0,
-      "warnings": 6,
-      "rules": {
-        "param-count": 1,
-        "output-parameter": 2,
-        "line-length": 3
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
-          "line": 39,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "TryImprovePath() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
-          "line": 22,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "TryDequeue() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
-          "line": 39,
-          "rule": "output-parameter",
-          "severity": "warn",
-          "message": "TryImprovePath() exposes an output parameter; return a value instead",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
-          "line": 36,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
-          "line": 39,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Core/Services/Pathfinding/AStarSearchState.cs",
-          "line": 42,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
         }
       ]
     },
@@ -123709,6 +124721,64 @@
       ]
     },
     {
+      "file": "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs",
+      "errors": 0,
+      "warnings": 6,
+      "rules": {
+        "line-length": 6
+      },
+      "items": [
+        {
+          "file": "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs",
+          "line": 10,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs",
+          "line": 27,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs",
+          "line": 28,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs",
+          "line": 29,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Tests/Core/Services/RaycastVisibilityOpaqueTargetTest.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TsxProperties/TsxSchemaPropertyWriter.cs",
       "errors": 0,
       "warnings": 6,
@@ -123867,6 +124937,58 @@
           "severity": "warn",
           "message": "line is 84 chars",
           "metric": 84
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Core/Services/Pathfinder.cs",
+      "errors": 0,
+      "warnings": 5,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "line-length": 3
+      },
+      "items": [
+        {
+          "file": "Scripts/Core/Services/Pathfinder.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 104 lines",
+          "metric": 104
+        },
+        {
+          "file": "Scripts/Core/Services/Pathfinder.cs",
+          "line": 24,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "FindPath() cyclomatic complexity 6",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Core/Services/Pathfinder.cs",
+          "line": 32,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Core/Services/Pathfinder.cs",
+          "line": 86,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Core/Services/Pathfinder.cs",
+          "line": 97,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
         }
       ]
     },
@@ -125664,6 +126786,56 @@
       ]
     },
     {
+      "file": "Tests/Features/Deckbuilder/Services/RegularGridMapDataRectTest.cs",
+      "errors": 0,
+      "warnings": 5,
+      "rules": {
+        "line-length": 5
+      },
+      "items": [
+        {
+          "file": "Tests/Features/Deckbuilder/Services/RegularGridMapDataRectTest.cs",
+          "line": 28,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Tests/Features/Deckbuilder/Services/RegularGridMapDataRectTest.cs",
+          "line": 30,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 120 chars",
+          "metric": 120
+        },
+        {
+          "file": "Tests/Features/Deckbuilder/Services/RegularGridMapDataRectTest.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Tests/Features/Deckbuilder/Services/RegularGridMapDataRectTest.cs",
+          "line": 44,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Tests/Features/Deckbuilder/Services/RegularGridMapDataRectTest.cs",
+          "line": 46,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 120 chars",
+          "metric": 120
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/TileEditorPlugin.cs",
       "errors": 0,
       "warnings": 4,
@@ -125969,6 +127141,50 @@
           "severity": "warn",
           "message": "line is 85 chars",
           "metric": 85
+        }
+      ]
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWarTest.cs",
+      "errors": 0,
+      "warnings": 4,
+      "rules": {
+        "file-length": 1,
+        "comment-restates-code": 1,
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWarTest.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 281 lines",
+          "metric": 281
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWarTest.cs",
+          "line": 269,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWarTest.cs",
+          "line": 147,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWarTest.cs",
+          "line": 232,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
         }
       ]
     },
@@ -127301,6 +128517,48 @@
       ]
     },
     {
+      "file": "Tests/Scenes/GameplayMapSceneContractTest.cs",
+      "errors": 0,
+      "warnings": 4,
+      "rules": {
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "Tests/Scenes/GameplayMapSceneContractTest.cs",
+          "line": 6,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Tests/Scenes/GameplayMapSceneContractTest.cs",
+          "line": 13,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Tests/Scenes/GameplayMapSceneContractTest.cs",
+          "line": 14,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Tests/Scenes/GameplayMapSceneContractTest.cs",
+          "line": 33,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        }
+      ]
+    },
+    {
       "file": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
       "errors": 0,
       "warnings": 4,
@@ -127491,42 +128749,6 @@
       ]
     },
     {
-      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWarTest.cs",
-      "errors": 0,
-      "warnings": 3,
-      "rules": {
-        "file-length": 1,
-        "comment-restates-code": 1,
-        "line-length": 1
-      },
-      "items": [
-        {
-          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWarTest.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 268 lines",
-          "metric": 268
-        },
-        {
-          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWarTest.cs",
-          "line": 256,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWarTest.cs",
-          "line": 219,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        }
-      ]
-    },
-    {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMovementControllerTest.cs",
       "errors": 0,
       "warnings": 3,
@@ -127541,12 +128763,12 @@
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 266 lines",
-          "metric": 266
+          "message": "file is 278 lines",
+          "metric": 278
         },
         {
           "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMovementControllerTest.cs",
-          "line": 254,
+          "line": 266,
           "rule": "comment-restates-code",
           "severity": "warn",
           "message": "comment repeats the declaration below it - say why, not what",
@@ -127554,7 +128776,7 @@
         },
         {
           "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMovementControllerTest.cs",
-          "line": 202,
+          "line": 214,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 82 chars",
@@ -130984,6 +132206,24 @@
           "severity": "warn",
           "message": "line is 116 chars",
           "metric": 116
+        }
+      ]
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMapDataStructureTest.cs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": {
+        "line-length": 1
+      },
+      "items": [
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMapDataStructureTest.cs",
+          "line": 7,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
         }
       ]
     },
