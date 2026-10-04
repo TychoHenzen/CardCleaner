@@ -23,11 +23,7 @@ public class BiomeAffinityConstraint : IWfcConstraint
     private readonly ITileRegistry? _tileRegistry;
     private readonly Dictionary<string, List<string>> _tileToBiomes;
 
-    /// <summary>
-    /// Factor controlling how much biome strength affects probability.
-    /// Default 2.0 means: +1 strength → 3.0x probability, -1 strength → 0.1x penalty (MinModifier clamp).
-    /// Increased from 0.5 to overcome continuity bias and create coherent biome regions.
-    /// </summary>
+    /// <summary>Controls how biome strength scales tile probability.</summary>
     public float BoostFactor { get; set; } = 2.0f;
 
     /// <summary>
@@ -49,13 +45,20 @@ public class BiomeAffinityConstraint : IWfcConstraint
         if (!_tileToBiomes.TryGetValue(context.TileId, out var biomeIds) || biomeIds.Count == 0)
             return 1.0f;
 
+        // BiomeStrengthGrid uses Vector2I positions - only works for grid topologies
+        // For non-grid topologies, return neutral (biome affinity not supported)
+        if (context.Topology is not WfcGrid grid)
+            return 1.0f;
+
+        var position = grid.CellIdToPosition(context.CellId);
+
         // Find maximum strength across all biomes this tile belongs to
         // Using max instead of average prevents dilution for tiles in multiple biomes
         var maxStrength = float.MinValue;
 
         foreach (var biomeId in biomeIds)
         {
-            var strength = _grid.GetStrength(context.Position, biomeId);
+            var strength = _grid.GetStrength(position, biomeId);
             if (strength > maxStrength)
                 maxStrength = strength;
         }

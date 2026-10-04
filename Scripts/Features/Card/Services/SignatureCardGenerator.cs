@@ -82,8 +82,13 @@ public class SignatureCardGenerator : ICardGenerator
         renderer.AttrLabel.Text = signature.ToDebugString();
     }
 
-    private static void SetGemVisuals(CardShaderRenderer renderer, CardTemplate cardTemplate, GemVisual gemVis, bool isPos,
-        int i, float intensity)
+    private static void SetGemVisuals(
+        CardShaderRenderer renderer,
+        CardTemplate cardTemplate,
+        GemVisual gemVis,
+        bool isPos,
+        int i,
+        float intensity)
     {
         // Select textures based on sign
         var socketTex = gemVis.SocketTexture;

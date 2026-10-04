@@ -1,11 +1,13 @@
+using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
-using GdUnit4;
 using Godot;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Worldgen.Biomes;
 
@@ -14,6 +16,7 @@ namespace CardCleaner.Tests.Features.Worldgen.Biomes;
 public partial class BiomeAffinityConstraintTest
 {
     private BiomeRegistry _registry = null!;
+    private TileRegistry _tileRegistry = null!;
     private WfcGrid _grid = null!;
 
     [BeforeTest]
@@ -21,6 +24,33 @@ public partial class BiomeAffinityConstraintTest
     {
         _registry = new BiomeRegistry();
         _grid = new WfcGrid(10, 10, new[] { "fire_tile", "water_tile", "neutral_tile" });
+
+        // Create tile registry with tiles that have AllowedBiomes set
+        _tileRegistry = new TileRegistry();
+        _tileRegistry.RegisterTile(new TileDefinition(
+            "fire_tile",
+            "Fire Tile",
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = new HashSet<string> { "fire" }
+            }));
+        _tileRegistry.RegisterTile(new TileDefinition(
+            "water_tile",
+            "Water Tile",
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = new HashSet<string> { "water" }
+            }));
+        // neutral_tile has no AllowedBiomes (universal/neutral)
+        _tileRegistry.RegisterTile(new TileDefinition(
+            "neutral_tile",
+            "Neutral Tile",
+            TilePassability.Passable,
+            Vector2I.Zero));
 
         // Create test biomes with tiles
         var fireSignature = new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f });
@@ -44,13 +74,13 @@ public partial class BiomeAffinityConstraintTest
         // Arrange: Create gradient that returns fire-like signature (high strength for fire biome)
         var gradient = new FixedGradient(new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }));
         var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient, _registry);
-        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry);
+        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry, _tileRegistry);
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "fire_tile", // Belongs to fire biome
-            Grid = _grid
+            Topology = _grid
         };
 
         // Act
@@ -66,13 +96,13 @@ public partial class BiomeAffinityConstraintTest
         // Arrange: Create gradient that returns water-like signature (negative strength for fire biome)
         var gradient = new FixedGradient(new CardSignature(new[] { 0f, -1f, 0f, 0f, 0f, 0f, 0f, 0f }));
         var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient, _registry);
-        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry);
+        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry, _tileRegistry);
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "fire_tile", // Belongs to fire biome, but biome has negative strength here
-            Grid = _grid
+            Topology = _grid
         };
 
         // Act
@@ -88,13 +118,13 @@ public partial class BiomeAffinityConstraintTest
         // Arrange: Create gradient that returns neutral signature
         var gradient = new FixedGradient(new CardSignature()); // All zeros
         var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient, _registry);
-        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry);
+        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry, _tileRegistry);
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "neutral_tile", // Not in any biome
-            Grid = _grid
+            Topology = _grid
         };
 
         // Act
@@ -110,13 +140,13 @@ public partial class BiomeAffinityConstraintTest
         // Arrange
         var gradient = new FixedGradient(new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }));
         var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient, _registry);
-        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry);
+        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry, _tileRegistry);
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "unknown_tile", // Not registered in any biome
-            Grid = _grid
+            Topology = _grid
         };
 
         // Act
@@ -132,7 +162,7 @@ public partial class BiomeAffinityConstraintTest
         // Arrange: Create extremely negative conditions
         var gradient = new FixedGradient(new CardSignature(new[] { 0f, -1f, 0f, 0f, 0f, 0f, 0f, 0f }));
         var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient, _registry);
-        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry)
+        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry, _tileRegistry)
         {
             BoostFactor = 2.0f, // Higher boost factor to test minimum clamp
             MinModifier = 0.1f
@@ -140,9 +170,9 @@ public partial class BiomeAffinityConstraintTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "fire_tile",
-            Grid = _grid
+            Topology = _grid
         };
 
         // Act
@@ -160,7 +190,7 @@ public partial class BiomeAffinityConstraintTest
         var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient, _registry);
 
         // Act
-        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry);
+        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry, _tileRegistry);
 
         // Assert
         AssertThat(constraint is IWfcConstraint).IsTrue();

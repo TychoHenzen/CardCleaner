@@ -3,13 +3,9 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Tests.Mocking;
-using GdUnit4;
 using Godot;
-using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
 namespace CardCleaner.Tests.Core.DependencyInjection;
-
-// Test service interfaces
 
 [TestSuite]
 [RequireGodotRuntime]
@@ -196,17 +192,5 @@ public class ServiceLocatorTest
         // Verify the service was registered
         Assertions.AssertThat(testProvider.RegisterServicesCalled).IsTrue();
         Assertions.AssertBool(ServiceLocator.Has<IAsyncTestService>()).IsTrue();
-    }
-}
-
-// Keep a simple test-specific service provider
-public partial class TestServiceProvider : Node, IServiceProvider
-{
-    public bool RegisterServicesCalled { get; private set; }
-
-    public void RegisterServices(IServiceContainer container)
-    {
-        RegisterServicesCalled = true;
-        container.RegisterSingleton<IAsyncTestService, AsyncTestServiceImpl>();
     }
 }

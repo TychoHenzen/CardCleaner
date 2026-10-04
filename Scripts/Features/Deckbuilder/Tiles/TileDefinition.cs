@@ -7,77 +7,43 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
 /// <summary>
-/// Animation configuration for animated tiles.
-/// </summary>
-public record TileAnimation(
-    Vector2I[] Frames,
-    float FrameDuration = 0.2f)
-{
-    /// <summary>
-    /// Frame atlas coordinates. First frame is typically the base AtlasCoords.
-    /// </summary>
-    public Vector2I[] Frames { get; init; } = Frames;
-
-    /// <summary>
-    /// Duration of each frame in seconds.
-    /// </summary>
-    public float FrameDuration { get; init; } = FrameDuration;
-
-    /// <summary>
-    /// Total animation duration in seconds.
-    /// </summary>
-    public float TotalDuration => Frames.Length * FrameDuration;
-}
-
-/// <summary>
 /// Defines a tile type with all its properties
 /// </summary>
 public class TileDefinition
 {
-    public TileDefinition(
+    public TileDefinition(string id, string name, TilePassability passability, Vector2I atlasCoords)
+        : this(id, name, passability, atlasCoords, new TileDefinitionOptions())
+    {
+    }
+
+    internal TileDefinition(
         string id,
         string name,
         TilePassability passability,
         Vector2I atlasCoords,
-        int sourceId = 4,
-        TileLayer layer = TileLayer.Terrain,
-        float elevation = 0f,
-        bool? isTransparent = null,
-        HashSet<string>? allowedBiomes = null,
-        Vector2I? size = null,
-        float decorationDensity = 1.0f,
-        Vector2I?[]? autoTileVariants = null,
-        string autoTileFormatName = "corner16",
-        Vector2I[]? variations = null,
-        VariationMode variationMode = VariationMode.PerInstance,
-        TileAnimation? animation = null,
-        int dominance = 0,
-        string? innerTerrainId = null,
-        string? outerTerrainId = null,
-        bool isGapTile = false,
-        float probability = 1.0f)
+        TileDefinitionOptions options)
     {
         Id = id;
         Name = name;
         Passability = passability;
         AtlasCoords = atlasCoords;
-        SourceId = sourceId;
-        Layer = layer;
-        Elevation = elevation;
-        IsTransparent = isTransparent ?? (passability == TilePassability.Passable);
-        AllowedBiomes = allowedBiomes;
-        Size = size ?? Vector2I.One;
-        DecorationDensity = decorationDensity;
-        AutoTileVariants = autoTileVariants;
-        AutoTileFormatName = autoTileFormatName;
-        Variations = variations;
-        VariationMode = variationMode;
-        Animation = animation;
-        Dominance = dominance;
-        InnerTerrainId = innerTerrainId;
-        OuterTerrainId = outerTerrainId;
-        IsGapTile = isGapTile;
-        Probability = probability;
+        SourceId = options.SourceId;
+        Layer = options.Layer;
+        Elevation = options.Elevation;
+        IsTransparent = options.IsTransparent ?? (passability == TilePassability.Passable);
+        AllowedBiomes = options.AllowedBiomes;
+        Size = options.Size ?? Vector2I.One;
+        DecorationDensity = options.DecorationDensity;
+        AutoTileVariants = options.AutoTileVariants;
+        AutoTileFormatName = options.AutoTileFormatName;
+        Variations = options.Variations;
+        VariationMode = options.VariationMode;
+        Animation = options.Animation;
+        Dominance = options.Dominance;
+        InnerTerrainId = options.InnerTerrainId;
+        OuterTerrainId = options.OuterTerrainId;
+        IsGapTile = options.IsGapTile;
+        Probability = options.Probability;
     }
 
     public string Id { get; }
@@ -103,10 +69,7 @@ public class TileDefinition
     public float DecorationDensity { get; }
 
     /// <summary>
-    /// Auto-tile variant atlas coordinates indexed by bitmask.
-    /// For Corner16 format: 16 entries indexed by 4-bit corner mask (0-15).
-    /// For Blob47 format: 47 entries indexed by GetBlobIndex().
-    /// Null array means no auto-tiling. Null elements use the base tile's atlas coords.
+    /// Auto-tile variant atlas coordinates indexed by bitmask; null entries use the base atlas coordinates.
     /// </summary>
     public Vector2I?[]? AutoTileVariants { get; }
 
@@ -138,15 +101,12 @@ public class TileDefinition
     }
 
     /// <summary>
-    /// Visual variations for this tile (different atlas coordinates for the same tile type).
-    /// Null means no variations (always use base AtlasCoords).
+    /// Visual variations for this tile; null means the base AtlasCoords is always used.
     /// </summary>
     public Vector2I[]? Variations { get; }
 
     /// <summary>
-    /// How variations are selected during map generation.
-    /// PerInstance: Random per tile placement (foliage-style).
-    /// PerGeneration: One variant selected at generation start, used for all instances.
+    /// How variations are selected during map generation, per instance or per generation.
     /// </summary>
     public VariationMode VariationMode { get; }
 
@@ -156,9 +116,7 @@ public class TileDefinition
     public TileAnimation? Animation { get; }
 
     /// <summary>
-    /// Visual dominance for terrain transitions. Higher values render on top of lower values.
-    /// Used by dual-grid auto-tiling to determine which terrain's edges show at boundaries.
-    /// Defaults to file order index if not specified in tile definition.
+    /// Visual dominance for terrain transitions; higher values render on top of lower values.
     /// </summary>
     public int Dominance { get; }
 
@@ -169,10 +127,8 @@ public class TileDefinition
     public string? InnerTerrainId { get; }
 
     /// <summary>
-    /// For auto-tiles: the background terrain.
-    /// "*" = compositable (transparent border, composite onto any base terrain).
-    /// Specific tile ID = fixed transition (baked pair, use as-is).
-    /// Null = use dominance-based resolution at runtime.
+    /// For auto-tiles, identifies the background terrain: "*" is compositable, a tile ID fixes the transition,
+    /// and null uses dominance-based resolution.
     /// </summary>
     public string? OuterTerrainId { get; }
 
@@ -211,10 +167,7 @@ public class TileDefinition
     public bool IsGapTile { get; }
 
     /// <summary>
-    /// Selection probability/weight for this tile (0.0-1.0+).
-    /// For tiles in variation groups, this controls:
-    /// - Density: max probability in group determines how often the tile type appears
-    /// - Relative weight: probability/maxProbability determines selection ratio within the group
+    /// Selection probability/weight for this tile; in variation groups, it controls density and relative weight.
     /// </summary>
     public float Probability { get; }
 

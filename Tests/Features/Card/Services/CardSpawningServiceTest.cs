@@ -45,7 +45,7 @@ public class CardSpawningServiceTest
         Assertions.AddNode(_service);
 
         // Set up the card scene
-        _mockCardScene = GD.Load<PackedScene>("res://Scenes/CardShader.tscn");
+        _mockCardScene = GD.Load<PackedScene>("res://Scenes/Components/CardShader.tscn");
         _service.CardScene = _mockCardScene;
 
         // Force _Ready() to be called and wait for dependency resolution

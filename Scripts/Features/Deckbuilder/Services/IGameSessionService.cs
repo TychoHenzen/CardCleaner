@@ -1,21 +1,12 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
 // ReSharper disable once CheckNamespace
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
-
-public enum SessionState
-{
-    WaitingForCards,
-    GeneratingMap,
-    Exploring,
-    InCombat,
-    GeneratingLoot,
-    SessionComplete
-}
 
 public interface IGameSessionService
 {
@@ -30,7 +21,22 @@ public interface IGameSessionService
     event Action<IReadOnlyList<Vector2I>, Vector2I?> PathUpdated;
     event Action<float>? ProgressUpdated;
 
+    /// <summary>
+    /// Raised for every generated map, including maps from a custom generator that skip <see cref="MapGenerated"/>.
+    /// </summary>
+    event Action<IGeneratedMap> GeneratedMapReady;
+
+    /// <summary>
+    /// The current map from the active generator, or null before generation.
+    /// </summary>
+    IGeneratedMap? CurrentGeneratedMap { get; }
+
     void StartSession(List<CardSignature> mapSeeds, List<CardSignature> abilityCards);
     void AdvanceSession();
     void ResetSession();
+
+    /// <summary>
+    /// Sets a custom map generator. Pass null to use the default generator.
+    /// </summary>
+    void SetMapGenerator(IMapGenerator? generator);
 }

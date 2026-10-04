@@ -1,9 +1,8 @@
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using GdUnit4;
+using CardCleaner.Tests.Features.Worldgen.Support;
 using Godot;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Worldgen.Biomes;
 
@@ -115,31 +114,4 @@ public class BiomeMapGeneratorTest
         AssertThat(biome).IsNotNull();
         AssertThat(biome.Id).IsEqual("plains");
     }
-}
-
-internal sealed partial class ConstantSignatureGradient : BaselineGradient
-{
-    private readonly CardSignature _signature;
-
-    public ConstantSignatureGradient(CardSignature signature)
-    {
-        _signature = signature;
-    }
-
-    public override CardSignature GetSignatureAt(Vector2I position, Vector2I mapSize) => _signature;
-}
-
-internal sealed partial class TwoZoneGradient : BaselineGradient
-{
-    private readonly CardSignature _left;
-    private readonly CardSignature _right;
-
-    public TwoZoneGradient(CardSignature left, CardSignature right)
-    {
-        _left = left;
-        _right = right;
-    }
-
-    public override CardSignature GetSignatureAt(Vector2I position, Vector2I mapSize) =>
-        position.X < mapSize.X / 2 ? _left : _right;
 }

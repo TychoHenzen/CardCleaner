@@ -27,7 +27,8 @@ public partial class BaseCardType : Resource
     [Export] public CardRarity BaseRarity { get; set; } = DefaultBaseRarity;
 
     [Export] public CardSignature BaseSignature { get; set; } = new();
-    [Export] public float MatchRadius { get; set; } = DefaultMatchRadius; // How far signatures can be to match this base
+    // How far signatures can be to match this base.
+    [Export] public float MatchRadius { get; set; } = DefaultMatchRadius;
 
     // Visual assets specific to this card type
     [Export] public Texture2D[] ArtOptions { get; set; } = [];

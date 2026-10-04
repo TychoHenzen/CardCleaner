@@ -11,7 +11,8 @@ namespace CardCleaner.Features.Worldgen.AutoTiling;
 public static class AutoTileFormatRegistry
 {
     private static readonly object _lock = new();
-    private static readonly Dictionary<string, AutoTileFormatDefinition> _formats = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly Dictionary<string, AutoTileFormatDefinition> _formats =
+        new(StringComparer.OrdinalIgnoreCase);
     private static bool _builtInsRegistered;
 
     /// <summary>

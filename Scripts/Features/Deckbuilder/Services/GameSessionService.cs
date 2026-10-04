@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Worldgen;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
+using CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
+using CardCleaner.Scripts.Features.Deckbuilder.Services.Session.Generation;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 using Timer = Godot.Timer;
 
@@ -18,57 +15,75 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 [Service(ServiceLifetime.Singleton, typeof(IGameSessionService))]
 public partial class GameSessionService : Node, IGameSessionService
 {
-    // Game timing
-    private const float ExplorationStepDelay = 0.1f; // 500ms between exploration steps
-    private const float CombatTurnDelay = 1.0f; // 1s between combat turns
-    private List<CardSignature> _abilityCards = new();
-    private BiomeRegistry _biomeRegistry = null!;
-    private SimpleCombatSystem? _combatSystem;
-    private Vector2I? _currentEnemyPosition;
+    private readonly SessionServices _services = new();
+    private readonly SessionWorld _world = new();
+    private readonly GridCellEventAdapter _eventAdapter = new();
+    private readonly GenerationTracker _generationTracker = new();
+    private readonly MapGenerationCoordinator _generation;
+    private readonly ExplorationSession _exploration;
+    private readonly SessionFlow _flow;
 
-    // Simple game systems
-    private SimpleMapData? _currentMap;
-    private SessionState _currentState = SessionState.WaitingForCards;
-    private ExplorationAI? _explorationAI;
-    private Timer _gameTimer = null!;
     private List<CardSignature> _mapSeeds = new();
+    private List<CardSignature> _abilityCards = new();
+    private IMapGenerator? _mapGenerator;
 
-    // Player and enemy tracking
-    private Vector2I? _playerPosition;
-    private RandomNumberGenerator _rng = new();
-    private ITileRegistry _tileRegistry = null!;
-    private ITileMetadataProvider _metadataProvider = null!;
-    private CancellationTokenSource? _generationCts;
-    private Task? _currentGenerationTask;
-
-    public SessionState CurrentState
+    public GameSessionService()
     {
-        get => _currentState;
-        private set
-        {
-            if (_currentState == value)
-                return;
-            _currentState = value;
-            StateChanged?.Invoke(value);
-            ILog.Print($"Session state changed to: {value}");
-        }
+        _generation = new MapGenerationCoordinator(this, _services, _world, _eventAdapter, _generationTracker);
+        _exploration = new ExplorationSession(_world, _eventAdapter);
+        _flow = new SessionFlow(this, _world, _eventAdapter, _exploration);
+        ForwardGenerationEvents();
+        ForwardExplorationEvents();
     }
+
+    public SessionState CurrentState => _flow.State;
 
     public event Action<SessionState>? StateChanged;
     public event Action<SimpleMapData>? MapGenerated;
+    public event Action<IGeneratedMap>? GeneratedMapReady;
     public event Action<List<CardSignature>>? LootGenerated;
     public event Action<Vector2I>? PlayerMoved;
+    public event Action<Vector2>? PlayerMovedWorld;
     public event Action<Vector2I>? EnemyDefeated;
+    public event Action<int>? EnemyDefeatedCell;
     public event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
+    public event Action<IReadOnlySet<int>>? VisitedCellsUpdated;
     public event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>>? VisibilityUpdated;
+    public event Action<IReadOnlySet<int>, IReadOnlySet<int>>? VisibilityCellsUpdated;
     public event Action<IReadOnlyList<Vector2I>, Vector2I?>? PathUpdated;
+    public event Action<IReadOnlyList<int>, int?>? PathCellsUpdated;
     public event Action<float>? ProgressUpdated;
 
     /// <summary>
     /// Exposes the current map generation task for testing purposes.
     /// Tests can await this to wait for actual async completion instead of polling with timeouts.
     /// </summary>
-    public Task? CurrentGenerationTask => _currentGenerationTask;
+    public Task? CurrentGenerationTask => _generationTracker.CurrentTask;
+
+    /// <summary>
+    /// Gets the current generated map (available after map generation completes).
+    /// Works with both regular grid and irregular mesh maps.
+    /// </summary>
+    public IGeneratedMap? CurrentGeneratedMap => _world.GeneratedMap;
+
+    /// <summary>
+    /// Gets the current map data adapter for pathfinding and exploration.
+    /// </summary>
+    public IMapData? CurrentMapData => _world.MapData;
+
+    /// <summary>
+    /// Sets a custom map generator for the next session.
+    /// When set, this generator will be used instead of the default SimpleMapGenerator.
+    /// Set to null to use the default generator.
+    /// </summary>
+    /// <param name="generator">The map generator to use, or null for default.</param>
+    public void SetMapGenerator(IMapGenerator? generator)
+    {
+        _mapGenerator = generator;
+        ILog.Print(generator != null
+            ? $"Map generator set to: {generator.GetType().Name}"
+            : "Map generator reset to default");
+    }
 
     public void StartSession(List<CardSignature>? mapSeeds, List<CardSignature>? abilityCards)
     {
@@ -86,13 +101,13 @@ public partial class GameSessionService : Node, IGameSessionService
 
         _mapSeeds = new List<CardSignature>(mapSeeds);
         _abilityCards = new List<CardSignature>(abilityCards);
-        _currentGenerationTask = null; // Clear any stale task from previous session
-        CurrentState = SessionState.GeneratingMap;
+        var generationId = _generationTracker.BeginPending();
+        _flow.State = SessionState.GeneratingMap;
 
         ILog.Print($"Started session with {_mapSeeds.Count} map seed(s) and {_abilityCards.Count} ability cards");
 
         // Start the game loop
-        CallDeferred(MethodName.AdvanceSession);
+        CallDeferred(MethodName.AdvanceSessionForGeneration, generationId);
     }
 
     public void AdvanceSession()
@@ -103,13 +118,13 @@ public partial class GameSessionService : Node, IGameSessionService
                 GenerateMap();
                 break;
             case SessionState.Exploring:
-                StartExploration();
+                _flow.StartExploration();
                 break;
             case SessionState.InCombat:
-                StartCombat();
+                _flow.StartCombat(_abilityCards, _mapSeeds[0]);
                 break;
             case SessionState.GeneratingLoot:
-                GenerateLoot();
+                _flow.GenerateLoot(_mapSeeds[0]);
                 break;
             case SessionState.SessionComplete:
                 ILog.Print("Session already complete");
@@ -122,351 +137,98 @@ public partial class GameSessionService : Node, IGameSessionService
 
     public void ResetSession()
     {
-        _gameTimer.Stop();
+        _generationTracker.Reset();
         _mapSeeds.Clear();
         _abilityCards.Clear();
-        _currentMap = null!;
-        _explorationAI = null!;
-        _combatSystem = null!;
-        _playerPosition = null;
-        _currentEnemyPosition = null;
-        _currentGenerationTask = null;
-        CurrentState = SessionState.WaitingForCards;
+        _flow.Reset();
+        _flow.State = SessionState.WaitingForCards;
         ILog.Print("Session reset");
     }
 
     public override void _Ready()
     {
-        // Note: _rng is seeded deterministically in GenerateMap() using ComputeSeedFromCards()
-        // Do not call _rng.Randomize() here as it would make map generation non-reproducible
+        // Note: the world's RNG is seeded deterministically from the map seed cards during generation.
+        // Do not call Randomize() here as it would make map generation non-reproducible
 
         // Initialize biome registry immediately
-        _biomeRegistry = new BiomeRegistry();
-        _biomeRegistry.RegisterDefaultBiomes();
+        _services.BiomeRegistry = new BiomeRegistry();
+        _services.BiomeRegistry.RegisterDefaultBiomes();
 
         // Get services via async callback (may not be registered yet during startup)
-        ServiceLocator.Get<ITileRegistry>(registry => _tileRegistry = registry);
-        ServiceLocator.Get<ITileMetadataProvider>(provider => _metadataProvider = provider);
+        ServiceLocator.Get<ITileRegistry>(registry => _services.TileRegistry = registry);
+        ServiceLocator.Get<ITileMetadataProvider>(provider => _services.MetadataProvider = provider);
 
         // Create timer for game progression
-        _gameTimer = new Timer();
-        AddChild(_gameTimer);
-        _gameTimer.Timeout += OnTimerTimeout;
+        var gameTimer = new Timer();
+        AddChild(gameTimer);
+        _flow.AttachTimer(gameTimer);
 
         ILog.Print("GameSessionService ready and initialized");
     }
 
-    private async void GenerateMap()
+    private async void GenerateMap(TaskCompletionSource<bool>? generationTaskSource = null)
     {
-        // Capture the task synchronously to avoid race conditions in tests
-        // Task remains set after completion so tests can await it and check status
-        _currentGenerationTask = GenerateMapAsync();
-        await _currentGenerationTask;
-    }
-
-    private async Task GenerateMapAsync()
-    {
-        ILog.Print($"Starting async map generation from {_mapSeeds.Count} seed signature(s)...");
-
-        // Cancel any previous generation in progress
-        _generationCts?.Cancel();
-        _generationCts?.Dispose();
-        _generationCts = new CancellationTokenSource();
-
-        // Create progress reporter for loading UI
-        var progress = new GodotProgress();
-        AddChild(progress);
-        progress.ProgressUpdated += OnMapGenerationProgress;
-
+        var generationTask = _generation.GenerateAsync(_mapSeeds.ToArray(), _mapGenerator);
+        _generationTracker.CurrentTask = generationTask;
         try
         {
-            // Compute deterministic seed from card signatures
-            var seed = ComputeSeedFromCards(_mapSeeds);
-            _rng.Seed = seed;
-            ILog.Print($"Map seed: {seed}");
-
-            // Ensure tile registry is available (fallback if async callback hasn't run yet)
-            _tileRegistry ??= new TileRegistry();
-
-            // Use first signature to influence map size (could blend in future)
-            var mapSize = CalculateMapSize(_mapSeeds[0]);
-
-            // Create gradient from all map seeds for biome placement
-            var gradient = new CardBasedGradient(_mapSeeds.ToArray(), _rng);
-
-            // Create biome provider that maps gradient signatures to biomes
-            var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, mapSize);
-
-            // Create WFC generator with hard constraints (2x2 window, adjacency rules)
-            // Pass tile registry so WfcMapGenerator uses TileDefinition.IsPassable for connectivity
-            var transitionResolver = new CompiledTransitionResolver();
-            var wfcGenerator = new WfcMapGenerator(transitionResolver, _tileRegistry);
-
-            // Create map generator with WFC for terrain generation
-            var mapGenerator = new SimpleMapGenerator(
-                _rng, biomeProvider, _tileRegistry, _metadataProvider, wfcGenerator, _biomeRegistry, gradient);
-
-            // Wrap in async adapter and generate on background thread
-            var asyncGenerator = new AsyncMapGeneratorAdapter(mapGenerator);
-            _currentMap = await asyncGenerator.GenerateMapAsync(mapSize, progress, _generationCts.Token);
-
-            // Log biome distribution for debugging
-            biomeProvider.LogBiomeStats();
-
-            ILog.Print($"Map generated: {mapSize.X}x{mapSize.Y}, {_currentMap.EnemyPositions.Count} enemies");
-
-            // Notify listeners about the generated map
-            MapGenerated?.Invoke(_currentMap);
-
-            CurrentState = SessionState.Exploring;
-            CallDeferred(MethodName.AdvanceSession);
-        }
-        catch (MapGenerationCancelledException ex)
-        {
-            ILog.Warning($"Map generation cancelled: {ex.Message}");
-            CurrentState = SessionState.WaitingForCards;
-        }
-        catch (OperationCanceledException ex)
-        {
-            ILog.Warning($"Map generation cancelled: {ex.Message}");
-            CurrentState = SessionState.WaitingForCards;
+            await generationTask;
+            generationTaskSource?.TrySetResult(true);
         }
         catch (Exception ex)
         {
-            ILog.Error($"Map generation failed: {ex.Message}");
-            ILog.Error($"Stack trace: {ex.StackTrace}");
-            CurrentState = SessionState.WaitingForCards;
+            generationTaskSource?.TrySetException(ex);
+            ILog.Error($"Map generation task failed: {ex.Message}");
         }
-        finally
+    }
+
+    private void AdvanceSessionForGeneration(long generationId)
+    {
+        if (!_generation.IsCurrent(generationId))
+            return;
+
+        var generationTaskSource = _generationTracker.TakePending(generationId);
+        if (generationTaskSource != null)
         {
-            progress.QueueFree();
-            _generationCts?.Dispose();
-            _generationCts = null;
-        }
-    }
-
-    private void OnMapGenerationProgress(float value)
-    {
-        ProgressUpdated?.Invoke(value);
-        ILog.Print($"Map generation: {value * 100:F0}%");
-    }
-
-    private void StartExploration()
-    {
-        ILog.Print($"Starting exploration... ({_currentMap?.EnemyPositions.Count ?? 0} enemies on map)");
-
-        // Continue from current player position if resuming, otherwise start fresh
-        if (_currentMap == null) return;
-        _explorationAI = new ExplorationAI(_currentMap, _playerPosition);
-        _explorationAI.EnemyEncountered += OnEnemyEncountered;
-        _explorationAI.PlayerMoved += pos => PlayerMoved?.Invoke(pos);
-        _explorationAI.VisitedTilesUpdated += tiles => VisitedTilesUpdated?.Invoke(tiles);
-        _explorationAI.VisibilityUpdated += (seen, current) => VisibilityUpdated?.Invoke(seen, current);
-        _explorationAI.PathUpdated +=
-            () => PathUpdated?.Invoke(_explorationAI.CurrentPath, _explorationAI.CurrentTarget);
-
-        // Start exploration timer
-        _gameTimer.WaitTime = ExplorationStepDelay;
-        _gameTimer.Start();
-    }
-
-    private void OnTimerTimeout()
-    {
-        switch (CurrentState)
-        {
-            case SessionState.Exploring:
-                ProcessExplorationStep();
-                break;
-            case SessionState.InCombat:
-                ProcessCombatTurn();
-                break;
-        }
-    }
-
-    private void ProcessExplorationStep()
-    {
-        if (_explorationAI == null) return;
-
-        var shouldContinue = _explorationAI.StepExploration();
-
-        if (!shouldContinue)
-        {
-            _gameTimer.Stop();
-
-            if (_explorationAI.HasFoundEnemy)
-            {
-                CurrentState = SessionState.InCombat;
-                CallDeferred(MethodName.AdvanceSession);
-            }
-            else
-            {
-                ILog.Print("Exploration complete - no enemies found, ending session");
-                CurrentState = SessionState.GeneratingLoot;
-                CallDeferred(MethodName.AdvanceSession);
-            }
-        }
-    }
-
-    private void OnEnemyEncountered(Vector2I position)
-    {
-        ILog.Print($"Enemy encountered at {position}! Preparing for combat...");
-        _currentEnemyPosition = position;
-        _gameTimer.Stop();
-        CurrentState = SessionState.InCombat;
-        CallDeferred(MethodName.AdvanceSession);
-    }
-
-    private void StartCombat()
-    {
-        ILog.Print($"Starting combat with {_abilityCards.Count} ability cards...");
-
-        _combatSystem = new SimpleCombatSystem(_abilityCards, _mapSeeds[0], _rng);
-        _combatSystem.CombatEnded += OnCombatEnded;
-
-        // Start combat timer
-        _gameTimer.WaitTime = CombatTurnDelay;
-        _gameTimer.Start();
-    }
-
-    private void ProcessCombatTurn()
-    {
-        if (_combatSystem == null) return;
-
-        var shouldContinue = _combatSystem.ProcessTurn();
-
-        if (!shouldContinue) _gameTimer.Stop();
-    }
-
-    private void OnCombatEnded()
-    {
-        if (_combatSystem?.PlayerWon == true)
-        {
-            // Remove the defeated enemy from the map
-            if (_currentEnemyPosition.HasValue)
-            {
-                var defeatedPosition = _currentEnemyPosition.Value;
-                // Player is now at the enemy's position
-                _playerPosition = defeatedPosition;
-                _currentMap?.EnemyPositions.Remove(defeatedPosition);
-                ILog.Print(
-                    $"Enemy at {defeatedPosition} destroyed! ({_currentMap?.EnemyPositions.Count ?? 0} enemies remaining)");
-
-                // Notify UI to remove enemy sprite
-                EnemyDefeated?.Invoke(defeatedPosition);
-                _currentEnemyPosition = null;
-            }
-
-            // Check if more enemies remain on the map
-            if (_currentMap?.EnemyPositions.Count > 0)
-            {
-                ILog.Print($"Resuming exploration from {_playerPosition} to find remaining enemies...");
-                CurrentState = SessionState.Exploring;
-                CallDeferred(MethodName.AdvanceSession);
-            }
-            else
-            {
-                ILog.Print("All enemies destroyed! Generating loot...");
-                CurrentState = SessionState.GeneratingLoot;
-                CallDeferred(MethodName.AdvanceSession);
-            }
-        }
-        else
-        {
-            ILog.Print("Combat lost! Session ending...");
-            CleanupCurrentSession();
-            CurrentState = SessionState.SessionComplete;
-            CallDeferred(MethodName.ResetForNextSession);
-        }
-    }
-
-    private void GenerateLoot()
-    {
-        ILog.Print("Generating loot from defeated enemy...");
-
-        var lootSignatures = new List<CardSignature>();
-
-        // Generate 5-10 cards based on map seed and abilities used
-        var lootCount = _rng.RandiRange(5, 10);
-
-        for (var i = 0; i < lootCount; i++)
-        {
-            var lootSignature = GenerateLootSignature();
-            lootSignatures.Add(lootSignature);
+            GenerateMap(generationTaskSource);
+            return;
         }
 
-        CleanupCurrentSession();
-
-        CurrentState = SessionState.SessionComplete;
-        LootGenerated?.Invoke(lootSignatures);
-
-        ILog.Print($"Session complete! Generated {lootSignatures.Count} loot cards");
-        CallDeferred(MethodName.ResetForNextSession);
-    }
-
-    private void CleanupCurrentSession()
-    {
-        // Stop any running timers
-        _gameTimer?.Stop();
-
-        // Clean up GameSessionService's own data
-        _currentMap = null!;
-        _combatSystem = null!;
-        _explorationAI = null!;
-        _playerPosition = null;
-        _currentEnemyPosition = null;
+        AdvanceSession();
     }
 
     private void ResetForNextSession()
     {
-        CurrentState = SessionState.WaitingForCards;
+        _flow.State = SessionState.WaitingForCards;
         ILog.Print("Ready for next session");
     }
 
-
-    private CardSignature GenerateLootSignature()
+    private void ForwardGenerationEvents()
     {
-        // Create signature that's a variation of the map seed plus random elements from abilities
-        var lootSignature = new CardSignature();
-        var baseSeed = _mapSeeds[0];
-
-        for (var i = 0; i < 8; i++)
+        _flow.StateChanged += state => StateChanged?.Invoke(state);
+        _flow.LootGenerated += loot => LootGenerated?.Invoke(loot);
+        _generation.MapGenerated += map => MapGenerated?.Invoke(map);
+        _generation.GeneratedMapReady += map => GeneratedMapReady?.Invoke(map);
+        _generation.ProgressUpdated += value => ProgressUpdated?.Invoke(value);
+        _generation.Succeeded += generationId =>
         {
-            var variation = _rng.Randfn(baseSeed[i], 0.1f);
-            lootSignature[i] = Mathf.Clamp(variation, -1f, 1f);
-        }
-
-        return lootSignature;
+            _flow.State = SessionState.Exploring;
+            CallDeferred(MethodName.AdvanceSessionForGeneration, generationId);
+        };
+        _generation.Abandoned += () => _flow.State = SessionState.WaitingForCards;
     }
 
-    private Vector2I CalculateMapSize(CardSignature signature)
+    private void ForwardExplorationEvents()
     {
-        // Use signature to determine map size (larger for more complex signatures)
-        var complexity = 0f;
-        for (var i = 0; i < 8; i++) complexity += Mathf.Abs(signature[i]);
-        complexity /= 8f;
-
-        var baseSize = 50;
-        var sizeVariation = Mathf.RoundToInt(complexity * 25);
-        var size = baseSize + sizeVariation;
-
-        return new Vector2I(size, size);
-    }
-
-    /// <summary>
-    /// Computes a deterministic seed from a list of card signatures.
-    /// Same cards in same order always produce the same seed.
-    /// </summary>
-    internal static ulong ComputeSeedFromCards(List<CardSignature> cards)
-    {
-        var hash = 17UL;
-        foreach (var card in cards)
-        {
-            for (var i = 0; i < 8; i++)
-            {
-                // Use BitConverter for deterministic float→bits conversion
-                hash = hash * 31 + BitConverter.ToUInt32(BitConverter.GetBytes(card[i]), 0);
-            }
-        }
-        return hash;
+        _exploration.PlayerMoved += position => PlayerMoved?.Invoke(position);
+        _exploration.PlayerMovedWorld += position => PlayerMovedWorld?.Invoke(position);
+        _exploration.EnemyDefeated += position => EnemyDefeated?.Invoke(position);
+        _exploration.EnemyDefeatedCell += cellId => EnemyDefeatedCell?.Invoke(cellId);
+        _exploration.VisitedTilesUpdated += tiles => VisitedTilesUpdated?.Invoke(tiles);
+        _exploration.VisitedCellsUpdated += cells => VisitedCellsUpdated?.Invoke(cells);
+        _exploration.VisibilityUpdated += (seen, visible) => VisibilityUpdated?.Invoke(seen, visible);
+        _exploration.VisibilityCellsUpdated += (seen, visible) => VisibilityCellsUpdated?.Invoke(seen, visible);
+        _exploration.PathUpdated += (path, target) => PathUpdated?.Invoke(path, target);
+        _exploration.PathCellsUpdated += (path, target) => PathCellsUpdated?.Invoke(path, target);
     }
 }

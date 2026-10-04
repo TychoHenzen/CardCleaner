@@ -1,31 +1,11 @@
 using System.Collections.Generic;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
-/// Result of a propagation operation.
-/// </summary>
-public readonly struct PropagationResult
-{
-    public bool Success { get; }
-    public Vector2I? ContradictionPosition { get; }
-    public int CellsUpdated { get; }
-
-    public PropagationResult(bool success, int cellsUpdated, Vector2I? contradictionPos = null)
-    {
-        Success = success;
-        CellsUpdated = cellsUpdated;
-        ContradictionPosition = contradictionPos;
-    }
-
-    public static PropagationResult Succeeded(int cellsUpdated) => new(true, cellsUpdated);
-    public static PropagationResult Failed(Vector2I pos) => new(false, 0, pos);
-}
-
-/// <summary>
-/// Propagates constraints through the WFC grid after a cell collapse.
+/// Propagates constraints through the WFC topology after a cell collapse.
 /// Uses work queue to iteratively reduce neighbor possibilities.
+/// Topology-agnostic: works with rectangular grids, irregular meshes, or any IWfcTopology.
 /// </summary>
 public class WfcPropagator
 {
@@ -39,141 +19,115 @@ public class WfcPropagator
     /// <summary>
     /// Propagates constraints starting from a collapsed cell.
     /// Removes invalid options from neighbors based on adjacency rules.
-    /// Uses 8-directional neighbors because the 2x2 window constraint affects diagonal cells.
     /// </summary>
-    /// <param name="grid">The WFC grid</param>
-    /// <param name="collapsedPos">Position of the cell that was just collapsed</param>
-    /// <returns>Success if propagation completed, failure with contradiction position if not</returns>
-    public PropagationResult Propagate(WfcGrid grid, Vector2I collapsedPos)
+    /// <param name="topology">The WFC topology</param>
+    /// <param name="collapsedCellId">Cell ID that was just collapsed</param>
+    /// <returns>Success if propagation completed, failure with contradiction cell if not</returns>
+    public PropagationResult Propagate(IWfcTopology topology, int collapsedCellId)
     {
-        var workQueue = new Queue<Vector2I>();
-        var inQueue = new HashSet<Vector2I>();
-        var cellsUpdated = 0;
+        var workQueue = new Queue<int>();
+        var inQueue = new HashSet<int>();
 
-        // Start with ALL 8 neighbors of the collapsed cell
-        // We need 8-directional because diagonal cells share 2x2 windows
-        foreach (var neighbor in grid.GetNeighbors8(collapsedPos))
+        // Start with every cell sharing a window with the collapsed cell
+        foreach (var neighbor in topology.GetWindowNeighbors(collapsedCellId))
         {
             workQueue.Enqueue(neighbor);
             inQueue.Add(neighbor);
         }
 
+        return DrainQueue(topology, workQueue, inQueue);
+    }
+
+    /// <summary>
+    /// Propagates constraints for all cells in the topology.
+    /// Useful after initial setup or when multiple cells need updating.
+    /// </summary>
+    public PropagationResult PropagateAll(IWfcTopology topology)
+    {
+        var workQueue = new Queue<int>();
+        var inQueue = new HashSet<int>();
+
+        // Add all uncollapsed and unreserved cells to work queue
+        foreach (var cellId in topology.GetAllCellIds())
+        {
+            var cell = topology.GetCell(cellId);
+            if (!cell.IsCollapsed() && !cell.IsReserved)
+            {
+                workQueue.Enqueue(cellId);
+                inQueue.Add(cellId);
+            }
+        }
+
+        return DrainQueue(topology, workQueue, inQueue);
+    }
+
+    /// <summary>
+    /// Processes queued cells until the queue is empty or a contradiction appears.
+    /// </summary>
+    private PropagationResult DrainQueue(IWfcTopology topology, Queue<int> workQueue, HashSet<int> inQueue)
+    {
+        var cellsUpdated = 0;
+
         while (workQueue.Count > 0)
         {
-            var currentPos = workQueue.Dequeue();
-            inQueue.Remove(currentPos);
+            var currentCellId = workQueue.Dequeue();
+            inQueue.Remove(currentCellId);
 
-            var currentCell = grid.GetCell(currentPos);
+            var currentCell = topology.GetCell(currentCellId);
 
             // Skip already collapsed or reserved cells
             if (currentCell.IsCollapsed() || currentCell.IsReserved)
                 continue;
 
-            // Compute valid tiles for this cell based on all collapsed neighbors
-            var validTiles = ComputeValidTiles(grid, currentPos);
-
-            // Intersect with current possibilities
+            // Intersect current possibilities with tiles valid next to all neighbors
+            var validTiles = ComputeValidTiles(topology, currentCellId);
             var changed = currentCell.IntersectWith(validTiles);
 
             if (currentCell.IsContradiction())
-            {
-                return PropagationResult.Failed(currentPos);
-            }
+                return PropagationResult.Failed(currentCellId);
 
-            if (changed)
-            {
-                cellsUpdated++;
-
-                // If this cell changed, ALL 8 neighbors may need updating
-                // because they share 2x2 windows with this cell
-                foreach (var neighbor in grid.GetNeighbors8(currentPos))
-                {
-                    var neighborCell = grid.GetCell(neighbor);
-                    if (!neighborCell.IsCollapsed() && !neighborCell.IsReserved && !inQueue.Contains(neighbor))
-                    {
-                        workQueue.Enqueue(neighbor);
-                        inQueue.Add(neighbor);
-                    }
-                }
-            }
-        }
-
-        return PropagationResult.Succeeded(cellsUpdated);
-    }
-
-    /// <summary>
-    /// Propagates constraints for all cells in the grid.
-    /// Useful after initial setup or when multiple cells need updating.
-    /// </summary>
-    public PropagationResult PropagateAll(WfcGrid grid)
-    {
-        var workQueue = new Queue<Vector2I>();
-        var inQueue = new HashSet<Vector2I>();
-        var cellsUpdated = 0;
-
-        // Add all uncollapsed and unreserved cells to work queue
-        foreach (var pos in grid.GetAllPositions())
-        {
-            var cell = grid.GetCell(pos);
-            if (!cell.IsCollapsed() && !cell.IsReserved)
-            {
-                workQueue.Enqueue(pos);
-                inQueue.Add(pos);
-            }
-        }
-
-        while (workQueue.Count > 0)
-        {
-            var currentPos = workQueue.Dequeue();
-            inQueue.Remove(currentPos);
-
-            var currentCell = grid.GetCell(currentPos);
-
-            // Skip collapsed or reserved cells
-            if (currentCell.IsCollapsed() || currentCell.IsReserved)
+            if (!changed)
                 continue;
 
-            var validTiles = ComputeValidTiles(grid, currentPos);
-            var changed = currentCell.IntersectWith(validTiles);
-
-            if (currentCell.IsContradiction())
-            {
-                return PropagationResult.Failed(currentPos);
-            }
-
-            if (changed)
-            {
-                cellsUpdated++;
-
-                // Use 8-directional for 2x2 window constraint propagation
-                foreach (var neighbor in grid.GetNeighbors8(currentPos))
-                {
-                    var neighborCell = grid.GetCell(neighbor);
-                    if (!neighborCell.IsCollapsed() && !neighborCell.IsReserved && !inQueue.Contains(neighbor))
-                    {
-                        workQueue.Enqueue(neighbor);
-                        inQueue.Add(neighbor);
-                    }
-                }
-            }
+            cellsUpdated++;
+            EnqueueOpenNeighbors(topology, currentCellId, workQueue, inQueue);
         }
 
         return PropagationResult.Succeeded(cellsUpdated);
     }
 
     /// <summary>
-    /// Computes which tiles are valid at a position given its neighbors' states.
+    /// Queues every unresolved neighbor of a changed cell that is not already queued.
+    /// </summary>
+    private static void EnqueueOpenNeighbors(
+        IWfcTopology topology,
+        int cellId,
+        Queue<int> workQueue,
+        HashSet<int> inQueue)
+    {
+        foreach (var neighbor in topology.GetWindowNeighbors(cellId))
+        {
+            var neighborCell = topology.GetCell(neighbor);
+            if (neighborCell.IsCollapsed() || neighborCell.IsReserved || inQueue.Contains(neighbor))
+                continue;
+
+            workQueue.Enqueue(neighbor);
+            inQueue.Add(neighbor);
+        }
+    }
+
+    /// <summary>
+    /// Computes which tiles are valid at a cell given its neighbors' states.
     /// A tile is valid if it can be adjacent to ALL collapsed neighbors.
     /// For uncollapsed neighbors, we use the union of valid neighbors.
-    /// Also applies transition spacing constraint to prevent rapid type changes.
     /// </summary>
-    private HashSet<string> ComputeValidTiles(WfcGrid grid, Vector2I pos)
+    private HashSet<string> ComputeValidTiles(IWfcTopology topology, int cellId)
     {
         HashSet<string>? validTiles = null;
 
-        foreach (var neighborPos in grid.GetNeighbors(pos))
+        foreach (var neighborId in topology.GetNeighbors(cellId))
         {
-            var neighborCell = grid.GetCell(neighborPos);
+            var neighborCell = topology.GetCell(neighborId);
             HashSet<string> neighborConstraint;
 
             if (neighborCell.IsCollapsed())
@@ -208,5 +162,4 @@ public class WfcPropagator
         // If no neighbors (shouldn't happen in practice), all tiles are valid
         return validTiles ?? new HashSet<string>(_rules.AllTileIds);
     }
-
 }

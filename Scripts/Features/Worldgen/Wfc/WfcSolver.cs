@@ -3,48 +3,22 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Contracts;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
-/// Result of a WFC solve operation.
-/// </summary>
-public readonly struct WfcSolveResult
-{
-    public bool Success { get; }
-    public int Iterations { get; }
-    public string? ErrorMessage { get; }
-    public Vector2I? ContradictionPosition { get; }
-
-    private WfcSolveResult(bool success, int iterations, string? error = null, Vector2I? contradictionPos = null)
-    {
-        Success = success;
-        Iterations = iterations;
-        ErrorMessage = error;
-        ContradictionPosition = contradictionPos;
-    }
-
-    public static WfcSolveResult Succeeded(int iterations) => new(true, iterations);
-    public static WfcSolveResult Failed(string error, int iterations, Vector2I? pos = null) =>
-        new(false, iterations, error, pos);
-}
-
-/// <summary>
 /// Main WFC algorithm solver. Orchestrates cell selection, collapse, and propagation.
+/// Topology-agnostic: works with rectangular grids, irregular meshes, or any IWfcTopology.
 /// </summary>
 public class WfcSolver
 {
     private readonly WfcPropagator _propagator;
     private readonly WfcTileSelector _selector;
-    private readonly ITileRegistry? _tileRegistry;
-    private readonly BlobSizeTracker? _blobTracker;
-    private readonly SpatialCoherenceConstraint? _spatialCoherence;
-    private readonly PassabilityGraph? _passabilityGraph;
-    private readonly Func<string, bool>? _isPassable;
+    private readonly WfcCollapseEffects _collapseEffects;
     private readonly EntropyCache _entropyCache = new();
     private IProfiler _profiler = new NoOpProfiler();
 
@@ -54,41 +28,38 @@ public class WfcSolver
     /// </summary>
     public int MaxIterations { get; set; } = 10000;
 
-    public WfcSolver(WfcPropagator propagator, WfcTileSelector selector, BlobSizeTracker? blobTracker = null, SpatialCoherenceConstraint? spatialCoherence = null, ITileRegistry? tileRegistry = null)
+    public WfcSolver(
+        WfcPropagator propagator,
+        WfcTileSelector selector,
+        BlobSizeTracker? blobTracker = null,
+        SpatialCoherenceConstraint? spatialCoherence = null,
+        ITileRegistry? tileRegistry = null)
     {
         _propagator = propagator;
         _selector = selector;
-        _tileRegistry = tileRegistry;
-        _blobTracker = blobTracker;
-        _spatialCoherence = spatialCoherence;
+        _collapseEffects = new WfcCollapseEffects(blobTracker, spatialCoherence, tileRegistry);
     }
 
     /// <summary>
-    /// Creates a WFC solver with connectivity tracking.
+    /// Creates a WFC solver with connectivity tracking. Each collapsed passable grid cell is
+    /// added to <paramref name="passabilityGraph"/> so connectivity constraints see the real map.
     /// </summary>
-    /// <param name="propagator">Constraint propagator for adjacency rules.</param>
-    /// <param name="selector">Tile selector with registered constraints.</param>
-    /// <param name="blobTracker">Optional blob tracker for shape constraints.</param>
-    /// <param name="passabilityGraph">Graph for tracking passable tile connectivity.</param>
-    /// <param name="isPassable">Function to determine if a tile ID is passable.</param>
-    /// <param name="spatialCoherence">Optional spatial coherence constraint for region tracking.</param>
-    /// <param name="tileRegistry">Optional tile registry for multi-cell variant reservation.</param>
     public WfcSolver(
         WfcPropagator propagator,
         WfcTileSelector selector,
         BlobSizeTracker? blobTracker,
-        PassabilityGraph passabilityGraph,
+        Connectivity.PassabilityGraph passabilityGraph,
         Func<string, bool> isPassable,
         SpatialCoherenceConstraint? spatialCoherence = null,
         ITileRegistry? tileRegistry = null)
     {
         _propagator = propagator;
         _selector = selector;
-        _tileRegistry = tileRegistry;
-        _blobTracker = blobTracker;
-        _passabilityGraph = passabilityGraph;
-        _isPassable = isPassable;
-        _spatialCoherence = spatialCoherence;
+        _collapseEffects = new WfcCollapseEffects(
+            blobTracker,
+            spatialCoherence,
+            tileRegistry,
+            new Connectivity.PassabilityGraphUpdater(passabilityGraph, isPassable));
     }
 
     public void SetProfiler(IProfiler profiler)
@@ -97,209 +68,202 @@ public class WfcSolver
     }
 
     /// <summary>
-    /// Runs the WFC algorithm until the grid is fully collapsed or a contradiction occurs.
+    /// Runs the WFC algorithm until the topology is fully collapsed or a contradiction occurs.
     /// </summary>
-    /// <param name="grid">The WFC grid to solve</param>
+    /// <param name="topology">The WFC topology to solve</param>
     /// <param name="biome">Biome for soft rule weighting</param>
     /// <param name="rng">Random number generator for tile selection</param>
     /// <returns>Result indicating success or failure with details</returns>
-    public WfcSolveResult Solve(WfcGrid grid, BiomeDefinition? biome, RandomNumberGenerator rng)
+    public WfcSolveResult Solve(IWfcTopology topology, BiomeDefinition? biome, RandomNumberGenerator rng)
     {
-        var iterations = 0;
-        var totalCells = grid.Width * grid.Height;
-
-        // Clear state for fresh solve
-        _blobTracker?.Clear();
-        _entropyCache.Reset();
-
-        // Register constraints that need to invalidate cells beyond neighbors
-        _entropyCache.ClearInvalidators();
-        foreach (var constraint in _selector.GetConstraints())
-        {
-            if (constraint is Constraints.IEntropyInvalidator invalidator)
-                _entropyCache.RegisterInvalidator(invalidator);
-        }
+        var run = new WfcSolveRun(topology, biome, rng, topology.CellCount);
+        PrepareForSolve(topology);
 
         // Initial propagation to apply any pre-existing constraints
-        var initialResult = _propagator.PropagateAll(grid);
+        var initialResult = _propagator.PropagateAll(topology);
         if (!initialResult.Success)
         {
             return WfcSolveResult.Failed(
                 "Initial propagation found contradiction",
                 0,
-                initialResult.ContradictionPosition);
+                initialResult.ContradictionCellId);
         }
 
-        while (!grid.IsFullyCollapsed())
+        var iterations = 0;
+        while (!topology.IsFullyCollapsed())
         {
             iterations++;
 
             if (iterations > MaxIterations)
-            {
-                GD.Print($"[WFC] Exceeded MaxIterations at {iterations}, collapsed ~{iterations}/{totalCells}");
-                return WfcSolveResult.Failed(
-                    $"Exceeded maximum iterations ({MaxIterations})",
-                    iterations);
-            }
+                return FailIterationBudget(iterations, run.TotalCells);
 
-            // Progress logging every 100 iterations (iterations ≈ collapsed cells)
-            if (iterations % 100 == 0)
-            {
-                GD.Print($"[WFC] Progress: {iterations}/{totalCells} cells ({100*iterations/totalCells}%)");
-            }
+            LogProgress(iterations, run.TotalCells);
 
-            // Find cell with lowest weighted entropy using incremental cache
-            // Only recomputes entropy for cells that were marked dirty
-            var targetPos = _entropyCache.GetLowestEntropyCell(
-                grid,
-                pos =>
-                {
-                    var weights = _selector.ComputeWeights(
-                        grid.GetCell(pos).GetPossibleTiles(),
-                        biome,
-                        rng,
-                        GetContinuityMatchingTiles(grid, pos),
-                        pos,
-                        grid);
-                    return grid.GetCell(pos).GetWeightedEntropy(weights);
-                },
-                rng);
-
-            if (targetPos == null)
-            {
-                // All cells collapsed - we're done
+            var outcome = CollapseNextCell(run, iterations);
+            if (outcome.Status == WfcStepStatus.Complete)
                 break;
-            }
 
-            var targetCell = grid.GetCell(targetPos.Value);
-
-            // Check for contradiction before collapse
-            if (targetCell.IsContradiction())
-            {
-                GD.Print($"[WFC] Contradiction at {targetPos} after {iterations}/{totalCells} cells");
-                return WfcSolveResult.Failed(
-                    "Found cell with no valid options",
-                    iterations,
-                    targetPos);
-            }
-
-            // Get tiles matching collapsed neighbors for continuity bias
-            var continuityTiles = GetContinuityMatchingTiles(grid, targetPos.Value);
-
-            // Select tile using weighted probabilities
-            string? selectedTile;
-            using (_profiler.BeginScope("TileSelection"))
-            {
-                selectedTile = _selector.SelectTile(
-                    targetCell.GetPossibleTiles(),
-                    biome,
-                    rng,
-                    continuityTiles,
-                    targetPos.Value,
-                    grid);
-            }
-
-            if (selectedTile == null)
-            {
-                GD.Print($"[WFC] Selector returned null at {targetPos} after {iterations}/{totalCells} cells, validTiles={targetCell.GetPossibleTiles().Count}");
-                return WfcSolveResult.Failed(
-                    "Tile selector returned null",
-                    iterations,
-                    targetPos);
-            }
-
-            // Collapse the cell
-            using (_profiler.BeginScope("CellCollapse"))
-            {
-                targetCell.CollapseTo(selectedTile);
-
-                // Update blob tracker for soft modifiers
-                _blobTracker?.RegisterCollapse(targetPos.Value, selectedTile, grid);
-
-                // Update spatial coherence for region tracking
-                _spatialCoherence?.OnTileCollapsed(targetPos.Value, selectedTile, grid);
-
-                // Update passability graph for connectivity constraints
-                UpdatePassabilityGraph(targetPos.Value, selectedTile, grid);
-
-                // Reserve cells for multi-cell variants
-                ReserveMultiCellVariant(targetPos.Value, selectedTile, grid);
-
-                // Mark affected cells dirty for entropy recalculation
-                _entropyCache.OnCellCollapsed(targetPos.Value, selectedTile, grid);
-            }
-
-            // Propagate constraints to neighbors
-            PropagationResult propResult;
-            using (_profiler.BeginScope("Propagation"))
-            {
-                propResult = _propagator.Propagate(grid, targetPos.Value);
-            }
-            if (!propResult.Success)
-            {
-                GD.Print($"[WFC] Propagation failed at {propResult.ContradictionPosition} after placing {selectedTile} at {targetPos}, {iterations}/{totalCells} cells");
-                return WfcSolveResult.Failed(
-                    $"Propagation failed at {propResult.ContradictionPosition}",
-                    iterations,
-                    propResult.ContradictionPosition);
-            }
+            if (outcome.Status == WfcStepStatus.Failed)
+                return outcome.Failure;
         }
 
-        GD.Print($"[WFC] Success! Completed {iterations} iterations for {totalCells} cells");
+        GD.Print($"[WFC] Success! Completed {iterations} iterations for {run.TotalCells} cells");
         return WfcSolveResult.Succeeded(iterations);
     }
 
     /// <summary>
-    /// Attempts to solve with automatic retry on contradiction.
-    /// Each retry uses a fresh grid with a different random seed.
+    /// Clears per-solve state and registers the constraints that invalidate cells beyond neighbors.
     /// </summary>
-    /// <param name="createGrid">Factory function to create a fresh grid</param>
-    /// <param name="biome">Biome for soft rule weighting</param>
-    /// <param name="baseSeed">Base seed for random number generation</param>
-    /// <param name="maxRetries">Maximum retry attempts (default 3)</param>
-    /// <returns>Tuple of (result, finalGrid) - grid is the last attempt's grid</returns>
-    public (WfcSolveResult result, WfcGrid grid) SolveWithRetry(
-        System.Func<WfcGrid> createGrid,
-        BiomeDefinition? biome,
-        ulong baseSeed,
-        int maxRetries = 3)
+    private void PrepareForSolve(IWfcTopology topology)
     {
-        WfcGrid? lastGrid = null;
-        WfcSolveResult lastResult = default;
+        _collapseEffects.Reset(topology);
+        _entropyCache.Reset();
 
-        for (var attempt = 0; attempt <= maxRetries; attempt++)
+        _entropyCache.ClearInvalidators();
+        foreach (var constraint in _selector.GetConstraints())
         {
-            var grid = createGrid();
-            lastGrid = grid;
-
-            var rng = new RandomNumberGenerator();
-            rng.Seed = baseSeed + (ulong)attempt;
-
-            lastResult = Solve(grid, biome, rng);
-
-            if (lastResult.Success)
-            {
-                return (lastResult, grid);
-            }
+            if (constraint is IEntropyInvalidator invalidator)
+                _entropyCache.RegisterInvalidator(invalidator);
         }
+    }
 
-        return (WfcSolveResult.Failed(
-            $"All {maxRetries + 1} attempts failed. Last error: {lastResult.ErrorMessage}",
-            lastResult.Iterations,
-            lastResult.ContradictionPosition), lastGrid!);
+    private WfcSolveResult FailIterationBudget(int iterations, int totalCells)
+    {
+        GD.Print($"[WFC] Exceeded MaxIterations at {iterations}, collapsed ~{iterations}/{totalCells}");
+        return WfcSolveResult.Failed(
+            $"Exceeded maximum iterations ({MaxIterations})",
+            iterations);
+    }
+
+    private static void LogProgress(int iterations, int totalCells)
+    {
+        // Progress logging every 100 iterations (iterations ~ collapsed cells)
+        if (iterations % 100 == 0)
+            GD.Print($"[WFC] Progress: {iterations}/{totalCells} cells ({100 * iterations / totalCells}%)");
     }
 
     /// <summary>
-    /// Gets the set of tile IDs from collapsed neighbors at the given position.
+    /// Picks the lowest-entropy cell, collapses it, and propagates the result.
+    /// </summary>
+    private WfcStepOutcome CollapseNextCell(WfcSolveRun run, int iterations)
+    {
+        var topology = run.Topology;
+        var targetCellId = FindLowestEntropyCell(run);
+
+        // All cells collapsed - we are done
+        if (targetCellId == null)
+            return WfcStepOutcome.Complete;
+
+        var targetCell = topology.GetCell(targetCellId.Value);
+
+        // Check for contradiction before collapse
+        if (targetCell.IsContradiction())
+        {
+            GD.Print($"[WFC] Contradiction at cell {targetCellId} after {iterations}/{run.TotalCells} cells");
+            return WfcStepOutcome.Failed(WfcSolveResult.Failed(
+                "Found cell with no valid options",
+                iterations,
+                targetCellId));
+        }
+
+        var selectedTile = SelectTileFor(run, targetCellId.Value);
+        if (selectedTile == null)
+        {
+            GD.Print(
+                $"[WFC] Selector returned null at cell {targetCellId} after " +
+                $"{iterations}/{run.TotalCells} cells, validTiles={targetCell.GetPossibleTiles().Count}");
+            return WfcStepOutcome.Failed(WfcSolveResult.Failed(
+                "Tile selector returned null",
+                iterations,
+                targetCellId));
+        }
+
+        CollapseCell(topology, targetCellId.Value, selectedTile);
+
+        // Propagate constraints to neighbors
+        PropagationResult propResult;
+        using (_profiler.BeginScope("Propagation"))
+        {
+            propResult = _propagator.Propagate(topology, targetCellId.Value);
+        }
+
+        if (propResult.Success)
+            return WfcStepOutcome.Collapsed;
+
+        GD.Print(
+            $"[WFC] Propagation failed at cell {propResult.ContradictionCellId} after placing " +
+            $"{selectedTile} at cell {targetCellId}, {iterations}/{run.TotalCells} cells");
+        return WfcStepOutcome.Failed(WfcSolveResult.Failed(
+            $"Propagation failed at cell {propResult.ContradictionCellId}",
+            iterations,
+            propResult.ContradictionCellId));
+    }
+
+    /// <summary>
+    /// Finds the cell with lowest weighted entropy using the incremental cache.
+    /// </summary>
+    private int? FindLowestEntropyCell(WfcSolveRun run)
+    {
+        var topology = run.Topology;
+
+        return _entropyCache.GetLowestEntropyCellId(
+            topology,
+            cellId =>
+            {
+                var weights = _selector.ComputeWeights(
+                    topology.GetCell(cellId).GetPossibleTiles(),
+                    run.Biome,
+                    run.Rng,
+                    GetContinuityMatchingTiles(topology, cellId),
+                    cellId,
+                    topology);
+                return topology.GetCell(cellId).GetWeightedEntropy(weights);
+            },
+            run.Rng);
+    }
+
+    /// <summary>
+    /// Selects a tile by weighted probability, biased toward tiles matching collapsed neighbors.
+    /// </summary>
+    private string? SelectTileFor(WfcSolveRun run, int cellId)
+    {
+        var continuityTiles = GetContinuityMatchingTiles(run.Topology, cellId);
+
+        using (_profiler.BeginScope("TileSelection"))
+        {
+            return _selector.SelectTile(
+                run.Topology.GetCell(cellId).GetPossibleTiles(),
+                run.Biome,
+                run.Rng,
+                continuityTiles,
+                cellId,
+                run.Topology);
+        }
+    }
+
+    private void CollapseCell(IWfcTopology topology, int cellId, string tileId)
+    {
+        using (_profiler.BeginScope("CellCollapse"))
+        {
+            topology.GetCell(cellId).CollapseTo(tileId);
+            _collapseEffects.Apply(topology, cellId, tileId);
+
+            // Mark affected cells dirty for entropy recalculation
+            _entropyCache.OnCellCollapsed(cellId, tileId, topology);
+        }
+    }
+
+    /// <summary>
+    /// Gets the set of tile IDs from collapsed neighbors at the given cell.
     /// Used to apply continuity bias in tile selection.
     /// </summary>
-    private static HashSet<string>? GetContinuityMatchingTiles(WfcGrid grid, Vector2I pos)
+    private static HashSet<string>? GetContinuityMatchingTiles(IWfcTopology topology, int cellId)
     {
         HashSet<string>? result = null;
 
-        foreach (var neighborPos in grid.GetNeighbors(pos))
+        foreach (var neighborId in topology.GetNeighbors(cellId))
         {
-            var neighborCell = grid.GetCell(neighborPos);
+            var neighborCell = topology.GetCell(neighborId);
             if (neighborCell.IsCollapsed())
             {
                 result ??= new HashSet<string>();
@@ -308,89 +272,5 @@ public class WfcSolver
         }
 
         return result;
-    }
-
-    /// <summary>
-    /// Updates the passability graph after a cell collapse.
-    /// If the collapsed tile is passable, adds it to the graph and connects to passable neighbors.
-    /// </summary>
-    private void UpdatePassabilityGraph(Vector2I position, string tileId, WfcGrid grid)
-    {
-        if (_passabilityGraph == null || _isPassable == null)
-            return;
-
-        if (!_isPassable(tileId))
-            return;
-
-        // Add this passable tile to the graph
-        _passabilityGraph.AddNode(position);
-
-        // Connect to adjacent collapsed passable tiles
-        foreach (var neighborPos in grid.GetNeighbors(position))
-        {
-            var neighborTile = grid.GetCollapsedTileAt(neighborPos);
-            if (neighborTile != null && _isPassable(neighborTile))
-            {
-                _passabilityGraph.AddEdge(position, neighborPos);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Reserves cells occupied by multi-cell variants after a cell collapse.
-    /// Uses the tile's auto-tile format to determine if any variants span multiple cells,
-    /// and reserves the maximum bounding box across all variants.
-    /// </summary>
-    /// <param name="anchorPos">Position of the collapsed cell (anchor for the variant).</param>
-    /// <param name="tileId">ID of the tile that was placed.</param>
-    /// <param name="grid">The WFC grid to mark reservations on.</param>
-    private void ReserveMultiCellVariant(Vector2I anchorPos, string tileId, WfcGrid grid)
-    {
-        if (_tileRegistry == null)
-            return;
-
-        var tileDef = _tileRegistry.GetTile(tileId);
-        if (tileDef == null || !tileDef.HasAutoTileVariants)
-            return;
-
-        var format = tileDef.GetAutoTileFormat();
-        if (format == null)
-            return;
-
-        // Get the maximum multi-cell bounds across all variants
-        var bounds = format.GetMaxMultiCellBounds();
-        if (bounds == null)
-            return; // All variants are 1x1, nothing to reserve
-
-        var (size, offset) = bounds.Value;
-
-        // Reserve all cells covered by this multi-cell variant (except the anchor itself)
-        for (var dy = 0; dy < size.Y; dy++)
-        {
-            for (var dx = 0; dx < size.X; dx++)
-            {
-                // Skip the anchor cell (it's already collapsed, not reserved)
-                if (dx == 0 && dy == 0 && offset == Vector2I.Zero)
-                    continue;
-
-                var reservedPos = anchorPos + offset + new Vector2I(dx, dy);
-
-                // Skip if outside grid bounds
-                if (!grid.IsInBounds(reservedPos))
-                    continue;
-
-                // Skip the anchor position if offset moved us there
-                if (reservedPos == anchorPos)
-                    continue;
-
-                var cell = grid.GetCell(reservedPos);
-
-                // Only reserve if not already collapsed or reserved
-                if (!cell.IsCollapsed() && !cell.IsReserved)
-                {
-                    cell.Reserve(anchorPos);
-                }
-            }
-        }
     }
 }

@@ -33,7 +33,9 @@ public class MapGenerationProfiler : IProfiler
         ILog.Print("=== Map Generation Profile ===");
         foreach (var (name, stats) in _stats)
         {
-            ILog.Print($"  {name}: {stats.TotalMs}ms total ({stats.Count}x, avg {stats.AverageMs:F1}ms, min {stats.MinMs}ms, max {stats.MaxMs}ms)");
+            ILog.Print(
+                $"  {name}: {stats.TotalMs}ms total ({stats.Count}x, " +
+                $"avg {stats.AverageMs:F1}ms, min {stats.MinMs}ms, max {stats.MaxMs}ms)");
         }
     }
 

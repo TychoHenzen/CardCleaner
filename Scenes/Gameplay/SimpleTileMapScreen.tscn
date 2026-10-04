@@ -1,0 +1,94 @@
+[gd_scene load_steps=8 format=4 uid="uid://b80slr4xbnys8"]
+
+[ext_resource type="Script" uid="uid://bjg0x01ksf3wp" path="res://Scripts/Features/Deckbuilder/Models/SimpleWorldMapScreen.cs" id="1_w558t"]
+[ext_resource type="Texture2D" uid="uid://c22xilhi7cap1" path="res://Graphics/tile_0001.png" id="3_xv0u5"]
+[ext_resource type="PackedScene" uid="uid://r47yt6f8uot1" path="res://Scenes/UI/CombatUi.tscn" id="4_c04c6"]
+[ext_resource type="TileSet" path="res://Assets/Terrain/TileSets/PlaceholderTileSet.tres" id="4_olmej"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_c04c6"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_10on8"]
+cull_mode = 2
+shading_mode = 0
+albedo_texture = SubResource("ViewportTexture_c04c6")
+uv1_offset = Vector3(-1, -1, -1)
+texture_filter = 0
+disable_receive_shadows = true
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_sb8ww"]
+_surfaces = [{
+"aabb": AABB(-2.6665, -1.5, 0, 5.333, 3, 1e-05),
+"attribute_data": PackedByteArray("AAAAAAAAgD8AAIA/AACAPwAAgD8AAAAAAAAAAAAAAAA="),
+"format": 34359742487,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("8KcqwAAAwL8AAAAA8KcqQAAAwL8AAAAA8KcqQAAAwD8AAAAA8KcqwAAAwD8AAAAA//////9/AID//////38AgP//////fwCA//////9/AIA=")
+}]
+
+[node name="SimpleTileMapScreen" type="Node3D" node_paths=PackedStringArray("TerrainLayer", "DecorationLayer", "StructureLayer", "EffectLayer", "OverlayLayer", "BiomeOverlayLayer", "Viewport", "ScreenMesh", "StatusLabel", "PlayerSprite", "CombatUI")]
+script = ExtResource("1_w558t")
+TerrainLayer = NodePath("SubViewport/TerrainLayer")
+DecorationLayer = NodePath("SubViewport/DecorationLayer")
+StructureLayer = NodePath("SubViewport/StructureLayer")
+EffectLayer = NodePath("SubViewport/EffectLayer")
+OverlayLayer = NodePath("SubViewport/OverlayLayer")
+BiomeOverlayLayer = NodePath("SubViewport/BiomeOverlay")
+Viewport = NodePath("SubViewport")
+ScreenMesh = NodePath("CSGMesh3D")
+StatusLabel = NodePath("SubViewport/UILayer/UI/StatusLabel")
+PlayerSprite = NodePath("SubViewport/PlayerAgent")
+CombatUI = NodePath("SubViewport/UILayer/UI/CombatUI")
+
+[node name="CSGMesh3D" type="MeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_10on8")
+mesh = SubResource("ArrayMesh_sb8ww")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+size = Vector2i(1024, 1024)
+
+[node name="TerrainLayer" type="TileMapLayer" parent="SubViewport"]
+tile_set = ExtResource("4_olmej")
+
+[node name="DecorationLayer" type="TileMapLayer" parent="SubViewport"]
+visible = false
+tile_set = ExtResource("4_olmej")
+
+[node name="StructureLayer" type="TileMapLayer" parent="SubViewport"]
+visible = false
+tile_set = ExtResource("4_olmej")
+
+[node name="EffectLayer" type="TileMapLayer" parent="SubViewport"]
+visible = false
+tile_set = ExtResource("4_olmej")
+
+[node name="OverlayLayer" type="TileMapLayer" parent="SubViewport"]
+visible = false
+tile_set = ExtResource("4_olmej")
+
+[node name="BiomeOverlay" type="TileMapLayer" parent="SubViewport"]
+visible = false
+tile_set = ExtResource("4_olmej")
+
+[node name="PlayerAgent" type="Sprite2D" parent="SubViewport"]
+texture = ExtResource("3_xv0u5")
+
+[node name="Camera2D" type="Camera2D" parent="SubViewport"]
+
+[node name="EnemyContainer" type="Node2D" parent="SubViewport"]
+
+[node name="UILayer" type="CanvasLayer" parent="SubViewport"]
+layer = 100
+
+[node name="UI" parent="SubViewport/UILayer" instance=ExtResource("4_c04c6")]
+
+[node name="ColorRect" parent="SubViewport/UILayer/UI" index="0"]
+visible = false
+
+[node name="CombatUI" parent="SubViewport/UILayer/UI" index="2"]
+visible = false
+
+[editable path="SubViewport/UILayer/UI"]

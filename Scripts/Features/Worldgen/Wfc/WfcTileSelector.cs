@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Selectors;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -54,31 +55,27 @@ public class WfcTileSelector
     /// </summary>
     public float DefaultTileWeight { get; set; } = 1.0f;
 
-    /// <summary>
-    /// Weight multiplier for tiles matching collapsed neighbors.
-    /// Default 2.0 means matching tiles are 2x more likely to be selected.
-    /// Reduced from 5.0 to allow biome affinity to dominate over neighbor continuity.
-    /// Set to 1.0 to disable continuity bias.
-    /// </summary>
+    /// <summary>Weights tiles matching collapsed neighbors; 1 disables continuity bias.</summary>
     public float ContinuityBiasMultiplier { get; set; } = 2.0f;
 
     /// <summary>
     /// Selects a tile from the valid options using biome-weighted probabilities.
+    /// Topology-agnostic version using cell IDs.
     /// </summary>
     /// <param name="validTiles">Tiles that satisfy hard constraints (from WfcCellState)</param>
     /// <param name="biome">Current biome for soft rule weights</param>
     /// <param name="rng">Random number generator</param>
     /// <param name="continuityTiles">Optional set of tiles that match collapsed neighbors (for continuity bias)</param>
-    /// <param name="position">Grid position for soft modifier context</param>
-    /// <param name="grid">WFC grid for soft modifier context</param>
+    /// <param name="cellId">Cell ID for constraint context</param>
+    /// <param name="topology">WFC topology for constraint context</param>
     /// <returns>Selected tile ID, or null if no valid tiles</returns>
     public string? SelectTile(
         IReadOnlyCollection<string> validTiles,
         BiomeDefinition? biome,
         RandomNumberGenerator rng,
         IReadOnlySet<string>? continuityTiles = null,
-        Vector2I? position = null,
-        WfcGrid? grid = null)
+        int? cellId = null,
+        IWfcTopology? topology = null)
     {
         if (validTiles.Count == 0)
             return null;
@@ -91,128 +88,19 @@ public class WfcTileSelector
                 return tile;
         }
 
-        // One-time log to verify constraint count
-        if (!_loggedConstraintCount && position.HasValue)
-        {
-            _loggedConstraintCount = true;
-            GD.Print($"[WfcTileSelector] SelectTile called with position, constraints: {_constraints.Count}");
-        }
+        LogConstraintCount(cellId);
+        var weightContext = CreateWeightContext(
+            biome,
+            rng,
+            continuityTiles,
+            cellId,
+            topology,
+            useUniformBaseWeight: cellId.HasValue && topology != null);
+        var weights = WfcWeightedCandidateBuilder.BuildWeightedCandidates(
+            validTiles,
+            weightContext);
 
-        // Build weight lookup from biome
-        var biomeWeights = BuildBiomeWeightLookup(biome);
-
-        // Precompute collapsed neighbors ONCE for this position using stack-allocated arrays
-        Dictionary<Vector2I, string>? neighbors4 = null;
-        Dictionary<Vector2I, string>? neighbors8 = null;
-
-        if (position.HasValue && grid != null && _constraints.Count > 0)
-        {
-            neighbors4 = new Dictionary<Vector2I, string>(4);
-            neighbors8 = new Dictionary<Vector2I, string>(8);
-
-            // Use stack-allocated span for non-allocating neighbor iteration
-            Span<Vector2I> neighborBuffer4 = stackalloc Vector2I[4];
-            var count4 = grid.GetNeighborsNonAlloc(position.Value, neighborBuffer4);
-            for (var i = 0; i < count4; i++)
-            {
-                var neighborPos = neighborBuffer4[i];
-                var neighborCell = grid.GetCell(neighborPos);
-                if (neighborCell.IsCollapsed())
-                {
-                    neighbors4[neighborPos] = neighborCell.GetCollapsedTile();
-                }
-            }
-
-            Span<Vector2I> neighborBuffer8 = stackalloc Vector2I[8];
-            var count8 = grid.GetNeighbors8NonAlloc(position.Value, neighborBuffer8);
-            for (var i = 0; i < count8; i++)
-            {
-                var neighborPos = neighborBuffer8[i];
-                var neighborCell = grid.GetCell(neighborPos);
-                if (neighborCell.IsCollapsed())
-                {
-                    neighbors8[neighborPos] = neighborCell.GetCollapsedTile();
-                }
-            }
-        }
-
-        // Calculate weighted probabilities
-        var weights = new List<(string tileId, float weight)>(validTiles.Count);
-        var totalWeight = 0f;
-
-        foreach (var tileId in validTiles)
-        {
-            float weight;
-
-            // Use uniform base weight (1.0) when position provided to prevent base weight
-            // differences from causing fragmentation during spatial coherence growth
-            if (position.HasValue && grid != null)
-            {
-                // Uniform weight to let spatial coherence dominate
-                weight = 1.0f;
-            }
-            else if (biomeWeights.TryGetValue(tileId, out var biomeWeight))
-            {
-                // Tile is in biome's preferred set - use its defined weight
-                weight = biomeWeight;
-            }
-            else
-            {
-                // Tile is not in biome - apply penalty
-                weight = DefaultTileWeight * NonBiomeTilePenalty;
-            }
-
-            // Apply continuity bias if tile matches a collapsed neighbor
-            if (continuityTiles != null && continuityTiles.Contains(tileId))
-            {
-                weight *= ContinuityBiasMultiplier;
-            }
-
-            // Apply registered constraints with precomputed neighbor info
-            if (position.HasValue && grid != null && _constraints.Count > 0)
-            {
-                var constraintContext = WfcConstraintContext.CreateWithNeighborInfo(
-                    position.Value,
-                    tileId,
-                    grid,
-                    rng,
-                    neighbors4!,
-                    neighbors8!);
-
-                foreach (var constraint in _constraints)
-                {
-                    var modifier = constraint.GetProbabilityModifier(constraintContext);
-                    if (modifier == 0f)
-                    {
-                        weight = 0f;
-                        break;
-                    }
-                    weight *= modifier;
-                }
-            }
-
-            weights.Add((tileId, weight));
-            totalWeight += weight;
-        }
-
-        // Edge case: all weights are zero (all tiles banned by hard constraints)
-        // Return null to signal contradiction - let WFC retry with different seed
-        if (totalWeight <= 0)
-            return null;
-
-        // Weighted random selection
-        var roll = rng.Randf() * totalWeight;
-        var cumulative = 0f;
-
-        foreach (var (tileId, weight) in weights)
-        {
-            cumulative += weight;
-            if (roll <= cumulative)
-                return tileId;
-        }
-
-        // Fallback (shouldn't reach here)
-        return weights[^1].tileId;
+        return WfcWeightedTileChooser.SelectWeightedTile(weights, rng);
     }
 
     /// <summary>
@@ -243,130 +131,80 @@ public class WfcTileSelector
     }
 
     /// <summary>
-    /// Computes weights for all valid tiles at a position.
+    /// Computes weights for all valid tiles at a cell.
     /// Used for weighted entropy calculation during cell selection.
     /// </summary>
     /// <param name="validTiles">Tiles that satisfy hard constraints</param>
     /// <param name="biome">Current biome for soft rule weights</param>
     /// <param name="rng">Random number generator for constraint context</param>
     /// <param name="continuityTiles">Optional set of tiles matching collapsed neighbors</param>
-    /// <param name="position">Grid position for constraint evaluation</param>
-    /// <param name="grid">WFC grid for constraint evaluation</param>
+    /// <param name="cellId">Cell ID for constraint evaluation</param>
+    /// <param name="topology">WFC topology for constraint evaluation</param>
     /// <returns>Dictionary mapping tile IDs to their final weights</returns>
     public IReadOnlyDictionary<string, float> ComputeWeights(
         IReadOnlyCollection<string> validTiles,
         BiomeDefinition? biome,
         RandomNumberGenerator rng,
         IReadOnlySet<string>? continuityTiles = null,
-        Vector2I? position = null,
-        WfcGrid? grid = null)
+        int? cellId = null,
+        IWfcTopology? topology = null)
     {
         var weights = new Dictionary<string, float>(validTiles.Count);
-
         if (validTiles.Count == 0)
             return weights;
 
-        var biomeWeights = BuildBiomeWeightLookup(biome);
-
-        // Precompute collapsed neighbors ONCE for this position using stack-allocated arrays
-        Dictionary<Vector2I, string>? neighbors4 = null;
-        Dictionary<Vector2I, string>? neighbors8 = null;
-
-        if (position.HasValue && grid != null && _constraints.Count > 0)
-        {
-            neighbors4 = new Dictionary<Vector2I, string>(4);
-            neighbors8 = new Dictionary<Vector2I, string>(8);
-
-            // Use stack-allocated span for non-allocating neighbor iteration
-            Span<Vector2I> neighborBuffer4 = stackalloc Vector2I[4];
-            var count4 = grid.GetNeighborsNonAlloc(position.Value, neighborBuffer4);
-            for (var i = 0; i < count4; i++)
-            {
-                var neighborPos = neighborBuffer4[i];
-                var neighborCell = grid.GetCell(neighborPos);
-                if (neighborCell.IsCollapsed())
-                {
-                    neighbors4[neighborPos] = neighborCell.GetCollapsedTile();
-                }
-            }
-
-            Span<Vector2I> neighborBuffer8 = stackalloc Vector2I[8];
-            var count8 = grid.GetNeighbors8NonAlloc(position.Value, neighborBuffer8);
-            for (var i = 0; i < count8; i++)
-            {
-                var neighborPos = neighborBuffer8[i];
-                var neighborCell = grid.GetCell(neighborPos);
-                if (neighborCell.IsCollapsed())
-                {
-                    neighbors8[neighborPos] = neighborCell.GetCollapsedTile();
-                }
-            }
-        }
-
-        foreach (var tileId in validTiles)
-        {
-            float weight;
-
-            // Always start with biome weights to preserve intended tile distribution
-            if (biomeWeights.TryGetValue(tileId, out var biomeWeight))
-            {
-                weight = biomeWeight;
-            }
-            else
-            {
-                weight = DefaultTileWeight * NonBiomeTilePenalty;
-            }
-
-            // Apply continuity bias
-            if (continuityTiles != null && continuityTiles.Contains(tileId))
-            {
-                weight *= ContinuityBiasMultiplier;
-            }
-
-            // Apply constraints with precomputed neighbor info
-            if (position.HasValue && grid != null && _constraints.Count > 0)
-            {
-                var constraintContext = WfcConstraintContext.CreateWithNeighborInfo(
-                    position.Value,
-                    tileId,
-                    grid,
-                    rng,
-                    neighbors4!,
-                    neighbors8!);
-
-                foreach (var constraint in _constraints)
-                {
-                    var modifier = constraint.GetProbabilityModifier(constraintContext);
-                    if (modifier == 0f)
-                    {
-                        weight = 0f;
-                        break;
-                    }
-                    weight *= modifier;
-                }
-            }
-
-            weights[tileId] = weight;
-        }
-
-        return weights;
+        var weightContext = CreateWeightContext(
+            biome,
+            rng,
+            continuityTiles,
+            cellId,
+            topology,
+            useUniformBaseWeight: false);
+        return WfcWeightedCandidateBuilder.BuildWeightLookup(
+            validTiles,
+            weightContext);
     }
 
-    private Dictionary<string, float> BuildBiomeWeightLookup(BiomeDefinition? biome)
+    private WfcTileWeightContext CreateWeightContext(
+        BiomeDefinition? biome,
+        RandomNumberGenerator rng,
+        IReadOnlySet<string>? continuityTiles,
+        int? cellId,
+        IWfcTopology? topology,
+        bool useUniformBaseWeight)
     {
-        var lookup = new Dictionary<string, float>();
+        var biomeWeights = WfcWeightedCandidateBuilder.BuildBiomeWeightLookup(biome);
+        var collapsedNeighbors = WfcWeightedCandidateBuilder.BuildCollapsedNeighbors(
+            cellId,
+            topology,
+            _constraints);
+        var collapsedWindowNeighbors = WfcWeightedCandidateBuilder.BuildCollapsedWindowNeighbors(
+            cellId,
+            topology,
+            _constraints);
+        return new WfcTileWeightContext(
+            biomeWeights,
+            rng,
+            continuityTiles,
+            cellId,
+            topology,
+            collapsedNeighbors,
+            collapsedWindowNeighbors,
+            useUniformBaseWeight,
+            _constraints,
+            DefaultTileWeight,
+            NonBiomeTilePenalty,
+            ContinuityBiasMultiplier);
+    }
 
-        if (biome?.PassableTiles == null)
-            return lookup;
+    private void LogConstraintCount(int? cellId)
+    {
+        if (_loggedConstraintCount || !cellId.HasValue)
+            return;
 
-        foreach (var entry in biome.PassableTiles.Entries)
-        {
-            if (!string.IsNullOrEmpty(entry.TileId))
-            {
-                lookup[entry.TileId] = entry.Weight;
-            }
-        }
-
-        return lookup;
+        _loggedConstraintCount = true;
+        GD.Print($"[WfcTileSelector] SelectTile called with cellId, constraints: {_constraints.Count}");
+        foreach (var constraint in _constraints)
+            GD.Print($"  - {constraint.GetType().Name}");
     }
 }

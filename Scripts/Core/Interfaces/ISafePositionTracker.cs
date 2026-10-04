@@ -13,12 +13,7 @@ public interface ISafePositionTracker
     /// </summary>
     int PositionCount { get; }
 
-    /// <summary>
-    ///     Records a position as safe. Position is validated before storage.
-    ///     Invalid positions (NaN, Infinity) are rejected.
-    /// </summary>
-    /// <param name="position">The world position to record</param>
-    /// <returns>True if position was recorded, false if rejected</returns>
+    /// <summary>Records a finite position as safe.</summary>
     bool RecordSafePosition(Vector3 position);
 
     /// <summary>

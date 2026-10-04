@@ -7,7 +7,6 @@ using Godot;
 using Saveable;
 using System.Collections.Generic;
 using System.Linq;
-using Saveable.Extensions;
 
 namespace CardCleaner.Scripts.Core.Services;
 
@@ -137,22 +136,21 @@ public partial class GameSaveService : Node, ISaveable
     private void RecreateCards()
     {
         ILog.Print("RecreateCards() called");
-        
+
         if (_cardSpawningService == null)
         {
             ILog.Print("CardSpawningService is null");
             return;
         }
-        
+
         if (_pendingCardData == null)
         {
             ILog.Print("PendingCardData is null");
             return;
         }
-        
+
         ILog.Print($"Processing {_pendingCardData.Count} card entries");
-        
-        var recreatedCount = 0;
+
         var worldNode = GetTree().CurrentScene as Node3D;
         if (worldNode == null)
         {
@@ -160,111 +158,42 @@ public partial class GameSaveService : Node, ISaveable
             return;
         }
 
+        var respawner = new SavedCardRespawner(
+            GetTree(),
+            _cardSpawningService,
+            worldNode,
+            (card, camera) => CallDeferred(MethodName.ReparentToCamera, card, camera));
+
+        var recreatedCount = 0;
         foreach (var cardDataObj in _pendingCardData)
         {
-            
-            // Handle both Dictionary<string, object> and JObject (from Newtonsoft.Json)
-            Dictionary<string, object>? cardData = null;
-            
-            if (cardDataObj is Dictionary<string, object> dict)
-            {
-                cardData = dict;
-            }
-            else if (cardDataObj?.GetType().Name == "JObject")
-            {
-                // Convert JObject to Dictionary using the Saveable plugin's method
-                try
-                {
-                    var json = SaveExtension.SerializeObject(cardDataObj);
-                    cardData = SaveExtension.DeserializeObject<Dictionary<string, object>>(json);
-                }
-                catch (Exception ex)
-                {
-                    ILog.Error($"Failed to convert JObject to Dictionary: {ex.Message}");
-                    continue;
-                }
-            }
-            
-            if (cardData == null)
-            {
-                ILog.Print($"Could not convert card data object, skipping");
-                continue;
-            }
-            
-            
-            try
-            {
-                // Extract card data - handle signature as float array
-                var signatureElements = GetFloatArrayFromData(cardData["signature_elements"]);
-                var signature = new CardSignature(signatureElements);
-                
-                var position = GetVector3FromData(cardData["position"]);
-                
-                var rotation = GetVector3FromData(cardData["rotation"]);
-                
-                var isHeld = Convert.ToBoolean(cardData["isHeld"]);
-                
-                var parentPath = cardData["parentPath"]?.ToString() ?? "";
-                
-                // Determine spawn parent
-                Node3D spawnParent = worldNode;
-                if (!string.IsNullOrEmpty(parentPath))
-                {
-                    var parentNode = GetTree().CurrentScene.GetNodeOrNull(parentPath);
-                    if (parentNode is Node3D parent3D)
-                        spawnParent = parent3D;
-                }
-                
-                // Create spawn transform
-                var spawnTransform = new Transform3D(Basis.FromEuler(rotation), position);
-                
-                // Spawn the card
-                var cardInstance = _cardSpawningService.SpawnCard(signature, spawnTransform, spawnParent);
-                
-                // Handle held state if needed
-                if (isHeld && cardInstance is CardController controller)
-                {
-                    // Find player camera and reparent if card was held
-                    var playerCamera = GetTree().GetFirstNodeInGroup("player")?.GetNodeOrNull<Camera3D>("Head/Camera3D");
-                    if (playerCamera != null)
-                    {
-                        CallDeferred(MethodName.ReparentToCamera, controller, playerCamera);
-                    }
-                }
-                
+            if (TryRecreateCard(respawner, cardDataObj))
                 recreatedCount++;
-            }
-            catch (System.Exception ex)
-            {
-                ILog.Error($"Failed to recreate card: {ex.Message}");
-            }
         }
-        
+
         // Clear the pending data
         _pendingCardData = null;
         ILog.Print($"Recreated {recreatedCount} cards from save data");
     }
-    
-    private Vector3 GetVector3FromData(object vectorData)
-    {
-        if (vectorData is Vector3 vec)
-            return vec;
-        
-        // Handle JSON object with x, y, z properties
-        var json = SaveExtension.SerializeObject(vectorData);
-        return SaveExtension.DeserializeObject<Vector3>(json);
-    }
-    
-    private float[] GetFloatArrayFromData(object arrayData)
-    {
-        if (arrayData is float[] arr)
-            return arr;
 
-        // Handle JSON array
-        var json = SaveExtension.SerializeObject(arrayData);
-        return SaveExtension.DeserializeObject<float[]>(json) ?? [];
+    private static bool TryRecreateCard(SavedCardRespawner respawner, object cardDataObj)
+    {
+        try
+        {
+            var saved = SavedCardReader.Read(cardDataObj);
+            if (saved == null)
+                return false;
+
+            respawner.Respawn(saved);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            ILog.Error($"Failed to recreate card: {ex.Message}");
+            return false;
+        }
     }
-    
+
     private void ReparentToCamera(CardController card, Camera3D camera)
     {
         if (card.GetParent() != camera)

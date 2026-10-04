@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
 namespace CardCleaner.Features.Worldgen.AutoTiling;
@@ -68,7 +69,7 @@ public static class BuiltInAutoTileFormats
     /// </summary>
     public static AutoTileFormatDefinition CreateBlob47()
     {
-        var validMasks = GetValidBlob47Bitmasks();
+        var validMasks = NeighborBitmask8.GetValid47Masks();
         var bitmasks = validMasks.ToHashSet();
 
         var variants = new Dictionary<int, VariantDefinition>();
@@ -85,50 +86,5 @@ public static class BuiltInAutoTileFormats
             allowedBitmasks: bitmasks,
             variantMappings: variants,
             isBuiltIn: true);
-    }
-
-    /// <summary>
-    /// Gets the 47 valid blob bitmask values in the canonical order.
-    /// This order matches what <see cref="NeighborBitmask8.GetBlobIndex"/> expects.
-    /// </summary>
-    private static List<int> GetValidBlob47Bitmasks()
-    {
-        var valid = new List<int>(47);
-
-        // Bit positions: N=1, NE=2, E=4, SE=8, S=16, SW=32, W=64, NW=128
-        for (var mask = 0; mask < 256; mask++)
-        {
-            if (IsValidBlobMask(mask))
-                valid.Add(mask);
-        }
-
-        return valid;
-    }
-
-    /// <summary>
-    /// Checks if an 8-bit bitmask represents a valid blob configuration.
-    /// A corner is only valid if both adjacent edges are present.
-    /// </summary>
-    private static bool IsValidBlobMask(int mask)
-    {
-        const int N = 1, NE = 2, E = 4, SE = 8, S = 16, SW = 32, W = 64, NW = 128;
-
-        // NE corner requires N and E edges
-        if ((mask & NE) != 0 && ((mask & N) == 0 || (mask & E) == 0))
-            return false;
-
-        // SE corner requires E and S edges
-        if ((mask & SE) != 0 && ((mask & E) == 0 || (mask & S) == 0))
-            return false;
-
-        // SW corner requires S and W edges
-        if ((mask & SW) != 0 && ((mask & S) == 0 || (mask & W) == 0))
-            return false;
-
-        // NW corner requires W and N edges
-        if ((mask & NW) != 0 && ((mask & W) == 0 || (mask & N) == 0))
-            return false;
-
-        return true;
     }
 }

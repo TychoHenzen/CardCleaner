@@ -1,9 +1,7 @@
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
-using GdUnit4;
 using Godot;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc.Modifiers;
 
@@ -27,9 +25,9 @@ public class CompactnessSoftModifierTest
         // No neighbors - neutral (no match)
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);
@@ -45,9 +43,9 @@ public class CompactnessSoftModifierTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);
@@ -65,9 +63,9 @@ public class CompactnessSoftModifierTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);
@@ -86,9 +84,9 @@ public class CompactnessSoftModifierTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);
@@ -108,9 +106,9 @@ public class CompactnessSoftModifierTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);
@@ -129,9 +127,9 @@ public class CompactnessSoftModifierTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);
@@ -150,9 +148,9 @@ public class CompactnessSoftModifierTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);
@@ -171,9 +169,9 @@ public class CompactnessSoftModifierTest
 
         var context = new WfcConstraintContext
         {
-            Position = new Vector2I(5, 5),
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
             TileId = "grass",
-            Grid = _grid
+            Topology = _grid
         };
 
         var multiplier = _modifier.GetProbabilityModifier(context);

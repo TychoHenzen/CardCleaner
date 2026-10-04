@@ -4,18 +4,6 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Services;
 
-public enum ModifierType
-{
-    Power, // Affects damage/effectiveness
-    Cost, // Affects energy/mana cost
-    Duration, // Affects how long effects last
-    Range, // Affects area of effect/targeting range
-    Healing, // Adds healing effects
-    Speed, // Affects attack speed or movement
-    Defense, // Adds defensive properties
-    Special // Custom effect modifications
-}
-
 [Tool]
 [GlobalClass]
 public partial class ResidualEnergyModifier : Resource
@@ -33,9 +21,11 @@ public partial class ResidualEnergyModifier : Resource
     [Export] public ModifierType Type { get; set; } = DefaultType;
     [Export] public Element SourceElement { get; set; } = DefaultSourceElement;
     [Export] public float Intensity { get; set; } = DefaultIntensity; // How strongly this element affects the modifier
-    [Export] public bool UsePositiveAspect { get; set; } = DefaultUsePositiveAspect; // Whether to use positive or negative aspect
+    // Whether to use positive or negative aspect.
+    [Export] public bool UsePositiveAspect { get; set; } = DefaultUsePositiveAspect;
     [Export] public float BaseValue { get; set; } = DefaultBaseValue; // Starting value before residual energy
-    [Export] public string EffectTemplate { get; set; } = DefaultEffectTemplate; // Text template for describing the effect
+    // Text template for describing the effect.
+    [Export] public string EffectTemplate { get; set; } = DefaultEffectTemplate;
 
     public override bool _PropertyCanRevert(StringName property)
     {

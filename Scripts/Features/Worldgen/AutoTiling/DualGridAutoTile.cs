@@ -3,46 +3,7 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 
-/// <summary>
-///     Utility for dual-grid auto-tiling where visual tiles are offset by half a tile
-///     from the data grid. Each visual tile sits at the intersection of 4 data cells
-///     and computes its bitmask from those 4 corners.
-///
-///     This approach prevents invalid auto-tile states because visual tiles always
-///     sample from the actual data grid state rather than checking diagonal neighbors.
-///
-///     Data grid: What the user edits (is this cell filled?)
-///     Visual grid: Offset by (-0.5, -0.5) tiles, size is (dataWidth+1, dataHeight+1)
-///
-///     For visual tile at index (vx, vy), the 4 sampled data cells are:
-///     - TopLeft (NW):     data[vy-1, vx-1]
-///     - TopRight (NE):    data[vy-1, vx]
-///     - BottomLeft (SW):  data[vy, vx-1]
-///     - BottomRight (SE): data[vy, vx]
-///
-///     Uses Corner16 bitmask format: NE=1, SE=2, SW=4, NW=8
-///
-///     ## Auto-Tile Format Selection Guide
-///
-///     ### Corner16 (Dual-Grid) - Recommended for terrain transitions
-///     - 16 tiles, checks 4 diagonal corners
-///     - Use with dual-grid technique (visual tiles at half-tile offset)
-///     - Each visual tile samples 4 terrain cells at its corners
-///     - Prevents invalid states: bitmask always reflects actual terrain
-///     - Best for: terrain edges, grass/dirt transitions, water shores
-///
-///     ### Edge16 (Cardinal) - For wall-like structures
-///     - 16 tiles, checks 4 cardinal neighbors (N, E, S, W)
-///     - Single-grid technique (visual tiles aligned with data)
-///     - Bitmask from same-grid neighbors
-///     - Best for: walls, fences, roads, paths
-///
-///     ### Blob47 (8-bit with constraints) - For detailed tiles
-///     - 47 tiles, checks all 8 neighbors with corner constraint
-///     - Corners only valid when both adjacent edges are set
-///     - Single-grid technique with complex edge handling
-///     - Best for: detailed terrain blobs, irregular shapes
-/// </summary>
+/// <summary>Computes auto-tile bitmasks for visual tiles in a dual-grid layout.</summary>
 public static class DualGridAutoTile
 {
     /// <summary>
@@ -138,10 +99,7 @@ public static class DualGridAutoTile
         return CornersToFull8Bitmask(hasNE, hasSE, hasSW, hasNW);
     }
 
-    /// <summary>
-    ///     Convert 4 corner states to a Full8/Blob47 bitmask.
-    ///     Edges are derived from adjacent corners, corners only set when both adjacent edges exist.
-    /// </summary>
+    /// <summary>Converts four corner states to a normalized Full8/Blob47 bitmask.</summary>
     /// <param name="hasNE">True if NE data corner is filled</param>
     /// <param name="hasSE">True if SE data corner is filled</param>
     /// <param name="hasSW">True if SW data corner is filled</param>
@@ -149,28 +107,27 @@ public static class DualGridAutoTile
     /// <returns>8-bit bitmask for Blob47 format</returns>
     public static int CornersToFull8Bitmask(bool hasNE, bool hasSE, bool hasSW, bool hasNW)
     {
-        // Derive edges from adjacent corners
         // An edge is set if EITHER adjacent corner has terrain
-        var hasN = hasNW || hasNE;
-        var hasE = hasNE || hasSE;
-        var hasS = hasSE || hasSW;
-        var hasW = hasSW || hasNW;
-
-        // Build bitmask - edges first
-        var mask = 0;
-        if (hasN) mask |= NeighborBitmask8.North;     // 1
-        if (hasE) mask |= NeighborBitmask8.East;      // 4
-        if (hasS) mask |= NeighborBitmask8.South;     // 16
-        if (hasW) mask |= NeighborBitmask8.West;      // 64
+        var hasN = hasNW | hasNE;
+        var hasE = hasNE | hasSE;
+        var hasS = hasSE | hasSW;
+        var hasW = hasSW | hasNW;
 
         // Corners only valid when both adjacent edges are set (blob constraint)
         // AND the actual corner data cell is filled
-        if (hasNE && hasN && hasE) mask |= NeighborBitmask8.NorthEast;  // 2
-        if (hasSE && hasE && hasS) mask |= NeighborBitmask8.SouthEast;  // 8
-        if (hasSW && hasS && hasW) mask |= NeighborBitmask8.SouthWest;  // 32
-        if (hasNW && hasW && hasN) mask |= NeighborBitmask8.NorthWest;  // 128
+        return BitIf(hasN, NeighborBitmask8.North)
+               | BitIf(hasE, NeighborBitmask8.East)
+               | BitIf(hasS, NeighborBitmask8.South)
+               | BitIf(hasW, NeighborBitmask8.West)
+               | BitIf(hasNE & hasN & hasE, NeighborBitmask8.NorthEast)
+               | BitIf(hasSE & hasE & hasS, NeighborBitmask8.SouthEast)
+               | BitIf(hasSW & hasS & hasW, NeighborBitmask8.SouthWest)
+               | BitIf(hasNW & hasW & hasN, NeighborBitmask8.NorthWest);
+    }
 
-        return mask;
+    private static int BitIf(bool condition, int bit)
+    {
+        return condition ? bit : 0;
     }
 
     /// <summary>

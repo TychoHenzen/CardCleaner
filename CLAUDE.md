@@ -141,12 +141,13 @@ The map generator uses a **two-phase Wave Function Collapse** approach with dual
 
 3. **Merge**: Foreground takes precedence where present; background shows through gaps
 
-**Key Files**:
-- `WfcMapGenerator.cs`: Core WFC solver with soft constraints
-- `AutoTileGapConstraint.cs`: Prevents adjacent different auto-tiles (hard constraint)
-- `SpatialCoherenceConstraint.cs`: Encourages contiguous tile regions
-- `BitmaskConsistencyValidator.cs`: Validates dual-grid bitmask agreement
-- `RegionAnalyzer.cs`: Measures spatial coherence metrics
+**Key Files** (all in `Scripts/Features/Worldgen/Wfc/`):
+- `WfcMapGenerator.cs`: High-level generator that configures and runs WFC
+- `WfcSolver.cs`: Core WFC algorithm (cell selection, collapse, propagation)
+- `WfcPropagator.cs`: Constraint propagation using adjacency rules
+- `WfcTileSelector.cs`: Weighted tile selection with soft constraints
+- `Constraints/AutoTileGapConstraint.cs`: Prevents adjacent different auto-tiles (hard constraint)
+- `Constraints/SpatialCoherenceConstraint.cs`: Encourages contiguous tile regions
 
 **CRITICAL - WFC Soft Constraints and Entropy**:
 - **Tiles are NOT removed from possibility sets** - constraints set weights to 0 instead
@@ -201,18 +202,11 @@ Code is organized by feature under `Scripts/Features/`:
 
 Core utilities and interfaces are in `Scripts/Core/`.
 
-## Memory Tools
+## Canonical dod-guard Workflow
 
-Claude Code has access to persistent memory through the claude-mem MCP plugin. Use these tools to access prior session context:
-
-**3-Layer Workflow** (always follow this pattern to minimize token usage):
-1. `search(query)` → Get index with observation IDs (~50-100 tokens/result)
-2. `timeline(anchor=ID)` → Get context around interesting results
-3. `get_observations([IDs])` → Fetch full details ONLY for filtered IDs
-
-**When to use memory:**
-- Starting a new session - check for recent context on the current project
-- Before re-reading files - past analysis may already be captured
-- When debugging - prior discoveries and decisions are indexed by type (🔴 bugfix, ⚖️ decision, 🔵 discovery)
-
-**Token economics:** Memory provides ~90% token savings vs re-reading files. The session start hook automatically loads recent context summaries.
+- `/add-backlog-idea` creates an issue in **Backlog**.
+- `/refine-backlog-item` researches the issue and moves it to **Todo** when it is ready.
+- `/next-ticket` implements exactly one issue on one issue branch.
+- `/submit-draft-pr` publishes the branch as a draft pull request.
+- Review remains read-only until the user explicitly accepts the findings or requests remediation.
+- `/complete-pr` owns the ready-to-merge check, merge, linked-issue confirmation, and remote branch deletion.

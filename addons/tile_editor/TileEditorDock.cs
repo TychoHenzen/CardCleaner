@@ -1,6 +1,5 @@
 #if TOOLS
 using System;
-using System.Linq;
 using Godot;
 
 namespace CardCleaner.Addons.TileEditor;
@@ -8,16 +7,10 @@ namespace CardCleaner.Addons.TileEditor;
 [Tool]
 public partial class TileEditorDock : Control
 {
-    private TileAtlasPanel? _atlasPanel;
-    private BiomePoolPanel? _biomePoolPanel;
-    private AutoTilePreviewPanel? _autoTilePreviewPanel;
-    private TmxPreviewPanel? _tmxPreviewPanel;
-    private AutoTileFormatEditorPanel? _autoTileFormatEditorPanel;
-    private UnusedSourcesPanel? _unusedSourcesPanel;
-    private TransitionCoveragePanel? _transitionCoveragePanel;
+    private TileEditorPanels? _panels;
+    private TileEditorToolCommands? _toolCommands;
     private bool _initialized;
     private bool _isDirty;
-    private TilePropertiesPanel? _propertiesPanel;
     private Button? _saveButton;
     private TileEditorService? _service;
     private Label? _statusLabel;
@@ -103,84 +96,37 @@ public partial class TileEditorDock : Control
         mainVBox.SetAnchorsPreset(LayoutPreset.FullRect);
         AddChild(mainVBox);
 
-        // Toolbar
-        var toolbar = new HBoxContainer();
-        mainVBox.AddChild(toolbar);
+        SetupToolbar(mainVBox);
 
-        _saveButton = new Button { Text = "Save", Disabled = true };
-        _saveButton.Pressed += OnSavePressed;
-        toolbar.AddChild(_saveButton);
-
-        var reloadButton = new Button { Text = "Reload" };
-        reloadButton.Pressed += OnReloadPressed;
-        toolbar.AddChild(reloadButton);
-
-        toolbar.AddChild(new VSeparator());
-
-        // TMX tools
-        var compileTmxButton = new Button { Text = "Compile from TMX", TooltipText = "Compile atlas from TMX/TSX files" };
-        compileTmxButton.Pressed += OnCompileTmxPressed;
-        toolbar.AddChild(compileTmxButton);
-
-        var insertPropsButton = new Button { Text = "Insert TSX Props", TooltipText = "Insert default properties into TSX files" };
-        insertPropsButton.Pressed += OnInsertTsxPropsPressed;
-        toolbar.AddChild(insertPropsButton);
-
-        toolbar.AddChild(new HSeparator { SizeFlagsHorizontal = SizeFlags.Expand });
-
-        _statusLabel = new Label { Text = "Loading..." };
-        toolbar.AddChild(_statusLabel);
-
-        // Tab container
         _tabContainer = new TabContainer
         {
             SizeFlagsVertical = SizeFlags.ExpandFill, SizeFlagsHorizontal = SizeFlags.ExpandFill
         };
         mainVBox.AddChild(_tabContainer);
 
-        // Atlas tab
-        _atlasPanel = new TileAtlasPanel(_service!);
-        _atlasPanel.Name = "Tile Browser";
-        _atlasPanel.TileSelected += OnTileSelected;
-        _tabContainer.AddChild(_atlasPanel);
+        _panels = new TileEditorPanels(_service!);
+        _panels.Atlas.TileSelected += OnTileSelected;
+        _panels.FormatEditor.FormatModified += OnFormatChanged;
+        _panels.FormatEditor.FormatCreated += OnFormatChanged;
+        _panels.FormatEditor.FormatDeleted += OnFormatChanged;
+        _panels.AddTo(_tabContainer);
+    }
 
-        // Properties tab
-        _propertiesPanel = new TilePropertiesPanel(_service!);
-        _propertiesPanel.Name = "Properties";
-        _tabContainer.AddChild(_propertiesPanel);
+    private void SetupToolbar(Control parent)
+    {
+        var toolbar = TileEditorToolbar.CreateIn(parent);
 
-        // Biomes tab
-        _biomePoolPanel = new BiomePoolPanel(_service!);
-        _biomePoolPanel.Name = "Biomes";
-        _tabContainer.AddChild(_biomePoolPanel);
+        _saveButton = toolbar.SaveButton;
+        _saveButton.Pressed += OnSavePressed;
+        toolbar.ReloadButton.Pressed += OnReloadPressed;
 
-        // Auto-Tile Preview tab
-        _autoTilePreviewPanel = new AutoTilePreviewPanel(_service!);
-        _autoTilePreviewPanel.Name = "Auto-Tile Preview";
-        _tabContainer.AddChild(_autoTilePreviewPanel);
+        _compileTmxButton = toolbar.CompileTmxButton;
+        _compileTmxButton.Pressed += OnCompileTmxPressed;
+        _insertPropsButton = toolbar.InsertPropsButton;
+        _insertPropsButton.Pressed += OnInsertTsxPropsPressed;
 
-        // TMX Preview tab
-        _tmxPreviewPanel = new TmxPreviewPanel(_service!);
-        _tmxPreviewPanel.Name = "TMX Preview";
-        _tabContainer.AddChild(_tmxPreviewPanel);
-
-        // Auto-Tile Formats tab
-        _autoTileFormatEditorPanel = new AutoTileFormatEditorPanel(_service!);
-        _autoTileFormatEditorPanel.Name = "Formats";
-        _autoTileFormatEditorPanel.FormatModified += OnFormatModified;
-        _autoTileFormatEditorPanel.FormatCreated += OnFormatCreated;
-        _autoTileFormatEditorPanel.FormatDeleted += OnFormatDeleted;
-        _tabContainer.AddChild(_autoTileFormatEditorPanel);
-
-        // Unused Sources tab
-        _unusedSourcesPanel = new UnusedSourcesPanel(_service!);
-        _unusedSourcesPanel.Name = "Unused Sources";
-        _tabContainer.AddChild(_unusedSourcesPanel);
-
-        // Transition Coverage tab
-        _transitionCoveragePanel = new TransitionCoveragePanel(_service!);
-        _transitionCoveragePanel.Name = "Transitions";
-        _tabContainer.AddChild(_transitionCoveragePanel);
+        _statusLabel = toolbar.StatusLabel;
+        _toolCommands = new TileEditorToolCommands(_statusLabel, ShowToolDialog);
     }
 
     private void OnTilesLoaded()
@@ -188,7 +134,7 @@ public partial class TileEditorDock : Control
         _statusLabel!.Text = $"Loaded {_service!.TileCount} tiles";
         _isDirty = false;
         UpdateTitle();
-        _autoTilePreviewPanel?.Refresh();
+        _panels?.AutoTilePreview.Refresh();
     }
 
     private void OnTileModified(string tileId)
@@ -200,32 +146,14 @@ public partial class TileEditorDock : Control
 
     private void OnTileSelected(string tileId)
     {
-        _propertiesPanel?.SelectTile(tileId);
+        _panels?.Properties.SelectTile(tileId);
         _tabContainer!.CurrentTab = 1; // Switch to Properties tab
     }
 
-    private void OnFormatModified(string formatName)
+    private void OnFormatChanged(string formatName)
     {
         SyncCustomFormatsToService();
-        _propertiesPanel?.RefreshFormatDropdown();
-        _isDirty = true;
-        _saveButton!.Disabled = false;
-        UpdateTitle();
-    }
-
-    private void OnFormatCreated(string formatName)
-    {
-        SyncCustomFormatsToService();
-        _propertiesPanel?.RefreshFormatDropdown();
-        _isDirty = true;
-        _saveButton!.Disabled = false;
-        UpdateTitle();
-    }
-
-    private void OnFormatDeleted(string formatName)
-    {
-        SyncCustomFormatsToService();
-        _propertiesPanel?.RefreshFormatDropdown();
+        _panels?.Properties.RefreshFormatDropdown();
         _isDirty = true;
         _saveButton!.Disabled = false;
         UpdateTitle();
@@ -233,8 +161,8 @@ public partial class TileEditorDock : Control
 
     private void SyncCustomFormatsToService()
     {
-        if (_autoTileFormatEditorPanel == null || _service == null) return;
-        _service.UpdateCustomAutoTileFormats(_autoTileFormatEditorPanel.GetCustomFormats());
+        if (_panels == null || _service == null) return;
+        _service.UpdateCustomAutoTileFormats(_panels.FormatEditor.GetCustomFormats());
     }
 
     private void OnSavePressed()
@@ -290,109 +218,20 @@ public partial class TileEditorDock : Control
 
     private void OnCompileTmxPressed()
     {
-        const string tiledDir = "res://Data/Tiled";
         _statusLabel!.Text = "Compiling from TMX...";
 
         // Run compilation asynchronously to avoid blocking UI
-        CallDeferred(MethodName.DoCompileTmx, tiledDir);
+        CallDeferred(MethodName.DoCompileTmx, TiledDirectory);
     }
 
     private void DoCompileTmx(string tiledDir)
     {
-        var compiler = new TmxAtlasCompiler();
-        var (success, message) = compiler.CompileFromTmx(tiledDir);
-
-        if (success)
-        {
-            _statusLabel!.Text = "TMX compilation complete!";
-            GD.Print($"[TileEditorDock] {message}");
-
-            // Show success dialog
-            var dialog = new AcceptDialog { DialogText = message, Title = "TMX Compilation Complete" };
-            dialog.Confirmed += () => dialog.QueueFree();
-            AddChild(dialog);
-            dialog.PopupCentered();
-        }
-        else
-        {
-            _statusLabel!.Text = $"TMX compilation failed: {message}";
-            GD.PrintErr($"[TileEditorDock] TMX compilation failed: {message}");
-
-            // Show error dialog
-            var dialog = new AcceptDialog { DialogText = $"Compilation failed:\n{message}", Title = "TMX Compilation Error" };
-            dialog.Confirmed += () => dialog.QueueFree();
-            AddChild(dialog);
-            dialog.PopupCentered();
-        }
+        _toolCommands!.CompileTmx(tiledDir);
     }
 
     private void OnInsertTsxPropsPressed()
     {
-        const string tiledDir = "res://Data/Tiled";
-
-        // First analyze what would be changed
-        var reports = TsxPropertyInserter.AnalyzePropertiesInDirectory(tiledDir);
-        var filesWithMissing = reports.Count(r => r.HasMissingProperties);
-
-        if (filesWithMissing == 0)
-        {
-            var noChangesDialog = new AcceptDialog
-            {
-                DialogText = "All TSX files already have the required properties.",
-                Title = "No Changes Needed"
-            };
-            noChangesDialog.Confirmed += () => noChangesDialog.QueueFree();
-            AddChild(noChangesDialog);
-            noChangesDialog.PopupCentered();
-            return;
-        }
-
-        // Confirm with user
-        var dialog = new ConfirmationDialog
-        {
-            DialogText = $"Insert default properties into {filesWithMissing} TSX file(s)?",
-            Title = "Insert TSX Properties"
-        };
-        dialog.Confirmed += () =>
-        {
-            DoInsertTsxProps(tiledDir);
-            dialog.QueueFree();
-        };
-        dialog.Canceled += () => dialog.QueueFree();
-        AddChild(dialog);
-        dialog.PopupCentered();
-    }
-
-    private void DoInsertTsxProps(string tiledDir)
-    {
-        _statusLabel!.Text = "Inserting TSX properties...";
-
-        var (success, message, filesModified, totalTiles, totalWangSets) =
-            TsxPropertyInserter.InsertPropertiesInDirectory(tiledDir);
-
-        if (success)
-        {
-            var resultMessage = $"Updated {filesModified} file(s):\n" +
-                               $"- {totalTiles} tile(s) modified\n" +
-                               $"- {totalWangSets} wang set(s) modified";
-            _statusLabel!.Text = $"Inserted properties into {filesModified} files";
-            GD.Print($"[TileEditorDock] TSX properties inserted: {resultMessage}");
-
-            var successDialog = new AcceptDialog { DialogText = resultMessage, Title = "Properties Inserted" };
-            successDialog.Confirmed += () => successDialog.QueueFree();
-            AddChild(successDialog);
-            successDialog.PopupCentered();
-        }
-        else
-        {
-            _statusLabel!.Text = $"Property insertion failed: {message}";
-            GD.PrintErr($"[TileEditorDock] TSX property insertion failed: {message}");
-
-            var errorDialog = new AcceptDialog { DialogText = $"Failed:\n{message}", Title = "Error" };
-            errorDialog.Confirmed += () => errorDialog.QueueFree();
-            AddChild(errorDialog);
-            errorDialog.PopupCentered();
-        }
+        _toolCommands!.ConfirmInsertTsxProps(TiledDirectory);
     }
 
     private void UpdateTitle()

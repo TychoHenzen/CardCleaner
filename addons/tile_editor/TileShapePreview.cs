@@ -10,7 +10,7 @@ namespace CardCleaner.Addons.TileEditor;
 [Tool]
 public partial class TileShapePreview : Control
 {
-    /// <summary>Auto-tile format: Corner16 (4-bit corners), Edge16 (4-bit edges), or Blob47 (8-bit edges+corners)</summary>
+    /// <summary>Auto-tile formats use 4-bit corners, 4-bit edges, or 8-bit edges and corners.</summary>
     public enum Format
     {
         /// <summary>4-bit corner format: NE=1, SE=2, SW=4, NW=8 (16 combinations)</summary>

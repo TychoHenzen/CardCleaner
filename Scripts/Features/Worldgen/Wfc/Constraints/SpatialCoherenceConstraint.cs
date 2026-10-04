@@ -6,48 +6,30 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
 /// <summary>
 /// Encourages spatial coherence by boosting tiles that extend existing regions.
-/// During WFC collapse, tracks regions of identical tiles and applies probability modifiers
-/// to encourage region growth up to target size.
+/// Linear tiles use distance-based repulsion instead.
 /// </summary>
-/// <remarks>
-/// Region tracking strategy:
-/// - Scans collapsed neighbors (4-directional) to detect existing regions
-/// - Full boost given for ANY matching neighbor (encourages region growth from size 1)
-/// - Boost tapers off for oversized regions to encourage tile diversity
-///
-/// Probability calculation for regular tiles:
-/// - If tile matches any neighbor region below target: modifier = 1.0 + BoostFactor
-/// - If tile matches oversized region: modifier tapers toward 1.0
-/// - If no neighbors collapsed: modifier = 1.0 (neutral)
-///
-/// Linear tiles (without bitmask 15, e.g., hedges) use repulsion instead of attraction:
-/// - Same-type tiles within LinearRepulsionRadius apply a distance-weighted penalty
-/// - Closer tiles apply stronger penalties, diminishing with distance
-/// - This creates sparse, spread-out hedge structures instead of dense clusters
-/// The NoSolidFillConstraint separately ensures they remain 1-tile wide.
-/// </remarks>
 public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
 {
     private const int SolidFillBitmask = 15;
     private readonly ITileRegistry? _tileRegistry;
+    private readonly LinearRepulsionCalculator? _linearRepulsion;
+    private readonly SpatialCoherenceStats _stats = new();
 
     public SpatialCoherenceConstraint(ITileRegistry? tileRegistry = null)
     {
         _tileRegistry = tileRegistry;
+        _linearRepulsion = tileRegistry != null ? new LinearRepulsionCalculator(tileRegistry) : null;
     }
+
     /// <summary>
-    /// Target size for coherent regions (in tiles).
-    /// Regions below this receive full boost; regions above start tapering.
-    /// For ~3600-tile maps, 50 tiles = ~1.4% per region, allowing 20-70 regions.
+    /// Target size for coherent regions; larger regions receive a tapered boost.
     /// </summary>
     public int TargetRegionSize { get; set; } = 50;
 
     /// <summary>
-    /// Factor controlling how much regional coherence affects probability.
-    /// With BoostFactor=10.0, matching tiles get 11x weight boost.
-    /// This ensures extending a region strongly dominates over starting new ones.
+    /// Probability multiplier applied to tiles matching an existing region.
     /// </summary>
-    public float BoostFactor { get; set; } = 500.0f;
+    public float BoostFactor { get; set; } = 10.0f;
 
     /// <summary>
     /// Radius within which linear tiles (hedges) repel each other.
@@ -56,9 +38,7 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
     public int LinearRepulsionRadius { get; set; } = 10;
 
     /// <summary>
-    /// Maximum penalty factor for linear tiles at distance 1.
-    /// A value of 0.9 means a same-type tile at distance 1 reduces probability by 90%.
-    /// Penalty diminishes linearly with distance up to LinearRepulsionRadius.
+    /// Maximum distance-1 penalty factor for nearby same-type linear tiles.
     /// </summary>
     public float LinearRepulsionStrength { get; set; } = 0.5f;
 
@@ -69,34 +49,16 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
 
     private RegionTracker? _regionTracker;
 
-    // Diagnostic counters
-    private int _totalCalls;
-    private int _callsWithMatch;
-    private int _callsNoCollapsedNeighbor;
-    private float _totalBoostApplied;
-
     /// <summary>
     /// Initializes region tracking for a new WFC generation.
     /// Must be called before WFC collapse begins.
     /// </summary>
     public void Reset(int width, int height)
     {
-        // Print stats from previous run
-        if (_totalCalls > 0)
-        {
-            var matchRate = _callsWithMatch * 100f / _totalCalls;
-            var avgBoost = _callsWithMatch > 0 ? _totalBoostApplied / _callsWithMatch : 0;
-            GD.Print($"[SpatialCoherence] Stats: {_totalCalls} calls, {_callsWithMatch} with match ({matchRate:F1}%), {_callsNoCollapsedNeighbor} no collapsed neighbor, avg boost {avgBoost:F2}x");
-        }
+        _stats.PrintAndClear();
 
         _regionTracker ??= new RegionTracker(width, height);
         _regionTracker.Reset();
-
-        // Reset counters
-        _totalCalls = 0;
-        _callsWithMatch = 0;
-        _callsNoCollapsedNeighbor = 0;
-        _totalBoostApplied = 0;
     }
 
     /// <summary>
@@ -110,92 +72,34 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
 
     public float GetProbabilityModifier(WfcConstraintContext context)
     {
-        _totalCalls++;
+        _stats.RecordCall();
 
         // Check if this is a linear tile (no bitmask 15) - needs different boost logic
         var isLinearTile = _tileRegistry != null && !HasSolidFillVariant(context.TileId);
 
-        if (_regionTracker == null)
+        // RegionTracker is only used for grid topologies - mesh topologies use neighbor-count approximation
+        if (_regionTracker == null && context.Topology is WfcGrid)
         {
-            GD.Print("[SpatialCoherence] RegionTracker is null!");
+            GD.Print("[SpatialCoherence] RegionTracker is null for grid topology!");
             return 1.0f;
         }
 
-        var largestMatchingRegion = 0;
-        var hasAnyCollapsedNeighbor = false;
-        var sameTypeNeighborCount = 0;
+        var scan = CoherenceNeighborScanner.Scan(context, _regionTracker);
 
-        // Use precomputed neighbor info if available (optimization)
-        if (context.NeighborInfo.HasValue)
-        {
-            var neighborInfo = context.NeighborInfo.Value;
-            hasAnyCollapsedNeighbor = neighborInfo.HasCollapsedNeighbor4;
-            sameTypeNeighborCount = neighborInfo.SameType4Count;
+        if (!scan.HasAnyCollapsedNeighbor)
+            _stats.RecordNoCollapsedNeighbor();
 
-            foreach (var kvp in neighborInfo.Neighbors4)
-            {
-                if (kvp.Value == context.TileId)
-                {
-                    var regionSize = _regionTracker.GetRegionSize(kvp.Key);
-                    if (regionSize > largestMatchingRegion)
-                        largestMatchingRegion = regionSize;
-                }
-            }
-        }
-        else
-        {
-            // Fallback: iterate neighbors directly (for backward compatibility)
-            foreach (var neighbor in context.Grid.GetNeighbors(context.Position))
-            {
-                var neighborTile = context.Grid.GetCollapsedTileAt(neighbor);
-                if (neighborTile != null)
-                {
-                    hasAnyCollapsedNeighbor = true;
-                    if (neighborTile == context.TileId)
-                    {
-                        sameTypeNeighborCount++;
-                        var regionSize = _regionTracker.GetRegionSize(neighbor);
-                        if (regionSize > largestMatchingRegion)
-                            largestMatchingRegion = regionSize;
-                    }
-                }
-            }
-        }
-
-        if (!hasAnyCollapsedNeighbor)
-            _callsNoCollapsedNeighbor++;
-
-        if (largestMatchingRegion == 0)
+        if (scan.LargestMatchingRegion == 0)
             return 1.0f;
 
-        _callsWithMatch++;
+        _stats.RecordMatch(context.TileId, scan.LargestMatchingRegion, isLinearTile);
 
-        float modifier;
-
+        // Linear tiles (hedges, paths) repel each other within a radius
         if (isLinearTile)
-        {
-            // Linear tiles (hedges, paths) repel each other within a radius
-            // This creates sparse, spread-out structures instead of dense clusters
-            return CalculateLinearRepulsion(context);
-        }
-        else if (largestMatchingRegion >= TargetRegionSize)
-        {
-            // Taper off for oversized regions to encourage new regions
-            // At 2x target size, boost drops to ~50%
-            var oversize = (float)largestMatchingRegion / TargetRegionSize;
-            var taperStrength = Mathf.Max(0.0f, 1.0f - (oversize - 1.0f) * 0.5f);
-            modifier = 1.0f + taperStrength * BoostFactor;
-        }
-        else
-        {
-            // Square root scaling: small regions get meaningful boost, larger regions get more
-            // 1-tile: 2.4x, 10-tile: 5.5x, 25-tile: 8.1x, 50-tile: 11x
-            // This allows regions to seed while giving larger regions competitive advantage
-            var regionProgress = Mathf.Sqrt((float)largestMatchingRegion / TargetRegionSize);
-            modifier = 1.0f + regionProgress * BoostFactor;
-        }
+            return _linearRepulsion!.Calculate(context, CurrentRepulsionSettings());
 
-        _totalBoostApplied += modifier;
+        var modifier = CalculateRegionBoost(scan.LargestMatchingRegion);
+        _stats.RecordBoost(modifier);
         return Mathf.Max(MinModifier, modifier);
     }
 
@@ -231,54 +135,25 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
         return invalidated;
     }
 
-    /// <summary>
-    /// Calculates repulsion penalty for linear tiles based on nearby same-type tiles.
-    /// </summary>
-    private float CalculateLinearRepulsion(WfcConstraintContext context)
+    private LinearRepulsionSettings CurrentRepulsionSettings() =>
+        new(LinearRepulsionRadius, LinearRepulsionStrength, MinModifier);
+
+    private float CalculateRegionBoost(int largestMatchingRegion)
     {
-        var totalPenalty = 0.0f;
-        var pos = context.Position;
-        var grid = context.Grid;
-
-        // Scan within repulsion radius
-        for (var dy = -LinearRepulsionRadius; dy <= LinearRepulsionRadius; dy++)
+        if (largestMatchingRegion >= TargetRegionSize)
         {
-            for (var dx = -LinearRepulsionRadius; dx <= LinearRepulsionRadius; dx++)
-            {
-                if (dx == 0 && dy == 0)
-                    continue;
-
-                var checkX = pos.X + dx;
-                var checkY = pos.Y + dy;
-
-                // Bounds check
-                if (checkX < 0 || checkY < 0 || checkX >= grid.Width || checkY >= grid.Height)
-                    continue;
-
-                var cell = grid.GetCell(new Vector2I(checkX, checkY));
-                if (!cell.IsCollapsed())
-                    continue;
-
-                // Check if same tile type (using terrain type comparison for auto-tiles)
-                var collapsedTile = cell.GetCollapsedTile();
-                if (!_tileRegistry!.AreSameTerrainType(context.TileId, collapsedTile))
-                    continue;
-
-                // Calculate distance and penalty (Chebyshev distance for grid)
-                var distance = Mathf.Max(Mathf.Abs(dx), Mathf.Abs(dy));
-                if (distance > LinearRepulsionRadius)
-                    continue;
-
-                // Penalty diminishes linearly with distance
-                // At distance 1: full penalty, at radius: zero penalty
-                var distanceFactor = 1.0f - (float)(distance - 1) / LinearRepulsionRadius;
-                totalPenalty += LinearRepulsionStrength * distanceFactor;
-            }
+            // Taper off for oversized regions to encourage new regions
+            // At 2x target size, boost drops to ~50%
+            var oversize = (float)largestMatchingRegion / TargetRegionSize;
+            var taperStrength = Mathf.Max(0.0f, 1.0f - (oversize - 1.0f) * 0.5f);
+            return 1.0f + taperStrength * BoostFactor;
         }
 
-        // Convert accumulated penalty to modifier (clamped to MinModifier)
-        var modifier = Mathf.Max(MinModifier, 1.0f - totalPenalty);
-        return modifier;
+        // Square root scaling: small regions get meaningful boost, larger regions get more
+        // 1-tile: 2.4x, 10-tile: 5.5x, 25-tile: 8.1x, 50-tile: 11x
+        // This allows regions to seed while giving larger regions competitive advantage
+        var regionProgress = Mathf.Sqrt((float)largestMatchingRegion / TargetRegionSize);
+        return 1.0f + regionProgress * BoostFactor;
     }
 
     private bool HasSolidFillVariant(string tileId)

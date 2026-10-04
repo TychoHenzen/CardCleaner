@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
 namespace CardCleaner.Features.Worldgen.AutoTiling;
@@ -73,11 +74,7 @@ public sealed class AutoTileFormatDefinition
         return _variantMappings.TryGetValue(bitmask, out var variant) ? variant : null;
     }
 
-    /// <summary>
-    /// Checks if a bitmask value is allowed in this format.
-    /// </summary>
-    /// <param name="bitmask">The bitmask value to check.</param>
-    /// <returns>True if the bitmask is allowed; false if forbidden.</returns>
+    /// <summary>Checks whether a bitmask value is allowed in this format.</summary>
     public bool IsBitmaskAllowed(int bitmask) => _allowedBitmasks.Contains(bitmask);
 
     /// <summary>
@@ -156,42 +153,8 @@ public sealed class AutoTileFormatDefinition
         {
             BitmaskType.Corner4 => Enumerable.Range(0, 16).ToHashSet(),
             BitmaskType.Edge4 => Enumerable.Range(0, 16).ToHashSet(),
-            BitmaskType.Full8 => GetValidBlobBitmasks(),
+            BitmaskType.Full8 => NeighborBitmask8.GetValid47Masks().ToHashSet(),
             _ => Enumerable.Range(0, 16).ToHashSet()
         };
-    }
-
-    /// <summary>
-    /// Gets the set of valid 8-bit blob bitmasks (47 combinations where corners
-    /// are only valid when both adjacent edges are present).
-    /// </summary>
-    private static HashSet<int> GetValidBlobBitmasks()
-    {
-        var valid = new HashSet<int>();
-
-        // For blob format, a corner is only valid if both adjacent edges are set
-        // N=1, NE=2, E=4, SE=8, S=16, SW=32, W=64, NW=128
-        for (var mask = 0; mask < 256; mask++)
-        {
-            var isValid = true;
-
-            // NE corner (2) requires N (1) and E (4)
-            if ((mask & 2) != 0 && ((mask & 1) == 0 || (mask & 4) == 0))
-                isValid = false;
-            // SE corner (8) requires E (4) and S (16)
-            if ((mask & 8) != 0 && ((mask & 4) == 0 || (mask & 16) == 0))
-                isValid = false;
-            // SW corner (32) requires S (16) and W (64)
-            if ((mask & 32) != 0 && ((mask & 16) == 0 || (mask & 64) == 0))
-                isValid = false;
-            // NW corner (128) requires W (64) and N (1)
-            if ((mask & 128) != 0 && ((mask & 64) == 0 || (mask & 1) == 0))
-                isValid = false;
-
-            if (isValid)
-                valid.Add(mask);
-        }
-
-        return valid;
     }
 }

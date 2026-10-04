@@ -1,8 +1,10 @@
 ﻿using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Controllers;
@@ -14,6 +16,7 @@ public partial class DeckBuilderController : Node
 {
     // Default values as constants
     private static readonly Vector3 DefaultScreenSpawnPosition = Vector3.Zero;
+    private const MapGenerationType DefaultMapType = MapGenerationType.RegularGrid;
 
     private IGameSessionService? _gameSession;
     private bool _awaitingMapReset;
@@ -23,6 +26,8 @@ public partial class DeckBuilderController : Node
     [Export] public InteractableButton ActivateButton { get; set; } = null!;
     [Export] public PackedScene BattleScreenScene { get; set; } = null!;
     [Export] public SimpleWorldMapScreen WorldTileMapScreenScene { get; set; } = null!;
+    [Export] public IrregularWorldMapScreen IrregularMapScreen { get; set; } = null!;
+    [Export] public MapGenerationType MapType { get; set; } = DefaultMapType;
     [Export] public Vector3 ScreenSpawnPosition { get; set; } = DefaultScreenSpawnPosition;
 
     public override bool _PropertyCanRevert(StringName property)
@@ -30,6 +35,7 @@ public partial class DeckBuilderController : Node
         return property.ToString() switch
         {
             nameof(ScreenSpawnPosition) => true,
+            nameof(MapType) => true,
             _ => base._PropertyCanRevert(property)
         };
     }
@@ -39,6 +45,7 @@ public partial class DeckBuilderController : Node
         return property.ToString() switch
         {
             nameof(ScreenSpawnPosition) => Variant.From(DefaultScreenSpawnPosition),
+            nameof(MapType) => (int)DefaultMapType,
             _ => base._PropertyGetRevert(property)
         };
     }
@@ -62,6 +69,9 @@ public partial class DeckBuilderController : Node
             gameSession.StateChanged += OnSessionStateChanged;
         });
 
+        if (IrregularMapScreen != null)
+            IrregularMapScreen.ExplorationFinished += OnIrregularExplorationFinished;
+
         // Initially disable the button
         UpdateButtonState();
     }
@@ -73,6 +83,9 @@ public partial class DeckBuilderController : Node
         {
             _gameSession.StateChanged -= OnSessionStateChanged;
         }
+
+        if (IrregularMapScreen != null)
+            IrregularMapScreen.ExplorationFinished -= OnIrregularExplorationFinished;
     }
 
     /// <summary>
@@ -82,13 +95,27 @@ public partial class DeckBuilderController : Node
     private void OnSessionStateChanged(SessionState newState)
     {
         if (newState == SessionState.SessionComplete)
-        {
-            ILog.Print("Session complete - map revealed, awaiting reset");
+            AwaitMapReset();
+    }
 
-            // Enable button and flag that next press should just reset the view
-            _awaitingMapReset = true;
-            ActivateButton.SetEnabled(true);
-        }
+    /// <summary>
+    /// Called when the irregular mesh map finishes exploring (map stays visible).
+    /// </summary>
+    private void OnIrregularExplorationFinished()
+    {
+        if (MapType == MapGenerationType.IrregularMesh)
+            AwaitMapReset();
+    }
+
+    /// <summary>
+    /// Enables the button and flags that the next press should just reset the view.
+    /// </summary>
+    private void AwaitMapReset()
+    {
+        ILog.Print("Session complete - map revealed, awaiting reset");
+
+        _awaitingMapReset = true;
+        ActivateButton.SetEnabled(true);
     }
 
     /// <summary>
@@ -101,10 +128,13 @@ public partial class DeckBuilderController : Node
     }
 
     /// <summary>
-    /// Updates the biome distribution preview based on current MapCardSlot cards
+    /// Updates the biome distribution preview based on current MapCardSlot cards.
+    /// Only applicable for regular grid maps.
     /// </summary>
     private void UpdateBiomePreview()
     {
+        if (MapType != MapGenerationType.RegularGrid) return;
+
         var signatures = MapCardSlot.GetCardSignatures();
         WorldTileMapScreenScene.UpdateBiomePreview(signatures.ToArray());
     }
@@ -133,7 +163,7 @@ public partial class DeckBuilderController : Node
             ILog.Print("Resetting map view after session complete");
 
             _awaitingMapReset = false;
-            WorldTileMapScreenScene.ResetToInitialState();
+            ResetCurrentScreen();
 
             // Update biome preview and button state based on current slot contents
             UpdateBiomePreview();
@@ -148,21 +178,102 @@ public partial class DeckBuilderController : Node
             return;
         }
 
-        ILog.Print("Cards present - starting new map generation...");
+        if (MapType == MapGenerationType.IrregularMesh && IrregularMapScreen == null)
+        {
+            ILog.Error("IrregularMapScreen not assigned! Cannot generate irregular mesh map.");
+            return;
+        }
+
+        ILog.Print($"Cards present - starting {MapType} map generation...");
 
         // Consume the seed cards and ability deck
         var mapSeeds = MapCardSlot.ConsumeAllCardSignatures();
         var abilities = AbilityDeckSlot.ConsumeAllCardSignatures();
 
-        // Initialize the map screen with new seeds
-        if (mapSeeds.Count > 0)
-            WorldTileMapScreenScene.Initialize(mapSeeds.ToArray(), abilities.ToArray());
+        if (mapSeeds.Count == 0) return;
+
+        // Initialize the appropriate screen based on MapType
+        switch (MapType)
+        {
+            case MapGenerationType.RegularGrid:
+                StartRegularGridGeneration(mapSeeds.ToArray(), abilities.ToArray());
+                break;
+
+            case MapGenerationType.IrregularMesh:
+                StartIrregularMeshGeneration(mapSeeds.ToArray(), abilities.ToArray());
+                break;
+        }
 
         // Clear slots and disable button
         AbilityDeckSlot.Clear();
         MapCardSlot.Clear();
         UpdateButtonState();
 
-        ILog.Print("3D map screen generated successfully!");
+        ILog.Print($"{MapType} map screen generated successfully!");
+    }
+
+    /// <summary>
+    /// Starts map generation using the regular grid system (via GameSessionService).
+    /// </summary>
+    private void StartRegularGridGeneration(CardSignature[] mapSeeds, CardSignature[] abilities)
+    {
+        // Show regular grid screen, hide irregular screen
+        WorldTileMapScreenScene.Visible = true;
+        if (IrregularMapScreen != null) IrregularMapScreen.Visible = false;
+
+        WorldTileMapScreenScene.Initialize(mapSeeds, abilities);
+    }
+
+    /// <summary>
+    /// Starts map generation using the irregular mesh system.
+    /// </summary>
+    private void StartIrregularMeshGeneration(CardSignature[] mapSeeds, CardSignature[] abilities)
+    {
+        // Show irregular screen, hide regular grid screen
+        WorldTileMapScreenScene.Visible = false;
+        IrregularMapScreen.Visible = true;
+
+        // Generate a seed from the card signatures
+        var seed = GenerateSeedFromSignatures(mapSeeds);
+
+        // Pass seed, card signatures for terrain, and abilities for combat
+        IrregularMapScreen.GenerateMap(seed, mapSeeds, abilities);
+    }
+
+    /// <summary>
+    /// Generates an integer seed from card signatures for reproducible generation.
+    /// </summary>
+    private static int GenerateSeedFromSignatures(CardSignature[] signatures)
+    {
+        if (signatures.Length == 0) return 0;
+
+        // Combine signature elements into a seed
+        var hash = 17;
+        foreach (var sig in signatures)
+        {
+            foreach (var element in sig.Elements)
+            {
+                // Convert float to int bits and combine
+                hash = hash * 31 + System.BitConverter.SingleToInt32Bits(element);
+            }
+        }
+        return hash;
+    }
+
+    /// <summary>
+    /// Resets the currently active screen to initial state.
+    /// </summary>
+    private void ResetCurrentScreen()
+    {
+        switch (MapType)
+        {
+            case MapGenerationType.RegularGrid:
+                WorldTileMapScreenScene.ResetToInitialState();
+                break;
+
+            case MapGenerationType.IrregularMesh:
+                IrregularMapScreen?.Reset();
+                break;
+        }
     }
 }

@@ -16,7 +16,7 @@ public class SimpleCombatSystem
     /// <summary>
     /// Combat participant that implements ICombatant for command pattern integration.
     /// </summary>
-    public class Combatant : ICombatant
+    internal sealed class Combatant : ICombatant
     {
         public required string Name { get; set; }
         public int Health { get; set; }
@@ -165,9 +165,9 @@ public class SimpleCombatSystem
         return Mathf.Clamp(totalIntensity / 8f, 0.1f, 1.0f);
     }
 
-    public (int playerHealth, int playerMaxHealth, int enemyHealth, int enemyMaxHealth) GetCombatStatus()
+    public CombatStatus GetCombatStatus()
     {
-        return (_player.Health, _player.MaxHealth, _enemy.Health, _enemy.MaxHealth);
+        return new CombatStatus(_player.Health, _player.MaxHealth, _enemy.Health, _enemy.MaxHealth);
     }
 
     /// <summary>

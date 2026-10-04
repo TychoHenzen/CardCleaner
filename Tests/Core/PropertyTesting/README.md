@@ -95,12 +95,12 @@ StatisticalAssertions.AssertWeightedDistribution(samples,
     new Dictionary<string, double> { ["common"] = 9, ["rare"] = 1 });
 
 // Continuous distributions
-StatisticalAssertions.AssertMean(samples, expectedMean: 0.0, tolerance: 0.1);
-StatisticalAssertions.AssertVariance(samples, expectedVariance: 1.0, tolerance: 0.2);
-StatisticalAssertions.AssertStandardDeviation(samples, expectedStdDev: 1.0, tolerance: 0.1);
+SampleStatisticsAssertions.AssertMean(samples, expectedMean: 0.0, tolerance: 0.1);
+SampleStatisticsAssertions.AssertVariance(samples, expectedVariance: 1.0, tolerance: 0.2);
+SampleStatisticsAssertions.AssertStandardDeviation(samples, expectedStdDev: 1.0, tolerance: 0.1);
 
 // Bounds checking
-StatisticalAssertions.AssertAllInBounds(samples, min: -1.0, max: 1.0);
+SampleStatisticsAssertions.AssertAllInBounds(samples, min: -1.0, max: 1.0);
 ```
 
 ## Creating New Generators

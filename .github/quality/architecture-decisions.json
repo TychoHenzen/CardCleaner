@@ -1,0 +1,344 @@
+[
+  {
+    "findingId": "87bcb072752ead62e42cb9f5aac3889e701167abe3271a0625f013a05bc9a7ea",
+    "fingerprint": "09290c348d179c4eaaa755a3d801b520b1cc344291bc8b9ceee8b2b0712e5ce9",
+    "baseIdentity": "c4edf4be6ef3cbe354bf959d8f1bd4f4fbaf9bf2",
+    "targetIdentity": "4d0908b464bc968415f1f99cc6899fa19aac7e6fda40ca8f7c8fb36d9879eb83",
+    "reason": "Pure type move: PropagationResult struct moved unchanged from WfcPropagator.cs to Contracts/PropagationResult.cs to satisfy types-per-file. It is the return type of public WfcPropagator methods, so it must stay public; members and namespace unchanged.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:22:02.555Z"
+  },
+  {
+    "findingId": "aeede1a68d149d76423d71ca1d1af313e04f230edff8f9bf4e6e11215f33e335",
+    "fingerprint": "09290c348d179c4eaaa755a3d801b520b1cc344291bc8b9ceee8b2b0712e5ce9",
+    "baseIdentity": "c4edf4be6ef3cbe354bf959d8f1bd4f4fbaf9bf2",
+    "targetIdentity": "4d0908b464bc968415f1f99cc6899fa19aac7e6fda40ca8f7c8fb36d9879eb83",
+    "reason": "Pure type move: CollapsedNeighborInfo struct moved unchanged from WfcConstraintContext.cs to Constraints/CollapsedNeighborInfo.cs to satisfy types-per-file. It is the type of the public WfcConstraintContext.NeighborInfo property, so it must stay public; members and namespace unchanged.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:22:52.660Z"
+  },
+  {
+    "findingId": "ff099209654c2d409141be274a37344192ff0d369a4dedb029fd2fdc6a5fd9c2",
+    "fingerprint": "09290c348d179c4eaaa755a3d801b520b1cc344291bc8b9ceee8b2b0712e5ce9",
+    "baseIdentity": "c4edf4be6ef3cbe354bf959d8f1bd4f4fbaf9bf2",
+    "targetIdentity": "4d0908b464bc968415f1f99cc6899fa19aac7e6fda40ca8f7c8fb36d9879eb83",
+    "reason": "Pure type move: CollapsedNeighborInfo.int is the synthesized constructor-signature entry of the same unchanged struct moved from WfcConstraintContext.cs; see the CollapsedNeighborInfo acknowledgement.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:23:42.026Z"
+  },
+  {
+    "findingId": "6f5548c6668b9b17783bf5b3fd6cab61007069f8910c0f9c78793abd157a2bda",
+    "fingerprint": "45d4457cb8bf0a7220bdf27a2f0fae611d6a0514c6f184900283a74a58d5d27c",
+    "baseIdentity": "762f23d7733ff9f6dbd92ac8527c1c800b4df275",
+    "targetIdentity": "5505ada4f6f3a2885a5862ace2bb20c5697a2ecce12347e13c857cd5be97661b",
+    "reason": "Pure type move: CombatContext class moved unchanged from ICombatCommand.cs to its own file to satisfy types-per-file. It is the parameter type of the public ICombatCommand methods, so it must stay public; members and namespace unchanged.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:42:31.343Z"
+  },
+  {
+    "findingId": "88dcf19751dde5d96304eb1f182945515e2da43ee0dc82bcaa02149e1004d028",
+    "fingerprint": "45d4457cb8bf0a7220bdf27a2f0fae611d6a0514c6f184900283a74a58d5d27c",
+    "baseIdentity": "762f23d7733ff9f6dbd92ac8527c1c800b4df275",
+    "targetIdentity": "5505ada4f6f3a2885a5862ace2bb20c5697a2ecce12347e13c857cd5be97661b",
+    "reason": "Pure type move: ExplorationContext class moved unchanged from IExplorationStrategy.cs to its own file to satisfy types-per-file. It is the parameter type of the public IExplorationStrategy.GetNextTarget, so it must stay public; members and namespace unchanged.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:43:24.004Z"
+  },
+  {
+    "findingId": "f8500f9bd020b0c5f6a8ff3ea2af5401eb5da0e51d30f24e8f0fa490880f52a7",
+    "fingerprint": "45d4457cb8bf0a7220bdf27a2f0fae611d6a0514c6f184900283a74a58d5d27c",
+    "baseIdentity": "762f23d7733ff9f6dbd92ac8527c1c800b4df275",
+    "targetIdentity": "5505ada4f6f3a2885a5862ace2bb20c5697a2ecce12347e13c857cd5be97661b",
+    "reason": "Deliberate signature change, not a pure move: SimpleCombatSystem.GetCombatStatus now returns the named readonly record struct CombatStatus instead of an unnamed 4-tuple (clears the unnamed-tuple error). Positional order and deconstruction are identical, there are no production callers, and all existing deconstructing test callers compile and pass unchanged.",
+    "author": "Tycho",
+    "time": "2026-10-03T20:44:14.313Z"
+  },
+  {
+    "findingId": "01d894595a01273ba435c59f9eaca01f95b676426d0bbdeab2f425cb36406405",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: public Godot resource TilePoolEntry moved unchanged out of TilePool.cs (types-per-file; Godot expects one script class per file). It is the element type of the public TilePool entries so it must stay public; namespace unchanged, no scene or resource references the old path (member: TilePoolEntry._PropertyGetRevert)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:10:03.052Z"
+  },
+  {
+    "findingId": "1edc9927b56eb3075abe1259c826499478b86956479f9e4a992ab23d9e970ec1",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: VariantWeight struct moved unchanged out of VariationGroup.cs (types-per-file). It is part of the public VariationGroup.Variants signature so it must stay public; namespace unchanged (member: VariantWeight.get)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:10:51.577Z"
+  },
+  {
+    "findingId": "218895e4f5a1665fc3a22cb3f3d0355caaa63c9594045fdfe341a0628a9fb79f",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: public Godot resource RadialGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: RadialGradient._PropertyGetRevert)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:11:39.602Z"
+  },
+  {
+    "findingId": "279b3dd9dd9e77a9e538cab3c21fd55b9d0467bf639c0bb1e74614dd974bbae8",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: MapGenerationConfig moved unchanged out of IMapGenerator.cs (types-per-file). It is the parameter type of the public IMapGenerator.GenerateAsync so it must stay public; namespace unchanged (member: MapGenerationConfig.get)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:12:27.096Z"
+  },
+  {
+    "findingId": "36b2d3e40051c34da2649754f5155faec008453dde70acf93d8141ae4db55be9",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: public Godot resource NoiseGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: NoiseGradient.GetSignatureAt)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:13:16.303Z"
+  },
+  {
+    "findingId": "421a65e33d9763c758fc4cbae755a6feb5dae2ad855652c403245af890aa10fe",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: ProfileStats moved unchanged out of IProfiler.cs (types-per-file). It is the return type of the public IProfiler.GetStatistics so it must stay public; namespace unchanged (member: ProfileStats.get)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:14:03.164Z"
+  },
+  {
+    "findingId": "4fb09a0c97141addf7d732353198880fdae99d4a7eede9dcd90192e77d31237f",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: public Godot resource NoiseGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: NoiseGradient._PropertyGetRevert)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:14:50.686Z"
+  },
+  {
+    "findingId": "547ed9dcad6e0c2b551b8aa78d2b6e25c99c0faab3828d7891c3d4fe3e4b7dbf",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: NoOpProfiler moved unchanged out of IProfiler.cs (types-per-file) and narrowed to internal sealed since it is only constructed inside the assembly (private fields and a property initializer); the flagged public members are its IProfiler interface implementations and do not widen the public surface; namespace unchanged (member: NoOpProfiler.Clear)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:15:39.110Z"
+  },
+  {
+    "findingId": "548658d3f2e5b40f726f3b0c851491182753c563b8b2577ffbb14eaa9cd59973",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: public Godot resource TilePoolEntry moved unchanged out of TilePool.cs (types-per-file; Godot expects one script class per file). It is the element type of the public TilePool entries so it must stay public; namespace unchanged, no scene or resource references the old path (member: TilePoolEntry.get)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:16:31.283Z"
+  },
+  {
+    "findingId": "64569abd0c975923c16c29d5b1432cef0801c3cc30fa818025e6e47f26063683",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: NoOpProfiler moved unchanged out of IProfiler.cs (types-per-file) and narrowed to internal sealed since it is only constructed inside the assembly (private fields and a property initializer); the flagged public members are its IProfiler interface implementations and do not widen the public surface; namespace unchanged (member: NoOpProfiler.Dispose)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:17:20.606Z"
+  },
+  {
+    "findingId": "66b256635c48affde39392ea742f0ae8ce9fbb463686462298291fa8a1023eb0",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: VariationGroupCollection moved unchanged out of VariationGroup.cs (types-per-file). It is a public dependency of TileRegistry so it must stay public; namespace unchanged (member: VariationGroupCollection.GetAllGroups)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:18:11.624Z"
+  },
+  {
+    "findingId": "6b2621788a2a9d62f64ab14953508a7ea384d42e106e744af4d93d5b03b706c8",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: VariationGroupCollection moved unchanged out of VariationGroup.cs (types-per-file). It is a public dependency of TileRegistry so it must stay public; namespace unchanged (member: VariationGroupCollection.GetGroupByBaseName)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:19:00.222Z"
+  },
+  {
+    "findingId": "6c6151091530fa95f0f2ed1d90ae49052d7568e48f8c5964d382725d19915fca",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: ProfileStats moved unchanged out of IProfiler.cs (types-per-file). It is the return type of the public IProfiler.GetStatistics so it must stay public; namespace unchanged (member: ProfileStats.Record)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:19:52.650Z"
+  },
+  {
+    "findingId": "7b258cf7488e38a06cac9aedbb71b2cd1a6e5a7aa76e4debeef825fec9c4f3a7",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: NoOpProfiler moved unchanged out of IProfiler.cs (types-per-file) and narrowed to internal sealed since it is only constructed inside the assembly (private fields and a property initializer); the flagged public members are its IProfiler interface implementations and do not widen the public surface; namespace unchanged (member: EmptyDisposable.Dispose)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:20:44.986Z"
+  },
+  {
+    "findingId": "8370628554266e0b1c89568e664189c765f2af60b8845fcd0cbb55609bd6767f",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: ProfileStats moved unchanged out of IProfiler.cs (types-per-file). It is the return type of the public IProfiler.GetStatistics so it must stay public; namespace unchanged (member: ProfileStats.AverageMs)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:21:36.336Z"
+  },
+  {
+    "findingId": "859bd5d52d0d8990096db5884e6337f732d070842c33e75d6085d495737adce5",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: public Godot resource RadialGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: RadialGradient.GetSignatureAt)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:22:27.947Z"
+  },
+  {
+    "findingId": "8f2a0b7f09ed291a782326bc67e5e3c46c0645934e34892b47a69429a283a2c7",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: public Godot resource RadialGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: RadialGradient._PropertyCanRevert)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:23:23.884Z"
+  },
+  {
+    "findingId": "8f6e500341c3800ac3d36691f64492a897f6defc07ec4fd76d9618a7f581f4ca",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: VariationGroupCollection moved unchanged out of VariationGroup.cs (types-per-file). It is a public dependency of TileRegistry so it must stay public; namespace unchanged (member: VariationGroupCollection.Count)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:24:13.635Z"
+  },
+  {
+    "findingId": "9046d86d0f145f02d3512b4fa5e04ac3f7d5a2f0482ba4c1635326a4f452b9d5",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: VariationGroupCollection moved unchanged out of VariationGroup.cs (types-per-file). It is a public dependency of TileRegistry so it must stay public; namespace unchanged (member: VariationGroupCollection.FindGroupContaining)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:25:01.160Z"
+  },
+  {
+    "findingId": "9f8e160620488aeaaa0fff5aae7a14739cd607e7d284445f2cacf3f22746100e",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: VariationGroupCollection moved unchanged out of VariationGroup.cs (types-per-file). It is a public dependency of TileRegistry so it must stay public; namespace unchanged (member: VariationGroupCollection.GetVariantsFor)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:25:51.032Z"
+  },
+  {
+    "findingId": "a3630dffc80fc2121ea2c5e172b4ba9a076904748d23bfd504344c535871c577",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: public Godot resource NoiseGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: NoiseGradient._PropertyCanRevert)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:26:38.863Z"
+  },
+  {
+    "findingId": "ab80bbdbb0027fefa7530475e886ca6d05f5812f23047211f2a0b681b884d174",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: TransitionEntry moved unchanged out of CompiledTransitionMap.cs (types-per-file). It is the value type of the public CompiledTransitionMap.Transitions JSON model so it must stay public; namespace unchanged (member: TransitionEntry.get)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:27:27.141Z"
+  },
+  {
+    "findingId": "ab8f5b85d138241d07f8c9d47d125c67e1c4217315a4a2ef8d97e763ed35e6a3",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: public Godot resource NoiseGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: NoiseGradient.get)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:28:15.828Z"
+  },
+  {
+    "findingId": "b356c765620210ea3aef80e3f389e493118b1917f4d2ba7b31ad7952182c5463",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: TileAnimation record moved unchanged out of TileDefinition.cs (types-per-file). It is the type of the public TileDefinition.Animation property so it must stay public; namespace unchanged (member: TileAnimation.TotalDuration)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:29:04.599Z"
+  },
+  {
+    "findingId": "b51b125d5350b8d26a89e7258d2fc79bfce4ca09123a6d15acf12ac3a848e77e",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: public Godot resource RadialGradient moved unchanged from BaselineGradient.cs into its own file (types-per-file; Godot expects one script class per file). It is a [GlobalClass] resource and must stay public; namespace unchanged, no scene or resource references the old path (member: RadialGradient.get)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:29:53.373Z"
+  },
+  {
+    "findingId": "b8aa737798deaaa460d17de40b10ce9d4aa014e6ebbcbe34c54917594c55a35e",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: NoOpProfiler moved unchanged out of IProfiler.cs (types-per-file) and narrowed to internal sealed since it is only constructed inside the assembly (private fields and a property initializer); the flagged public members are its IProfiler interface implementations and do not widen the public surface; namespace unchanged (member: NoOpProfiler.RecordDuration)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:30:43.112Z"
+  },
+  {
+    "findingId": "be9ee2c1ce3098abbfa1011c9a40a13d12d936cca386370a9c06163adb52af67",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: DecorationData moved unchanged out of DecorationRenderer.cs (types-per-file). It is the return type of the public DecorationRenderer.GetDecoration and used by DecorationMultiMeshLayer so it must stay public; namespace unchanged (member: DecorationData.get)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:31:31.666Z"
+  },
+  {
+    "findingId": "cbab941a8a0e3eab3f634667b61bdc3b212f7b59f0b5c742bd9f233685aa92ad",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: TileAnimation record moved unchanged out of TileDefinition.cs (types-per-file). It is the type of the public TileDefinition.Animation property so it must stay public; namespace unchanged (member: TileAnimation.get)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:32:19.942Z"
+  },
+  {
+    "findingId": "d7a8e1b6600d75d149290b00b121ab0a18df827e155e25eb0ea2d868421ba8a7",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: VariationGroupCollection moved unchanged out of VariationGroup.cs (types-per-file). It is a public dependency of TileRegistry so it must stay public; namespace unchanged (member: VariationGroupCollection.Clear)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:33:09.201Z"
+  },
+  {
+    "findingId": "da0d480137af0cc3e96efbc04cc0ef0760a5f4db8f8fec40eb056c4566e2a225",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: VariationGroupCollection moved unchanged out of VariationGroup.cs (types-per-file). It is a public dependency of TileRegistry so it must stay public; namespace unchanged (member: VariationGroupCollection.AddGroup)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:34:00.668Z"
+  },
+  {
+    "findingId": "e4a6548637f87344fe8fee931e66111d4168736b4707b80f3e66111ef30313e1",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: public Godot resource TilePoolEntry moved unchanged out of TilePool.cs (types-per-file; Godot expects one script class per file). It is the element type of the public TilePool entries so it must stay public; namespace unchanged, no scene or resource references the old path (member: TilePoolEntry._PropertyCanRevert)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:34:51.341Z"
+  },
+  {
+    "findingId": "fd05cce34e04426fd097e617dcf35dc1811152839ea1ac36e7b3f1dab1fe0fdb",
+    "fingerprint": "5842ab2e787a58906386385ba0af0732c2c1e32fb557ac0b004c73d25f0e2fba",
+    "baseIdentity": "59eeec381362820da27083de731b9c6c580ee012",
+    "targetIdentity": "738ede29e2da4517adfef610b67edbf46d1ed3ac404d4f20cffa586b3b5d772f",
+    "reason": "Pure type move: VariantCoord moved unchanged out of CompiledTransitionMap.cs (types-per-file). It is the element type of the public TransitionEntry.Variants JSON model so it must stay public; namespace unchanged (member: VariantCoord.get)",
+    "author": "Tycho",
+    "time": "2026-10-03T21:35:40.937Z"
+  }
+]

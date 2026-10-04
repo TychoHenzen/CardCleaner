@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling.Validation;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.AutoTiling;
@@ -13,7 +14,7 @@ public static class BitmaskConsistencyValidator
     /// <summary>
     /// A detected bitmask violation where adjacent tiles disagree on a shared data cell.
     /// </summary>
-    public readonly struct Violation
+    internal readonly struct Violation
     {
         public Vector2I TileA { get; init; }
         public Vector2I TileB { get; init; }
@@ -41,7 +42,7 @@ public static class BitmaskConsistencyValidator
     /// <param name="visualWidth">Width of visual grid</param>
     /// <param name="visualHeight">Height of visual grid</param>
     /// <returns>List of violations found</returns>
-    public static List<Violation> ValidateConsistency(
+    internal static List<Violation> ValidateConsistency(
         Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> overlays,
         int visualWidth,
         int visualHeight)
@@ -62,9 +63,9 @@ public static class BitmaskConsistencyValidator
                 // A.NE and B.NW share data cell [vy-1, vx]
                 // A.SE and B.SW share data cell [vy, vx]
                 CheckSharedCorner(violations, posA, posB, overlayA, overlayB,
-                    NeighborBitmaskCorner.NorthEast, NeighborBitmaskCorner.NorthWest, "NE", "NW");
+                    new SharedCorner(NeighborBitmaskCorner.NorthEast, NeighborBitmaskCorner.NorthWest, "NE", "NW"));
                 CheckSharedCorner(violations, posA, posB, overlayA, overlayB,
-                    NeighborBitmaskCorner.SouthEast, NeighborBitmaskCorner.SouthWest, "SE", "SW");
+                    new SharedCorner(NeighborBitmaskCorner.SouthEast, NeighborBitmaskCorner.SouthWest, "SE", "SW"));
             }
 
             // Check vertical neighbor (tile below)
@@ -74,9 +75,9 @@ public static class BitmaskConsistencyValidator
                 // A.SW and B.NW share data cell [vy, vx-1]
                 // A.SE and B.NE share data cell [vy, vx]
                 CheckSharedCorner(violations, posA, posB, overlayA, overlayB,
-                    NeighborBitmaskCorner.SouthWest, NeighborBitmaskCorner.NorthWest, "SW", "NW");
+                    new SharedCorner(NeighborBitmaskCorner.SouthWest, NeighborBitmaskCorner.NorthWest, "SW", "NW"));
                 CheckSharedCorner(violations, posA, posB, overlayA, overlayB,
-                    NeighborBitmaskCorner.SouthEast, NeighborBitmaskCorner.NorthEast, "SE", "NE");
+                    new SharedCorner(NeighborBitmaskCorner.SouthEast, NeighborBitmaskCorner.NorthEast, "SE", "NE"));
             }
         }
 
@@ -88,14 +89,13 @@ public static class BitmaskConsistencyValidator
         Vector2I posA, Vector2I posB,
         (string BaseTileId, string TopTileId, int Bitmask) overlayA,
         (string BaseTileId, string TopTileId, int Bitmask) overlayB,
-        int cornerBitA, int cornerBitB,
-        string cornerNameA, string cornerNameB)
+        SharedCorner corner)
     {
         // If both tiles have the SAME topTerrain, their bits for shared corners MUST match
         if (overlayA.TopTileId == overlayB.TopTileId)
         {
-            var aBitSet = (overlayA.Bitmask & cornerBitA) != 0;
-            var bBitSet = (overlayB.Bitmask & cornerBitB) != 0;
+            var aBitSet = (overlayA.Bitmask & corner.BitA) != 0;
+            var bBitSet = (overlayB.Bitmask & corner.BitB) != 0;
 
             if (aBitSet != bBitSet)
             {
@@ -107,8 +107,8 @@ public static class BitmaskConsistencyValidator
                     TileBTopTerrain = overlayB.TopTileId,
                     TileABitmask = overlayA.Bitmask,
                     TileBBitmask = overlayB.Bitmask,
-                    CornerNameA = cornerNameA,
-                    CornerNameB = cornerNameB,
+                    CornerNameA = corner.NameA,
+                    CornerNameB = corner.NameB,
                     TileASaysSet = aBitSet,
                     TileBSaysSet = bBitSet
                 });
@@ -163,7 +163,7 @@ public static class BitmaskConsistencyValidator
     /// <summary>
     /// Analyzes a bitmask grid and reports statistics.
     /// </summary>
-    public static (int TotalTiles, int UniqueTopTerrains, int TopTerrainConflicts, int BitmaskViolations) Analyze(
+    internal static ConsistencyStats Analyze(
         Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> overlays,
         int visualWidth,
         int visualHeight)
@@ -177,6 +177,6 @@ public static class BitmaskConsistencyValidator
         var terrainConflicts = DetectTopTerrainConflicts(overlays, visualWidth, visualHeight);
         var bitmaskViolations = ValidateConsistency(overlays, visualWidth, visualHeight);
 
-        return (overlays.Count, topTerrains.Count, terrainConflicts.Count, bitmaskViolations.Count);
+        return new ConsistencyStats(overlays.Count, topTerrains.Count, terrainConflicts.Count, bitmaskViolations.Count);
     }
 }

@@ -18,10 +18,10 @@ public class AdjacencyConstraint : IWfcConstraint
     /// <inheritdoc />
     public float GetProbabilityModifier(WfcConstraintContext context)
     {
-        // Check all collapsed neighbors
-        foreach (var neighborPos in context.Grid.GetNeighbors(context.Position))
+        // Check all collapsed neighbors using topology-agnostic API
+        foreach (var neighborId in context.Topology.GetNeighbors(context.CellId))
         {
-            var neighborTile = context.Grid.GetCollapsedTileAt(neighborPos);
+            var neighborTile = context.Topology.GetCollapsedTileAt(neighborId);
             if (neighborTile == null) continue;
 
             // If this tile can't be adjacent to the neighbor, hard ban it

@@ -1,15 +1,9 @@
+using System;
 using System.Linq;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
-using CardCleaner.Scripts.Features.Worldgen;
-using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using CardCleaner.Tests.Core.PropertyTesting;
-using CardCleaner.Tests.Core.PropertyTesting.Generators;
-using CardCleaner.Tests.Mocks;
+using CardCleaner.Tests.Features.Worldgen.Support;
 using FsCheck;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Properties;
@@ -20,126 +14,36 @@ namespace CardCleaner.Tests.Features.Worldgen.Properties;
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
-public partial class DeterminismProperties : PropertyTestBase
+public partial class DeterminismProperties : MapGenerationPropertyBase
 {
-    private BiomeRegistry _registry = null!;
-    private MockTileRegistry _tileRegistry = null!;
-
-    [BeforeTest]
-    public new void SetupPropertyTest()
-    {
-        base.SetupPropertyTest();
-        CardSignatureArbitrary.Register();
-        _registry = new BiomeRegistry();
-        _registry.RegisterDefaultBiomes();
-        _tileRegistry = MockTileRegistry.CreateWithTestTiles();
-    }
-
-    /// <summary>
-    ///     Simple gradient that returns a constant signature at all positions.
-    /// </summary>
-    private sealed partial class ConstantGradient : BaselineGradient
-    {
-        private readonly CardSignature _signature;
-
-        public ConstantGradient(CardSignature signature)
-        {
-            _signature = signature;
-        }
-
-        public override CardSignature GetSignatureAt(Vector2I position, Vector2I mapSize) => _signature;
-    }
-
-    #region Generators
-
-    private static Gen<(int Seed, int Width, int Height)> MapGenParams(int minSize = 5, int maxSize = 15) =>
-        from seed in Gen.Choose(1, 1000000)
-        from width in Gen.Choose(minSize, maxSize)
-        from height in Gen.Choose(minSize, maxSize)
-        select (seed, width, height);
-
-    private static Gen<(int Seed, int Count)> SeedCountParams =>
-        from seed in Gen.Choose(1, 1000000)
-        from count in Gen.Choose(1, 10)
-        select (seed, count);
-
-    #endregion
+    private const float SignatureTolerance = 0.0001f;
 
     #region SimpleMapGenerator Determinism
 
     [TestCase]
     public void SimpleMapGeneratorIsDeterministic_TileLayout()
     {
-        Property(p => p
-            .ForAll(
-                Arb.From(MapGenParams()),
-                args =>
-                {
-                    var size = new Vector2I(args.Width, args.Height);
-
-                    var map1 = GenerateMapWithSeed((ulong)args.Seed, size);
-                    var map2 = GenerateMapWithSeed((ulong)args.Seed, size);
-
-                    return TileLayoutsMatch(map1, map2, size);
-                })
-            .Iterations(100));
+        TwiceGeneratedMapsMatch(5, 15, (map1, map2, request) => TileLayoutsMatch(map1, map2, request.Size));
     }
 
     [TestCase]
     public void SimpleMapGeneratorIsDeterministic_PlayerStart()
     {
-        Property(p => p
-            .ForAll(
-                Arb.From(MapGenParams()),
-                args =>
-                {
-                    var size = new Vector2I(args.Width, args.Height);
-
-                    var map1 = GenerateMapWithSeed((ulong)args.Seed, size);
-                    var map2 = GenerateMapWithSeed((ulong)args.Seed, size);
-
-                    return map1.PlayerStart == map2.PlayerStart;
-                })
-            .Iterations(100));
+        TwiceGeneratedMapsMatch(5, 15, (map1, map2, _) => map1.PlayerStart == map2.PlayerStart);
     }
 
     [TestCase]
     public void SimpleMapGeneratorIsDeterministic_EnemyPositions()
     {
-        Property(p => p
-            .ForAll(
-                Arb.From(MapGenParams(8)),
-                args =>
-                {
-                    var size = new Vector2I(args.Width, args.Height);
-
-                    var map1 = GenerateMapWithSeed((ulong)args.Seed, size);
-                    var map2 = GenerateMapWithSeed((ulong)args.Seed, size);
-
-                    if (map1.EnemyPositions.Count != map2.EnemyPositions.Count)
-                        return false;
-
-                    return map1.EnemyPositions.SequenceEqual(map2.EnemyPositions);
-                })
-            .Iterations(100));
+        TwiceGeneratedMapsMatch(8, 15, (map1, map2, _) =>
+            map1.EnemyPositions.Count == map2.EnemyPositions.Count &&
+            map1.EnemyPositions.SequenceEqual(map2.EnemyPositions));
     }
 
     [TestCase]
     public void SimpleMapGeneratorIsDeterministic_PassableTileCount()
     {
-        Property(p => p
-            .ForAll(
-                Arb.From(MapGenParams(5, 20)),
-                args =>
-                {
-                    var size = new Vector2I(args.Width, args.Height);
-
-                    var map1 = GenerateMapWithSeed((ulong)args.Seed, size);
-                    var map2 = GenerateMapWithSeed((ulong)args.Seed, size);
-
-                    return map1.PassableTiles.Count == map2.PassableTiles.Count;
-                })
-            .Iterations(100));
+        TwiceGeneratedMapsMatch(5, 20, (map1, map2, _) => map1.PassableTiles.Count == map2.PassableTiles.Count);
     }
 
     #endregion
@@ -160,7 +64,7 @@ public partial class DeterminismProperties : PropertyTestBase
                     var sig1 = CardSignature.Random(rng1);
                     var sig2 = CardSignature.Random(rng2);
 
-                    return sig1.DistanceTo(sig2) < 0.0001f;
+                    return sig1.DistanceTo(sig2) < SignatureTolerance;
                 })
             .Iterations(200));
     }
@@ -168,24 +72,22 @@ public partial class DeterminismProperties : PropertyTestBase
     [TestCase]
     public void CardSignatureRandomSequenceIsDeterministic()
     {
+        var seedAndCount =
+            from seed in Gen.Choose(1, 1000000)
+            from count in Gen.Choose(1, 10)
+            select new SeedAndCount(seed, count);
+
         Property(p => p
             .ForAll(
-                Arb.From(SeedCountParams),
+                Arb.From(seedAndCount),
                 args =>
                 {
                     var rng1 = new RandomNumberGenerator { Seed = (ulong)args.Seed };
                     var rng2 = new RandomNumberGenerator { Seed = (ulong)args.Seed };
 
-                    for (var i = 0; i < args.Count; i++)
-                    {
-                        var sig1 = CardSignature.Random(rng1);
-                        var sig2 = CardSignature.Random(rng2);
-
-                        if (sig1.DistanceTo(sig2) > 0.0001f)
-                            return false;
-                    }
-
-                    return true;
+                    return Enumerable.Range(0, args.Count)
+                        .All(_ => CardSignature.Random(rng1)
+                            .DistanceTo(CardSignature.Random(rng2)) <= SignatureTolerance);
                 })
             .Iterations(100));
     }
@@ -194,13 +96,14 @@ public partial class DeterminismProperties : PropertyTestBase
 
     #region Helper Methods
 
-    private SimpleMapData GenerateMapWithSeed(ulong seed, Vector2I size)
+    private readonly record struct SeedAndCount(int Seed, int Count);
+
+    private void TwiceGeneratedMapsMatch(
+        int minSize,
+        int maxSize,
+        Func<SimpleMapData, SimpleMapData, MapRequest, bool> matches)
     {
-        var rng = new RandomNumberGenerator { Seed = seed };
-        var gradient = new ConstantGradient(new CardSignature());
-        var biomeProvider = new BiomeMapGenerator(_registry, gradient, size);
-        var generator = new SimpleMapGenerator(rng, biomeProvider, _tileRegistry, _tileRegistry);
-        return generator.GenerateMap(size);
+        MapProperty(minSize, maxSize, 100, request => matches(GenerateMap(request), GenerateMap(request), request));
     }
 
     private static bool TileLayoutsMatch(SimpleMapData map1, SimpleMapData map2, Vector2I size)

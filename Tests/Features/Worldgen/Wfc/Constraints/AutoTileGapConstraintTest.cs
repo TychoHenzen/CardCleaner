@@ -2,9 +2,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Tests.Mocks;
-using GdUnit4;
 using Godot;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc.Constraints;
 
@@ -218,9 +216,9 @@ public class AutoTileGapConstraintTest
     {
         return new WfcConstraintContext
         {
-            Position = position,
+            CellId = _grid.PositionToCellId(position),
             TileId = tileId,
-            Grid = _grid,
+            Topology = _grid,
             Rng = null
         };
     }
