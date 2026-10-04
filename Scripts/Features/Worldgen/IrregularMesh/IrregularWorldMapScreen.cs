@@ -157,7 +157,7 @@ public partial class IrregularWorldMapScreen : Node3D
         GD.Print($"[IrregularWorldMapScreen] Generating WFC map with seed {seed}");
 
         var generator = new MeshTerrainGenerator(adjacencyRules, tileToTerrainType);
-        var mesh = generator.Generate(MeshRings, null, seed);
+        var mesh = generator.GenerateFromRules(MeshRings, seed);
 
         var session = BeginSession(mesh);
         var playerStartCell = session.Prepare(seed, abilityCards?.ToList());

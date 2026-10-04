@@ -18,6 +18,7 @@ public class MeshTerrainGenerator
 {
     private readonly WfcMapGenerator _wfcGenerator;
     private readonly MeshTerrainWfcRunner _terrainWfc;
+    private readonly RuleDrivenMeshTerrain? _ruleTerrain;
 
     /// <summary>
     /// When true, uses mesh topology for foreground WFC.
@@ -61,6 +62,7 @@ public class MeshTerrainGenerator
             tileRegistry,
             null,
             tileToTerrainType);
+        _ruleTerrain = new RuleDrivenMeshTerrain(adjacencyRules, tileToTerrainType);
     }
 
     /// <summary>
@@ -83,6 +85,7 @@ public class MeshTerrainGenerator
             null,
             null,
             tileToTerrainType);
+        _ruleTerrain = new RuleDrivenMeshTerrain(wfcRules, tileToTerrainType);
 
         GD.PrintErr("[MeshTerrainGen] Using legacy constructor without tile registry - two-pass WFC will not work!");
     }
@@ -125,6 +128,20 @@ public class MeshTerrainGenerator
 
         var registry = new BiomeRegistry();
         return Generate(rings, registry, _ => biome, (ulong)seed, relaxationIterations);
+    }
+
+    /// <summary>
+    /// Generates terrain by running WFC over the adjacency rules and tile mapping given at construction.
+    /// Uses fallback terrain when the generator has no rules or the solve fails.
+    /// </summary>
+    internal IrregularMesh GenerateFromRules(int rings, int seed, int relaxationIterations = 15)
+    {
+        var mesh = CreateMesh(rings, seed, relaxationIterations);
+        if (_ruleTerrain?.Generate(mesh, (ulong)seed) == true)
+            return mesh;
+
+        _terrainWfc.ApplyFallbackTerrain(mesh);
+        return mesh;
     }
 
     private BiomeRegistry? _biomeRegistry;

@@ -33,7 +33,7 @@ internal sealed class MeshForegroundWfc
             return false;
         }
 
-        var initialTiles = CollectInitialTiles(biomeRegistry);
+        var initialTiles = MeshForegroundTileCandidates.Collect(_tileRegistry, biomeRegistry);
         if (initialTiles.Count == 0)
         {
             GD.PrintErr("[MeshTerrainGen] No valid tiles for mesh WFC");
@@ -58,20 +58,6 @@ internal sealed class MeshForegroundWfc
         GD.Print($"[MeshTerrainGen] Direct mesh WFC succeeded in {result.Iterations} iterations");
         AssignTiles(mesh, topology);
         return true;
-    }
-
-    private HashSet<string> CollectInitialTiles(BiomeRegistry biomeRegistry)
-    {
-        var initialTiles = new HashSet<string>();
-        var biomeIds = biomeRegistry.GetAllBiomeIds().ToList();
-
-        foreach (var tile in _tileRegistry!.GetAllTiles())
-        {
-            if (biomeIds.Any(biomeId => tile.IsAllowedInBiome(biomeId)))
-                initialTiles.Add(tile.Id);
-        }
-
-        return initialTiles;
     }
 
     private WfcSolver CreateSolver(IrregularMesh mesh)
@@ -153,7 +139,7 @@ internal sealed class MeshForegroundWfc
 
         var gapTiles = new List<string>();
         var autoTiles = new List<string>();
-        foreach (var tile in _tileRegistry.GetAllTiles())
+        foreach (var tile in _tileRegistry.GetAllTiles().Where(MeshForegroundTileCandidates.IsCandidate))
         {
             (tile.HasAutoTileVariants ? autoTiles : gapTiles).Add(tile.Id);
         }
