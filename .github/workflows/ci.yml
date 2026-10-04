@@ -48,7 +48,7 @@ jobs:
 
       - name: Run GdUnit tests
         shell: pwsh
-        run: ./scripts/ci/Run-GdUnit.ps1 -GodotBinary $env:GODOT_BIN
+        run: ./Scripts/ci/Run-GdUnit.ps1 -GodotBinary $env:GODOT_BIN
 
       - name: Upload GdUnit reports
         if: failure()
