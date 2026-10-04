@@ -42,7 +42,6 @@ ScreenMesh = NodePath("CSGMesh3D")
 StatusLabel = NodePath("SubViewport/UILayer/UI/StatusLabel")
 PlayerSprite = NodePath("SubViewport/PlayerAgent")
 CombatUI = NodePath("SubViewport/UILayer/UI/CombatUI")
-MapType = 1
 
 [node name="CSGMesh3D" type="MeshInstance3D" parent="."]
 material_override = SubResource("StandardMaterial3D_10on8")
