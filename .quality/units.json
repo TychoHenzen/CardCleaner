@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 799,
+  "fileCount": 806,
   "files": [
     {
       "path": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
@@ -2218,6 +2218,11 @@
       "classification": "production"
     },
     {
+      "path": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidates.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
       "path": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
       "language": "cs",
       "classification": "production"
@@ -2229,6 +2234,11 @@
     },
     {
       "path": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainWfcRunner.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -2369,6 +2379,11 @@
     },
     {
       "path": "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraph.cs",
+      "language": "cs",
+      "classification": "production"
+    },
+    {
+      "path": "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraphUpdater.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -3638,6 +3653,16 @@
       "classification": "test"
     },
     {
+      "path": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+      "language": "cs",
+      "classification": "test"
+    },
+    {
+      "path": "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs",
+      "language": "cs",
+      "classification": "test"
+    },
+    {
       "path": "Tests/Features/Worldgen/IrregularMesh/StructurePlacementScenarios/StructureLifecycleTest.cs",
       "language": "cs",
       "classification": "test"
@@ -3858,12 +3883,22 @@
       "classification": "test"
     },
     {
+      "path": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+      "language": "cs",
+      "classification": "test"
+    },
+    {
       "path": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorGridAndWindowTest.cs",
       "language": "cs",
       "classification": "test"
     },
     {
       "path": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorWindowBoundaryTest.cs",
+      "language": "cs",
+      "classification": "test"
+    },
+    {
+      "path": "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs",
       "language": "cs",
       "classification": "test"
     },
@@ -3999,24 +4034,24 @@
     }
   ],
   "summary": {
-    "total": 7499,
+    "total": 7577,
     "errors": 0,
-    "warnings": 7499,
+    "warnings": 7577,
     "byRule": {
       "test-only-export": 9,
       "duplicate-block": 68,
-      "file-length": 350,
-      "complexity": 231,
-      "function-length": 264,
+      "file-length": 353,
+      "complexity": 230,
+      "function-length": 267,
       "nesting-depth": 11,
-      "param-count": 171,
+      "param-count": 172,
       "else-branch": 90,
-      "stateless-method": 1548,
+      "stateless-method": 1553,
       "comment-bloat": 49,
       "comment-restates-code": 95,
       "output-parameter": 25,
       "flag-parameter": 73,
-      "line-length": 4515
+      "line-length": 4582
     },
     "byFile": {
       "Scripts/Core/Services/MapGenerationProfiler.cs": 2,
@@ -4032,11 +4067,11 @@
       "Scripts/Features/Deckbuilder/Models/WorldMap/WorldMapRuntime.cs": 26,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularWorldMapScreen.cs": 24,
       "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/HexGridGenerator.cs": 21,
-      "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs": 14,
+      "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs": 16,
       "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainWfcRunner.cs": 21,
-      "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs": 17,
+      "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs": 21,
       "Scripts/Features/Worldgen/IrregularMesh/WorldMap/TerrainGeneratorFactory.cs": 7,
-      "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs": 26,
+      "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs": 28,
       "Tests/Core/Services/VariationGroupScenarios/TileProbabilityConstraintTest.cs": 29,
       "Tests/Features/Card/Services/SignatureCardGeneratorTest.cs": 23,
       "Tests/Features/Worldgen/AutoTiling/AutoTileHelperScenarios/AutoTileHelperNeighborRuleTest.cs": 10,
@@ -4152,7 +4187,7 @@
       "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs": 12,
       "Scripts/Features/Worldgen/IrregularMesh/Topology/MeshAdjacencyBuilder.cs": 5,
       "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapRenderLayer.cs": 10,
-      "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs": 18,
+      "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs": 19,
       "Scripts/Features/Worldgen/Wfc/Connectivity/Graph/UnionFind.cs": 4,
       "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraph.cs": 15,
       "Scripts/Features/Worldgen/Wfc/Constraints/BiomeAffinityConstraint.cs": 12,
@@ -4161,12 +4196,14 @@
       "Scripts/Features/Worldgen/Wfc/Constraints/NoSolidFillConstraint.cs": 20,
       "Scripts/Features/Worldgen/Wfc/Constraints/SpatialCoherenceConstraint.cs": 23,
       "Scripts/Features/Worldgen/Wfc/EntropyCache.cs": 17,
+      "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs": 13,
       "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs": 9,
       "Scripts/Features/Worldgen/Wfc/RegionAnalyzer.cs": 8,
       "Scripts/Features/Worldgen/Wfc/RegionTracker.cs": 4,
+      "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs": 11,
       "Scripts/Features/Worldgen/Wfc/WfcAdjacencyRules.cs": 11,
       "Scripts/Features/Worldgen/Wfc/WfcCellState.cs": 15,
-      "Scripts/Features/Worldgen/Wfc/WfcGrid.cs": 33,
+      "Scripts/Features/Worldgen/Wfc/WfcGrid.cs": 37,
       "Scripts/Features/Worldgen/Wfc/WfcMapDataAdapter.cs": 15,
       "Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs": 35,
       "Scripts/Features/Worldgen/Wfc/WfcPropagator.cs": 23,
@@ -4282,6 +4319,7 @@
       "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMapGeneratorTest.cs": 8,
       "Tests/Features/Worldgen/IrregularMesh/IrregularMeshMovementControllerTest.cs": 3,
       "Tests/Features/Worldgen/IrregularMesh/IrregularTerrainRendererTest.cs": 3,
+      "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs": 11,
       "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs": 15,
       "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenTest.cs": 9,
       "Tests/Features/Worldgen/IrregularMesh/StructurePlacementScenarios/StructureLifecycleTest.cs": 15,
@@ -4395,7 +4433,6 @@
       "Scripts/Features/Worldgen/Wfc/Constraints/TileProbabilityConstraint.cs": 16,
       "Scripts/Features/Worldgen/Wfc/Generation/WfcConstraintSet.cs": 11,
       "Scripts/Features/Worldgen/Wfc/Grid/WfcFrontierEntropySelector.cs": 7,
-      "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs": 9,
       "Scripts/Features/Worldgen/Wfc/Solving/MultiCellReserver.cs": 5,
       "Tests/Core/PropertyTesting/Generators/CardSignatureArbitrary.cs": 5,
       "Tests/Core/PropertyTesting/Generators/NeighborBitmaskArbitrary.cs": 5,
@@ -4418,7 +4455,9 @@
       "Scripts/Features/Deckbuilder/Components/ViewportScreenSetup.cs": 12,
       "Scripts/Features/Deckbuilder/Services/Session/Generation/DefaultSessionMapBuilder.cs": 9,
       "Scripts/Features/Deckbuilder/Services/SimpleMapGenerator/SimpleMapDiagnostics.cs": 13,
+      "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs": 11,
       "Scripts/Features/Worldgen/Wfc/Analysis/DistributionMetrics.cs": 2,
+      "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs": 7,
       "Scripts/Features/Worldgen/Wfc/Modifiers/Soft/DiminishingReturnsSoftModifier.cs": 3,
       "Scripts/Features/Worldgen/Wfc/Solving/WfcRetrySolver.cs": 5,
       "Tests/Features/Deckbuilder/Services/FrontierExplorationScenarios/FrontierExplorationTestBase.cs": 5,
@@ -4440,9 +4479,9 @@
       "Scripts/Features/Worldgen/Biomes/BiomeDefinition.cs": 6,
       "Scripts/Features/Worldgen/IrregularMesh/Decoration/DecorationMultiMeshLayer.cs": 6,
       "Scripts/Features/Worldgen/IrregularMesh/Rendering/TerrainQuadMeshWriter.cs": 8,
-      "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs": 6,
       "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs": 4,
       "Scripts/Features/Worldgen/Wfc/Contracts/WfcSolveResult.cs": 5,
+      "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs": 6,
       "Tests/Core/PropertyTesting/Generators/MapGridArbitrary.cs": 4,
       "Tests/Core/PropertyTesting/Generators/MapGridGenerators.cs": 7,
       "Tests/Features/Worldgen/Support/MapGenerationPropertyBase.cs": 14,
@@ -4456,7 +4495,6 @@
       "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/MeshSubdivider.cs": 10,
       "Scripts/Features/Worldgen/Wfc/Connectivity/Graph/ArticulationPointFinder.cs": 6,
       "Scripts/Features/Worldgen/Wfc/Generation/GapTileAdjacencyConfigurator.cs": 5,
-      "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs": 4,
       "addons/tile_editor/TileEditorDock.TestHooks.cs": 1,
       "Scripts/Core/Data/GameSettings.cs": 8,
       "Scripts/Core/Data/LayerData.cs": 3,
@@ -4479,7 +4517,7 @@
       "Scripts/Features/Worldgen/Biomes/BiomeRegistry.cs": 3,
       "Scripts/Features/Worldgen/Biomes/Pools/TilePoolEntry.cs": 2,
       "Scripts/Features/Worldgen/Wfc/Generation/WfcTileSetBuilder.cs": 6,
-      "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs": 10,
+      "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs": 13,
       "Tests/Core/Data/LayerDataTest.cs": 2,
       "Tests/Core/PropertyTesting/Generators/GradientArbitraries.cs": 8,
       "Tests/Core/Services/GodotProgressTest.cs": 2,
@@ -4507,6 +4545,7 @@
       "Tests/Features/Worldgen/Properties/MapGenerationSuites/MapSignatureProperties.cs": 9,
       "Tests/Features/Worldgen/Wfc/BiomeGridScenarios/BiomeGridGenerationTest.cs": 4,
       "Tests/Features/Worldgen/Wfc/Constraints/WfcConstraintContextTest.cs": 2,
+      "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs": 6,
       "Tests/Mocking/AsyncTestServiceImpl.cs": 1,
       "Tests/Mocking/TestServiceImpl.cs": 1,
       "addons/tile_editor/AutoTileFormatEditor/AutoTileFormatEditorPanelCommands.cs": 8,
@@ -4525,9 +4564,8 @@
       "Scripts/Features/Worldgen/AutoTiling/BuiltInAutoTileFormats.cs": 5,
       "Scripts/Features/Worldgen/AutoTiling/ITransitionResolver.cs": 11,
       "Scripts/Features/Worldgen/AutoTiling/Transitions/TransitionEntry.cs": 3,
-      "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs": 1,
+      "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs": 3,
       "Scripts/Features/Worldgen/Wfc/Constraints/IEntropyInvalidator.cs": 6,
-      "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs": 7,
       "Scripts/Features/Worldgen/Wfc/Modifiers/Soft/CompactnessSoftModifier.cs": 7,
       "Scripts/Core/Data/CardTemplate.cs": 19,
       "Scripts/Features/Card/Services/CardSpawningService.cs": 6,
@@ -4627,6 +4665,7 @@
       "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/WorkingFace.cs": 1,
       "Scripts/Features/Worldgen/IrregularMesh/MeshGeneration/WorkingMesh.cs": 1,
       "Scripts/Features/Worldgen/IrregularMesh/MeshGenerator.cs": 10,
+      "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidates.cs": 4,
       "Scripts/Features/Worldgen/IrregularMesh/MeshVertex.cs": 1,
       "Scripts/Features/Worldgen/IrregularMesh/Rendering/SolidColorMeshBuilder.cs": 2,
       "Scripts/Features/Worldgen/IrregularMesh/Rendering/TerrainAtlasLoader.cs": 1,
@@ -4637,6 +4676,7 @@
       "Scripts/Features/Worldgen/Wfc/Analysis/TileTally.cs": 1,
       "Scripts/Features/Worldgen/Wfc/Connectivity/Graph/ClosestPair.cs": 2,
       "Scripts/Features/Worldgen/Wfc/Connectivity/Graph/ComponentPairFinder.cs": 5,
+      "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraphUpdater.cs": 4,
       "Scripts/Features/Worldgen/Wfc/Constraints/AutoTileGapConstraint.cs": 6,
       "Scripts/Features/Worldgen/Wfc/Constraints/IWfcConstraint.cs": 1,
       "Scripts/Features/Worldgen/Wfc/Constraints/Spatial/CoherenceNeighborScan.cs": 1,
@@ -4673,13 +4713,15 @@
       "Tests/Features/Worldgen/AutoTiling/RandomReproduction/RandomAutoTileReproductionTestBase.cs": 3,
       "Tests/Features/Worldgen/AutoTiling/TileDataLoaderFormat/TileDataLoaderFormatTestBase.cs": 1,
       "Tests/Features/Worldgen/AutoTiling/TransitionMap/TransitionMapValidationTestBase.cs": 2,
-      "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs": 7,
+      "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs": 7,
+      "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs": 6,
       "Tests/Features/Worldgen/Support/ConstantSignatureGradient.cs": 1,
       "Tests/Features/Worldgen/Support/MapRequest.cs": 1,
       "Tests/Features/Worldgen/Support/SignedMapRequest.cs": 2,
       "Tests/Features/Worldgen/Support/TwoZoneGradient.cs": 2,
       "Tests/Features/Worldgen/Wfc/BiomeGridScenarios/FixedGradient.cs": 1,
       "Tests/Features/Worldgen/Wfc/Constraints/ConnectivityScenarios/ConnectivityConstraintTestBase.cs": 3,
+      "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs": 7,
       "Tests/Mocking/MockCardShaderRenderer.cs": 1,
       "Tests/Scenes/GameplayMapSceneContractTest.cs": 4,
       "Tests/TestUtilities/Fixtures/OpenFloorMap.cs": 3,
@@ -4860,18 +4902,18 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 104,
+      "line": 107,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:104, Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:176",
+      "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:107, Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:193",
       "metric": 2
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 176,
+      "line": 193,
       "rule": "duplicate-block",
       "severity": "warn",
-      "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:104, Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:176",
+      "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:107, Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:193",
       "metric": 2
     },
     {
@@ -6103,8 +6145,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 175 lines",
-      "metric": 175
+      "message": "file is 161 lines",
+      "metric": 161
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
@@ -6127,8 +6169,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 231 lines",
-      "metric": 231
+      "message": "file is 248 lines",
+      "metric": 248
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/StructurePlacement.cs",
@@ -6159,8 +6201,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 237 lines",
-      "metric": 237
+      "message": "file is 241 lines",
+      "metric": 241
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Connectivity/Graph/UnionFind.cs",
@@ -6227,6 +6269,14 @@
       "metric": 199
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 106 lines",
+      "metric": 106
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
       "line": 1,
       "rule": "file-length",
@@ -6251,6 +6301,14 @@
       "metric": 119
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 114 lines",
+      "metric": 114
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/WfcAdjacencyRules.cs",
       "line": 1,
       "rule": "file-length",
@@ -6271,8 +6329,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 299 lines",
-      "metric": 299
+      "message": "file is 300 lines",
+      "metric": 300
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcMapDataAdapter.cs",
@@ -6303,16 +6361,16 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 276 lines",
-      "metric": 276
+      "message": "file is 277 lines",
+      "metric": 277
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 206 lines",
-      "metric": 206
+      "message": "file is 211 lines",
+      "metric": 211
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
@@ -7233,6 +7291,14 @@
       "severity": "warn",
       "message": "file is 199 lines",
       "metric": 199
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+      "line": 1,
+      "rule": "file-length",
+      "severity": "warn",
+      "message": "file is 104 lines",
+      "metric": 104
     },
     {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
@@ -8963,14 +9029,6 @@
       "metric": 8
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-      "line": 10,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "BuildCollapsedNeighbors() cyclomatic complexity 6",
-      "metric": 6
-    },
-    {
       "file": "Scripts/Features/Worldgen/Wfc/Solving/MultiCellReserver.cs",
       "line": 38,
       "rule": "complexity",
@@ -9028,7 +9086,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 76,
+      "line": 77,
       "rule": "complexity",
       "severity": "warn",
       "message": "Solve() cyclomatic complexity 6",
@@ -10524,7 +10582,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-      "line": 108,
+      "line": 94,
       "rule": "function-length",
       "severity": "warn",
       "message": "AssignTiles() is 33 lines",
@@ -10547,8 +10605,16 @@
       "metric": 37
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+      "line": 26,
+      "rule": "function-length",
+      "severity": "warn",
+      "message": "Generate() is 33 lines",
+      "metric": 33
+    },
+    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 143,
+      "line": 160,
       "rule": "function-length",
       "severity": "warn",
       "message": "GenerateWithCards() is 42 lines",
@@ -10635,6 +10701,14 @@
       "metric": 43
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+      "line": 58,
+      "rule": "function-length",
+      "severity": "warn",
+      "message": "Create() is 31 lines",
+      "metric": 31
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/EntropyCache.cs",
       "line": 123,
       "rule": "function-length",
@@ -10708,7 +10782,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 76,
+      "line": 77,
       "rule": "function-length",
       "severity": "warn",
       "message": "Solve() is 36 lines",
@@ -10716,7 +10790,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 147,
+      "line": 148,
       "rule": "function-length",
       "severity": "warn",
       "message": "CollapseNextCell() is 53 lines",
@@ -10729,6 +10803,14 @@
       "severity": "warn",
       "message": "SelectTile() is 33 lines",
       "metric": 33
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+      "line": 168,
+      "rule": "function-length",
+      "severity": "warn",
+      "message": "CreateWeightContext() is 31 lines",
+      "metric": 31
     },
     {
       "file": "Tests/Addons/TileEditor/TileEditorWiringSmokeTest.cs",
@@ -12820,7 +12902,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 93,
+      "line": 96,
       "rule": "param-count",
       "severity": "warn",
       "message": "Generate() takes 5 parameters",
@@ -12828,7 +12910,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 117,
+      "line": 120,
       "rule": "param-count",
       "severity": "warn",
       "message": "Generate() takes 4 parameters",
@@ -12836,7 +12918,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 143,
+      "line": 160,
       "rule": "param-count",
       "severity": "warn",
       "message": "GenerateWithCards() takes 5 parameters",
@@ -12927,8 +13009,8 @@
       "line": 58,
       "rule": "param-count",
       "severity": "warn",
-      "message": "Create() takes 5 parameters",
-      "metric": 5
+      "message": "Create() takes 6 parameters",
+      "metric": 6
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Contracts/WfcGenerationResult.cs",
@@ -12968,6 +13050,14 @@
       "rule": "param-count",
       "severity": "warn",
       "message": "ReserveBlock() takes 4 parameters",
+      "metric": 4
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
+      "line": 19,
+      "rule": "param-count",
+      "severity": "warn",
+      "message": "WfcCollapseEffects() takes 4 parameters",
       "metric": 4
     },
     {
@@ -13052,7 +13142,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 48,
+      "line": 47,
       "rule": "param-count",
       "severity": "warn",
       "message": "WfcSolver() takes 7 parameters",
@@ -13764,7 +13854,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-      "line": 108,
+      "line": 94,
       "rule": "else-branch",
       "severity": "warn",
       "message": "AssignTiles() has 1 else branch(es) — prefer guard clauses",
@@ -13860,7 +13950,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
-      "line": 51,
+      "line": 56,
       "rule": "else-branch",
       "severity": "warn",
       "message": "RegisterBlob() has 1 else branch(es) — prefer guard clauses",
@@ -15739,8 +15829,16 @@
       "metric": 1
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+      "line": 36,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "WfcSolver() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 117,
+      "line": 120,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "Generate() never touches instance state — make it a free function",
@@ -15772,7 +15870,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 70,
+      "line": 73,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "Complete() never touches instance state — make it a free function",
@@ -15852,7 +15950,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
-      "line": 60,
+      "line": 64,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "Enumerate() never touches instance state — make it a free function",
@@ -15860,10 +15958,26 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
-      "line": 71,
+      "line": 91,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "Collect() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+      "line": 48,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetWindowNeighbors() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+      "line": 54,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "GetWindowNeighborsNonAlloc() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -15948,15 +16062,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-      "line": 221,
+      "line": 228,
       "rule": "stateless-method",
       "severity": "warn",
-      "message": "GetNeighborsNonAlloc() never touches instance state — make it a free function",
+      "message": "GetWindowNeighbors() never touches instance state — make it a free function",
       "metric": 1
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-      "line": 254,
+      "line": 255,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "HasCollapsedNeighbor() never touches instance state — make it a free function",
@@ -15964,7 +16078,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-      "line": 259,
+      "line": 260,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetCollapsedTileAt() never touches instance state — make it a free function",
@@ -15972,7 +16086,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-      "line": 264,
+      "line": 265,
       "rule": "stateless-method",
       "severity": "warn",
       "message": "GetNeighbors8() never touches instance state — make it a free function",
@@ -22611,6 +22725,22 @@
       "metric": 1
     },
     {
+      "file": "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs",
+      "line": 39,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "Solve_AddsExactlyTheCollapsedPassableCellsToGraph() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs",
+      "line": 59,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "Solve_ConnectsAdjacentPassableCellsInGraph() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
       "file": "Tests/Features/Worldgen/Wfc/WfcAdjacencyRulesTest.cs",
       "line": 32,
       "rule": "stateless-method",
@@ -28228,7 +28358,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 212,
+      "line": 215,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "OnCombatEnded() takes a boolean flag; split the behavior or name the policy",
@@ -42435,6 +42565,38 @@
       "metric": 94
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidates.cs",
+      "line": 11,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidates.cs",
+      "line": 12,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidates.cs",
+      "line": 16,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidates.cs",
+      "line": 18,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 100 chars",
+      "metric": 100
+    },
+    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
       "line": 28,
       "rule": "line-length",
@@ -42449,6 +42611,14 @@
       "severity": "warn",
       "message": "line is 93 chars",
       "metric": 93
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+      "line": 36,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
@@ -42476,7 +42646,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-      "line": 96,
+      "line": 82,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -42484,7 +42654,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-      "line": 108,
+      "line": 94,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -42492,11 +42662,19 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-      "line": 139,
+      "line": 125,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 110 chars",
       "metric": 110
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+      "line": 142,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 105 chars",
+      "metric": 105
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshTerrainProjection.cs",
@@ -42635,8 +42813,80 @@
       "metric": 84
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+      "line": 9,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+      "line": 17,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 102 chars",
+      "metric": 102
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+      "line": 24,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+      "line": 28,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+      "line": 31,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+      "line": 36,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+      "line": 40,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+      "line": 44,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+      "line": 53,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 51,
+      "line": 52,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -42644,7 +42894,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 87,
+      "line": 65,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+      "line": 90,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 117 chars",
@@ -42652,7 +42910,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 127,
+      "line": 130,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -42660,7 +42918,31 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 154,
+      "line": 134,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 105 chars",
+      "metric": 105
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+      "line": 135,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+      "line": 137,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+      "line": 171,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -42668,7 +42950,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 161,
+      "line": 178,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -42676,7 +42958,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 170,
+      "line": 187,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -42684,7 +42966,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 186,
+      "line": 203,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -42692,7 +42974,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 193,
+      "line": 210,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -42700,7 +42982,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "line": 224,
+      "line": 241,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -43204,7 +43486,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 50,
+      "line": 42,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+      "line": 53,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -43212,7 +43502,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 76,
+      "line": 79,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -43220,7 +43510,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 93,
+      "line": 96,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 114 chars",
@@ -43228,7 +43518,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 129,
+      "line": 132,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -43236,7 +43526,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 130,
+      "line": 133,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -43244,7 +43534,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 161,
+      "line": 164,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -43252,7 +43542,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 187,
+      "line": 190,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
@@ -43260,7 +43550,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 189,
+      "line": 192,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -43268,7 +43558,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 191,
+      "line": 194,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -43276,7 +43566,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 207,
+      "line": 210,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -43284,7 +43574,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 232,
+      "line": 236,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -43547,6 +43837,38 @@
       "metric": 85
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraphUpdater.cs",
+      "line": 7,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraphUpdater.cs",
+      "line": 15,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraphUpdater.cs",
+      "line": 22,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 103 chars",
+      "metric": 103
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraphUpdater.cs",
+      "line": 24,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/AdjacencyConstraint.cs",
       "line": 22,
       "rule": "line-length",
@@ -43567,8 +43889,8 @@
       "line": 50,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
+      "message": "line is 87 chars",
+      "metric": 87
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/AutoTileGapConstraint.cs",
@@ -43825,6 +44147,22 @@
       "severity": "warn",
       "message": "line is 82 chars",
       "metric": 82
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs",
+      "line": 13,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs",
+      "line": 19,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Constraints/ConnectivityConstraint.cs",
@@ -44959,12 +45297,28 @@
       "line": 56,
       "rule": "line-length",
       "severity": "warn",
+      "message": "line is 116 chars",
+      "metric": 116
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+      "line": 58,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 116 chars",
+      "metric": 116
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+      "line": 60,
+      "rule": "line-length",
+      "severity": "warn",
       "message": "line is 90 chars",
       "metric": 90
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
-      "line": 58,
+      "line": 62,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -44991,16 +45345,24 @@
       "line": 10,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
+      "message": "line is 106 chars",
+      "metric": 106
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
       "line": 11,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+      "line": 36,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
@@ -45015,8 +45377,32 @@
       "line": 46,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
+      "message": "line is 118 chars",
+      "metric": 118
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+      "line": 50,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 99 chars",
+      "metric": 99
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+      "line": 54,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 105 chars",
+      "metric": 105
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+      "line": 56,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 105 chars",
+      "metric": 105
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Modifiers/BlobSizeTracker.cs",
@@ -45212,39 +45598,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-      "line": 26,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-      "line": 32,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 92 chars",
-      "metric": 92
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-      "line": 52,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 83 chars",
-      "metric": 83
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-      "line": 73,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-      "line": 76,
+      "line": 33,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 88 chars",
@@ -45252,7 +45606,55 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-      "line": 79,
+      "line": 35,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 86 chars",
+      "metric": 86
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 49,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 53,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 73,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 94,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 85 chars",
+      "metric": 85
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 97,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 88 chars",
+      "metric": 88
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "line": 100,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -45260,7 +45662,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-      "line": 82,
+      "line": 103,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -45284,7 +45686,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
-      "line": 8,
+      "line": 9,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -45292,7 +45694,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
-      "line": 28,
+      "line": 32,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -45300,7 +45702,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
-      "line": 57,
+      "line": 46,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
+      "line": 62,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -45631,16 +46041,16 @@
       "line": 213,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
+      "message": "line is 89 chars",
+      "metric": 89
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
       "line": 214,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 91 chars",
-      "metric": 91
+      "message": "line is 81 chars",
+      "metric": 81
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
@@ -45660,7 +46070,39 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-      "line": 236,
+      "line": 225,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 94 chars",
+      "metric": 94
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+      "line": 226,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+      "line": 228,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 90 chars",
+      "metric": 90
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+      "line": 231,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+      "line": 237,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 82 chars",
@@ -45668,7 +46110,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-      "line": 254,
+      "line": 255,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 99 chars",
@@ -45676,7 +46118,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-      "line": 259,
+      "line": 260,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 98 chars",
@@ -45684,7 +46126,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-      "line": 276,
+      "line": 277,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 87 chars",
@@ -45692,7 +46134,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-      "line": 281,
+      "line": 282,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -46063,20 +46505,20 @@
       "line": 44,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 85 chars",
-      "metric": 85
+      "message": "line is 93 chars",
+      "metric": 93
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 59,
+      "line": 45,
       "rule": "line-length",
       "severity": "warn",
-      "message": "line is 95 chars",
-      "metric": 95
+      "message": "line is 98 chars",
+      "metric": 98
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 60,
+      "line": 62,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 84 chars",
@@ -46084,7 +46526,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 70,
+      "line": 71,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -46092,7 +46534,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 76,
+      "line": 77,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 105 chars",
@@ -46100,7 +46542,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 109,
+      "line": 110,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -46108,7 +46550,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 114,
+      "line": 115,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 100 chars",
@@ -46116,7 +46558,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 131,
+      "line": 132,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 104 chars",
@@ -46124,7 +46566,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 141,
+      "line": 142,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 108 chars",
@@ -46132,7 +46574,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 161,
+      "line": 162,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 110 chars",
@@ -46140,7 +46582,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 173,
+      "line": 174,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 106 chars",
@@ -46148,7 +46590,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 193,
+      "line": 194,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -46156,7 +46598,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 194,
+      "line": 195,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 91 chars",
@@ -46164,7 +46606,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 225,
+      "line": 226,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -46172,7 +46614,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-      "line": 259,
+      "line": 260,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 97 chars",
@@ -46276,7 +46718,15 @@
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "line": 201,
+      "line": 181,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+      "line": 206,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 104 chars",
@@ -57071,12 +57521,20 @@
       "line": 41,
       "rule": "line-length",
       "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+      "line": 43,
+      "rule": "line-length",
+      "severity": "warn",
       "message": "line is 90 chars",
       "metric": 90
     },
     {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
-      "line": 60,
+      "line": 62,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -57084,7 +57542,23 @@
     },
     {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
-      "line": 75,
+      "line": 81,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+      "line": 82,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+      "line": 95,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -57092,7 +57566,7 @@
     },
     {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
-      "line": 79,
+      "line": 99,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 94 chars",
@@ -57100,7 +57574,7 @@
     },
     {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
-      "line": 81,
+      "line": 101,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -57233,6 +57707,110 @@
       "severity": "warn",
       "message": "line is 81 chars",
       "metric": 81
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+      "line": 10,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 102 chars",
+      "metric": 102
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+      "line": 24,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 101 chars",
+      "metric": 101
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+      "line": 30,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+      "line": 36,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 113 chars",
+      "metric": 113
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+      "line": 52,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+      "line": 69,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 91 chars",
+      "metric": 91
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+      "line": 73,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 95 chars",
+      "metric": 95
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs",
+      "line": 12,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 104 chars",
+      "metric": 104
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs",
+      "line": 40,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 106 chars",
+      "metric": 106
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs",
+      "line": 45,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs",
+      "line": 47,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 102 chars",
+      "metric": 102
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs",
+      "line": 55,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 81 chars",
+      "metric": 81
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs",
+      "line": 57,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 106 chars",
+      "metric": 106
     },
     {
       "file": "Tests/Features/Worldgen/IrregularMesh/StructurePlacementScenarios/StructureLifecycleTest.cs",
@@ -59451,6 +60029,62 @@
       "metric": 91
     },
     {
+      "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+      "line": 8,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+      "line": 23,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
+      "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+      "line": 32,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+      "line": 35,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+      "line": 45,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 83 chars",
+      "metric": 83
+    },
+    {
+      "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+      "line": 47,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 96 chars",
+      "metric": 96
+    },
+    {
+      "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+      "line": 56,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 92 chars",
+      "metric": 92
+    },
+    {
       "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorGridAndWindowTest.cs",
       "line": 25,
       "rule": "line-length",
@@ -59521,6 +60155,38 @@
       "severity": "warn",
       "message": "line is 85 chars",
       "metric": 85
+    },
+    {
+      "file": "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs",
+      "line": 19,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs",
+      "line": 29,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 87 chars",
+      "metric": 87
+    },
+    {
+      "file": "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs",
+      "line": 32,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 89 chars",
+      "metric": 89
+    },
+    {
+      "file": "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs",
+      "line": 73,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
     },
     {
       "file": "Tests/Features/Worldgen/Wfc/WfcGridTest.cs",
@@ -67567,6 +68233,314 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+      "errors": 0,
+      "warnings": 37,
+      "rules": {
+        "file-length": 1,
+        "stateless-method": 10,
+        "line-length": 26
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 300 lines",
+          "metric": 300
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 63,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "IsInBounds() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 74,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetNeighbors() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 85,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetNeighbors8() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 134,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "HasCollapsedNeighbor() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 203,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetNeighbors4() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 216,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetNeighbors() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 228,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetWindowNeighbors() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 255,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "HasCollapsedNeighbor() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 260,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetCollapsedTileAt() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 265,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetNeighbors8() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 67,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 69,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 74,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 78,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 80,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 85,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 88,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 94,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 145,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 146,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 147,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 149,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 151,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 213,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 214,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 216,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 219,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 225,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 226,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 228,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 231,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 237,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 255,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 260,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 277,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
+          "line": 282,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        }
+      ]
+    },
+    {
       "file": "Tests/Core/Services/InputServiceTest.cs",
       "errors": 0,
       "warnings": 37,
@@ -69637,282 +70611,6 @@
           "severity": "warn",
           "message": "line is 81 chars",
           "metric": 81
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-      "errors": 0,
-      "warnings": 33,
-      "rules": {
-        "file-length": 1,
-        "stateless-method": 10,
-        "line-length": 22
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 299 lines",
-          "metric": 299
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 63,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "IsInBounds() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 74,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetNeighbors() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 85,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetNeighbors8() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 134,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "HasCollapsedNeighbor() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 203,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetNeighbors4() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 216,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetNeighbors() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 221,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetNeighborsNonAlloc() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 254,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "HasCollapsedNeighbor() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 259,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetCollapsedTileAt() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 264,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetNeighbors8() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 67,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 69,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 74,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 78,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 80,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 100 chars",
-          "metric": 100
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 85,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 88,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 94,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 145,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 146,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 147,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 149,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 151,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 213,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 214,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 216,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 219,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 236,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 254,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 259,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 276,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcGrid.cs",
-          "line": 281,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
         }
       ]
     },
@@ -74629,6 +75327,246 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+      "errors": 0,
+      "warnings": 28,
+      "rules": {
+        "duplicate-block": 4,
+        "file-length": 1,
+        "function-length": 2,
+        "param-count": 3,
+        "stateless-method": 3,
+        "flag-parameter": 1,
+        "line-length": 14
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 73,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:73, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:145",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 92,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:92, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:156",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 145,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:73, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:145",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 156,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:92, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:156",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 211 lines",
+          "metric": 211
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 72,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "SelectTile() is 33 lines",
+          "metric": 33
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 168,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "CreateWeightContext() is 31 lines",
+          "metric": 31
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 72,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "SelectTile() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 144,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "ComputeWeights() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 168,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "CreateWeightContext() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 72,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SelectTile() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 110,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "SelectUniform() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 144,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ComputeWeights() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 168,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "CreateWeightContext() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 12,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 23,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 29,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 42,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 101 chars",
+          "metric": 101
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 58,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 62,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 65,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 68,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 120 chars",
+          "metric": 120
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 110,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 140,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 176,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 177,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 181,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
+          "line": 206,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        }
+      ]
+    },
+    {
       "file": "Scripts/Core/Services/TerrainCollisionShapeGenerator.cs",
       "errors": 0,
       "warnings": 28,
@@ -77881,230 +78819,6 @@
           "severity": "warn",
           "message": "line is 116 chars",
           "metric": 116
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-      "errors": 0,
-      "warnings": 26,
-      "rules": {
-        "duplicate-block": 4,
-        "file-length": 1,
-        "function-length": 1,
-        "param-count": 3,
-        "stateless-method": 3,
-        "flag-parameter": 1,
-        "line-length": 13
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 73,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:73, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:145",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 92,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:92, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:156",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 145,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:73, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:145",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 156,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:92, Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs:156",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 206 lines",
-          "metric": 206
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 72,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "SelectTile() is 33 lines",
-          "metric": 33
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 72,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "SelectTile() takes 6 parameters",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 144,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "ComputeWeights() takes 6 parameters",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 168,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "CreateWeightContext() takes 6 parameters",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 72,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "SelectTile() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 110,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "SelectUniform() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 144,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "ComputeWeights() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 168,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "CreateWeightContext() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 12,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 23,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 29,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 42,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 101 chars",
-          "metric": 101
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 58,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 62,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 65,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 68,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 120 chars",
-          "metric": 120
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 110,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 99 chars",
-          "metric": 99
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 140,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 176,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 177,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/WfcTileSelector.cs",
-          "line": 201,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
         }
       ]
     },
@@ -82040,12 +82754,12 @@
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 276 lines",
-          "metric": 276
+          "message": "file is 277 lines",
+          "metric": 277
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 76,
+          "line": 77,
           "rule": "complexity",
           "severity": "warn",
           "message": "Solve() cyclomatic complexity 6",
@@ -82053,7 +82767,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 76,
+          "line": 77,
           "rule": "function-length",
           "severity": "warn",
           "message": "Solve() is 36 lines",
@@ -82061,7 +82775,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 147,
+          "line": 148,
           "rule": "function-length",
           "severity": "warn",
           "message": "CollapseNextCell() is 53 lines",
@@ -82077,7 +82791,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 48,
+          "line": 47,
           "rule": "param-count",
           "severity": "warn",
           "message": "WfcSolver() takes 7 parameters",
@@ -82112,20 +82826,20 @@
           "line": 44,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
+          "message": "line is 93 chars",
+          "metric": 93
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 59,
+          "line": 45,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
+          "message": "line is 98 chars",
+          "metric": 98
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 60,
+          "line": 62,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 84 chars",
@@ -82133,7 +82847,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 70,
+          "line": 71,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 95 chars",
@@ -82141,7 +82855,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 76,
+          "line": 77,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 105 chars",
@@ -82149,7 +82863,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 109,
+          "line": 110,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 97 chars",
@@ -82157,7 +82871,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 114,
+          "line": 115,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 100 chars",
@@ -82165,7 +82879,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 131,
+          "line": 132,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 104 chars",
@@ -82173,7 +82887,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 141,
+          "line": 142,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 108 chars",
@@ -82181,7 +82895,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 161,
+          "line": 162,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 110 chars",
@@ -82189,7 +82903,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 173,
+          "line": 174,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 106 chars",
@@ -82197,7 +82911,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 193,
+          "line": 194,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 97 chars",
@@ -82205,7 +82919,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 194,
+          "line": 195,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 91 chars",
@@ -82213,7 +82927,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 225,
+          "line": 226,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 97 chars",
@@ -82221,7 +82935,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/WfcSolver.cs",
-          "line": 259,
+          "line": 260,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 97 chars",
@@ -87539,6 +88253,189 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+      "errors": 0,
+      "warnings": 21,
+      "rules": {
+        "duplicate-block": 2,
+        "file-length": 1,
+        "function-length": 1,
+        "param-count": 3,
+        "stateless-method": 1,
+        "line-length": 13
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 107,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:107, Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:193",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 193,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:107, Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:193",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 248 lines",
+          "metric": 248
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 160,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "GenerateWithCards() is 42 lines",
+          "metric": 42
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 96,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "Generate() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 120,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "Generate() takes 4 parameters",
+          "metric": 4
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 160,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "GenerateWithCards() takes 5 parameters",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 120,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Generate() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 52,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 65,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 90,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 117 chars",
+          "metric": 117
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 130,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 134,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 135,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 137,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 171,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 178,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 187,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 203,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 210,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
+          "line": 241,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        }
+      ]
+    },
+    {
       "file": "Tests/Features/Worldgen/AutoTiling/AutoTileHelperScenarios/AutoTileHelperVariantLookupTest.cs",
       "errors": 0,
       "warnings": 21,
@@ -92833,6 +93730,171 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+      "errors": 0,
+      "warnings": 19,
+      "rules": {
+        "file-length": 1,
+        "stateless-method": 2,
+        "flag-parameter": 1,
+        "line-length": 15
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 241 lines",
+          "metric": 241
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 25,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "IrregularMeshMapData() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 73,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Complete() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 215,
+          "rule": "flag-parameter",
+          "severity": "warn",
+          "message": "OnCombatEnded() takes a boolean flag; split the behavior or name the policy",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 25,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 33,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 42,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 53,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 79,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 96,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 132,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 133,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 164,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 190,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 192,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 194,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 112 chars",
+          "metric": 112
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 210,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
+          "line": 236,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        }
+      ]
+    },
+    {
       "file": "Tests/Core/PropertyTesting/SampleStatisticsAssertions.cs",
       "errors": 0,
       "warnings": 19,
@@ -95097,163 +96159,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "errors": 0,
-      "warnings": 18,
-      "rules": {
-        "file-length": 1,
-        "stateless-method": 2,
-        "flag-parameter": 1,
-        "line-length": 14
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 237 lines",
-          "metric": 237
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 25,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "IrregularMeshMapData() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 70,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "Complete() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 212,
-          "rule": "flag-parameter",
-          "severity": "warn",
-          "message": "OnCombatEnded() takes a boolean flag; split the behavior or name the policy",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 11,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 25,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 33,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 50,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 76,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 93,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 114 chars",
-          "metric": 114
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 129,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 130,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 161,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 187,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 189,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 191,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 112 chars",
-          "metric": 112
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 207,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 232,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        }
-      ]
-    },
-    {
       "file": "Tests/Core/Services/TileRegistryScenarios/TileRegistryAutoTileTest.cs",
       "errors": 0,
       "warnings": 18,
@@ -96497,157 +97402,6 @@
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/DecorationRenderer.cs",
           "line": 220,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-      "errors": 0,
-      "warnings": 17,
-      "rules": {
-        "duplicate-block": 2,
-        "file-length": 1,
-        "function-length": 1,
-        "param-count": 3,
-        "stateless-method": 1,
-        "line-length": 9
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 104,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:104, Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:176",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 176,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:104, Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs:176",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 231 lines",
-          "metric": 231
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 143,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "GenerateWithCards() is 42 lines",
-          "metric": 42
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 93,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "Generate() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 117,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "Generate() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 143,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "GenerateWithCards() takes 5 parameters",
-          "metric": 5
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 117,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "Generate() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 51,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 87,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 117 chars",
-          "metric": 117
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 127,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 154,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 161,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 170,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 186,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 193,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrainGenerator.cs",
-          "line": 224,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 82 chars",
@@ -98894,6 +99648,148 @@
           "severity": "warn",
           "message": "line is 96 chars",
           "metric": 96
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+      "errors": 0,
+      "warnings": 16,
+      "rules": {
+        "duplicate-block": 2,
+        "file-length": 1,
+        "function-length": 2,
+        "else-branch": 1,
+        "line-length": 10
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 1,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs:1, Scripts/Features/Worldgen/IrregularMesh/WorldMap/TerrainGeneratorFactory.cs:1",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 2,
+          "rule": "duplicate-block",
+          "severity": "warn",
+          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs:2, Scripts/Features/Worldgen/IrregularMesh/WorldMap/TerrainGeneratorFactory.cs:2",
+          "metric": 2
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 161 lines",
+          "metric": 161
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 28,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "Generate() is 34 lines",
+          "metric": 34
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 94,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "AssignTiles() is 33 lines",
+          "metric": 33
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 94,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "AssignTiles() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 28,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 32,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 44,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 54,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 58,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 82,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 94,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 125,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 110 chars",
+          "metric": 110
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
+          "line": 142,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
         }
       ]
     },
@@ -104077,132 +104973,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-      "errors": 0,
-      "warnings": 14,
-      "rules": {
-        "duplicate-block": 2,
-        "file-length": 1,
-        "function-length": 2,
-        "else-branch": 1,
-        "line-length": 8
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-          "line": 1,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs:1, Scripts/Features/Worldgen/IrregularMesh/WorldMap/TerrainGeneratorFactory.cs:1",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-          "line": 2,
-          "rule": "duplicate-block",
-          "severity": "warn",
-          "message": "6-line block duplicated at Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs:2, Scripts/Features/Worldgen/IrregularMesh/WorldMap/TerrainGeneratorFactory.cs:2",
-          "metric": 2
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 175 lines",
-          "metric": 175
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-          "line": 28,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "Generate() is 34 lines",
-          "metric": 34
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-          "line": 108,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "AssignTiles() is 33 lines",
-          "metric": 33
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-          "line": 108,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "AssignTiles() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-          "line": 28,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-          "line": 32,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-          "line": 44,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-          "line": 54,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-          "line": 58,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-          "line": 96,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 84 chars",
-          "metric": 84
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-          "line": 108,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundWfc.cs",
-          "line": 139,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 110 chars",
-          "metric": 110
-        }
-      ]
-    },
-    {
       "file": "addons/tile_editor/TileAtlas/TileAtlasTransitionComposer.cs",
       "errors": 0,
       "warnings": 14,
@@ -106918,6 +107688,122 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+      "errors": 0,
+      "warnings": 13,
+      "rules": {
+        "file-length": 1,
+        "stateless-method": 2,
+        "line-length": 10
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 106 lines",
+          "metric": 106
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+          "line": 64,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Enumerate() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+          "line": 91,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Collect() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+          "line": 13,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+          "line": 46,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+          "line": 48,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+          "line": 50,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 107 chars",
+          "metric": 107
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+          "line": 52,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+          "line": 54,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 115 chars",
+          "metric": 115
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+          "line": 56,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 116 chars",
+          "metric": 116
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+          "line": 58,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 116 chars",
+          "metric": 116
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+          "line": 60,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
+          "line": 62,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        }
+      ]
+    },
+    {
       "file": "Tests/Core/Services/TileRegistryScenarios/TileRegistryTransitionTest.cs",
       "errors": 0,
       "warnings": 13,
@@ -108900,6 +109786,122 @@
           "severity": "warn",
           "message": "line is 88 chars",
           "metric": 88
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+      "errors": 0,
+      "warnings": 13,
+      "rules": {
+        "stateless-method": 2,
+        "comment-bloat": 1,
+        "line-length": 10
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+          "line": 48,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetWindowNeighbors() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+          "line": 54,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "GetWindowNeighborsNonAlloc() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+          "line": 6,
+          "rule": "comment-bloat",
+          "severity": "warn",
+          "message": "7-line comment over 2 line(s) of code - keep the why, cut the rest",
+          "metric": 7
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+          "line": 7,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+          "line": 8,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+          "line": 10,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+          "line": 46,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 118 chars",
+          "metric": 118
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+          "line": 50,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+          "line": 54,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
+          "line": 56,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
         }
       ]
     },
@@ -112553,6 +113555,105 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+      "errors": 0,
+      "warnings": 11,
+      "rules": {
+        "file-length": 1,
+        "line-length": 10
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 114 lines",
+          "metric": 114
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 18,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 33,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 35,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 49,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 53,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 73,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 94,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 97,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 100,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
+          "line": 103,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/Wfc/WfcAdjacencyRules.cs",
       "errors": 0,
       "warnings": 11,
@@ -112751,6 +113852,105 @@
           "severity": "warn",
           "message": "line is 92 chars",
           "metric": 92
+        }
+      ]
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+      "errors": 0,
+      "warnings": 11,
+      "rules": {
+        "file-length": 1,
+        "line-length": 10
+      },
+      "items": [
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 104 lines",
+          "metric": 104
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+          "line": 39,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 98 chars",
+          "metric": 98
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+          "line": 43,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+          "line": 62,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+          "line": 81,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+          "line": 82,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+          "line": 95,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 90 chars",
+          "metric": 90
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+          "line": 99,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+          "line": 101,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
         }
       ]
     },
@@ -113662,6 +114862,106 @@
           "severity": "warn",
           "message": "line is 84 chars",
           "metric": 84
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+      "errors": 0,
+      "warnings": 11,
+      "rules": {
+        "function-length": 1,
+        "stateless-method": 1,
+        "line-length": 9
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+          "line": 26,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "Generate() is 33 lines",
+          "metric": 33
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+          "line": 36,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "WfcSolver() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+          "line": 9,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+          "line": 17,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+          "line": 24,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+          "line": 28,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+          "line": 31,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+          "line": 36,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+          "line": 44,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/RuleDrivenMeshTerrain.cs",
+          "line": 53,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
         }
       ]
     },
@@ -116463,97 +117763,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
-      "errors": 0,
-      "warnings": 10,
-      "rules": {
-        "stateless-method": 2,
-        "line-length": 8
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
-          "line": 60,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "Enumerate() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
-          "line": 71,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "Collect() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
-          "line": 13,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
-          "line": 46,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
-          "line": 48,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
-          "line": 50,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 107 chars",
-          "metric": 107
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
-          "line": 52,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
-          "line": 54,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 115 chars",
-          "metric": 115
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
-          "line": 56,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Grid/WfcGridGeometry.cs",
-          "line": 58,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        }
-      ]
-    },
-    {
       "file": "Tests/Features/Worldgen/AutoTiling/AutoTileHelperScenarios/AutoTileHelperFull8BitmaskTest.cs",
       "errors": 0,
       "warnings": 10,
@@ -118432,89 +119641,6 @@
           "severity": "warn",
           "message": "line is 94 chars",
           "metric": 94
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-      "errors": 0,
-      "warnings": 9,
-      "rules": {
-        "complexity": 1,
-        "line-length": 8
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-          "line": 10,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "BuildCollapsedNeighbors() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-          "line": 18,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-          "line": 26,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-          "line": 32,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-          "line": 52,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-          "line": 73,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-          "line": 76,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-          "line": 79,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Selectors/WfcWeightedCandidateBuilder.cs",
-          "line": 82,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
         }
       ]
     },
@@ -122018,6 +123144,74 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+      "errors": 0,
+      "warnings": 7,
+      "rules": {
+        "function-length": 1,
+        "param-count": 1,
+        "line-length": 5
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+          "line": 58,
+          "rule": "function-length",
+          "severity": "warn",
+          "message": "Create() is 31 lines",
+          "metric": 31
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+          "line": 58,
+          "rule": "param-count",
+          "severity": "warn",
+          "message": "Create() takes 6 parameters",
+          "metric": 6
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+          "line": 9,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+          "line": 43,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 88 chars",
+          "metric": 88
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+          "line": 50,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 82 chars",
+          "metric": 82
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+          "line": 52,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+          "line": 56,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 85 chars",
+          "metric": 85
+        }
+      ]
+    },
+    {
       "file": "Tests/Core/PropertyTesting/Generators/MapGridGenerators.cs",
       "errors": 0,
       "warnings": 7,
@@ -122350,73 +123544,6 @@
           "severity": "warn",
           "message": "line is 86 chars",
           "metric": 86
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
-      "errors": 0,
-      "warnings": 7,
-      "rules": {
-        "comment-bloat": 1,
-        "line-length": 6
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
-          "line": 6,
-          "rule": "comment-bloat",
-          "severity": "warn",
-          "message": "7-line comment over 2 line(s) of code - keep the why, cut the rest",
-          "metric": 7
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
-          "line": 7,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
-          "line": 8,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 83 chars",
-          "metric": 83
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
-          "line": 10,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
-          "line": 11,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
-          "line": 40,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/IWfcTopology.cs",
-          "line": 46,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
         }
       ]
     },
@@ -123083,7 +124210,7 @@
       ]
     },
     {
-      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
       "errors": 0,
       "warnings": 7,
       "rules": {
@@ -123091,60 +124218,126 @@
       },
       "items": [
         {
-          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
-          "line": 11,
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+          "line": 10,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
+          "message": "line is 102 chars",
+          "metric": 102
         },
         {
-          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
-          "line": 39,
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+          "line": 24,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
+          "message": "line is 101 chars",
+          "metric": 101
         },
         {
-          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
-          "line": 41,
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+          "line": 30,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
+          "message": "line is 83 chars",
+          "metric": 83
         },
         {
-          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
-          "line": 60,
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+          "line": 36,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
+          "message": "line is 113 chars",
+          "metric": 113
         },
         {
-          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
-          "line": 75,
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+          "line": 52,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
+          "message": "line is 91 chars",
+          "metric": 91
         },
         {
-          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
-          "line": 79,
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+          "line": 69,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 94 chars",
-          "metric": 94
+          "message": "line is 91 chars",
+          "metric": 91
         },
         {
-          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenCombatFlowTest.cs",
-          "line": 81,
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs",
+          "line": 73,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
+          "message": "line is 95 chars",
+          "metric": 95
+        }
+      ]
+    },
+    {
+      "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+      "errors": 0,
+      "warnings": 7,
+      "rules": {
+        "line-length": 7
+      },
+      "items": [
+        {
+          "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+          "line": 8,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+          "line": 23,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+          "line": 32,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+          "line": 35,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+          "line": 45,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 83 chars",
+          "metric": 83
+        },
+        {
+          "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+          "line": 47,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 96 chars",
+          "metric": 96
+        },
+        {
+          "file": "Tests/Features/Worldgen/Wfc/PropagatorScenarios/WfcPropagatorDiagonalAdjacencyTest.cs",
+          "line": 56,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
         }
       ]
     },
@@ -124240,61 +125433,62 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+      "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
       "errors": 0,
       "warnings": 6,
       "rules": {
         "param-count": 1,
-        "line-length": 5
+        "else-branch": 1,
+        "line-length": 4
       },
       "items": [
         {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-          "line": 58,
+          "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
+          "line": 19,
           "rule": "param-count",
           "severity": "warn",
-          "message": "Create() takes 5 parameters",
-          "metric": 5
+          "message": "WfcCollapseEffects() takes 4 parameters",
+          "metric": 4
         },
         {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
+          "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
+          "line": 56,
+          "rule": "else-branch",
+          "severity": "warn",
+          "message": "RegisterBlob() has 1 else branch(es) — prefer guard clauses",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
           "line": 9,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 91 chars",
-          "metric": 91
+          "message": "line is 86 chars",
+          "metric": 86
         },
         {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-          "line": 43,
+          "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
+          "line": 32,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 88 chars",
-          "metric": 88
+          "message": "line is 89 chars",
+          "metric": 89
         },
         {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-          "line": 50,
+          "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
+          "line": 46,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
+          "message": "line is 87 chars",
+          "metric": 87
         },
         {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-          "line": 52,
+          "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
+          "line": 62,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/WfcConstraintContext.cs",
-          "line": 56,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 85 chars",
-          "metric": 85
+          "message": "line is 87 chars",
+          "metric": 87
         }
       ]
     },
@@ -124472,6 +125666,65 @@
           "severity": "warn",
           "message": "line is 103 chars",
           "metric": 103
+        }
+      ]
+    },
+    {
+      "file": "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs",
+      "errors": 0,
+      "warnings": 6,
+      "rules": {
+        "stateless-method": 2,
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs",
+          "line": 39,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Solve_AddsExactlyTheCollapsedPassableCellsToGraph() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs",
+          "line": 59,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "Solve_ConnectsAdjacentPassableCellsInGraph() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs",
+          "line": 29,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 87 chars",
+          "metric": 87
+        },
+        {
+          "file": "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs",
+          "line": 32,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Tests/Features/Worldgen/Wfc/SolverScenarios/WfcSolverPassabilityGraphTest.cs",
+          "line": 73,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
         }
       ]
     },
@@ -124962,8 +126215,8 @@
           "line": 50,
           "rule": "line-length",
           "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
+          "message": "line is 87 chars",
+          "metric": 87
         },
         {
           "file": "Scripts/Features/Worldgen/Wfc/Constraints/AutoTileGapConstraint.cs",
@@ -125112,6 +126365,64 @@
           "severity": "warn",
           "message": "line is 83 chars",
           "metric": 83
+        }
+      ]
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs",
+      "errors": 0,
+      "warnings": 6,
+      "rules": {
+        "line-length": 6
+      },
+      "items": [
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs",
+          "line": 12,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 104 chars",
+          "metric": 104
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs",
+          "line": 40,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs",
+          "line": 45,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs",
+          "line": 47,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 102 chars",
+          "metric": 102
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs",
+          "line": 55,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs",
+          "line": 57,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 106 chars",
+          "metric": 106
         }
       ]
     },
@@ -127977,49 +129288,6 @@
       ]
     },
     {
-      "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
-      "errors": 0,
-      "warnings": 4,
-      "rules": {
-        "else-branch": 1,
-        "line-length": 3
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
-          "line": 51,
-          "rule": "else-branch",
-          "severity": "warn",
-          "message": "RegisterBlob() has 1 else branch(es) — prefer guard clauses",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
-          "line": 8,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
-          "line": 28,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Solving/WfcCollapseEffects.cs",
-          "line": 57,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        }
-      ]
-    },
-    {
       "file": "Scripts/Core/DependencyInjection/ServiceContainer.cs",
       "errors": 0,
       "warnings": 4,
@@ -128703,6 +129971,48 @@
       ]
     },
     {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidates.cs",
+      "errors": 0,
+      "warnings": 4,
+      "rules": {
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidates.cs",
+          "line": 11,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 99 chars",
+          "metric": 99
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidates.cs",
+          "line": 12,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidates.cs",
+          "line": 16,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidates.cs",
+          "line": 18,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 100 chars",
+          "metric": 100
+        }
+      ]
+    },
+    {
       "file": "Scripts/Features/Worldgen/IrregularMesh/Topology/MeshSpatialIndex.cs",
       "errors": 0,
       "warnings": 4,
@@ -128741,6 +130051,48 @@
           "severity": "warn",
           "message": "line is 84 chars",
           "metric": 84
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraphUpdater.cs",
+      "errors": 0,
+      "warnings": 4,
+      "rules": {
+        "line-length": 4
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraphUpdater.cs",
+          "line": 7,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraphUpdater.cs",
+          "line": 15,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 91 chars",
+          "metric": 91
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraphUpdater.cs",
+          "line": 22,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraphUpdater.cs",
+          "line": 24,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
         }
       ]
     },
@@ -129533,6 +130885,41 @@
           "severity": "warn",
           "message": "line is 87 chars",
           "metric": 87
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs",
+      "errors": 0,
+      "warnings": 3,
+      "rules": {
+        "comment-bloat": 1,
+        "line-length": 2
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs",
+          "line": 5,
+          "rule": "comment-bloat",
+          "severity": "warn",
+          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
+          "metric": 5
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs",
+          "line": 13,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 94 chars",
+          "metric": 94
+        },
+        {
+          "file": "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
         }
       ]
     },
@@ -131768,24 +133155,6 @@
           "severity": "warn",
           "message": "GetValue() never touches instance state — make it a free function",
           "metric": 1
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs",
-      "errors": 0,
-      "warnings": 1,
-      "rules": {
-        "comment-bloat": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/Wfc/Constraints/CollapsedNeighborInfo.cs",
-          "line": 5,
-          "rule": "comment-bloat",
-          "severity": "warn",
-          "message": "5-line comment over 2 line(s) of code - keep the why, cut the rest",
-          "metric": 5
         }
       ]
     },
