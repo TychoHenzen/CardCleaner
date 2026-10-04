@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 806,
+  "fileCount": 807,
   "files": [
     {
       "path": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
@@ -3643,6 +3643,11 @@
       "classification": "test"
     },
     {
+      "path": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs",
+      "language": "cs",
+      "classification": "test"
+    },
+    {
       "path": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
       "language": "cs",
       "classification": "test"
@@ -4034,9 +4039,9 @@
     }
   ],
   "summary": {
-    "total": 7577,
+    "total": 7587,
     "errors": 0,
-    "warnings": 7577,
+    "warnings": 7587,
     "byRule": {
       "test-only-export": 9,
       "duplicate-block": 68,
@@ -4046,12 +4051,12 @@
       "nesting-depth": 11,
       "param-count": 172,
       "else-branch": 90,
-      "stateless-method": 1553,
+      "stateless-method": 1555,
       "comment-bloat": 49,
       "comment-restates-code": 95,
       "output-parameter": 25,
       "flag-parameter": 73,
-      "line-length": 4582
+      "line-length": 4590
     },
     "byFile": {
       "Scripts/Core/Services/MapGenerationProfiler.cs": 2,
@@ -4172,7 +4177,7 @@
       "Scripts/Features/Worldgen/IrregularMesh/Debug/Painting/MeshDebugPainter.cs": 11,
       "Scripts/Features/Worldgen/IrregularMesh/Exploration/ExplorationStepLoop.cs": 10,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMapCombatHandler.cs": 10,
-      "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs": 12,
+      "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs": 16,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMesh.cs": 7,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshExplorationController.cs": 25,
       "Scripts/Features/Worldgen/IrregularMesh/IrregularMeshFogOfWar.cs": 12,
@@ -4713,6 +4718,7 @@
       "Tests/Features/Worldgen/AutoTiling/RandomReproduction/RandomAutoTileReproductionTestBase.cs": 3,
       "Tests/Features/Worldgen/AutoTiling/TileDataLoaderFormat/TileDataLoaderFormatTestBase.cs": 1,
       "Tests/Features/Worldgen/AutoTiling/TransitionMap/TransitionMapValidationTestBase.cs": 2,
+      "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs": 6,
       "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenWfcRulesTest.cs": 7,
       "Tests/Features/Worldgen/IrregularMesh/MeshTerrain/MeshForegroundTileCandidatesTest.cs": 6,
       "Tests/Features/Worldgen/Support/ConstantSignatureGradient.cs": 1,
@@ -6025,8 +6031,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 152 lines",
-      "metric": 152
+      "message": "file is 186 lines",
+      "metric": 186
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMesh.cs",
@@ -6201,8 +6207,8 @@
       "line": 1,
       "rule": "file-length",
       "severity": "warn",
-      "message": "file is 241 lines",
-      "metric": 241
+      "message": "file is 242 lines",
+      "metric": 242
     },
     {
       "file": "Scripts/Features/Worldgen/Wfc/Connectivity/Graph/UnionFind.cs",
@@ -8782,7 +8788,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-      "line": 57,
+      "line": 58,
       "rule": "complexity",
       "severity": "warn",
       "message": "FindEligibleCells() cyclomatic complexity 8",
@@ -15746,6 +15752,22 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "Render() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+      "line": 144,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "OnVisibilityChanged() never touches instance state — make it a free function",
+      "metric": 1
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+      "line": 173,
+      "rule": "stateless-method",
+      "severity": "warn",
+      "message": "ClearSprites() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -27502,7 +27524,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-      "line": 108,
+      "line": 109,
       "rule": "comment-restates-code",
       "severity": "warn",
       "message": "comment repeats the declaration below it - say why, not what",
@@ -28358,7 +28380,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 215,
+      "line": 216,
       "rule": "flag-parameter",
       "severity": "warn",
       "message": "OnCombatEnded() takes a boolean flag; split the behavior or name the policy",
@@ -40942,7 +40964,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-      "line": 27,
+      "line": 28,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -40950,7 +40972,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-      "line": 28,
+      "line": 29,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 95 chars",
@@ -40958,7 +40980,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-      "line": 33,
+      "line": 34,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 86 chars",
@@ -40966,7 +40988,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-      "line": 36,
+      "line": 37,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -40974,7 +40996,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-      "line": 55,
+      "line": 56,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 111 chars",
@@ -40982,7 +41004,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-      "line": 57,
+      "line": 58,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 89 chars",
@@ -40990,7 +41012,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-      "line": 75,
+      "line": 76,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 103 chars",
@@ -40998,7 +41020,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-      "line": 112,
+      "line": 113,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 81 chars",
@@ -41006,11 +41028,27 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-      "line": 119,
+      "line": 120,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 92 chars",
       "metric": 92
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+      "line": 124,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 105 chars",
+      "metric": 105
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+      "line": 144,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 93 chars",
+      "metric": 93
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMesh.cs",
@@ -43534,7 +43572,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 164,
+      "line": 165,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 93 chars",
@@ -43542,7 +43580,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 190,
+      "line": 191,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 102 chars",
@@ -43550,7 +43588,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 192,
+      "line": 193,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 90 chars",
@@ -43558,7 +43596,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 194,
+      "line": 195,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 112 chars",
@@ -43566,7 +43604,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 210,
+      "line": 211,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 83 chars",
@@ -43574,7 +43612,7 @@
     },
     {
       "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-      "line": 236,
+      "line": 237,
       "rule": "line-length",
       "severity": "warn",
       "message": "line is 85 chars",
@@ -57579,6 +57617,54 @@
       "severity": "warn",
       "message": "line is 86 chars",
       "metric": 86
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs",
+      "line": 19,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 84 chars",
+      "metric": 84
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs",
+      "line": 39,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 114 chars",
+      "metric": 114
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs",
+      "line": 41,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs",
+      "line": 42,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 118 chars",
+      "metric": 118
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs",
+      "line": 52,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 118 chars",
+      "metric": 118
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs",
+      "line": 84,
+      "rule": "line-length",
+      "severity": "warn",
+      "message": "line is 97 chars",
+      "metric": 97
     },
     {
       "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenSessionTest.cs",
@@ -93745,8 +93831,8 @@
           "line": 1,
           "rule": "file-length",
           "severity": "warn",
-          "message": "file is 241 lines",
-          "metric": 241
+          "message": "file is 242 lines",
+          "metric": 242
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
@@ -93766,7 +93852,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 215,
+          "line": 216,
           "rule": "flag-parameter",
           "severity": "warn",
           "message": "OnCombatEnded() takes a boolean flag; split the behavior or name the policy",
@@ -93846,7 +93932,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 164,
+          "line": 165,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 93 chars",
@@ -93854,7 +93940,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 190,
+          "line": 191,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 102 chars",
@@ -93862,7 +93948,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 192,
+          "line": 193,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 90 chars",
@@ -93870,7 +93956,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 194,
+          "line": 195,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 112 chars",
@@ -93878,7 +93964,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 210,
+          "line": 211,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 83 chars",
@@ -93886,7 +93972,7 @@
         },
         {
           "file": "Scripts/Features/Worldgen/IrregularMesh/WorldMap/WorldMapSession.cs",
-          "line": 236,
+          "line": 237,
           "rule": "line-length",
           "severity": "warn",
           "message": "line is 85 chars",
@@ -100354,6 +100440,148 @@
           "severity": "warn",
           "message": "line is 82 chars",
           "metric": 82
+        }
+      ]
+    },
+    {
+      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+      "errors": 0,
+      "warnings": 16,
+      "rules": {
+        "file-length": 1,
+        "complexity": 1,
+        "stateless-method": 2,
+        "comment-restates-code": 1,
+        "line-length": 11
+      },
+      "items": [
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 1,
+          "rule": "file-length",
+          "severity": "warn",
+          "message": "file is 186 lines",
+          "metric": 186
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 58,
+          "rule": "complexity",
+          "severity": "warn",
+          "message": "FindEligibleCells() cyclomatic complexity 8",
+          "metric": 8
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 144,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "OnVisibilityChanged() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 173,
+          "rule": "stateless-method",
+          "severity": "warn",
+          "message": "ClearSprites() never touches instance state — make it a free function",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 109,
+          "rule": "comment-restates-code",
+          "severity": "warn",
+          "message": "comment repeats the declaration below it - say why, not what",
+          "metric": 1
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 28,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 29,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 95 chars",
+          "metric": 95
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 34,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 86 chars",
+          "metric": 86
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 37,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 56,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 111 chars",
+          "metric": 111
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 58,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 89 chars",
+          "metric": 89
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 76,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 103 chars",
+          "metric": 103
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 113,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 81 chars",
+          "metric": 81
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 120,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 92 chars",
+          "metric": 92
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 124,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 105 chars",
+          "metric": 105
+        },
+        {
+          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
+          "line": 144,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 93 chars",
+          "metric": 93
         }
       ]
     },
@@ -110448,115 +110676,6 @@
           "severity": "warn",
           "message": "line is 94 chars",
           "metric": 94
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-      "errors": 0,
-      "warnings": 12,
-      "rules": {
-        "file-length": 1,
-        "complexity": 1,
-        "comment-restates-code": 1,
-        "line-length": 9
-      },
-      "items": [
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 152 lines",
-          "metric": 152
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-          "line": 57,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "FindEligibleCells() cyclomatic complexity 8",
-          "metric": 8
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-          "line": 108,
-          "rule": "comment-restates-code",
-          "severity": "warn",
-          "message": "comment repeats the declaration below it - say why, not what",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-          "line": 27,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-          "line": 28,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 95 chars",
-          "metric": 95
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-          "line": 33,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-          "line": 36,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 93 chars",
-          "metric": 93
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-          "line": 55,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 111 chars",
-          "metric": 111
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-          "line": 57,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-          "line": 75,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 103 chars",
-          "metric": 103
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-          "line": 112,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Features/Worldgen/IrregularMesh/IrregularMapEnemyManager.cs",
-          "line": 119,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 92 chars",
-          "metric": 92
         }
       ]
     },
@@ -126365,6 +126484,64 @@
           "severity": "warn",
           "message": "line is 83 chars",
           "metric": 83
+        }
+      ]
+    },
+    {
+      "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs",
+      "errors": 0,
+      "warnings": 6,
+      "rules": {
+        "line-length": 6
+      },
+      "items": [
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs",
+          "line": 19,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 84 chars",
+          "metric": 84
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs",
+          "line": 39,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 114 chars",
+          "metric": 114
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs",
+          "line": 41,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs",
+          "line": 42,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 118 chars",
+          "metric": 118
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs",
+          "line": 52,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 118 chars",
+          "metric": 118
+        },
+        {
+          "file": "Tests/Features/Worldgen/IrregularMesh/IrregularWorldMapScreenEnemyFogTest.cs",
+          "line": 84,
+          "rule": "line-length",
+          "severity": "warn",
+          "message": "line is 97 chars",
+          "metric": 97
         }
       ]
     },

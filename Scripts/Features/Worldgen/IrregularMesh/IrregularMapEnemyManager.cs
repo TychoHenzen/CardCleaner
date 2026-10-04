@@ -11,7 +11,8 @@ public class IrregularMapEnemyManager
 {
     private readonly IrregularMeshMapData _mapData;
     private readonly Node _parent;
-    private readonly List<Sprite2D> _enemySprites = new();
+    private readonly List<(int CellId, Sprite2D Sprite)> _enemySprites = new();
+    private IrregularMeshFogOfWar? _fogOfWar;
 
     public IrregularMapEnemyManager(IrregularMeshMapData mapData, Node parent)
     {
@@ -113,10 +114,42 @@ public class IrregularMapEnemyManager
             enemySprite.Position = _mapData.GetCellCenter(enemyCellId);
 
             _parent.AddChild(enemySprite);
-            _enemySprites.Add(enemySprite);
+            _enemySprites.Add((enemyCellId, enemySprite));
         }
 
         GD.Print($"[IrregularMapEnemyManager] Created {_enemySprites.Count} enemy sprites");
+    }
+
+    /// <summary>
+    /// Shows enemy sprites only while their cell is currently visible, so they never draw above the fog.
+    /// </summary>
+    internal void BindFog(IrregularMeshFogOfWar fogOfWar)
+    {
+        UnbindFog();
+        _fogOfWar = fogOfWar;
+        _fogOfWar.VisibilityChanged += OnVisibilityChanged;
+        ApplyFogVisibility();
+    }
+
+    /// <summary>
+    /// Stops following fog changes. Sprites keep their current visibility.
+    /// </summary>
+    private void UnbindFog()
+    {
+        if (_fogOfWar != null)
+            _fogOfWar.VisibilityChanged -= OnVisibilityChanged;
+        _fogOfWar = null;
+    }
+
+    private void OnVisibilityChanged(IReadOnlySet<int> changedCells) => ApplyFogVisibility();
+
+    private void ApplyFogVisibility()
+    {
+        if (_fogOfWar == null)
+            return;
+
+        foreach (var (cellId, sprite) in _enemySprites)
+            sprite.Visible = _fogOfWar.IsVisible(cellId);
     }
 
     /// <summary>
@@ -125,11 +158,11 @@ public class IrregularMapEnemyManager
     public void RemoveEnemyAt(int cellId)
     {
         var spriteIndex = _enemySprites.FindIndex(s =>
-            s.Position == _mapData.GetCellCenter(cellId));
+            s.Sprite.Position == _mapData.GetCellCenter(cellId));
 
         if (spriteIndex >= 0 && spriteIndex < _enemySprites.Count)
         {
-            _enemySprites[spriteIndex].QueueFree();
+            _enemySprites[spriteIndex].Sprite.QueueFree();
             _enemySprites.RemoveAt(spriteIndex);
         }
     }
@@ -139,7 +172,8 @@ public class IrregularMapEnemyManager
     /// </summary>
     public void ClearSprites()
     {
-        foreach (var sprite in _enemySprites)
+        UnbindFog();
+        foreach (var (_, sprite) in _enemySprites)
             sprite?.QueueFree();
         _enemySprites.Clear();
     }

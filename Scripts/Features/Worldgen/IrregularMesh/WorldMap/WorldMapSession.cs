@@ -154,6 +154,7 @@ internal sealed class WorldMapSession
             CellsPerUnit = _settings.WorldScale
         };
         FogOfWar.VisibilityChanged += OnVisibilityChanged;
+        _enemyManager?.BindFog(FogOfWar);
     }
 
     private void UpgradeToRaycastVisibility()
