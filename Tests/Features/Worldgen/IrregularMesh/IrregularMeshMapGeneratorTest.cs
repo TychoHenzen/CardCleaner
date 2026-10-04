@@ -106,6 +106,27 @@ public class IrregularMeshMapGeneratorTest
     }
 
     [TestCase]
+    public async Task TestCustomGeneratedMapIsExposedThroughTheServiceInterface()
+    {
+        IGameSessionService session = _service;
+        IGeneratedMap? received = null;
+        session.GeneratedMapReady += map => received = map;
+        session.SetMapGenerator(new IrregularMeshMapGenerator { EnemyCount = 2, MinEnemyDistance = 2 });
+        var mapSeeds = new List<CardSignature>
+        {
+            new(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f })
+        };
+
+        session.StartSession(mapSeeds, new List<CardSignature> { new() });
+        await ISceneRunner.SyncProcessFrame;
+        await _service.CurrentGenerationTask!;
+        await ISceneRunner.SyncProcessFrame;
+
+        AssertThat(received).IsNotNull();
+        AssertThat(session.CurrentGeneratedMap).IsEqual(received);
+    }
+
+    [TestCase]
     public async Task TestGeneratedMapHasValidData()
     {
         var generator = new IrregularMeshMapGenerator

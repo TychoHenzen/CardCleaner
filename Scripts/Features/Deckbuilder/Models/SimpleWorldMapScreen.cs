@@ -17,6 +17,7 @@ public partial class SimpleWorldMapScreen : Node3D
     private const bool DefaultShowBiomeOverlay = true;
 
     private WorldMapRuntime? _runtime;
+    private (CardSignature[] MapSeed, CardSignature[] Abilities)? _pendingSession;
 
     #region Export Properties
 
@@ -65,6 +66,12 @@ public partial class SimpleWorldMapScreen : Node3D
         CallDeferred(nameof(SetupScreenMesh));
         CallDeferred(nameof(SetupScreenMaterial));
         _runtime.Start();
+
+        if (_pendingSession is var (mapSeed, abilities))
+        {
+            _pendingSession = null;
+            _runtime.StartSession(mapSeed, abilities);
+        }
     }
 
     public override void _ExitTree()
@@ -88,7 +95,13 @@ public partial class SimpleWorldMapScreen : Node3D
             $"Initializing simple map screen with {mapSeed.Length} seed card(s) " +
             $"and {abilities.Length} abilities");
 
-        _runtime?.StartSession(mapSeed, abilities);
+        if (_runtime == null)
+        {
+            _pendingSession = (mapSeed, abilities);
+            return;
+        }
+
+        _runtime.StartSession(mapSeed, abilities);
     }
 
     /// <summary>
