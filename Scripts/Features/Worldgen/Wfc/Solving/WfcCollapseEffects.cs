@@ -34,7 +34,7 @@ internal sealed class WfcCollapseEffects
     internal void Reset(IWfcTopology topology)
     {
         _blobTracker?.Clear();
-        _passabilityUpdater?.Reset();
+        _passabilityUpdater?.Reset(topology);
 
         if (_spatialCoherence != null && topology is WfcGrid grid)
             _spatialCoherence.Reset(grid.Width, grid.Height);

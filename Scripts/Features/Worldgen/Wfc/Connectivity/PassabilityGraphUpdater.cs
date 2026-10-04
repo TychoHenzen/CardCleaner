@@ -19,9 +19,23 @@ internal sealed class PassabilityGraphUpdater
     }
 
     /// <summary>
-    /// Empties the graph so a new solve attempt starts without the previous attempt's cells.
+    /// Empties the graph so a new solve attempt starts without the previous attempt's cells,
+    /// then re-adds the passable cells the topology already has collapsed.
     /// </summary>
-    internal void Reset() => _graph.Clear();
+    internal void Reset(IWfcTopology topology)
+    {
+        _graph.Clear();
+
+        if (topology is not WfcGrid grid)
+            return;
+
+        foreach (var position in grid.GetAllPositions())
+        {
+            var tileId = grid.GetCollapsedTileAt(position);
+            if (tileId != null)
+                OnCellCollapsed(position, tileId, grid);
+        }
+    }
 
     /// <summary>
     /// Adds a collapsed passable cell to the graph and connects it to passable edge-sharing neighbors.
