@@ -71,6 +71,7 @@ public class StructurePlacement
 
         var vertex = _mesh.Vertices[vertexId];
         vertex.HasStructure = true;
+        vertex.Structure = type;
         _structures[vertexId] = type;
 
         // Notify adjacent quads that passability may have changed
@@ -99,6 +100,7 @@ public class StructurePlacement
             return false;
 
         vertex.HasStructure = false;
+        vertex.Structure = null;
         _structures.Remove(vertexId);
 
         // Clean up visual if it exists

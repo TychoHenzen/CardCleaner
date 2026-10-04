@@ -1,10 +1,33 @@
+using System.Linq;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 
 [TestSuite]
+[RequireGodotRuntime]
 public class WfcAdjacencyRulesTest
 {
+    private readonly CompiledTransitionResolver _resolver = new();
+
+    [TestCase]
+    public void TestResolverConstructorPopulatesCompiledTransitions()
+    {
+        var pairs = _resolver.GetAllTransitionPairs().ToList();
+        AssertThat(pairs.Count).IsGreater(0);
+
+        var rules = new WfcAdjacencyRules(_resolver);
+
+        AssertThat(rules.AllTileIds.Count).IsGreater(0);
+        foreach (var (inner, outer) in pairs)
+        {
+            AssertBool(rules.AllTileIds.Contains(inner)).IsTrue();
+            AssertBool(rules.AllTileIds.Contains(outer)).IsTrue();
+            AssertBool(rules.CanBeAdjacent(inner, outer)).IsTrue();
+            AssertBool(rules.CanBeAdjacent(outer, inner)).IsTrue();
+        }
+    }
+
     [TestCase]
     public void TestTileCanBeAdjacentToItself()
     {

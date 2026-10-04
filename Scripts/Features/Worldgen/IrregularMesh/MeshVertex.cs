@@ -40,6 +40,11 @@ public class MeshVertex
     public bool HasStructure { get; set; }
 
     /// <summary>
+    /// Type of the structure placed on this vertex; null when none was placed through <see cref="StructurePlacement"/>.
+    /// </summary>
+    public StructureType? Structure { get; set; }
+
+    /// <summary>
     /// IDs of quads that have this vertex as a corner.
     /// Populated during mesh building.
     /// </summary>

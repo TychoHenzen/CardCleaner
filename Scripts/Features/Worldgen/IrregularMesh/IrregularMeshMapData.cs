@@ -118,9 +118,12 @@ public class IrregularMeshMapData : IMapData
         if (!IsValidCell(cellId))
             return false;
 
-        // By default, all terrain is transparent (no tall walls in terrain layer)
-        // Structures might block LOS
-        return !_structureCells.Contains(cellId);
+        // Terrain is transparent; cell structures and walls on a corner vertex block line of sight
+        // (fences and other vertex structures block movement only)
+        if (_structureCells.Contains(cellId))
+            return false;
+
+        return !QuadCornerCounter.HasSightBlockingCorner(_mesh, _mesh.Quads[cellId]);
     }
 
     public bool HasStructure(int cellId)

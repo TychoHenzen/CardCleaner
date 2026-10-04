@@ -98,7 +98,7 @@ public class WfcAdjacencyRules
         // Extract all transition pairs from the resolver
         foreach (var (innerTerrain, outerTerrain) in resolver.GetAllTransitionPairs())
         {
-            //AddTransition(innerTerrain, outerTerrain);
+            AddTransition(innerTerrain, outerTerrain);
         }
 
         // Ensure all tiles can be adjacent to themselves

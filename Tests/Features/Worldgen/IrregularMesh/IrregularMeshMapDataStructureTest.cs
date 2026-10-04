@@ -42,6 +42,47 @@ public class IrregularMeshMapDataStructureTest
         }
     }
 
+    [TestCase]
+    public void WallOnAVertexBlocksLineOfSightInItsAdjacentCells()
+    {
+        var placement = new IrregularMeshNs.StructurePlacement(_mesh);
+
+        AssertBool(placement.PlaceStructure(CenterVertex, IrregularMeshNs.StructureType.Wall)).IsTrue();
+
+        for (int cellId = 0; cellId < _mapData.CellCount; cellId++)
+        {
+            AssertBool(_mapData.IsTransparent(cellId)).IsFalse();
+        }
+    }
+
+    [TestCase]
+    public void FenceOnAVertexBlocksMovementButNotLineOfSight()
+    {
+        var placement = new IrregularMeshNs.StructurePlacement(_mesh);
+
+        AssertBool(placement.PlaceStructure(CenterVertex, IrregularMeshNs.StructureType.Fence)).IsTrue();
+
+        for (int cellId = 0; cellId < _mapData.CellCount; cellId++)
+        {
+            AssertBool(_mapData.IsPassable(cellId)).IsFalse();
+            AssertBool(_mapData.IsTransparent(cellId)).IsTrue();
+        }
+    }
+
+    [TestCase]
+    public void RemovingAWallRestoresLineOfSight()
+    {
+        var placement = new IrregularMeshNs.StructurePlacement(_mesh);
+        placement.PlaceStructure(CenterVertex, IrregularMeshNs.StructureType.Wall);
+
+        placement.RemoveStructure(CenterVertex);
+
+        for (int cellId = 0; cellId < _mapData.CellCount; cellId++)
+        {
+            AssertBool(_mapData.IsTransparent(cellId)).IsTrue();
+        }
+    }
+
     private static IrregularMeshNs.IrregularMesh CreateTwoByTwoMesh()
     {
         var mesh = new IrregularMeshNs.IrregularMesh();
