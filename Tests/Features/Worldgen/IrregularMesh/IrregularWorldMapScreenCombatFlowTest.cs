@@ -38,6 +38,8 @@ public class IrregularWorldMapScreenCombatFlowTest
 
     private static CardSignature StrongAbility() => new(new[] { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f });
 
+    private static CardSignature WeakAbility() => new(new[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f });
+
     private static async Task<bool> WaitUntil(Func<bool> condition, double timeoutSeconds)
     {
         var deadline = Time.GetTicksMsec() + (ulong)(timeoutSeconds * 1000);
@@ -62,6 +64,24 @@ public class IrregularWorldMapScreenCombatFlowTest
             await ISceneRunner.SyncProcessFrame;
 
         AssertThat(finishedCount).IsEqual(0);
+    }
+
+    [TestCase]
+    public async Task LosingACombatFinishesTheSessionSoTheDeckBuilderCanReset()
+    {
+        var encountered = false;
+        var defeated = false;
+        var finishedCount = 0;
+        _screen.EnemyEncountered += _ => encountered = true;
+        _screen.EnemyDefeated += _ => defeated = true;
+        _screen.ExplorationFinished += () => finishedCount++;
+
+        _screen.GenerateMap(Seed, null, new[] { WeakAbility() });
+
+        AssertBool(await WaitUntil(() => encountered, EncounterTimeoutSeconds)).IsTrue();
+        AssertBool(await WaitUntil(() => finishedCount > 0, EncounterTimeoutSeconds)).IsTrue();
+        AssertThat(finishedCount).IsEqual(1);
+        AssertBool(defeated).IsFalse();
     }
 
     [TestCase]

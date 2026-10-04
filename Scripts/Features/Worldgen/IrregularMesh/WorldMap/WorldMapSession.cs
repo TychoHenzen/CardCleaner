@@ -38,6 +38,9 @@ internal sealed class WorldMapSession
 
     internal event Action<IReadOnlySet<int>>? VisibilityChanged;
 
+    /// <summary>
+    /// Raised when the session is over: the map is fully explored or the player lost a combat.
+    /// </summary>
     internal event Action? ExplorationFinished;
 
     internal event Action<int>? EnemySpotted;
@@ -214,6 +217,7 @@ internal sealed class WorldMapSession
         if (!playerWon)
         {
             GD.Print("[IrregularWorldMapScreen] Player defeated!");
+            ExplorationFinished?.Invoke();
             return;
         }
 
