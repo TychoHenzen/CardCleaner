@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 
@@ -6,21 +7,24 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
 /// Updates the trackers that depend on collapsed cells: blob sizes, spatial coherence
-/// regions and multi-cell reservations.
+/// regions, the passability graph and multi-cell reservations.
 /// </summary>
 internal sealed class WfcCollapseEffects
 {
     private readonly BlobSizeTracker? _blobTracker;
     private readonly SpatialCoherenceConstraint? _spatialCoherence;
+    private readonly PassabilityGraphUpdater? _passabilityUpdater;
     private readonly MultiCellReserver _reserver;
 
     internal WfcCollapseEffects(
         BlobSizeTracker? blobTracker,
         SpatialCoherenceConstraint? spatialCoherence,
-        ITileRegistry? tileRegistry)
+        ITileRegistry? tileRegistry,
+        PassabilityGraphUpdater? passabilityUpdater = null)
     {
         _blobTracker = blobTracker;
         _spatialCoherence = spatialCoherence;
+        _passabilityUpdater = passabilityUpdater;
         _reserver = new MultiCellReserver(tileRegistry);
     }
 
@@ -39,12 +43,13 @@ internal sealed class WfcCollapseEffects
     {
         RegisterBlob(topology, cellId, tileId);
 
-        // Spatial coherence and multi-cell reservation are grid-specific.
+        // Spatial coherence, passability and multi-cell reservation are grid-specific.
         if (topology is not WfcGrid grid)
             return;
 
         var position = grid.CellIdToPosition(cellId);
         _spatialCoherence?.OnTileCollapsed(position, tileId, grid);
+        _passabilityUpdater?.OnCellCollapsed(position, tileId, grid);
         _reserver.Reserve(position, tileId, grid);
     }
 

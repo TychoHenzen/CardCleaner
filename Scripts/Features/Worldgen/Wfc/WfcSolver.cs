@@ -41,9 +41,8 @@ public class WfcSolver
     }
 
     /// <summary>
-    /// Creates a WFC solver with connectivity tracking (for backward compatibility).
-    /// Note: PassabilityGraph is not used in topology-agnostic solving,
-    /// but maintained for API compatibility.
+    /// Creates a WFC solver with connectivity tracking. Each collapsed passable grid cell is
+    /// added to <paramref name="passabilityGraph"/> so connectivity constraints see the real map.
     /// </summary>
     public WfcSolver(
         WfcPropagator propagator,
@@ -56,9 +55,11 @@ public class WfcSolver
     {
         _propagator = propagator;
         _selector = selector;
-        _collapseEffects = new WfcCollapseEffects(blobTracker, spatialCoherence, tileRegistry);
-        // Note: passabilityGraph and isPassable not stored as they're grid-specific
-        // Connectivity constraint added to selector handles this
+        _collapseEffects = new WfcCollapseEffects(
+            blobTracker,
+            spatialCoherence,
+            tileRegistry,
+            new Connectivity.PassabilityGraphUpdater(passabilityGraph, isPassable));
     }
 
     public void SetProfiler(IProfiler profiler)
