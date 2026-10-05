@@ -10,7 +10,8 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 /// <summary>
 ///     Charges the <see cref="IMoneyService" /> and instances the ordered scene at the delivery marker.
 ///     Successive orders land in successive grid slots so items never spawn inside each other. Each delivery
-///     point keeps its own slot count, so two terminals with different markers never share a grid.
+///     point keeps its own slots, so two terminals with different markers never share a grid. A plain marker stacks
+///     layer after layer; a <see cref="DeliveryMarker" /> holds one layer and reuses a slot once its item has left.
 /// </summary>
 [Service(ServiceLifetime.Singleton, typeof(IOrderingService))]
 public partial class OrderingService : Node, IOrderingService
@@ -26,7 +27,10 @@ public partial class OrderingService : Node, IOrderingService
 
     public const float LayerHeight = 1.5f;
 
+    private const int SlotsPerLayer = SlotColumns * SlotRows;
+
     private readonly Dictionary<ulong, int> _deliveredPerPoint = [];
+    private readonly Dictionary<ulong, List<Node3D>> _groundItems = [];
 
     /// <summary>Marker where ordered items appear when the ordering terminal names none of its own.</summary>
     [Export]
@@ -57,8 +61,8 @@ public partial class OrderingService : Node, IOrderingService
         if (point == null || parent == null || Money == null)
             return Fail(item, OrderStatus.NoDeliveryPoint);
 
-        var slot = _deliveredPerPoint.GetValueOrDefault(point.GetInstanceId());
-        if (point is DeliveryMarker { MaxLayers: > 0 } limited && slot / (SlotColumns * SlotRows) >= limited.MaxLayers)
+        var slot = NextSlot(point);
+        if (slot < 0)
             return Fail(item, OrderStatus.DeliveryFull);
 
         // Build the item first: an unusable scene must be rejected before the player is charged.
@@ -77,7 +81,7 @@ public partial class OrderingService : Node, IOrderingService
 
         parent.AddChild(instance);
         instance.GlobalPosition = point.GlobalPosition + SlotOffset(slot);
-        _deliveredPerPoint[point.GetInstanceId()] = slot + 1;
+        RecordDelivery(point, slot, instance);
         DeliveredCount++;
 
         ILog.Print($"Order succeeded: {item.Id} for {item.Price}, balance now {Money.Balance}");
@@ -100,6 +104,45 @@ public partial class OrderingService : Node, IOrderingService
             layer * LayerHeight,
             (row - (SlotRows - 1) / 2f) * SlotSpacingZ);
     }
+
+    /// <summary>
+    ///     Slot for the next delivery at <paramref name="point" />, or -1 when a ground-level
+    ///     <see cref="DeliveryMarker" /> has no free slot left. Other markers stack layer after layer.
+    /// </summary>
+    private int NextSlot(Marker3D point)
+    {
+        var id = point.GetInstanceId();
+        if (point is not DeliveryMarker)
+            return _deliveredPerPoint.GetValueOrDefault(id);
+
+        var items = _groundItems.GetValueOrDefault(id) ?? [];
+        items.RemoveAll(i => !GodotObject.IsInstanceValid(i) || i.IsQueuedForDeletion());
+        for (var slot = 0; slot < SlotsPerLayer; slot++)
+        {
+            var centre = point.GlobalPosition + SlotOffset(slot);
+            if (!items.Exists(i => IsInSlot(i.GlobalPosition, centre)))
+                return slot;
+        }
+
+        return -1;
+    }
+
+    private void RecordDelivery(Marker3D point, int slot, Node3D instance)
+    {
+        var id = point.GetInstanceId();
+        if (point is not DeliveryMarker)
+        {
+            _deliveredPerPoint[id] = slot + 1;
+            return;
+        }
+
+        if (!_groundItems.TryGetValue(id, out var items))
+            _groundItems[id] = items = [];
+        items.Add(instance);
+    }
+
+    private static bool IsInSlot(Vector3 position, Vector3 centre) =>
+        Mathf.Abs(position.X - centre.X) < SlotSpacingX / 2f && Mathf.Abs(position.Z - centre.Z) < SlotSpacingZ / 2f;
 
     private static OrderResult Fail(OrderItem item, OrderStatus status)
     {

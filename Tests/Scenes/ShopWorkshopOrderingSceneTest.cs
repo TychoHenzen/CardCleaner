@@ -172,6 +172,54 @@ public class ShopWorkshopOrderingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void RoomIsClosedOnTheHallSideExceptForTheDoorGap()
+    {
+        var space = _shop.GetWorld3D().DirectSpaceState;
+        var inside = _workshop.GlobalPosition + new Vector3(-4.5f, 1.0f, -3.5f);
+        var hall = _workshop.GlobalPosition + new Vector3(-2.0f, 1.0f, -3.5f);
+        var doorSide = _workshop.GlobalPosition + new Vector3(-4.3f, 1.0f, -1.0f);
+
+        var throughWall = space.IntersectRay(PhysicsRayQueryParameters3D.Create(inside, hall));
+        var throughDoor = space.IntersectRay(PhysicsRayQueryParameters3D.Create(
+            _workshop.GlobalPosition + new Vector3(-4.3f, 1.0f, -3.5f), doorSide));
+
+        AssertThat(throughWall.Count).IsGreater(0);
+        AssertThat(throughDoor.Count).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TerminalArtSlotsUseManifestPackMeshesWithAPlaceholderFallback()
+    {
+        var manifest = FileAccess.GetFileAsString("res://tools/synty-assets.json");
+        var slots = _terminal.GetChildren().OfType<ShopArtSlot>().ToList();
+
+        AssertThat(slots.Count).IsEqual(3);
+        foreach (var slot in slots)
+        {
+            AssertBool(slot.ArtPath.StartsWith("res://Assets/Synty/")).IsTrue();
+            AssertBool(manifest.Contains($"\"{slot.ArtPath["res://Assets/Synty/".Length..]}\"")).IsTrue();
+            AssertThat(slot.Placeholder).IsNotNull();
+            AssertBool(slot.ArtLoaded != slot.Placeholder!.Visible).IsTrue();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void OrderedConveyorIsAPhysicalBodyWithCollision()
+    {
+        _terminal.Interact();
+        _money.Add(1000);
+
+        _ui.PressItem(0);
+
+        var belt = ((Node3D)_shop.GetNode("World").GetChildren().Last()).GetNode("Belt");
+        AssertBool(belt.IsClass("StaticBody3D")).IsTrue();
+        AssertThat(belt.GetNodeOrNull<CollisionShape3D>("CollisionShape3D")).IsNotNull();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void OrderedConveyorKeepsItsConveyorBehaviourNode()
     {
         _terminal.Interact();

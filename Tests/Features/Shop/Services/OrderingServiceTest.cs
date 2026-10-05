@@ -207,18 +207,23 @@ public class OrderingServiceTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void DeliveryMarkerWithALayerCapRejectsTheNextOrderWithoutChargingOnceFull()
+    public void GroundMarkerHoldsOneLayerThenRefusesTheNextOrderWithoutCharging()
     {
         _money.Add(10000);
-        var capped = new DeliveryMarker { Position = new Vector3(-20f, 0f, 3f), MaxLayers = 1 };
-        _world.AddChild(capped);
+        var ground = AddGroundMarker();
         var cheap = MakeItem("cheap", 1);
         for (var order = 0; order < OrderingService.SlotColumns * OrderingService.SlotRows; order++)
-            AssertBool(_ordering.Order(cheap, capped).Succeeded).IsTrue();
+        {
+            var delivered = _ordering.Order(cheap, ground);
+            AssertBool(delivered.Succeeded).IsTrue();
+            AssertBool(delivered.Spawned!.GlobalPosition.IsEqualApprox(
+                ground.GlobalPosition + OrderingService.SlotOffset(order))).IsTrue();
+        }
+
         var balance = _money.Balance;
         var spawned = SpawnedItems().Count;
 
-        var result = _ordering.Order(cheap, capped);
+        var result = _ordering.Order(cheap, ground);
 
         AssertThat(result.Status).IsEqual(OrderStatus.DeliveryFull);
         AssertThat(_money.Balance).IsEqual(balance);
@@ -227,29 +232,71 @@ public class OrderingServiceTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void FullCappedMarkerDoesNotBlockTheDefaultDeliveryPoint()
+    public void GroundMarkerReusesTheSlotOfAnItemThatWasRemoved()
     {
         _money.Add(10000);
-        var capped = new DeliveryMarker { Position = new Vector3(-20f, 0f, 3f), MaxLayers = 1 };
-        _world.AddChild(capped);
+        var ground = AddGroundMarker();
+        var cheap = MakeItem("cheap", 1);
+        var delivered = Enumerable.Range(0, OrderingService.SlotColumns * OrderingService.SlotRows)
+            .Select(_ => _ordering.Order(cheap, ground).Spawned!).ToList();
+
+        delivered[2].QueueFree();
+        var replacement = _ordering.Order(cheap, ground);
+
+        AssertBool(replacement.Succeeded).IsTrue();
+        AssertBool(replacement.Spawned!.GlobalPosition.IsEqualApprox(
+            ground.GlobalPosition + OrderingService.SlotOffset(2))).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void GroundMarkerTreatsAnItemCarriedOutOfItsSlotAsGone()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
+        var cheap = MakeItem("cheap", 1);
+        var delivered = Enumerable.Range(0, OrderingService.SlotColumns * OrderingService.SlotRows)
+            .Select(_ => _ordering.Order(cheap, ground).Spawned!).ToList();
+
+        delivered[0].GlobalPosition += new Vector3(30f, 0f, 0f);
+        var replacement = _ordering.Order(cheap, ground);
+
+        AssertBool(replacement.Succeeded).IsTrue();
+        AssertBool(replacement.Spawned!.GlobalPosition.IsEqualApprox(
+            ground.GlobalPosition + OrderingService.SlotOffset(0))).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void FullGroundMarkerDoesNotBlockTheDefaultDeliveryPoint()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
         var cheap = MakeItem("cheap", 1);
         for (var order = 0; order <= OrderingService.SlotColumns * OrderingService.SlotRows; order++)
-            _ordering.Order(cheap, capped);
+            _ordering.Order(cheap, ground);
 
         AssertBool(_ordering.Order(cheap).Succeeded).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void MarkerWithoutALayerCapNeverReportsFull()
+    public void PlainMarkerKeepsStackingLayersAndNeverReportsFull()
     {
         _money.Add(10000);
-        var uncapped = new DeliveryMarker { Position = new Vector3(-20f, 0f, 3f) };
-        _world.AddChild(uncapped);
+        var plain = new Marker3D { Position = new Vector3(-20f, 0f, 3f) };
+        _world.AddChild(plain);
         var cheap = MakeItem("cheap", 1);
 
         for (var order = 0; order < 4 * OrderingService.SlotColumns * OrderingService.SlotRows; order++)
-            AssertBool(_ordering.Order(cheap, uncapped).Succeeded).IsTrue();
+            AssertBool(_ordering.Order(cheap, plain).Succeeded).IsTrue();
+    }
+
+    private DeliveryMarker AddGroundMarker()
+    {
+        var ground = new DeliveryMarker { Position = new Vector3(-20f, 0f, 3f) };
+        _world.AddChild(ground);
+        return ground;
     }
 
     private List<Node3D> SpawnedItems() =>

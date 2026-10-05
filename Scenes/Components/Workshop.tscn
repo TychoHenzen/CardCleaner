@@ -597,7 +597,6 @@ mesh = SubResource("TerminalHighlightMesh")
 [node name="DeliveryPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
 script = ExtResource("DeliveryMarker")
-MaxLayers = 2
 
 [node name="Pad" type="MeshInstance3D" parent="DeliveryPoint"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)

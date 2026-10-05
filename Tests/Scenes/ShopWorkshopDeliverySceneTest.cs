@@ -12,7 +12,7 @@ namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 /// Reliability of the workshop terminal inside the shop scene: its deliveries never overlap workshop geometry,
-/// stop at the ceiling instead of stacking into it, leave the shop delivery grid alone, and the balance
+/// use a single ground layer so tall items never reach the ceiling, leave the shop delivery grid alone, and the balance
 /// stays consistent when the two terminals order alternately.
 /// </summary>
 [TestSuite]
@@ -35,7 +35,7 @@ public class ShopWorkshopDeliverySceneTest
     private DeliveryMarker _delivery = null!;
     private Marker3D _shopDelivery = null!;
 
-    private int Capacity => _delivery.MaxLayers * OrderingService.SlotColumns * OrderingService.SlotRows;
+    private static int Capacity => OrderingService.SlotColumns * OrderingService.SlotRows;
 
     [BeforeTest]
     public async Task Setup()
@@ -73,7 +73,6 @@ public class ShopWorkshopDeliverySceneTest
     {
         AssertBool(ReferenceEquals(_terminal.DeliveryPoint, _delivery)).IsTrue();
         AssertBool(_delivery.GlobalPosition.DistanceTo(_shopDelivery.GlobalPosition) > 20f).IsTrue();
-        AssertThat(_delivery.MaxLayers).IsGreater(0);
     }
 
     [TestCase]
@@ -100,16 +99,35 @@ public class ShopWorkshopDeliverySceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void TopCappedLayerOfTheTallestItemStaysBelowTheCeilingAndOneMoreLayerWouldNot()
+    public void TallestItemInTheSingleLayerClearsTheCeiling()
     {
         var ceiling = _workshop.GetNode<StaticBody3D>("Room/Ceiling");
         var shape = (BoxShape3D)ceiling.GetNode<CollisionShape3D>("CollisionShape3D").Shape;
         var underside = ceiling.GlobalPosition.Y - shape.Size.Y / 2f;
-        var topLayerFeet = _delivery.GlobalPosition.Y + OrderingService.SlotOffset(Capacity - 1).Y;
-        var nextLayerFeet = _delivery.GlobalPosition.Y + OrderingService.SlotOffset(Capacity).Y;
 
-        AssertBool(topLayerFeet + TallestItem < underside).IsTrue();
-        AssertBool(nextLayerFeet + TallestItem >= underside).IsTrue();
+        AssertBool(_delivery.GlobalPosition.Y + TallestItem < underside).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RemovingADeliveredItemFreesItsSlotForTheNextOrder()
+    {
+        _money.Add(TopUp);
+        _terminal.Interact();
+        var cabinet = IndexOf("arcade_cabinet");
+        var world = _shop.GetNode("World");
+        _ui.PressItem(cabinet);
+        var first = (Node3D)world.GetChildren().Last();
+        for (var order = 1; order < Capacity; order++)
+            _ui.PressItem(cabinet);
+
+        first.QueueFree();
+        _ui.PressItem(cabinet);
+
+        var replacement = (Node3D)world.GetChildren().Last();
+        AssertBool(replacement.GlobalPosition.IsEqualApprox(_delivery.GlobalPosition + OrderingService.SlotOffset(0)))
+            .IsTrue();
+        AssertThat(_ui.MessageText.Contains("Ordered")).IsTrue();
     }
 
     [TestCase]
@@ -128,7 +146,7 @@ public class ShopWorkshopDeliverySceneTest
 
         AssertThat(_money.Balance).IsEqual(balance);
         AssertThat(_shop.GetNode("World").GetChildCount()).IsEqual(spawned);
-        AssertThat(_ui.MessageText).IsEqual("The delivery area is full.");
+        AssertBool(_ui.MessageText.StartsWith("The delivery area is full")).IsTrue();
     }
 
     [TestCase]

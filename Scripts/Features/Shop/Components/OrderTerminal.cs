@@ -168,7 +168,7 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
         {
             OrderStatus.Success => $"Ordered {item.DisplayName}. It is at the delivery point.",
             OrderStatus.InsufficientFunds => $"Not enough money for {item.DisplayName}.",
-            OrderStatus.DeliveryFull => "The delivery area is full.",
+            OrderStatus.DeliveryFull => "The delivery area is full. Move or remove some items first.",
             _ => $"{item.DisplayName} cannot be ordered right now."
         });
     }
