@@ -6,6 +6,12 @@
     { "source": "SIMPLE_Shop_Interiors_Source_Files/SourceFiles/Fbx/SI_Env_Wall_01.fbx", "target": "SimpleShopInterior/SI_Env_Wall_01.fbx" },
     { "source": "SIMPLE_Shop_Interiors_Source_Files/SourceFiles/Fbx/SI_Env_Wall_Door_Small_01.fbx", "target": "SimpleShopInterior/SI_Env_Wall_Door_Small_01.fbx" },
     { "source": "SIMPLE_Shop_Interiors_Source_Files/SourceFiles/Fbx/SI_Prop_CheckoutCounter_01.fbx", "target": "SimpleShopInterior/SI_Prop_CheckoutCounter_01.fbx" },
+    { "source": "SIMPLE_Shop_Interiors_Source_Files/SourceFiles/Fbx/SI_Prop_RecordShelf_01.fbx", "target": "SimpleShopInterior/SI_Prop_RecordShelf_01.fbx" },
+    { "source": "POLYGON_Office_SourceFiles_v4/SourceFiles/FBX/SM_Prop_CardboardBox_03.fbx", "target": "PolygonOffice/SM_Prop_CardboardBox_03.fbx" },
+    { "source": "POLYGON_Office_SourceFiles_v4/SourceFiles/FBX/SM_Prop_Desk_01.fbx", "target": "PolygonOffice/SM_Prop_Desk_01.fbx" },
+    { "source": "POLYGON_Office_SourceFiles_v4/SourceFiles/FBX/SM_Prop_Computer_Monitor_01.fbx", "target": "PolygonOffice/SM_Prop_Computer_Monitor_01.fbx" },
+    { "source": "POLYGON_Office_SourceFiles_v4/SourceFiles/FBX/SM_Prop_Computer_Keyboard_01.fbx", "target": "PolygonOffice/SM_Prop_Computer_Keyboard_01.fbx" },
+    { "source": "POLYGON_Office_SourceFiles_v4/SourceFiles/Textures/PolygonOffice_Texture_01_A.png", "target": "PolygonOffice/PolygonOffice_Texture_01_A.png" },
     { "source": "SIMPLE_Shop_Interiors_Source_Files/SourceFiles/Textures/SimpleShopInterior_Texture.png", "target": "SimpleShopInterior/SimpleShopInterior_Texture.png" }
   ]
 }

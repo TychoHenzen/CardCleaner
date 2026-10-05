@@ -24,6 +24,12 @@ public partial class PlayerController : CharacterBody3D, ISaveable
 
     public StringName UniqueID => "player";
 
+    /// <summary>
+    ///     False while a modal UI (for example the shop PC) owns the mouse and keyboard.
+    ///     Movement input, mouse look and jumping are ignored; gravity still applies.
+    /// </summary>
+    public bool ControlEnabled { get; set; } = true;
+
     public void Save(NodeSave save)
     {
         save.SetOrAddProperty("position", GlobalPosition);
@@ -100,21 +106,28 @@ public partial class PlayerController : CharacterBody3D, ISaveable
     private void RegisterInputActions()
     {
         if (_inputService == null) return;
-        // Register light cycling control
-        _inputService.RegisterAction(this, "cycle_light", Key.F, () => _light?.Cycle());
-        System.Action brighter = () => _light?.AdjustIntensity(0.2f);
+        // Every keyboard action is gated by ControlEnabled so a modal screen owns the keyboard.
+        _inputService.RegisterAction(this, "cycle_light", Key.F, WhenControlled(() => _light?.Cycle()));
+        System.Action brighter = WhenControlled(() => _light?.AdjustIntensity(0.2f));
         _inputService.RegisterAction(this, "increase_light_intensity", Key.Plus, brighter);
-        _inputService.RegisterAction(this, "decrease_light_intensity", Key.Minus, () => _light?.AdjustIntensity(-0.2f));
+        _inputService.RegisterAction(this, "decrease_light_intensity", Key.Minus,
+            WhenControlled(() => _light?.AdjustIntensity(-0.2f)));
         _inputService.RegisterAction(this, "increase_light_intensity_alt", Key.Equal, brighter);
 
         // Register safety reset action (R key)
-        _inputService.RegisterAction(this, "player_reset", Key.R, OnResetRequested);
+        _inputService.RegisterAction(this, "player_reset", Key.R, WhenControlled(OnResetRequested));
 
         // Subscribe to mouse movement
         _inputService.MouseMoved += OnMouseMoved;
 
         ILog.Print("Registered light controls and mouse input");
     }
+
+    private System.Action WhenControlled(System.Action action) => () =>
+    {
+        if (ControlEnabled)
+            action();
+    };
 
     public override void _ExitTree()
     {
@@ -130,7 +143,7 @@ public partial class PlayerController : CharacterBody3D, ISaveable
 
     private void OnMouseMoved(Vector2 delta)
     {
-        if (_settings == null || _head == null) return;
+        if (_settings == null || _head == null || !ControlEnabled) return;
         var yawDelta = -delta.X * _settings.MouseSensitivity;
         RotateY(Mathf.DegToRad(yawDelta));
 
@@ -143,10 +156,12 @@ public partial class PlayerController : CharacterBody3D, ISaveable
     {
         if (_settings == null) return;
         // Movement input
-        var input = new Vector2(
-            Input.GetActionStrength("ui_right") - Input.GetActionStrength("ui_left"),
-            Input.GetActionStrength("ui_down") - Input.GetActionStrength("ui_up")
-        ).Normalized();
+        var input = ControlEnabled
+            ? new Vector2(
+                Input.GetActionStrength("ui_right") - Input.GetActionStrength("ui_left"),
+                Input.GetActionStrength("ui_down") - Input.GetActionStrength("ui_up")
+            ).Normalized()
+            : Vector2.Zero;
 
         // Apply movement
         var vel = Velocity;
@@ -155,7 +170,7 @@ public partial class PlayerController : CharacterBody3D, ISaveable
         vel.Z = dir.Z * _settings.MovementSpeed;
 
         // Jumping
-        if (IsOnFloor() && Input.IsActionJustPressed("ui_accept"))
+        if (ControlEnabled && IsOnFloor() && Input.IsActionJustPressed("ui_accept"))
             vel.Y = _settings.JumpVelocity;
 
         // Gravity

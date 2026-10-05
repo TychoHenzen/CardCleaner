@@ -1,9 +1,14 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=36 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/player.tscn" id="Player"]
 [ext_resource type="Script" path="res://Scripts/Core/DependencyInjection/AutoServiceProvider.cs" id="AutoServiceProvider"]
 [ext_resource type="Script" path="res://Scripts/Core/Data/GameSettings.cs" id="GameSettings"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/OrderTerminal.cs" id="OrderTerminal"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Ui/OrderTerminalUi.cs" id="OrderTerminalUi"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Services/MoneyService.cs" id="MoneyService"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Services/OrderingService.cs" id="OrderingService"]
+[ext_resource type="Resource" path="res://Data/Shop/BackofficeCatalog.tres" id="BackofficeCatalog"]
 
 [sub_resource type="StandardMaterial3D" id="GrayMaterial"]
 albedo_color = Color(0.62, 0.62, 0.65, 1)
@@ -38,6 +43,32 @@ size = Vector3(16, 0.1, 4)
 
 [sub_resource type="BoxShape3D" id="CounterShape"]
 size = Vector3(3.1, 1.1, 1.3)
+
+[sub_resource type="BoxShape3D" id="PcShape"]
+size = Vector3(1.96, 1.3, 0.88)
+
+[sub_resource type="BoxMesh" id="PcDeskMesh"]
+material = SubResource("GrayMaterial")
+size = Vector3(1.96, 0.75, 0.88)
+
+[sub_resource type="BoxMesh" id="PcMonitorMesh"]
+material = SubResource("GrayMaterial")
+size = Vector3(0.66, 0.5, 0.26)
+
+[sub_resource type="BoxMesh" id="PcKeyboardMesh"]
+material = SubResource("GrayMaterial")
+size = Vector3(0.66, 0.04, 0.21)
+
+[sub_resource type="StandardMaterial3D" id="PcHighlightMaterial"]
+transparency = 1
+albedo_color = Color(1, 1, 0.4, 0.25)
+emission_enabled = true
+emission = Color(1, 1, 0.4, 1)
+emission_energy_multiplier = 0.4
+
+[sub_resource type="BoxMesh" id="PcHighlightMesh"]
+material = SubResource("PcHighlightMaterial")
+size = Vector3(2.1, 1.4, 1)
 
 [sub_resource type="Environment" id="ShopEnvironment"]
 background_mode = 1
@@ -818,16 +849,64 @@ mesh = SubResource("WallBoxMesh")
 [node name="Markers" type="Node3D" parent="World"]
 
 [node name="PcLocation" type="Marker3D" parent="World/Markers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -6.9)
 
 [node name="SeamLocation" type="Marker3D" parent="World/Markers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1.5, -7.8)
 
 [node name="DeliveryPoint" type="Marker3D" parent="World/Markers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -5.5)
 
 [node name="ShelfSlotsArea" type="Marker3D" parent="World/Markers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 7)
+
+[node name="PcTerminal" type="StaticBody3D" parent="World/Markers/PcLocation" node_paths=PackedStringArray("Ui", "HighlightMesh")]
+collision_layer = 5
+script = ExtResource("OrderTerminal")
+Catalog = ExtResource("BackofficeCatalog")
+Ui = NodePath("../../../../OrderUi")
+HighlightMesh = NodePath("Highlight")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Markers/PcLocation/PcTerminal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
+shape = SubResource("PcShape")
+
+[node name="DeskArt" type="Node3D" parent="World/Markers/PcLocation/PcTerminal" node_paths=PackedStringArray("Placeholder")]
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonOffice/SM_Prop_Desk_01.fbx"
+ArtScale = 1.0
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Markers/PcLocation/PcTerminal/DeskArt"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, 0)
+mesh = SubResource("PcDeskMesh")
+
+[node name="MonitorArt" type="Node3D" parent="World/Markers/PcLocation/PcTerminal" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -0.2)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonOffice/SM_Prop_Computer_Monitor_01.fbx"
+ArtScale = 1.0
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Markers/PcLocation/PcTerminal/MonitorArt"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+mesh = SubResource("PcMonitorMesh")
+
+[node name="KeyboardArt" type="Node3D" parent="World/Markers/PcLocation/PcTerminal" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0.2)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonOffice/SM_Prop_Computer_Keyboard_01.fbx"
+ArtScale = 1.0
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Markers/PcLocation/PcTerminal/KeyboardArt"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+mesh = SubResource("PcKeyboardMesh")
+
+[node name="Highlight" type="MeshInstance3D" parent="World/Markers/PcLocation/PcTerminal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+visible = false
+mesh = SubResource("PcHighlightMesh")
 
 [node name="Player" parent="." instance=ExtResource("Player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, 9)
@@ -857,3 +936,14 @@ script = ExtResource("AutoServiceProvider")
 
 [node name="GameSettings" type="Node" parent="Services"]
 script = ExtResource("GameSettings")
+
+[node name="MoneyService" type="Node" parent="Services"]
+script = ExtResource("MoneyService")
+
+[node name="OrderingService" type="Node" parent="Services" node_paths=PackedStringArray("DeliveryPoint", "SpawnRoot")]
+script = ExtResource("OrderingService")
+DeliveryPoint = NodePath("../../World/Markers/DeliveryPoint")
+SpawnRoot = NodePath("../../World")
+
+[node name="OrderUi" type="CanvasLayer" parent="."]
+script = ExtResource("OrderTerminalUi")

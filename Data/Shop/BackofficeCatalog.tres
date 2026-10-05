@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="OrderCatalog" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Models/OrderCatalog.cs" id="OrderCatalogScript"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Models/OrderItem.cs" id="OrderItemScript"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Shelf.tscn" id="Shelf"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/PackingStation.tscn" id="PackingStation"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/CardboardBox.tscn" id="CardboardBox"]
+
+[sub_resource type="Resource" id="ShelfItem"]
+script = ExtResource("OrderItemScript")
+Id = "shelf"
+DisplayName = "Store shelf"
+Price = 120
+Scene = ExtResource("Shelf")
+
+[sub_resource type="Resource" id="PackingStationItem"]
+script = ExtResource("OrderItemScript")
+Id = "bulk_packing_station"
+DisplayName = "Bulk packing station"
+Price = 250
+Scene = ExtResource("PackingStation")
+
+[sub_resource type="Resource" id="CardboardBoxItem"]
+script = ExtResource("OrderItemScript")
+Id = "cardboard_box"
+DisplayName = "Cardboard box (8 booster packs)"
+Price = 60
+Scene = ExtResource("CardboardBox")
+
+[resource]
+script = ExtResource("OrderCatalogScript")
+Items = Array[ExtResource("OrderItemScript")]([SubResource("ShelfItem"), SubResource("PackingStationItem"), SubResource("CardboardBoxItem")])
