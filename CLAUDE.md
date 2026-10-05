@@ -218,3 +218,7 @@ Core utilities and interfaces are in `Scripts/Core/`.
 - Run `tools/sync-assets.ps1` once, then open the project in Godot so it imports the FBX files. The script copies the files listed in `tools/synty-assets.json` into the gitignored `Assets/Synty/` folder. Set `CARDCLEANER_ASSET_SOURCE` to override the source root (default `../CardCleanerAssets`). A missing root or file is an error.
 - Each shop issue adds its own manifest entries.
 - `ShopArtSlot` nodes load a pack mesh at runtime and hide their graybox placeholder. Without the import the scene still loads and shows the placeholders. Collision is hand-authored and independent of the art.
+
+### Backoffice PC Ordering
+
+The PC in the shop backoffice (`World/PcTerminal`, an `OrderTerminal`) opens an ordering screen (`OrderTerminalUi`) for the `OrderCatalog` assigned to its `Catalog` export (`Data/Shop/BackofficeCatalog.tres`). Ordering uses `IMoneyService` (balance, `TrySpend`) and `IOrderingService`, both nodes under the scene's `Services` provider. A successful order deducts the price and instances the item scene (`Scenes/Shop/Items/*.tscn`) at the `DeliveryPoint` marker, in a grid of slots that never overlap. To sell different items elsewhere (for example a workshop terminal), add an `OrderTerminal`, an `OrderTerminalUi` and a new `OrderCatalog` resource; no code changes. While the screen is open `PlayerController.ControlEnabled` is false and the cursor is visible; closing it (button or Escape) restores both. The starting balance is `MoneyService.StartingBalance`; the balance is not saved.

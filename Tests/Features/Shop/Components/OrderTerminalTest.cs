@@ -62,6 +62,24 @@ public class OrderTerminalTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void SecondTerminalWithItsOwnCatalogOrdersItsOwnItemsWithoutCodeChanges()
+    {
+        var workshopUi = new OrderTerminalUi();
+        var workshop = new OrderTerminal { Catalog = MakeCatalog(("tool", 30)), Ui = workshopUi };
+        _world.AddChild(workshopUi);
+        _world.AddChild(workshop);
+
+        workshop.Interact();
+        workshopUi.PressItem(0);
+
+        AssertThat(workshopUi.ItemRowCount).IsEqual(1);
+        AssertThat(_ui.ItemRowCount).IsEqual(2);
+        AssertThat(_money.Balance).IsEqual(StartingBalance - 30);
+        AssertThat(_ordering.DeliveredCount).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void InteractOpensTheUiWithTheCurrentBalanceAndBlocksFurtherInteraction()
     {
         AssertBool(_terminal.CanInteract).IsTrue();
