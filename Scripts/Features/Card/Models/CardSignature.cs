@@ -118,6 +118,12 @@ public partial class CardSignature : Resource
         return signature;
     }
 
+    /// <summary>True when any element is non-zero. Common cards are all-zero and have no magical potential.</summary>
+    public bool HasMagicalPotential()
+    {
+        return _elements.Any(e => !Mathf.IsZeroApprox(e));
+    }
+
     public float DistanceTo(CardSignature other)
     {
         var sum = 0f;
