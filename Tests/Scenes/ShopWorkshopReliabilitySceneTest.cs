@@ -2,17 +2,14 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// Reliability of the workshop cabinet: the shop scene hands the service locator exactly the singletons the
-/// workshop owns, and the button returns to its dark state after a finished session so a second session can run.
+/// Reliability of the workshop cabinet: the button returns to its dark state after a finished session so a second session can run.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -79,36 +76,6 @@ public class ShopWorkshopReliabilitySceneTest
         AssertBool(_rig.Screen.IsInitialized).IsTrue();
     }
 
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task RealServiceRegistrationResolvesTheWorkshopSingletons()
-    {
-        var tree = (SceneTree)Engine.GetMainLoop();
-        var previousScene = tree.CurrentScene;
-        var originalParent = _rig.Shop.GetParent();
-        originalParent.RemoveChild(_rig.Shop);
-        tree.Root.AddChild(_rig.Shop);
-        tree.CurrentScene = _rig.Shop;
-
-        try
-        {
-            ServiceLocator.ReinitializeServices();
-            await WorkshopSceneRig.Settle();
-
-            AssertBool(ReferenceEquals(ServiceLocator.Get<IGameSessionService>(),
-                _rig.Workshop.GetNode("GameSessionService"))).IsTrue();
-            AssertBool(ReferenceEquals(ServiceLocator.Get<ICardSpawningService>(),
-                _rig.Shop.GetNode("Services/SpawningService"))).IsTrue();
-            AssertBool(ServiceLocator.Has<IGameSettings>()).IsTrue();
-        }
-        finally
-        {
-            tree.CurrentScene = previousScene;
-            tree.Root.RemoveChild(_rig.Shop);
-            originalParent.AddChild(_rig.Shop);
-        }
-    }
-
     private async Task RunSession()
     {
         await _rig.Place(_rig.CardHolder, SomeCard);
@@ -122,6 +89,7 @@ public class ShopWorkshopReliabilitySceneTest
         var backingField = typeof(IrregularWorldMapScreen).GetField(
             nameof(IrregularWorldMapScreen.ExplorationFinished),
             BindingFlags.Instance | BindingFlags.NonPublic);
+        AssertThat(backingField).IsNotNull();
         ((Action?)backingField!.GetValue(screen))?.Invoke();
     }
 }

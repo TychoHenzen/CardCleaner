@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Shop.Components;
@@ -73,14 +74,11 @@ public class ShopWorkshopSceneTest
     {
         foreach (var (holder, prefix) in new[] { (_rig.DeckHolder, "Deck"), (_rig.CardHolder, "Card") })
         {
-            var chain = _rig.Workshop.GetNode("Wires").GetChildren()
-                .OfType<MeshInstance3D>()
-                .Where(wire => wire.Name.ToString().StartsWith(prefix))
-                .Select(WorldBounds)
-                .ToList();
+            var chain = WireMeshes(prefix).Select(WorldBounds).ToList();
 
             AssertBool(chain.Count > 0).IsTrue();
             AssertBool(chain.TrueForAll(bounds => bounds.Size.Length() > 0f)).IsTrue();
+            AssertBool(WireMeshes(prefix).All(wire => wire.IsVisibleInTree() && wire.Mesh.SurfaceGetMaterial(0) != null)).IsTrue();
             AssertBool(chain.Exists(bounds => TouchesHolder(bounds, holder.GlobalPosition))).IsTrue();
             AssertBool(chain.Exists(TouchesCabinetFront)).IsTrue();
             AssertBool(ChainIsConnected(chain)).IsTrue();
@@ -110,10 +108,23 @@ public class ShopWorkshopSceneTest
         foreach (var slot in slots)
         {
             AssertBool(slot.ArtPath.StartsWith("res://Assets/Synty/")).IsTrue();
-            AssertThat(manifest).Contains(Path.GetFileName(slot.ArtPath));
+            AssertBool(ManifestTargets(manifest).Contains(slot.ArtPath["res://Assets/Synty/".Length..])).IsTrue();
             AssertThat(slot.Placeholder).IsNotNull();
             AssertBool(slot.ArtLoaded || slot.Placeholder!.Visible).IsTrue();
         }
+    }
+
+    private IEnumerable<MeshInstance3D> WireMeshes(string prefix) =>
+        _rig.Workshop.GetNode("Wires").GetChildren()
+            .OfType<MeshInstance3D>()
+            .Where(wire => wire.Name.ToString().StartsWith(prefix));
+
+    private static HashSet<string> ManifestTargets(string manifest)
+    {
+        using var document = JsonDocument.Parse(manifest);
+        return document.RootElement.GetProperty("files").EnumerateArray()
+            .Select(file => file.GetProperty("target").GetString()!)
+            .ToHashSet();
     }
 
     private bool IsInsideRoom(Vector3 position)

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Player.Controllers;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -14,6 +15,8 @@ namespace CardCleaner.Tests.Scenes;
 public class ShopWorkshopCabinetSceneTest
 {
     private const int SmallMeshRings = 3;
+    private const float EyeHeight = 1.6f;
+    private const float StandingDistanceToButton = 2.5f;
 
     private WorkshopSceneRig _rig = null!;
 
@@ -88,5 +91,35 @@ public class ShopWorkshopCabinetSceneTest
         AssertBool(_rig.Screen.Visible).IsTrue();
         AssertBool(_rig.Screen.IsInitialized).IsTrue();
         AssertBool(_rig.Button.Enabled).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void PlayerCanStandAtTheEntryOnTheFloor()
+    {
+        var player = _rig.Shop.GetNode<CharacterBody3D>("Player");
+        var probe = new ShopSceneProbe(_rig.Shop, (CapsuleShape3D)player.GetNode<CollisionShape3D>("CollisionShape3D").Shape);
+        var feet = _rig.Entry.GlobalPosition with { Y = 0f };
+
+        AssertBool(probe.SupportedByFloor(feet)).IsTrue();
+        AssertBool(probe.CapsuleFits(feet with { Y = probe.CapsuleCenterHeight })).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void PlayerInteractionRayReachesTheButtonFromInFrontOfTheCabinet()
+    {
+        var interaction = _rig.Shop.GetNode<InteractionSystem>("Player/Head/Camera3D/InteractionSystem");
+        var target = _rig.Button.GetNode<CollisionShape3D>("CollisionShape3D").GlobalPosition;
+        var from = new Vector3(target.X, EyeHeight, target.Z + StandingDistanceToButton);
+
+        var hit = _rig.Shop.GetWorld3D().DirectSpaceState.IntersectRay(new PhysicsRayQueryParameters3D
+        {
+            From = from, To = target, CollideWithBodies = true, CollisionMask = interaction.InteractableCollisionMask
+        });
+
+        AssertThat(hit.Count).IsGreater(0);
+        AssertBool(ReferenceEquals(hit["collider"].Obj, _rig.Button)).IsTrue();
+        AssertBool(from.DistanceTo(target) <= _rig.Button.InteractionRange).IsTrue();
     }
 }
