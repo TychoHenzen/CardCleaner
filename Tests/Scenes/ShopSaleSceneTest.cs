@@ -142,6 +142,23 @@ public class ShopSaleSceneTest
         AssertThat(_money.Balance).IsEqual(afterFirst);
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CardHeldByThePlayerIsSoldAtTheRegister()
+    {
+        var holder = _register.PlayerHolder!;
+        var card = Tests.Features.Shop.ShopTestCards.Create(new CardSignature { Febris = 0.3f });
+        _shop.GetNode("World/Cards").AddChild(card);
+        holder.AddCard(card);
+        var balance = _money.Balance;
+
+        _register.Interact();
+
+        AssertThat(_money.Balance).IsEqual(balance + CardPricing.FixedCardPrice);
+        AssertThat(holder.HeldCount).IsEqual(0);
+        AssertBool(card.IsQueuedForDeletion()).IsTrue();
+    }
+
     private CardShelf OrderShelf()
     {
         var item = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal").Catalog!.Items

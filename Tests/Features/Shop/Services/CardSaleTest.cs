@@ -119,6 +119,20 @@ public class CardSaleTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void AFailedReleaseLeavesTheCardUnpaidAndSellable()
+    {
+        var card = MakeCard(new CardSignature());
+
+        AssertThrown(() => CardSale.TrySell(card, _money, _ => throw new System.InvalidOperationException("stuck")))
+            .IsInstanceOf<System.InvalidOperationException>();
+        var retry = CardSale.TrySell(card, _money);
+
+        AssertThat(retry.Status).IsEqual(SaleStatus.Sold);
+        AssertThat(_money.Balance).IsEqual(StartingBalance + CardPricing.FixedCardPrice);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void ACardCannotBeSoldTwice()
     {
         var card = MakeCard(new CardSignature());

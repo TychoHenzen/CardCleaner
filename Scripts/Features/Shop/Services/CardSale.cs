@@ -32,7 +32,17 @@ public static class CardSale
 
         // Mark first so a second request in the same frame cannot pay out again.
         card.SetMeta(SoldMeta, true);
-        release?.Invoke(card);
+        try
+        {
+            release?.Invoke(card);
+        }
+        catch
+        {
+            // The card was not paid for, so it must stay sellable.
+            card.RemoveMeta(SoldMeta);
+            throw;
+        }
+
         money.Add(price);
         card.QueueFree();
 
