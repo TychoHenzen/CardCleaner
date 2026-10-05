@@ -1,0 +1,191 @@
+using System.Linq;
+using System.Threading.Tasks;
+using CardCleaner.Scripts.Core.Data;
+using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Ui;
+using Godot;
+
+namespace CardCleaner.Tests.Scenes;
+
+/// <summary>
+/// Reliability of the workshop terminal inside the shop scene: its deliveries never overlap workshop geometry,
+/// stop at the ceiling instead of stacking into it, leave the shop delivery grid alone, and the balance
+/// stays consistent when the two terminals order alternately.
+/// </summary>
+[TestSuite]
+[RequireGodotRuntime]
+public class ShopWorkshopDeliverySceneTest
+{
+    private const float WidestItem = 1.3f;
+    private const float TallestItem = 2.24f;
+    private const float ProbeInset = 0.02f;
+    private const int Rounds = 3;
+    private const int TopUp = 10000;
+
+    private Node3D _shop = null!;
+    private Node3D _workshop = null!;
+    private OrderTerminal _pc = null!;
+    private OrderTerminal _terminal = null!;
+    private OrderTerminalUi _pcUi = null!;
+    private OrderTerminalUi _ui = null!;
+    private MoneyService _money = null!;
+    private DeliveryMarker _delivery = null!;
+    private Marker3D _shopDelivery = null!;
+
+    private int Capacity => _delivery.MaxLayers * OrderingService.SlotColumns * OrderingService.SlotRows;
+
+    [BeforeTest]
+    public async Task Setup()
+    {
+        _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
+        _workshop = _shop.GetNode<Node3D>("World/Workshop");
+        _pc = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
+        _terminal = _workshop.GetNode<OrderTerminal>("OrderingRoom/OrderTerminal");
+        _pcUi = _shop.GetNode<OrderTerminalUi>("OrderUi");
+        _ui = _workshop.GetNode<OrderTerminalUi>("OrderUi");
+        _delivery = _workshop.GetNode<DeliveryMarker>("DeliveryPoint");
+        _shopDelivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint");
+        _money = _shop.GetNode<MoneyService>("Services/MoneyService");
+
+        ServiceLocator.ResetForTesting();
+        ServiceLocator.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
+        ServiceLocator.Container.RegisterSingleton<IMoneyService>(_money);
+        ServiceLocator.Container.RegisterSingleton<IOrderingService>(
+            _shop.GetNode<OrderingService>("Services/OrderingService"));
+
+        AddNode(_shop);
+        await ISceneRunner.SyncPhysicsFrame;
+        await ISceneRunner.SyncPhysicsFrame;
+    }
+
+    [AfterTest]
+    public static void Teardown()
+    {
+        ServiceLocator.ResetForTesting();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TerminalDeliversToItsOwnMarkerNotTheShopDefault()
+    {
+        AssertBool(ReferenceEquals(_terminal.DeliveryPoint, _delivery)).IsTrue();
+        AssertBool(_delivery.GlobalPosition.DistanceTo(_shopDelivery.GlobalPosition) > 20f).IsTrue();
+        AssertThat(_delivery.MaxLayers).IsGreater(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void EveryDeliverySlotIsFreeOfWorkshopGeometryForTheTallestItem()
+    {
+        var space = _shop.GetWorld3D().DirectSpaceState;
+        var box = new BoxShape3D { Size = new Vector3(WidestItem, TallestItem - ProbeInset * 2f, WidestItem) };
+
+        for (var slot = 0; slot < Capacity; slot++)
+        {
+            var feet = _delivery.GlobalPosition + OrderingService.SlotOffset(slot);
+            var query = new PhysicsShapeQueryParameters3D
+            {
+                Shape = box,
+                Transform = new Transform3D(Basis.Identity, feet + Vector3.Up * (TallestItem / 2f)),
+                CollideWithBodies = true,
+                CollideWithAreas = false
+            };
+
+            AssertThat(space.IntersectShape(query, 1).Count).IsEqual(0);
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TopCappedLayerOfTheTallestItemStaysBelowTheCeilingAndOneMoreLayerWouldNot()
+    {
+        var ceiling = _workshop.GetNode<StaticBody3D>("Room/Ceiling");
+        var shape = (BoxShape3D)ceiling.GetNode<CollisionShape3D>("CollisionShape3D").Shape;
+        var underside = ceiling.GlobalPosition.Y - shape.Size.Y / 2f;
+        var topLayerFeet = _delivery.GlobalPosition.Y + OrderingService.SlotOffset(Capacity - 1).Y;
+        var nextLayerFeet = _delivery.GlobalPosition.Y + OrderingService.SlotOffset(Capacity).Y;
+
+        AssertBool(topLayerFeet + TallestItem < underside).IsTrue();
+        AssertBool(nextLayerFeet + TallestItem >= underside).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void FullDeliveryAreaRejectsTheNextOrderWithAMessageAndNoCharge()
+    {
+        _money.Add(TopUp);
+        _terminal.Interact();
+        var wiring = IndexOf("wiring");
+        for (var order = 0; order < Capacity; order++)
+            _ui.PressItem(wiring);
+        var balance = _money.Balance;
+        var spawned = _shop.GetNode("World").GetChildCount();
+
+        _ui.PressItem(wiring);
+
+        AssertThat(_money.Balance).IsEqual(balance);
+        AssertThat(_shop.GetNode("World").GetChildCount()).IsEqual(spawned);
+        AssertThat(_ui.MessageText).IsEqual("The delivery area is full.");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void WorkshopOrdersLeaveTheShopDeliveryGridUntouched()
+    {
+        var world = _shop.GetNode("World");
+        _money.Add(TopUp);
+        _terminal.Interact();
+        _ui.PressItem(IndexOf("wiring"));
+        _ui.PressItem(IndexOf("wiring"));
+        _terminal.Close();
+
+        _pc.Interact();
+        _pcUi.PressItem(0);
+
+        var spawned = (Node3D)world.GetChildren().Last();
+        AssertBool(spawned.GlobalPosition.IsEqualApprox(_shopDelivery.GlobalPosition + OrderingService.SlotOffset(0)))
+            .IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AlternatingOrdersFromBothTerminalsKeepOneConsistentBalanceAndTwoSeparateGrids()
+    {
+        _money.Add(TopUp);
+        var world = _shop.GetNode("World");
+        var expected = _money.Balance;
+        var wiringIndex = IndexOf("wiring");
+        var wiringPrice = _terminal.Catalog!.Items[wiringIndex].Price;
+        var boxIndex = _pc.Catalog!.Items.ToList().FindIndex(i => i.Id == "cardboard_box");
+        var boxPrice = _pc.Catalog.Items[boxIndex].Price;
+
+        for (var round = 0; round < Rounds; round++)
+        {
+            _terminal.Interact();
+            _ui.PressItem(wiringIndex);
+            _terminal.Close();
+            expected -= wiringPrice;
+            AssertThat(_money.Balance).IsEqual(expected);
+            var workshopItem = (Node3D)world.GetChildren().Last();
+            AssertBool(workshopItem.GlobalPosition.IsEqualApprox(
+                _delivery.GlobalPosition + OrderingService.SlotOffset(round))).IsTrue();
+
+            _pc.Interact();
+            _pcUi.PressItem(boxIndex);
+            _pc.Close();
+            expected -= boxPrice;
+            AssertThat(_money.Balance).IsEqual(expected);
+            var shopItem = (Node3D)world.GetChildren().Last();
+            AssertBool(shopItem.GlobalPosition.IsEqualApprox(
+                _shopDelivery.GlobalPosition + OrderingService.SlotOffset(round))).IsTrue();
+
+            AssertThat(_pcUi.BalanceText).IsEqual($"Balance: {expected}");
+            AssertThat(_ui.BalanceText).IsEqual($"Balance: {expected}");
+        }
+    }
+
+    private int IndexOf(string id) => _terminal.Catalog!.Items.ToList().FindIndex(i => i.Id == id);
+}

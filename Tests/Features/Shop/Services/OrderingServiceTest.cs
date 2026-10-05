@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using Godot;
@@ -180,6 +181,75 @@ public class OrderingServiceTest
         AssertBool(Mathf.IsEqualApprox(firstLayer.Average(p => p.X), DeliveryPosition.X)).IsTrue();
         AssertBool(Mathf.IsEqualApprox(firstLayer.Average(p => p.Z), DeliveryPosition.Z)).IsTrue();
         AssertBool(spawned[perLayer].Y > DeliveryPosition.Y).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ExplicitDeliveryPointOverridesTheDefaultAndKeepsItsOwnSlotCount()
+    {
+        var other = new Marker3D { Position = new Vector3(-20f, 0f, 3f) };
+        _world.AddChild(other);
+        _money.Add(StartingBalance);
+
+        var first = _ordering.Order(_crate);
+        var elsewhere = _ordering.Order(_crate, other);
+        var second = _ordering.Order(_crate);
+        var elsewhereAgain = _ordering.Order(_crate, other);
+
+        AssertBool(elsewhere.Spawned!.GlobalPosition.IsEqualApprox(other.GlobalPosition + OrderingService.SlotOffset(0)))
+            .IsTrue();
+        AssertBool(elsewhereAgain.Spawned!.GlobalPosition.IsEqualApprox(other.GlobalPosition + OrderingService.SlotOffset(1)))
+            .IsTrue();
+        AssertBool(first.Spawned!.GlobalPosition.IsEqualApprox(DeliveryPosition + OrderingService.SlotOffset(0))).IsTrue();
+        AssertBool(second.Spawned!.GlobalPosition.IsEqualApprox(DeliveryPosition + OrderingService.SlotOffset(1))).IsTrue();
+        AssertThat(_ordering.DeliveredCount).IsEqual(4);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void DeliveryMarkerWithALayerCapRejectsTheNextOrderWithoutChargingOnceFull()
+    {
+        _money.Add(10000);
+        var capped = new DeliveryMarker { Position = new Vector3(-20f, 0f, 3f), MaxLayers = 1 };
+        _world.AddChild(capped);
+        var cheap = MakeItem("cheap", 1);
+        for (var order = 0; order < OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+            AssertBool(_ordering.Order(cheap, capped).Succeeded).IsTrue();
+        var balance = _money.Balance;
+        var spawned = SpawnedItems().Count;
+
+        var result = _ordering.Order(cheap, capped);
+
+        AssertThat(result.Status).IsEqual(OrderStatus.DeliveryFull);
+        AssertThat(_money.Balance).IsEqual(balance);
+        AssertThat(SpawnedItems().Count).IsEqual(spawned);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void FullCappedMarkerDoesNotBlockTheDefaultDeliveryPoint()
+    {
+        _money.Add(10000);
+        var capped = new DeliveryMarker { Position = new Vector3(-20f, 0f, 3f), MaxLayers = 1 };
+        _world.AddChild(capped);
+        var cheap = MakeItem("cheap", 1);
+        for (var order = 0; order <= OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+            _ordering.Order(cheap, capped);
+
+        AssertBool(_ordering.Order(cheap).Succeeded).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void MarkerWithoutALayerCapNeverReportsFull()
+    {
+        _money.Add(10000);
+        var uncapped = new DeliveryMarker { Position = new Vector3(-20f, 0f, 3f) };
+        _world.AddChild(uncapped);
+        var cheap = MakeItem("cheap", 1);
+
+        for (var order = 0; order < 4 * OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+            AssertBool(_ordering.Order(cheap, uncapped).Succeeded).IsTrue();
     }
 
     private List<Node3D> SpawnedItems() =>
