@@ -79,4 +79,38 @@ public class BackofficeCatalogTest
             instance.Free();
         }
     }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ItemSceneKeepsItsPlaceholderWhenThePackFileIsMissing()
+    {
+        foreach (var item in _catalog.Items)
+        {
+            var instance = item.Scene!.Instantiate<Node3D>();
+            var slot = instance.GetNode<ShopArtSlot>("Art");
+            slot.ArtPath = PackPrefix + "DoesNotExist/Missing.fbx";
+            AddNode(instance);
+
+            AssertBool(slot.ArtLoaded).IsFalse();
+            AssertBool(slot.Placeholder!.Visible).IsTrue();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ItemSceneShowsThePackMeshAndHidesItsPlaceholderWhenTheFileIsImported()
+    {
+        foreach (var item in _catalog.Items)
+        {
+            var instance = item.Scene!.Instantiate<Node3D>();
+            var slot = instance.GetNode<ShopArtSlot>("Art");
+            AddNode(instance);
+
+            // The pack files are gitignored, so only assert the swap when this machine has them imported.
+            if (!ResourceLoader.Exists(slot.ArtPath))
+                continue;
+            AssertBool(slot.ArtLoaded).IsTrue();
+            AssertBool(slot.Placeholder!.Visible).IsFalse();
+        }
+    }
 }
