@@ -1,7 +1,10 @@
 [CmdletBinding()]
 param(
     [Parameter()]
-    [string]$GodotBinary = $env:GODOT_BIN
+    [string]$GodotBinary = $env:GODOT_BIN,
+
+    [Parameter()]
+    [switch]$Fast
 )
 
 $ErrorActionPreference = 'Stop'
@@ -34,13 +37,32 @@ $godotArguments = @(
     '.'
     '-s'
     'res://addons/gdUnit4/bin/GdUnitCmdTool.gd'
-    '-a'
-    'res://Tests'
     '-c'
     '--ignoreHeadlessMode'
     '-rd'
     'reports/ci'
 )
+
+$testSuites = Get-ChildItem -LiteralPath (Join-Path $repositoryRoot 'Tests') -Filter '*.cs' -File -Recurse |
+    Where-Object { Select-String -LiteralPath $_.FullName -Pattern '\[TestSuite\]' -Quiet }
+if ($Fast) {
+    $testSuites = @($testSuites | Where-Object {
+        Select-String -LiteralPath $_.FullName -Pattern '\[TestCategory\("Unit"\)\]' -Quiet
+    })
+    if ($testSuites.Count -eq 0) {
+        throw 'Fast GdUnit mode found no [TestCategory("Unit")] suites.'
+    }
+}
+
+if ($Fast) {
+    foreach ($testSuite in $testSuites) {
+        $relativePath = $testSuite.FullName.Substring($repositoryRoot.Length).TrimStart('\').Replace('\', '/')
+        $godotArguments += @('-a', "res://$relativePath")
+    }
+}
+else {
+    $godotArguments += @('-a', 'res://Tests')
+}
 
 New-Item -ItemType Directory -Path $reportRoot -Force | Out-Null
 Write-Host "Using Godot executable: $godotPath"
