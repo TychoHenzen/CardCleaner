@@ -140,6 +140,24 @@ public partial class DeckSlot : Node3D
         card.ApplyImpulse(Vector3.Up * EjectForce);
     }
 
+    /// <summary>The cards currently locked in this slot.</summary>
+    public IReadOnlyList<RigidBody3D> Cards => _cards;
+
+    /// <summary>
+    /// Hands a locked card back to the caller without freeing it. The caller decides what happens
+    /// to the card (for example the shop register sells and frees it).
+    /// </summary>
+    public bool ReleaseCard(RigidBody3D card)
+    {
+        if (!_cards.Remove(card)) return false;
+
+        if (card is CardController cardController) cardController.CardPickedUp -= OnCardPickedUp;
+
+        RepositionCards();
+        EmitSignal(SignalName.CardsChanged);
+        return true;
+    }
+
     public List<CardSignature> ConsumeAllCardSignatures()
     {
         var sigs = new List<CardSignature>();
