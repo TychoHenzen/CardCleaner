@@ -159,6 +159,28 @@ public class OrderTerminalTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void EscapeClosesTheOpenTerminal()
+    {
+        _terminal.Interact();
+
+        _ui._UnhandledInput(new InputEventAction { Action = "ui_cancel", Pressed = true });
+
+        AssertBool(_terminal.IsOpen).IsFalse();
+        AssertBool(_ui.Visible).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void EscapeDoesNothingWhileTheTerminalIsClosed()
+    {
+        _ui._UnhandledInput(new InputEventAction { Action = "ui_cancel", Pressed = true });
+
+        AssertBool(_terminal.IsOpen).IsFalse();
+        AssertBool(_terminal.CanInteract).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void HighlightShowsAndClearsTheHighlightMesh()
     {
         var mesh = new MeshInstance3D { Visible = false };

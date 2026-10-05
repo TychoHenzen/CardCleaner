@@ -123,6 +123,41 @@ public class ShopOrderingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void RemovingTheOpenPcFromTheSceneStillRestoresPlayerControl()
+    {
+        _terminal.Interact();
+
+        _shop.GetNode("World").RemoveChild(_terminal);
+
+        AssertBool(_player.ControlEnabled).IsTrue();
+        _terminal.Free();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task PlayerStaysPutWhileThePcIsOpenAndWalksAgainAfterClosing()
+    {
+        for (var frame = 0; frame < 30; frame++)
+            await ISceneRunner.SyncPhysicsFrame;
+        var start = _player.GlobalPosition;
+        Input.ActionPress("ui_up");
+        _terminal.Interact();
+
+        for (var frame = 0; frame < 20; frame++)
+            await ISceneRunner.SyncPhysicsFrame;
+        var whileOpen = _player.GlobalPosition;
+        _terminal.Close();
+        for (var frame = 0; frame < 20; frame++)
+            await ISceneRunner.SyncPhysicsFrame;
+        var afterClose = _player.GlobalPosition;
+        Input.ActionRelease("ui_up");
+
+        AssertBool(new Vector2(whileOpen.X - start.X, whileOpen.Z - start.Z).Length() < 0.01f).IsTrue();
+        AssertBool(new Vector2(afterClose.X - whileOpen.X, afterClose.Z - whileOpen.Z).Length() > 0.1f).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void OrderingEachItemChargesTheBalanceAndDeliversItToTheDeliveryPoint()
     {
         var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;
