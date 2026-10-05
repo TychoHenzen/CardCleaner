@@ -199,6 +199,7 @@ Code is organized by feature under `Scripts/Features/`:
 - **Player/**: Player controller and interaction system
 - **Packs/**: Card containers the player opens (box of 8 packs, pack of 8 boosters, booster of 8 cards); `CardPackGenerator` makes each card special with probability 1/512 and special cards show their signature along the card edges
 - **Conveyor/**: Conveyor belt mechanics
+- **Portal/**: Backoffice wall seam that opens to a doorway and teleports the player (pure rules in `Models/`)
 - **Pause/**: Pause menu controller
 
 Core utilities and interfaces are in `Scripts/Core/`.
