@@ -66,7 +66,9 @@ public class SignatureCardGenerator : ICardGenerator
             SignatureCardHelper.Apply(rng, cardTemplate.EnergyFill2, chosenBase.EnergyFill2Options);
         }
 
-        // 4. Assign gems by dominant aspect
+        // 4. Assign gems by dominant aspect. Textures are always assigned so the shader layer arrays stay
+        //    aligned; only cards with magical potential then show the signature along their edges, and
+        //    common cards (all-zero signature) render without it.
         for (var i = 0; i < cardTemplate.GemSockets.Length; i++)
         {
             var element = (Element)i;
@@ -77,6 +79,8 @@ public class SignatureCardGenerator : ICardGenerator
             var gemVis = _gemVisuals.FirstOrDefault(gv => gv.Element == element);
             if (gemVis != null) SetGemVisuals(renderer, cardTemplate, gemVis, isPos, i, intensity);
         }
+
+        cardTemplate.SetSignatureEdgesVisible(signature.HasMagicalPotential());
 
         renderer.NameLabel.Text = rarity.ToString();
         renderer.AttrLabel.Text = signature.ToDebugString();

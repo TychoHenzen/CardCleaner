@@ -54,6 +54,16 @@ public partial class CardTemplate : Resource
         };
     }
 
+    /// <summary>
+    ///     Shows or hides the signature along the card edges: the gem sockets and the gems themselves.
+    ///     The layers keep their textures so the shader's layer arrays stay aligned; only their front flag changes.
+    /// </summary>
+    public void SetSignatureEdgesVisible(bool visible)
+    {
+        foreach (var layer in GemSockets.Concat(Gems))
+            layer.RenderOnFront = visible;
+    }
+
     public LayerData[] GatherAllLayers()
     {
         return new[]

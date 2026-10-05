@@ -18,6 +18,10 @@ public static class SignatureCardHelper
 
     public static CardRarity DetermineRarity(CardSignature[] signature)
     {
+        // The scorer rewards distance from 0.5, so an all-zero (common) signature would otherwise score Legendary.
+        if (signature.All(sig => !sig.HasMagicalPotential()))
+            return CardRarity.Common;
+
         var totalPoints = signature.Sum(sig => sig.Elements.Sum(e =>
         {
             var v = Mathf.Abs(Math.Abs(e) - 0.5f);

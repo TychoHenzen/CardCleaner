@@ -59,4 +59,11 @@ public class SignatureCardHelperTest
         var rarity = SignatureCardHelper.DetermineRarity(new[] { signature });
         Assertions.AssertThat(rarity).IsEqual(expectedRarity);
     }
+
+    [TestCase]
+    public static void TestDetermineRarity_AllZeroSignatureIsCommon()
+    {
+        var rarity = SignatureCardHelper.DetermineRarity(new[] { new CardSignature() });
+        Assertions.AssertThat(rarity).IsEqual(CardRarity.Common);
+    }
 }

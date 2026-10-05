@@ -197,6 +197,7 @@ Code is organized by feature under `Scripts/Features/`:
 - **Deckbuilder/**: Game session management, map generation, combat, exploration
 - **Worldgen/**: Procedural generation support (auto-tiling, biomes, gradients, blob generation)
 - **Player/**: Player controller and interaction system
+- **Packs/**: Card containers the player opens (box of 8 packs, pack of 8 boosters, booster of 8 cards); `CardPackGenerator` makes each card special with probability 1/512 and special cards show their signature along the card edges
 - **Conveyor/**: Conveyor belt mechanics
 - **Pause/**: Pause menu controller
 
