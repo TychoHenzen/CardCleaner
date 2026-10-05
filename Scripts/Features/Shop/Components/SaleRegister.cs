@@ -58,6 +58,15 @@ public partial class SaleRegister : StaticBody3D, IInteractable
         ShowIdle();
     }
 
+    public override void _EnterTree()
+    {
+        // A register that leaves and re-enters the tree must listen again and show the current balance.
+        Unsubscribe();
+        Subscribe();
+        if (_money != null)
+            SetLabel(_money.Balance, null);
+    }
+
     public override void _ExitTree() => Unsubscribe();
 
     public void Interact() => Sell();
@@ -97,7 +106,11 @@ public partial class SaleRegister : StaticBody3D, IInteractable
     private SaleResult SellHeldOrStocked(IMoneyService money)
     {
         if (PlayerHolder is { HasCards: true } holder)
-            return CardSale.TrySell(holder.HeldCards[^1], money, holder.RemoveCard);
+            return CardSale.TrySell(holder.HeldCards[^1], money, c =>
+            {
+                holder.RemoveCard(c);
+                return true;
+            });
 
         var result = new SaleResult(SaleStatus.NothingToSell);
         foreach (var shelf in ShelvesByDistance())
@@ -105,7 +118,7 @@ public partial class SaleRegister : StaticBody3D, IInteractable
             foreach (var card in shelf.StockedCards.ToArray())
             {
                 // Something that cannot be sold stays on the shelf, so try the next one.
-                var attempt = CardSale.TrySell(card, money, c => shelf.Release(c));
+                var attempt = CardSale.TrySell(card, money, shelf.Release);
                 if (attempt.Succeeded)
                     return attempt;
                 result = attempt;

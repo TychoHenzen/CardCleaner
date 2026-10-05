@@ -47,10 +47,37 @@ public class CardSaleTest
     {
         var card = MakeCard(new CardSignature());
         var released = 0;
+        var cardAliveDuringRelease = false;
+        var balanceDuringRelease = -1;
 
-        CardSale.TrySell(card, _money, _ => released++);
+        var result = CardSale.TrySell(card, _money, c =>
+        {
+            released++;
+            cardAliveDuringRelease = !c.IsQueuedForDeletion();
+            balanceDuringRelease = _money.Balance;
+            return true;
+        });
 
+        AssertThat(result.Status).IsEqual(SaleStatus.Sold);
         AssertThat(released).IsEqual(1);
+        AssertBool(cardAliveDuringRelease).IsTrue();
+        AssertThat(balanceDuringRelease).IsEqual(StartingBalance);
+        AssertBool(card.IsQueuedForDeletion()).IsTrue();
+        AssertThat(_money.Balance).IsEqual(StartingBalance + CardPricing.FixedCardPrice);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ARefusedReleaseAbortsTheSaleUnpaidAndKeepsTheCardSellable()
+    {
+        var card = MakeCard(new CardSignature());
+
+        var refused = CardSale.TrySell(card, _money, _ => false);
+        var retry = CardSale.TrySell(card, _money);
+
+        AssertThat(refused.Status).IsEqual(SaleStatus.NothingToSell);
+        AssertThat(retry.Status).IsEqual(SaleStatus.Sold);
+        AssertThat(_money.Balance).IsEqual(StartingBalance + CardPricing.FixedCardPrice);
     }
 
     [TestCase]
@@ -96,7 +123,11 @@ public class CardSaleTest
         AddNode(card);
         var released = 0;
 
-        var result = CardSale.TrySell(card, _money, _ => released++);
+        var result = CardSale.TrySell(card, _money, _ =>
+        {
+            released++;
+            return true;
+        });
 
         AssertThat(result.Status).IsEqual(SaleStatus.NotSellable);
         AssertThat(_money.Balance).IsEqual(StartingBalance);

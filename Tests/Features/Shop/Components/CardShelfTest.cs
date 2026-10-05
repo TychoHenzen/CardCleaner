@@ -109,6 +109,20 @@ public class CardShelfTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public async Task ACardIsLockedWhateverItsNodeIsNamed()
+    {
+        var slot = _shelf.Slots.First();
+        var card = MakeCard();
+        card.Name = "DisplayItem";
+
+        await Drop(slot, card);
+
+        AssertThat(_shelf.StockedCount).IsEqual(1);
+        AssertBool(card.Freeze).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public async Task StockedCardsAndTheShelfStayStillWhilePhysicsRuns()
     {
         var slots = _shelf.Slots.ToArray();

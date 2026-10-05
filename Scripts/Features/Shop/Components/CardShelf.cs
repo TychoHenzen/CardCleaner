@@ -27,7 +27,10 @@ public partial class CardShelf : RigidBody3D
 
     public int StockedCount => StockedCards.Count();
 
-    /// <summary>Takes a card off whichever slot holds it. False when the card is not on this shelf.</summary>
+    /// <summary>
+    ///     Drops a card from whichever slot holds it, without moving the card itself (see
+    ///     <see cref="DeckSlot.ReleaseCard" />). False when the card is not on this shelf.
+    /// </summary>
     public bool Release(RigidBody3D card)
     {
         return Slots.Any(slot => slot.ReleaseCard(card));

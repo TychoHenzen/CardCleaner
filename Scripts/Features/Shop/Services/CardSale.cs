@@ -16,9 +16,10 @@ public static class CardSale
 
     /// <summary>
     ///     Sells <paramref name="card" />. <paramref name="release" /> detaches the card from wherever it is
-    ///     held (a shelf slot or the player's hand) and runs only once the sale is certain.
+    ///     held (a shelf slot or the player's hand) and runs only once the sale is certain. It returns
+    ///     false when the card could not be detached, which aborts the sale unpaid.
     /// </summary>
-    public static SaleResult TrySell(RigidBody3D? card, IMoneyService money, Action<RigidBody3D>? release = null)
+    public static SaleResult TrySell(RigidBody3D? card, IMoneyService money, Func<RigidBody3D, bool>? release = null)
     {
         if (card == null || !GodotObject.IsInstanceValid(card))
             return new SaleResult(SaleStatus.NothingToSell);
@@ -34,7 +35,11 @@ public static class CardSale
         card.SetMeta(SoldMeta, true);
         try
         {
-            release?.Invoke(card);
+            if (release != null && !release(card))
+            {
+                card.RemoveMeta(SoldMeta);
+                return new SaleResult(SaleStatus.NothingToSell);
+            }
         }
         catch
         {

@@ -65,6 +65,21 @@ public class SaleRegisterTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void ARegisterThatLeavesAndReEntersTheTreeTracksTheBalanceAgain()
+    {
+        _world.RemoveChild(_register);
+        _money.Add(5);
+        _world.AddChild(_register);
+
+        AssertThat(_label.Text).Contains($"Balance: {StartingBalance + 5}");
+
+        _money.Add(5);
+
+        AssertThat(_label.Text).Contains($"Balance: {StartingBalance + 10}");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public async Task InteractingSellsAShelfCardForTheFixedPrice()
     {
         var card = await Stock(new CardSignature());
