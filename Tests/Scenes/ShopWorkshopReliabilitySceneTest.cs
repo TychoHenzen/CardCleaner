@@ -1,5 +1,3 @@
-using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -40,7 +38,7 @@ public class ShopWorkshopReliabilitySceneTest
     {
         await RunSession();
 
-        RaiseExplorationFinished(_rig.Screen);
+        _rig.Screen.RaiseExplorationFinished();
 
         AssertBool(_rig.Button.Enabled).IsTrue();
         AssertBool(_rig.Button.ButtonMesh!.Visible).IsTrue();
@@ -58,7 +56,7 @@ public class ShopWorkshopReliabilitySceneTest
     public async Task SecondSessionRunsAfterTheResetOnceBothHoldersAreFilledAgain()
     {
         await RunSession();
-        RaiseExplorationFinished(_rig.Screen);
+        _rig.Screen.RaiseExplorationFinished();
         _rig.Button.Interact();
         await WorkshopSceneRig.Settle();
 
@@ -82,14 +80,5 @@ public class ShopWorkshopReliabilitySceneTest
         _rig.Button.Interact();
         await WorkshopSceneRig.Settle();
         AssertBool(_rig.Screen.IsInitialized).IsTrue();
-    }
-
-    private static void RaiseExplorationFinished(IrregularWorldMapScreen screen)
-    {
-        var backingField = typeof(IrregularWorldMapScreen).GetField(
-            nameof(IrregularWorldMapScreen.ExplorationFinished),
-            BindingFlags.Instance | BindingFlags.NonPublic);
-        AssertThat(backingField).IsNotNull();
-        ((Action?)backingField!.GetValue(screen))?.Invoke();
     }
 }

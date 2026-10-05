@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Portal.Components;
@@ -103,6 +104,7 @@ public class ShopWorkshopSceneContractTest
         {
             AssertThat(Count<GameSessionService>(shop)).IsEqual(1);
             AssertThat(Count<DeckBuilderController>(shop)).IsEqual(1);
+            AssertThat(Count<CardSpawningService>(shop)).IsEqual(1);
             AssertThat(Count<GameSaveService>(shop)).IsEqual(0);
         }
         finally
