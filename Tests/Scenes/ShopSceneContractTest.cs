@@ -125,6 +125,15 @@ public class ShopSceneContractTest
     }
 
     [TestCase]
+    public void StreetOutsideTheEntranceIsFlooredAndBounded()
+    {
+        AssertBool(CanWalk([new Vector2(6.05f, 9f), new Vector2(6.05f, 15.2f)])).IsTrue();
+        AssertBool(CanWalk([new Vector2(6.05f, 15.2f), new Vector2(6.05f, 17f)])).IsFalse();
+        AssertBool(CanWalk([new Vector2(6.05f, 13f), new Vector2(-1f, 13f)])).IsFalse();
+        AssertBool(CanWalk([new Vector2(6.05f, 13f), new Vector2(17f, 13f)])).IsFalse();
+    }
+
+    [TestCase]
     public void AreasAreNotReachableThroughSolidWalls()
     {
         AssertBool(CanWalk([new Vector2(6f, 4f), new Vector2(6f, -4f)])).IsFalse();
