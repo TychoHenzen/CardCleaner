@@ -210,3 +210,11 @@ Core utilities and interfaces are in `Scripts/Core/`.
 - `/submit-draft-pr` publishes the branch as a draft pull request.
 - Review remains read-only until the user explicitly accepts the findings or requests remediation.
 - `/complete-pr` owns the ready-to-merge check, merge, linked-issue confirmation, and remote branch deletion.
+
+### Shop Scene and Licensed Assets
+
+`Scenes/Gameplay/ShopScene.tscn` is the graybox shop (storefront, storage, backoffice). Launch it directly (editor F6); `StartScene.tscn` stays the main scene. Wall, floor, door and counter art comes from the licensed Synty packs, which are never committed:
+
+- Run `tools/sync-assets.ps1` once, then open the project in Godot so it imports the FBX files. The script copies the files listed in `tools/synty-assets.json` into the gitignored `Assets/Synty/` folder. Set `CARDCLEANER_ASSET_SOURCE` to override the source root (default `../CardCleanerAssets`). A missing root or file is an error.
+- Each shop issue adds its own manifest entries.
+- `ShopArtSlot` nodes load a pack mesh at runtime and hide their graybox placeholder. Without the import the scene still loads and shows the placeholders. Collision is hand-authored and independent of the art.

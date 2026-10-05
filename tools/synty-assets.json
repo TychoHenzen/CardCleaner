@@ -1,0 +1,11 @@
+{
+  "sourceRootEnvVar": "CARDCLEANER_ASSET_SOURCE",
+  "defaultSourceRoot": "../CardCleanerAssets",
+  "files": [
+    { "source": "SIMPLE_Shop_Interiors_Source_Files/SourceFiles/Fbx/SI_Env_Floor_01.fbx", "target": "SimpleShopInterior/SI_Env_Floor_01.fbx" },
+    { "source": "SIMPLE_Shop_Interiors_Source_Files/SourceFiles/Fbx/SI_Env_Wall_01.fbx", "target": "SimpleShopInterior/SI_Env_Wall_01.fbx" },
+    { "source": "SIMPLE_Shop_Interiors_Source_Files/SourceFiles/Fbx/SI_Env_Wall_Door_Small_01.fbx", "target": "SimpleShopInterior/SI_Env_Wall_Door_Small_01.fbx" },
+    { "source": "SIMPLE_Shop_Interiors_Source_Files/SourceFiles/Fbx/SI_Prop_CheckoutCounter_01.fbx", "target": "SimpleShopInterior/SI_Prop_CheckoutCounter_01.fbx" },
+    { "source": "SIMPLE_Shop_Interiors_Source_Files/SourceFiles/Textures/SimpleShopInterior_Texture.png", "target": "SimpleShopInterior/SimpleShopInterior_Texture.png" }
+  ]
+}

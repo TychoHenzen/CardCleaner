@@ -132,3 +132,6 @@ Scripts/Tools/*.png.import
 # Godot auto-generated files
 *.uid
 *.import
+
+# Licensed Synty pack files copied by tools/sync-assets.ps1 (never committed)
+Assets/Synty/
