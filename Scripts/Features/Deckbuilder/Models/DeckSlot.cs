@@ -64,7 +64,9 @@ public partial class DeckSlot : Node3D
     {
         if (_processingEntry) return;
 
-        if (body is not RigidBody3D card
+        // Only real cards lock: other rigid bodies whose name starts with "Card" (a cardboard box)
+        // must not be frozen and reparented into the slot.
+        if (body is not CardController card
             || _cards.Contains(card)
             || !card.Name.ToString().StartsWith("Card"))
             return;
