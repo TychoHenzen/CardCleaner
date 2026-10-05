@@ -57,12 +57,54 @@ internal sealed class TmxTransitionComposer
             if (baseTerrain.Id == wangSetId)
                 continue;
 
+            var baseImage = _packer.ExtractTileRegion(baseTerrain, state.TargetTileSize);
+            var borderImages = new Dictionary<int, Image>();
+            foreach (var tileIds in wangSet.WangTiles.Values)
+            {
+                foreach (var tileId in tileIds)
+                {
+                    if (!borderImages.ContainsKey(tileId))
+                    {
+                        borderImages[tileId] = _packer.ExtractTileRegion(
+                            wangSet,
+                            tileId,
+                            state.TargetTileSize);
+                    }
+                }
+            }
+
             var variantCoords = CreateVariantCoordinates();
             for (var bitmask = 0; bitmask < 16; bitmask++)
-                GenerateBitmaskVariants(wangSet, baseTerrain, bitmask, variantCoords, state);
+            {
+                GenerateBitmaskVariants(
+                    wangSet,
+                    baseImage,
+                    borderImages,
+                    bitmask,
+                    variantCoords,
+                    state);
+            }
 
-            GenerateDiagonalIfMissing(wangSet, baseTerrain, 5, 1, 4, variantCoords, state);
-            GenerateDiagonalIfMissing(wangSet, baseTerrain, 10, 8, 2, variantCoords, state);
+            GenerateDiagonalIfMissing(
+                wangSet,
+                baseTerrain.Id,
+                baseImage,
+                borderImages,
+                5,
+                1,
+                4,
+                variantCoords,
+                state);
+            GenerateDiagonalIfMissing(
+                wangSet,
+                baseTerrain.Id,
+                baseImage,
+                borderImages,
+                10,
+                8,
+                2,
+                variantCoords,
+                state);
             transitionMap.AddTransitionWithVariants(
                 wangSetId,
                 baseTerrain.Id,
@@ -73,7 +115,8 @@ internal sealed class TmxTransitionComposer
 
     private void GenerateBitmaskVariants(
         TsxWangSetData wangSet,
-        TsxTileData baseTerrain,
+        Image baseImage,
+        Dictionary<int, Image> borderImages,
         int bitmask,
         List<Vector2I>[] variantCoords,
         CompositeAtlasState state)
@@ -83,11 +126,7 @@ internal sealed class TmxTransitionComposer
         {
             foreach (var borderTileId in borderTileIds)
             {
-                var baseImage = _packer.ExtractTileRegion(baseTerrain, state.TargetTileSize);
-                var borderImage = _packer.ExtractTileRegion(
-                    wangSet,
-                    borderTileId,
-                    state.TargetTileSize);
+                var borderImage = borderImages[borderTileId];
                 var compositeImage = TmxAtlasPacker.CompositeImages(baseImage, borderImage);
                 AddPackedVariant(compositeImage, bitmask, variantCoords, state);
             }
@@ -95,13 +134,14 @@ internal sealed class TmxTransitionComposer
             return;
         }
 
-        var fallbackImage = _packer.ExtractTileRegion(baseTerrain, state.TargetTileSize);
-        AddPackedVariant(fallbackImage, bitmask, variantCoords, state);
+        AddPackedVariant(baseImage, bitmask, variantCoords, state);
     }
 
     private void GenerateDiagonalIfMissing(
         TsxWangSetData wangSet,
-        TsxTileData baseTerrain,
+        string baseTerrainId,
+        Image baseImage,
+        Dictionary<int, Image> borderImages,
         int targetBitmask,
         int northCornerBitmask,
         int southCornerBitmask,
@@ -116,16 +156,15 @@ internal sealed class TmxTransitionComposer
             return;
 
         variantCoords[targetBitmask].Clear();
-        var baseImage = _packer.ExtractTileRegion(baseTerrain, state.TargetTileSize);
-        var northImage = _packer.ExtractTileRegion(wangSet, northTileId, state.TargetTileSize);
-        var southImage = _packer.ExtractTileRegion(wangSet, southTileId, state.TargetTileSize);
+        var northImage = borderImages[northTileId];
+        var southImage = borderImages[southTileId];
         var intermediate = TmxAtlasPacker.CompositeImages(baseImage, northImage);
         var compositeImage = TmxAtlasPacker.CompositeImages(intermediate, southImage);
         AddPackedVariant(compositeImage, targetBitmask, variantCoords, state);
 
         GD.Print(
             $"[TmxAtlasCompiler] Generated diagonal bitmask {targetBitmask} "
-            + $"for {wangSet.Name} on {baseTerrain.Id}");
+            + $"for {wangSet.Name} on {baseTerrainId}");
     }
 
     private static bool TryGetFirstTile(

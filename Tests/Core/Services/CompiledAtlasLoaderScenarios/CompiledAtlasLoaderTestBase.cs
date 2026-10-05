@@ -20,11 +20,11 @@ public abstract class CompiledAtlasLoaderTestBase
     protected JsonDocument? _transitionDoc;
     protected Image? _atlasImage;
     protected readonly List<string> _temporaryPaths = new();
+    private static Image? _cachedAtlasImage;
 
     [BeforeTest]
     public void Setup()
     {
-        CompiledAtlasLoader.ClearCache();
         _mapping = CompiledAtlasLoader.LoadMapping();
 
         var transitionPath = ProjectSettings.GlobalizePath(TransitionMapPath);
@@ -37,7 +37,8 @@ public abstract class CompiledAtlasLoaderTestBase
         var atlasPath = ProjectSettings.GlobalizePath(AtlasPngPath);
         if (File.Exists(atlasPath))
         {
-            _atlasImage = Image.LoadFromFile(atlasPath);
+            _cachedAtlasImage ??= Image.LoadFromFile(atlasPath);
+            _atlasImage = _cachedAtlasImage;
         }
     }
 
@@ -45,7 +46,6 @@ public abstract class CompiledAtlasLoaderTestBase
     public void Teardown()
     {
         _transitionDoc?.Dispose();
-        CompiledAtlasLoader.ClearCache();
 
         foreach (var path in _temporaryPaths)
         {

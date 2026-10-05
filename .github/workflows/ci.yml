@@ -7,6 +7,12 @@ on:
   schedule:
     - cron: '0 3 * * 0'
   workflow_dispatch:
+    inputs:
+      full:
+        description: 'Run the full GdUnit suite instead of the fast PR suite'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -76,7 +82,7 @@ jobs:
       - name: Run GdUnit tests
         shell: pwsh
         run: |
-          if ('${{ github.event_name }}' -eq 'schedule') {
+          if ('${{ github.event_name }}' -eq 'schedule' -or '${{ inputs.full }}' -eq 'true') {
             ./Scripts/ci/Run-GdUnit.ps1 -GodotBinary $env:GODOT_BIN
           }
           else {
@@ -84,7 +90,7 @@ jobs:
           }
 
       - name: Upload GdUnit reports
-        if: failure()
+        if: failure() || github.event_name == 'schedule' || inputs.full
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: gdunit-reports

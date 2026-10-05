@@ -10,6 +10,7 @@ public partial class TileEditorDock
 
     internal string TiledDirectory { get; set; } = "res://Data/Tiled";
     internal bool SuppressDialogs { get; set; }
+    internal bool SkipInitialTileLoad { get; set; }
     internal Button? CompileTmxButton => _compileTmxButton;
     internal Button? InsertTsxPropsButton => _insertPropsButton;
 
