@@ -1,0 +1,817 @@
+[gd_scene load_steps=20 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/player.tscn" id="Player"]
+[ext_resource type="Script" path="res://Scripts/Core/DependencyInjection/AutoServiceProvider.cs" id="AutoServiceProvider"]
+[ext_resource type="Script" path="res://Scripts/Core/Data/GameSettings.cs" id="GameSettings"]
+
+[sub_resource type="StandardMaterial3D" id="GrayMaterial"]
+albedo_color = Color(0.62, 0.62, 0.65, 1)
+
+[sub_resource type="BoxMesh" id="WallBoxMesh"]
+material = SubResource("GrayMaterial")
+size = Vector3(4, 3.75, 0.2)
+
+[sub_resource type="BoxMesh" id="WallPostLeftMesh"]
+material = SubResource("GrayMaterial")
+size = Vector3(1.3, 3.75, 0.2)
+
+[sub_resource type="BoxMesh" id="WallPostRightMesh"]
+material = SubResource("GrayMaterial")
+size = Vector3(1.2, 3.75, 0.2)
+
+[sub_resource type="BoxMesh" id="WallLintelMesh"]
+material = SubResource("GrayMaterial")
+size = Vector3(1.5, 0.55, 0.2)
+
+[sub_resource type="BoxMesh" id="FloorBoxMesh"]
+material = SubResource("GrayMaterial")
+size = Vector3(4, 0.1, 4)
+
+[sub_resource type="BoxMesh" id="CounterBoxMesh"]
+material = SubResource("GrayMaterial")
+size = Vector3(3.1, 1.04, 1.28)
+
+[sub_resource type="BoxShape3D" id="CounterShape"]
+size = Vector3(3.1, 1.1, 1.3)
+
+[sub_resource type="Environment" id="ShopEnvironment"]
+background_mode = 1
+background_color = Color(0.25, 0.27, 0.3, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.55
+
+[sub_resource type="BoxShape3D" id="Shape_0"]
+size = Vector3(16, 0.2, 12)
+
+[sub_resource type="BoxShape3D" id="Shape_1"]
+size = Vector3(8, 0.2, 8)
+
+[sub_resource type="BoxShape3D" id="Shape_2"]
+size = Vector3(4, 3.75, 0.3)
+
+[sub_resource type="BoxShape3D" id="Shape_3"]
+size = Vector3(1.3, 3.75, 0.3)
+
+[sub_resource type="BoxShape3D" id="Shape_4"]
+size = Vector3(1.2, 3.75, 0.3)
+
+[sub_resource type="BoxShape3D" id="Shape_5"]
+size = Vector3(1.5, 0.55, 0.3)
+
+[node name="Root" type="Node3D"]
+
+[node name="World" type="Node3D" parent="."]
+
+[node name="Storefront" type="Node3D" parent="World"]
+
+[node name="Floor" type="StaticBody3D" parent="World/Storefront"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, -0.1, 6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Storefront/Floor"]
+shape = SubResource("Shape_0")
+
+[node name="FloorArt" type="Node3D" parent="World/Storefront"]
+
+[node name="Tile_0_0" type="Node3D" parent="World/Storefront/FloorArt" node_paths=PackedStringArray("Placeholder")]
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/FloorArt/Tile_0_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_0_1" type="Node3D" parent="World/Storefront/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/FloorArt/Tile_0_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_0_2" type="Node3D" parent="World/Storefront/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/FloorArt/Tile_0_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_1_0" type="Node3D" parent="World/Storefront/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/FloorArt/Tile_1_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_1_1" type="Node3D" parent="World/Storefront/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/FloorArt/Tile_1_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_1_2" type="Node3D" parent="World/Storefront/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 8)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/FloorArt/Tile_1_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_2_0" type="Node3D" parent="World/Storefront/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/FloorArt/Tile_2_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_2_1" type="Node3D" parent="World/Storefront/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 4)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/FloorArt/Tile_2_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_2_2" type="Node3D" parent="World/Storefront/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 8)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/FloorArt/Tile_2_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_3_0" type="Node3D" parent="World/Storefront/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/FloorArt/Tile_3_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_3_1" type="Node3D" parent="World/Storefront/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 4)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/FloorArt/Tile_3_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_3_2" type="Node3D" parent="World/Storefront/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 8)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/FloorArt/Tile_3_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Storage" type="Node3D" parent="World"]
+
+[node name="Floor" type="StaticBody3D" parent="World/Storage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.1, -4)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Storage/Floor"]
+shape = SubResource("Shape_1")
+
+[node name="FloorArt" type="Node3D" parent="World/Storage"]
+
+[node name="Tile_0_0" type="Node3D" parent="World/Storage/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storage/FloorArt/Tile_0_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_0_1" type="Node3D" parent="World/Storage/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storage/FloorArt/Tile_0_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_1_0" type="Node3D" parent="World/Storage/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -8)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storage/FloorArt/Tile_1_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_1_1" type="Node3D" parent="World/Storage/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -4)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storage/FloorArt/Tile_1_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Backoffice" type="Node3D" parent="World"]
+
+[node name="Floor" type="StaticBody3D" parent="World/Backoffice"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, -0.1, -4)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Backoffice/Floor"]
+shape = SubResource("Shape_1")
+
+[node name="FloorArt" type="Node3D" parent="World/Backoffice"]
+
+[node name="Tile_0_0" type="Node3D" parent="World/Backoffice/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -8)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Backoffice/FloorArt/Tile_0_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_0_1" type="Node3D" parent="World/Backoffice/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -4)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Backoffice/FloorArt/Tile_0_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_1_0" type="Node3D" parent="World/Backoffice/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -8)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Backoffice/FloorArt/Tile_1_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_1_1" type="Node3D" parent="World/Backoffice/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -4)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Backoffice/FloorArt/Tile_1_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="CheckoutCounter" type="StaticBody3D" parent="World/Storefront"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+shape = SubResource("CounterShape")
+
+[node name="CounterArt" type="Node3D" parent="World/Storefront/CheckoutCounter" node_paths=PackedStringArray("Placeholder")]
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Prop_CheckoutCounter_01.fbx"
+ArtScale = 40
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/CheckoutCounter/CounterArt"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.52, 0)
+mesh = SubResource("CounterBoxMesh")
+
+[node name="Walls" type="Node3D" parent="World"]
+
+[node name="FrontWall" type="StaticBody3D" parent="World/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12)
+
+[node name="Collision_0" type="CollisionShape3D" parent="World/Walls/FrontWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_1_Left" type="CollisionShape3D" parent="World/Walls/FrontWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.65, 1.875, 0)
+shape = SubResource("Shape_3")
+
+[node name="Collision_1_Right" type="CollisionShape3D" parent="World/Walls/FrontWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.4, 1.875, 0)
+shape = SubResource("Shape_4")
+
+[node name="Collision_1_Lintel" type="CollisionShape3D" parent="World/Walls/FrontWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.05, 3.475, 0)
+shape = SubResource("Shape_5")
+
+[node name="Collision_2" type="CollisionShape3D" parent="World/Walls/FrontWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_3" type="CollisionShape3D" parent="World/Walls/FrontWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Panel_0" type="Node3D" parent="World/Walls/FrontWall" node_paths=PackedStringArray("Placeholder")]
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/FrontWall/Panel_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_1" type="Node3D" parent="World/Walls/FrontWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_Door_Small_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="Node3D" parent="World/Walls/FrontWall/Panel_1"]
+
+[node name="PostLeft" type="MeshInstance3D" parent="World/Walls/FrontWall/Panel_1/Placeholder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 1.875, 0)
+mesh = SubResource("WallPostLeftMesh")
+
+[node name="PostRight" type="MeshInstance3D" parent="World/Walls/FrontWall/Panel_1/Placeholder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 1.875, 0)
+mesh = SubResource("WallPostRightMesh")
+
+[node name="Lintel" type="MeshInstance3D" parent="World/Walls/FrontWall/Panel_1/Placeholder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.05, 3.475, 0)
+mesh = SubResource("WallLintelMesh")
+
+[node name="Panel_2" type="Node3D" parent="World/Walls/FrontWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/FrontWall/Panel_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_3" type="Node3D" parent="World/Walls/FrontWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/FrontWall/Panel_3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="BackWall" type="StaticBody3D" parent="World/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8)
+
+[node name="Collision_0" type="CollisionShape3D" parent="World/Walls/BackWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_1" type="CollisionShape3D" parent="World/Walls/BackWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_2" type="CollisionShape3D" parent="World/Walls/BackWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_3" type="CollisionShape3D" parent="World/Walls/BackWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Panel_0" type="Node3D" parent="World/Walls/BackWall" node_paths=PackedStringArray("Placeholder")]
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/BackWall/Panel_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_1" type="Node3D" parent="World/Walls/BackWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/BackWall/Panel_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_2" type="Node3D" parent="World/Walls/BackWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/BackWall/Panel_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_3" type="Node3D" parent="World/Walls/BackWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/BackWall/Panel_3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="LeftWall" type="StaticBody3D" parent="World/Walls"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, 12)
+
+[node name="Collision_0" type="CollisionShape3D" parent="World/Walls/LeftWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_1" type="CollisionShape3D" parent="World/Walls/LeftWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_2" type="CollisionShape3D" parent="World/Walls/LeftWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_3" type="CollisionShape3D" parent="World/Walls/LeftWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_4" type="CollisionShape3D" parent="World/Walls/LeftWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Panel_0" type="Node3D" parent="World/Walls/LeftWall" node_paths=PackedStringArray("Placeholder")]
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/LeftWall/Panel_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_1" type="Node3D" parent="World/Walls/LeftWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/LeftWall/Panel_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_2" type="Node3D" parent="World/Walls/LeftWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/LeftWall/Panel_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_3" type="Node3D" parent="World/Walls/LeftWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/LeftWall/Panel_3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_4" type="Node3D" parent="World/Walls/LeftWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/LeftWall/Panel_4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="RightWall" type="StaticBody3D" parent="World/Walls"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16, 0, 12)
+
+[node name="Collision_0" type="CollisionShape3D" parent="World/Walls/RightWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_1" type="CollisionShape3D" parent="World/Walls/RightWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_2" type="CollisionShape3D" parent="World/Walls/RightWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_3" type="CollisionShape3D" parent="World/Walls/RightWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_4" type="CollisionShape3D" parent="World/Walls/RightWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Panel_0" type="Node3D" parent="World/Walls/RightWall" node_paths=PackedStringArray("Placeholder")]
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/RightWall/Panel_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_1" type="Node3D" parent="World/Walls/RightWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/RightWall/Panel_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_2" type="Node3D" parent="World/Walls/RightWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/RightWall/Panel_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_3" type="Node3D" parent="World/Walls/RightWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/RightWall/Panel_3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_4" type="Node3D" parent="World/Walls/RightWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/RightWall/Panel_4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="StoreRearDivider" type="StaticBody3D" parent="World/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Collision_0_Left" type="CollisionShape3D" parent="World/Walls/StoreRearDivider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 1.875, 0)
+shape = SubResource("Shape_3")
+
+[node name="Collision_0_Right" type="CollisionShape3D" parent="World/Walls/StoreRearDivider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 1.875, 0)
+shape = SubResource("Shape_4")
+
+[node name="Collision_0_Lintel" type="CollisionShape3D" parent="World/Walls/StoreRearDivider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.05, 3.475, 0)
+shape = SubResource("Shape_5")
+
+[node name="Collision_1" type="CollisionShape3D" parent="World/Walls/StoreRearDivider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_2" type="CollisionShape3D" parent="World/Walls/StoreRearDivider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Collision_3_Left" type="CollisionShape3D" parent="World/Walls/StoreRearDivider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.65, 1.875, 0)
+shape = SubResource("Shape_3")
+
+[node name="Collision_3_Right" type="CollisionShape3D" parent="World/Walls/StoreRearDivider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.4, 1.875, 0)
+shape = SubResource("Shape_4")
+
+[node name="Collision_3_Lintel" type="CollisionShape3D" parent="World/Walls/StoreRearDivider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.05, 3.475, 0)
+shape = SubResource("Shape_5")
+
+[node name="Panel_0" type="Node3D" parent="World/Walls/StoreRearDivider" node_paths=PackedStringArray("Placeholder")]
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_Door_Small_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="Node3D" parent="World/Walls/StoreRearDivider/Panel_0"]
+
+[node name="PostLeft" type="MeshInstance3D" parent="World/Walls/StoreRearDivider/Panel_0/Placeholder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 1.875, 0)
+mesh = SubResource("WallPostLeftMesh")
+
+[node name="PostRight" type="MeshInstance3D" parent="World/Walls/StoreRearDivider/Panel_0/Placeholder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 1.875, 0)
+mesh = SubResource("WallPostRightMesh")
+
+[node name="Lintel" type="MeshInstance3D" parent="World/Walls/StoreRearDivider/Panel_0/Placeholder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.05, 3.475, 0)
+mesh = SubResource("WallLintelMesh")
+
+[node name="Panel_1" type="Node3D" parent="World/Walls/StoreRearDivider" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/StoreRearDivider/Panel_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_2" type="Node3D" parent="World/Walls/StoreRearDivider" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/StoreRearDivider/Panel_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Panel_3" type="Node3D" parent="World/Walls/StoreRearDivider" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_Door_Small_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="Node3D" parent="World/Walls/StoreRearDivider/Panel_3"]
+
+[node name="PostLeft" type="MeshInstance3D" parent="World/Walls/StoreRearDivider/Panel_3/Placeholder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 1.875, 0)
+mesh = SubResource("WallPostLeftMesh")
+
+[node name="PostRight" type="MeshInstance3D" parent="World/Walls/StoreRearDivider/Panel_3/Placeholder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 1.875, 0)
+mesh = SubResource("WallPostRightMesh")
+
+[node name="Lintel" type="MeshInstance3D" parent="World/Walls/StoreRearDivider/Panel_3/Placeholder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.05, 3.475, 0)
+mesh = SubResource("WallLintelMesh")
+
+[node name="BackRoomDivider" type="StaticBody3D" parent="World/Walls"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 8, 0, 0)
+
+[node name="Collision_0_Left" type="CollisionShape3D" parent="World/Walls/BackRoomDivider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 1.875, 0)
+shape = SubResource("Shape_3")
+
+[node name="Collision_0_Right" type="CollisionShape3D" parent="World/Walls/BackRoomDivider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 1.875, 0)
+shape = SubResource("Shape_4")
+
+[node name="Collision_0_Lintel" type="CollisionShape3D" parent="World/Walls/BackRoomDivider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.05, 3.475, 0)
+shape = SubResource("Shape_5")
+
+[node name="Collision_1" type="CollisionShape3D" parent="World/Walls/BackRoomDivider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.875, 0)
+shape = SubResource("Shape_2")
+
+[node name="Panel_0" type="Node3D" parent="World/Walls/BackRoomDivider" node_paths=PackedStringArray("Placeholder")]
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_Door_Small_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="Node3D" parent="World/Walls/BackRoomDivider/Panel_0"]
+
+[node name="PostLeft" type="MeshInstance3D" parent="World/Walls/BackRoomDivider/Panel_0/Placeholder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 1.875, 0)
+mesh = SubResource("WallPostLeftMesh")
+
+[node name="PostRight" type="MeshInstance3D" parent="World/Walls/BackRoomDivider/Panel_0/Placeholder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 1.875, 0)
+mesh = SubResource("WallPostRightMesh")
+
+[node name="Lintel" type="MeshInstance3D" parent="World/Walls/BackRoomDivider/Panel_0/Placeholder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.05, 3.475, 0)
+mesh = SubResource("WallLintelMesh")
+
+[node name="Panel_1" type="Node3D" parent="World/Walls/BackRoomDivider" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Wall_01.fbx"
+ArtScale = 80
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/Walls/BackRoomDivider/Panel_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
+
+[node name="Markers" type="Node3D" parent="World"]
+
+[node name="PcLocation" type="Marker3D" parent="World/Markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -4)
+
+[node name="SeamLocation" type="Marker3D" parent="World/Markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1.5, -7.8)
+
+[node name="DeliveryPoint" type="Marker3D" parent="World/Markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -5)
+
+[node name="ShelfSlotsArea" type="Marker3D" parent="World/Markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 7)
+
+[node name="Player" parent="." instance=ExtResource("Player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, 9)
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("ShopEnvironment")
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="StorefrontLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3.4, 6)
+omni_range = 14.0
+
+[node name="StorageLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 3.4, -4)
+omni_range = 14.0
+
+[node name="BackofficeLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3.4, -4)
+omni_range = 14.0
+
+[node name="Services" type="Node" parent="."]
+script = ExtResource("AutoServiceProvider")
+
+[node name="GameSettings" type="Node" parent="Services"]
+script = ExtResource("GameSettings")
