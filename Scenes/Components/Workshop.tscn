@@ -1,0 +1,469 @@
+[gd_scene load_steps=28 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+[ext_resource type="Script" path="res://Scripts/Features/Workshop/Components/CreditCardSeeder.cs" id="CreditCardSeeder"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/DeckSlot.tscn" id="DeckSlot"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/CardSlot.tscn" id="CardSlot"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/button.tscn" id="Button"]
+[ext_resource type="PackedScene" path="res://Scenes/Gameplay/SimpleTileMapScreen.tscn" id="SimpleScreen"]
+[ext_resource type="PackedScene" path="res://Scenes/Gameplay/IrregularTileMapScreen.tscn" id="IrregularScreen"]
+[ext_resource type="Script" path="res://Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs" id="DeckBuilderController"]
+[ext_resource type="Script" path="res://Scripts/Features/Deckbuilder/Services/GameSessionService.cs" id="GameSessionService"]
+
+[sub_resource type="StandardMaterial3D" id="WorkshopStone"]
+albedo_color = Color(0.36, 0.33, 0.31, 1)
+
+[sub_resource type="StandardMaterial3D" id="WorkshopCabinet"]
+albedo_color = Color(0.2, 0.22, 0.32, 1)
+
+[sub_resource type="StandardMaterial3D" id="WireDeck"]
+albedo_color = Color(0.9, 0.55, 0.15, 1)
+emission_enabled = true
+emission = Color(0.9, 0.45, 0.1, 1)
+emission_energy_multiplier = 0.4
+
+[sub_resource type="StandardMaterial3D" id="WireCard"]
+albedo_color = Color(0.2, 0.75, 0.85, 1)
+emission_enabled = true
+emission = Color(0.1, 0.6, 0.8, 1)
+emission_energy_multiplier = 0.4
+
+[sub_resource type="BoxShape3D" id="WorkshopFloorShape"]
+size = Vector3(12, 0.2, 12)
+
+[sub_resource type="BoxShape3D" id="WorkshopWallShape"]
+size = Vector3(12, 4, 0.4)
+
+[sub_resource type="BoxShape3D" id="WorkshopCeilingShape"]
+size = Vector3(12, 0.2, 12)
+
+[sub_resource type="BoxMesh" id="WorkshopTileMesh"]
+material = SubResource("WorkshopStone")
+size = Vector3(4, 0.2, 4)
+
+[sub_resource type="BoxMesh" id="WorkshopPanelMesh"]
+material = SubResource("WorkshopStone")
+size = Vector3(4, 4, 0.4)
+
+[sub_resource type="BoxMesh" id="WorkshopCeilingMesh"]
+material = SubResource("WorkshopStone")
+size = Vector3(12, 0.2, 12)
+
+[sub_resource type="BoxShape3D" id="CabinetShape"]
+size = Vector3(1.3, 2.24, 1.3)
+
+[sub_resource type="BoxMesh" id="CabinetMesh"]
+material = SubResource("WorkshopCabinet")
+size = Vector3(1.3, 2.24, 1.3)
+
+[sub_resource type="BoxMesh" id="DeckWireRun1Mesh"]
+material = SubResource("WireDeck")
+size = Vector3(0.06, 0.04, 1.85)
+
+[sub_resource type="BoxMesh" id="DeckWireRun2Mesh"]
+material = SubResource("WireDeck")
+size = Vector3(1.76, 0.04, 0.06)
+
+[sub_resource type="BoxMesh" id="DeckWireRun3Mesh"]
+material = SubResource("WireDeck")
+size = Vector3(0.06, 0.04, 0.6)
+
+[sub_resource type="BoxMesh" id="CardWireRun1Mesh"]
+material = SubResource("WireCard")
+size = Vector3(0.06, 0.04, 1.85)
+
+[sub_resource type="BoxMesh" id="CardWireRun2Mesh"]
+material = SubResource("WireCard")
+size = Vector3(1.76, 0.04, 0.06)
+
+[sub_resource type="BoxMesh" id="CardWireRun3Mesh"]
+material = SubResource("WireCard")
+size = Vector3(0.06, 0.04, 0.6)
+
+[node name="Workshop" type="Node3D" ]
+
+[node name="Room" type="Node3D" parent="."]
+
+[node name="Floor" type="StaticBody3D" parent="Room"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 0, -0.1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Room/Floor"]
+shape = SubResource("WorkshopFloorShape")
+
+[node name="FloorArt" type="Node3D" parent="Room"]
+
+[node name="Tile_0_0" type="Node3D" parent="Room/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, -6, -0.15, -6)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Tiles_01.fbx"
+ArtScale = 80.0
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/FloorArt/Tile_0_0"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 2, 0.05, 2)
+mesh = SubResource("WorkshopTileMesh")
+
+[node name="Tile_0_1" type="Node3D" parent="Room/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, -2, -0.15, -6)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Tiles_01.fbx"
+ArtScale = 80.0
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/FloorArt/Tile_0_1"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 2, 0.05, 2)
+mesh = SubResource("WorkshopTileMesh")
+
+[node name="Tile_0_2" type="Node3D" parent="Room/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 2, -0.15, -6)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Tiles_01.fbx"
+ArtScale = 80.0
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/FloorArt/Tile_0_2"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 2, 0.05, 2)
+mesh = SubResource("WorkshopTileMesh")
+
+[node name="Tile_1_0" type="Node3D" parent="Room/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, -6, -0.15, -2)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Tiles_01.fbx"
+ArtScale = 80.0
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/FloorArt/Tile_1_0"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 2, 0.05, 2)
+mesh = SubResource("WorkshopTileMesh")
+
+[node name="Tile_1_1" type="Node3D" parent="Room/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, -2, -0.15, -2)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Tiles_01.fbx"
+ArtScale = 80.0
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/FloorArt/Tile_1_1"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 2, 0.05, 2)
+mesh = SubResource("WorkshopTileMesh")
+
+[node name="Tile_1_2" type="Node3D" parent="Room/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 2, -0.15, -2)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Tiles_01.fbx"
+ArtScale = 80.0
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/FloorArt/Tile_1_2"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 2, 0.05, 2)
+mesh = SubResource("WorkshopTileMesh")
+
+[node name="Tile_2_0" type="Node3D" parent="Room/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, -6, -0.15, 2)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Tiles_01.fbx"
+ArtScale = 80.0
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/FloorArt/Tile_2_0"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 2, 0.05, 2)
+mesh = SubResource("WorkshopTileMesh")
+
+[node name="Tile_2_1" type="Node3D" parent="Room/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, -2, -0.15, 2)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Tiles_01.fbx"
+ArtScale = 80.0
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/FloorArt/Tile_2_1"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 2, 0.05, 2)
+mesh = SubResource("WorkshopTileMesh")
+
+[node name="Tile_2_2" type="Node3D" parent="Room/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 2, -0.15, 2)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Tiles_01.fbx"
+ArtScale = 80.0
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/FloorArt/Tile_2_2"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 2, 0.05, 2)
+mesh = SubResource("WorkshopTileMesh")
+
+[node name="Ceiling" type="StaticBody3D" parent="Room"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 0, 4.1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Room/Ceiling"]
+shape = SubResource("WorkshopCeilingShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="Room/Ceiling"]
+mesh = SubResource("WorkshopCeilingMesh")
+
+[node name="Walls" type="Node3D" parent="Room"]
+
+[node name="NorthWall" type="StaticBody3D" parent="Room/Walls"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 0, 0, -6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Room/Walls/NorthWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0.2)
+shape = SubResource("WorkshopWallShape")
+
+[node name="Panel_0" type="Node3D" parent="Room/Walls/NorthWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_01.fbx"
+ArtScale = 76.3
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/Walls/NorthWall/Panel_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0.2)
+mesh = SubResource("WorkshopPanelMesh")
+
+[node name="Panel_1" type="Node3D" parent="Room/Walls/NorthWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_01.fbx"
+ArtScale = 76.3
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/Walls/NorthWall/Panel_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0.2)
+mesh = SubResource("WorkshopPanelMesh")
+
+[node name="Panel_2" type="Node3D" parent="Room/Walls/NorthWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_01.fbx"
+ArtScale = 76.3
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/Walls/NorthWall/Panel_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0.2)
+mesh = SubResource("WorkshopPanelMesh")
+
+[node name="EastWall" type="StaticBody3D" parent="Room/Walls"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, 6, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Room/Walls/EastWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0.2)
+shape = SubResource("WorkshopWallShape")
+
+[node name="Panel_0" type="Node3D" parent="Room/Walls/EastWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_01.fbx"
+ArtScale = 76.3
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/Walls/EastWall/Panel_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0.2)
+mesh = SubResource("WorkshopPanelMesh")
+
+[node name="Panel_1" type="Node3D" parent="Room/Walls/EastWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_01.fbx"
+ArtScale = 76.3
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/Walls/EastWall/Panel_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0.2)
+mesh = SubResource("WorkshopPanelMesh")
+
+[node name="Panel_2" type="Node3D" parent="Room/Walls/EastWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_01.fbx"
+ArtScale = 76.3
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/Walls/EastWall/Panel_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0.2)
+mesh = SubResource("WorkshopPanelMesh")
+
+[node name="SouthWall" type="StaticBody3D" parent="Room/Walls"]
+transform = Transform3D(-1.0, 0, 0.0, 0, 1, 0, 0, 0, -1.0, 0, 0, 6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Room/Walls/SouthWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0.2)
+shape = SubResource("WorkshopWallShape")
+
+[node name="Panel_0" type="Node3D" parent="Room/Walls/SouthWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_01.fbx"
+ArtScale = 76.3
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/Walls/SouthWall/Panel_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0.2)
+mesh = SubResource("WorkshopPanelMesh")
+
+[node name="Panel_1" type="Node3D" parent="Room/Walls/SouthWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_01.fbx"
+ArtScale = 76.3
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/Walls/SouthWall/Panel_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0.2)
+mesh = SubResource("WorkshopPanelMesh")
+
+[node name="Panel_2" type="Node3D" parent="Room/Walls/SouthWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_01.fbx"
+ArtScale = 76.3
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/Walls/SouthWall/Panel_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0.2)
+mesh = SubResource("WorkshopPanelMesh")
+
+[node name="WestWall" type="StaticBody3D" parent="Room/Walls"]
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, -6, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Room/Walls/WestWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0.2)
+shape = SubResource("WorkshopWallShape")
+
+[node name="Panel_0" type="Node3D" parent="Room/Walls/WestWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_01.fbx"
+ArtScale = 76.3
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/Walls/WestWall/Panel_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0.2)
+mesh = SubResource("WorkshopPanelMesh")
+
+[node name="Panel_1" type="Node3D" parent="Room/Walls/WestWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_01.fbx"
+ArtScale = 76.3
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/Walls/WestWall/Panel_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0.2)
+mesh = SubResource("WorkshopPanelMesh")
+
+[node name="Panel_2" type="Node3D" parent="Room/Walls/WestWall" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_01.fbx"
+ArtScale = 76.3
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Room/Walls/WestWall/Panel_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0.2)
+mesh = SubResource("WorkshopPanelMesh")
+
+[node name="WorkshopEntry" type="Marker3D" parent="."]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 0, 1.5, 4)
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="EntryLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 0, 3.4, 3)
+omni_range = 9.0
+light_energy = 0.9
+
+[node name="CabinetLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 0, 3.4, -3)
+omni_range = 9.0
+light_energy = 0.9
+
+[node name="Cabinet" type="StaticBody3D" parent="."]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 0, 0, -5.15)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cabinet"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 0, 1.12, 0)
+shape = SubResource("CabinetShape")
+
+[node name="CabinetArt" type="Node3D" parent="Cabinet" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 0, 0, -0.36)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Prop_ArcadeMachine_01.fbx"
+ArtScale = 80.0
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Cabinet/CabinetArt"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 0, 1.12, 0.36)
+mesh = SubResource("CabinetMesh")
+
+[node name="DeckSlot" parent="." instance=ExtResource("DeckSlot")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, -2.5, 0, -2)
+PositionOffset = Vector3(0, 0.135, 0.2)
+StackOffset = Vector3(0, 0.005, 0)
+
+[node name="CardSlot" parent="." instance=ExtResource("CardSlot")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 2.5, 0.152501, -2)
+PositionOffset = Vector3(0, 0.01, 0.2)
+
+[node name="Button" parent="." instance=ExtResource("Button")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 0, 0.127075, -2)
+
+[node name="Wires" type="Node3D" parent="."]
+
+[node name="DeckWireRun1" type="MeshInstance3D" parent="Wires"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, -2.5, 0.03, -2.975)
+mesh = SubResource("DeckWireRun1Mesh")
+
+[node name="DeckWireRun2" type="MeshInstance3D" parent="Wires"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, -1.65, 0.03, -3.9)
+mesh = SubResource("DeckWireRun2Mesh")
+
+[node name="DeckWireRun3" type="MeshInstance3D" parent="Wires"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, -0.8, 0.03, -4.2)
+mesh = SubResource("DeckWireRun3Mesh")
+
+[node name="CardWireRun1" type="MeshInstance3D" parent="Wires"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 2.5, 0.03, -2.975)
+mesh = SubResource("CardWireRun1Mesh")
+
+[node name="CardWireRun2" type="MeshInstance3D" parent="Wires"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 1.65, 0.03, -3.9)
+mesh = SubResource("CardWireRun2Mesh")
+
+[node name="CardWireRun3" type="MeshInstance3D" parent="Wires"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 0.8, 0.03, -4.2)
+mesh = SubResource("CardWireRun3Mesh")
+
+[node name="CollisionShape3D" parent="CardSlot/Area3D" index="0"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0, 0, 1.0, 0, 0.0334473, 0.221375)
+
+[node name="icosphere_Disabled" parent="Button/workbenchCopy" index="2"]
+surface_material_override/0 = null
+
+[node name="SimpleTileMapScreen" parent="." instance=ExtResource("SimpleScreen")]
+transform = Transform3D(0.26, 0, 0, 0, 0.26, 0, 0, 0, 0.26, 0, 1.5, -4.48)
+visible = false
+
+[node name="IrregularTileMapScreen" parent="." instance=ExtResource("IrregularScreen")]
+transform = Transform3D(0.26, 0, 0, 0, 0.26, 0, 0, 0, 0.26, 0, 1.5, -4.48)
+MeshRings = 20
+VisionRange = 5.0
+
+[node name="DeckbuilderController" type="Node" parent="." node_paths=PackedStringArray("AbilityDeckSlot", "MapCardSlot", "ActivateButton", "WorldTileMapScreenScene", "IrregularMapScreen")]
+script = ExtResource("DeckBuilderController")
+AbilityDeckSlot = NodePath("../DeckSlot")
+MapCardSlot = NodePath("../CardSlot")
+ActivateButton = NodePath("../Button/StaticBody3D")
+WorldTileMapScreenScene = NodePath("../SimpleTileMapScreen")
+IrregularMapScreen = NodePath("../IrregularTileMapScreen")
+MapType = 1
+
+[node name="GameSessionService" type="Node" parent="."]
+script = ExtResource("GameSessionService")
+
+[node name="CreditCardSeeder" type="Node" parent="." node_paths=PackedStringArray("Slot", "SpawnParent")]
+script = ExtResource("CreditCardSeeder")
+Slot = NodePath("../DeckSlot")
+SpawnParent = NodePath("..")
+
+[editable path="Button"]
+[editable path="CardSlot"]

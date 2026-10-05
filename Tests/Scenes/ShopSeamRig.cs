@@ -30,7 +30,7 @@ public sealed class ShopSeamRig
         Shop = shop;
         Player = shop.GetNode<PlayerController>("Player");
         Seam = shop.GetNode<WallSeam>("World/Markers/SeamLocation/Seam");
-        WorkshopEntry = shop.GetNode<Node3D>("World/WorkshopPlaceholder/WorkshopEntry");
+        WorkshopEntry = shop.GetNode<Node3D>("World/Workshop/WorkshopEntry");
         Holder = Player.GetNode<CardHolder>("CardInteraction/CardHolder");
     }
 

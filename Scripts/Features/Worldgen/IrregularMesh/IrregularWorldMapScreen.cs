@@ -199,11 +199,17 @@ public partial class IrregularWorldMapScreen : Node3D
         session.PlayerMoved += OnPlayerMoved;
         session.PositionUpdated += OnPositionUpdated;
         session.VisibilityChanged += changedCells => VisibilityChanged?.Invoke(changedCells);
-        session.ExplorationFinished += () => ExplorationFinished?.Invoke();
+        session.ExplorationFinished += RaiseExplorationFinished;
         session.EnemySpotted += cellId => EnemySpotted?.Invoke(cellId);
         session.EnemyEncountered += cellId => EnemyEncountered?.Invoke(cellId);
         session.EnemyDefeated += cellId => EnemyDefeated?.Invoke(cellId);
         return session;
+    }
+
+    /// <summary>Raises <see cref="ExplorationFinished"/>. Internal so tests can finish a session without exploring it.</summary>
+    internal void RaiseExplorationFinished()
+    {
+        ExplorationFinished?.Invoke();
     }
 
     private void CompleteSession(WorldMapSession session, int playerStartCell)

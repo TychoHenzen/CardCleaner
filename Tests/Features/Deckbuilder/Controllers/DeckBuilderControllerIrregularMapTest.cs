@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -75,14 +74,6 @@ public class DeckBuilderControllerIrregularMapTest
         await ISceneRunner.SyncProcessFrame;
     }
 
-    private static void RaiseExplorationFinished(IrregularWorldMapScreen screen)
-    {
-        var backingField = typeof(IrregularWorldMapScreen).GetField(
-            nameof(IrregularWorldMapScreen.ExplorationFinished),
-            BindingFlags.Instance | BindingFlags.NonPublic);
-        ((System.Action?)backingField!.GetValue(screen))?.Invoke();
-    }
-
     [TestCase]
     public async Task MissingIrregularScreenDoesNotConsumeTheSelectedCards()
     {
@@ -105,7 +96,7 @@ public class DeckBuilderControllerIrregularMapTest
         _button.Interact();
         AssertBool(_button.Enabled).IsFalse();
 
-        RaiseExplorationFinished(_screen!);
+        _screen!.RaiseExplorationFinished();
 
         AssertBool(_button.Enabled).IsTrue();
     }
