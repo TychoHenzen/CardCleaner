@@ -117,7 +117,9 @@ fabric.properties
 # Claude Code solve session
 .solve-session/
 # Test artifacts
-test_output.txt
+/build.log
+/CardCleaner.csproj.old*
+/test_output*.txt
 addons/gdUnit4/GdUnitRunner.cfg
 
 # Tiled editor session files

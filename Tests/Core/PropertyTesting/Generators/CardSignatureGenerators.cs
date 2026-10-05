@@ -14,7 +14,7 @@ public static class CardSignatureGenerators
     ///     Generates a CardSignature with extreme values (-1 or 1 for each dimension).
     /// </summary>
     public static Gen<CardSignature> Extreme =>
-        from elements in Gen.ArrayOf(8, Gen.Elements(-1f, 1f))
+        from elements in Gen.ArrayOf(Gen.Elements(-1f, 1f), 8)
         select new CardSignature(elements);
 
     /// <summary>
@@ -22,8 +22,8 @@ public static class CardSignatureGenerators
     /// </summary>
     public static Gen<CardSignature> Sparse =>
         from activeCount in Gen.Choose(1, 3)
-        from activeIndices in Gen.ArrayOf(activeCount, Gen.Choose(0, 7))
-        from activeValues in Gen.ArrayOf(activeCount, Gen.Choose(-1000, 1000).Select(i => i / 1000f))
+        from activeIndices in Gen.ArrayOf(Gen.Choose(0, 7), activeCount)
+        from activeValues in Gen.ArrayOf(Gen.Choose(-1000, 1000).Select(i => i / 1000f), activeCount)
         select CreateSparse(activeIndices, activeValues);
 
     /// <summary>
@@ -45,7 +45,7 @@ public static class CardSignatureGenerators
         var min = (int)(Math.Max(-1f, minValue) * 1000);
         var max = (int)(Math.Min(1f, maxValue) * 1000);
 
-        return from elements in Gen.ArrayOf(8, Gen.Choose(min, max).Select(i => i / 1000f))
+        return from elements in Gen.ArrayOf(Gen.Choose(min, max).Select(i => i / 1000f), 8)
             select new CardSignature(elements);
     }
 

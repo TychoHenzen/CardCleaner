@@ -29,11 +29,12 @@ internal sealed class WfcCollapseEffects
     }
 
     /// <summary>
-    /// Clears blob tracking and, for grid topologies, spatial coherence region tracking.
+    /// Clears blob tracking, the passability graph and, for grid topologies, spatial coherence region tracking.
     /// </summary>
     internal void Reset(IWfcTopology topology)
     {
         _blobTracker?.Clear();
+        _passabilityUpdater?.Reset(topology);
 
         if (_spatialCoherence != null && topology is WfcGrid grid)
             _spatialCoherence.Reset(grid.Width, grid.Height);

@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 807,
+  "fileCount": 798,
   "files": [
     {
       "path": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
@@ -684,51 +684,6 @@
     },
     {
       "path": "Scripts/Core/DependencyInjection/ServiceLocator.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Core/Devices/Cable.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Core/Devices/Cabling/CableEndpoints.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Core/Devices/ICable.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Core/Devices/IDevice.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Core/Devices/IJack.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Core/Devices/IJackT.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Core/Devices/JackDirection.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Core/Devices/Jacks/IJackOfT.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Core/Devices/Jacks/IOutputJack.cs",
       "language": "cs",
       "classification": "production"
     },
@@ -4039,24 +3994,24 @@
     }
   ],
   "summary": {
-    "total": 7587,
+    "total": 7570,
     "errors": 0,
-    "warnings": 7587,
+    "warnings": 7570,
     "byRule": {
       "test-only-export": 9,
       "duplicate-block": 68,
-      "file-length": 353,
-      "complexity": 230,
-      "function-length": 267,
+      "file-length": 352,
+      "complexity": 229,
+      "function-length": 266,
       "nesting-depth": 11,
-      "param-count": 172,
+      "param-count": 171,
       "else-branch": 90,
       "stateless-method": 1555,
       "comment-bloat": 49,
       "comment-restates-code": 95,
       "output-parameter": 25,
       "flag-parameter": 73,
-      "line-length": 4590
+      "line-length": 4577
     },
     "byFile": {
       "Scripts/Core/Services/MapGenerationProfiler.cs": 2,
@@ -4100,7 +4055,6 @@
       "addons/tile_editor/TmxPreview/TmxPreviewControlAutoRendering.cs": 14,
       "Scripts/Core/DependencyInjection/AutoServiceProvider.cs": 21,
       "Scripts/Core/DependencyInjection/ServiceLocator.cs": 14,
-      "Scripts/Core/Devices/Cable.cs": 13,
       "Scripts/Core/Interfaces/IMapData.cs": 3,
       "Scripts/Core/Interfaces/ITileMetadataProvider.cs": 5,
       "Scripts/Core/Services/AssemblyUnloadCleanup.cs": 14,
@@ -4584,10 +4538,6 @@
       "Scripts/Features/Worldgen/Wfc/Contracts/PropagationResult.cs": 3,
       "Scripts/Core/Data/InputAction.cs": 1,
       "Scripts/Core/DependencyInjection/ServiceAttribute.cs": 1,
-      "Scripts/Core/Devices/Cabling/CableEndpoints.cs": 1,
-      "Scripts/Core/Devices/IJack.cs": 1,
-      "Scripts/Core/Devices/Jacks/IJackOfT.cs": 1,
-      "Scripts/Core/Devices/Jacks/IOutputJack.cs": 1,
       "Scripts/Core/Interfaces/Fog/FogState.cs": 1,
       "Scripts/Core/Interfaces/Fog/IPassiveFogOfWar.cs": 2,
       "Scripts/Core/Interfaces/ICardGenerator.cs": 1,
@@ -5377,14 +5327,6 @@
       "severity": "warn",
       "message": "file is 169 lines",
       "metric": 169
-    },
-    {
-      "file": "Scripts/Core/Devices/Cable.cs",
-      "line": 1,
-      "rule": "file-length",
-      "severity": "warn",
-      "message": "file is 144 lines",
-      "metric": 144
     },
     {
       "file": "Scripts/Core/Interfaces/IMapData.cs",
@@ -8187,14 +8129,6 @@
       "metric": 216
     },
     {
-      "file": "Scripts/Core/Devices/Cable.cs",
-      "line": 26,
-      "rule": "complexity",
-      "severity": "warn",
-      "message": "Connect() cyclomatic complexity 6",
-      "metric": 6
-    },
-    {
       "file": "Scripts/Core/Services/CompiledAtlasLoader.cs",
       "line": 51,
       "rule": "complexity",
@@ -10032,14 +9966,6 @@
       "rule": "function-length",
       "severity": "warn",
       "message": "Get() is 34 lines",
-      "metric": 34
-    },
-    {
-      "file": "Scripts/Core/Devices/Cable.cs",
-      "line": 71,
-      "rule": "function-length",
-      "severity": "warn",
-      "message": "CreateVisual() is 34 lines",
       "metric": 34
     },
     {
@@ -12257,14 +12183,6 @@
       "severity": "warn",
       "message": "RegisterServiceWithLifetime() takes 5 parameters",
       "metric": 5
-    },
-    {
-      "file": "Scripts/Core/Devices/Cable.cs",
-      "line": 18,
-      "rule": "param-count",
-      "severity": "warn",
-      "message": "Cable() takes 4 parameters",
-      "metric": 4
     },
     {
       "file": "Scripts/Core/Services/CompiledAtlas/CompiledAtlasTileSetBuilder.cs",
@@ -29097,110 +29015,6 @@
       "severity": "warn",
       "message": "line is 81 chars",
       "metric": 81
-    },
-    {
-      "file": "Scripts/Core/Devices/Cable.cs",
-      "line": 18,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 98 chars",
-      "metric": 98
-    },
-    {
-      "file": "Scripts/Core/Devices/Cable.cs",
-      "line": 29,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 109 chars",
-      "metric": 109
-    },
-    {
-      "file": "Scripts/Core/Devices/Cable.cs",
-      "line": 32,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 86 chars",
-      "metric": 86
-    },
-    {
-      "file": "Scripts/Core/Devices/Cable.cs",
-      "line": 36,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 109 chars",
-      "metric": 109
-    },
-    {
-      "file": "Scripts/Core/Devices/Cable.cs",
-      "line": 37,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 102 chars",
-      "metric": 102
-    },
-    {
-      "file": "Scripts/Core/Devices/Cable.cs",
-      "line": 40,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Core/Devices/Cable.cs",
-      "line": 109,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 81 chars",
-      "metric": 81
-    },
-    {
-      "file": "Scripts/Core/Devices/Cable.cs",
-      "line": 111,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 90 chars",
-      "metric": 90
-    },
-    {
-      "file": "Scripts/Core/Devices/Cable.cs",
-      "line": 122,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 96 chars",
-      "metric": 96
-    },
-    {
-      "file": "Scripts/Core/Devices/Cabling/CableEndpoints.cs",
-      "line": 6,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 104 chars",
-      "metric": 104
-    },
-    {
-      "file": "Scripts/Core/Devices/IJack.cs",
-      "line": 10,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 87 chars",
-      "metric": 87
-    },
-    {
-      "file": "Scripts/Core/Devices/Jacks/IJackOfT.cs",
-      "line": 5,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 89 chars",
-      "metric": 89
-    },
-    {
-      "file": "Scripts/Core/Devices/Jacks/IOutputJack.cs",
-      "line": 11,
-      "rule": "line-length",
-      "severity": "warn",
-      "message": "line is 82 chars",
-      "metric": 82
     },
     {
       "file": "Scripts/Core/Interfaces/Fog/FogState.cs",
@@ -107444,124 +107258,6 @@
       ]
     },
     {
-      "file": "Scripts/Core/Devices/Cable.cs",
-      "errors": 0,
-      "warnings": 13,
-      "rules": {
-        "file-length": 1,
-        "complexity": 1,
-        "function-length": 1,
-        "param-count": 1,
-        "line-length": 9
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Devices/Cable.cs",
-          "line": 1,
-          "rule": "file-length",
-          "severity": "warn",
-          "message": "file is 144 lines",
-          "metric": 144
-        },
-        {
-          "file": "Scripts/Core/Devices/Cable.cs",
-          "line": 26,
-          "rule": "complexity",
-          "severity": "warn",
-          "message": "Connect() cyclomatic complexity 6",
-          "metric": 6
-        },
-        {
-          "file": "Scripts/Core/Devices/Cable.cs",
-          "line": 71,
-          "rule": "function-length",
-          "severity": "warn",
-          "message": "CreateVisual() is 34 lines",
-          "metric": 34
-        },
-        {
-          "file": "Scripts/Core/Devices/Cable.cs",
-          "line": 18,
-          "rule": "param-count",
-          "severity": "warn",
-          "message": "Cable() takes 4 parameters",
-          "metric": 4
-        },
-        {
-          "file": "Scripts/Core/Devices/Cable.cs",
-          "line": 18,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 98 chars",
-          "metric": 98
-        },
-        {
-          "file": "Scripts/Core/Devices/Cable.cs",
-          "line": 29,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "Scripts/Core/Devices/Cable.cs",
-          "line": 32,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 86 chars",
-          "metric": 86
-        },
-        {
-          "file": "Scripts/Core/Devices/Cable.cs",
-          "line": 36,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 109 chars",
-          "metric": 109
-        },
-        {
-          "file": "Scripts/Core/Devices/Cable.cs",
-          "line": 37,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 102 chars",
-          "metric": 102
-        },
-        {
-          "file": "Scripts/Core/Devices/Cable.cs",
-          "line": 40,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Devices/Cable.cs",
-          "line": 109,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 81 chars",
-          "metric": 81
-        },
-        {
-          "file": "Scripts/Core/Devices/Cable.cs",
-          "line": 111,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 90 chars",
-          "metric": 90
-        },
-        {
-          "file": "Scripts/Core/Devices/Cable.cs",
-          "line": 122,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 96 chars",
-          "metric": 96
-        }
-      ]
-    },
-    {
       "file": "Scripts/Core/Utilities/CsgBaker.cs",
       "errors": 0,
       "warnings": 13,
@@ -133368,78 +133064,6 @@
           "severity": "warn",
           "message": "line is 109 chars",
           "metric": 109
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Devices/Cabling/CableEndpoints.cs",
-      "errors": 0,
-      "warnings": 1,
-      "rules": {
-        "line-length": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Devices/Cabling/CableEndpoints.cs",
-          "line": 6,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 104 chars",
-          "metric": 104
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Devices/IJack.cs",
-      "errors": 0,
-      "warnings": 1,
-      "rules": {
-        "line-length": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Devices/IJack.cs",
-          "line": 10,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 87 chars",
-          "metric": 87
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Devices/Jacks/IJackOfT.cs",
-      "errors": 0,
-      "warnings": 1,
-      "rules": {
-        "line-length": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Devices/Jacks/IJackOfT.cs",
-          "line": 5,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 89 chars",
-          "metric": 89
-        }
-      ]
-    },
-    {
-      "file": "Scripts/Core/Devices/Jacks/IOutputJack.cs",
-      "errors": 0,
-      "warnings": 1,
-      "rules": {
-        "line-length": 1
-      },
-      "items": [
-        {
-          "file": "Scripts/Core/Devices/Jacks/IOutputJack.cs",
-          "line": 11,
-          "rule": "line-length",
-          "severity": "warn",
-          "message": "line is 82 chars",
-          "metric": 82
         }
       ]
     },

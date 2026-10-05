@@ -53,17 +53,23 @@ public class IrregularWorldMapScreenCombatFlowTest
     public async Task MeetingAnEnemyDoesNotFinishExploration()
     {
         var encountered = false;
+        var defeated = false;
         var finishedCount = 0;
+        var finishedBeforeDefeat = -1;
         _screen.EnemyEncountered += _ => encountered = true;
+        _screen.EnemyDefeated += _ =>
+        {
+            defeated = true;
+            finishedBeforeDefeat = finishedCount;
+        };
         _screen.ExplorationFinished += () => finishedCount++;
 
-        _screen.GenerateMap(Seed);
+        _screen.GenerateMap(Seed, null, new[] { StrongAbility() });
 
         AssertBool(await WaitUntil(() => encountered, EncounterTimeoutSeconds)).IsTrue();
-        for (var frame = 0; frame < 30; frame++)
-            await ISceneRunner.SyncProcessFrame;
+        AssertBool(await WaitUntil(() => defeated, EncounterTimeoutSeconds)).IsTrue();
 
-        AssertThat(finishedCount).IsEqual(0);
+        AssertThat(finishedBeforeDefeat).IsEqual(0);
     }
 
     [TestCase]
@@ -82,6 +88,43 @@ public class IrregularWorldMapScreenCombatFlowTest
         AssertBool(await WaitUntil(() => finishedCount > 0, EncounterTimeoutSeconds)).IsTrue();
         AssertThat(finishedCount).IsEqual(1);
         AssertBool(defeated).IsFalse();
+    }
+
+    [TestCase]
+    public async Task EncounterWithoutAbilityCardsFinishesTheSessionSoTheDeckBuilderCanReset()
+    {
+        var encountered = false;
+        var defeated = false;
+        var finishedCount = 0;
+        _screen.EnemyEncountered += _ => encountered = true;
+        _screen.EnemyDefeated += _ => defeated = true;
+        _screen.ExplorationFinished += () => finishedCount++;
+
+        _screen.GenerateMap(Seed, null, Array.Empty<CardSignature>());
+
+        AssertBool(await WaitUntil(() => encountered, EncounterTimeoutSeconds)).IsTrue();
+        AssertBool(await WaitUntil(() => finishedCount > 0, EncounterTimeoutSeconds)).IsTrue();
+        for (var frame = 0; frame < 30; frame++)
+            await ISceneRunner.SyncProcessFrame;
+
+        AssertThat(finishedCount).IsEqual(1);
+        AssertBool(defeated).IsFalse();
+    }
+
+    [TestCase]
+    public void StartCombatWithoutAbilityCardsReportsALossAndStartsNoCombat()
+    {
+        var handler = new IrregularMeshNs.IrregularMapCombatHandler(null!, new RandomNumberGenerator());
+        var endedCells = new List<(int Cell, bool PlayerWon)>();
+        handler.CombatEnded += (cell, won) => endedCells.Add((cell, won));
+
+        handler.StartCombat(7, _screen);
+
+        AssertThat(endedCells.Count).IsEqual(1);
+        AssertThat(endedCells[0].Cell).IsEqual(7);
+        AssertBool(endedCells[0].PlayerWon).IsFalse();
+        AssertBool(handler.IsInCombat).IsFalse();
+        AssertThat(handler.CurrentEnemyCellId).IsEqual(-1);
     }
 
     [TestCase]

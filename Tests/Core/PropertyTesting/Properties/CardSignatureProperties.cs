@@ -80,7 +80,7 @@ public class CardSignatureProperties : PropertyTestBase
     {
         Property(p => p
             .ForAll<float[]>(
-                Arb.From(Gen.ArrayOf(8, Gen.Choose(-5000, 5000).Select(i => i / 1000f))),
+                Arb.From(Gen.ArrayOf(Gen.Choose(-5000, 5000).Select(i => i / 1000f), 8)),
                 unclamped =>
                 {
                     var sig = new CardSignature(unclamped);

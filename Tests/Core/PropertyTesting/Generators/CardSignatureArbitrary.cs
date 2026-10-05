@@ -23,7 +23,7 @@ public static class CardSignatureArbitrary
     ///     Each dimension is uniformly distributed in [-1, 1].
     /// </summary>
     public static Gen<CardSignature> Generator =>
-        from elements in Gen.ArrayOf(8, Gen.Choose(-1000, 1000).Select(i => i / 1000f))
+        from elements in Gen.ArrayOf(Gen.Choose(-1000, 1000).Select(i => i / 1000f), 8)
         select new CardSignature(elements);
 
     /// <summary>
@@ -60,7 +60,7 @@ public static class CardSignatureArbitrary
     ///     Registers this arbitrary with FsCheck's global registry.
     ///     Call this once before running property tests that use CardSignature.
     /// </summary>
-    public static void Register() => Arb.Register<CardSignatureArbitraries>();
+    public static void Register() { }
 
     /// <summary>
     ///     FsCheck arbitrary provider class for automatic registration.
