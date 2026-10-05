@@ -75,4 +75,60 @@ public class WfcSolverPassabilityGraphTest
             }
         }
     }
+
+    [TestCase]
+    public void Solve_ResetsGraphSoRetriesDoNotInheritEarlierAttempts()
+    {
+        var graph = new PassabilityGraph();
+        var solver = new WfcSolver(
+            new WfcPropagator(_rules), new WfcTileSelector(), null, graph, IsPassable);
+
+        for (ulong seed = 1; seed <= 3; seed++)
+        {
+            var grid = new WfcGrid(5, 5, Tiles);
+            AssertBool(solver.Solve(grid, null, new RandomNumberGenerator { Seed = seed }).Success).IsTrue();
+
+            var passableCount = 0;
+            foreach (var position in grid.GetAllPositions())
+            {
+                var passable = IsPassable(grid.GetCollapsedTileAt(position)!);
+                AssertBool(graph.ContainsNode(position)).IsEqual(passable);
+                if (passable)
+                    passableCount++;
+            }
+
+            AssertThat(graph.NodeCount).IsEqual(passableCount);
+        }
+    }
+
+    [TestCase]
+    public void Solve_RebuildsGraphFromCellsCollapsedBeforeTheSolve()
+    {
+        var graph = new PassabilityGraph();
+        var solver = new WfcSolver(
+            new WfcPropagator(_rules), new WfcTileSelector(), null, graph, IsPassable);
+        var grid = new WfcGrid(5, 5, Tiles);
+        AssertBool(solver.Solve(grid, null, new RandomNumberGenerator { Seed = 2 }).Success).IsTrue();
+
+        AssertBool(solver.Solve(grid, null, new RandomNumberGenerator { Seed = 3 }).Success).IsTrue();
+
+        var passableCount = 0;
+        foreach (var position in grid.GetAllPositions())
+        {
+            var passable = IsPassable(grid.GetCollapsedTileAt(position)!);
+            AssertBool(graph.ContainsNode(position)).IsEqual(passable);
+            if (!passable)
+                continue;
+
+            passableCount++;
+            foreach (var neighbor in grid.GetNeighbors(position))
+            {
+                if (IsPassable(grid.GetCollapsedTileAt(neighbor)!))
+                    AssertBool(graph.AreConnected(position, neighbor)).IsTrue();
+            }
+        }
+
+        AssertInt(passableCount).IsGreater(0);
+        AssertThat(graph.NodeCount).IsEqual(passableCount);
+    }
 }

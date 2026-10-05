@@ -1,7 +1,6 @@
 using System;
 using FsCheck;
 using GdUnit4;
-using Random = FsCheck.Random;
 
 namespace CardCleaner.Tests.Core.PropertyTesting;
 
@@ -10,7 +9,7 @@ namespace CardCleaner.Tests.Core.PropertyTesting;
 ///     Handles test configuration, seed capture for reproducibility, and failure reporting.
 /// </summary>
 /// <remarks>
-///     Note: FsCheck uses its own random number generator (StdGen), separate from Godot's
+///     Note: FsCheck uses its own random number generator (Rnd), separate from Godot's
 ///     RandomNumberGenerator. For FsCheck property test reproduction, use the seed reported
 ///     in failure messages with the WithSeed() method. For Godot RNG-based tests, use SeedManager.
 /// </remarks>
@@ -135,11 +134,10 @@ public abstract class PropertyTestBase
 
             var actualSeed = _seed ?? GenerateSeed();
 
-            // FsCheck Configuration using mutable properties
-            var config = Configuration.Quick;
-            config.MaxNbOfTest = _iterations;
-            config.MaxNbOfFailedTests = _iterations * 10;
-            config.Replay = Random.StdGen.NewStdGen(actualSeed, 0);
+            var config = Config.Quick
+                .WithMaxTest(_iterations)
+                .WithMaxRejected(_iterations * 10)
+                .WithReplay(unchecked((ulong)(uint)actualSeed), 1UL);
 
             try
             {

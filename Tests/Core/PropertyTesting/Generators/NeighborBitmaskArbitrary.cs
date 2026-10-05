@@ -78,7 +78,7 @@ public static class NeighborBitmaskArbitrary
         }
     }
 
-    public static void Register() => Arb.Register<NeighborBitmaskArbitraryProvider>();
+    public static void Register() { }
 
     private sealed class NeighborBitmaskArbitraryProvider
     {

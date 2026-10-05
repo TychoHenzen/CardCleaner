@@ -51,7 +51,7 @@ public static class MapGridGenerators
             from chance in Gen.Choose(0, 99)
             from otherTile in Gen.Elements(otherTiles)
             select chance < (int)(percentage * 100) ? dominantTile : otherTile;
-        return from tileIds in Gen.ArrayOf(width * height, tileGen)
+        return from tileIds in Gen.ArrayOf(tileGen, width * height)
             select MapGridArbitrary.ToGrid(tileIds, width, height);
     }
 }
