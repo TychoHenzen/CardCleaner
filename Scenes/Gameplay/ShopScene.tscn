@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3]
+[gd_scene load_steps=57 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/player.tscn" id="Player"]
@@ -9,6 +9,26 @@
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/MoneyService.cs" id="MoneyService"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/OrderingService.cs" id="OrderingService"]
 [ext_resource type="Resource" path="res://Data/Shop/BackofficeCatalog.tres" id="BackofficeCatalog"]
+
+[ext_resource type="PackedScene" path="res://Scenes/Components/CardShader.tscn" id="Card_3_4bcsh"]
+[ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardSpawner.cs" id="Card_3_6nqof"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Common.tres" id="Card_4_vkee2"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Uncommon.tres" id="Card_5_otk7d"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Rare.tres" id="Card_6_ypprn"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Epic.tres" id="Card_7_ioitf"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Legendary.tres" id="Card_8_3rand"]
+[ext_resource type="Resource" path="res://Assets/CardBases/Weapon.tres" id="Card_9_3xlss"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Solidum.tres" id="Card_9_h03qd"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Febris.tres" id="Card_10_3xlss"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Ordinem.tres" id="Card_11_o6inp"]
+[ext_resource type="Script" path="res://Scripts/Core/ServiceProviders/CardServiceProvider.cs" id="Card_11_r0o6j"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Lumines.tres" id="Card_12_f1k1t"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Varias.tres" id="Card_13_6aa2p"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Inertiae.tres" id="Card_14_sstrp"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Subsidium.tres" id="Card_15_dta7m"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Spatium.tres" id="Card_16_r0o6j"]
+[ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardSpawningService.cs" id="Card_28_1ia11"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/SaleRegister.cs" id="SaleRegister"]
 
 [sub_resource type="StandardMaterial3D" id="GrayMaterial"]
 albedo_color = Color(0.62, 0.62, 0.65, 1)
@@ -69,6 +89,10 @@ emission_energy_multiplier = 0.4
 [sub_resource type="BoxMesh" id="PcHighlightMesh"]
 material = SubResource("PcHighlightMaterial")
 size = Vector3(2.1, 1.4, 1)
+
+[sub_resource type="BoxMesh" id="RegisterHighlightMesh"]
+material = SubResource("PcHighlightMaterial")
+size = Vector3(3.2, 1.2, 1.4)
 
 [sub_resource type="Environment" id="ShopEnvironment"]
 background_mode = 1
@@ -357,7 +381,12 @@ Placeholder = NodePath("Placeholder")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
 mesh = SubResource("FloorBoxMesh")
 
-[node name="CheckoutCounter" type="StaticBody3D" parent="World/Storefront"]
+[node name="CheckoutCounter" type="StaticBody3D" parent="World/Storefront" node_paths=PackedStringArray("PlayerHolder", "StatusLabel", "HighlightMesh")]
+collision_layer = 5
+script = ExtResource("SaleRegister")
+PlayerHolder = NodePath("../../../Player/CardInteraction/CardHolder")
+StatusLabel = NodePath("StatusLabel")
+HighlightMesh = NodePath("Highlight")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 6)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="World/Storefront/CheckoutCounter"]
@@ -373,6 +402,18 @@ Placeholder = NodePath("Placeholder")
 [node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/CheckoutCounter/CounterArt"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.52, 0)
 mesh = SubResource("CounterBoxMesh")
+
+[node name="Highlight" type="MeshInstance3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+visible = false
+mesh = SubResource("RegisterHighlightMesh")
+
+[node name="StatusLabel" type="Label3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+billboard = 1
+text = "Balance: -"
+font_size = 48
+outline_size = 12
 
 [node name="Street" type="Node3D" parent="World"]
 
@@ -846,6 +887,11 @@ Placeholder = NodePath("Placeholder")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
 mesh = SubResource("WallBoxMesh")
 
+[node name="Cards" type="Node3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 6)
+script = ExtResource("Card_3_6nqof")
+OffsetRange = Vector3(1, 1, 1)
+
 [node name="Markers" type="Node3D" parent="World"]
 
 [node name="PcLocation" type="Marker3D" parent="World/Markers"]
@@ -947,3 +993,14 @@ SpawnRoot = NodePath("../../World")
 
 [node name="OrderUi" type="CanvasLayer" parent="."]
 script = ExtResource("OrderTerminalUi")
+
+[node name="CardServiceProvider" type="Node" parent="Services" node_paths=PackedStringArray("CardRoot")]
+script = ExtResource("Card_11_r0o6j")
+RarityVisuals = Array[Object]([ExtResource("Card_4_vkee2"), ExtResource("Card_5_otk7d"), ExtResource("Card_6_ypprn"), ExtResource("Card_7_ioitf"), ExtResource("Card_8_3rand")])
+BaseCardTypes = Array[Object]([ExtResource("Card_9_3xlss")])
+GemVisuals = Array[Object]([ExtResource("Card_9_h03qd"), ExtResource("Card_10_3xlss"), ExtResource("Card_11_o6inp"), ExtResource("Card_12_f1k1t"), ExtResource("Card_13_6aa2p"), ExtResource("Card_14_sstrp"), ExtResource("Card_15_dta7m"), ExtResource("Card_16_r0o6j")])
+CardRoot = NodePath("../../World/Cards")
+
+[node name="SpawningService" type="Node" parent="Services"]
+script = ExtResource("Card_28_1ia11")
+CardScene = ExtResource("Card_3_4bcsh")

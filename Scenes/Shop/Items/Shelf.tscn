@@ -1,6 +1,8 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/CardShelf.cs" id="CardShelf"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/CardSlot.tscn" id="CardSlot"]
 
 [sub_resource type="BoxShape3D" id="Shape"]
 size = Vector3(2.13, 1.07, 1.0)
@@ -13,6 +15,7 @@ material = SubResource("PlaceholderMaterial")
 size = Vector3(2.13, 1.07, 1.0)
 
 [node name="Shelf" type="RigidBody3D"]
+script = ExtResource("CardShelf")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.535, 0)
@@ -27,3 +30,15 @@ Placeholder = NodePath("Placeholder")
 [node name="Placeholder" type="MeshInstance3D" parent="Art"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.535, 0)
 mesh = SubResource("PlaceholderMesh")
+
+[node name="Slot1" parent="." instance=ExtResource("CardSlot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0.9, -0.2)
+Capacity = 1
+
+[node name="Slot2" parent="." instance=ExtResource("CardSlot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.9, -0.2)
+Capacity = 1
+
+[node name="Slot3" parent="." instance=ExtResource("CardSlot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0.9, -0.2)
+Capacity = 1

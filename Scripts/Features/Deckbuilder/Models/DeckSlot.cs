@@ -64,9 +64,9 @@ public partial class DeckSlot : Node3D
     {
         if (_processingEntry) return;
 
-        if (body is not RigidBody3D card
-            || _cards.Contains(card)
-            || !card.Name.ToString().StartsWith("Card"))
+        // Only real cards lock: other rigid bodies (a cardboard box) must not be frozen and
+        // reparented into the slot.
+        if (body is not CardController card || _cards.Contains(card))
             return;
 
         if (_cards.Count < Capacity)
@@ -138,6 +138,25 @@ public partial class DeckSlot : Node3D
     {
         card.Freeze = false;
         card.ApplyImpulse(Vector3.Up * EjectForce);
+    }
+
+    /// <summary>The cards currently locked in this slot.</summary>
+    public IReadOnlyList<RigidBody3D> Cards => _cards;
+
+    /// <summary>
+    /// Removes a locked card from this slot's bookkeeping and stops listening to it. The card stays
+    /// parented to the slot and frozen: the caller owns what happens next (the shop register sells and
+    /// frees it) and must re-home it itself if it keeps the card.
+    /// </summary>
+    public bool ReleaseCard(RigidBody3D card)
+    {
+        if (!_cards.Remove(card)) return false;
+
+        if (card is CardController cardController) cardController.CardPickedUp -= OnCardPickedUp;
+
+        RepositionCards();
+        EmitSignal(SignalName.CardsChanged);
+        return true;
     }
 
     public List<CardSignature> ConsumeAllCardSignatures()

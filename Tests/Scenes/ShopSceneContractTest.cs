@@ -136,7 +136,7 @@ public class ShopSceneContractTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ArtSlotKeepsPlaceholderWhenPackFileIsMissing()
+    public static void ArtSlotKeepsPlaceholderWhenPackFileIsMissing()
     {
         var placeholder = new Node3D();
         var slot = new ShopArtSlot { ArtPath = PackFolder + "DoesNotExist/Missing.fbx", Placeholder = placeholder };
