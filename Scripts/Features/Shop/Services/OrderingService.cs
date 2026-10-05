@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
@@ -7,7 +9,8 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 
 /// <summary>
 ///     Charges the <see cref="IMoneyService" /> and instances the ordered scene at the delivery marker.
-///     Successive orders land in successive grid slots so items never spawn inside each other.
+///     Successive orders land in successive grid slots so items never spawn inside each other. Each delivery
+///     point keeps its own slot count, so two terminals with different markers never share a grid.
 /// </summary>
 [Service(ServiceLifetime.Singleton, typeof(IOrderingService))]
 public partial class OrderingService : Node, IOrderingService
@@ -23,7 +26,9 @@ public partial class OrderingService : Node, IOrderingService
 
     public const float LayerHeight = 1.5f;
 
-    /// <summary>Marker where ordered items appear.</summary>
+    private readonly Dictionary<ulong, int> _deliveredPerPoint = [];
+
+    /// <summary>Marker where ordered items appear when the ordering terminal names none of its own.</summary>
     [Export]
     public Marker3D? DeliveryPoint { get; set; }
 
@@ -34,7 +39,7 @@ public partial class OrderingService : Node, IOrderingService
     /// <summary>Resolved from the service locator at startup; assignable directly in tests.</summary>
     public IMoneyService? Money { get; set; }
 
-    /// <summary>How many items this service has delivered so far.</summary>
+    /// <summary>How many items this service has delivered so far, across every delivery point.</summary>
     public int DeliveredCount { get; private set; }
 
     public override void _Ready()
@@ -42,14 +47,19 @@ public partial class OrderingService : Node, IOrderingService
         ServiceLocator.Get<IMoneyService>(money => Money = money);
     }
 
-    public OrderResult Order(OrderItem item)
+    public OrderResult Order(OrderItem item, Marker3D? deliveryPoint = null)
     {
         if (item.Scene == null || item.Price <= 0)
             return Fail(item, OrderStatus.InvalidItem);
 
-        var parent = SpawnRoot ?? DeliveryPoint?.GetParent();
-        if (DeliveryPoint == null || parent == null || Money == null)
+        var point = deliveryPoint ?? DeliveryPoint;
+        var parent = SpawnRoot ?? point?.GetParent();
+        if (point == null || parent == null || Money == null)
             return Fail(item, OrderStatus.NoDeliveryPoint);
+
+        var slot = _deliveredPerPoint.GetValueOrDefault(point.GetInstanceId());
+        if (point is DeliveryMarker { MaxLayers: > 0 } limited && slot / (SlotColumns * SlotRows) >= limited.MaxLayers)
+            return Fail(item, OrderStatus.DeliveryFull);
 
         // Build the item first: an unusable scene must be rejected before the player is charged.
         var built = item.Scene.Instantiate();
@@ -66,7 +76,8 @@ public partial class OrderingService : Node, IOrderingService
         }
 
         parent.AddChild(instance);
-        instance.GlobalPosition = DeliveryPoint.GlobalPosition + SlotOffset(DeliveredCount);
+        instance.GlobalPosition = point.GlobalPosition + SlotOffset(slot);
+        _deliveredPerPoint[point.GetInstanceId()] = slot + 1;
         DeliveredCount++;
 
         ILog.Print($"Order succeeded: {item.Id} for {item.Price}, balance now {Money.Balance}");
