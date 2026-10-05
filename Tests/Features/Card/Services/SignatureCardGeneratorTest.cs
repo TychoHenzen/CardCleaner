@@ -1,4 +1,5 @@
-﻿using CardCleaner.Scripts.Core.Data;
+﻿using System.Linq;
+using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -51,7 +52,7 @@ public class SignatureCardGeneratorTest
     }
 
     [AfterTest]
-    public void TearDown()
+    public static void TearDown()
     {
         ServiceLocator.ResetForTesting();
     }
@@ -203,6 +204,39 @@ public class SignatureCardGeneratorTest
         Assertions.AssertThat(template1.Art.Texture).IsEqual(template2.Art.Texture);
         Assertions.AssertThat(renderer1.NameLabel.Text).IsEqual(renderer2.NameLabel.Text);
         Assertions.AssertThat(renderer1.AttrLabel.Text).IsEqual(renderer2.AttrLabel.Text);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CommonCardRendersWithoutSignatureEdges()
+    {
+        _generator.GenerateCardRenderer(_renderer, new CardSignature(), _template);
+
+        foreach (var layer in _template.GemSockets.Concat(_template.Gems))
+            Assertions.AssertThat(layer.RenderOnFront).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void SpecialCardRendersSignatureEdges()
+    {
+        var signature = new CardSignature { Febris = 0.6f };
+
+        _generator.GenerateCardRenderer(_renderer, signature, _template);
+
+        foreach (var layer in _template.GemSockets.Concat(_template.Gems))
+            Assertions.AssertThat(layer.RenderOnFront).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CommonCardKeepsEdgeLayerTexturesSoShaderArraysStayAligned()
+    {
+        _generator.GenerateCardRenderer(_renderer, new CardSignature(), _template);
+
+        foreach (var layer in _template.GemSockets.Concat(_template.Gems))
+            Assertions.AssertThat(layer.Texture).IsNotNull();
+        Assertions.AssertThat(_template.GatherAllLayers().Length).IsEqual(27);
     }
 
     private Mocking.MockCardShaderRenderer CreateMockRenderer()
