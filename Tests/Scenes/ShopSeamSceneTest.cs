@@ -1,15 +1,12 @@
 using System.IO;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Portal.Components;
 using CardCleaner.Scripts.Features.Portal.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Tests.Features.Shop;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -23,35 +20,15 @@ namespace CardCleaner.Tests.Scenes;
 [RequireGodotRuntime]
 public class ShopSeamSceneTest
 {
-    private const int SettleFrames = 4;
     private const string ArchwayPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_Archway_01.fbx";
     private const string GlowTexturePath = "res://Assets/Synty/ParticleFx/Generic_Circle_Soft_01.png";
 
-    private static readonly Vector3 BackofficeMiddle = new(12f, 0.95f, -3f);
-    private static readonly Vector3 NearTheSeam = new(12f, 0.95f, -5.5f);
-    private static readonly Vector3 InTheDoorway = new(12.2f, 0.95f, -7.4f);
-
-    private Node3D _shop = null!;
-    private PlayerController _player = null!;
-    private WallSeam _seam = null!;
-    private Node3D _workshopEntry = null!;
+    private ShopSeamRig _rig = null!;
 
     [BeforeTest]
     public async Task Setup()
     {
-        _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
-        _player = _shop.GetNode<PlayerController>("Player");
-        _seam = _shop.GetNode<WallSeam>("World/Markers/SeamLocation/Seam");
-        _workshopEntry = _shop.GetNode<Node3D>("World/WorkshopPlaceholder/WorkshopEntry");
-
-        // The test scene is not the current scene, so hand the scene-owned services over directly.
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
-        ServiceLocator.Container.RegisterSingleton<ICardSpawner>(_shop.GetNode<Node3D>("World/Cards") as ICardSpawner
-            ?? throw new System.InvalidOperationException("World/Cards must be the card spawner"));
-
-        AddNode(_shop);
-        await Settle();
+        _rig = await ShopSeamRig.Create();
     }
 
     [AfterTest]
@@ -64,89 +41,91 @@ public class ShopSeamSceneTest
     [TestCategory("Unit")]
     public async Task WithoutASpecialCardTheSeamIsHiddenAndSilent()
     {
-        await MovePlayer(BackofficeMiddle);
-        await Hold(new CardSignature());
+        await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
+        await _rig.Hold(new CardSignature());
 
-        AssertThat(_seam.Phase).IsEqual(SeamPhase.Hidden);
-        AssertBool(_seam.Glow!.Visible).IsFalse();
-        AssertBool(_seam.Door!.Visible).IsFalse();
-        AssertBool(_seam.HumRequested).IsFalse();
+        AssertThat(_rig.Seam.Phase).IsEqual(SeamPhase.Hidden);
+        AssertBool(_rig.Seam.Glow!.Visible).IsFalse();
+        AssertBool(_rig.Seam.Door!.Visible).IsFalse();
+        AssertBool(_rig.Seam.HumRequested).IsFalse();
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public async Task SpecialCardInTheBackofficeShowsAGlowingSeamThatHums()
     {
-        await MovePlayer(BackofficeMiddle);
-        await Hold(Special());
+        await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
+        await _rig.Hold(ShopSeamRig.Special());
 
-        AssertThat(_seam.Phase).IsEqual(SeamPhase.Glowing);
-        AssertBool(_seam.Glow!.Visible).IsTrue();
-        AssertBool(_seam.HumRequested).IsTrue();
-        AssertBool(_seam.Door!.Visible).IsFalse();
+        AssertThat(_rig.Seam.Phase).IsEqual(SeamPhase.Glowing);
+        AssertBool(_rig.Seam.Glow!.Visible).IsTrue();
+        AssertBool(_rig.Seam.HumRequested).IsTrue();
+        AssertBool(_rig.Seam.Door!.Visible).IsFalse();
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public async Task SpecialCardOutsideTheBackofficeDoesNotShowTheSeam()
     {
-        await MovePlayer(new Vector3(6f, 0.95f, 9f));
-        await Hold(Special());
+        await _rig.MovePlayer(new Vector3(6f, 0.95f, 9f));
+        await _rig.Hold(ShopSeamRig.Special());
 
-        AssertThat(_seam.Phase).IsEqual(SeamPhase.Hidden);
-        AssertBool(_seam.HumRequested).IsFalse();
+        AssertThat(_rig.Seam.Phase).IsEqual(SeamPhase.Hidden);
+        AssertBool(_rig.Seam.HumRequested).IsFalse();
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public async Task ApproachingTheSeamOpensItIntoADoorway()
     {
-        await MovePlayer(BackofficeMiddle);
-        await Hold(Special());
-        await MovePlayer(NearTheSeam);
+        await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
+        await _rig.Hold(ShopSeamRig.Special());
+        await _rig.MovePlayer(ShopSeamRig.NearTheSeam);
 
-        AssertThat(_seam.Phase).IsEqual(SeamPhase.Open);
-        AssertBool(_seam.Door!.Visible).IsTrue();
+        AssertThat(_rig.Seam.Phase).IsEqual(SeamPhase.Open);
+        AssertBool(_rig.Seam.Door!.Visible).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public async Task SteppingThroughTheDoorwayLandsAtTheWorkshopEntryWithTheSameFacing()
     {
-        await MovePlayer(BackofficeMiddle);
-        await Hold(Special());
-        _player.RotationDegrees = new Vector3(0f, 30f, 0f);
-        await MovePlayer(InTheDoorway);
+        await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
+        await _rig.Hold(ShopSeamRig.Special());
+        _rig.Player.RotationDegrees = new Vector3(0f, 30f, 0f);
+        await _rig.MovePlayer(ShopSeamRig.InTheDoorway);
 
-        AssertThat(_seam.CrossingCount).IsEqual(1);
-        var offsetFromEntry = _player.GlobalPosition - _workshopEntry.GlobalPosition;
+        AssertThat(_rig.Seam.CrossingCount).IsEqual(1);
+        var offsetFromEntry = _rig.Player.GlobalPosition - _rig.WorkshopEntry.GlobalPosition;
         AssertBool(new Vector2(offsetFromEntry.X, offsetFromEntry.Z).Length() < 1.5f).IsTrue();
-        AssertBool(_player.GlobalPosition.X > 50f).IsTrue();
-        AssertBool(Mathf.IsEqualApprox(_player.GlobalRotationDegrees.Y, 30f)).IsTrue();
-        AssertBool(_player.GlobalPosition.Y > -1f).IsTrue();
+        AssertBool(_rig.Player.GlobalPosition.X > 50f).IsTrue();
+        AssertBool(Mathf.IsEqualApprox(_rig.Player.GlobalRotationDegrees.Y, 30f)).IsTrue();
+        AssertBool(_rig.Player.GlobalPosition.Y > -1f).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void HumHasAGeneratedLoopingStream()
     {
-        AssertThat(_seam.Hum!.Stream).IsNotNull();
-        AssertBool(_seam.Hum.Stream!.GetLength() > 0).IsTrue();
+        AssertThat(_rig.Seam.Hum!.Stream).IsNotNull();
+        AssertBool(_rig.Seam.Hum.Stream!.GetLength() > 0).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void SeamArtIsListedInTheManifestWithPlaceholderAndPlainGlowFallbacks()
     {
-        var manifest = File.ReadAllText(ProjectSettings.GlobalizePath("res://tools/synty-assets.json"));
-        var art = _seam.Door!.GetNode<ShopArtSlot>("DoorArt");
+        var manifest = JsonDocument.Parse(File.ReadAllText(ProjectSettings.GlobalizePath("res://tools/synty-assets.json")));
+        var targets = manifest.RootElement.GetProperty("files").EnumerateArray()
+            .Select(entry => entry.GetProperty("target").GetString()).ToArray();
+        var art = _rig.Seam.Door!.GetNode<ShopArtSlot>("DoorArt");
 
         AssertThat(art.ArtPath).IsEqual(ArchwayPath);
-        AssertThat(_seam.GlowTexturePath).IsEqual(GlowTexturePath);
-        AssertThat(manifest).Contains(Path.GetFileName(ArchwayPath));
-        AssertThat(manifest).Contains(Path.GetFileName(GlowTexturePath));
+        AssertThat(_rig.Seam.GlowTexturePath).IsEqual(GlowTexturePath);
+        AssertThat(targets).Contains(ArchwayPath["res://Assets/Synty/".Length..]);
+        AssertThat(targets).Contains(GlowTexturePath["res://Assets/Synty/".Length..]);
         AssertBool(art.ArtLoaded || art.Placeholder!.Visible).IsTrue();
-        AssertThat(_seam.GlowTextureLoaded).IsEqual(ResourceLoader.Exists(GlowTexturePath));
+        AssertThat(_rig.Seam.GlowTextureLoaded).IsEqual(ResourceLoader.Exists(GlowTexturePath));
     }
 
     [TestCase]
@@ -161,30 +140,5 @@ public class ShopSeamSceneTest
 
         AssertBool(seam.GlowTextureLoaded).IsFalse();
         AssertThat(glow.MaterialOverride).IsEqual(material);
-    }
-
-    private static CardSignature Special() => new() { Febris = 0.3f };
-
-    private async Task<CardController> Hold(CardSignature signature)
-    {
-        var card = ShopTestCards.Create(signature);
-        _shop.GetNode("World/Cards").AddChild(card);
-        _player.GetNode<CardCleaner.Scripts.Features.Card.Components.CardHolder>("CardInteraction/CardHolder")
-            .AddCard(card);
-        await Settle();
-        return card;
-    }
-
-    private async Task MovePlayer(Vector3 position)
-    {
-        _player.GlobalPosition = position;
-        _player.Velocity = Vector3.Zero;
-        await Settle();
-    }
-
-    private static async Task Settle()
-    {
-        for (var i = 0; i < SettleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
     }
 }

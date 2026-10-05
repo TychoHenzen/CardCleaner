@@ -13,8 +13,8 @@ namespace CardCleaner.Scripts.Features.Portal.Components;
 ///     stepping into the doorway moves the player to <see cref="WorkshopEntry" /> with no cut: the camera
 ///     keeps its offset to the doorway and its facing relative to it. The node sits at the wall marker and
 ///     the doorway faces its local +Z, into the room. The decisions live in <see cref="SeamTriggerRule" />,
-///     <see cref="SeamPhaseRule" /> and <see cref="PortalTransform" />; this node only reads the scene and
-///     applies the results.
+///     <see cref="SeamPhaseRule" /> and <see cref="PortalTransform" />; this node reads the scene, animates
+///     the glow, door and hum, and applies the teleport (including the landing clearance check).
 /// </summary>
 public partial class WallSeam : Node3D
 {
@@ -22,9 +22,11 @@ public partial class WallSeam : Node3D
     private const float DefaultCloseRange = 4.5f;
     private const float DefaultDoorHalfWidth = 0.8f;
     private const float DefaultCrossDepth = 0.9f;
+    private const float DefaultDoorBottom = -1.5f;
+    private const float DefaultDoorTop = 0.9f;
     private const float LandingStep = 0.25f;
     private const int LandingAttempts = 5;
-    private const float OpenSeconds = 0.6f;
+    private const float DoorTweenSeconds = 0.6f;
     private const float ClosedDoorScaleX = 0.05f;
 
     private Tween? _tween;
@@ -75,6 +77,14 @@ public partial class WallSeam : Node3D
     [Export]
     public float CrossDepth { get; set; } = DefaultCrossDepth;
 
+    /// <summary>Local Y of the doorway floor, relative to the seam marker.</summary>
+    [Export]
+    public float DoorBottom { get; set; } = DefaultDoorBottom;
+
+    /// <summary>Local Y of the doorway top, relative to the seam marker.</summary>
+    [Export]
+    public float DoorTop { get; set; } = DefaultDoorTop;
+
     public SeamPhase Phase { get; private set; } = SeamPhase.Hidden;
 
     public bool GlowTextureLoaded { get; private set; }
@@ -106,7 +116,8 @@ public partial class WallSeam : Node3D
             ApplyPhase(next, true);
 
         if (Phase == SeamPhase.Open
-            && PortalTransform.HasCrossed(GlobalTransform, Player.GlobalPosition, DoorHalfWidth, CrossDepth))
+            && PortalTransform.HasCrossed(GlobalTransform, Player.GlobalPosition, DoorHalfWidth, CrossDepth,
+                DoorBottom, DoorTop))
             TryCross();
     }
 
@@ -170,7 +181,7 @@ public partial class WallSeam : Node3D
 
         Door.Visible = true;
         _tween = CreateTween();
-        _tween.TweenProperty(Door, "scale:x", target, OpenSeconds);
+        _tween.TweenProperty(Door, "scale:x", target, DoorTweenSeconds);
         if (!open)
             _tween.TweenCallback(Callable.From(() => Door.Visible = false));
     }

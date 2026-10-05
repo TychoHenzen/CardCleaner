@@ -92,9 +92,19 @@ public class PortalTransformTest
     {
         var doorway = At(new Vector3(12f, 1.5f, -7.8f), 0f);
 
-        AssertThat(PortalTransform.HasCrossed(doorway, new Vector3(12.2f, 0.9f, -7.4f), 0.8f, 0.6f)).IsTrue();
-        AssertThat(PortalTransform.HasCrossed(doorway, new Vector3(12f, 0.9f, -5f), 0.8f, 0.6f)).IsFalse();
-        AssertThat(PortalTransform.HasCrossed(doorway, new Vector3(13.5f, 0.9f, -7.4f), 0.8f, 0.6f)).IsFalse();
+        AssertThat(PortalTransform.HasCrossed(doorway, new Vector3(12.2f, 0.9f, -7.4f), 0.8f, 0.6f, -1.5f, 0.9f)).IsTrue();
+        AssertThat(PortalTransform.HasCrossed(doorway, new Vector3(12f, 0.9f, -5f), 0.8f, 0.6f, -1.5f, 0.9f)).IsFalse();
+        AssertThat(PortalTransform.HasCrossed(doorway, new Vector3(13.5f, 0.9f, -7.4f), 0.8f, 0.6f, -1.5f, 0.9f)).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void JumpingAboveTheDoorwayDoesNotCross()
+    {
+        var doorway = At(new Vector3(12f, 1.5f, -7.8f), 0f);
+
+        AssertThat(PortalTransform.HasCrossed(doorway, new Vector3(12f, 3.5f, -7.4f), 0.8f, 0.6f, -1.5f, 0.9f)).IsFalse();
+        AssertThat(PortalTransform.HasCrossed(doorway, new Vector3(12f, 2.3f, -7.4f), 0.8f, 0.6f, -1.5f, 0.9f)).IsTrue();
     }
 
     [TestCase]
@@ -104,8 +114,8 @@ public class PortalTransformTest
         var doorway = At(Vector3.Zero, 90f);
 
         // Yawed 90 degrees, the room side (local +Z) points along world +X.
-        AssertThat(PortalTransform.HasCrossed(doorway, new Vector3(0.3f, 0f, 0f), 0.8f, 0.6f)).IsTrue();
-        AssertThat(PortalTransform.HasCrossed(doorway, new Vector3(0f, 0f, 5f), 0.8f, 0.6f)).IsFalse();
+        AssertThat(PortalTransform.HasCrossed(doorway, new Vector3(0.3f, 0f, 0f), 0.8f, 0.6f, -1.5f, 0.9f)).IsTrue();
+        AssertThat(PortalTransform.HasCrossed(doorway, new Vector3(0f, 0f, 5f), 0.8f, 0.6f, -1.5f, 0.9f)).IsFalse();
     }
 
     [TestCase]

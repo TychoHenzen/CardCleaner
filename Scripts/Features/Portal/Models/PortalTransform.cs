@@ -26,12 +26,16 @@ public static class PortalTransform
 
     /// <summary>
     ///     True once the player has stepped into the doorway: inside its half width, no further from the
-    ///     wall than <paramref name="depth" /> and not behind it. The doorway faces its local +Z.
+    ///     wall than <paramref name="depth" /> and not behind it, and between <paramref name="bottom" /> and
+    ///     <paramref name="top" /> (local Y of the opening). The doorway faces its local +Z.
     /// </summary>
-    public static bool HasCrossed(Transform3D doorway, Vector3 playerPosition, float halfWidth, float depth)
+    public static bool HasCrossed(
+        Transform3D doorway, Vector3 playerPosition, float halfWidth, float depth, float bottom, float top)
     {
         var local = doorway.AffineInverse() * playerPosition;
-        return Mathf.Abs(local.X) <= halfWidth && local.Z <= depth && local.Z >= -depth;
+        return Mathf.Abs(local.X) <= halfWidth
+               && local.Z <= depth && local.Z >= -depth
+               && local.Y >= bottom && local.Y <= top;
     }
 
     /// <summary>
