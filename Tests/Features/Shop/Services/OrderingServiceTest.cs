@@ -1,0 +1,168 @@
+using System.Collections.Generic;
+using System.Linq;
+using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.Services;
+using Godot;
+
+namespace CardCleaner.Tests.Features.Shop.Services;
+
+[TestSuite]
+[RequireGodotRuntime]
+public class OrderingServiceTest
+{
+    private const int StartingBalance = 300;
+    private static readonly Vector3 DeliveryPosition = new(4f, 0f, -5f);
+
+    private Node3D _world = null!;
+    private MoneyService _money = null!;
+    private OrderingService _ordering = null!;
+    private OrderItem _crate = null!;
+
+    [BeforeTest]
+    public void Setup()
+    {
+        _world = new Node3D();
+        var marker = new Marker3D { Position = DeliveryPosition };
+        _world.AddChild(marker);
+        AddNode(_world);
+
+        _money = new MoneyService { StartingBalance = StartingBalance };
+        _ordering = new OrderingService { DeliveryPoint = marker, SpawnRoot = _world, Money = _money };
+        _world.AddChild(_money);
+        _world.AddChild(_ordering);
+
+        _crate = MakeItem("crate", 100);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AffordableOrderDeductsThePriceAndSpawnsAtTheDeliveryPoint()
+    {
+        var result = _ordering.Order(_crate);
+
+        AssertBool(result.Succeeded).IsTrue();
+        AssertThat(_money.Balance).IsEqual(StartingBalance - 100);
+        AssertThat(result.Spawned).IsNotNull();
+        AssertThat(result.Spawned!.GetParent()).IsEqual(_world);
+        AssertBool(result.Spawned.GlobalPosition.IsEqualApprox(DeliveryPosition + OrderingService.SlotOffset(0)))
+            .IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void UnaffordableOrderSpawnsNothingAndChargesNothing()
+    {
+        var result = _ordering.Order(MakeItem("gold", StartingBalance + 1));
+
+        AssertThat(result.Status).IsEqual(OrderStatus.InsufficientFunds);
+        AssertBool(result.Succeeded).IsFalse();
+        AssertThat(_money.Balance).IsEqual(StartingBalance);
+        AssertThat(SpawnedItems().Count).IsEqual(0);
+        AssertThat(_ordering.DeliveredCount).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ItemWithoutASceneIsRejectedWithoutCharging()
+    {
+        var result = _ordering.Order(new OrderItem { Id = "empty", Price = 10 });
+
+        AssertThat(result.Status).IsEqual(OrderStatus.InvalidItem);
+        AssertThat(_money.Balance).IsEqual(StartingBalance);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void MissingDeliveryPointIsRejectedWithoutCharging()
+    {
+        _ordering.DeliveryPoint = null;
+
+        var result = _ordering.Order(_crate);
+
+        AssertThat(result.Status).IsEqual(OrderStatus.NoDeliveryPoint);
+        AssertThat(_money.Balance).IsEqual(StartingBalance);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void OrderSpawnsTheScenePackedInTheCatalogItem()
+    {
+        var root = new Node3D { Name = "FromCatalog" };
+        var packed = new PackedScene();
+        packed.Pack(root);
+        root.Free();
+        var item = new OrderItem { Id = "named", Price = 10, Scene = packed };
+
+        var result = _ordering.Order(item);
+
+        AssertThat(result.Spawned!.Name.ToString()).IsEqual("FromCatalog");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RepeatedOrdersChargeAndSpawnOncePerOrderAtDistinctSlots()
+    {
+        var first = _ordering.Order(_crate);
+        var second = _ordering.Order(_crate);
+
+        AssertThat(_money.Balance).IsEqual(StartingBalance - 200);
+        AssertThat(SpawnedItems().Count).IsEqual(2);
+        AssertBool(first.Spawned!.GlobalPosition.IsEqualApprox(second.Spawned!.GlobalPosition)).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void OrderStopsChargingOnceFundsRunOut()
+    {
+        _ordering.Order(_crate);
+        _ordering.Order(_crate);
+        _ordering.Order(_crate);
+        var fourth = _ordering.Order(_crate);
+
+        AssertThat(fourth.Status).IsEqual(OrderStatus.InsufficientFunds);
+        AssertThat(_money.Balance).IsEqual(0);
+        AssertThat(SpawnedItems().Count).IsEqual(3);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ManyOrdersNeverSpawnItemsWithinSlotSpacingOfEachOther()
+    {
+        _money.Add(10000);
+        var cheap = MakeItem("cheap", 1);
+        var positions = Enumerable.Range(0, 27).Select(_ => _ordering.Order(cheap).Spawned!.GlobalPosition).ToList();
+
+        for (var i = 0; i < positions.Count; i++)
+        for (var j = i + 1; j < positions.Count; j++)
+            AssertBool(positions[i].DistanceTo(positions[j]) >= OrderingService.SlotSpacing - 0.001f).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void FirstLayerIsCentredOnTheDeliveryPointAtGroundLevelAndLaterLayersStackAbove()
+    {
+        _money.Add(10000);
+        var cheap = MakeItem("cheap", 1);
+        var perLayer = OrderingService.SlotColumns * OrderingService.SlotRows;
+        var spawned = Enumerable.Range(0, perLayer + 1).Select(_ => _ordering.Order(cheap).Spawned!.GlobalPosition)
+            .ToList();
+        var firstLayer = spawned.Take(perLayer).ToList();
+
+        AssertBool(firstLayer.All(p => Mathf.IsEqualApprox(p.Y, DeliveryPosition.Y))).IsTrue();
+        AssertBool(Mathf.IsEqualApprox(firstLayer.Average(p => p.X), DeliveryPosition.X)).IsTrue();
+        AssertBool(Mathf.IsEqualApprox(firstLayer.Average(p => p.Z), DeliveryPosition.Z)).IsTrue();
+        AssertBool(spawned[perLayer].Y > DeliveryPosition.Y).IsTrue();
+    }
+
+    private List<Node3D> SpawnedItems() =>
+        _world.GetChildren().OfType<Node3D>().Where(n => n is not Marker3D).ToList();
+
+    private static OrderItem MakeItem(string id, int price)
+    {
+        var root = new Node3D { Name = "Crate" };
+        var packed = new PackedScene();
+        packed.Pack(root);
+        root.Free();
+        return new OrderItem { Id = id, DisplayName = id, Price = price, Scene = packed };
+    }
+}
