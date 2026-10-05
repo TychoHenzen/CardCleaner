@@ -1,6 +1,7 @@
 [gd_scene load_steps=66 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/Workshop.tscn" id="Workshop"]
 [ext_resource type="Script" path="res://Scripts/Features/Portal/Components/WallSeam.cs" id="WallSeam"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/player.tscn" id="Player"]
 [ext_resource type="Script" path="res://Scripts/Core/DependencyInjection/AutoServiceProvider.cs" id="AutoServiceProvider"]
@@ -152,10 +153,6 @@ size = Vector3(1.6, 2.4, 0.06)
 
 [sub_resource type="BoxShape3D" id="BackofficeZoneShape"]
 size = Vector3(8, 4, 8)
-
-[sub_resource type="BoxMesh" id="WorkshopFloorMesh"]
-material = SubResource("GrayMaterial")
-size = Vector3(8, 0.2, 8)
 
 [node name="Root" type="Node3D"]
 
@@ -1041,27 +1038,15 @@ collision_layer = 0
 [node name="CollisionShape3D" type="CollisionShape3D" parent="World/BackofficeZone"]
 shape = SubResource("BackofficeZoneShape")
 
-[node name="WorkshopPlaceholder" type="Node3D" parent="World"]
+[node name="Workshop" parent="World" instance=ExtResource("Workshop")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 0, -4)
-
-[node name="Floor" type="StaticBody3D" parent="World/WorkshopPlaceholder"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="World/WorkshopPlaceholder/Floor"]
-shape = SubResource("Shape_1")
-
-[node name="Mesh" type="MeshInstance3D" parent="World/WorkshopPlaceholder/Floor"]
-mesh = SubResource("WorkshopFloorMesh")
-
-[node name="WorkshopEntry" type="Marker3D" parent="World/WorkshopPlaceholder"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
 [node name="Seam" type="Node3D" parent="World/Markers/SeamLocation" node_paths=PackedStringArray("Zone", "PlayerHolder", "Player", "WorkshopEntry", "Glow", "Door", "Hum")]
 script = ExtResource("WallSeam")
 Zone = NodePath("../../../BackofficeZone")
 PlayerHolder = NodePath("../../../../Player/CardInteraction/CardHolder")
 Player = NodePath("../../../../Player")
-WorkshopEntry = NodePath("../../../WorkshopPlaceholder/WorkshopEntry")
+WorkshopEntry = NodePath("../../../Workshop/WorkshopEntry")
 Glow = NodePath("Glow")
 Door = NodePath("Door")
 Hum = NodePath("Hum")
