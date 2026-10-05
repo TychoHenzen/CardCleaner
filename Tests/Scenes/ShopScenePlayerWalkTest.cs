@@ -38,7 +38,7 @@ public class ShopScenePlayerWalkTest
     }
 
     [AfterTest]
-    public void ReleaseInput()
+    public static void ReleaseInput()
     {
         Input.ActionRelease("ui_up");
         ServiceLocator.ResetForTesting();
