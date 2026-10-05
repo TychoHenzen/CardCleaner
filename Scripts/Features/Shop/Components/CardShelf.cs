@@ -11,6 +11,11 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 /// </summary>
 public partial class CardShelf : RigidBody3D
 {
+    /// <summary>Scene-tree group every shelf joins, so a register finds ordered shelves without wiring.</summary>
+    public const string GroupName = "card_shelves";
+
+    public override void _Ready() => AddToGroup(GroupName);
+
     /// <summary>The slots of this shelf, in scene order.</summary>
     public IEnumerable<DeckSlot> Slots => GetChildren().OfType<DeckSlot>();
 
