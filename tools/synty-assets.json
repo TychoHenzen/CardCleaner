@@ -12,6 +12,9 @@
     { "source": "POLYGON_Office_SourceFiles_v4/SourceFiles/FBX/SM_Prop_Computer_Monitor_01.fbx", "target": "PolygonOffice/SM_Prop_Computer_Monitor_01.fbx" },
     { "source": "POLYGON_Office_SourceFiles_v4/SourceFiles/FBX/SM_Prop_Computer_Keyboard_01.fbx", "target": "PolygonOffice/SM_Prop_Computer_Keyboard_01.fbx" },
     { "source": "POLYGON_Office_SourceFiles_v4/SourceFiles/Textures/PolygonOffice_Texture_01_A.png", "target": "PolygonOffice/PolygonOffice_Texture_01_A.png" },
-    { "source": "SIMPLE_Shop_Interiors_Source_Files/SourceFiles/Textures/SimpleShopInterior_Texture.png", "target": "SimpleShopInterior/SimpleShopInterior_Texture.png" }
+    { "source": "SIMPLE_Shop_Interiors_Source_Files/SourceFiles/Textures/SimpleShopInterior_Texture.png", "target": "SimpleShopInterior/SimpleShopInterior_Texture.png" },
+    { "source": "POLYGON_Dungeon_Pack_SourceFiles_v4/FBX/SM_Env_Wall_Archway_01.fbx", "target": "PolygonDungeon/SM_Env_Wall_Archway_01.fbx" },
+    { "source": "POLYGON_Dungeon_Pack_SourceFiles_v4/Textures/Dungeons_Texture_01.png", "target": "PolygonDungeon/Dungeons_Texture_01.png" },
+    { "source": "GENERIC_Particle_FX_Godot_4_5_1_v1_0_0/particle-fx/Assets/Particle_FX/Textures/FX/Generic_Circle_Soft_01.png", "target": "ParticleFx/Generic_Circle_Soft_01.png" }
   ]
 }
