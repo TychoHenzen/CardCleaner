@@ -13,28 +13,25 @@ namespace CardCleaner.Tests.Scenes;
 [RequireGodotRuntime]
 public class ShopSceneContractTest
 {
-    private const string ScenePath = "res://Scenes/Gameplay/ShopScene.tscn";
     private const string PackFolder = "res://Assets/Synty/";
-    private const float FloorClearance = 0.01f;
-    private const float WalkSampleStep = 0.1f;
 
     private static readonly string[] AreaNames = ["Storefront", "Storage", "Backoffice"];
     private static readonly string[] MarkerNames = ["PcLocation", "SeamLocation", "DeliveryPoint", "ShelfSlotsArea"];
 
     private PackedScene _packed = null!;
     private Node3D _shop = null!;
-    private CapsuleShape3D _playerShape = null!;
+    private ShopSceneProbe _probe = null!;
     private Vector3 _spawn;
 
     [BeforeTest]
     public async Task Setup()
     {
-        _packed = GD.Load<PackedScene>(ScenePath);
+        _packed = GD.Load<PackedScene>(ShopSceneProbe.ScenePath);
         _shop = _packed.Instantiate<Node3D>();
 
         var player = _shop.GetNode<CharacterBody3D>("Player");
         _spawn = player.Position;
-        _playerShape = (CapsuleShape3D)player.GetNode<CollisionShape3D>("CollisionShape3D").Shape;
+        _probe = new ShopSceneProbe(_shop, (CapsuleShape3D)player.GetNode<CollisionShape3D>("CollisionShape3D").Shape);
 
         // The walk checks sweep the player capsule through the level, so the live body must not be in the way.
         _shop.RemoveChild(player);
@@ -46,6 +43,7 @@ public class ShopSceneContractTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void SceneLoadsAndInstantiates()
     {
         AssertThat(_packed).IsNotNull();
@@ -53,16 +51,19 @@ public class ShopSceneContractTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void AreasAreSeparatelyNamedNodesWithFloorCollision()
     {
         foreach (var area in AreaNames)
         {
             AssertThat(_shop.GetNodeOrNull<Node3D>($"World/{area}")).IsNotNull();
             AssertThat(FloorShape(area)).IsNotNull();
+            AssertThat(FloorShape(area)!.Shape).IsInstanceOf<BoxShape3D>();
         }
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void WallsHaveCollision()
     {
         var walls = _shop.GetNode("World/Walls");
@@ -76,6 +77,7 @@ public class ShopSceneContractTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void MarkersExistForLaterFeatures()
     {
         foreach (var marker in MarkerNames)
@@ -85,6 +87,7 @@ public class ShopSceneContractTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void MarkersSitInsideTheShopFootprint()
     {
         foreach (var marker in MarkerNames)
@@ -95,6 +98,7 @@ public class ShopSceneContractTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void PcAndSeamMarkersAreInTheBackoffice()
     {
         AssertBool(IsInsideArea("Backoffice", MarkerPosition("PcLocation"))).IsTrue();
@@ -102,45 +106,17 @@ public class ShopSceneContractTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void PlayerSpawnsInsideTheStorefrontAboveTheFloor()
     {
         AssertBool(IsInsideArea("Storefront", _spawn)).IsTrue();
         AssertBool(_spawn.Y > 0f).IsTrue();
-        AssertBool(SupportedByFloor(_spawn with { Y = 0f })).IsTrue();
-        AssertBool(CapsuleFits(_spawn with { Y = _playerShape.Height / 2f + FloorClearance })).IsTrue();
+        AssertBool(_probe.SupportedByFloor(_spawn with { Y = 0f })).IsTrue();
+        AssertBool(_probe.CapsuleFits(_spawn with { Y = _probe.CapsuleCenterHeight })).IsTrue();
     }
 
     [TestCase]
-    public void PlayerCanWalkEveryRouteBetweenTheAreas()
-    {
-        AssertBool(CanWalk(StorefrontToStorage)).IsTrue();
-        AssertBool(CanWalk(StorageToBackoffice)).IsTrue();
-        AssertBool(CanWalk(BackofficeToStorefront)).IsTrue();
-    }
-
-    [TestCase]
-    public void StorefrontEntranceIsOpen()
-    {
-        AssertBool(CanWalk([new Vector2(_spawn.X, _spawn.Z), new Vector2(6.05f, 11.5f)])).IsTrue();
-    }
-
-    [TestCase]
-    public void StreetOutsideTheEntranceIsFlooredAndBounded()
-    {
-        AssertBool(CanWalk([new Vector2(6.05f, 9f), new Vector2(6.05f, 15.2f)])).IsTrue();
-        AssertBool(CanWalk([new Vector2(6.05f, 15.2f), new Vector2(6.05f, 17f)])).IsFalse();
-        AssertBool(CanWalk([new Vector2(6.05f, 13f), new Vector2(-1f, 13f)])).IsFalse();
-        AssertBool(CanWalk([new Vector2(6.05f, 13f), new Vector2(17f, 13f)])).IsFalse();
-    }
-
-    [TestCase]
-    public void AreasAreNotReachableThroughSolidWalls()
-    {
-        AssertBool(CanWalk([new Vector2(6f, 4f), new Vector2(6f, -4f)])).IsFalse();
-        AssertBool(CanWalk([new Vector2(4f, -4f), new Vector2(12f, -6f)])).IsFalse();
-    }
-
-    [TestCase]
+    [TestCategory("Unit")]
     public void ArtSlotsPointAtPackMeshesForWallsFloorDoorsAndCounter()
     {
         var slots = new List<ShopArtSlot>();
@@ -159,6 +135,21 @@ public class ShopSceneContractTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
+    public void ArtSlotKeepsPlaceholderWhenPackFileIsMissing()
+    {
+        var placeholder = new Node3D();
+        var slot = new ShopArtSlot { ArtPath = PackFolder + "DoesNotExist/Missing.fbx", Placeholder = placeholder };
+        slot.AddChild(placeholder);
+
+        AddNode(slot);
+
+        AssertBool(slot.ArtLoaded).IsFalse();
+        AssertBool(placeholder.Visible).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void SceneStillBuildsWhenPackFilesAreMissing()
     {
         var slots = new List<ShopArtSlot>();
@@ -171,6 +162,7 @@ public class ShopSceneContractTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void SceneDoesNotSerializeRuntimeOnlyFields()
     {
         var state = _packed.GetState();
@@ -185,15 +177,6 @@ public class ShopSceneContractTest
             }
         }
     }
-
-    private static readonly Vector2[] StorefrontToStorage =
-        [new(6f, 9f), new(2.05f, 2f), new(2.05f, -2f), new(4f, -4f)];
-
-    private static readonly Vector2[] StorageToBackoffice =
-        [new(4f, -4f), new(7f, -2.05f), new(9f, -2.05f), new(12f, -4f)];
-
-    private static readonly Vector2[] BackofficeToStorefront =
-        [new(12f, -4f), new(14.05f, -2f), new(14.05f, 2f), new(13f, 8f), new(6f, 9f)];
 
     private Vector3 MarkerPosition(string marker) =>
         _shop.GetNode<Marker3D>($"World/Markers/{marker}").GlobalPosition;
@@ -231,41 +214,5 @@ public class ShopSceneContractTest
 
         foreach (var child in node.GetChildren())
             CollectArtSlots(child, slots);
-    }
-
-    private bool CanWalk(Vector2[] route)
-    {
-        for (int leg = 1; leg < route.Length; leg++)
-        {
-            var from = route[leg - 1];
-            var to = route[leg];
-            int steps = Mathf.CeilToInt(from.DistanceTo(to) / WalkSampleStep);
-
-            for (int step = 0; step <= steps; step++)
-            {
-                var point = from.Lerp(to, step / (float)steps);
-                var feet = new Vector3(point.X, 0f, point.Y);
-                if (!SupportedByFloor(feet) || !CapsuleFits(feet with { Y = _playerShape.Height / 2f + FloorClearance }))
-                    return false;
-            }
-        }
-
-        return true;
-    }
-
-    private bool SupportedByFloor(Vector3 feet)
-    {
-        var query = PhysicsRayQueryParameters3D.Create(feet + Vector3.Up * 0.5f, feet + Vector3.Down * 1f);
-        return _shop.GetWorld3D().DirectSpaceState.IntersectRay(query).Count > 0;
-    }
-
-    private bool CapsuleFits(Vector3 center)
-    {
-        var query = new PhysicsShapeQueryParameters3D
-        {
-            Shape = _playerShape,
-            Transform = new Transform3D(Basis.Identity, center)
-        };
-        return _shop.GetWorld3D().DirectSpaceState.IntersectShape(query, 1).Count == 0;
     }
 }
