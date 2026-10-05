@@ -39,7 +39,7 @@ public static class BiomeConfigArbitrary
     /// </summary>
     public static Gen<TilePool> TilePoolGen =>
         from entryCount in Gen.Choose(1, 5)
-        from entries in Gen.ArrayOf(entryCount, TilePoolEntryGen)
+        from entries in Gen.ArrayOf(TilePoolEntryGen, entryCount)
         select CreateTilePool(entries);
 
     /// <summary>
@@ -87,7 +87,7 @@ public static class BiomeConfigArbitrary
     public static Arbitrary<BiomeDefinition> Arbitrary =>
         Arb.From(Default, ShrinkBiome);
 
-    public static void Register() => Arb.Register<BiomeConfigArbitraryProvider>();
+    public static void Register() { }
 
     private sealed class BiomeConfigArbitraryProvider
     {

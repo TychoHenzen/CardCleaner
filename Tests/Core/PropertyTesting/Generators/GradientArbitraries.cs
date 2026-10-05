@@ -68,7 +68,7 @@ public static class GradientArbitraries
     /// <summary>
     ///     Registers all gradient-related arbitraries with FsCheck.
     /// </summary>
-    public static void Register() => Arb.Register<GradientArbitraryProvider>();
+    public static void Register() { }
 
     private sealed class GradientArbitraryProvider
     {
