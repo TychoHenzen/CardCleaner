@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+
+[sub_resource type="BoxShape3D" id="Shape"]
+size = Vector3(1.96, 0.75, 0.88)
+
+[sub_resource type="StandardMaterial3D" id="PlaceholderMaterial"]
+albedo_color = Color(0.4, 0.45, 0.55, 1)
+
+[sub_resource type="BoxMesh" id="PlaceholderMesh"]
+material = SubResource("PlaceholderMaterial")
+size = Vector3(1.96, 0.75, 0.88)
+
+[node name="PackingStation" type="RigidBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, 0)
+shape = SubResource("Shape")
+
+[node name="Art" type="Node3D" parent="." node_paths=PackedStringArray("Placeholder")]
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonOffice/SM_Prop_Desk_01.fbx"
+ArtScale = 1
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Art"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, 0)
+mesh = SubResource("PlaceholderMesh")
