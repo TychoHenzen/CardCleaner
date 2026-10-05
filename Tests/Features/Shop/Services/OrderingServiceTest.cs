@@ -126,15 +126,21 @@ public class OrderingServiceTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ManyOrdersNeverSpawnItemsWithinSlotSpacingOfEachOther()
+    public void ManyOrdersNeverSpawnItemsOverlappingEachOther()
     {
         _money.Add(10000);
         var cheap = MakeItem("cheap", 1);
-        var positions = Enumerable.Range(0, 27).Select(_ => _ordering.Order(cheap).Spawned!.GlobalPosition).ToList();
+        var positions = Enumerable.Range(0, 3 * OrderingService.SlotColumns * OrderingService.SlotRows).Select(_ => _ordering.Order(cheap).Spawned!.GlobalPosition).ToList();
 
         for (var i = 0; i < positions.Count; i++)
         for (var j = i + 1; j < positions.Count; j++)
-            AssertBool(positions[i].DistanceTo(positions[j]) >= OrderingService.SlotSpacing - 0.001f).IsTrue();
+        {
+            var apart = positions[i] - positions[j];
+            var separated = Mathf.Abs(apart.X) >= OrderingService.SlotSpacingX - 0.001f
+                            || Mathf.Abs(apart.Z) >= OrderingService.SlotSpacingZ - 0.001f
+                            || Mathf.Abs(apart.Y) >= OrderingService.LayerHeight - 0.001f;
+            AssertBool(separated).IsTrue();
+        }
     }
 
     [TestCase]

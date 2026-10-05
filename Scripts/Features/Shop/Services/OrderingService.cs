@@ -13,8 +13,14 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 public partial class OrderingService : Node, IOrderingService
 {
     public const int SlotColumns = 3;
-    public const int SlotRows = 3;
-    public const float SlotSpacing = 1.5f;
+    public const int SlotRows = 2;
+
+    /// <summary>Wider than the widest orderable item (the 2.1 m shelf), so neighbours never overlap.</summary>
+    public const float SlotSpacingX = 2.3f;
+
+    /// <summary>Deeper than the deepest orderable item (the 1 m shelf).</summary>
+    public const float SlotSpacingZ = 1.5f;
+
     public const float LayerHeight = 1.5f;
 
     /// <summary>Marker where ordered items appear.</summary>
@@ -69,9 +75,9 @@ public partial class OrderingService : Node, IOrderingService
         var column = cell % SlotColumns;
         var row = cell / SlotColumns;
         return new Vector3(
-            (column - (SlotColumns - 1) / 2f) * SlotSpacing,
+            (column - (SlotColumns - 1) / 2f) * SlotSpacingX,
             layer * LayerHeight,
-            (row - (SlotRows - 1) / 2f) * SlotSpacing);
+            (row - (SlotRows - 1) / 2f) * SlotSpacingZ);
     }
 
     private static OrderResult Fail(OrderItem item, OrderStatus status)

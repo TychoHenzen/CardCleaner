@@ -24,6 +24,12 @@ public partial class PlayerController : CharacterBody3D, ISaveable
 
     public StringName UniqueID => "player";
 
+    /// <summary>
+    ///     False while a modal UI (for example the shop PC) owns the mouse and keyboard.
+    ///     Movement input, mouse look and jumping are ignored; gravity still applies.
+    /// </summary>
+    public bool ControlEnabled { get; set; } = true;
+
     public void Save(NodeSave save)
     {
         save.SetOrAddProperty("position", GlobalPosition);
@@ -130,7 +136,7 @@ public partial class PlayerController : CharacterBody3D, ISaveable
 
     private void OnMouseMoved(Vector2 delta)
     {
-        if (_settings == null || _head == null) return;
+        if (_settings == null || _head == null || !ControlEnabled) return;
         var yawDelta = -delta.X * _settings.MouseSensitivity;
         RotateY(Mathf.DegToRad(yawDelta));
 
@@ -143,10 +149,12 @@ public partial class PlayerController : CharacterBody3D, ISaveable
     {
         if (_settings == null) return;
         // Movement input
-        var input = new Vector2(
-            Input.GetActionStrength("ui_right") - Input.GetActionStrength("ui_left"),
-            Input.GetActionStrength("ui_down") - Input.GetActionStrength("ui_up")
-        ).Normalized();
+        var input = ControlEnabled
+            ? new Vector2(
+                Input.GetActionStrength("ui_right") - Input.GetActionStrength("ui_left"),
+                Input.GetActionStrength("ui_down") - Input.GetActionStrength("ui_up")
+            ).Normalized()
+            : Vector2.Zero;
 
         // Apply movement
         var vel = Velocity;
@@ -155,7 +163,7 @@ public partial class PlayerController : CharacterBody3D, ISaveable
         vel.Z = dir.Z * _settings.MovementSpeed;
 
         // Jumping
-        if (IsOnFloor() && Input.IsActionJustPressed("ui_accept"))
+        if (ControlEnabled && IsOnFloor() && Input.IsActionJustPressed("ui_accept"))
             vel.Y = _settings.JumpVelocity;
 
         // Gravity
