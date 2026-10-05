@@ -74,7 +74,8 @@ public class TileEditorWiringSmokeTest
         _dock = new TileEditorDock
         {
             TiledDirectory = _fixtureDirectory,
-            SuppressDialogs = true
+            SuppressDialogs = true,
+            SkipInitialTileLoad = true
         };
         Assertions.AddNode(_dock);
         await WaitForFrames(2);

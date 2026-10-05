@@ -59,6 +59,9 @@ public partial class TileEditorDock : Control
 
     private void LoadTilesDeferred()
     {
+        if (SkipInitialTileLoad)
+            return;
+
         try
         {
             if (_service == null)

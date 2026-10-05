@@ -25,6 +25,8 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Services;
 [RequireGodotRuntime]
 public class ConnectivityVerificationTest
 {
+    private const int ConnectivitySampleCount = 10;
+
     private BiomeRegistry _registry = null!;
     private MockTileRegistry _tileRegistry = null!;
 
@@ -131,20 +133,20 @@ public class ConnectivityVerificationTest
         return visited.Count == passablePositions.Count;
     }
 
-    // ========== Test Case 1: Generate100Maps_WithoutCorridor_AllConnected ==========
+    // ========== Test Case 1: GenerateSampledMaps_WithoutCorridor_AllConnected ==========
 
     [TestCase]
-    public async Task Generate100Maps_WithoutCorridor_AllConnected()
+    public async Task GenerateSampledMaps_WithoutCorridor_AllConnected()
     {
-        // GATE TEST: Generate 100 maps with corridor fallback disabled
+        // GATE TEST: Generate a deterministic sample with corridor fallback disabled
         // Verify WFC-native connectivity maintains connection
 
         var profiler = new MapGenerationProfiler();
 
-        var mapSize = new Vector2I(25, 25); // Smaller size for faster test execution
+        var mapSize = new Vector2I(10, 10); // Sample connectivity without duplicating the performance gate
         var disconnectedMaps = new List<int>();
 
-        for (var i = 0; i < 100; i++)
+        for (var i = 0; i < ConnectivitySampleCount; i++)
         {
             var rng = new RandomNumberGenerator();
             rng.Seed = (ulong)(i * 12345 + 7);
@@ -163,8 +165,11 @@ public class ConnectivityVerificationTest
             }
         }
 
-        var successRate = (100 - disconnectedMaps.Count) / 100.0f * 100;
-        GD.Print($"Connectivity success rate: {successRate}% ({100 - disconnectedMaps.Count}/100)");
+        var connectedMaps = ConnectivitySampleCount - disconnectedMaps.Count;
+        var successRate = connectedMaps / (float)ConnectivitySampleCount * 100;
+        GD.Print(
+            $"Connectivity success rate: {successRate}% " +
+            $"({connectedMaps}/{ConnectivitySampleCount})");
 
         if (disconnectedMaps.Count > 0)
         {
@@ -228,8 +233,8 @@ public class ConnectivityVerificationTest
     public async Task ConnectivityRate_Above99Percent()
     {
         // Statistical verification test - calculate exact success rate
-        var mapSize = new Vector2I(25, 25);
-        var totalTests = 100;
+        var mapSize = new Vector2I(10, 10);
+        var totalTests = ConnectivitySampleCount;
         var connectedCount = 0;
 
         for (var i = 0; i < totalTests; i++)

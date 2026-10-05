@@ -160,6 +160,9 @@ internal sealed class MapGenerationCoordinator
 
         ILog.Print($"Custom map generated: {generatedMap.EnemyCount} enemies");
 
+        if (generatedMap is SimpleGeneratedMap simpleMap)
+            MapGenerated?.Invoke(simpleMap.RawMapData);
+
         // Notify listeners with the new event
         GeneratedMapReady?.Invoke(generatedMap);
     }

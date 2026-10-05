@@ -62,7 +62,7 @@ public class GameSessionResetTest : GameSessionServiceTestBase
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.WaitingForCards);
         Assertions.AssertThat(CountProgressNodes()).IsEqual(0);
 
-        _service.SetMapGenerator(null);
+        _service.SetMapGenerator(CreateFastMapGenerator());
         _service.StartSession(
             new List<CardSignature> { new() },
             new List<CardSignature> { new() });

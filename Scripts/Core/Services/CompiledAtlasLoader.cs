@@ -81,6 +81,9 @@ public static class CompiledAtlasLoader
                 return null;
             }
 
+            if (_cachedAtlasPath != null && _cachedAtlasPath != mappingPath)
+                _cachedTileSet = null;
+
             _cachedMapping = loadedMapping;
             _cachedAtlasPath = mappingPath;
 

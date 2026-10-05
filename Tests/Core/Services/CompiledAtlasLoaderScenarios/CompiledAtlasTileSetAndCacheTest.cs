@@ -1,6 +1,5 @@
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using CardCleaner.Scripts.Core.Services;
 using Godot;
 
@@ -133,19 +132,12 @@ public class CompiledAtlasTileSetAndCacheTest : CompiledAtlasLoaderTestBase
     {
         var mappingPath = CreateTemporaryPath(".json");
         var atlasPath = CreateTemporaryPath(".png");
-        var sourceMapping = JsonSerializer.Deserialize<CompiledAtlasLoader.AtlasMappingData>(
-            File.ReadAllText(ProjectSettings.GlobalizePath(AtlasMappingPath)))!;
-        sourceMapping.Atlas!.Path = atlasPath;
-        File.WriteAllText(
-            ProjectSettings.GlobalizePath(mappingPath),
-            JsonSerializer.Serialize(sourceMapping));
+        WriteMapping(mappingPath, atlasPath);
 
         AssertThat(CompiledAtlasLoader.LoadCompiledTileSet(mappingPath)).IsNull();
 
-        File.Copy(
-            ProjectSettings.GlobalizePath(AtlasPngPath),
-            ProjectSettings.GlobalizePath(atlasPath),
-            overwrite: true);
+        var atlasImage = Image.CreateEmpty(16, 16, false, Image.Format.Rgba8);
+        AssertThat(atlasImage.SavePng(ProjectSettings.GlobalizePath(atlasPath))).IsEqual(Error.Ok);
 
         var tileSet = CompiledAtlasLoader.LoadCompiledTileSet(mappingPath);
         AssertThat(tileSet).IsNotNull();

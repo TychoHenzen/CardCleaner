@@ -219,6 +219,14 @@ internal static class CompiledAtlasTileSetBuilder
         ref int tilesSkipped)
     {
         var atlasCoords = variant.GetAtlasCoordinates();
+        var texture = atlasSource.Texture;
+        var regionSize = atlasSource.TextureRegionSize;
+        if (texture == null
+            || atlasCoords.X < 0
+            || atlasCoords.Y < 0
+            || atlasCoords.X * regionSize.X >= texture.GetWidth()
+            || atlasCoords.Y * regionSize.Y >= texture.GetHeight())
+            return;
 
         if (atlasSource.HasTile(atlasCoords))
         {
