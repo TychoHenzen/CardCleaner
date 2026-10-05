@@ -1,32 +1,20 @@
 using CardCleaner.Scripts.Features.Card.Models;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
 /// <summary>
-///     What a card is worth at the register. Only common cards (the all-zero signature) can be
-///     sold for now; every other card is worth nothing here and is refused by the sale.
+///     What a card is worth at the register. Every card currently sells for the same fixed price;
+///     special-card pricing is a non-goal. The signature is the input so that later pricing rules can
+///     slot in here without changing the sale flow.
 /// </summary>
 public static class CardPricing
 {
-    /// <summary>Fixed price of one common card. A tuning constant, not a requirement.</summary>
-    public const int CommonCardPrice = 10;
+    /// <summary>Fixed price of one card. A tuning constant, not a requirement.</summary>
+    public const int FixedCardPrice = 10;
 
-    /// <summary>The price of a card, or 0 when it cannot be sold.</summary>
+    /// <summary>The price of a card, or 0 when there is no card data to price.</summary>
     public static int GetPrice(CardSignature? signature)
     {
-        return IsCommon(signature) ? CommonCardPrice : 0;
-    }
-
-    public static bool IsCommon(CardSignature? signature)
-    {
-        if (signature == null)
-            return false;
-
-        for (var i = 0; i < 8; i++)
-            if (!Mathf.IsZeroApprox(signature[i]))
-                return false;
-
-        return true;
+        return signature == null ? 0 : FixedCardPrice;
     }
 }

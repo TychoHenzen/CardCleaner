@@ -87,7 +87,7 @@ public partial class SaleRegister : StaticBody3D, IInteractable
         SetMessage(result.Status switch
         {
             SaleStatus.Sold => $"Sold for {result.Price}.",
-            SaleStatus.NotSellable => "Only common cards can be sold.",
+            SaleStatus.NotSellable => "That cannot be sold.",
             SaleStatus.AlreadySold => "That card was already sold.",
             _ => "Nothing to sell."
         });
@@ -104,7 +104,7 @@ public partial class SaleRegister : StaticBody3D, IInteractable
         {
             foreach (var card in shelf.StockedCards.ToArray())
             {
-                // A card that would be refused leaves the shelf alone, so try the next one.
+                // Something that cannot be sold stays on the shelf, so try the next one.
                 var attempt = CardSale.TrySell(card, money, c => shelf.Release(c));
                 if (attempt.Succeeded)
                     return attempt;

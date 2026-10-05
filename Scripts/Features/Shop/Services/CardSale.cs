@@ -8,7 +8,7 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 
 /// <summary>
 ///     Sells one card: pays <see cref="CardPricing" /> into the money service and removes the card
-///     from the world. A card that cannot be sold is left exactly where it is.
+///     from the world. Something that cannot be sold is left exactly where it is.
 /// </summary>
 public static class CardSale
 {
