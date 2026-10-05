@@ -171,6 +171,39 @@ public class CardContainerTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public async Task OpeningSpawnsAtMostOneItemPerFrameSoABigBoxNeverStallsAFrame()
+    {
+        var booster = Make(BoosterScene);
+        booster.Open();
+
+        var previous = 0;
+        for (var frame = 0; frame < OpenFrames; frame++)
+        {
+            await Frames(1);
+            AssertBool(_spawner.Spawned.Count - previous <= 1).IsTrue();
+            previous = _spawner.Spawned.Count;
+        }
+
+        AssertThat(previous).IsEqual(CardContainerLayout.ItemsPerContainer);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task FreeingTheParentWhileOpeningStopsSpawningWithoutErrors()
+    {
+        var booster = Make(BoosterScene);
+        booster.Open();
+        await Frames(2);
+        var spawnedSoFar = _spawner.Spawned.Count;
+
+        _world.Free();
+        await Frames(OpenFrames);
+
+        AssertThat(_spawner.Spawned.Count).IsEqual(spawnedSoFar);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public static void OpenedItemsLandOnADistinctGridWellApartSoNothingOverlapsOrIsFlung()
     {
         var offsets = Enumerable.Range(0, CardContainerLayout.ItemsPerContainer).Select(CardContainer.SpawnOffset)
