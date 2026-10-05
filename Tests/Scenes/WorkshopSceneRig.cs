@@ -1,10 +1,14 @@
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
+using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Features.Shop;
 using Godot;
 
@@ -27,6 +31,8 @@ public sealed class WorkshopSceneRig
         DeckHolder = Workshop.GetNode<DeckSlot>("DeckSlot");
         CardHolder = Workshop.GetNode<DeckSlot>("CardSlot");
         Button = Workshop.GetNode<InteractableButton>("Button/StaticBody3D");
+        Controller = Workshop.GetNode<DeckBuilderController>("DeckbuilderController");
+        Screen = Workshop.GetNode<IrregularWorldMapScreen>("IrregularTileMapScreen");
     }
 
     public Node3D Shop { get; }
@@ -36,6 +42,8 @@ public sealed class WorkshopSceneRig
     public DeckSlot DeckHolder { get; }
     public DeckSlot CardHolder { get; }
     public InteractableButton Button { get; }
+    public DeckBuilderController Controller { get; }
+    public IrregularWorldMapScreen Screen { get; }
 
     public static async Task<WorkshopSceneRig> Create()
     {
@@ -44,6 +52,9 @@ public sealed class WorkshopSceneRig
         // The test scene is not the current scene, so hand the services the cabinet needs over directly.
         ServiceLocator.ResetForTesting();
         ServiceLocator.Container.RegisterSingleton<ICardSpawningService>(new TestCardSpawner());
+        ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
+        ServiceLocator.Container.RegisterSingleton<IGameSessionService>(
+            rig.Workshop.GetNode<GameSessionService>("GameSessionService"));
 
         AddNode(rig.Shop);
         await Settle();
