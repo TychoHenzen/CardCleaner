@@ -28,4 +28,13 @@ public class CardContainerLayoutTest
     {
         AssertThat(CardContainerLayout.CardsPerBox).IsEqual(512);
     }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void LevelsBelowCountsContainerLevelsUnderEachKind()
+    {
+        AssertThat(CardContainerLayout.LevelsBelow(CardContainerKind.Booster)).IsEqual(0);
+        AssertThat(CardContainerLayout.LevelsBelow(CardContainerKind.Pack)).IsEqual(1);
+        AssertThat(CardContainerLayout.LevelsBelow(CardContainerKind.Box)).IsEqual(2);
+    }
 }

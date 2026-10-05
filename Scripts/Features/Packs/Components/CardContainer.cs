@@ -60,7 +60,8 @@ public partial class CardContainer : RigidBody3D, IInteractable
 
     public Node3D InteractionBody => this;
 
-    private bool HasContents => Kind == CardContainerKind.Booster ? Spawning != null : ChildScene != null;
+    private bool HasContents =>
+        Kind == CardContainerKind.Booster ? Spawning != null && Generator != null : ChildScene != null;
 
     public override void _Ready()
     {
@@ -98,16 +99,22 @@ public partial class CardContainer : RigidBody3D, IInteractable
             HighlightMesh.Visible = false;
     }
 
-    /// <summary>Offset of the n-th opened item from the container: a grid of <see cref="Columns" /> columns.</summary>
-    public static Vector3 SpawnOffset(int index)
+    /// <summary>
+    ///     Offset of the n-th item opened out of a container of <paramref name="kind" />: a grid of
+    ///     <see cref="Columns" /> columns. A booster lays its cards on the base grid; each level above
+    ///     multiplies the grid by the footprint of the level below, so the items of sibling containers
+    ///     (cards of two boosters, boosters of two packs) never land on the same spot.
+    /// </summary>
+    public static Vector3 SpawnOffset(int index, CardContainerKind kind)
     {
         var rows = (CardContainerLayout.ItemsPerContainer + Columns - 1) / Columns;
+        var levels = CardContainerLayout.LevelsBelow(kind);
         var column = index % Columns;
         var row = index / Columns;
         return new Vector3(
-            (column - (Columns - 1) / 2f) * SpacingX,
+            (column - (Columns - 1) / 2f) * SpacingX * MathF.Pow(Columns, levels),
             LiftHeight,
-            (row - (rows - 1) / 2f) * SpacingZ);
+            (row - (rows - 1) / 2f) * SpacingZ * MathF.Pow(rows, levels));
     }
 
     /// <summary>
@@ -138,11 +145,11 @@ public partial class CardContainer : RigidBody3D, IInteractable
 
     private void QueueCards(Node3D parent, Vector3 origin)
     {
-        var signatures = (Generator ?? CreateFallbackGenerator()).OpenBooster();
+        var signatures = Generator!.OpenBooster();
         for (var i = 0; i < signatures.Length; i++)
         {
             var signature = signatures[i];
-            var position = origin + SpawnOffset(i);
+            var position = origin + SpawnOffset(i, Kind);
             _pendingSpawns.Enqueue(() => SpawnCard(parent, signature, position));
         }
     }
@@ -151,7 +158,7 @@ public partial class CardContainer : RigidBody3D, IInteractable
     {
         for (var i = 0; i < CardContainerLayout.ItemsPerContainer; i++)
         {
-            var position = origin + SpawnOffset(i);
+            var position = origin + SpawnOffset(i, Kind);
             _pendingSpawns.Enqueue(() => SpawnContainer(parent, position));
         }
     }
@@ -180,6 +187,4 @@ public partial class CardContainer : RigidBody3D, IInteractable
         parent.AddChild(child);
         child.GlobalPosition = position;
     }
-
-    private static CardPackGenerator CreateFallbackGenerator() => new(new RandomNumberGenerator());
 }

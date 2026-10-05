@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Packs.Components;
@@ -171,7 +172,7 @@ public class CardContainerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task OpeningSpawnsAtMostOneItemPerFrameSoABigBoxNeverStallsAFrame()
+    public async Task OpeningABoosterSpawnsAtMostOneCardPerFrame()
     {
         var booster = Make(BoosterScene);
         booster.Open();
@@ -206,7 +207,7 @@ public class CardContainerTest
     [TestCategory("Unit")]
     public static void OpenedItemsLandOnADistinctGridWellApartSoNothingOverlapsOrIsFlung()
     {
-        var offsets = Enumerable.Range(0, CardContainerLayout.ItemsPerContainer).Select(CardContainer.SpawnOffset)
+        var offsets = Enumerable.Range(0, CardContainerLayout.ItemsPerContainer).Select(i => CardContainer.SpawnOffset(i, CardContainerKind.Booster))
             .ToArray();
 
         AssertThat(offsets.Distinct().Count()).IsEqual(offsets.Length);
@@ -215,6 +216,26 @@ public class CardContainerTest
         for (var a = 0; a < offsets.Length; a++)
         for (var b = a + 1; b < offsets.Length; b++)
             AssertBool(offsets[a].DistanceTo(offsets[b]) >= CardContainer.SpacingX - 0.001f).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void SiblingContainersOpenOntoDisjointSpotsAtEveryLevel()
+    {
+        // Two neighbouring containers of a level sit one grid step apart; their children must not share a spot.
+        foreach (var kind in new[] { CardContainerKind.Box, CardContainerKind.Pack })
+        {
+            var children = new List<Vector3>();
+            for (var index = 0; index < CardContainerLayout.ItemsPerContainer; index++)
+            {
+                var containerOrigin = CardContainer.SpawnOffset(index, kind);
+                var childKind = CardContainerLayout.ChildKind(kind)!.Value;
+                for (var child = 0; child < CardContainerLayout.ItemsPerContainer; child++)
+                    children.Add(containerOrigin + CardContainer.SpawnOffset(child, childKind));
+            }
+
+            AssertThat(children.Distinct().Count()).IsEqual(children.Count);
+        }
     }
 
     private CardContainer Make(string scenePath)

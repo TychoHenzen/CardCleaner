@@ -92,12 +92,16 @@ public class CardPackGeneratorTest
         // Twenty boxes hold about twenty special cards, so the comparison is not vacuous.
         var first = Seeded(Seed);
         var second = Seeded(Seed);
+        var specialSeen = 0;
         for (var box = 0; box < 20; box++)
         {
             var a = SpecialPositions(first);
             var b = SpecialPositions(second);
             AssertThat(a).IsEqual(b);
+            specialSeen += a.Length;
         }
+
+        AssertThat(specialSeen).IsGreater(0);
     }
 
     [TestCase]
