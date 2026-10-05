@@ -63,6 +63,22 @@ public class OrderingServiceTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void SceneWithoutA3DRootIsRejectedWithoutCharging()
+    {
+        var root = new Node { Name = "NotSpatial" };
+        var packed = new PackedScene();
+        packed.Pack(root);
+        root.Free();
+
+        var result = _ordering.Order(new OrderItem { Id = "flat", Price = 10, Scene = packed });
+
+        AssertThat(result.Status).IsEqual(OrderStatus.InvalidItem);
+        AssertThat(_money.Balance).IsEqual(StartingBalance);
+        AssertThat(_ordering.DeliveredCount).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void ItemWithoutASceneIsRejectedWithoutCharging()
     {
         var result = _ordering.Order(new OrderItem { Id = "empty", Price = 10 });
@@ -130,7 +146,13 @@ public class OrderingServiceTest
     {
         _money.Add(10000);
         var cheap = MakeItem("cheap", 1);
-        var positions = Enumerable.Range(0, 3 * OrderingService.SlotColumns * OrderingService.SlotRows).Select(_ => _ordering.Order(cheap).Spawned!.GlobalPosition).ToList();
+        var positions = new List<Vector3>();
+        for (var order = 0; order < 3 * OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+        {
+            var result = _ordering.Order(cheap);
+            AssertBool(result.Succeeded).IsTrue();
+            positions.Add(result.Spawned!.GlobalPosition);
+        }
 
         for (var i = 0; i < positions.Count; i++)
         for (var j = i + 1; j < positions.Count; j++)

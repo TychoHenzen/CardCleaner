@@ -106,21 +106,28 @@ public partial class PlayerController : CharacterBody3D, ISaveable
     private void RegisterInputActions()
     {
         if (_inputService == null) return;
-        // Register light cycling control
-        _inputService.RegisterAction(this, "cycle_light", Key.F, () => _light?.Cycle());
-        System.Action brighter = () => _light?.AdjustIntensity(0.2f);
+        // Every keyboard action is gated by ControlEnabled so a modal screen owns the keyboard.
+        _inputService.RegisterAction(this, "cycle_light", Key.F, WhenControlled(() => _light?.Cycle()));
+        System.Action brighter = WhenControlled(() => _light?.AdjustIntensity(0.2f));
         _inputService.RegisterAction(this, "increase_light_intensity", Key.Plus, brighter);
-        _inputService.RegisterAction(this, "decrease_light_intensity", Key.Minus, () => _light?.AdjustIntensity(-0.2f));
+        _inputService.RegisterAction(this, "decrease_light_intensity", Key.Minus,
+            WhenControlled(() => _light?.AdjustIntensity(-0.2f)));
         _inputService.RegisterAction(this, "increase_light_intensity_alt", Key.Equal, brighter);
 
         // Register safety reset action (R key)
-        _inputService.RegisterAction(this, "player_reset", Key.R, OnResetRequested);
+        _inputService.RegisterAction(this, "player_reset", Key.R, WhenControlled(OnResetRequested));
 
         // Subscribe to mouse movement
         _inputService.MouseMoved += OnMouseMoved;
 
         ILog.Print("Registered light controls and mouse input");
     }
+
+    private System.Action WhenControlled(System.Action action) => () =>
+    {
+        if (ControlEnabled)
+            action();
+    };
 
     public override void _ExitTree()
     {

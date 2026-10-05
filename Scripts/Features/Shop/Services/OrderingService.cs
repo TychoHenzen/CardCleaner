@@ -51,10 +51,20 @@ public partial class OrderingService : Node, IOrderingService
         if (DeliveryPoint == null || parent == null || Money == null)
             return Fail(item, OrderStatus.NoDeliveryPoint);
 
-        if (!Money.TrySpend(item.Price))
-            return Fail(item, OrderStatus.InsufficientFunds);
+        // Build the item first: an unusable scene must be rejected before the player is charged.
+        var built = item.Scene.Instantiate();
+        if (built is not Node3D instance)
+        {
+            built.Free();
+            return Fail(item, OrderStatus.InvalidItem);
+        }
 
-        var instance = item.Scene.Instantiate<Node3D>();
+        if (!Money.TrySpend(item.Price))
+        {
+            instance.Free();
+            return Fail(item, OrderStatus.InsufficientFunds);
+        }
+
         parent.AddChild(instance);
         instance.GlobalPosition = DeliveryPoint.GlobalPosition + SlotOffset(DeliveredCount);
         DeliveredCount++;

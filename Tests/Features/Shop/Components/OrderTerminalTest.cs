@@ -159,6 +159,34 @@ public class OrderTerminalTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void TerminalThatLeavesAndReentersTheTreeStillOrdersExactlyOncePerClick()
+    {
+        _world.RemoveChild(_terminal);
+        _world.AddChild(_terminal);
+        _money.Add(500);
+        _terminal.Interact();
+
+        _ui.PressItem(0);
+
+        AssertThat(_money.Balance).IsEqual(StartingBalance + 500 - CheapPrice);
+        AssertThat(_ordering.DeliveredCount).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RemovedTerminalNoLongerReactsToTheUi()
+    {
+        _world.RemoveChild(_terminal);
+
+        _ui.PressItem(0);
+
+        AssertThat(_ordering.DeliveredCount).IsEqual(0);
+        AssertThat(_money.Balance).IsEqual(StartingBalance);
+        _terminal.Free();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void EscapeClosesTheOpenTerminal()
     {
         _terminal.Interact();

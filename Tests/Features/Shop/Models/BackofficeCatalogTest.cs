@@ -106,11 +106,10 @@ public class BackofficeCatalogTest
             var slot = instance.GetNode<ShopArtSlot>("Art");
             AddNode(instance);
 
-            // The pack files are gitignored, so only assert the swap when this machine has them imported.
-            if (!ResourceLoader.Exists(slot.ArtPath))
-                continue;
-            AssertBool(slot.ArtLoaded).IsTrue();
-            AssertBool(slot.Placeholder!.Visible).IsFalse();
+            // The pack files are gitignored, so this machine either swaps in the pack mesh or keeps the placeholder.
+            var imported = ResourceLoader.Exists(slot.ArtPath);
+            AssertBool(slot.ArtLoaded).IsEqual(imported);
+            AssertBool(slot.Placeholder!.Visible).IsEqual(!imported);
         }
     }
 }

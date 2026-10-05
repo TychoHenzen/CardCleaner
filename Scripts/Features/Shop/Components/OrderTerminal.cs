@@ -20,6 +20,8 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
 
     private Input.MouseModeEnum _mouseModeBeforeOpen = Input.MouseModeEnum.Visible;
     private PlayerController? _player;
+    private IMoneyService? _money;
+    private IOrderingService? _ordering;
 
     /// <summary>Items this terminal sells. Assign a different catalog for a different terminal.</summary>
     [Export]
@@ -33,12 +35,6 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
 
     [Export]
     public float InteractionRange { get; set; } = DefaultInteractionRange;
-
-    /// <summary>Resolved from the service locator at startup; assignable directly in tests.</summary>
-    public IMoneyService? Money { get; set; }
-
-    /// <summary>Resolved from the service locator at startup; assignable directly in tests.</summary>
-    public IOrderingService? Ordering { get; set; }
 
     public bool IsOpen { get; private set; }
 
@@ -76,24 +72,26 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
         }
 
         Ui.Populate(Catalog);
-        Ui.OrderRequested += OnOrderRequested;
-        Ui.CloseRequested += Close;
+        Subscribe();
 
-        ServiceLocator.Get<IOrderingService>(ordering => Ordering = ordering);
+        ServiceLocator.Get<IOrderingService>(ordering => _ordering = ordering);
         ServiceLocator.Get<IMoneyService>(money =>
         {
-            Money = money;
-            Money.BalanceChanged += Ui.SetBalance;
-            Ui.SetBalance(Money.Balance);
+            _money = money;
+            Subscribe();
+            Ui.SetBalance(_money.Balance);
         });
     }
+
+    // _Ready runs once, but a terminal can leave and re-enter the tree, so the subscriptions that
+    // _ExitTree drops are restored on every entry.
+    public override void _EnterTree() => Subscribe();
 
     public override void _ExitTree()
     {
         if (IsOpen)
             Close();
-        if (Money != null && Ui != null)
-            Money.BalanceChanged -= Ui.SetBalance;
+        Unsubscribe();
     }
 
     public void Open()
@@ -103,8 +101,8 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
 
         IsOpen = true;
         ClearHighlight();
-        if (Money != null)
-            Ui.SetBalance(Money.Balance);
+        if (_money != null)
+            Ui.SetBalance(_money.Balance);
         Ui.ShowMessage(string.Empty);
         Ui.Visible = true;
 
@@ -130,15 +128,38 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
         _player = null;
     }
 
+    private void Subscribe()
+    {
+        if (Ui == null || !IsInsideTree())
+            return;
+
+        Unsubscribe();
+        Ui.OrderRequested += OnOrderRequested;
+        Ui.CloseRequested += Close;
+        if (_money != null)
+            _money.BalanceChanged += Ui.SetBalance;
+    }
+
+    private void Unsubscribe()
+    {
+        if (Ui == null)
+            return;
+
+        Ui.OrderRequested -= OnOrderRequested;
+        Ui.CloseRequested -= Close;
+        if (_money != null)
+            _money.BalanceChanged -= Ui.SetBalance;
+    }
+
     private void OnOrderRequested(OrderItem item)
     {
-        if (Ordering == null || Ui == null)
+        if (_ordering == null || Ui == null)
         {
             Ui?.ShowMessage("Ordering is unavailable right now.");
             return;
         }
 
-        var result = Ordering.Order(item);
+        var result = _ordering.Order(item);
         Ui.ShowMessage(result.Status switch
         {
             OrderStatus.Success => $"Ordered {item.DisplayName}. It is at the delivery point.",

@@ -28,23 +28,22 @@ public class ShopOrderingSceneTest
     private OrderTerminal _terminal = null!;
     private OrderTerminalUi _ui = null!;
     private MoneyService _money = null!;
-    private OrderingService _ordering = null!;
 
     [BeforeTest]
     public async Task Setup()
     {
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _player = _shop.GetNode<PlayerController>("Player");
-        _terminal = _shop.GetNode<OrderTerminal>("World/PcTerminal");
+        _terminal = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
         _ui = _shop.GetNode<OrderTerminalUi>("OrderUi");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
-        _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
+        var ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
 
         // The test scene is not the current scene, so hand the scene-owned services over directly.
         ServiceLocator.ResetForTesting();
         ServiceLocator.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
         ServiceLocator.Container.RegisterSingleton<IMoneyService>(_money);
-        ServiceLocator.Container.RegisterSingleton<IOrderingService>(_ordering);
+        ServiceLocator.Container.RegisterSingleton<IOrderingService>(ordering);
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;
@@ -127,7 +126,7 @@ public class ShopOrderingSceneTest
     {
         _terminal.Interact();
 
-        _shop.GetNode("World").RemoveChild(_terminal);
+        _terminal.GetParent().RemoveChild(_terminal);
 
         AssertBool(_player.ControlEnabled).IsTrue();
         _terminal.Free();
@@ -140,17 +139,25 @@ public class ShopOrderingSceneTest
         for (var frame = 0; frame < 30; frame++)
             await ISceneRunner.SyncPhysicsFrame;
         var start = _player.GlobalPosition;
+        Vector3 whileOpen;
+        Vector3 afterClose;
         Input.ActionPress("ui_up");
-        _terminal.Interact();
+        try
+        {
+            _terminal.Interact();
 
-        for (var frame = 0; frame < 20; frame++)
-            await ISceneRunner.SyncPhysicsFrame;
-        var whileOpen = _player.GlobalPosition;
-        _terminal.Close();
-        for (var frame = 0; frame < 20; frame++)
-            await ISceneRunner.SyncPhysicsFrame;
-        var afterClose = _player.GlobalPosition;
-        Input.ActionRelease("ui_up");
+            for (var frame = 0; frame < 20; frame++)
+                await ISceneRunner.SyncPhysicsFrame;
+            whileOpen = _player.GlobalPosition;
+            _terminal.Close();
+            for (var frame = 0; frame < 20; frame++)
+                await ISceneRunner.SyncPhysicsFrame;
+            afterClose = _player.GlobalPosition;
+        }
+        finally
+        {
+            Input.ActionRelease("ui_up");
+        }
 
         AssertBool(new Vector2(whileOpen.X - start.X, whileOpen.Z - start.Z).Length() < 0.01f).IsTrue();
         AssertBool(new Vector2(afterClose.X - whileOpen.X, afterClose.Z - whileOpen.Z).Length() > 0.1f).IsTrue();

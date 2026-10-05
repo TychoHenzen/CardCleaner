@@ -98,10 +98,10 @@ public partial class OrderTerminalUi : CanvasLayer
     }
 
     /// <summary>Presses the n-th item row, as a click would.</summary>
-    public void PressItem(int index) => _itemButtons[index].EmitSignal(BaseButton.SignalName.Pressed);
+    internal void PressItem(int index) => _itemButtons[index].EmitSignal(BaseButton.SignalName.Pressed);
 
     /// <summary>Presses the close button, as a click would.</summary>
-    public void PressClose() => _closeButton.EmitSignal(BaseButton.SignalName.Pressed);
+    internal void PressClose() => _closeButton.EmitSignal(BaseButton.SignalName.Pressed);
 
     // The terminal can populate this screen before the screen's own _Ready has run, so every
     // entry point builds the layout on first use.

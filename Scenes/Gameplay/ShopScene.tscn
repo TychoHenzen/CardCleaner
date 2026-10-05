@@ -860,51 +860,50 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -5.5)
 [node name="ShelfSlotsArea" type="Marker3D" parent="World/Markers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 7)
 
-[node name="PcTerminal" type="StaticBody3D" parent="World" node_paths=PackedStringArray("Ui", "HighlightMesh")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -6.9)
+[node name="PcTerminal" type="StaticBody3D" parent="World/Markers/PcLocation" node_paths=PackedStringArray("Ui", "HighlightMesh")]
 collision_layer = 5
 script = ExtResource("OrderTerminal")
 Catalog = ExtResource("BackofficeCatalog")
-Ui = NodePath("../../OrderUi")
+Ui = NodePath("../../../../OrderUi")
 HighlightMesh = NodePath("Highlight")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="World/PcTerminal"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Markers/PcLocation/PcTerminal"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 shape = SubResource("PcShape")
 
-[node name="DeskArt" type="Node3D" parent="World/PcTerminal" node_paths=PackedStringArray("Placeholder")]
+[node name="DeskArt" type="Node3D" parent="World/Markers/PcLocation/PcTerminal" node_paths=PackedStringArray("Placeholder")]
 script = ExtResource("ShopArtSlot")
 ArtPath = "res://Assets/Synty/PolygonOffice/SM_Prop_Desk_01.fbx"
 ArtScale = 1.0
 Placeholder = NodePath("Placeholder")
 
-[node name="Placeholder" type="MeshInstance3D" parent="World/PcTerminal/DeskArt"]
+[node name="Placeholder" type="MeshInstance3D" parent="World/Markers/PcLocation/PcTerminal/DeskArt"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, 0)
 mesh = SubResource("PcDeskMesh")
 
-[node name="MonitorArt" type="Node3D" parent="World/PcTerminal" node_paths=PackedStringArray("Placeholder")]
+[node name="MonitorArt" type="Node3D" parent="World/Markers/PcLocation/PcTerminal" node_paths=PackedStringArray("Placeholder")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -0.2)
 script = ExtResource("ShopArtSlot")
 ArtPath = "res://Assets/Synty/PolygonOffice/SM_Prop_Computer_Monitor_01.fbx"
 ArtScale = 1.0
 Placeholder = NodePath("Placeholder")
 
-[node name="Placeholder" type="MeshInstance3D" parent="World/PcTerminal/MonitorArt"]
+[node name="Placeholder" type="MeshInstance3D" parent="World/Markers/PcLocation/PcTerminal/MonitorArt"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 mesh = SubResource("PcMonitorMesh")
 
-[node name="KeyboardArt" type="Node3D" parent="World/PcTerminal" node_paths=PackedStringArray("Placeholder")]
+[node name="KeyboardArt" type="Node3D" parent="World/Markers/PcLocation/PcTerminal" node_paths=PackedStringArray("Placeholder")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0.2)
 script = ExtResource("ShopArtSlot")
 ArtPath = "res://Assets/Synty/PolygonOffice/SM_Prop_Computer_Keyboard_01.fbx"
 ArtScale = 1.0
 Placeholder = NodePath("Placeholder")
 
-[node name="Placeholder" type="MeshInstance3D" parent="World/PcTerminal/KeyboardArt"]
+[node name="Placeholder" type="MeshInstance3D" parent="World/Markers/PcLocation/PcTerminal/KeyboardArt"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
 mesh = SubResource("PcKeyboardMesh")
 
-[node name="Highlight" type="MeshInstance3D" parent="World/PcTerminal"]
+[node name="Highlight" type="MeshInstance3D" parent="World/Markers/PcLocation/PcTerminal"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 visible = false
 mesh = SubResource("PcHighlightMesh")
