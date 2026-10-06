@@ -22,6 +22,10 @@ public class ShopWorkshopDeliverySceneTest
     private const float ProbeInset = 0.02f;
     private const int Rounds = 3;
     private const int TopUp = 10000;
+    private const int SettleFrames = 300;
+    private const float UprightDot = 0.95f;
+    private const float PadReach = 3.5f;
+    private const float RestTolerance = 0.1f;
 
     private Node3D _shop = null!;
     private Node3D _workshop = null!;
@@ -214,6 +218,27 @@ public class ShopWorkshopDeliverySceneTest
             AssertThat(_pcUi.BalanceText).IsEqual($"Balance: {expected}");
             AssertThat(_ui.BalanceText).IsEqual($"Balance: {expected}");
         }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task OrderedCabinetSettlesUprightOnThePadWithItsHolders()
+    {
+        _money.Add(TopUp);
+        _terminal.Interact();
+        _ui.PressItem(IndexOf("arcade_cabinet"));
+        _terminal.Close();
+        var cabinet = (RigidBody3D)_shop.GetNode("World").GetChildren().Last();
+        for (var i = 0; i < SettleFrames; i++)
+            await ISceneRunner.SyncPhysicsFrame;
+
+        var offset = cabinet.GlobalPosition - _delivery.GlobalPosition;
+        AssertBool(cabinet.GlobalBasis.Y.Dot(Vector3.Up) > UprightDot).OverrideFailureMessage($"cabinet tipped: up {cabinet.GlobalBasis.Y}").IsTrue();
+        AssertBool(new Vector2(offset.X, offset.Z).Length() < PadReach && Mathf.Abs(offset.Y) < RestTolerance)
+            .OverrideFailureMessage($"cabinet came to rest at {offset} from the pad")
+            .IsTrue();
+        AssertThat(cabinet.GetNodeOrNull("Assembly/DeckSlot")).IsNotNull();
+        AssertThat(cabinet.GetNodeOrNull("Assembly/CardSlot")).IsNotNull();
     }
 
     private int IndexOf(string id) => _terminal.Catalog!.Items.ToList().FindIndex(i => i.Id == id);

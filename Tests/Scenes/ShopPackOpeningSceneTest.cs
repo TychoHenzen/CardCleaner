@@ -28,6 +28,11 @@ public class ShopPackOpeningSceneTest
     private const ulong Seed = 4242;
     private const float StandingDistance = 2.0f;
     private const int OpenFrames = 12;
+    private const int SettleFrames = 180;
+    private const float FallLimitY = -0.5f;
+
+    // The storage room of the shop scene, inside its walls.
+    private static readonly Rect2 StorageRoom = new(0f, -8f, 8f, 8f);
 
     private Node3D _shop = null!;
     private Node3D _world = null!;
@@ -113,6 +118,24 @@ public class ShopPackOpeningSceneTest
             AssertThat(cards[i].Signature.Elements).IsEqual(expected[i].Elements);
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task OpenedBoxLeavesEveryPackSettledInsideTheStorageRoom()
+    {
+        var box = OrderBox();
+        await PhysicsFrames(SettleFrames);
+        box.Interact();
+        await Frames(OpenFrames);
+        await PhysicsFrames(SettleFrames);
+
+        var packs = Containers(CardContainerKind.Pack);
+        AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
+        foreach (var pack in packs)
+            AssertBool(StorageRoom.HasPoint(new Vector2(pack.GlobalPosition.X, pack.GlobalPosition.Z)) && pack.GlobalPosition.Y > FallLimitY)
+                .OverrideFailureMessage($"pack settled at {pack.GlobalPosition}, outside the storage room")
+                .IsTrue();
+    }
+
     private CardContainer OrderBox()
     {
         var item = Catalog().Items.Single(i => i.Id == "cardboard_box");
@@ -127,6 +150,12 @@ public class ShopPackOpeningSceneTest
 
     private CardContainer[] Containers(CardContainerKind kind) =>
         _world.GetChildren().OfType<CardContainer>().Where(c => c.Kind == kind && !c.IsOpened).ToArray();
+
+    private static async Task PhysicsFrames(int count)
+    {
+        for (var i = 0; i < count; i++)
+            await ISceneRunner.SyncPhysicsFrame;
+    }
 
     private static async Task Frames(int count)
     {
