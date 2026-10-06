@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3]
+[gd_scene load_steps=51 format=3]
 
 [ext_resource type="PackedScene" path="res://Scenes/Components/player.tscn" id="1_player"]
 [ext_resource type="Script" path="res://Scripts/Core/DependencyInjection/AutoServiceProvider.cs" id="2_provider"]
@@ -10,6 +10,24 @@
 [ext_resource type="Resource" path="res://Data/Shop/BackofficeCatalog.tres" id="8_backoffice_catalog"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/SaleRegister.cs" id="9_sale_register"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Shelf.tscn" id="10_shelf"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/CardShader.tscn" id="11_card_scene"]
+[ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardSpawner.cs" id="12_card_spawner"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Common.tres" id="13_common"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Uncommon.tres" id="14_uncommon"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Rare.tres" id="15_rare"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Epic.tres" id="16_epic"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Legendary.tres" id="17_legendary"]
+[ext_resource type="Resource" path="res://Assets/CardBases/Weapon.tres" id="18_weapon"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Solidum.tres" id="19_solidum"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Febris.tres" id="20_febris"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Ordinem.tres" id="21_ordinem"]
+[ext_resource type="Script" path="res://Scripts/Core/ServiceProviders/CardServiceProvider.cs" id="22_card_provider"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Lumines.tres" id="23_lumines"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Varias.tres" id="24_varias"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Inertiae.tres" id="25_inertiae"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Subsidium.tres" id="26_subsidium"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Spatium.tres" id="27_spatium"]
+[ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardSpawningService.cs" id="28_card_spawning"]
 
 [sub_resource type="StandardMaterial3D" id="StorefrontMaterial"]
 albedo_color = Color(0.18, 0.32, 0.5, 1)
@@ -166,6 +184,7 @@ modulate = Color(0.8, 1, 0.7, 1)
 position = Vector3(-2, 0, 8)
 
 [node name="Cards" type="Node3D" parent="World"]
+script = ExtResource("12_card_spawner")
 
 [node name="Backoffice" type="Node3D" parent="World"]
 
@@ -343,6 +362,17 @@ script = ExtResource("6_money_service")
 script = ExtResource("7_ordering_service")
 DeliveryPoint = NodePath("../../World/Markers/DeliveryPoint")
 SpawnRoot = NodePath("../../World")
+
+[node name="CardServiceProvider" type="Node" parent="Services" node_paths=PackedStringArray("CardRoot")]
+script = ExtResource("22_card_provider")
+RarityVisuals = Array[Object]([ExtResource("13_common"), ExtResource("14_uncommon"), ExtResource("15_rare"), ExtResource("16_epic"), ExtResource("17_legendary")])
+BaseCardTypes = Array[Object]([ExtResource("18_weapon")])
+GemVisuals = Array[Object]([ExtResource("19_solidum"), ExtResource("20_febris"), ExtResource("21_ordinem"), ExtResource("23_lumines"), ExtResource("24_varias"), ExtResource("25_inertiae"), ExtResource("26_subsidium"), ExtResource("27_spatium")])
+CardRoot = NodePath("../../World/Cards")
+
+[node name="SpawningService" type="Node" parent="Services"]
+script = ExtResource("28_card_spawning")
+CardScene = ExtResource("11_card_scene")
 
 [node name="OrderUi" type="CanvasLayer" parent="."]
 script = ExtResource("5_order_terminal_ui")
