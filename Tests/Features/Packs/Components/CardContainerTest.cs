@@ -15,7 +15,13 @@ public class CardContainerTest
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
+    private const string CardScene = "res://Scenes/Components/CardShader.tscn";
+    private const float StorageWallHeight = 3.75f;
     private const ulong Seed = 777;
+
+    // The storage room of ShopScene (x 0..8, z -8..0) and the box delivery marker inside it.
+    private static readonly Rect2 StorageRoom = new(0f, -8f, 8f, 8f);
+    private static readonly Vector3 StorageDelivery = new(4f, 0f, -5.5f);
     private const int GenerousFrameBudget = 200;
     private const int OpenFrames = 12;
 
@@ -205,36 +211,65 @@ public class CardContainerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void OpenedItemsLandOnADistinctGridWellApartSoNothingOverlapsOrIsFlung()
+    public static void OpenedItemsStackInAColumnStraightAboveTheContainer()
     {
-        var offsets = Enumerable.Range(0, CardContainerLayout.ItemsPerContainer).Select(i => CardContainer.SpawnOffset(i, CardContainerKind.Booster))
-            .ToArray();
+        foreach (var kind in new[] { CardContainerKind.Box, CardContainerKind.Pack, CardContainerKind.Booster })
+        {
+            var offsets = Enumerable.Range(0, CardContainerLayout.ItemsPerContainer).Select(i => CardContainer.SpawnOffset(i, kind)).ToArray();
 
-        AssertThat(offsets.Distinct().Count()).IsEqual(offsets.Length);
-        foreach (var offset in offsets)
-            AssertThat(offset.Y).IsEqual(CardContainer.LiftHeight);
-        for (var a = 0; a < offsets.Length; a++)
-        for (var b = a + 1; b < offsets.Length; b++)
-            AssertBool(offsets[a].DistanceTo(offsets[b]) >= CardContainer.SpacingX - 0.001f).IsTrue();
+            AssertThat(offsets[0].Y).IsEqual(CardContainer.LiftHeight);
+            foreach (var offset in offsets)
+                AssertBool(offset.X == 0f && offset.Z == 0f).IsTrue();
+            for (var i = 1; i < offsets.Length; i++)
+                AssertThat(offsets[i].Y - offsets[i - 1].Y).IsEqualApprox(CardContainer.StackStep(kind), 0.0001f);
+        }
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void SiblingContainersOpenOntoDisjointSpotsAtEveryLevel()
+    public static void EachStepClearsTheHeightOfTheItemBelowSoNoneSpawnsInsideAnother()
     {
-        // Two neighbouring containers of a level sit one grid step apart; their children must not share a spot.
-        foreach (var kind in new[] { CardContainerKind.Box, CardContainerKind.Pack })
+        var children = new Dictionary<CardContainerKind, string>
         {
-            var children = new List<Vector3>();
-            for (var index = 0; index < CardContainerLayout.ItemsPerContainer; index++)
-            {
-                var containerOrigin = CardContainer.SpawnOffset(index, kind);
-                var childKind = CardContainerLayout.ChildKind(kind)!.Value;
-                for (var child = 0; child < CardContainerLayout.ItemsPerContainer; child++)
-                    children.Add(containerOrigin + CardContainer.SpawnOffset(child, childKind));
-            }
+            [CardContainerKind.Box] = PackScene,
+            [CardContainerKind.Pack] = BoosterScene,
+            [CardContainerKind.Booster] = CardScene
+        };
 
-            AssertThat(children.Distinct().Count()).IsEqual(children.Count);
+        foreach (var (kind, childScene) in children)
+        {
+            var child = GD.Load<PackedScene>(childScene).Instantiate<Node3D>();
+            var collider = child.FindChildren("*", nameof(CollisionShape3D), true, false).OfType<CollisionShape3D>().First();
+            var height = ((BoxShape3D)collider.Shape).Size.Y;
+            child.Free();
+
+            AssertBool(CardContainer.StackStep(kind) > height).IsTrue();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void AFullBoxOpenedAtTheStorageDeliveryPointStaysInsideTheStorageRoom()
+    {
+        // Every item rests where it spawned before it is opened, so each level's column starts on the floor
+        // under the one before. The tallest column must stay under the storage walls.
+        var positions = new List<Vector3>();
+        var level = new List<Vector3> { StorageDelivery };
+        foreach (var kind in new[] { CardContainerKind.Box, CardContainerKind.Pack, CardContainerKind.Booster })
+        {
+            var next = new List<Vector3>();
+            foreach (var container in level)
+            for (var i = 0; i < CardContainerLayout.ItemsPerContainer; i++)
+                next.Add(container + CardContainer.SpawnOffset(i, kind));
+            positions.AddRange(next);
+            level = next.Select(p => new Vector3(p.X, StorageDelivery.Y, p.Z)).ToList();
+        }
+
+        AssertThat(positions.Count).IsEqual(8 + 64 + CardContainerLayout.CardsPerBox);
+        foreach (var position in positions)
+        {
+            AssertBool(StorageRoom.HasPoint(new Vector2(position.X, position.Z))).IsTrue();
+            AssertBool(position.Y < StorageWallHeight).IsTrue();
         }
     }
 
