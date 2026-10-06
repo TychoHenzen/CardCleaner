@@ -1,4 +1,4 @@
-[gd_scene load_steps=58 format=3]
+[gd_scene load_steps=59 format=3]
 
 [ext_resource type="PackedScene" path="res://Scenes/Components/player.tscn" id="1_player"]
 [ext_resource type="Script" path="res://Scripts/Core/DependencyInjection/AutoServiceProvider.cs" id="2_provider"]
@@ -29,6 +29,7 @@
 [ext_resource type="Resource" path="res://Assets/CardGems/Spatium.tres" id="27_spatium"]
 [ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardSpawningService.cs" id="28_card_spawning"]
 [ext_resource type="Script" path="res://Scripts/Features/Portal/Components/WallSeam.cs" id="29_wall_seam"]
+[ext_resource type="PackedScene" path="res://Scenes/Graybox/WorkshopGraybox.tscn" id="30_workshop_graybox"]
 
 [sub_resource type="StandardMaterial3D" id="StorefrontMaterial"]
 albedo_color = Color(0.18, 0.32, 0.5, 1)
@@ -427,28 +428,8 @@ collision_layer = 0
 [node name="CollisionShape3D" type="CollisionShape3D" parent="World/BackofficeZone"]
 shape = SubResource("SeamZoneShape")
 
-[node name="PortalWorkshop" type="Node3D" parent="World"]
+[node name="PortalWorkshop" parent="World" instance=ExtResource("30_workshop_graybox")]
 position = Vector3(60, 0, 8)
-
-[node name="Floor" type="StaticBody3D" parent="World/PortalWorkshop"]
-position = Vector3(0, -0.1, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="World/PortalWorkshop/Floor"]
-shape = SubResource("FloorShape")
-
-[node name="Mesh" type="MeshInstance3D" parent="World/PortalWorkshop/Floor"]
-mesh = SubResource("BackofficeFloorMesh")
-
-[node name="AreaLabel" type="Label3D" parent="World/PortalWorkshop"]
-position = Vector3(0, 2.4, 0)
-text = "WORKSHOP ENTRY"
-font_size = 48
-outline_size = 8
-modulate = Color(0.7, 0.9, 1, 1)
-
-[node name="WorkshopEntry" type="Marker3D" parent="World/PortalWorkshop"]
-position = Vector3(0, 1.2, 0)
-rotation_degrees = Vector3(0, 180, 0)
 
 [node name="Seam" type="Node3D" parent="World/Markers/SeamLocation" node_paths=PackedStringArray("Zone", "PlayerHolder", "Player", "WorkshopEntry", "Glow", "Door", "Hum")]
 script = ExtResource("29_wall_seam")
