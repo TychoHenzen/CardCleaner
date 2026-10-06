@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3]
+[gd_scene load_steps=34 format=3]
 
 [ext_resource type="PackedScene" path="res://Scenes/Components/player.tscn" id="1_player"]
 [ext_resource type="Script" path="res://Scripts/Core/DependencyInjection/AutoServiceProvider.cs" id="2_provider"]
@@ -8,6 +8,8 @@
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/MoneyService.cs" id="6_money_service"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/OrderingService.cs" id="7_ordering_service"]
 [ext_resource type="Resource" path="res://Data/Shop/BackofficeCatalog.tres" id="8_backoffice_catalog"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/SaleRegister.cs" id="9_sale_register"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Shelf.tscn" id="10_shelf"]
 
 [sub_resource type="StandardMaterial3D" id="StorefrontMaterial"]
 albedo_color = Color(0.18, 0.32, 0.5, 1)
@@ -84,10 +86,6 @@ size = Vector3(0.25, 2.4, 8)
 material = SubResource("PropMaterial")
 size = Vector3(3, 1.5, 1)
 
-[sub_resource type="BoxMesh" id="ShelfMesh"]
-material = SubResource("StoragePropMaterial")
-size = Vector3(2, 2.2, 1)
-
 [sub_resource type="BoxMesh" id="DeskMesh"]
 material = SubResource("OfficePropMaterial")
 size = Vector3(2.6, 1.2, 1.2)
@@ -101,6 +99,9 @@ ambient_light_energy = 0.8
 
 [sub_resource type="BoxShape3D" id="PcShape"]
 size = Vector3(2.6, 1.2, 1.2)
+
+[sub_resource type="BoxShape3D" id="CounterShape"]
+size = Vector3(3, 1.5, 1)
 
 [node name="ShopGraybox" type="Node3D"]
 
@@ -124,9 +125,24 @@ font_size = 48
 outline_size = 8
 modulate = Color(0.75, 0.9, 1, 1)
 
-[node name="CheckoutCounter" type="MeshInstance3D" parent="World/Storefront"]
+[node name="CheckoutCounter" type="StaticBody3D" parent="World/Storefront" node_paths=PackedStringArray("PlayerHolder", "StatusLabel")]
 position = Vector3(0, 0.75, -2.2)
+collision_layer = 4
+script = ExtResource("9_sale_register")
+PlayerHolder = NodePath("../../../Player/CardInteraction/CardHolder")
+StatusLabel = NodePath("StatusLabel")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Storefront/CheckoutCounter"]
+shape = SubResource("CounterShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="World/Storefront/CheckoutCounter"]
 mesh = SubResource("CounterMesh")
+
+[node name="StatusLabel" type="Label3D" parent="World/Storefront/CheckoutCounter"]
+position = Vector3(0, 1.2, 0)
+text = "Balance: -"
+font_size = 32
+outline_size = 6
 
 [node name="Storage" type="Node3D" parent="World"]
 
@@ -146,9 +162,10 @@ font_size = 48
 outline_size = 8
 modulate = Color(0.8, 1, 0.7, 1)
 
-[node name="Shelves" type="MeshInstance3D" parent="World/Storage"]
-position = Vector3(-2, 1.1, 8)
-mesh = SubResource("ShelfMesh")
+[node name="Shelves" parent="World/Storage" instance=ExtResource("10_shelf")]
+position = Vector3(-2, 0, 8)
+
+[node name="Cards" type="Node3D" parent="World"]
 
 [node name="Backoffice" type="Node3D" parent="World"]
 
