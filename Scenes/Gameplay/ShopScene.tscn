@@ -1,8 +1,8 @@
-[gd_scene load_steps=66 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/Workshop.tscn" id="Workshop"]
-[ext_resource type="Script" path="res://Scripts/Features/Portal/Components/WallSeam.cs" id="WallSeam"]
+[ext_resource type="PackedScene" path="res://Scenes/Portal/PortalDoorway.tscn" id="PortalDoorway"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/player.tscn" id="Player"]
 [ext_resource type="Script" path="res://Scripts/Core/DependencyInjection/AutoServiceProvider.cs" id="AutoServiceProvider"]
 [ext_resource type="Script" path="res://Scripts/Core/Data/GameSettings.cs" id="GameSettings"]
@@ -31,6 +31,7 @@
 [ext_resource type="Resource" path="res://Assets/CardGems/Spatium.tres" id="Card_16_r0o6j"]
 [ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardSpawningService.cs" id="Card_28_1ia11"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/SaleRegister.cs" id="SaleRegister"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/DeliveryMarker.cs" id="DeliveryMarker"]
 
 [sub_resource type="StandardMaterial3D" id="GrayMaterial"]
 albedo_color = Color(0.62, 0.62, 0.65, 1)
@@ -130,27 +131,6 @@ size = Vector3(1.2, 3.75, 0.3)
 [sub_resource type="BoxShape3D" id="Shape_8"]
 size = Vector3(1.5, 0.55, 0.3)
 
-[sub_resource type="StandardMaterial3D" id="SeamGlowMaterial"]
-transparency = 1
-shading_mode = 0
-albedo_color = Color(0.55, 0.85, 1, 0.8)
-emission_enabled = true
-emission = Color(0.4, 0.8, 1, 1)
-emission_energy_multiplier = 3.0
-
-[sub_resource type="QuadMesh" id="SeamGlowMesh"]
-size = Vector2(0.25, 3)
-
-[sub_resource type="StandardMaterial3D" id="SeamDoorMaterial"]
-albedo_color = Color(0.05, 0.1, 0.18, 1)
-emission_enabled = true
-emission = Color(0.3, 0.7, 1, 1)
-emission_energy_multiplier = 0.8
-
-[sub_resource type="BoxMesh" id="SeamDoorPanelMesh"]
-material = SubResource("SeamDoorMaterial")
-size = Vector3(1.6, 2.4, 0.06)
-
 [sub_resource type="BoxShape3D" id="BackofficeZoneShape"]
 size = Vector3(8, 4, 8)
 
@@ -159,6 +139,13 @@ size = Vector3(8, 4, 8)
 [node name="World" type="Node3D" parent="."]
 
 [node name="Storefront" type="Node3D" parent="World"]
+
+[node name="Sign" type="Label3D" parent="World/Storefront"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3, 6)
+billboard = 1
+text = "Storefront"
+font_size = 48
+outline_size = 8
 
 [node name="Floor" type="StaticBody3D" parent="World/Storefront"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, -0.1, 6)
@@ -301,6 +288,13 @@ mesh = SubResource("FloorBoxMesh")
 
 [node name="Storage" type="Node3D" parent="World"]
 
+[node name="Sign" type="Label3D" parent="World/Storage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 3, -4)
+billboard = 1
+text = "Storage"
+font_size = 48
+outline_size = 8
+
 [node name="Floor" type="StaticBody3D" parent="World/Storage"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.1, -4)
 
@@ -354,6 +348,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
 mesh = SubResource("FloorBoxMesh")
 
 [node name="Backoffice" type="Node3D" parent="World"]
+
+[node name="Sign" type="Label3D" parent="World/Backoffice"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3, -4)
+billboard = 1
+text = "Backoffice"
+font_size = 48
+outline_size = 8
 
 [node name="Floor" type="StaticBody3D" parent="World/Backoffice"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, -0.1, -4)
@@ -928,6 +929,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1.5, -7.8)
 
 [node name="DeliveryPoint" type="Marker3D" parent="World/Markers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -5.5)
+script = ExtResource("DeliveryMarker")
+MaxStackHeight = 3.6
 
 [node name="ShelfSlotsArea" type="Marker3D" parent="World/Markers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 7)
@@ -1041,37 +1044,16 @@ shape = SubResource("BackofficeZoneShape")
 [node name="Workshop" parent="World" instance=ExtResource("Workshop")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 0, -4)
 
-[node name="Seam" type="Node3D" parent="World/Markers/SeamLocation" node_paths=PackedStringArray("Zone", "PlayerHolder", "Player", "WorkshopEntry", "Glow", "Door", "Hum")]
-script = ExtResource("WallSeam")
+[node name="Seam" parent="World/Markers/SeamLocation" node_paths=PackedStringArray("Zone", "PlayerHolder", "Player", "Exit") instance=ExtResource("PortalDoorway")]
 Zone = NodePath("../../../BackofficeZone")
 PlayerHolder = NodePath("../../../../Player/CardInteraction/CardHolder")
 Player = NodePath("../../../../Player")
-WorkshopEntry = NodePath("../../../Workshop/WorkshopEntry")
-Glow = NodePath("Glow")
-Door = NodePath("Door")
-Hum = NodePath("Hum")
-GlowTexturePath = "res://Assets/Synty/ParticleFx/Generic_Circle_Soft_01.png"
+Exit = NodePath("../../../Workshop/WorkshopEntry")
 
-[node name="Glow" type="MeshInstance3D" parent="World/Markers/SeamLocation/Seam"]
-visible = false
-material_override = SubResource("SeamGlowMaterial")
-mesh = SubResource("SeamGlowMesh")
+[node name="ShopReturn" type="Marker3D" parent="World/Markers"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 12, 1.5, -6)
 
-[node name="Hum" type="AudioStreamPlayer3D" parent="World/Markers/SeamLocation/Seam"]
-volume_db = -12.0
-unit_size = 4.0
-
-[node name="Door" type="Node3D" parent="World/Markers/SeamLocation/Seam"]
-visible = false
-transform = Transform3D(0.05, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-
-[node name="DoorPanel" type="MeshInstance3D" parent="World/Markers/SeamLocation/Seam/Door"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0.03)
-mesh = SubResource("SeamDoorPanelMesh")
-
-[node name="DoorArt" type="Node3D" parent="World/Markers/SeamLocation/Seam/Door" node_paths=PackedStringArray("Placeholder")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.54, -1.5, 0.15)
-script = ExtResource("ShopArtSlot")
-ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_Archway_01.fbx"
-ArtScale = 60.0
-Placeholder = NodePath("../DoorPanel")
+[node name="ReturnSeam" parent="World/Workshop" node_paths=PackedStringArray("PlayerHolder", "Player", "Exit")]
+PlayerHolder = NodePath("../../../Player/CardInteraction/CardHolder")
+Player = NodePath("../../../Player")
+Exit = NodePath("../../Markers/ShopReturn")

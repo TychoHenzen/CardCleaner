@@ -25,7 +25,7 @@ public class OrderTerminalTest
     public void Setup()
     {
         _world = new Node3D();
-        var marker = new Marker3D();
+        var marker = new DeliveryMarker();
         _world.AddChild(marker);
         _money = new MoneyService { StartingBalance = StartingBalance };
         _ordering = new OrderingService { DeliveryPoint = marker, SpawnRoot = _world, Money = _money };

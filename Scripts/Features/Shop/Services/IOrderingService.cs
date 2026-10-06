@@ -1,5 +1,5 @@
+using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Services;
 
@@ -11,5 +11,5 @@ public interface IOrderingService
 {
     /// <param name="item">What to buy.</param>
     /// <param name="deliveryPoint">Where it appears. Null uses the service's own default delivery point.</param>
-    OrderResult Order(OrderItem item, Marker3D? deliveryPoint = null);
+    OrderResult Order(OrderItem item, DeliveryMarker? deliveryPoint = null);
 }

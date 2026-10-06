@@ -43,11 +43,11 @@ public class ShopWorkshopSceneContractTest
     {
         var controller = _workshop.GetNode<DeckBuilderController>("DeckbuilderController");
 
-        AssertSame(controller.AbilityDeckSlot, _workshop.GetNode("DeckSlot"));
-        AssertSame(controller.MapCardSlot, _workshop.GetNode("CardSlot"));
-        AssertSame(controller.ActivateButton, _workshop.GetNode("Button/StaticBody3D"));
-        AssertSame(controller.WorldTileMapScreenScene, _workshop.GetNode("SimpleTileMapScreen"));
-        AssertSame(controller.IrregularMapScreen, _workshop.GetNode("IrregularTileMapScreen"));
+        AssertSame(controller.AbilityDeckSlot, _workshop.GetNode("Cabinet/Assembly/DeckSlot"));
+        AssertSame(controller.MapCardSlot, _workshop.GetNode("Cabinet/Assembly/CardSlot"));
+        AssertSame(controller.ActivateButton, _workshop.GetNode("Cabinet/Assembly/Button/StaticBody3D"));
+        AssertSame(controller.WorldTileMapScreenScene, _workshop.GetNode("Cabinet/SimpleTileMapScreen"));
+        AssertSame(controller.IrregularMapScreen, _workshop.GetNode("Cabinet/IrregularTileMapScreen"));
         AssertThat(controller.MapType).IsEqual(MapGenerationType.IrregularMesh);
     }
 
@@ -57,7 +57,7 @@ public class ShopWorkshopSceneContractTest
     {
         var seeder = _workshop.GetNode<CreditCardSeeder>("CreditCardSeeder");
 
-        AssertSame(seeder.Slot, _workshop.GetNode("DeckSlot"));
+        AssertSame(seeder.Slot, _workshop.GetNode("Cabinet/Assembly/DeckSlot"));
         AssertSame(seeder.SpawnParent, _workshop);
     }
 
@@ -66,7 +66,8 @@ public class ShopWorkshopSceneContractTest
     public void NoWiredNodePathIsNull()
     {
         var checkedPaths = 0;
-        foreach (var node in OwnedNodes())
+        // The return doorway's player and exit live in the shop scene, which wires them; see the test below.
+        foreach (var node in OwnedNodes().Where(n => n is not WallSeam))
         {
             foreach (var property in WiredNodeProperties(node))
             {
@@ -122,7 +123,27 @@ public class ShopWorkshopSceneContractTest
         {
             var seam = shop.GetNode<WallSeam>("World/Markers/SeamLocation/Seam");
 
-            AssertSame(seam.WorkshopEntry, shop.GetNode("World/Workshop/WorkshopEntry"));
+            AssertSame(seam.Exit, shop.GetNode("World/Workshop/WorkshopEntry"));
+        }
+        finally
+        {
+            shop.Free();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ReturnDoorwayIsAlwaysOpenAndLeadsBackToTheBackoffice()
+    {
+        var shop = GD.Load<PackedScene>(ShopScenePath).Instantiate<Node3D>();
+        try
+        {
+            var back = shop.GetNode<WallSeam>("World/Workshop/ReturnSeam");
+
+            AssertBool(back.AlwaysOpen).IsTrue();
+            AssertSame(back.Exit, shop.GetNode("World/Markers/ShopReturn"));
+            AssertSame(back.Player, shop.GetNode("Player"));
+            AssertSame(back.PlayerHolder, shop.GetNode("Player/CardInteraction/CardHolder"));
         }
         finally
         {

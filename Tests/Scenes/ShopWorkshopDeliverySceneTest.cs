@@ -93,7 +93,7 @@ public class ShopWorkshopDeliverySceneTest
     [TestCategory("Unit")]
     public void TallestItemInTheSingleLayerClearsTheCeiling()
     {
-        var ceiling = _workshop.GetNode<StaticBody3D>("Room/Ceiling");
+        var ceiling = _workshop.GetNode<StaticBody3D>("WorkshopGrid/Ceiling");
         var shape = (BoxShape3D)ceiling.GetNode<CollisionShape3D>("CollisionShape3D").Shape;
         var underside = ceiling.GlobalPosition.Y - shape.Size.Y / 2f;
 

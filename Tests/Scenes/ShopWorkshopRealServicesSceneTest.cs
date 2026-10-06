@@ -48,7 +48,7 @@ public class ShopWorkshopRealServicesSceneTest
         }
 
         ServiceLocator.ExecutePendingCallbacks();
-        _shop.GetNode<IrregularWorldMapScreen>("World/Workshop/IrregularTileMapScreen").MeshRings = SmallMeshRings;
+        _shop.GetNode<IrregularWorldMapScreen>("World/Workshop/Cabinet/IrregularTileMapScreen").MeshRings = SmallMeshRings;
         await WorkshopSceneRig.Settle();
     }
 
@@ -75,8 +75,8 @@ public class ShopWorkshopRealServicesSceneTest
     [TestCategory("Unit")]
     public void RealSpawnerSeatsTheCreditCardInTheDeckHolderOnly()
     {
-        var deck = _shop.GetNode<DeckSlot>("World/Workshop/DeckSlot");
-        var cards = _shop.GetNode<DeckSlot>("World/Workshop/CardSlot");
+        var deck = _shop.GetNode<DeckSlot>("World/Workshop/Cabinet/Assembly/DeckSlot");
+        var cards = _shop.GetNode<DeckSlot>("World/Workshop/Cabinet/Assembly/CardSlot");
 
         AssertThat(deck.Cards.Count).IsEqual(1);
         AssertBool(cards.HasCards).IsFalse();
@@ -87,9 +87,9 @@ public class ShopWorkshopRealServicesSceneTest
     public async Task SecondCardLightsTheButtonAndPressingItStartsTheSession()
     {
         var workshop = _shop.GetNode<Node3D>("World/Workshop");
-        var button = workshop.GetNode<InteractableButton>("Button/StaticBody3D");
-        var cards = workshop.GetNode<DeckSlot>("CardSlot");
-        var screen = workshop.GetNode<IrregularWorldMapScreen>("IrregularTileMapScreen");
+        var button = workshop.GetNode<InteractableButton>("Cabinet/Assembly/Button/StaticBody3D");
+        var cards = workshop.GetNode<DeckSlot>("Cabinet/Assembly/CardSlot");
+        var screen = workshop.GetNode<IrregularWorldMapScreen>("Cabinet/IrregularTileMapScreen");
         AssertBool(button.Enabled).IsFalse();
 
         var card = ShopTestCards.Create(new CardSignature { Febris = 0.4f });
@@ -102,7 +102,7 @@ public class ShopWorkshopRealServicesSceneTest
         await WorkshopSceneRig.Settle();
 
         AssertBool(screen.IsInitialized).IsTrue();
-        AssertBool(workshop.GetNode<DeckSlot>("DeckSlot").HasCards).IsFalse();
+        AssertBool(workshop.GetNode<DeckSlot>("Cabinet/Assembly/DeckSlot").HasCards).IsFalse();
         AssertBool(cards.HasCards).IsFalse();
     }
 }

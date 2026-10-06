@@ -14,6 +14,7 @@ namespace CardCleaner.Tests.Features.Workshop.Models;
 [RequireGodotRuntime]
 public class WorkshopCatalogTest
 {
+    private const string CabinetAssemblyPath = "res://Scenes/Workshop/CabinetAssembly.tscn";
     private const string CatalogPath = "res://Data/Workshop/WorkshopCatalog.tres";
     private const string ShopCatalogPath = "res://Data/Shop/BackofficeCatalog.tres";
     private const string ConveyorId = "conveyor";
@@ -72,6 +73,19 @@ public class WorkshopCatalogTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void OrderedCabinetIsTheSameAssemblyAsTheWorkshopCabinet()
+    {
+        var cabinet = _catalog.Items.Single(i => i.Id == "arcade_cabinet").Scene!.Instantiate<Node3D>();
+        AddNode(cabinet);
+
+        var assembly = cabinet.GetNode<Node3D>("Assembly");
+        AssertThat(assembly.SceneFilePath).IsEqual(CabinetAssemblyPath);
+        foreach (var part in new[] { "DeckSlot", "CardSlot", "Button/StaticBody3D", "Wires", "CabinetArt" })
+            AssertThat(assembly.GetNodeOrNull(part)).IsNotNull();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void EveryItemSceneIsAPlaceableNodeWithAnArtSlotAndPlaceholderFallback()
     {
         foreach (var item in _catalog.Items)
@@ -79,7 +93,7 @@ public class WorkshopCatalogTest
             var instance = item.Scene!.Instantiate<Node3D>();
             AddNode(instance);
 
-            var slot = instance.GetNode<ShopArtSlot>("Art");
+            var slot = ArtSlotOf(instance);
             AssertThat(slot.Placeholder).IsNotNull();
             AssertBool(slot.ArtLoaded != slot.Placeholder!.Visible).IsTrue();
         }
@@ -120,7 +134,7 @@ public class WorkshopCatalogTest
         foreach (var item in _catalog.Items)
         {
             var instance = item.Scene!.Instantiate<Node3D>();
-            var slot = instance.GetNode<ShopArtSlot>("Art");
+            var slot = ArtSlotOf(instance);
             AssertBool(slot.ArtPath.StartsWith(PackPrefix)).IsTrue();
             AssertBool(SyntyManifest.ListsTarget(slot.ArtPath[PackPrefix.Length..])).IsTrue();
             instance.Free();
@@ -134,7 +148,7 @@ public class WorkshopCatalogTest
         foreach (var item in _catalog.Items)
         {
             var instance = item.Scene!.Instantiate<Node3D>();
-            var slot = instance.GetNode<ShopArtSlot>("Art");
+            var slot = ArtSlotOf(instance);
             slot.ArtPath = PackPrefix + "DoesNotExist/Missing.fbx";
             AddNode(instance);
 
@@ -150,7 +164,7 @@ public class WorkshopCatalogTest
         foreach (var item in _catalog.Items)
         {
             var instance = item.Scene!.Instantiate<Node3D>();
-            var slot = instance.GetNode<ShopArtSlot>("Art");
+            var slot = ArtSlotOf(instance);
             AddNode(instance);
 
             var imported = ResourceLoader.Exists(slot.ArtPath);
@@ -158,4 +172,8 @@ public class WorkshopCatalogTest
             AssertBool(slot.Placeholder!.Visible).IsEqual(!imported);
         }
     }
+
+    // The item's own art: directly under the item, or inside the cabinet assembly it is built from.
+    private static ShopArtSlot ArtSlotOf(Node3D item) =>
+        item.FindChildren("*", nameof(Node3D), true, false).OfType<ShopArtSlot>().First();
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Components;
@@ -8,11 +7,10 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Services;
 
 /// <summary>
-///     Charges the <see cref="IMoneyService" /> and instances the ordered scene at the delivery marker.
-///     Successive orders land in successive grid slots so items never spawn inside each other. Each delivery
-///     point keeps its own slots, so two terminals with different markers never share a grid. A plain marker stacks
-///     layer after layer; a <see cref="DeliveryMarker" /> tracks its own occupancy, fills its ground slots first, then stacks
-///     on the lowest stack while the item fits under the marker's clearance, and refuses only when none does.
+///     Charges the <see cref="IMoneyService" /> and instances the ordered scene at a <see cref="DeliveryMarker" />.
+///     The marker decides where each delivery goes: it tracks its own occupancy, fills its ground slots first, then
+///     stacks on the lowest stack while the item fits under its clearance, and refuses only when none does. Each
+///     marker keeps its own slots, so two terminals with different markers never share a grid.
 /// </summary>
 [Service(ServiceLifetime.Singleton, typeof(IOrderingService))]
 public partial class OrderingService : Node, IOrderingService
@@ -26,15 +24,11 @@ public partial class OrderingService : Node, IOrderingService
     /// <summary>Deeper than the deepest orderable item (the 1 m shelf).</summary>
     public const float SlotSpacingZ = 1.5f;
 
-    public const float LayerHeight = 1.5f;
+    private const int SlotCount = SlotColumns * SlotRows;
 
-    private const int SlotsPerLayer = SlotColumns * SlotRows;
-
-    private readonly Dictionary<ulong, int> _deliveredPerPoint = [];
-
-    /// <summary>Marker where ordered items appear when the ordering terminal names none of its own.</summary>
+    /// <summary>Where ordered items appear when the ordering terminal names no area of its own.</summary>
     [Export]
-    public Marker3D? DeliveryPoint { get; set; }
+    public DeliveryMarker? DeliveryPoint { get; set; }
 
     /// <summary>Node the spawned items are added to. Falls back to the delivery point's parent.</summary>
     [Export]
@@ -51,7 +45,7 @@ public partial class OrderingService : Node, IOrderingService
         ServiceLocator.Get<IMoneyService>(money => Money = money);
     }
 
-    public OrderResult Order(OrderItem item, Marker3D? deliveryPoint = null)
+    public OrderResult Order(OrderItem item, DeliveryMarker? deliveryPoint = null)
     {
         if (item.Scene == null || item.Price <= 0)
             return Fail(item, OrderStatus.InvalidItem);
@@ -70,7 +64,7 @@ public partial class OrderingService : Node, IOrderingService
             return Fail(item, OrderStatus.InvalidItem);
         }
 
-        var placement = NextPlacement(point, instance);
+        var placement = point.FindPlacement(SlotCount, SlotOffset, new Vector2(SlotSpacingX, SlotSpacingZ), instance);
         if (placement is not { } place)
         {
             instance.Free();
@@ -85,45 +79,22 @@ public partial class OrderingService : Node, IOrderingService
 
         parent.AddChild(instance);
         instance.GlobalPosition = point.GlobalPosition + SlotOffset(place.Slot) + Vector3.Up * place.Lift;
-        RecordDelivery(point, place.Slot, instance);
+        point.Track(instance);
         DeliveredCount++;
 
         ILog.Print($"Order succeeded: {item.Id} for {item.Price}, balance now {Money.Balance}");
         return new OrderResult(OrderStatus.Success, instance);
     }
 
-    /// <summary>
-    ///     Offset from the delivery point for the n-th delivery: a grid centred on the marker, then
-    ///     the same grid one layer higher once it is full.
-    /// </summary>
+    /// <summary>Offset from the delivery point of slot <paramref name="index" />: a grid centred on the marker.</summary>
     public static Vector3 SlotOffset(int index)
     {
-        var perLayer = SlotColumns * SlotRows;
-        var layer = index / perLayer;
-        var cell = index % perLayer;
-        var column = cell % SlotColumns;
-        var row = cell / SlotColumns;
+        var column = index % SlotColumns;
+        var row = index / SlotColumns;
         return new Vector3(
             (column - (SlotColumns - 1) / 2f) * SlotSpacingX,
-            layer * LayerHeight,
+            0f,
             (row - (SlotRows - 1) / 2f) * SlotSpacingZ);
-    }
-
-    /// <summary>
-    ///     Where the next delivery at <paramref name="point" /> goes, or null when a <see cref="DeliveryMarker" />
-    ///     has no clearance left. Other markers stack layer after layer and never report full.
-    /// </summary>
-    private Placement? NextPlacement(Marker3D point, Node3D instance) =>
-        point is DeliveryMarker area
-            ? area.FindPlacement(SlotsPerLayer, SlotOffset, new Vector2(SlotSpacingX, SlotSpacingZ), instance)
-            : new Placement(_deliveredPerPoint.GetValueOrDefault(point.GetInstanceId()), 0f);
-
-    private void RecordDelivery(Marker3D point, int slot, Node3D instance)
-    {
-        if (point is DeliveryMarker area)
-            area.Track(instance);
-        else
-            _deliveredPerPoint[point.GetInstanceId()] = slot + 1;
     }
 
     private static OrderResult Fail(OrderItem item, OrderStatus status)
