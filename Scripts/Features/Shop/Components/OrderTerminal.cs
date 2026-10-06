@@ -27,6 +27,10 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
     [Export]
     public OrderCatalog? Catalog { get; set; }
 
+    /// <summary>Where this terminal's orders appear. Null falls back to the ordering service's own delivery point.</summary>
+    [Export]
+    public Marker3D? DeliveryPoint { get; set; }
+
     [Export]
     public OrderTerminalUi? Ui { get; set; }
 
@@ -159,11 +163,12 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
             return;
         }
 
-        var result = _ordering.Order(item);
+        var result = _ordering.Order(item, DeliveryPoint);
         Ui.ShowMessage(result.Status switch
         {
             OrderStatus.Success => $"Ordered {item.DisplayName}. It is at the delivery point.",
             OrderStatus.InsufficientFunds => $"Not enough money for {item.DisplayName}.",
+            OrderStatus.DeliveryFull => "The delivery area is full. There is no room left for another item.",
             _ => $"{item.DisplayName} cannot be ordered right now."
         });
     }

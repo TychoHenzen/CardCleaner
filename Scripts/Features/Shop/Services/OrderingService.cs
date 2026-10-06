@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
@@ -7,7 +9,10 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 
 /// <summary>
 ///     Charges the <see cref="IMoneyService" /> and instances the ordered scene at the delivery marker.
-///     Successive orders land in successive grid slots so items never spawn inside each other.
+///     Successive orders land in successive grid slots so items never spawn inside each other. Each delivery
+///     point keeps its own slots, so two terminals with different markers never share a grid. A plain marker stacks
+///     layer after layer; a <see cref="DeliveryMarker" /> tracks its own occupancy, fills its ground slots first, then stacks
+///     on the lowest stack while the item fits under the marker's clearance, and refuses only when none does.
 /// </summary>
 [Service(ServiceLifetime.Singleton, typeof(IOrderingService))]
 public partial class OrderingService : Node, IOrderingService
@@ -23,7 +28,11 @@ public partial class OrderingService : Node, IOrderingService
 
     public const float LayerHeight = 1.5f;
 
-    /// <summary>Marker where ordered items appear.</summary>
+    private const int SlotsPerLayer = SlotColumns * SlotRows;
+
+    private readonly Dictionary<ulong, int> _deliveredPerPoint = [];
+
+    /// <summary>Marker where ordered items appear when the ordering terminal names none of its own.</summary>
     [Export]
     public Marker3D? DeliveryPoint { get; set; }
 
@@ -34,7 +43,7 @@ public partial class OrderingService : Node, IOrderingService
     /// <summary>Resolved from the service locator at startup; assignable directly in tests.</summary>
     public IMoneyService? Money { get; set; }
 
-    /// <summary>How many items this service has delivered so far.</summary>
+    /// <summary>How many items this service has delivered so far, across every delivery point.</summary>
     public int DeliveredCount { get; private set; }
 
     public override void _Ready()
@@ -42,21 +51,30 @@ public partial class OrderingService : Node, IOrderingService
         ServiceLocator.Get<IMoneyService>(money => Money = money);
     }
 
-    public OrderResult Order(OrderItem item)
+    public OrderResult Order(OrderItem item, Marker3D? deliveryPoint = null)
     {
         if (item.Scene == null || item.Price <= 0)
             return Fail(item, OrderStatus.InvalidItem);
 
-        var parent = SpawnRoot ?? DeliveryPoint?.GetParent();
-        if (DeliveryPoint == null || parent == null || Money == null)
+        var point = deliveryPoint ?? DeliveryPoint;
+        var parent = SpawnRoot ?? point?.GetParent();
+        if (point == null || parent == null || Money == null)
             return Fail(item, OrderStatus.NoDeliveryPoint);
 
-        // Build the item first: an unusable scene must be rejected before the player is charged.
+        // Build the item first: an unusable scene must be rejected before the player is charged, and a
+        // delivery area needs its size to find clearance.
         var built = item.Scene.Instantiate();
         if (built is not Node3D instance)
         {
             built.Free();
             return Fail(item, OrderStatus.InvalidItem);
+        }
+
+        var placement = NextPlacement(point, instance);
+        if (placement is not { } place)
+        {
+            instance.Free();
+            return Fail(item, OrderStatus.DeliveryFull);
         }
 
         if (!Money.TrySpend(item.Price))
@@ -66,7 +84,8 @@ public partial class OrderingService : Node, IOrderingService
         }
 
         parent.AddChild(instance);
-        instance.GlobalPosition = DeliveryPoint.GlobalPosition + SlotOffset(DeliveredCount);
+        instance.GlobalPosition = point.GlobalPosition + SlotOffset(place.Slot) + Vector3.Up * place.Lift;
+        RecordDelivery(point, place.Slot, instance);
         DeliveredCount++;
 
         ILog.Print($"Order succeeded: {item.Id} for {item.Price}, balance now {Money.Balance}");
@@ -88,6 +107,23 @@ public partial class OrderingService : Node, IOrderingService
             (column - (SlotColumns - 1) / 2f) * SlotSpacingX,
             layer * LayerHeight,
             (row - (SlotRows - 1) / 2f) * SlotSpacingZ);
+    }
+
+    /// <summary>
+    ///     Where the next delivery at <paramref name="point" /> goes, or null when a <see cref="DeliveryMarker" />
+    ///     has no clearance left. Other markers stack layer after layer and never report full.
+    /// </summary>
+    private Placement? NextPlacement(Marker3D point, Node3D instance) =>
+        point is DeliveryMarker area
+            ? area.FindPlacement(SlotsPerLayer, SlotOffset, new Vector2(SlotSpacingX, SlotSpacingZ), instance)
+            : new Placement(_deliveredPerPoint.GetValueOrDefault(point.GetInstanceId()), 0f);
+
+    private void RecordDelivery(Marker3D point, int slot, Node3D instance)
+    {
+        if (point is DeliveryMarker area)
+            area.Track(instance);
+        else
+            _deliveredPerPoint[point.GetInstanceId()] = slot + 1;
     }
 
     private static OrderResult Fail(OrderItem item, OrderStatus status)

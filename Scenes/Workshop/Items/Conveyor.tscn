@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://Scenes/Components/Conveyor_Straight.tscn" id="Belt"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+
+[node name="Conveyor" type="Node3D"]
+
+[node name="Belt" parent="." instance=ExtResource("Belt")]
+
+[node name="Art" type="Node3D" parent="." node_paths=PackedStringArray("Placeholder")]
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Prop_Tech_Conveyor_01.fbx"
+ArtScale = 38.0
+Placeholder = NodePath("../Belt/Untitled-1")
