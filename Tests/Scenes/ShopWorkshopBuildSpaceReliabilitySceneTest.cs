@@ -119,6 +119,21 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void GridCeilingMeetsTheRoomCeilingWithoutOverlappingIt()
+    {
+        var roomCeiling = _workshop.GetNode<Node3D>("Room/Ceiling");
+        var gridCeiling = _grid.GetNode<Node3D>("Ceiling");
+
+        var roomBounds = ShapeBounds(roomCeiling);
+        var gridBounds = ShapeBounds(gridCeiling);
+
+        AssertBool(roomBounds.Intersects(gridBounds)).IsFalse();
+        AssertBool(Mathf.Abs(roomBounds.End.X - gridBounds.Position.X) < GroundTolerance).IsTrue();
+        AssertBool(Mathf.Abs(roomBounds.Position.Y - gridBounds.Position.Y) < GroundTolerance).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void PlayerCapsuleFitsOnEveryClearCellOfTheReachableLayout()
     {
         var paths = new WorkshopGridPaths(_grid, ClearanceCells);
@@ -175,6 +190,13 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
     private static bool IsDoorwayThreshold(Vector2I cell)
     {
         return cell.X == ThresholdCellX - 1 && Mathf.Abs(cell.Y) < RoomHalfDepthCells;
+    }
+
+    private static Aabb ShapeBounds(Node3D body)
+    {
+        var shape = body.GetNode<CollisionShape3D>("CollisionShape3D");
+        var box = (BoxShape3D)shape.Shape;
+        return shape.GlobalTransform * new Aabb(-box.Size / 2f, box.Size);
     }
 
     private float? GroundHeightAt(Vector3 world)

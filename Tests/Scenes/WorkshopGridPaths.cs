@@ -47,6 +47,21 @@ public sealed class WorkshopGridPaths
 
     public IReadOnlySet<Vector2I> Clear => _clear;
 
+    /// <summary>
+    ///     Floor cells with no clear cell within <paramref name="clearanceCells" />: places that are walkable on
+    ///     paper but too tight for the player body, such as a hallway narrower than the capsule.
+    /// </summary>
+    public int CountFloorCellsTooTight(int clearanceCells)
+    {
+        var near = new HashSet<Vector2I>();
+        foreach (var cell in _clear)
+        for (var dx = -clearanceCells; dx <= clearanceCells; dx++)
+        for (var dz = -clearanceCells; dz <= clearanceCells; dz++)
+            near.Add(new Vector2I(cell.X + dx, cell.Y + dz));
+
+        return Floor.Count(c => !near.Contains(c));
+    }
+
     public Vector2I CellOf(Vector3 world)
     {
         var cell = _grid.WorldToCell(world);

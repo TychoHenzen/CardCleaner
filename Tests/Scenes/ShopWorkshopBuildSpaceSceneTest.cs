@@ -24,6 +24,10 @@ public class ShopWorkshopBuildSpaceSceneTest
     private const float WallThickness = 0.4f;
     private const float DoorwayHalfWidth = 2f;
     private const float WallProbeHeight = 1f;
+    // The wall pack art sits about 0.11 m past the 4 m panel edge; that sliver is visual only.
+    private const float PanelArtOverhang = 0.2f;
+    private const float DoorwayBottom = 0.1f;
+    private const float DoorwayTop = 3.9f;
     private const double WalkTimeScale = 4.0;
     private const float MaxHeightVariation = 0.05f;
     private const float MaxAirborneShare = 0.01f;
@@ -82,6 +86,36 @@ public class ShopWorkshopBuildSpaceSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void GridDoesNotOverlapAnyShopInteriorGeometry()
+    {
+        var cells = _grid.GetUsedCells().Select(c => _grid.CellToWorld(c)).ToList();
+        var half = _grid.CellSize / 2f;
+        var low = cells.Aggregate((a, b) => new Vector3(Mathf.Min(a.X, b.X), Mathf.Min(a.Y, b.Y), Mathf.Min(a.Z, b.Z))) - half;
+        var high = cells.Aggregate((a, b) => new Vector3(Mathf.Max(a.X, b.X), Mathf.Max(a.Y, b.Y), Mathf.Max(a.Z, b.Z))) + half;
+        var gridBounds = new Aabb(low, high - low).Merge(WorldBounds(_grid.GetNode<MeshInstance3D>("Ceiling/Mesh")));
+
+        var shopMeshes = _shop.FindChildren("*", nameof(MeshInstance3D), true, false)
+            .OfType<MeshInstance3D>()
+            .Where(m => !_workshop.IsAncestorOf(m) && m.Mesh != null);
+
+        foreach (var mesh in shopMeshes)
+            AssertBool(gridBounds.Intersects(WorldBounds(mesh))).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RemainingEastWallPanelsLeaveTheDoorwayFree()
+    {
+        var doorway = new Aabb(
+            new Vector3(_workshop.GlobalPosition.X + RoomEastEdge - 0.5f, DoorwayBottom, _workshop.GlobalPosition.Z - DoorwayHalfWidth + PanelArtOverhang),
+            new Vector3(1f, DoorwayTop - DoorwayBottom, 2f * (DoorwayHalfWidth - PanelArtOverhang)));
+
+        foreach (var mesh in _workshop.GetNode("Room/Walls/EastWall").FindChildren("*", nameof(MeshInstance3D), true, false).OfType<MeshInstance3D>())
+            AssertBool(doorway.Intersects(WorldBounds(mesh))).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void EastWallIsOpenOnlyAcrossTheDoorway()
     {
         var wallX = _workshop.GlobalPosition.X + RoomEastEdge - 0.2f;
@@ -110,6 +144,17 @@ public class ShopWorkshopBuildSpaceSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void EveryClearCellIsReachableAndNoHallwayIsTighterThanThePlayer()
+    {
+        var paths = new WorkshopGridPaths(_grid, ClearanceCells);
+        var reachable = paths.ReachableFrom(paths.CellOf(_grid.GetNode<Node3D>("Doorway").GlobalPosition));
+
+        AssertThat(reachable.Count).IsEqual(paths.Clear.Count);
+        AssertThat(paths.CountFloorCellsTooTight(ClearanceCells)).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public async Task PlayerWalksFromTheCabinetThroughEveryRoomWithoutFalling()
     {
         // Same fixed physics step, more steps per real second: the long route would otherwise run in real time.
@@ -133,6 +178,11 @@ public class ShopWorkshopBuildSpaceSceneTest
         GD.Print($"[workshop-walk] frames {_frames}, airborne {_airborneFrames}, y {_lowest:F3}..{_highest:F3}");
         AssertBool(_highest - _lowest < MaxHeightVariation).IsTrue();
         AssertBool(_airborneFrames <= _frames * MaxAirborneShare).IsTrue();
+    }
+
+    private static Aabb WorldBounds(MeshInstance3D mesh)
+    {
+        return mesh.GlobalTransform * mesh.Mesh.GetAabb();
     }
 
     private async Task WalkAndAssert(Vector2 waypoint)
