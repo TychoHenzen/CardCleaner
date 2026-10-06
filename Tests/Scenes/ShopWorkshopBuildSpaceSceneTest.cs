@@ -170,7 +170,9 @@ public class ShopWorkshopBuildSpaceSceneTest
         foreach (var room in _grid.GetNode("Rooms").GetChildren().OfType<Marker3D>().OrderBy(r => r.GlobalPosition.DistanceTo(_player.GlobalPosition)))
         {
             var target = paths.CellOf(room.GlobalPosition);
-            foreach (var waypoint in paths.StraightenPath(paths.ShortestPath(here, target)))
+            var route = paths.ShortestPath(here, target);
+            AssertThat(route.Count).IsGreater(0);
+            foreach (var waypoint in paths.StraightenPath(route))
                 await WalkAndAssert(paths.WorldXz(waypoint));
             here = target;
         }

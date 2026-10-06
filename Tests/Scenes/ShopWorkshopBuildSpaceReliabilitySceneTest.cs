@@ -22,8 +22,6 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
     private const float RayStartHeight = 1f;
     private const float CeilingMaxHeight = 4.05f;
     private const int ClearanceCells = 4;
-    private const int CapsuleSampleStride = 5;
-    private const int ThresholdCellX = 30;
     private const int RoomHalfDepthCells = 30;
     private const int QueryBatches = 5;
     private const int QueriesPerBatch = 200;
@@ -141,7 +139,7 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
         var probe = new ShopSceneProbe(_shop, shape);
         var reachable = paths.ReachableFrom(paths.CellOf(_grid.GetNode<Node3D>("Doorway").GlobalPosition));
 
-        foreach (var cell in reachable.Where(c => (c.X + c.Y) % CapsuleSampleStride == 0))
+        foreach (var cell in reachable)
         {
             var world = paths.WorldXz(cell);
             var centre = new Vector3(world.X, probe.CapsuleCenterHeight, world.Y);
@@ -160,9 +158,9 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
             await ISceneRunner.SyncPhysicsFrame;
 
         var cells = _grid.GetUsedCells().Count;
-        var withGrid = FastestQueryMicroseconds();
+        var withGrid = TypicalQueryMicroseconds();
         _grid.GetParent().RemoveChild(_grid);
-        var withoutGrid = FastestQueryMicroseconds();
+        var withoutGrid = TypicalQueryMicroseconds();
         _grid.Free();
 
         GD.Print($"[workshop-grid] movement query {withGrid:F1} us with the grid ({cells} cells), {withoutGrid:F1} us without it");
@@ -170,26 +168,27 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
     }
 
     // What PlayerController does each physics frame is a test move of the capsule, so that is the cost to bound.
-    // The fastest batch is kept: a batch only gets slower when something else on the machine interrupts it.
-    private double FastestQueryMicroseconds()
+    // The median batch is kept: one interrupted batch cannot fail the test, and one lucky batch cannot hide a slowdown.
+    private double TypicalQueryMicroseconds()
     {
         var motion = Vector3.Right * 0.1f;
-        var fastest = double.MaxValue;
+        var batches = new List<double>();
         for (var batch = 0; batch < QueryBatches; batch++)
         {
             var start = Time.GetTicksUsec();
             for (var i = 0; i < QueriesPerBatch; i++)
                 _player.TestMove(_player.GlobalTransform, motion);
-            fastest = Mathf.Min((float)fastest, (Time.GetTicksUsec() - start) / (float)QueriesPerBatch);
+            batches.Add((Time.GetTicksUsec() - start) / (double)QueriesPerBatch);
         }
 
-        return fastest;
+        batches.Sort();
+        return batches[batches.Count / 2];
     }
 
     // The cells just west of the grid are the workshop room itself: open at the doorway, its own wall elsewhere.
     private static bool IsDoorwayThreshold(Vector2I cell)
     {
-        return cell.X == ThresholdCellX - 1 && Mathf.Abs(cell.Y) < RoomHalfDepthCells;
+        return cell.X == WorkshopGridPaths.ThresholdCellX - 1 && Mathf.Abs(cell.Y) < RoomHalfDepthCells;
     }
 
     private static Aabb ShapeBounds(Node3D body)

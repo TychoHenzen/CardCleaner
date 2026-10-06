@@ -18,32 +18,33 @@ public sealed class WorkshopGridPaths
     public const int FloorLayer = -1;
 
     // Cell range of the workshop room strip in front of the doorway, in grid cells (x up to the threshold).
-    private const int ThresholdCellX = 30;
+    public const int ThresholdCellX = 30;
     private const int RoomStripWidthCells = 10;
     private const int DoorwayHalfWidthCells = 10;
 
     private static readonly Vector2I[] Steps = [Vector2I.Right, Vector2I.Left, Vector2I.Down, Vector2I.Up];
 
     private readonly HashSet<Vector2I> _clear;
+    private readonly HashSet<Vector2I> _floor;
     private readonly WorkshopGrid _grid;
 
     public WorkshopGridPaths(WorkshopGrid grid, int clearanceCells)
     {
         _grid = grid;
-        Floor = grid.GetUsedCellsByItem(FloorItem)
+        _floor = grid.GetUsedCellsByItem(FloorItem)
             .Where(c => c.Y == FloorLayer)
             .Select(c => new Vector2I(c.X, c.Z))
             .ToHashSet();
 
-        var floorWithRoom = new HashSet<Vector2I>(Floor);
+        var floorWithRoom = new HashSet<Vector2I>(_floor);
         for (var x = ThresholdCellX - RoomStripWidthCells; x < ThresholdCellX; x++)
         for (var z = -DoorwayHalfWidthCells; z < DoorwayHalfWidthCells; z++)
             floorWithRoom.Add(new Vector2I(x, z));
 
-        _clear = Floor.Where(c => IsClear(floorWithRoom, c, clearanceCells)).ToHashSet();
+        _clear = _floor.Where(c => IsClear(floorWithRoom, c, clearanceCells)).ToHashSet();
     }
 
-    public HashSet<Vector2I> Floor { get; }
+    public IReadOnlySet<Vector2I> Floor => _floor;
 
     public IReadOnlySet<Vector2I> Clear => _clear;
 
@@ -59,7 +60,7 @@ public sealed class WorkshopGridPaths
         for (var dz = -clearanceCells; dz <= clearanceCells; dz++)
             near.Add(new Vector2I(cell.X + dx, cell.Y + dz));
 
-        return Floor.Count(c => !near.Contains(c));
+        return _floor.Count(c => !near.Contains(c));
     }
 
     public Vector2I CellOf(Vector3 world)
