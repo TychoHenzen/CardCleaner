@@ -1,0 +1,290 @@
+[gd_scene load_steps=21 format=3]
+
+[ext_resource type="PackedScene" path="res://Scenes/Components/player.tscn" id="1_player"]
+[ext_resource type="Script" path="res://Scripts/Core/DependencyInjection/AutoServiceProvider.cs" id="2_provider"]
+[ext_resource type="Script" path="res://Scripts/Core/Data/GameSettings.cs" id="3_settings"]
+
+[sub_resource type="StandardMaterial3D" id="StorefrontMaterial"]
+albedo_color = Color(0.18, 0.32, 0.5, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StorageMaterial"]
+albedo_color = Color(0.27, 0.42, 0.22, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="BackofficeMaterial"]
+albedo_color = Color(0.42, 0.28, 0.48, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="BorderMaterial"]
+albedo_color = Color(0.85, 0.85, 0.9, 1)
+emission_enabled = true
+emission = Color(0.25, 0.3, 0.4, 1)
+emission_energy_multiplier = 0.5
+
+[sub_resource type="StandardMaterial3D" id="WallMaterial"]
+albedo_color = Color(0.12, 0.14, 0.18, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="PropMaterial"]
+albedo_color = Color(0.72, 0.58, 0.3, 1)
+roughness = 0.75
+
+[sub_resource type="StandardMaterial3D" id="StoragePropMaterial"]
+albedo_color = Color(0.68, 0.48, 0.25, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="OfficePropMaterial"]
+albedo_color = Color(0.3, 0.6, 0.72, 1)
+roughness = 0.75
+
+[sub_resource type="BoxMesh" id="StorefrontFloorMesh"]
+material = SubResource("StorefrontMaterial")
+size = Vector3(8, 0.2, 8)
+
+[sub_resource type="BoxMesh" id="StorageFloorMesh"]
+material = SubResource("StorageMaterial")
+size = Vector3(8, 0.2, 8)
+
+[sub_resource type="BoxMesh" id="BackofficeFloorMesh"]
+material = SubResource("BackofficeMaterial")
+size = Vector3(8, 0.2, 8)
+
+[sub_resource type="BoxShape3D" id="FloorShape"]
+size = Vector3(8, 0.2, 8)
+
+[sub_resource type="BoxMesh" id="BorderLongMesh"]
+material = SubResource("BorderMaterial")
+size = Vector3(8, 0.08, 0.08)
+
+[sub_resource type="BoxMesh" id="BorderShortMesh"]
+material = SubResource("BorderMaterial")
+size = Vector3(0.08, 0.08, 8)
+
+[sub_resource type="BoxMesh" id="WallLongMesh"]
+material = SubResource("WallMaterial")
+size = Vector3(8, 2.4, 0.25)
+
+[sub_resource type="BoxMesh" id="WallShortMesh"]
+material = SubResource("WallMaterial")
+size = Vector3(0.25, 2.4, 8)
+
+[sub_resource type="BoxShape3D" id="WallLongShape"]
+size = Vector3(8, 2.4, 0.25)
+
+[sub_resource type="BoxShape3D" id="WallShortShape"]
+size = Vector3(0.25, 2.4, 8)
+
+[sub_resource type="BoxMesh" id="CounterMesh"]
+material = SubResource("PropMaterial")
+size = Vector3(3, 1.5, 1)
+
+[sub_resource type="BoxMesh" id="ShelfMesh"]
+material = SubResource("StoragePropMaterial")
+size = Vector3(2, 2.2, 1)
+
+[sub_resource type="BoxMesh" id="DeskMesh"]
+material = SubResource("OfficePropMaterial")
+size = Vector3(2.6, 1.2, 1.2)
+
+[sub_resource type="Environment" id="GrayboxEnvironment"]
+background_mode = 1
+background_color = Color(0.04, 0.05, 0.08, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.65, 0.7, 0.85, 1)
+ambient_light_energy = 0.8
+
+[node name="ShopGraybox" type="Node3D"]
+
+[node name="World" type="Node3D" parent="."]
+
+[node name="Storefront" type="Node3D" parent="World"]
+
+[node name="Floor" type="StaticBody3D" parent="World/Storefront"]
+position = Vector3(0, -0.1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Storefront/Floor"]
+shape = SubResource("FloorShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="World/Storefront/Floor"]
+mesh = SubResource("StorefrontFloorMesh")
+
+[node name="AreaLabel" type="Label3D" parent="World/Storefront"]
+position = Vector3(0, 2.4, 0)
+text = "STOREFRONT"
+font_size = 48
+outline_size = 8
+modulate = Color(0.75, 0.9, 1, 1)
+
+[node name="CheckoutCounter" type="MeshInstance3D" parent="World/Storefront"]
+position = Vector3(0, 0.75, -2.2)
+mesh = SubResource("CounterMesh")
+
+[node name="Storage" type="Node3D" parent="World"]
+
+[node name="Floor" type="StaticBody3D" parent="World/Storage"]
+position = Vector3(0, -0.1, 8)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Storage/Floor"]
+shape = SubResource("FloorShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="World/Storage/Floor"]
+mesh = SubResource("StorageFloorMesh")
+
+[node name="AreaLabel" type="Label3D" parent="World/Storage"]
+position = Vector3(0, 2.4, 8)
+text = "STORAGE"
+font_size = 48
+outline_size = 8
+modulate = Color(0.8, 1, 0.7, 1)
+
+[node name="Shelves" type="MeshInstance3D" parent="World/Storage"]
+position = Vector3(-2, 1.1, 8)
+mesh = SubResource("ShelfMesh")
+
+[node name="Backoffice" type="Node3D" parent="World"]
+
+[node name="Floor" type="StaticBody3D" parent="World/Backoffice"]
+position = Vector3(8, -0.1, 8)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Backoffice/Floor"]
+shape = SubResource("FloorShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="World/Backoffice/Floor"]
+mesh = SubResource("BackofficeFloorMesh")
+
+[node name="AreaLabel" type="Label3D" parent="World/Backoffice"]
+position = Vector3(8, 2.4, 8)
+text = "BACKOFFICE"
+font_size = 48
+outline_size = 8
+modulate = Color(1, 0.8, 1, 1)
+
+[node name="Desk" type="MeshInstance3D" parent="World/Backoffice"]
+position = Vector3(8, 0.6, 10)
+mesh = SubResource("DeskMesh")
+
+[node name="AreaBorders" type="Node3D" parent="World"]
+
+[node name="StorefrontNorth" type="MeshInstance3D" parent="World/AreaBorders"]
+position = Vector3(0, 0.04, -3.96)
+mesh = SubResource("BorderLongMesh")
+
+[node name="StorefrontSouth" type="MeshInstance3D" parent="World/AreaBorders"]
+position = Vector3(0, 0.04, 3.96)
+mesh = SubResource("BorderLongMesh")
+
+[node name="StorefrontWest" type="MeshInstance3D" parent="World/AreaBorders"]
+position = Vector3(-3.96, 0.04, 0)
+mesh = SubResource("BorderShortMesh")
+
+[node name="StorefrontEast" type="MeshInstance3D" parent="World/AreaBorders"]
+position = Vector3(3.96, 0.04, 0)
+mesh = SubResource("BorderShortMesh")
+
+[node name="StorageNorth" type="MeshInstance3D" parent="World/AreaBorders"]
+position = Vector3(0, 0.04, 4.04)
+mesh = SubResource("BorderLongMesh")
+
+[node name="StorageSouth" type="MeshInstance3D" parent="World/AreaBorders"]
+position = Vector3(0, 0.04, 11.96)
+mesh = SubResource("BorderLongMesh")
+
+[node name="StorageWest" type="MeshInstance3D" parent="World/AreaBorders"]
+position = Vector3(-3.96, 0.04, 8)
+mesh = SubResource("BorderShortMesh")
+
+[node name="StorageEast" type="MeshInstance3D" parent="World/AreaBorders"]
+position = Vector3(3.96, 0.04, 8)
+mesh = SubResource("BorderShortMesh")
+
+[node name="BackofficeNorth" type="MeshInstance3D" parent="World/AreaBorders"]
+position = Vector3(8, 0.04, 4.04)
+mesh = SubResource("BorderLongMesh")
+
+[node name="BackofficeSouth" type="MeshInstance3D" parent="World/AreaBorders"]
+position = Vector3(8, 0.04, 11.96)
+mesh = SubResource("BorderLongMesh")
+
+[node name="BackofficeWest" type="MeshInstance3D" parent="World/AreaBorders"]
+position = Vector3(4.04, 0.04, 8)
+mesh = SubResource("BorderShortMesh")
+
+[node name="BackofficeEast" type="MeshInstance3D" parent="World/AreaBorders"]
+position = Vector3(11.96, 0.04, 8)
+mesh = SubResource("BorderShortMesh")
+
+[node name="Walls" type="Node3D" parent="World"]
+
+[node name="StorefrontFront" type="StaticBody3D" parent="World/Walls"]
+position = Vector3(0, 1.2, -4.25)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Walls/StorefrontFront"]
+shape = SubResource("WallLongShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="World/Walls/StorefrontFront"]
+mesh = SubResource("WallLongMesh")
+
+[node name="StorageWest" type="StaticBody3D" parent="World/Walls"]
+position = Vector3(-4.25, 1.2, 8)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Walls/StorageWest"]
+shape = SubResource("WallShortShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="World/Walls/StorageWest"]
+mesh = SubResource("WallShortMesh")
+
+[node name="BackofficeSouth" type="StaticBody3D" parent="World/Walls"]
+position = Vector3(8, 1.2, 12.25)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Walls/BackofficeSouth"]
+shape = SubResource("WallLongShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="World/Walls/BackofficeSouth"]
+mesh = SubResource("WallLongMesh")
+
+[node name="BackofficeEast" type="StaticBody3D" parent="World/Walls"]
+position = Vector3(12.25, 1.2, 8)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Walls/BackofficeEast"]
+shape = SubResource("WallShortShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="World/Walls/BackofficeEast"]
+mesh = SubResource("WallShortMesh")
+
+[node name="Markers" type="Node3D" parent="World"]
+
+[node name="PlayerSpawn" type="Marker3D" parent="World/Markers"]
+
+[node name="PcLocation" type="Marker3D" parent="World/Markers"]
+position = Vector3(8, 0, 8)
+
+[node name="SeamLocation" type="Marker3D" parent="World/Markers"]
+position = Vector3(4, 0, 8)
+
+[node name="DeliveryPoint" type="Marker3D" parent="World/Markers"]
+position = Vector3(0, 0, 8)
+
+[node name="ShelfSlotsArea" type="Marker3D" parent="World/Markers"]
+position = Vector3(-2, 0, 8)
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector3(0, 0.9, 0)
+
+[node name="Camera3D" parent="Player/Head" index="0"]
+current = true
+fov = 75.0
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("GrayboxEnvironment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-55, -35, 0)
+light_energy = 1.2
+shadow_enabled = true
+
+[node name="Services" type="Node" parent="."]
+script = ExtResource("2_provider")
+
+[node name="GameSettings" type="Node" parent="Services"]
+script = ExtResource("3_settings")
