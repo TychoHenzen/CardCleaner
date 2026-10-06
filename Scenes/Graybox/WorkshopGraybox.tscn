@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3]
+[gd_scene load_steps=33 format=3]
 
 [ext_resource type="PackedScene" path="res://Scenes/UI/DeckSlot.tscn" id="1_deck_slot"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/CardSlot.tscn" id="2_card_slot"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/DeliveryMarker.cs" id="10_delivery_marker"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Ui/OrderTerminalUi.cs" id="11_order_terminal_ui"]
 [ext_resource type="Resource" path="res://Data/Workshop/WorkshopCatalog.tres" id="12_workshop_catalog"]
+[ext_resource type="PackedScene" path="res://Scenes/Workshop/WorkshopGrid.tscn" id="13_workshop_grid"]
 
 [sub_resource type="StandardMaterial3D" id="StoneMaterial"]
 albedo_color = Color(0.19, 0.16, 0.24, 1)
@@ -57,6 +58,13 @@ size = Vector3(0.3, 3.6, 12)
 
 [sub_resource type="BoxShape3D" id="WallShortShape"]
 size = Vector3(0.3, 3.6, 12)
+
+[sub_resource type="BoxMesh" id="WallDoorSegmentMesh"]
+material = SubResource("StoneMaterial")
+size = Vector3(0.3, 3.6, 4)
+
+[sub_resource type="BoxShape3D" id="WallDoorSegmentShape"]
+size = Vector3(0.3, 3.6, 4)
 
 [sub_resource type="BoxMesh" id="CabinetMesh"]
 material = SubResource("CabinetMaterial")
@@ -161,14 +169,27 @@ shape = SubResource("WallShortShape")
 [node name="Mesh" type="MeshInstance3D" parent="Room/WestWall"]
 mesh = SubResource("WallShortMesh")
 
-[node name="EastWall" type="StaticBody3D" parent="Room"]
-position = Vector3(6, 1.8, 0)
+[node name="EastWall" type="Node3D" parent="Room"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Room/EastWall"]
-shape = SubResource("WallShortShape")
+[node name="NorthSegment" type="StaticBody3D" parent="Room/EastWall"]
+position = Vector3(6, 1.8, -4)
 
-[node name="Mesh" type="MeshInstance3D" parent="Room/EastWall"]
-mesh = SubResource("WallShortMesh")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Room/EastWall/NorthSegment"]
+shape = SubResource("WallDoorSegmentShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="Room/EastWall/NorthSegment"]
+mesh = SubResource("WallDoorSegmentMesh")
+
+[node name="SouthSegment" type="StaticBody3D" parent="Room/EastWall"]
+position = Vector3(6, 1.8, 4)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Room/EastWall/SouthSegment"]
+shape = SubResource("WallDoorSegmentShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="Room/EastWall/SouthSegment"]
+mesh = SubResource("WallDoorSegmentMesh")
+
+[node name="WorkshopGrid" parent="." instance=ExtResource("13_workshop_grid")]
 
 [node name="AreaLabel" type="Label3D" parent="."]
 position = Vector3(0, 2.7, 2.4)
