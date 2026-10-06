@@ -15,8 +15,6 @@ namespace CardCleaner.Tests.Scenes;
 [RequireGodotRuntime]
 public class ShopScenePlayerWalkTest
 {
-    private const float ArrivalDistance = 0.25f;
-    private const int MaxFramesPerWaypoint = 600;
     private const float FallLimitY = -1f;
 
     private Node3D _shop = null!;
@@ -66,33 +64,12 @@ public class ShopScenePlayerWalkTest
 
         foreach (var waypoint in route)
         {
-            bool arrived = await WalkTo(waypoint);
+            var walk = await PlayerWalker.WalkTo(_player, waypoint);
 
-            AssertBool(arrived).IsTrue();
+            AssertBool(walk.Arrived).IsTrue();
             AssertBool(_player.GlobalPosition.Y > FallLimitY).IsTrue();
         }
 
         AssertBool(_player.IsOnFloor()).IsTrue();
-    }
-
-    private async Task<bool> WalkTo(Vector2 target)
-    {
-        for (int frame = 0; frame < MaxFramesPerWaypoint; frame++)
-        {
-            var offset = target - new Vector2(_player.GlobalPosition.X, _player.GlobalPosition.Z);
-            if (offset.Length() < ArrivalDistance)
-            {
-                Input.ActionRelease("ui_up");
-                return true;
-            }
-
-            // "ui_up" moves along local -Z, so yaw the body until -Z points at the waypoint.
-            _player.Rotation = new Vector3(0f, Mathf.Atan2(-offset.X, -offset.Y), 0f);
-            Input.ActionPress("ui_up");
-            await ISceneRunner.SyncPhysicsFrame;
-        }
-
-        Input.ActionRelease("ui_up");
-        return false;
     }
 }
