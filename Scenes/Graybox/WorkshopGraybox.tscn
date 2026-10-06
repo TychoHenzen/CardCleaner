@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=32 format=3]
 
 [ext_resource type="PackedScene" path="res://Scenes/UI/DeckSlot.tscn" id="1_deck_slot"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/CardSlot.tscn" id="2_card_slot"]
@@ -8,6 +8,10 @@
 [ext_resource type="Script" path="res://Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs" id="6_controller"]
 [ext_resource type="Script" path="res://Scripts/Features/Deckbuilder/Services/GameSessionService.cs" id="7_session"]
 [ext_resource type="Script" path="res://Scripts/Features/Workshop/Components/CreditCardSeeder.cs" id="8_credit_card"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/OrderTerminal.cs" id="9_order_terminal"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/DeliveryMarker.cs" id="10_delivery_marker"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Ui/OrderTerminalUi.cs" id="11_order_terminal_ui"]
+[ext_resource type="Resource" path="res://Data/Workshop/WorkshopCatalog.tres" id="12_workshop_catalog"]
 
 [sub_resource type="StandardMaterial3D" id="StoneMaterial"]
 albedo_color = Color(0.19, 0.16, 0.24, 1)
@@ -76,6 +80,46 @@ size = Vector3(0.06, 0.04, 1.5)
 [sub_resource type="BoxMesh" id="CardWireHorizontalMesh"]
 material = SubResource("WireCardMaterial")
 size = Vector3(1.7, 0.04, 0.06)
+
+[sub_resource type="BoxMesh" id="OrderingWallMesh"]
+material = SubResource("StoneMaterial")
+size = Vector3(0.25, 3, 4.8)
+
+[sub_resource type="BoxShape3D" id="OrderingWallShape"]
+size = Vector3(0.25, 3, 4.8)
+
+[sub_resource type="BoxMesh" id="OrderingBackWallMesh"]
+material = SubResource("StoneMaterial")
+size = Vector3(4.8, 3, 0.25)
+
+[sub_resource type="BoxShape3D" id="OrderingBackWallShape"]
+size = Vector3(4.8, 3, 0.25)
+
+[sub_resource type="BoxShape3D" id="TerminalShape"]
+size = Vector3(2.2, 1.2, 1)
+
+[sub_resource type="BoxMesh" id="TerminalMesh"]
+material = SubResource("CabinetMaterial")
+size = Vector3(2.2, 0.75, 1)
+
+[sub_resource type="BoxMesh" id="TerminalMonitorMesh"]
+material = SubResource("WireDeckMaterial")
+size = Vector3(0.7, 0.5, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="TerminalHighlightMaterial"]
+transparency = 1
+albedo_color = Color(1, 1, 0.4, 0.25)
+emission_enabled = true
+emission = Color(1, 1, 0.4, 1)
+emission_energy_multiplier = 0.4
+
+[sub_resource type="BoxMesh" id="TerminalHighlightMesh"]
+material = SubResource("TerminalHighlightMaterial")
+size = Vector3(2.4, 1.4, 1.2)
+
+[sub_resource type="BoxMesh" id="DeliveryPadMesh"]
+material = SubResource("WireCardMaterial")
+size = Vector3(4.4, 0.04, 2.6)
 
 [node name="Workshop" type="Node3D"]
 
@@ -229,6 +273,77 @@ script = ExtResource("7_session")
 script = ExtResource("8_credit_card")
 Slot = NodePath("../DeckSlot")
 SpawnParent = NodePath("..")
+
+[node name="OrderingRoom" type="Node3D" parent="."]
+position = Vector3(-2.4, 0, 2.8)
+
+[node name="EastWall" type="StaticBody3D" parent="OrderingRoom"]
+position = Vector3(1.8, 1.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="OrderingRoom/EastWall"]
+shape = SubResource("OrderingWallShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="OrderingRoom/EastWall"]
+mesh = SubResource("OrderingWallMesh")
+
+[node name="BackWall" type="StaticBody3D" parent="OrderingRoom"]
+position = Vector3(0, 1.5, -1.7)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="OrderingRoom/BackWall"]
+shape = SubResource("OrderingBackWallShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="OrderingRoom/BackWall"]
+mesh = SubResource("OrderingBackWallMesh")
+
+[node name="Light" type="OmniLight3D" parent="OrderingRoom"]
+position = Vector3(0, 3.1, 0)
+omni_range = 6.0
+light_energy = 0.8
+
+[node name="OrderTerminal" type="StaticBody3D" parent="OrderingRoom" node_paths=PackedStringArray("DeliveryPoint", "Ui", "HighlightMesh")]
+position = Vector3(-1, 0, -0.8)
+collision_layer = 4
+script = ExtResource("9_order_terminal")
+Catalog = ExtResource("12_workshop_catalog")
+DeliveryPoint = NodePath("../../DeliveryPoint")
+Ui = NodePath("../../OrderUi")
+HighlightMesh = NodePath("Highlight")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="OrderingRoom/OrderTerminal"]
+position = Vector3(0, 0.6, 0)
+shape = SubResource("TerminalShape")
+
+[node name="Desk" type="MeshInstance3D" parent="OrderingRoom/OrderTerminal"]
+position = Vector3(0, 0.375, 0)
+mesh = SubResource("TerminalMesh")
+
+[node name="Monitor" type="MeshInstance3D" parent="OrderingRoom/OrderTerminal"]
+position = Vector3(0, 0.85, -0.15)
+mesh = SubResource("TerminalMonitorMesh")
+
+[node name="Label" type="Label3D" parent="OrderingRoom/OrderTerminal"]
+position = Vector3(0, 1.45, 0)
+text = "WORKSHOP ORDERS"
+font_size = 24
+outline_size = 5
+modulate = Color(0.4, 1, 1, 1)
+
+[node name="Highlight" type="MeshInstance3D" parent="OrderingRoom/OrderTerminal"]
+visible = false
+position = Vector3(0, 0.7, 0)
+mesh = SubResource("TerminalHighlightMesh")
+
+[node name="DeliveryPoint" type="Marker3D" parent="."]
+position = Vector3(3.2, 0, 2.8)
+script = ExtResource("10_delivery_marker")
+MaxStackHeight = 3.9
+
+[node name="Pad" type="MeshInstance3D" parent="DeliveryPoint"]
+position = Vector3(0, 0.02, 0)
+mesh = SubResource("DeliveryPadMesh")
+
+[node name="OrderUi" type="CanvasLayer" parent="."]
+script = ExtResource("11_order_terminal_ui")
 
 [node name="CollisionShape3D" parent="CardSlot/Area3D" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0334473, 0.221375)
