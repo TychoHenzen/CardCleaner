@@ -12,6 +12,8 @@ namespace CardCleaner.Tests.Features.Shop.Services;
 public class OrderingServiceTest
 {
     private const int StartingBalance = 300;
+    private const float CabinetWidth = 1.3f;
+    private const float PartialShove = 0.9f;
     private static readonly Vector3 DeliveryPosition = new(4f, 0f, -5f);
 
     private Node3D _world = null!;
@@ -268,6 +270,61 @@ public class OrderingServiceTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void GroundMarkerKeepsASlotTakenWhileTheItemsColliderStillOverlapsIt()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
+        var cabinet = MakeBoxItem("cabinet", 1, CabinetWidth);
+        var delivered = Enumerable.Range(0, OrderingService.SlotColumns * OrderingService.SlotRows)
+            .Select(_ => _ordering.Order(cabinet, ground).Spawned!).ToList();
+
+        // Past half the slot depth, yet the 1.3 m collider still reaches into the slot.
+        delivered[0].GlobalPosition += new Vector3(0f, 0f, PartialShove);
+        var result = _ordering.Order(cabinet, ground);
+
+        AssertThat(result.Status).IsEqual(OrderStatus.DeliveryFull);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void GroundMarkerTreatsAnItemParkedBetweenTwoSlotsAsOccupyingBoth()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
+        var cabinet = MakeBoxItem("cabinet", 1, CabinetWidth);
+        var delivered = Enumerable.Range(0, OrderingService.SlotColumns * OrderingService.SlotRows)
+            .Select(_ => _ordering.Order(cabinet, ground).Spawned!).ToList();
+
+        // Slot 0 and slot 1 sit side by side; park the first item on their shared edge and carry slot 1's own item away: both stay taken.
+        delivered[0].GlobalPosition = ground.GlobalPosition + OrderingService.SlotOffset(0)
+                                      + new Vector3(OrderingService.SlotSpacingX / 2f, 0f, 0f);
+        delivered[1].GlobalPosition += new Vector3(30f, 0f, 0f);
+        var result = _ordering.Order(cabinet, ground);
+
+        AssertThat(result.Status).IsEqual(OrderStatus.DeliveryFull);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void GroundMarkerFreesTheSlotOfAnItemRemovedFromTheTreeButNotFreed()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
+        var cheap = MakeItem("cheap", 1);
+        var delivered = Enumerable.Range(0, OrderingService.SlotColumns * OrderingService.SlotRows)
+            .Select(_ => _ordering.Order(cheap, ground).Spawned!).ToList();
+
+        _world.RemoveChild(delivered[4]);
+        var replacement = _ordering.Order(cheap, ground);
+
+        AssertBool(replacement.Succeeded).IsTrue();
+        AssertBool(replacement.Spawned!.GlobalPosition.IsEqualApprox(
+            ground.GlobalPosition + OrderingService.SlotOffset(4))).IsTrue();
+        delivered[4].Free();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void FullGroundMarkerDoesNotBlockTheDefaultDeliveryPoint()
     {
         _money.Add(10000);
@@ -301,6 +358,18 @@ public class OrderingServiceTest
 
     private List<Node3D> SpawnedItems() =>
         _world.GetChildren().OfType<Node3D>().Where(n => n is not Marker3D).ToList();
+
+    private static OrderItem MakeBoxItem(string id, int price, float width)
+    {
+        var root = new Node3D { Name = "Box" };
+        var collider = new CollisionShape3D { Name = "CollisionShape3D", Shape = new BoxShape3D { Size = new Vector3(width, 1f, width) } };
+        root.AddChild(collider);
+        collider.Owner = root;
+        var packed = new PackedScene();
+        packed.Pack(root);
+        root.Free();
+        return new OrderItem { Id = id, DisplayName = id, Price = price, Scene = packed };
+    }
 
     private static OrderItem MakeItem(string id, int price)
     {

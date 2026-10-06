@@ -1,6 +1,7 @@
 using System.Linq;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Workshop.Models;
@@ -15,7 +16,7 @@ public class WorkshopCatalogTest
 {
     private const string CatalogPath = "res://Data/Workshop/WorkshopCatalog.tres";
     private const string ShopCatalogPath = "res://Data/Shop/BackofficeCatalog.tres";
-    private const string ManifestPath = "res://tools/synty-assets.json";
+    private const string ConveyorId = "conveyor";
     private const string PackPrefix = "res://Assets/Synty/";
 
     private static readonly string[] ExpectedIds = ["conveyor", "arcade_cabinet", "wiring"];
@@ -86,9 +87,9 @@ public class WorkshopCatalogTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void PhysicalItemsCollideSoTheyCanBePickedUpAndPlaced()
+    public void BodyItemsAreRigidBodiesWithACollisionShape()
     {
-        foreach (var item in _catalog.Items.Where(i => i.Id != "conveyor"))
+        foreach (var item in _catalog.Items.Where(i => i.Id != ConveyorId))
         {
             var instance = item.Scene!.Instantiate<Node3D>();
             AddNode(instance);
@@ -100,17 +101,28 @@ public class WorkshopCatalogTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void ConveyorCollidesThroughItsNestedBeltBody()
+    {
+        var conveyor = _catalog.Items.Single(i => i.Id == ConveyorId).Scene!.Instantiate<Node3D>();
+        AddNode(conveyor);
+
+        var belt = conveyor.GetNode("Belt");
+        AssertBool(belt.IsClass("StaticBody3D")).IsTrue();
+        AssertThat(belt.GetNodeOrNull<CollisionShape3D>("CollisionShape3D")).IsNotNull();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void EveryItemArtPathIsListedInTheAssetManifest()
     {
-        var manifest = FileAccess.GetFileAsString(ManifestPath);
-        AssertBool(manifest.Length > 0).IsTrue();
+        AssertBool(FileAccess.FileExists(SyntyManifest.Path)).IsTrue();
 
         foreach (var item in _catalog.Items)
         {
             var instance = item.Scene!.Instantiate<Node3D>();
             var slot = instance.GetNode<ShopArtSlot>("Art");
             AssertBool(slot.ArtPath.StartsWith(PackPrefix)).IsTrue();
-            AssertBool(manifest.Contains($"\"{slot.ArtPath[PackPrefix.Length..]}\"")).IsTrue();
+            AssertBool(SyntyManifest.ListsTarget(slot.ArtPath[PackPrefix.Length..])).IsTrue();
             instance.Free();
         }
     }

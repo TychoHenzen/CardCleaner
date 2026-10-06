@@ -1,12 +1,11 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -34,20 +33,13 @@ public class ShopWorkshopOrderingSceneTest
     [BeforeTest]
     public async Task Setup()
     {
-        _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
+        _shop = ShopOrderingRig.LoadShopWithServices();
         _workshop = _shop.GetNode<Node3D>("World/Workshop");
         _player = _shop.GetNode<PlayerController>("Player");
         _terminal = _workshop.GetNode<OrderTerminal>("OrderingRoom/OrderTerminal");
         _ui = _workshop.GetNode<OrderTerminalUi>("OrderUi");
         _delivery = _workshop.GetNode<Marker3D>("DeliveryPoint");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
-        var ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
-
-        // The test scene is not the current scene, so hand the scene-owned services over directly.
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
-        ServiceLocator.Container.RegisterSingleton<IMoneyService>(_money);
-        ServiceLocator.Container.RegisterSingleton<IOrderingService>(ordering);
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;
@@ -191,14 +183,13 @@ public class ShopWorkshopOrderingSceneTest
     [TestCategory("Unit")]
     public void TerminalArtSlotsUseManifestPackMeshesWithAPlaceholderFallback()
     {
-        var manifest = FileAccess.GetFileAsString("res://tools/synty-assets.json");
         var slots = _terminal.GetChildren().OfType<ShopArtSlot>().ToList();
 
         AssertThat(slots.Count).IsEqual(3);
         foreach (var slot in slots)
         {
             AssertBool(slot.ArtPath.StartsWith("res://Assets/Synty/")).IsTrue();
-            AssertBool(manifest.Contains($"\"{slot.ArtPath["res://Assets/Synty/".Length..]}\"")).IsTrue();
+            AssertBool(SyntyManifest.ListsTarget(slot.ArtPath["res://Assets/Synty/".Length..])).IsTrue();
             AssertThat(slot.Placeholder).IsNotNull();
             AssertBool(slot.ArtLoaded != slot.Placeholder!.Visible).IsTrue();
         }
@@ -206,21 +197,7 @@ public class ShopWorkshopOrderingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void OrderedConveyorIsAPhysicalBodyWithCollision()
-    {
-        _terminal.Interact();
-        _money.Add(1000);
-
-        _ui.PressItem(0);
-
-        var belt = ((Node3D)_shop.GetNode("World").GetChildren().Last()).GetNode("Belt");
-        AssertBool(belt.IsClass("StaticBody3D")).IsTrue();
-        AssertThat(belt.GetNodeOrNull<CollisionShape3D>("CollisionShape3D")).IsNotNull();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void OrderedConveyorKeepsItsConveyorBehaviourNode()
+    public void OrderedConveyorIsAPhysicalBodyWithCollisionAndKeepsItsConveyorBehaviourNode()
     {
         _terminal.Interact();
         _money.Add(1000);
@@ -228,6 +205,9 @@ public class ShopWorkshopOrderingSceneTest
         _ui.PressItem(0);
 
         var spawned = (Node3D)_shop.GetNode("World").GetChildren().Last();
-        AssertThat(spawned.GetNodeOrNull("Belt")).IsNotNull();
+        var belt = spawned.GetNodeOrNull("Belt");
+        AssertThat(belt).IsNotNull();
+        AssertBool(belt!.IsClass("StaticBody3D")).IsTrue();
+        AssertThat(belt.GetNodeOrNull<CollisionShape3D>("CollisionShape3D")).IsNotNull();
     }
 }

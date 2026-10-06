@@ -1,8 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
@@ -40,7 +38,7 @@ public class ShopWorkshopDeliverySceneTest
     [BeforeTest]
     public async Task Setup()
     {
-        _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
+        _shop = ShopOrderingRig.LoadShopWithServices();
         _workshop = _shop.GetNode<Node3D>("World/Workshop");
         _pc = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
         _terminal = _workshop.GetNode<OrderTerminal>("OrderingRoom/OrderTerminal");
@@ -49,12 +47,6 @@ public class ShopWorkshopDeliverySceneTest
         _delivery = _workshop.GetNode<DeliveryMarker>("DeliveryPoint");
         _shopDelivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
-
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
-        ServiceLocator.Container.RegisterSingleton<IMoneyService>(_money);
-        ServiceLocator.Container.RegisterSingleton<IOrderingService>(
-            _shop.GetNode<OrderingService>("Services/OrderingService"));
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;

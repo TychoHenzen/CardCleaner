@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Components;
@@ -28,18 +27,12 @@ public class ShopOrderingEconomySceneTest
     [BeforeTest]
     public async Task Setup()
     {
-        _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
+        _shop = ShopOrderingRig.LoadShopWithServices();
         _pc = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
         _workshop = _shop.GetNode<OrderTerminal>("World/Workshop/OrderingRoom/OrderTerminal");
         _pcUi = _shop.GetNode<OrderTerminalUi>("OrderUi");
         _workshopUi = _shop.GetNode<OrderTerminalUi>("World/Workshop/OrderUi");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
-
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
-        ServiceLocator.Container.RegisterSingleton<IMoneyService>(_money);
-        ServiceLocator.Container.RegisterSingleton<IOrderingService>(
-            _shop.GetNode<OrderingService>("Services/OrderingService"));
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;
