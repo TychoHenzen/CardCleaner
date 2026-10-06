@@ -21,9 +21,12 @@ public class ShopWorkshopBuildSpaceSceneTest
     private const float PlayerStartHeight = 1.2f;
     private const int ClearanceCells = 4;
     private const float RoomEastEdge = 6f;
+    private const float WallThickness = 0.4f;
     private const float DoorwayHalfWidth = 2f;
     private const float WallProbeHeight = 1f;
     private const double WalkTimeScale = 4.0;
+    private const float MaxHeightVariation = 0.05f;
+    private const float MaxAirborneShare = 0.01f;
     private const float FallLimitY = -1f;
     private const float MinimumDistanceFromShop = 30f;
 
@@ -33,6 +36,10 @@ public class ShopWorkshopBuildSpaceSceneTest
     private Node3D _workshop = null!;
     private WorkshopGrid _grid = null!;
     private CharacterBody3D _player = null!;
+    private float _lowest = float.MaxValue;
+    private float _highest = float.MinValue;
+    private int _airborneFrames;
+    private int _frames;
 
     [BeforeTest]
     public async Task Setup()
@@ -68,7 +75,8 @@ public class ShopWorkshopBuildSpaceSceneTest
         var eastEdge = _workshop.GlobalPosition.X + RoomEastEdge;
 
         AssertBool(doorway.X > cabinet.X).IsTrue();
-        AssertBool(_grid.GetUsedCells().All(cell => _grid.CellToWorld(cell).X > eastEdge)).IsTrue();
+        AssertBool(_grid.GetUsedCellsByItem(WorkshopGridPaths.FloorItem).All(cell => _grid.CellToWorld(cell).X > eastEdge)).IsTrue();
+        AssertBool(_grid.GetUsedCells().All(cell => _grid.CellToWorld(cell).X > eastEdge - WallThickness)).IsTrue();
         AssertBool(_grid.CellToWorld(_grid.GetUsedCells()[0]).X - _player.GlobalPosition.X > MinimumDistanceFromShop).IsTrue();
     }
 
@@ -121,6 +129,10 @@ public class ShopWorkshopBuildSpaceSceneTest
                 await WalkAndAssert(paths.WorldXz(waypoint));
             here = target;
         }
+
+        GD.Print($"[workshop-walk] frames {_frames}, airborne {_airborneFrames}, y {_lowest:F3}..{_highest:F3}");
+        AssertBool(_highest - _lowest < MaxHeightVariation).IsTrue();
+        AssertBool(_airborneFrames <= _frames * MaxAirborneShare).IsTrue();
     }
 
     private async Task WalkAndAssert(Vector2 waypoint)
@@ -129,6 +141,10 @@ public class ShopWorkshopBuildSpaceSceneTest
 
         AssertBool(walk.Arrived).IsTrue();
         AssertBool(_player.GlobalPosition.Y > FallLimitY).IsTrue();
+        _lowest = Mathf.Min(_lowest, walk.MinY);
+        _highest = Mathf.Max(_highest, walk.MaxY);
+        _airborneFrames += walk.AirborneFrames;
+        _frames += walk.Frames;
     }
 
     private static async Task Settle()
