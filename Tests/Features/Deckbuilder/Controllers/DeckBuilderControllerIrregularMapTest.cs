@@ -33,7 +33,8 @@ public class DeckBuilderControllerIrregularMapTest
             AbilityDeckSlot = _abilitySlot,
             MapCardSlot = _mapSlot,
             ActivateButton = _button,
-            WorldTileMapScreenScene = new SimpleWorldMapScreen(),
+            // Never added to the tree: only the irregular map type is under test.
+            WorldTileMapScreenScene = AutoFree(new SimpleWorldMapScreen()),
             MapType = MapGenerationType.IrregularMesh
         };
 

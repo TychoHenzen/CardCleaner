@@ -26,7 +26,8 @@ public class IrregularMeshMovementControllerTest
     [AfterTest]
     public void Teardown()
     {
-        _controller.QueueFree();
+        // The controller never enters the tree, so QueueFree would leave it alive when gdUnit counts orphans.
+        _controller.Free();
     }
 
     [TestCase]

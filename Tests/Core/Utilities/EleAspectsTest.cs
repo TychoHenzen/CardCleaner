@@ -6,7 +6,7 @@ using GdUnit4;
 namespace CardCleaner.Tests.Core.Utilities;
 
 [TestSuite]
-public class EleAspectsEnhancedTest
+public class EleAspectsTest
 {
     [TestCase]
     [TestCategory("Unit")]

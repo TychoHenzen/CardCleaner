@@ -16,12 +16,15 @@ internal sealed class BiomePreviewHost
 
     internal void Setup(SubViewport? viewport)
     {
+        // A preview without a viewport would have no parent, so nothing would ever free it.
+        if (viewport == null)
+            return;
+
         _biomeRegistry = new BiomeRegistry();
         _biomeRegistry.RegisterDefaultBiomes();
 
         _biomePreview = CreateFullRectPreview();
-
-        viewport?.AddChild(_biomePreview);
+        viewport.AddChild(_biomePreview);
     }
 
     private static BiomeDistributionPreview CreateFullRectPreview()
