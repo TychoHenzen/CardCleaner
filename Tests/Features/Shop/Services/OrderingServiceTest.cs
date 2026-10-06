@@ -13,6 +13,9 @@ public class OrderingServiceTest
 {
     private const int StartingBalance = 300;
     private const float CabinetWidth = 1.3f;
+    private const float CabinetHeight = 2.24f;
+    private const float SpoolHeight = 0.1f;
+    private const int ManyDeliveries = 40;
     private const float PartialShove = 0.9f;
     private static readonly Vector3 DeliveryPosition = new(4f, 0f, -5f);
 
@@ -209,14 +212,14 @@ public class OrderingServiceTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void GroundMarkerHoldsOneLayerThenRefusesTheNextOrderWithoutCharging()
+    public void GroundMarkerFillsItsSlotsThenRefusesATallItemWithoutCharging()
     {
         _money.Add(10000);
         var ground = AddGroundMarker();
-        var cheap = MakeItem("cheap", 1);
+        var cabinet = MakeBoxItem("cabinet", 1, CabinetWidth, CabinetHeight);
         for (var order = 0; order < OrderingService.SlotColumns * OrderingService.SlotRows; order++)
         {
-            var delivered = _ordering.Order(cheap, ground);
+            var delivered = _ordering.Order(cabinet, ground);
             AssertBool(delivered.Succeeded).IsTrue();
             AssertBool(delivered.Spawned!.GlobalPosition.IsEqualApprox(
                 ground.GlobalPosition + OrderingService.SlotOffset(order))).IsTrue();
@@ -224,12 +227,55 @@ public class OrderingServiceTest
 
         var balance = _money.Balance;
         var spawned = SpawnedItems().Count;
+        var deliveredCount = _ordering.DeliveredCount;
 
-        var result = _ordering.Order(cheap, ground);
+        var result = _ordering.Order(cabinet, ground);
 
         AssertThat(result.Status).IsEqual(OrderStatus.DeliveryFull);
         AssertThat(_money.Balance).IsEqual(balance);
         AssertThat(SpawnedItems().Count).IsEqual(spawned);
+        AssertThat(_ordering.DeliveredCount).IsEqual(deliveredCount);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void GroundMarkerNeverLocksWhileSmallItemsStillFitUnderItsClearance()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
+        var spool = MakeBoxItem("spool", 1, 0.46f, SpoolHeight);
+        var perLayer = OrderingService.SlotColumns * OrderingService.SlotRows;
+
+        for (var order = 0; order < ManyDeliveries; order++)
+        {
+            var result = _ordering.Order(spool, ground);
+
+            AssertBool(result.Succeeded).IsTrue();
+            AssertBool(result.Spawned!.GlobalPosition.Y + SpoolHeight <= ground.GlobalPosition.Y + ground.MaxStackHeight)
+                .IsTrue();
+            if (order >= perLayer)
+                AssertBool(result.Spawned.GlobalPosition.Y > ground.GlobalPosition.Y).IsTrue();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void StackedDeliveryRefusesOnceTheItemNoLongerFitsUnderTheClearanceAndChargesNothing()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
+        ground.MaxStackHeight = 1.0f;
+        var spool = MakeBoxItem("spool", 1, 0.46f, SpoolHeight);
+        var delivered = 0;
+        while (_ordering.Order(spool, ground).Succeeded)
+            delivered++;
+        var balance = _money.Balance;
+
+        var result = _ordering.Order(spool, ground);
+
+        AssertBool(delivered > OrderingService.SlotColumns * OrderingService.SlotRows).IsTrue();
+        AssertThat(result.Status).IsEqual(OrderStatus.DeliveryFull);
+        AssertThat(_money.Balance).IsEqual(balance);
     }
 
     [TestCase]
@@ -274,7 +320,7 @@ public class OrderingServiceTest
     {
         _money.Add(10000);
         var ground = AddGroundMarker();
-        var cabinet = MakeBoxItem("cabinet", 1, CabinetWidth);
+        var cabinet = MakeBoxItem("cabinet", 1, CabinetWidth, CabinetHeight);
         var delivered = Enumerable.Range(0, OrderingService.SlotColumns * OrderingService.SlotRows)
             .Select(_ => _ordering.Order(cabinet, ground).Spawned!).ToList();
 
@@ -291,7 +337,7 @@ public class OrderingServiceTest
     {
         _money.Add(10000);
         var ground = AddGroundMarker();
-        var cabinet = MakeBoxItem("cabinet", 1, CabinetWidth);
+        var cabinet = MakeBoxItem("cabinet", 1, CabinetWidth, CabinetHeight);
         var delivered = Enumerable.Range(0, OrderingService.SlotColumns * OrderingService.SlotRows)
             .Select(_ => _ordering.Order(cabinet, ground).Spawned!).ToList();
 
@@ -329,11 +375,11 @@ public class OrderingServiceTest
     {
         _money.Add(10000);
         var ground = AddGroundMarker();
-        var cheap = MakeItem("cheap", 1);
+        var cabinet = MakeBoxItem("cabinet", 1, CabinetWidth, CabinetHeight);
         for (var order = 0; order <= OrderingService.SlotColumns * OrderingService.SlotRows; order++)
-            _ordering.Order(cheap, ground);
+            _ordering.Order(cabinet, ground);
 
-        AssertBool(_ordering.Order(cheap).Succeeded).IsTrue();
+        AssertBool(_ordering.Order(MakeItem("cheap", 1)).Succeeded).IsTrue();
     }
 
     [TestCase]
@@ -359,10 +405,15 @@ public class OrderingServiceTest
     private List<Node3D> SpawnedItems() =>
         _world.GetChildren().OfType<Node3D>().Where(n => n is not Marker3D).ToList();
 
-    private static OrderItem MakeBoxItem(string id, int price, float width)
+    private static OrderItem MakeBoxItem(string id, int price, float width, float height)
     {
         var root = new Node3D { Name = "Box" };
-        var collider = new CollisionShape3D { Name = "CollisionShape3D", Shape = new BoxShape3D { Size = new Vector3(width, 1f, width) } };
+        var collider = new CollisionShape3D
+        {
+            Name = "CollisionShape3D",
+            Shape = new BoxShape3D { Size = new Vector3(width, height, width) },
+            Position = new Vector3(0f, height / 2f, 0f)
+        };
         root.AddChild(collider);
         collider.Owner = root;
         var packed = new PackedScene();

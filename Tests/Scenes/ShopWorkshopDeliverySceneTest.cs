@@ -124,21 +124,40 @@ public class ShopWorkshopDeliverySceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void FullDeliveryAreaRejectsTheNextOrderWithAMessageAndNoCharge()
+    public void FullDeliveryAreaRejectsTheNextTallOrderWithAMessageAndNoCharge()
     {
         _money.Add(TopUp);
         _terminal.Interact();
-        var wiring = IndexOf("wiring");
+        var cabinet = IndexOf("arcade_cabinet");
         for (var order = 0; order < Capacity; order++)
-            _ui.PressItem(wiring);
+            _ui.PressItem(cabinet);
         var balance = _money.Balance;
         var spawned = _shop.GetNode("World").GetChildCount();
 
-        _ui.PressItem(wiring);
+        _ui.PressItem(cabinet);
 
         AssertThat(_money.Balance).IsEqual(balance);
         AssertThat(_shop.GetNode("World").GetChildCount()).IsEqual(spawned);
         AssertBool(_ui.MessageText.StartsWith("The delivery area is full")).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void OrderingNeverLocksAfterManyDeliveriesOfSmallItems()
+    {
+        _money.Add(TopUp);
+        _terminal.Interact();
+        var wiring = IndexOf("wiring");
+        var world = _shop.GetNode("World");
+        var ceilingClearance = _delivery.GlobalPosition.Y + _delivery.MaxStackHeight;
+
+        for (var order = 0; order < 4 * Capacity; order++)
+        {
+            _ui.PressItem(wiring);
+
+            AssertBool(_ui.MessageText.Contains("Ordered")).IsTrue();
+            AssertBool(((Node3D)world.GetChildren().Last()).GlobalPosition.Y < ceilingClearance).IsTrue();
+        }
     }
 
     [TestCase]
