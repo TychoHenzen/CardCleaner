@@ -1,4 +1,4 @@
-[gd_scene load_steps=51 format=3]
+[gd_scene load_steps=58 format=3]
 
 [ext_resource type="PackedScene" path="res://Scenes/Components/player.tscn" id="1_player"]
 [ext_resource type="Script" path="res://Scripts/Core/DependencyInjection/AutoServiceProvider.cs" id="2_provider"]
@@ -28,6 +28,7 @@
 [ext_resource type="Resource" path="res://Assets/CardGems/Subsidium.tres" id="26_subsidium"]
 [ext_resource type="Resource" path="res://Assets/CardGems/Spatium.tres" id="27_spatium"]
 [ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardSpawningService.cs" id="28_card_spawning"]
+[ext_resource type="Script" path="res://Scripts/Features/Portal/Components/WallSeam.cs" id="29_wall_seam"]
 
 [sub_resource type="StandardMaterial3D" id="StorefrontMaterial"]
 albedo_color = Color(0.18, 0.32, 0.5, 1)
@@ -120,6 +121,36 @@ size = Vector3(2.6, 1.2, 1.2)
 
 [sub_resource type="BoxShape3D" id="CounterShape"]
 size = Vector3(3, 1.5, 1)
+
+[sub_resource type="BoxMesh" id="WallDoorSegmentMesh"]
+material = SubResource("WallMaterial")
+size = Vector3(2.75, 2.4, 0.25)
+
+[sub_resource type="BoxShape3D" id="WallDoorSegmentShape"]
+size = Vector3(2.75, 2.4, 0.25)
+
+[sub_resource type="BoxShape3D" id="SeamZoneShape"]
+size = Vector3(8, 2.4, 8.5)
+
+[sub_resource type="StandardMaterial3D" id="SeamGlowMaterial"]
+albedo_color = Color(0.2, 0.8, 1, 1)
+emission_enabled = true
+emission = Color(0.1, 0.7, 1, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="BoxMesh" id="SeamGlowMesh"]
+material = SubResource("SeamGlowMaterial")
+size = Vector3(1.6, 2.2, 0.06)
+
+[sub_resource type="StandardMaterial3D" id="SeamDoorMaterial"]
+albedo_color = Color(0.15, 0.4, 0.55, 1)
+emission_enabled = true
+emission = Color(0.05, 0.25, 0.4, 1)
+emission_energy_multiplier = 1.5
+
+[sub_resource type="BoxMesh" id="SeamDoorMesh"]
+material = SubResource("SeamDoorMaterial")
+size = Vector3(1.6, 2.2, 0.12)
 
 [node name="ShopGraybox" type="Node3D"]
 
@@ -278,14 +309,25 @@ shape = SubResource("WallShortShape")
 [node name="Mesh" type="MeshInstance3D" parent="World/Walls/StorageWest"]
 mesh = SubResource("WallShortMesh")
 
-[node name="BackofficeSouth" type="StaticBody3D" parent="World/Walls"]
-position = Vector3(8, 1.2, 12.25)
+[node name="BackofficeSouth" type="Node3D" parent="World/Walls"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Walls/BackofficeSouth"]
-shape = SubResource("WallLongShape")
+[node name="West" type="StaticBody3D" parent="World/Walls/BackofficeSouth"]
+position = Vector3(5.5, 1.2, 12.25)
 
-[node name="Mesh" type="MeshInstance3D" parent="World/Walls/BackofficeSouth"]
-mesh = SubResource("WallLongMesh")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Walls/BackofficeSouth/West"]
+shape = SubResource("WallDoorSegmentShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="World/Walls/BackofficeSouth/West"]
+mesh = SubResource("WallDoorSegmentMesh")
+
+[node name="East" type="StaticBody3D" parent="World/Walls/BackofficeSouth"]
+position = Vector3(10.5, 1.2, 12.25)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Walls/BackofficeSouth/East"]
+shape = SubResource("WallDoorSegmentShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="World/Walls/BackofficeSouth/East"]
+mesh = SubResource("WallDoorSegmentMesh")
 
 [node name="BackofficeEast" type="StaticBody3D" parent="World/Walls"]
 position = Vector3(12.25, 1.2, 8)
@@ -304,7 +346,8 @@ mesh = SubResource("WallShortMesh")
 position = Vector3(8, 0, 8)
 
 [node name="SeamLocation" type="Marker3D" parent="World/Markers"]
-position = Vector3(4, 0, 8)
+position = Vector3(8, 1.2, 12.25)
+rotation_degrees = Vector3(0, 180, 0)
 
 [node name="DeliveryPoint" type="Marker3D" parent="World/Markers"]
 position = Vector3(0, 0, 8)
@@ -376,3 +419,58 @@ CardScene = ExtResource("11_card_scene")
 
 [node name="OrderUi" type="CanvasLayer" parent="."]
 script = ExtResource("5_order_terminal_ui")
+
+[node name="BackofficeZone" type="Area3D" parent="World"]
+position = Vector3(8, 1.2, 8)
+collision_layer = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/BackofficeZone"]
+shape = SubResource("SeamZoneShape")
+
+[node name="PortalWorkshop" type="Node3D" parent="World"]
+position = Vector3(60, 0, 8)
+
+[node name="Floor" type="StaticBody3D" parent="World/PortalWorkshop"]
+position = Vector3(0, -0.1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/PortalWorkshop/Floor"]
+shape = SubResource("FloorShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="World/PortalWorkshop/Floor"]
+mesh = SubResource("BackofficeFloorMesh")
+
+[node name="AreaLabel" type="Label3D" parent="World/PortalWorkshop"]
+position = Vector3(0, 2.4, 0)
+text = "WORKSHOP ENTRY"
+font_size = 48
+outline_size = 8
+modulate = Color(0.7, 0.9, 1, 1)
+
+[node name="WorkshopEntry" type="Marker3D" parent="World/PortalWorkshop"]
+position = Vector3(0, 1.2, 0)
+rotation_degrees = Vector3(0, 180, 0)
+
+[node name="Seam" type="Node3D" parent="World/Markers/SeamLocation" node_paths=PackedStringArray("Zone", "PlayerHolder", "Player", "WorkshopEntry", "Glow", "Door", "Hum")]
+script = ExtResource("29_wall_seam")
+Zone = NodePath("../../../BackofficeZone")
+PlayerHolder = NodePath("../../../../Player/CardInteraction/CardHolder")
+Player = NodePath("../../../../Player")
+WorkshopEntry = NodePath("../../../PortalWorkshop/WorkshopEntry")
+Glow = NodePath("Glow")
+Door = NodePath("Door")
+Hum = NodePath("Hum")
+
+[node name="Glow" type="MeshInstance3D" parent="World/Markers/SeamLocation/Seam"]
+visible = false
+material_override = SubResource("SeamGlowMaterial")
+mesh = SubResource("SeamGlowMesh")
+
+[node name="Hum" type="AudioStreamPlayer3D" parent="World/Markers/SeamLocation/Seam"]
+volume_db = -12.0
+unit_size = 4.0
+
+[node name="Door" type="Node3D" parent="World/Markers/SeamLocation/Seam"]
+visible = false
+
+[node name="Panel" type="MeshInstance3D" parent="World/Markers/SeamLocation/Seam/Door"]
+mesh = SubResource("SeamDoorMesh")
