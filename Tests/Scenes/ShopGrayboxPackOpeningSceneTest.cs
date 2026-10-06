@@ -69,6 +69,7 @@ public class ShopGrayboxPackOpeningSceneTest
         var box = (CardContainer)result.Spawned!;
         AssertBool(box.Open()).IsTrue();
         await Frames(OpenFrames);
+        _spawner.Spawned.Clear();
 
         var packs = Containers(CardContainerKind.Pack);
         AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
