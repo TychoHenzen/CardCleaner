@@ -42,7 +42,15 @@ public class ShopGrayboxOrderingSceneTest
     }
 
     [AfterTest]
-    public static void Teardown() => ServiceLocator.ResetForTesting();
+    public void Teardown()
+    {
+        if (GodotObject.IsInstanceValid(_terminal))
+            _terminal.Close();
+        if (GodotObject.IsInstanceValid(_shop))
+            _shop.Free();
+
+        ServiceLocator.ResetForTesting();
+    }
 
     [TestCase]
     [TestCategory("Unit")]
