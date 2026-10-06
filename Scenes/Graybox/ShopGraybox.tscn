@@ -277,7 +277,7 @@ position = Vector3(0, 0, 8)
 position = Vector3(-2, 0, 8)
 
 [node name="PcTerminal" type="StaticBody3D" parent="World/Markers/PcLocation" node_paths=PackedStringArray("Ui", "DeliveryPoint")]
-collision_layer = 5
+collision_layer = 4
 script = ExtResource("4_order_terminal")
 Catalog = ExtResource("8_backoffice_catalog")
 DeliveryPoint = NodePath("../../DeliveryPoint")
