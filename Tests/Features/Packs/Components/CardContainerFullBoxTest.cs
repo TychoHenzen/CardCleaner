@@ -19,6 +19,7 @@ public class CardContainerFullBoxTest
     private const int GenerousFrameBudget = 200;
     private const int OpenFrames = 12;
     private const int SettleFrames = 180;
+    private const float WallThickness = 0.2f;
 
     // Two spawn positions closer than this count as the same spot (items would start inside each other).
     private const float SamePositionTolerance = 0.001f;
@@ -72,12 +73,13 @@ public class CardContainerFullBoxTest
     [TestCategory("Unit")]
     public async Task AFullBoxOpenedAtTheStorageDeliveryPointSpawnsEveryItemInsideTheStorageRoomOnItsOwnSpot()
     {
-        AddFloor();
+        AddStorageRoom();
         var box = Make(BoxScene);
         box.GlobalPosition = StorageDelivery;
 
         // Opens the real box, every pack and every booster. Each level lands on the floor before the next is
-        // opened, as in the shop where the player opens an item only after it has come to rest.
+        // opened, as in the shop where the player opens an item only after it has come to rest. The walls only
+        // keep things from leaving the room afterwards; the spawn offsets under test are not touched by them.
         await OpenEverything(box, SettleFrames);
 
         var positions = _containerSpawns.Concat(_spawner.Spawned.Select(spawned => spawned.Transform.Origin)).ToList();
@@ -108,14 +110,31 @@ public class CardContainerFullBoxTest
     private CardContainer[] Containers(CardContainerKind kind) =>
         _world.GetChildren().OfType<CardContainer>().Where(c => c.Kind == kind && !c.IsOpened).ToArray();
 
-    private void AddFloor()
+    // The storage room as the shop has it, a floor and four walls, so a pack that rolls on landing stays in the
+    // room as it does in the shop; without walls where it settles is up to the physics engine run by run.
+    private static void AddStorageRoom()
     {
-        var floor = AddNode(new StaticBody3D());
-        floor.AddChild(new CollisionShape3D
-        {
-            Shape = new BoxShape3D { Size = new Vector3(40f, 1f, 40f) },
-            Position = new Vector3(StorageDelivery.X, -0.5f, StorageDelivery.Z)
-        });
+        var room = AddNode(new StaticBody3D());
+        var centre = StorageRoom.GetCenter();
+        var halfWall = WallThickness / 2f;
+        var width = StorageRoom.Size.X + 2f * WallThickness;
+        var depth = StorageRoom.Size.Y + 2f * WallThickness;
+        var wallY = StorageWallHeight / 2f;
+
+        AddBox(room, new Vector3(centre.X, -0.5f, centre.Y), new Vector3(width, 1f, depth));
+        AddBox(room, new Vector3(StorageRoom.Position.X - halfWall, wallY, centre.Y),
+            new Vector3(WallThickness, StorageWallHeight, depth));
+        AddBox(room, new Vector3(StorageRoom.End.X + halfWall, wallY, centre.Y),
+            new Vector3(WallThickness, StorageWallHeight, depth));
+        AddBox(room, new Vector3(centre.X, wallY, StorageRoom.Position.Y - halfWall),
+            new Vector3(width, StorageWallHeight, WallThickness));
+        AddBox(room, new Vector3(centre.X, wallY, StorageRoom.End.Y + halfWall),
+            new Vector3(width, StorageWallHeight, WallThickness));
+    }
+
+    private static void AddBox(StaticBody3D body, Vector3 centre, Vector3 size)
+    {
+        body.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = size }, Position = centre });
     }
 
     /// <summary>Opens the box, then every pack and booster, optionally letting each level settle first.</summary>
