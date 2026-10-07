@@ -44,7 +44,8 @@ public class RaycastVisibilityCheckerTest
     [AfterTest]
     public void Teardown()
     {
-        _root.QueueFree();
+        // _root never enters the tree, so QueueFree would leave it alive when gdUnit counts orphans.
+        _root.Free();
     }
 
     [TestCase]

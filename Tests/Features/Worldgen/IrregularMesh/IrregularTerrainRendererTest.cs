@@ -17,14 +17,9 @@ public class IrregularTerrainRendererTest
     [BeforeTest]
     public void Setup()
     {
-        _renderer = new IrregularMeshNs.IrregularTerrainRenderer();
+        // In the tree, as in the game: _Ready builds the MeshInstance2D child, and gdUnit frees both after the test.
+        _renderer = AddNode(new IrregularMeshNs.IrregularTerrainRenderer());
         _testMesh = CreateSimpleTestMesh();
-    }
-
-    [AfterTest]
-    public void Teardown()
-    {
-        _renderer.QueueFree();
     }
 
     [TestCase]
@@ -47,7 +42,6 @@ public class IrregularTerrainRendererTest
     {
         // RenderTerrainSolid should work without atlas resources
         // This tests the basic mesh building functionality
-        _renderer._Ready();
         _renderer.RenderTerrainSolid(_testMesh);
 
         // The internal MeshInstance2D should have a mesh
@@ -59,7 +53,6 @@ public class IrregularTerrainRendererTest
     [TestCase]
     public void TestSolidColorMeshHasCorrectPrimitiveType()
     {
-        _renderer._Ready();
         _renderer.RenderTerrainSolid(_testMesh);
 
         var meshInstance = _renderer.GetChildOrNull<MeshInstance2D>(0);
@@ -74,7 +67,6 @@ public class IrregularTerrainRendererTest
     public void TestEmptyMeshHandledGracefully()
     {
         var emptyMesh = new IrregularMeshNs.IrregularMesh();
-        _renderer._Ready();
 
         // Should not crash with empty mesh
         _renderer.RenderTerrainSolid(emptyMesh);
@@ -88,7 +80,6 @@ public class IrregularTerrainRendererTest
     public void TestQuadCornerPositionsUsedForMesh()
     {
         // Create a simple quad mesh and verify rendering
-        _renderer._Ready();
         _renderer.RenderTerrainSolid(_testMesh);
 
         // If mesh was built, we have quads rendered
@@ -132,8 +123,6 @@ public class IrregularTerrainRendererTest
     [TestCase]
     public void TestMeshInstanceIsChildOfRenderer()
     {
-        _renderer._Ready();
-
         // After _Ready, a MeshInstance2D child should exist
         var childCount = _renderer.GetChildCount();
         AssertThat(childCount).IsEqual(1);
@@ -145,8 +134,6 @@ public class IrregularTerrainRendererTest
     [TestCase]
     public void TestRenderTerrainWithMissingAtlasFails()
     {
-        _renderer._Ready();
-
         // RenderTerrain requires atlas resources which won't be loaded in tests
         // This should log an error but not crash
         _renderer.RenderTerrain(_testMesh);

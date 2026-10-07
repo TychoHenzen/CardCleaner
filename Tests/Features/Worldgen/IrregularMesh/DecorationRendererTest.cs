@@ -18,15 +18,9 @@ public class DecorationRendererTest
     public void Setup()
     {
         _testMesh = CreateSimpleTestMesh();
-        _renderer = new IrregularMeshNs.DecorationRenderer();
-        _renderer._Ready();
+        // In the tree, as in the game, so the sprites a test renders are not orphans. gdUnit frees it after the test.
+        _renderer = AddNode(new IrregularMeshNs.DecorationRenderer());
         _renderer.Initialize(_testMesh);
-    }
-
-    [AfterTest]
-    public void Teardown()
-    {
-        _renderer.QueueFree();
     }
 
     [TestCase]

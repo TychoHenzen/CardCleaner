@@ -20,9 +20,17 @@ dotnet test --logger "console;verbosity=detailed"
 
 # Run a specific test class
 dotnet test --filter "FullyQualifiedName~CardSignatureTest"
+
+# Run the whole gdUnit suite the way CI does (Windows PowerShell 5.1 or PowerShell 7)
+powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot_v4.7.1-stable_mono_win64.exe>
+
+# Only the [TestCategory("Unit")] suites, as CI runs on pull requests
+powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot exe> -Fast
 ```
 
 Tests use gdUnit4 framework and require the Godot runtime (`[RequireGodotRuntime]` attribute). Test files are in `Tests/` mirroring the `Scripts/` structure.
+
+gdUnit finds a C# suite by its file name, so a `[TestSuite]` class must be named after its file (`TestSuiteNamingTest` enforces this). `Run-GdUnit.ps1` fails when a `[TestSuite]` file never runs. When Godot prints nothing for `-StallSeconds` (180 by default) it kills Godot, names the suite it stalled in, and reruns only the unfinished suites (at most `-MaxResumes` times); a second stall in the same place fails the run. Reports and logs go to `reports/ci`.
 
 ## Code Style
 

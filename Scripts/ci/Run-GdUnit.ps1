@@ -4,153 +4,389 @@ param(
     [string]$GodotBinary = $env:GODOT_BIN,
 
     [Parameter()]
-    [switch]$Fast
+    [switch]$Fast,
+
+    # Seconds without new GdUnit output before Godot counts as stalled. Healthy suites print a line every few
+    # seconds and the slowest single cases take about 3 s; the bounds keep a typo from disabling the watchdog.
+    [Parameter()]
+    [ValidateRange(10, 3600)]
+    [int]$StallSeconds = 180,
+
+    # How many times one run may restart Godot on the unfinished suites after a stall. More than a handful
+    # means the run is not converging, so the bound stops a broken run from looping for hours.
+    [Parameter()]
+    [ValidateRange(0, 10)]
+    [int]$MaxResumes = 3
 )
 
 $ErrorActionPreference = 'Stop'
 
+# Runs on Windows PowerShell 5.1 (local) and PowerShell 7 (CI): no `e escapes, no Split-Path -LeafBase.
+# Output growth is checked this often; small against the stall timeout, cheap against a 5-minute run.
+$PollSeconds = 5
+# After taskkill, wait this long for the killed tree to exit and release its log files.
+$KillWaitMilliseconds = 15000
+# Attempts, one second apart, to read a log the killed tree may still hold open.
+$ReadRetries = 10
+$AnsiEscape = [regex]::new([string][char]27 + '\[[0-9;]*m')
+$SuiteStartPattern = [regex]::new('^\s*Run Test Suite: (?<suite>res://\S+)')
+$StatisticsPattern = [regex]::new('^\s*Statistics: \d+ test cases \| (?<errors>\d+) errors \| (?<failures>\d+) failures')
+# Only GdUnit's own result shapes: a test's PASSED/FAILED line and a suite's Statistics line. Tests print their
+# own lines too (for example "Atlas Mapping Statistics:"), which must not be reported as results.
+$ResultLinePattern = [regex]::new('^\s*res://\S+ > .+ (PASSED|FAILED)\b|^\s*Statistics: \d+ test cases')
+
+function Resolve-GodotConsole {
+    param([string]$Binary)
+
+    $path = (Get-Item -LiteralPath $Binary).FullName
+    $name = [IO.Path]::GetFileNameWithoutExtension($path)
+    $console = Join-Path (Split-Path -Parent $path) "${name}_console.exe"
+    if ((Test-Path -LiteralPath $console -PathType Leaf) -and $path -ne $console) {
+        return (Get-Item -LiteralPath $console).FullName
+    }
+    return $path
+}
+
+function ConvertTo-ResPath {
+    param([string]$RepositoryRoot, [string]$Path)
+
+    return 'res://' + $Path.Substring($RepositoryRoot.Length).TrimStart('\').Replace('\', '/')
+}
+
+# Suite files gdUnit is expected to run: an attribute line for TestSuite in any spelling TestSuiteNamingTest accepts
+# ([TestSuite], [TestSuite()], [TestSuiteAttribute], [GdUnit4.TestSuite]).
+function Get-ExpectedSuites {
+    param([string]$RepositoryRoot, [switch]$UnitOnly)
+
+    $files = Get-ChildItem -LiteralPath (Join-Path $RepositoryRoot 'Tests') -Filter '*.cs' -File -Recurse |
+        Where-Object { Select-String -LiteralPath $_.FullName -Pattern '^\s*\[(?:GdUnit4\.)?TestSuite(?:Attribute)?(?:\(\s*\))?\]' -Quiet }
+    if ($UnitOnly) {
+        $files = $files | Where-Object { Select-String -LiteralPath $_.FullName -Pattern '\[TestCategory\("Unit"\)\]' -Quiet }
+    }
+    return @($files | ForEach-Object { ConvertTo-ResPath -RepositoryRoot $RepositoryRoot -Path $_.FullName } | Sort-Object)
+}
+
+# Pure log reading: which suites started, which finished (printed Statistics), their error and failure totals.
+function Read-SuiteProgress {
+    param([string]$LogText)
+
+    $progress = [pscustomobject]@{
+        Started = New-Object System.Collections.Generic.List[string]
+        Finished = New-Object System.Collections.Generic.List[string]
+        Errors = 0
+        Failures = 0
+        LastResultLine = '<none>'
+    }
+    $current = $null
+    foreach ($line in ($AnsiEscape.Replace($LogText, '') -split "`r?`n")) {
+        $start = $SuiteStartPattern.Match($line)
+        if ($start.Success) {
+            $current = $start.Groups['suite'].Value
+            $progress.Started.Add($current)
+            continue
+        }
+        if ($ResultLinePattern.IsMatch($line)) {
+            $progress.LastResultLine = $line.Trim()
+        }
+        $statistics = $StatisticsPattern.Match($line)
+        if ($statistics.Success -and $null -ne $current) {
+            $progress.Finished.Add($current)
+            $progress.Errors += [int]$statistics.Groups['errors'].Value
+            $progress.Failures += [int]$statistics.Groups['failures'].Value
+            $current = $null
+        }
+    }
+    return $progress
+}
+
+function Get-ParentResPath {
+    param([string]$ResPath)
+
+    return $ResPath.Substring(0, $ResPath.LastIndexOf('/'))
+}
+
+function Test-AllPending {
+    param([string]$Directory, [string[]]$AllSuites, $PendingSet)
+
+    foreach ($suite in $AllSuites) {
+        if ($suite.StartsWith("$Directory/", [StringComparison]::OrdinalIgnoreCase) -and -not $PendingSet.Contains($suite)) {
+            return $false
+        }
+    }
+    return $true
+}
+
+# Shortest -a list for a resume, so the command line stays far below the Windows limit as the suite grows:
+# the highest directory whose suites are all unfinished, otherwise the single suite file.
+function Get-ResumeTargets {
+    param([string[]]$Pending, [string[]]$AllSuites)
+
+    $pendingSet = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+    foreach ($suite in $Pending) {
+        [void]$pendingSet.Add($suite)
+    }
+    $targets = New-Object System.Collections.Generic.List[string]
+    foreach ($suite in $Pending) {
+        $target = $suite
+        $directory = Get-ParentResPath -ResPath $suite
+        while ($directory -ne 'res://Tests' -and (Test-AllPending -Directory $directory -AllSuites $AllSuites -PendingSet $pendingSet)) {
+            $target = $directory
+            $directory = Get-ParentResPath -ResPath $directory
+        }
+        if (-not $targets.Contains($target)) {
+            $targets.Add($target)
+        }
+    }
+    return , $targets.ToArray()
+}
+
+# The suite GdUnit was running when it stalled, or $null when the stall came between suites or before the first.
+function Get-UnfinishedSuite {
+    param($Progress)
+
+    if ($Progress.Started.Count -eq 0) {
+        return $null
+    }
+    $last = $Progress.Started[$Progress.Started.Count - 1]
+    if ($Progress.Finished.Contains($last)) {
+        return $null
+    }
+    return $last
+}
+
+function Get-StallPoint {
+    param($Progress)
+
+    $unfinished = Get-UnfinishedSuite -Progress $Progress
+    if ($null -ne $unfinished) {
+        return "in $unfinished"
+    }
+    if ($Progress.Finished.Count -gt 0) {
+        return "after $($Progress.Finished[$Progress.Finished.Count - 1])"
+    }
+    return 'before the first suite'
+}
+
+# Kills Godot's whole process tree and confirms the root process is gone, so a resume never overlaps a survivor.
+function Stop-ProcessTree {
+    param([System.Diagnostics.Process]$Process)
+
+    $ErrorActionPreference = 'Continue'
+    & taskkill.exe /PID $Process.Id /T /F *> $null
+    $taskkillExit = $LASTEXITCODE
+    if (-not $Process.WaitForExit($KillWaitMilliseconds)) {
+        throw "Could not stop Godot (PID $($Process.Id)); taskkill exit code $taskkillExit"
+    }
+}
+
+# A just-killed Godot can still hold its log open for a moment, so read with shared access and retry briefly.
+function Read-SharedText {
+    param([string]$Path)
+
+    for ($try = 1; ; $try++) {
+        try {
+            $stream = [IO.File]::Open($Path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]'ReadWrite, Delete')
+            try {
+                return (New-Object IO.StreamReader($stream)).ReadToEnd()
+            }
+            finally {
+                $stream.Dispose()
+            }
+        }
+        catch {
+            if ($try -ge $ReadRetries) {
+                throw
+            }
+            Start-Sleep -Seconds 1
+        }
+    }
+}
+
+# Starts Godot and waits for it, killing the whole process tree once its stdout stops growing for $StallSeconds.
+function Invoke-GodotWatched {
+    param([string]$GodotPath, [string[]]$Arguments, [string]$WorkingDirectory, [string]$StdoutPath, [string]$StderrPath)
+
+    $process = Start-Process -WindowStyle Hidden -FilePath $GodotPath -ArgumentList $Arguments -WorkingDirectory $WorkingDirectory -RedirectStandardOutput $StdoutPath -RedirectStandardError $StderrPath -PassThru
+    $null = $process.Handle # keeps ExitCode readable after exit
+    $lastLength = -1
+    $quietSince = Get-Date
+    while (-not $process.HasExited) {
+        Start-Sleep -Seconds $PollSeconds
+        $length = (Get-Item -LiteralPath $StdoutPath).Length
+        if ($length -ne $lastLength) {
+            $lastLength = $length
+            $quietSince = Get-Date
+        }
+        elseif (((Get-Date) - $quietSince).TotalSeconds -ge $StallSeconds) {
+            Stop-ProcessTree -Process $process
+            return [pscustomobject]@{ Stalled = $true; ExitCode = $null }
+        }
+    }
+    $process.WaitForExit()
+    return [pscustomobject]@{ Stalled = $false; ExitCode = $process.ExitCode }
+}
+
+function Read-ReportTotals {
+    param([string]$ReportRoot, [datetime]$Since)
+
+    $reports = @(Get-ChildItem -LiteralPath $ReportRoot -Filter results.xml -File -Recurse |
+        Where-Object { $_.LastWriteTimeUtc -ge $Since })
+    $totals = [pscustomobject]@{ Files = $reports.Count; Errors = 0; Failures = 0; Paths = @($reports.FullName) }
+    foreach ($report in $reports) {
+        try {
+            [xml]$xml = Get-Content -LiteralPath $report.FullName -Raw
+        }
+        catch {
+            throw "GdUnit report is not valid XML: $($report.FullName)"
+        }
+        if ($null -eq $xml.testsuites) {
+            throw "GdUnit report has no testsuites root: $($report.FullName)"
+        }
+        $totals.Failures += @($xml.SelectNodes('//failure')).Count
+        $totals.Errors += @($xml.SelectNodes('//error')).Count
+    }
+    return $totals
+}
+
+function Invoke-Build {
+    param([string]$RepositoryRoot, [string]$ReportRoot)
+
+    $stdout = Join-Path $ReportRoot 'dotnet-debug.stdout.log'
+    $stderr = Join-Path $ReportRoot 'dotnet-debug.stderr.log'
+    $dotnet = (Get-Command dotnet -CommandType Application).Source
+    $arguments = @('build', 'CardCleaner.csproj', '--configuration', 'Debug', '--no-restore')
+    $build = Start-Process -FilePath $dotnet -ArgumentList $arguments -WorkingDirectory $RepositoryRoot -RedirectStandardOutput $stdout -RedirectStandardError $stderr -Wait -PassThru
+    if ($build.ExitCode -ne 0) {
+        $tail = if (Test-Path -LiteralPath $stderr) { (Get-Content -LiteralPath $stderr -Tail 40) -join [Environment]::NewLine } else { '<missing>' }
+        throw "Godot test solution build failed with exit code $($build.ExitCode): $tail"
+    }
+}
+
+function Invoke-Import {
+    param([string]$GodotPath, [string]$RepositoryRoot, [string]$ReportRoot)
+
+    $stdout = Join-Path $ReportRoot 'godot-import.stdout.log'
+    $stderr = Join-Path $ReportRoot 'godot-import.stderr.log'
+    $arguments = @('--headless', '--editor', '--recovery-mode', '--import', '--path', '.', '--quit')
+    $import = Invoke-GodotWatched -GodotPath $GodotPath -Arguments $arguments -WorkingDirectory $RepositoryRoot -StdoutPath $stdout -StderrPath $stderr
+    if ($import.Stalled) {
+        throw "Godot project import stalled (no output for $StallSeconds s); see $stdout"
+    }
+    if ($import.ExitCode -ne 0) {
+        $tail = if (Test-Path -LiteralPath $stderr) { (Get-Content -LiteralPath $stderr -Tail 40) -join [Environment]::NewLine } else { '<missing>' }
+        throw "Godot project import failed with exit code $($import.ExitCode): $tail"
+    }
+}
+
 if ([string]::IsNullOrWhiteSpace($GodotBinary)) {
     throw 'Godot executable is required. Pass -GodotBinary or set GODOT_BIN.'
 }
-
 if (-not (Test-Path -LiteralPath $GodotBinary -PathType Leaf)) {
     throw "Godot executable was not found: $GodotBinary"
 }
 
-$godotPath = (Get-Item -LiteralPath $GodotBinary).FullName
-$consolePath = Join-Path (Split-Path -Parent $godotPath) "$(Split-Path -LeafBase $godotPath)_console.exe"
-if ((Test-Path -LiteralPath $consolePath -PathType Leaf) -and $godotPath -ne $consolePath) {
-    $godotPath = (Get-Item -LiteralPath $consolePath).FullName
-}
+$godotPath = Resolve-GodotConsole -Binary $GodotBinary
 $repositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 $reportRoot = Join-Path $repositoryRoot 'reports\ci'
-$buildStdoutPath = Join-Path $reportRoot 'dotnet-debug.stdout.log'
-$buildStderrPath = Join-Path $reportRoot 'dotnet-debug.stderr.log'
-$importStdoutPath = Join-Path $reportRoot 'godot-import.stdout.log'
-$importStderrPath = Join-Path $reportRoot 'godot-import.stderr.log'
-$stdoutPath = Join-Path $reportRoot 'godot.stdout.log'
-$stderrPath = Join-Path $reportRoot 'godot.stderr.log'
-$startedAt = [DateTime]::UtcNow
-$godotArguments = @(
-    '--headless'
-    '--path'
-    '.'
-    '-s'
-    'res://addons/gdUnit4/bin/GdUnitCmdTool.gd'
-    '-c'
-    '--ignoreHeadlessMode'
-    '-rd'
-    'reports/ci'
-)
-
-$testSuites = Get-ChildItem -LiteralPath (Join-Path $repositoryRoot 'Tests') -Filter '*.cs' -File -Recurse |
-    Where-Object { Select-String -LiteralPath $_.FullName -Pattern '\[TestSuite\]' -Quiet }
-if ($Fast) {
-    $testSuites = @($testSuites | Where-Object {
-        Select-String -LiteralPath $_.FullName -Pattern '\[TestCategory\("Unit"\)\]' -Quiet
-    })
-    if ($testSuites.Count -eq 0) {
-        throw 'Fast GdUnit mode found no [TestCategory("Unit")] suites.'
-    }
-}
-
-if ($Fast) {
-    foreach ($testSuite in $testSuites) {
-        $relativePath = $testSuite.FullName.Substring($repositoryRoot.Length).TrimStart('\').Replace('\', '/')
-        $godotArguments += @('-a', "res://$relativePath")
-    }
-}
-else {
-    $godotArguments += @('-a', 'res://Tests')
-}
-
 New-Item -ItemType Directory -Path $reportRoot -Force | Out-Null
 Write-Host "Using Godot executable: $godotPath"
 
-$dotnetPath = (Get-Command dotnet -CommandType Application).Source
-$buildArguments = @(
-    'build'
-    'CardCleaner.csproj'
-    '--configuration'
-    'Debug'
-    '--no-restore'
-)
-$buildProcess = Start-Process -FilePath $dotnetPath -ArgumentList $buildArguments -WorkingDirectory $repositoryRoot -RedirectStandardOutput $buildStdoutPath -RedirectStandardError $buildStderrPath -Wait -PassThru
-if ($buildProcess.ExitCode -ne 0) {
-    $buildStderr = if (Test-Path -LiteralPath $buildStderrPath) { (Get-Content -LiteralPath $buildStderrPath -Tail 40) -join [Environment]::NewLine } else { '<missing>' }
-    throw "Godot test solution build failed with exit code $($buildProcess.ExitCode): $buildStderr"
+$allSuites = Get-ExpectedSuites -RepositoryRoot $repositoryRoot
+$expected = if ($Fast) { Get-ExpectedSuites -RepositoryRoot $repositoryRoot -UnitOnly } else { $allSuites }
+if ($expected.Count -eq 0) {
+    throw 'GdUnit found no [TestSuite] files to run.'
 }
 
-$importArguments = @(
-    '--headless'
-    '--editor'
-    '--recovery-mode'
-    '--import'
-    '--path'
-    '.'
-    '--quit'
-)
-$importProcess = Start-Process -WindowStyle Hidden -FilePath $godotPath -ArgumentList $importArguments -WorkingDirectory $repositoryRoot -RedirectStandardOutput $importStdoutPath -RedirectStandardError $importStderrPath -Wait -PassThru
-if ($importProcess.ExitCode -ne 0) {
-    $importStderr = if (Test-Path -LiteralPath $importStderrPath) { (Get-Content -LiteralPath $importStderrPath -Tail 40) -join [Environment]::NewLine } else { '<missing>' }
-    throw "Godot project import failed with exit code $($importProcess.ExitCode): $importStderr"
-}
+Invoke-Build -RepositoryRoot $repositoryRoot -ReportRoot $reportRoot
+Invoke-Import -GodotPath $godotPath -RepositoryRoot $repositoryRoot -ReportRoot $reportRoot
 
-$godotProcess = Start-Process -WindowStyle Hidden -FilePath $godotPath -ArgumentList $godotArguments -WorkingDirectory $repositoryRoot -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath -Wait -PassThru
-$godotExitCode = $godotProcess.ExitCode
+$baseArguments = @('--headless', '--path', '.', '-s', 'res://addons/gdUnit4/bin/GdUnitCmdTool.gd', '-c', '--ignoreHeadlessMode', '-rd', 'reports/ci')
+$finished = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+$stallPoints = New-Object System.Collections.Generic.List[string]
+$stalledSuites = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+$lastFinished = 'none'
+$errors = 0
+$failures = 0
+$runStartedAt = [DateTime]::UtcNow
+$finalExitCode = $null
+# A full run starts from the Tests folder, -Fast names its suite files, and a resume names its compact targets.
+$targets = if ($Fast) { $expected } else { @('res://Tests') }
 
-$latestResult = Get-ChildItem -LiteralPath $reportRoot -Filter results.xml -File -Recurse |
-    Where-Object { $_.LastWriteTimeUtc -ge $startedAt } |
-    Sort-Object -Property LastWriteTimeUtc |
-    Select-Object -Last 1
+for ($attempt = 0; ; $attempt++) {
+    $suffix = if ($attempt -eq 0) { '' } else { ".resume$attempt" }
+    $stdoutPath = Join-Path $reportRoot "godot$suffix.stdout.log"
+    $stderrPath = Join-Path $reportRoot "godot$suffix.stderr.log"
+    $suiteArguments = @($targets | ForEach-Object { '-a', $_ })
 
-if ($null -eq $latestResult) {
-    $stdout = if (Test-Path -LiteralPath $stdoutPath) { (Get-Content -LiteralPath $stdoutPath -Tail 40) -join [Environment]::NewLine } else { '<missing>' }
-    $stderr = if (Test-Path -LiteralPath $stderrPath) { (Get-Content -LiteralPath $stderrPath -Tail 40) -join [Environment]::NewLine } else { '<missing>' }
-    throw "GdUnit did not produce a results.xml report under $reportRoot (exit=$godotExitCode). stdout=$stdout stderr=$stderr"
-}
-
-try {
-    [xml]$report = Get-Content -LiteralPath $latestResult.FullName -Raw
-}
-catch {
-    throw "GdUnit report is not valid XML: $($latestResult.FullName)"
-}
-
-if ($null -eq $report.testsuites) {
-    throw "GdUnit report has no testsuites root: $($latestResult.FullName)"
-}
-
-$failureCount = 0
-$errorCount = 0
-if ($report.testsuites.failures) {
-    $failureCount = [int]$report.testsuites.failures
-}
-if ($report.testsuites.errors) {
-    $errorCount = [int]$report.testsuites.errors
-}
-
-foreach ($suite in @($report.testsuites.testsuite)) {
-    if ($suite.failures) {
-        $failureCount = [Math]::Max($failureCount, [int]$suite.failures)
+    $run = Invoke-GodotWatched -GodotPath $godotPath -Arguments ($baseArguments + $suiteArguments) -WorkingDirectory $repositoryRoot -StdoutPath $stdoutPath -StderrPath $stderrPath
+    $progress = Read-SuiteProgress -LogText (Read-SharedText -Path $stdoutPath)
+    foreach ($suite in $progress.Finished) {
+        [void]$finished.Add($suite)
     }
-    if ($suite.errors) {
-        $errorCount = [Math]::Max($errorCount, [int]$suite.errors)
+
+    if (-not $run.Stalled) {
+        $finalExitCode = $run.ExitCode
+        break
     }
+
+    # A killed Godot normally writes no results.xml (GdUnit writes it when the session shuts down), so the suites it
+    # finished are judged from their Statistics lines. A report it did write is still read below; counting a
+    # failure from both sources only matters when it is already non-zero.
+    $errors += $progress.Errors
+    $failures += $progress.Failures
+    $point = Get-StallPoint -Progress $progress
+    Write-Warning "GdUnit stalled $point (no output for $StallSeconds s). Last result: $($progress.LastResultLine)"
+    $stallPoints.Add($point)
+    $unfinished = Get-UnfinishedSuite -Progress $progress
+    if ($null -ne $unfinished -and -not $stalledSuites.Add($unfinished)) {
+        throw "GdUnit stalled twice in $unfinished; see $stdoutPath"
+    }
+    # A resume that finishes no suite is not converging, whether it stalls in a suite, between suites or at startup.
+    if ($attempt -gt 0 -and $progress.Finished.Count -eq 0) {
+        throw "GdUnit stalled $point again after resuming, without finishing any suite (last finished: $lastFinished); see $stdoutPath"
+    }
+    if ($progress.Finished.Count -gt 0) {
+        $lastFinished = $progress.Finished[$progress.Finished.Count - 1]
+    }
+    if ($attempt -ge $MaxResumes) {
+        throw "GdUnit stalled $($stallPoints.Count) times (limit $MaxResumes resumes); last stall $point"
+    }
+    $pending = @($expected | Where-Object { -not $finished.Contains($_) })
+    if ($pending.Count -eq 0) {
+        break
+    }
+    $targets = Get-ResumeTargets -Pending $pending -AllSuites $allSuites
+    Write-Host "Resuming with $($pending.Count) unfinished suite(s): $($targets -join ' ')"
 }
 
-$failureNodes = @($report.SelectNodes('//failure'))
-$errorNodes = @($report.SelectNodes('//error'))
+# Every report written since the run began counts, and at least one is required: a run whose last attempt was
+# killed after its final suite printed Statistics still has to leave a report before it can pass.
+$totals = Read-ReportTotals -ReportRoot $reportRoot -Since $runStartedAt
+if ($totals.Files -eq 0) {
+    $stdoutTail = (Get-Content -LiteralPath $stdoutPath -Tail 40) -join [Environment]::NewLine
+    $exitText = if ($null -eq $finalExitCode) { 'killed after a stall' } else { "exit=$finalExitCode" }
+    throw "GdUnit did not produce a results.xml report under $reportRoot ($exitText). stdout=$stdoutTail"
+}
+$errors += $totals.Errors
+$failures += $totals.Failures
 
-if ($failureCount -gt 0 -or $errorCount -gt 0 -or $failureNodes.Count -gt 0 -or $errorNodes.Count -gt 0) {
-    throw "GdUnit report is not green: failures=$failureCount, errors=$errorCount, report=$($latestResult.FullName)"
+if ($failures -gt 0 -or $errors -gt 0) {
+    throw "GdUnit run is not green: failures=$failures, errors=$errors, reports under $reportRoot"
 }
 
-if ($godotExitCode -eq 101) {
-    Write-Warning 'GdUnit reported orphan-node warnings (exit code 101); the JUnit report has no test failures or errors.'
-}
-elseif ($godotExitCode -ne 0) {
-    throw "Godot exited with code $godotExitCode after a green report: $($latestResult.FullName)"
+$missing = @($expected | Where-Object { -not $finished.Contains($_) })
+if ($missing.Count -gt 0) {
+    throw "GdUnit never ran $($missing.Count) suite file(s); a class named differently from its file is skipped: $($missing -join ', ')"
 }
 
-Write-Host "GdUnit passed: $($latestResult.FullName)"
+if ($finalExitCode -eq 101) {
+    Write-Warning 'GdUnit reported orphan-node warnings (exit code 101); the reports have no test failures or errors.'
+}
+elseif ($null -ne $finalExitCode -and $finalExitCode -ne 0) {
+    throw "Godot exited with code $finalExitCode after a green report under $reportRoot"
+}
+
+if ($stallPoints.Count -gt 0) {
+    Write-Warning "GdUnit passed after $($stallPoints.Count) stall(s): $($stallPoints -join '; ')"
+}
+Write-Host "GdUnit passed: $($finished.Count) of $($expected.Count) suite files ran."

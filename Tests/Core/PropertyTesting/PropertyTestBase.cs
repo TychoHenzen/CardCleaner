@@ -13,7 +13,6 @@ namespace CardCleaner.Tests.Core.PropertyTesting;
 ///     RandomNumberGenerator. For FsCheck property test reproduction, use the seed reported
 ///     in failure messages with the WithSeed() method. For Godot RNG-based tests, use SeedManager.
 /// </remarks>
-[TestSuite]
 [RequireGodotRuntime]
 public abstract class PropertyTestBase
 {
