@@ -1053,7 +1053,9 @@ Exit = NodePath("../../../Workshop/WorkshopEntry")
 [node name="ShopReturn" type="Marker3D" parent="World/Markers"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 12, 1.5, -6)
 
-[node name="ReturnSeam" parent="World/Workshop" node_paths=PackedStringArray("PlayerHolder", "Player", "Exit")]
+[node name="ReturnSeam" parent="World/Workshop" node_paths=PackedStringArray("PlayerHolder", "Player", "Exit") instance=ExtResource("PortalDoorway")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.8, 1.5, 5.8)
+AlwaysOpen = true
 PlayerHolder = NodePath("../../../Player/CardInteraction/CardHolder")
 Player = NodePath("../../../Player")
 Exit = NodePath("../../Markers/ShopReturn")
