@@ -1,0 +1,89 @@
+using System;
+
+namespace CardCleaner.Scripts.Features.Card.Models;
+
+/// <summary>
+///     Bakes raster art into a bevel map: every colour region gets its own bevel, standing in for Axiom2d's
+///     per-shape UVs. Texel channels, in the art's own pixel space (x right, y down, like UV):
+///     R, G = the bevel normal's x and y as 0.5 + 0.5 * n; flat is 128. B = bevel strength, 255 on the edge
+///     falling to 0 at the bevel width. A = 255 where the art is opaque. z is rebuilt as sqrt(1 - x^2 - y^2).
+/// </summary>
+public static class CardEffectNormalBaker
+{
+    /// <summary>Bevel width as a fraction of the region's shorter bounding-box side (Axiom2d bevel_width 0.15 in UV).</summary>
+    public const float BevelWidthFraction = 0.15f;
+
+    /// <summary>How far the normal leans at the edge, as xy length over z (Axiom2d <c>bevel_strength * 0.8</c>).</summary>
+    public const float MaxTilt = 0.8f;
+
+    private const byte FlatChannel = 128;
+
+    public static CardEffectNormalMap Bake(byte[] rgba, int width, int height)
+    {
+        return Bake(CardEffectRegionSegmenter.Segment(rgba, width, height));
+    }
+
+    public static CardEffectNormalMap Bake(CardEffectRegionMap regions)
+    {
+        var texels = new byte[regions.Width * regions.Height * 4];
+        for (var i = 0; i < texels.Length; i += 4)
+        {
+            texels[i] = FlatChannel;
+            texels[i + 1] = FlatChannel;
+        }
+
+        foreach (var bounds in CardEffectRegionBounds.Of(regions))
+            BevelRegion(regions, bounds, texels);
+
+        return new CardEffectNormalMap(regions.Width, regions.Height, texels);
+    }
+
+    private static void BevelRegion(CardEffectRegionMap regions, CardEffectRegionBounds bounds, byte[] texels)
+    {
+        // One outside pixel all round, so the art's own edge bevels like any other region edge.
+        var width = bounds.Width + 2;
+        var height = bounds.Height + 2;
+        var inside = new bool[width * height];
+        for (var y = 0; y < bounds.Height; y++)
+        for (var x = 0; x < bounds.Width; x++)
+            inside[(y + 1) * width + x + 1] = regions.Labels[(bounds.MinY + y) * regions.Width + bounds.MinX + x] == bounds.Id;
+
+        var field = new CardEffectDistanceField(inside, width, height);
+        var bevelWidth = MathF.Max(1f, BevelWidthFraction * MathF.Min(bounds.Width, bounds.Height));
+        for (var y = 0; y < bounds.Height; y++)
+        for (var x = 0; x < bounds.Width; x++)
+        {
+            var local = (y + 1) * width + x + 1;
+            if (inside[local])
+                WriteTexel(texels, ((bounds.MinY + y) * regions.Width + bounds.MinX + x) * 4, field, local, bevelWidth);
+        }
+    }
+
+    private static void WriteTexel(byte[] texels, int at, CardEffectDistanceField field, int local, float bevelWidth)
+    {
+        // The distance is to the centre of the nearest outside pixel, half a pixel more than to the edge itself.
+        var depth = field.DistanceAt(local) - 0.5f;
+        var strength = 1f - Smoothstep(depth / bevelWidth);
+        var tilt = strength * MaxTilt;
+        var length = field.DistanceAt(local);
+        var tiltX = field.OffsetXAt(local) / length * tilt;
+        var tiltY = field.OffsetYAt(local) / length * tilt;
+        var normalLength = MathF.Sqrt(tiltX * tiltX + tiltY * tiltY + 1f);
+
+        texels[at] = Encode(tiltX / normalLength * 0.5f + 0.5f);
+        texels[at + 1] = Encode(tiltY / normalLength * 0.5f + 0.5f);
+        texels[at + 2] = Encode(strength);
+        texels[at + 3] = byte.MaxValue;
+    }
+
+    private static float Smoothstep(float t)
+    {
+        var x = Math.Clamp(t, 0f, 1f);
+        return x * x * (3f - 2f * x);
+    }
+
+    private static byte Encode(float unit)
+    {
+        return (byte)(Math.Clamp(unit, 0f, 1f) * 255f + 0.5f);
+    }
+}
