@@ -227,7 +227,7 @@ All art and models live in the private repo `TychoHenzen/cardcleaner-assets`, a 
 
 - Clone with `git clone --recurse-submodules`, or run `git submodule update --init` in an existing clone. An empty `Assets/` means the submodule is not initialised.
 - Changing an asset is two commits: commit and push inside `Assets/` first, then commit the updated `Assets` pointer in this repo. Pushing the pointer before the submodule commit breaks CI.
-- CI fetches the submodule with the read-only deploy key in the `ASSETS_DEPLOY_KEY` secret (`.github/actions/checkout-assets`).
+- CI fetches the submodule with the read-only deploy key in the `ASSETS_DEPLOY_KEY` secret (`.github/actions/checkout-assets`). The project cannot load without `Assets/`, so the step fails when the key is unavailable; fork and Dependabot pull requests cannot read the secret and fail there.
 - `Z:\Tycho\Projects\Assets` is our internal asset collection. Whenever new assets are needed, look there first. The Synty packs are under `Z:\Tycho\Projects\Assets\CardCleanerAssets` (mostly zips; extract one into the sync script's source root, `../CardCleanerAssets` or `CARDCLEANER_ASSET_SOURCE`, before listing its files in `tools/synty-assets.json`).
 
 ### Shop Scene and Licensed Assets
