@@ -1,14 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Workshop.Components;
+using CardCleaner.Scripts.Features.Workshop.Models;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// Pins the workshop grid scene: 0.2 m cells, gray floor and wall items that each carry a mesh and a collision
-/// shape, a non-empty authored layout of several rooms with winding hallways and a fork, and no
-/// runtime-only fields serialized into the scene.
+/// Pins the workshop grid scene: 0.2 m cells, the baked walls are exactly the layout spec, the floor and
+/// ceiling slabs cover the whole 40 m square, nearly all of the square is usable floor, every room and hallway
+/// is reachable through 3 m openings, the north hallway forks into both northern rooms, and no runtime-only
+/// fields are serialized into the scene.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -17,13 +19,16 @@ public class WorkshopGridSceneContractTest
     private const string GridScenePath = "res://Scenes/Workshop/WorkshopGrid.tscn";
     private const float ExpectedCellSize = 0.2f;
     private const float GrayTolerance = 0.06f;
-    private const int MinimumRooms = 5;
+    private const float SquareSide = 40f;
+    private const float SlabTolerance = 0.001f;
+    private const float MinimumFloorShare = 0.9f;
+
+    // A clear cell needs 7 floor cells on every side: a 15-cell (3 m) square, so routes only pass 3 m openings.
+    private const int ThreeMetreClearanceCells = 7;
     private const int ArmClearanceCells = 4;
     private const int ArmLengthCells = 15;
-    private const int MinimumForkArms = 3;
-    private const int TurnArms = 2;
-    private const int MinimumRouteTurns = 4;
-    private const int MaximumCells = 40000;
+    private const int MinimumRouteTurns = 2;
+    private const int ForkArms = 3;
 
     private static readonly Vector2I[] Directions = [Vector2I.Right, Vector2I.Left, Vector2I.Down, Vector2I.Up];
 
@@ -53,81 +58,97 @@ public class WorkshopGridSceneContractTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void LayoutHoldsFloorAndWallCellsWithinTheCellBudget()
+    public void BakedCellsAreExactlyTheLayoutWalls()
     {
-        AssertBool(_grid.GetUsedCellsByItem(WorkshopGridPaths.FloorItem).Count > 0).IsTrue();
-        AssertBool(_grid.GetUsedCellsByItem(WorkshopGridPaths.WallItem).Count > 0).IsTrue();
-        AssertBool(_grid.GetUsedCells().Count < MaximumCells).IsTrue();
+        var used = _grid.GetUsedCells();
+        var baked = used.Select(c => new Vector2I(c.X, c.Z)).ToHashSet();
+
+        AssertBool(used.All(c => c.Y == WorkshopHallLayout.WallLayer)).IsTrue();
+        AssertBool(used.All(c => _grid.GetCellItem(c) == WorkshopHallLayout.WallItem)).IsTrue();
+        AssertBool(baked.SetEquals(WorkshopHallLayout.Default.Walls)).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void FloorsLieOneLayerBelowTheWallsSoTheirTopIsGroundLevel()
-    {
-        AssertBool(_grid.GetUsedCellsByItem(WorkshopGridPaths.FloorItem).All(c => c.Y == WorkshopGridPaths.FloorLayer)).IsTrue();
-        AssertBool(_grid.GetUsedCellsByItem(WorkshopGridPaths.WallItem).All(c => c.Y == 0)).IsTrue();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void FloorAndWallItemsEachHaveAMeshAndACollisionShape()
+    public void WallItemHasAGrayMeshAndACollisionShape()
     {
         var library = _grid.MeshLibrary;
+        var mesh = library.GetItemMesh(WorkshopHallLayout.WallItem);
+        var color = ((StandardMaterial3D)mesh.SurfaceGetMaterial(0)).AlbedoColor;
 
-        AssertThat(library).IsNotNull();
-        foreach (var item in new[] { WorkshopGridPaths.FloorItem, WorkshopGridPaths.WallItem })
+        AssertThat(library.GetItemShapes(WorkshopHallLayout.WallItem)[0].As<Shape3D>()).IsNotNull();
+        AssertBool(Mathf.Abs(color.R - color.G) < GrayTolerance && Mathf.Abs(color.G - color.B) < GrayTolerance).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void FloorAndCeilingSlabsCoverTheWholeSquare()
+    {
+        foreach (var slab in new[] { "Floor", "Ceiling" })
         {
-            AssertThat(library.GetItemMesh(item)).IsNotNull();
-            AssertThat(library.GetItemShapes(item).Count).IsEqual(2);
-            AssertThat(library.GetItemShapes(item)[0].As<Shape3D>()).IsNotNull();
+            var shape = (BoxShape3D)_grid.GetNode<CollisionShape3D>($"{slab}/CollisionShape3D").Shape;
+            var centre = _grid.GetNode<Node3D>(slab).Position;
+
+            AssertBool(Mathf.Abs(shape.Size.X - SquareSide) < SlabTolerance && Mathf.Abs(shape.Size.Z - SquareSide) < SlabTolerance).IsTrue();
+            AssertBool(Mathf.Abs(centre.X) < SlabTolerance && Mathf.Abs(centre.Z) < SlabTolerance).IsTrue();
         }
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void FloorAndWallMeshesAreGray()
+    public void NearlyAllOfTheSquareIsUsableFloor()
     {
-        foreach (var item in new[] { WorkshopGridPaths.FloorItem, WorkshopGridPaths.WallItem })
-        {
-            var material = (StandardMaterial3D)_grid.MeshLibrary.GetItemMesh(item).SurfaceGetMaterial(0);
-            var color = material.AlbedoColor;
+        var paths = new WorkshopGridPaths(_grid, 0);
+        var share = paths.Floor.Count / (float)WorkshopHallLayout.AllCells.Count();
 
-            AssertBool(Mathf.Abs(color.R - color.G) < GrayTolerance && Mathf.Abs(color.G - color.B) < GrayTolerance).IsTrue();
+        GD.Print($"[workshop-grid] floor share {share:P1}");
+        AssertBool(share >= MinimumFloorShare).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void SectionMarkersMatchTheLayoutSections()
+    {
+        var markers = _grid.GetNode("Sections").GetChildren().OfType<Marker3D>().ToList();
+
+        AssertThat(markers.Count).IsEqual(WorkshopHallLayout.Sections.Count);
+        foreach (var section in WorkshopHallLayout.Sections)
+        {
+            var marker = _grid.GetNode<Marker3D>($"Sections/{section.Name}");
+            AssertThat(new Vector2(marker.Position.X, marker.Position.Z)).IsEqual(section.Anchor);
+            AssertThat(marker.GetNodeOrNull<Label3D>("Sign")).IsNotNull();
         }
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void LayoutHasSeveralRoomsOnClearFloor()
+    public void EverySectionIsReachableFromTheCabinetRoomThroughThreeMetreOpenings()
     {
-        var paths = new WorkshopGridPaths(_grid, ArmClearanceCells);
-        var rooms = _grid.GetNode("Rooms").GetChildren().OfType<Marker3D>().ToList();
+        var paths = new WorkshopGridPaths(_grid, ThreeMetreClearanceCells);
+        var reachable = paths.ReachableFrom(SectionCell(paths, "CabinetRoom"));
 
-        AssertBool(rooms.Count >= MinimumRooms).IsTrue();
-        foreach (var room in rooms)
-            AssertBool(paths.Clear.Contains(paths.CellOfLocal(room.Position))).IsTrue();
+        foreach (var section in WorkshopHallLayout.Sections)
+            AssertBool(reachable.Contains(SectionCell(paths, section.Name))).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void HallwaysForkAtTheCrossingAndTurnAtTheCorners()
+    public void NorthHallwayForksIntoBothNorthernRooms()
     {
         var paths = new WorkshopGridPaths(_grid, ArmClearanceCells);
+        var fork = paths.CellOfLocal(new Vector3(0f, 0f, -16.4f));
 
-        AssertBool(ArmCount(paths, "SpineCrossing") >= MinimumForkArms).IsTrue();
-        AssertThat(ArmCount(paths, "NorthTurn")).IsEqual(TurnArms);
-        AssertThat(ArmCount(paths, "SouthTurn")).IsEqual(TurnArms);
+        // West into the office, east into build room A, south back to the cabinet room.
+        AssertBool(Directions.Count(direction => IsArm(paths.Clear, fork, direction)) >= ForkArms).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void RouteToTheFarthestRoomWindsThroughSeveralTurns()
+    public void RouteFromTheCabinetRoomToTheOrderOfficeTurnsSeveralTimes()
     {
         var paths = new WorkshopGridPaths(_grid, ArmClearanceCells);
-        var from = paths.CellOfLocal(_grid.GetNode<Node3D>("Doorway").Position);
-        var to = paths.CellOfLocal(_grid.GetNode<Node3D>("Rooms/FarNorth").Position);
 
-        var route = paths.StraightenPath(paths.ShortestPath(from, to));
+        var route = paths.StraightenPath(paths.ShortestPath(SectionCell(paths, "CabinetRoom"), SectionCell(paths, "OrderOffice")));
 
         AssertBool(route.Count - 1 >= MinimumRouteTurns).IsTrue();
     }
@@ -143,11 +164,8 @@ public class WorkshopGridSceneContractTest
             AssertBool(state.GetNodePropertyName(node, i).ToString().StartsWith('_')).IsFalse();
     }
 
-    private int ArmCount(WorkshopGridPaths paths, string junction)
-    {
-        var centre = paths.CellOfLocal(_grid.GetNode<Node3D>($"Junctions/{junction}").Position);
-        return Directions.Count(direction => IsArm(paths.Clear, centre, direction));
-    }
+    private Vector2I SectionCell(WorkshopGridPaths paths, string name) =>
+        paths.CellOfLocal(_grid.GetNode<Node3D>($"Sections/{name}").Position);
 
     private static bool IsArm(IReadOnlySet<Vector2I> clear, Vector2I centre, Vector2I direction)
     {

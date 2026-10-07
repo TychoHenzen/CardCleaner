@@ -20,6 +20,7 @@ namespace CardCleaner.Tests.Scenes;
 public class ShopWorkshopOrderingSceneTest
 {
     private const float StandingDistanceToTerminal = 2.0f;
+    private const float OfficeReach = 4f;
     private static readonly string[] ExpectedItems = ["conveyor", "arcade_cabinet", "wiring"];
 
     private Node3D _shop = null!;
@@ -75,16 +76,13 @@ public class ShopWorkshopOrderingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void TerminalSitsInARoomLeftOfTheCabinetInsideTheWorkshopWalls()
+    public void TerminalSitsInTheOrderOfficeLeftOfTheCabinet()
     {
         var cabinet = _workshop.GetNode<StaticBody3D>("Cabinet");
-        var floor = (BoxShape3D)_workshop.GetNode<CollisionShape3D>("Room/Floor/CollisionShape3D").Shape;
-        var terminal = _terminal.GlobalPosition - _workshop.GlobalPosition;
+        var office = _workshop.GetNode<Node3D>("WorkshopGrid/Sections/OrderOffice").GlobalPosition;
 
         AssertBool(_terminal.GlobalPosition.X < cabinet.GlobalPosition.X).IsTrue();
-        AssertBool(Mathf.Abs(terminal.X) < floor.Size.X / 2f).IsTrue();
-        AssertBool(Mathf.Abs(terminal.Z) < floor.Size.Z / 2f).IsTrue();
-        AssertBool(_workshop.GetNode("OrderingRoom").GetChildren().OfType<StaticBody3D>().Count() >= 3).IsTrue();
+        AssertBool(new Vector2(_terminal.GlobalPosition.X - office.X, _terminal.GlobalPosition.Z - office.Z).Length() < OfficeReach).IsTrue();
     }
 
     [TestCase]
@@ -107,16 +105,18 @@ public class ShopWorkshopOrderingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void PlayerCanWalkFromTheWorkshopEntryThroughTheRoomDoorToTheTerminal()
+    public void PlayerCanWalkFromTheWorkshopEntryThroughTheNorthHallwayToTheTerminal()
     {
         var shape = (CapsuleShape3D)_player.GetNode<CollisionShape3D>("CollisionShape3D").Shape;
         var probe = new ShopSceneProbe(_shop, shape);
         var entry = _workshop.GetNode<Marker3D>("WorkshopEntry").GlobalPosition;
-        var door = _workshop.GlobalPosition + new Vector3(-4.3f, 0f, -2.0f);
+        var origin = _workshop.GlobalPosition;
         var inside = _terminal.GlobalPosition + new Vector3(0f, 0f, StandingDistanceToTerminal);
+        // West of the cabinet, out through the cabinet room's north door, up the hallway, into the office door.
         Vector2[] route =
         [
-            new(entry.X, entry.Z), new(door.X, door.Z + 1.5f), new(door.X, door.Z), new(inside.X, inside.Z)
+            new(entry.X, entry.Z), new(origin.X - 3.5f, origin.Z - 4.5f), new(origin.X, origin.Z - 4.5f),
+            new(origin.X, origin.Z - 16.4f), new(origin.X - 4f, origin.Z - 16.4f), new(inside.X, inside.Z)
         ];
 
         AssertBool(probe.CanWalk(route)).IsTrue();
@@ -164,16 +164,16 @@ public class ShopWorkshopOrderingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void RoomIsClosedOnTheHallSideExceptForTheDoorGap()
+    public void OfficeIsClosedTowardsTheNorthHallwayExceptForItsDoor()
     {
         var space = _shop.GetWorld3D().DirectSpaceState;
-        var inside = _workshop.GlobalPosition + new Vector3(-4.5f, 1.0f, -3.5f);
-        var hall = _workshop.GlobalPosition + new Vector3(-2.0f, 1.0f, -3.5f);
-        var doorSide = _workshop.GlobalPosition + new Vector3(-4.3f, 1.0f, -1.0f);
+        var origin = _workshop.GlobalPosition;
 
-        var throughWall = space.IntersectRay(PhysicsRayQueryParameters3D.Create(inside, hall));
+        // The office's east wall stands between it and the north hallway; its door is centred at z -16.4.
+        var throughWall = space.IntersectRay(PhysicsRayQueryParameters3D.Create(
+            origin + new Vector3(-4f, 1f, -14f), origin + new Vector3(0f, 1f, -14f)));
         var throughDoor = space.IntersectRay(PhysicsRayQueryParameters3D.Create(
-            _workshop.GlobalPosition + new Vector3(-4.3f, 1.0f, -3.5f), doorSide));
+            origin + new Vector3(-4f, 1f, -16.4f), origin + new Vector3(0f, 1f, -16.4f)));
 
         AssertThat(throughWall.Count).IsGreater(0);
         AssertThat(throughDoor.Count).IsEqual(0);

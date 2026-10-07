@@ -8,9 +8,10 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Portal.Components;
 
 /// <summary>
-///     The glowing seam on the backoffice wall. It stays hidden and silent until the player stands in the
-///     backoffice carrying a special card, then glows and hums. Coming close opens it into a doorway, and
-///     stepping into the doorway moves the player to <see cref="WorkshopEntry" /> with no cut: the camera
+///     A glowing seam in a wall that opens into a doorway between the shop and the workshop. The backoffice seam
+///     stays hidden and silent until the player stands in the backoffice carrying a special card, then glows and
+///     hums; the workshop's way back is <see cref="AlwaysOpen" />. Coming close opens it into a doorway, and
+///     stepping into the doorway moves the player to <see cref="Exit" /> with no cut: the camera
 ///     keeps its offset to the doorway and its facing relative to it. The node sits at the wall marker and
 ///     the doorway faces its local +Z, into the room. The decisions live in <see cref="SeamTriggerRule" />,
 ///     <see cref="SeamPhaseRule" /> and <see cref="PortalTransform" />; this node reads the scene, animates
@@ -46,11 +47,15 @@ public partial class WallSeam : Node3D
     public CharacterBody3D? Player { get; set; }
 
     /// <summary>
-    ///     Where the doorway leads. Owned by the workshop; it is placed like the seam marker, at the
-    ///     doorway's height above its floor, because the teleport keeps the player's height offset.
+    ///     Where the doorway leads. It is placed like the seam marker, at the doorway's height above its floor,
+    ///     because the teleport keeps the player's height offset, and turned the way the player should walk on.
     /// </summary>
     [Export]
-    public Node3D? WorkshopEntry { get; set; }
+    public Node3D? Exit { get; set; }
+
+    /// <summary>Shows without a zone or a special card, for a doorway the player must always be able to use.</summary>
+    [Export]
+    public bool AlwaysOpen { get; set; }
 
     [Export]
     public MeshInstance3D? Glow { get; set; }
@@ -121,9 +126,12 @@ public partial class WallSeam : Node3D
             TryCross();
     }
 
-    /// <summary>True when the player is in the backoffice with a special card in hand.</summary>
+    /// <summary>True when the doorway is always open, or the player is in the backoffice with a special card in hand.</summary>
     public bool IsTriggered()
     {
+        if (AlwaysOpen)
+            return true;
+
         var inBackoffice = Zone != null && Player != null && Zone.OverlapsBody(Player);
         var carried = PlayerHolder?.HeldCards.OfType<CardController>().Select(card => card.Signature).ToArray() ?? [];
         return SeamTriggerRule.ShouldShow(inBackoffice, carried);
@@ -188,17 +196,17 @@ public partial class WallSeam : Node3D
 
     private void TryCross()
     {
-        if (WorkshopEntry == null)
+        if (Exit == null)
         {
             if (!_warnedNoExit)
-                ILog.Warning("Wall seam has no WorkshopEntry; the doorway leads nowhere");
+                ILog.Warning("Wall seam has no Exit; the doorway leads nowhere");
             _warnedNoExit = true;
             return;
         }
 
         var player = Player!;
         var entry = GlobalTransform;
-        var exit = WorkshopEntry.GlobalTransform;
+        var exit = Exit.GlobalTransform;
         var landing = PortalTransform.Map(player.GlobalTransform, entry, exit);
         if (!TryFindClearSpot(player, landing.Origin, out var spot))
         {

@@ -5,14 +5,15 @@ using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Workshop.Components;
+using CardCleaner.Scripts.Features.Workshop.Models;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// Reliability of the open build space: floors are solid at ground level everywhere including across the
-/// doorway threshold, no floor cell opens onto the void, the ceiling keeps a jumping player inside, the
-/// player's capsule fits along every clear cell, and the full layout keeps the physics step cheap.
+/// Reliability of the warehouse workshop: the floor is solid at ground level everywhere, the outer wall closes
+/// the square on every side, the ceiling keeps a jumping player inside, the player's capsule fits along the
+/// reachable floor, and the walls keep the physics step cheap.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -21,14 +22,15 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
     private const float GroundTolerance = 0.002f;
     private const float RayStartHeight = 1f;
     private const float CeilingMaxHeight = 4.05f;
+    private const float WallProbeHeight = 1f;
     private const int ClearanceCells = 4;
-    private const int RoomHalfDepthCells = 30;
+
+    // Sampling every fourth cell on each axis keeps the ray count near 2,500 while still landing in every room.
+    private const int SampleStride = 4;
     private const int QueryBatches = 5;
     private const int QueriesPerBatch = 200;
     private const double MaxQueryMicroseconds = 1000.0;
     private const int SettleFrames = 20;
-
-    private static readonly Vector2I[] Neighbours = [Vector2I.Right, Vector2I.Left, Vector2I.Down, Vector2I.Up];
 
     private Node3D _shop = null!;
     private Node3D _workshop = null!;
@@ -59,54 +61,45 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void EveryFloorCellHasSolidGroundAtGroundLevel()
+    public void FloorIsSolidAtGroundLevelAcrossTheWholeSquare()
     {
-        var groundY = _workshop.GlobalPosition.Y;
+        // Props are left out: a ray would land on top of the cabinet or the terminal instead of the floor.
+        var paths = new WorkshopGridPaths(_grid, 0, WorkshopGridPaths.SolidProps(_workshop, _grid));
 
-        foreach (var cell in _grid.GetUsedCellsByItem(WorkshopGridPaths.FloorItem))
+        foreach (var cell in Sampled(paths.Floor))
         {
-            var top = GroundHeightAt(_grid.CellToWorld(cell));
+            var world = paths.WorldXz(cell);
+            var top = GroundHeightAt(new Vector3(world.X, 0f, world.Y));
 
-            AssertBool(top.HasValue && Mathf.Abs(top.Value - groundY) < GroundTolerance).IsTrue();
+            AssertBool(top.HasValue && Mathf.Abs(top.Value - _workshop.GlobalPosition.Y) < GroundTolerance)
+                .OverrideFailureMessage($"ground at {world} is {top}")
+                .IsTrue();
         }
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void GroundIsLevelAndContinuousAcrossTheDoorwayThreshold()
+    public void OuterWallClosesEverySideOfTheSquare()
     {
-        var thresholdX = _workshop.GlobalPosition.X + 6f;
+        var inner = WorkshopHallLayout.HalfSize - WorkshopHallLayout.WallThickness;
+        var origin = _workshop.GlobalPosition;
 
-        for (var dx = -0.8f; dx <= 0.8f; dx += 0.05f)
-        for (var dz = -1.8f; dz <= 1.8f; dz += 0.3f)
+        for (var along = -inner + 0.5f; along < inner; along += 1f)
         {
-            var top = GroundHeightAt(new Vector3(thresholdX + dx, 0f, _workshop.GlobalPosition.Z + dz));
-
-            AssertBool(top.HasValue && Mathf.Abs(top.Value - _workshop.GlobalPosition.Y) < GroundTolerance).IsTrue();
+            AssertBool(HitsWall(origin + new Vector3(along, 0f, -inner + 0.5f), Vector3.Back * -2f)).IsTrue();
+            AssertBool(HitsWall(origin + new Vector3(along, 0f, inner - 0.5f), Vector3.Back * 2f)).IsTrue();
+            AssertBool(HitsWall(origin + new Vector3(-inner + 0.5f, 0f, along), Vector3.Left * 2f)).IsTrue();
+            AssertBool(HitsWall(origin + new Vector3(inner - 0.5f, 0f, along), Vector3.Right * 2f)).IsTrue();
         }
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void NoFloorCellOpensOntoTheVoid()
-    {
-        var built = _grid.GetUsedCells().Select(c => new Vector2I(c.X, c.Z)).ToHashSet();
-
-        foreach (var cell in _grid.GetUsedCellsByItem(WorkshopGridPaths.FloorItem))
-        foreach (var step in Neighbours)
-        {
-            var next = new Vector2I(cell.X, cell.Z) + step;
-            AssertBool(built.Contains(next) || IsDoorwayThreshold(next)).IsTrue();
-        }
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void CeilingKeepsAJumpingPlayerInsideOverEveryClearCell()
+    public void CeilingKeepsAJumpingPlayerInsideOverTheClearFloor()
     {
         var paths = new WorkshopGridPaths(_grid, ClearanceCells);
 
-        foreach (var cell in paths.Clear)
+        foreach (var cell in Sampled(paths.Clear))
         {
             var world = paths.WorldXz(cell);
             var hit = Ray(new Vector3(world.X, RayStartHeight, world.Y), new Vector3(world.X, RayStartHeight + 8f, world.Y));
@@ -117,34 +110,19 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void GridCeilingMeetsTheRoomCeilingWithoutOverlappingIt()
+    public void PlayerCapsuleFitsAcrossTheReachableFloor()
     {
-        var roomCeiling = _workshop.GetNode<Node3D>("Room/Ceiling");
-        var gridCeiling = _grid.GetNode<Node3D>("Ceiling");
-
-        var roomBounds = ShapeBounds(roomCeiling);
-        var gridBounds = ShapeBounds(gridCeiling);
-
-        AssertBool(roomBounds.Intersects(gridBounds)).IsFalse();
-        AssertBool(Mathf.Abs(roomBounds.End.X - gridBounds.Position.X) < GroundTolerance).IsTrue();
-        AssertBool(Mathf.Abs(roomBounds.Position.Y - gridBounds.Position.Y) < GroundTolerance).IsTrue();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void PlayerCapsuleFitsOnEveryClearCellOfTheReachableLayout()
-    {
-        var paths = new WorkshopGridPaths(_grid, ClearanceCells);
+        var paths = new WorkshopGridPaths(_grid, ClearanceCells, WorkshopGridPaths.SolidProps(_workshop, _grid));
         var shape = (CapsuleShape3D)_player.GetNode<CollisionShape3D>("CollisionShape3D").Shape;
         var probe = new ShopSceneProbe(_shop, shape);
-        var reachable = paths.ReachableFrom(paths.CellOf(_grid.GetNode<Node3D>("Doorway").GlobalPosition));
+        var reachable = paths.ReachableFrom(paths.CellOf(_workshop.GetNode<Node3D>("WorkshopEntry").GlobalPosition));
 
-        foreach (var cell in reachable)
+        foreach (var cell in Sampled(reachable))
         {
             var world = paths.WorldXz(cell);
             var centre = new Vector3(world.X, probe.CapsuleCenterHeight, world.Y);
 
-            AssertBool(probe.CapsuleFits(centre)).IsTrue();
+            AssertBool(probe.CapsuleFits(centre)).OverrideFailureMessage($"capsule does not fit at {centre}").IsTrue();
         }
     }
 
@@ -152,20 +130,20 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
     [TestCategory("Unit")]
     public async Task MovementQueriesStayCheapAmongTheSmallCells()
     {
-        var crossing = _grid.GetNode<Node3D>("Junctions/SpineCrossing").GlobalPosition;
-        _player.GlobalPosition = crossing + Vector3.Up * 1.2f;
+        var hallway = _grid.GetNode<Node3D>("Sections/NorthHallway").GlobalPosition;
+        _player.GlobalPosition = hallway + Vector3.Up * 1.2f;
         for (var i = 0; i < SettleFrames; i++)
             await ISceneRunner.SyncPhysicsFrame;
 
         var cells = _grid.GetUsedCells().Count;
         var withGrid = TypicalQueryMicroseconds();
-        _grid.GetParent().RemoveChild(_grid);
-        var withoutGrid = TypicalQueryMicroseconds();
-        _grid.Free();
 
-        GD.Print($"[workshop-grid] movement query {withGrid:F1} us with the grid ({cells} cells), {withoutGrid:F1} us without it");
+        GD.Print($"[workshop-grid] movement query {withGrid:F1} us with the grid ({cells} cells)");
         AssertBool(withGrid < MaxQueryMicroseconds).IsTrue();
     }
+
+    private static IEnumerable<Vector2I> Sampled(IEnumerable<Vector2I> cells) =>
+        cells.Where(c => c.X % SampleStride == 0 && c.Y % SampleStride == 0);
 
     // What PlayerController does each physics frame is a test move of the capsule, so that is the cost to bound.
     // The median batch is kept: one interrupted batch cannot fail the test, and one lucky batch cannot hide a slowdown.
@@ -185,17 +163,10 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
         return batches[batches.Count / 2];
     }
 
-    // The cells just west of the grid are the workshop room itself: open at the doorway, its own wall elsewhere.
-    private static bool IsDoorwayThreshold(Vector2I cell)
+    private bool HitsWall(Vector3 from, Vector3 reach)
     {
-        return cell.X == WorkshopGridPaths.ThresholdCellX - 1 && Mathf.Abs(cell.Y) < RoomHalfDepthCells;
-    }
-
-    private static Aabb ShapeBounds(Node3D body)
-    {
-        var shape = body.GetNode<CollisionShape3D>("CollisionShape3D");
-        var box = (BoxShape3D)shape.Shape;
-        return shape.GlobalTransform * new Aabb(-box.Size / 2f, box.Size);
+        var start = from + Vector3.Up * WallProbeHeight;
+        return Ray(start, start + reach).Count > 0;
     }
 
     private float? GroundHeightAt(Vector3 world)

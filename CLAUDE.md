@@ -236,3 +236,11 @@ The PC in the shop backoffice (`World/Markers/PcLocation/PcTerminal`, a child of
 ### Selling Cards at the Register
 
 The shop's checkout counter (`World/Storefront/CheckoutCounter`, a `SaleRegister`) sells one card per interaction: the card the player is holding (`PlayerHolder`), otherwise a card on the nearest shelf. A label above the counter shows the balance and the last result. Shelf scenes (`Scenes/Shop/Items/Shelf.tscn`, a `CardShelf`) have three one-card `DeckSlot` slots: drop a card on a slot to stock it, pick it up to take it back. `CardShelf` joins the `card_shelves` group, so shelves ordered at the PC need no wiring. `CardPricing.GetPrice` is the pure price function: every card sells for `FixedCardPrice` (special-card pricing is out of scope). `CardSale.TrySell` pays into `IMoneyService`, frees the card and refuses a second sale of the same card. `DeckSlot` only locks `CardController` bodies, so ordered boxes are ignored. The shop scene has the card services and a `CardSpawner` (keys 1, 2, 3) so cards can be spawned for testing.
+
+### Workshop
+
+The workshop (`Scenes/Components/Workshop.tscn`, instanced in `ShopScene.tscn`) is one 40 x 40 m warehouse: the cabinet room in the centre, a 3.2 m hallway or hall leaving each of its sides, ordering rooms (order office, delivery bay) to the west and build rooms to the east. The backoffice seam (a `PortalDoorway`, `Scenes/Portal/PortalDoorway.tscn`) leads to `WorkshopEntry`; the always-open `ReturnSeam` on the cabinet room's south wall leads back to `World/Markers/ShopReturn`.
+
+The walls are a 0.2 m `GridMap` (`WorkshopGrid`) baked from the spec in `Scripts/Features/Workshop/Models/WorkshopHallLayout.cs`. To change the layout, edit the spec, then press "Bake Layout" on the `WorkshopGrid` node in the inspector and save the scene; `WorkshopGridSceneContractTest` fails while the baked cells differ from the spec. Section markers under `WorkshopGrid/Sections` carry each room's sign and light.
+
+The cabinet, holders, button and wires are `Scenes/Workshop/CabinetAssembly.tscn`, shared by the workshop's cabinet and the orderable `ArcadeCabinet`. The map screens stay on the workshop cabinet only, because they are wired to its `DeckbuilderController`.

@@ -13,14 +13,13 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 ///     A box, pack or booster the player opens by looking at it and interacting. Opening a box spawns
 ///     8 packs, a pack spawns 8 boosters and a booster spawns 8 cards whose signatures come from
 ///     <see cref="CardPackGenerator" />. The contents appear one per frame (like the debug card spawner)
-///     on a grid above the container, so even a full 512-card box never stalls a frame or stacks bodies
-///     on top of each other.
+///     in a column straight above the container, each one a little higher than the last, and physics
+///     lets them settle. A column takes no more floor than the container itself, so opening never throws
+///     items through the walls of the room the container stands in, and no item spawns inside another.
 /// </summary>
 public partial class CardContainer : RigidBody3D, IInteractable
 {
-    public const int Columns = 4;
-    public const float SpacingX = 0.8f;
-    public const float SpacingZ = 1.0f;
+    /// <summary>Height above the container's origin of the first item it opens into.</summary>
     public const float LiftHeight = 0.4f;
 
     private const float DefaultInteractionRange = 4.5f;
@@ -100,21 +99,27 @@ public partial class CardContainer : RigidBody3D, IInteractable
     }
 
     /// <summary>
-    ///     Offset of the n-th item opened out of a container of <paramref name="kind" />: a grid of
-    ///     <see cref="Columns" /> columns. A booster lays its cards on the base grid; each level above
-    ///     multiplies the grid by the footprint of the level below, so the items of sibling containers
-    ///     (cards of two boosters, boosters of two packs) never land on the same spot.
+    ///     Offset of the n-th item opened out of a container of <paramref name="kind" />: straight above the
+    ///     container, one <see cref="StackStep" /> higher per item.
     /// </summary>
     public static Vector3 SpawnOffset(int index, CardContainerKind kind)
     {
-        var rows = (CardContainerLayout.ItemsPerContainer + Columns - 1) / Columns;
-        var levels = CardContainerLayout.LevelsBelow(kind);
-        var column = index % Columns;
-        var row = index / Columns;
-        return new Vector3(
-            (column - (Columns - 1) / 2f) * SpacingX * MathF.Pow(Columns, levels),
-            LiftHeight,
-            (row - (rows - 1) / 2f) * SpacingZ * MathF.Pow(rows, levels));
+        return new Vector3(0f, LiftHeight + index * StackStep(kind), 0f);
+    }
+
+    /// <summary>
+    ///     Vertical gap between the items opened out of <paramref name="kind" />: a little more than the height of
+    ///     one item (a pack is 0.15 m tall, a booster 0.03 m, a card 0.005 m), so none spawns inside the one below.
+    /// </summary>
+    public static float StackStep(CardContainerKind kind)
+    {
+        return kind switch
+        {
+            CardContainerKind.Box => 0.25f,
+            CardContainerKind.Pack => 0.1f,
+            CardContainerKind.Booster => 0.05f,
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown container kind")
+        };
     }
 
     /// <summary>

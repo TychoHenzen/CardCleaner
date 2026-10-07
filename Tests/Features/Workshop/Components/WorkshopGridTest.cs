@@ -74,11 +74,13 @@ public class WorkshopGridTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void FloorCellTopSitsAtGroundLevelOfTheWorkshop()
+    public void FloorSlabTopAndWallCellBottomSitAtGroundLevelOfTheWorkshop()
     {
-        var floorCell = new Vector3I(30, -1, 0);
+        var floor = _grid.GetNode<CollisionShape3D>("Floor/CollisionShape3D");
+        var slabTop = floor.GlobalPosition.Y + ((BoxShape3D)floor.Shape).Size.Y / 2f;
+        var wallCell = _grid.GetUsedCells()[0];
 
-        AssertThat(_grid.GetCellItem(floorCell)).IsEqual(0);
-        AssertBool(Mathf.Abs(_grid.CellToWorld(floorCell).Y + _grid.CellSize.Y / 2f - _parent.Position.Y) < Tolerance).IsTrue();
+        AssertBool(Mathf.Abs(slabTop - _parent.Position.Y) < Tolerance).IsTrue();
+        AssertBool(Mathf.Abs(_grid.CellToWorld(wallCell).Y - _grid.CellSize.Y / 2f - _parent.Position.Y) < Tolerance).IsTrue();
     }
 }

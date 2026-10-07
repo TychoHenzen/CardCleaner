@@ -28,7 +28,7 @@ public class OrderingServiceTest
     public void Setup()
     {
         _world = new Node3D();
-        var marker = new Marker3D { Position = DeliveryPosition };
+        var marker = new DeliveryMarker { Position = DeliveryPosition };
         _world.AddChild(marker);
         AddNode(_world);
 
@@ -151,11 +151,11 @@ public class OrderingServiceTest
     public void ManyOrdersNeverSpawnItemsOverlappingEachOther()
     {
         _money.Add(10000);
-        var cheap = MakeItem("cheap", 1);
+        var spool = MakeBoxItem("spool", 1, 0.46f, SpoolHeight);
         var positions = new List<Vector3>();
         for (var order = 0; order < 3 * OrderingService.SlotColumns * OrderingService.SlotRows; order++)
         {
-            var result = _ordering.Order(cheap);
+            var result = _ordering.Order(spool);
             AssertBool(result.Succeeded).IsTrue();
             positions.Add(result.Spawned!.GlobalPosition);
         }
@@ -166,7 +166,7 @@ public class OrderingServiceTest
             var apart = positions[i] - positions[j];
             var separated = Mathf.Abs(apart.X) >= OrderingService.SlotSpacingX - 0.001f
                             || Mathf.Abs(apart.Z) >= OrderingService.SlotSpacingZ - 0.001f
-                            || Mathf.Abs(apart.Y) >= OrderingService.LayerHeight - 0.001f;
+                            || Mathf.Abs(apart.Y) >= SpoolHeight;
             AssertBool(separated).IsTrue();
         }
     }
@@ -192,7 +192,7 @@ public class OrderingServiceTest
     [TestCategory("Unit")]
     public void ExplicitDeliveryPointOverridesTheDefaultAndKeepsItsOwnSlotCount()
     {
-        var other = new Marker3D { Position = new Vector3(-20f, 0f, 3f) };
+        var other = new DeliveryMarker { Position = new Vector3(-20f, 0f, 3f) };
         _world.AddChild(other);
         _money.Add(StartingBalance);
 
@@ -382,19 +382,6 @@ public class OrderingServiceTest
         AssertBool(_ordering.Order(MakeItem("cheap", 1)).Succeeded).IsTrue();
     }
 
-    [TestCase]
-    [TestCategory("Unit")]
-    public void PlainMarkerKeepsStackingLayersAndNeverReportsFull()
-    {
-        _money.Add(10000);
-        var plain = new Marker3D { Position = new Vector3(-20f, 0f, 3f) };
-        _world.AddChild(plain);
-        var cheap = MakeItem("cheap", 1);
-
-        for (var order = 0; order < 4 * OrderingService.SlotColumns * OrderingService.SlotRows; order++)
-            AssertBool(_ordering.Order(cheap, plain).Succeeded).IsTrue();
-    }
-
     private DeliveryMarker AddGroundMarker()
     {
         var ground = new DeliveryMarker { Position = new Vector3(-20f, 0f, 3f) };
@@ -403,7 +390,7 @@ public class OrderingServiceTest
     }
 
     private List<Node3D> SpawnedItems() =>
-        _world.GetChildren().OfType<Node3D>().Where(n => n is not Marker3D).ToList();
+        _world.GetChildren().OfType<Node3D>().Where(n => n is not DeliveryMarker).ToList();
 
     private static OrderItem MakeBoxItem(string id, int price, float width, float height)
     {

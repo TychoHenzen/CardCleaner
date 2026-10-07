@@ -1,0 +1,56 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Portal/Components/WallSeam.cs" id="WallSeam"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+
+[sub_resource type="StandardMaterial3D" id="SeamGlowMaterial"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.55, 0.85, 1, 0.8)
+emission_enabled = true
+emission = Color(0.4, 0.8, 1, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="QuadMesh" id="SeamGlowMesh"]
+size = Vector2(0.25, 3)
+
+[sub_resource type="StandardMaterial3D" id="SeamDoorMaterial"]
+albedo_color = Color(0.05, 0.1, 0.18, 1)
+emission_enabled = true
+emission = Color(0.3, 0.7, 1, 1)
+emission_energy_multiplier = 0.8
+
+[sub_resource type="BoxMesh" id="SeamDoorPanelMesh"]
+material = SubResource("SeamDoorMaterial")
+size = Vector3(1.6, 2.4, 0.06)
+
+[node name="PortalDoorway" type="Node3D" node_paths=PackedStringArray("Glow", "Door", "Hum")]
+script = ExtResource("WallSeam")
+Glow = NodePath("Glow")
+Door = NodePath("Door")
+Hum = NodePath("Hum")
+GlowTexturePath = "res://Assets/Synty/ParticleFx/Generic_Circle_Soft_01.png"
+
+[node name="Glow" type="MeshInstance3D" parent="."]
+visible = false
+material_override = SubResource("SeamGlowMaterial")
+mesh = SubResource("SeamGlowMesh")
+
+[node name="Hum" type="AudioStreamPlayer3D" parent="."]
+volume_db = -12.0
+unit_size = 4.0
+
+[node name="Door" type="Node3D" parent="."]
+visible = false
+transform = Transform3D(0.05, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="DoorPanel" type="MeshInstance3D" parent="Door"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0.03)
+mesh = SubResource("SeamDoorPanelMesh")
+
+[node name="DoorArt" type="Node3D" parent="Door" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.54, -1.5, 0.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonDungeon/SM_Env_Wall_Archway_01.fbx"
+ArtScale = 60.0
+Placeholder = NodePath("../DoorPanel")

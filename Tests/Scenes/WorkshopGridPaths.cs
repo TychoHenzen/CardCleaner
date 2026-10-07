@@ -1,48 +1,56 @@
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Workshop.Components;
+using CardCleaner.Scripts.Features.Workshop.Models;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// Path finding over the built cells of the workshop grid, for tests that need a route a player body can
-/// follow. A floor cell is clear when every cell within the clearance square is floor, so a path of clear
-/// cells keeps the body's radius away from every wall. The workshop room just inside the doorway counts as
-/// floor, because the grid's own cells stop at the threshold.
+/// Path finding over the workshop grid, for tests that need a route a player body can follow. Floor is every
+/// cell of the warehouse square that holds no baked wall, minus the footprints of any solid props passed in.
+/// A floor cell is clear when every cell within the clearance square is floor, so a path of clear cells keeps
+/// the body's radius away from every wall and prop.
 /// </summary>
 public sealed class WorkshopGridPaths
 {
-    public const int FloorItem = 0;
-    public const int WallItem = 1;
-    public const int FloorLayer = -1;
-
-    // Cell range of the workshop room strip in front of the doorway, in grid cells (x up to the threshold).
-    public const int ThresholdCellX = 30;
-    private const int RoomStripWidthCells = 10;
-    private const int DoorwayHalfWidthCells = 10;
-
     private static readonly Vector2I[] Steps = [Vector2I.Right, Vector2I.Left, Vector2I.Down, Vector2I.Up];
 
     private readonly HashSet<Vector2I> _clear;
     private readonly HashSet<Vector2I> _floor;
     private readonly WorkshopGrid _grid;
 
-    public WorkshopGridPaths(WorkshopGrid grid, int clearanceCells)
+    /// <param name="grid">The baked grid.</param>
+    /// <param name="clearanceCells">Cells kept free on every side of a clear cell.</param>
+    /// <param name="obstacles">World-space boxes of solid props standing on the floor.</param>
+    public WorkshopGridPaths(WorkshopGrid grid, int clearanceCells, IEnumerable<Aabb>? obstacles = null)
     {
         _grid = grid;
-        _floor = grid.GetUsedCellsByItem(FloorItem)
-            .Where(c => c.Y == FloorLayer)
+        var walls = grid.GetUsedCellsByItem(WorkshopHallLayout.WallItem)
             .Select(c => new Vector2I(c.X, c.Z))
             .ToHashSet();
+        _floor = WorkshopHallLayout.AllCells.Where(c => !walls.Contains(c)).ToHashSet();
+        foreach (var box in obstacles ?? [])
+            _floor.ExceptWith(CellsUnder(box));
 
-        var floorWithRoom = new HashSet<Vector2I>(_floor);
-        for (var x = ThresholdCellX - RoomStripWidthCells; x < ThresholdCellX; x++)
-        for (var z = -DoorwayHalfWidthCells; z < DoorwayHalfWidthCells; z++)
-            floorWithRoom.Add(new Vector2I(x, z));
-
-        _clear = _floor.Where(c => IsClear(floorWithRoom, c, clearanceCells)).ToHashSet();
+        _clear = _floor.Where(c => IsClear(_floor, c, clearanceCells)).ToHashSet();
     }
+
+    /// <summary>
+    ///     World boxes of every solid body under <paramref name="root" /> except the grid's own floor and ceiling:
+    ///     the props a walking player must go around.
+    /// </summary>
+    public static List<Aabb> SolidProps(Node root, WorkshopGrid grid)
+    {
+        return root.FindChildren("*", nameof(CollisionShape3D), true, false)
+            .OfType<CollisionShape3D>()
+            .Where(shape => shape.GetParent() is StaticBody3D body && !grid.IsAncestorOf(body) && shape.Shape != null)
+            .Select(shape => shape.GlobalTransform * ShapeBounds(shape.Shape))
+            .ToList();
+    }
+
+    private static Aabb ShapeBounds(Shape3D shape) =>
+        shape is BoxShape3D box ? new Aabb(-box.Size / 2f, box.Size) : shape.GetDebugMesh().GetAabb();
 
     public IReadOnlySet<Vector2I> Floor => _floor;
 
@@ -160,6 +168,15 @@ public sealed class WorkshopGridPaths
         }
 
         return true;
+    }
+
+    private IEnumerable<Vector2I> CellsUnder(Aabb box)
+    {
+        var low = CellOf(box.Position);
+        var high = CellOf(box.End);
+        for (var x = low.X; x <= high.X; x++)
+        for (var z = low.Y; z <= high.Y; z++)
+            yield return new Vector2I(x, z);
     }
 
     private static bool IsClear(HashSet<Vector2I> floor, Vector2I cell, int clearance)

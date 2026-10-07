@@ -94,16 +94,15 @@ public partial class DeliveryMarker : Marker3D
     }
 
     /// <summary>
-    ///     World bounds of every collision shape under the item. An item without any shape counts as a point at
-    ///     its origin.
+    ///     World bounds of every solid collision shape under the item. An item without any shape counts as a point
+    ///     at its origin.
     /// </summary>
     private static Aabb WorldBounds(Node3D item)
     {
         Aabb? bounds = null;
-        foreach (var node in item.FindChildren("*", nameof(CollisionShape3D), true, false))
+        foreach (var collider in SolidShapes(item))
         {
-            if (node is not CollisionShape3D { Disabled: false, Shape: { } shape } collider)
-                continue;
+            var shape = collider.Shape;
 
             var world = collider.GlobalTransform * ShapeBounds(shape);
             bounds = bounds.HasValue ? bounds.Value.Merge(world) : world;
@@ -112,14 +111,13 @@ public partial class DeliveryMarker : Marker3D
         return bounds ?? new Aabb(item.GlobalPosition, Vector3.Zero);
     }
 
-    /// <summary>Bounds of the item's collision shapes in its own space, usable before it enters the tree.</summary>
+    /// <summary>Bounds of the item's solid collision shapes in its own space, usable before it enters the tree.</summary>
     private static Aabb LocalBounds(Node3D item)
     {
         Aabb? bounds = null;
-        foreach (var node in item.FindChildren("*", nameof(CollisionShape3D), true, false))
+        foreach (var collider in SolidShapes(item))
         {
-            if (node is not CollisionShape3D { Disabled: false, Shape: { } shape } collider)
-                continue;
+            var shape = collider.Shape;
 
             var toItem = Transform3D.Identity;
             for (Node? step = collider; step is Node3D spatial && spatial != item; step = step.GetParent())
@@ -131,6 +129,12 @@ public partial class DeliveryMarker : Marker3D
 
         return bounds ?? new Aabb(Vector3.Zero, Vector3.Zero);
     }
+
+    // Every enabled shape except an Area3D's: a trigger, such as a card holder's, takes up no space.
+    private static IEnumerable<CollisionShape3D> SolidShapes(Node3D item) =>
+        item.FindChildren("*", nameof(CollisionShape3D), true, false)
+            .OfType<CollisionShape3D>()
+            .Where(collider => collider is { Disabled: false, Shape: not null } && collider.GetParent() is not Area3D);
 
     private static Aabb ShapeBounds(Shape3D shape) =>
         shape is BoxShape3D box

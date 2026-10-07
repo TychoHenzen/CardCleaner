@@ -10,8 +10,9 @@ using Godot;
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// The workshop is a dungeon-like graybox room inside the shop scene, far from the shop interior. It holds the
-/// arcade cabinet, two card holders joined to it by visible wires, and a credit card seated in one holder.
+/// The workshop is a graybox warehouse inside the shop scene, far from the shop interior. Its central cabinet
+/// room holds the arcade cabinet, two card holders joined to it by visible wires, and a credit card seated in
+/// one holder.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -19,6 +20,7 @@ public class ShopWorkshopSceneTest
 {
     private const float WireTouchTolerance = 0.12f;
     private const float MinimumDistanceFromShop = 30f;
+    private const float CabinetRoomHalfWidth = 5.8f;
 
     private WorkshopSceneRig _rig = null!;
 
@@ -36,14 +38,10 @@ public class ShopWorkshopSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void RoomHasEntryMarkerAboveItsFloorAndEnclosingCollision()
+    public void EntryMarkerStandsAboveTheFloorInsideTheCabinetRoom()
     {
-        var room = _rig.Workshop.GetNode("Room");
-
-        AssertThat(room.GetNodeOrNull<CollisionShape3D>("Floor/CollisionShape3D")).IsNotNull();
-        AssertThat(room.GetNodeOrNull<CollisionShape3D>("Ceiling/CollisionShape3D")).IsNotNull();
-        foreach (var wall in new[] { "NorthWall", "EastWall", "SouthWall", "WestWall" })
-            AssertThat(room.GetNodeOrNull<CollisionShape3D>($"Walls/{wall}/CollisionShape3D")).IsNotNull();
+        AssertThat(_rig.Workshop.GetNodeOrNull<CollisionShape3D>("WorkshopGrid/Floor/CollisionShape3D")).IsNotNull();
+        AssertThat(_rig.Workshop.GetNodeOrNull<CollisionShape3D>("WorkshopGrid/Ceiling/CollisionShape3D")).IsNotNull();
 
         AssertBool(_rig.Entry.GlobalPosition.Y > 0f).IsTrue();
         AssertBool(IsInsideRoom(_rig.Entry.GlobalPosition)).IsTrue();
@@ -102,9 +100,8 @@ public class ShopWorkshopSceneTest
         CollectArtSlots(_rig.Workshop, slots);
         var manifest = File.ReadAllText(ProjectSettings.GlobalizePath("res://tools/synty-assets.json"));
 
-        AssertBool(slots.Exists(s => s.ArtPath.Contains("SM_Env_Wall"))).IsTrue();
-        AssertBool(slots.Exists(s => s.ArtPath.Contains("SM_Env_Tiles"))).IsTrue();
         AssertBool(slots.Exists(s => s.ArtPath.Contains("ArcadeMachine"))).IsTrue();
+        AssertBool(slots.Exists(s => s.ArtPath.Contains("Archway"))).IsTrue();
         foreach (var slot in slots)
         {
             AssertBool(slot.ArtPath.StartsWith("res://Assets/Synty/")).IsTrue();
@@ -115,7 +112,7 @@ public class ShopWorkshopSceneTest
     }
 
     private IEnumerable<MeshInstance3D> WireMeshes(string prefix) =>
-        _rig.Workshop.GetNode("Wires").GetChildren()
+        _rig.Workshop.GetNode("Cabinet/Assembly/Wires").GetChildren()
             .OfType<MeshInstance3D>()
             .Where(wire => wire.Name.ToString().StartsWith(prefix));
 
@@ -127,12 +124,11 @@ public class ShopWorkshopSceneTest
             .ToHashSet();
     }
 
+    // The cabinet room is the square inside its walls, centred on the workshop origin.
     private bool IsInsideRoom(Vector3 position)
     {
-        var floor = _rig.Workshop.GetNode<CollisionShape3D>("Room/Floor/CollisionShape3D");
-        var half = ((BoxShape3D)floor.Shape).Size / 2f;
-        var center = floor.GlobalPosition;
-        return Mathf.Abs(position.X - center.X) <= half.X && Mathf.Abs(position.Z - center.Z) <= half.Z;
+        var local = position - _rig.Workshop.GlobalPosition;
+        return Mathf.Abs(local.X) < CabinetRoomHalfWidth && Mathf.Abs(local.Z) < CabinetRoomHalfWidth;
     }
 
     private static Aabb WorldBounds(MeshInstance3D mesh) => mesh.GlobalTransform * mesh.Mesh.GetAabb();

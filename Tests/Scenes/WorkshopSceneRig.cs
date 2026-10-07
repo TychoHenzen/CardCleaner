@@ -28,11 +28,11 @@ public sealed class WorkshopSceneRig
         Workshop = shop.GetNode<Node3D>("World/Workshop");
         Entry = Workshop.GetNode<Marker3D>("WorkshopEntry");
         Cabinet = Workshop.GetNode<StaticBody3D>("Cabinet");
-        DeckHolder = Workshop.GetNode<DeckSlot>("DeckSlot");
-        CardHolder = Workshop.GetNode<DeckSlot>("CardSlot");
-        Button = Workshop.GetNode<InteractableButton>("Button/StaticBody3D");
+        DeckHolder = Workshop.GetNode<DeckSlot>("Cabinet/Assembly/DeckSlot");
+        CardHolder = Workshop.GetNode<DeckSlot>("Cabinet/Assembly/CardSlot");
+        Button = Workshop.GetNode<InteractableButton>("Cabinet/Assembly/Button/StaticBody3D");
         Controller = Workshop.GetNode<DeckBuilderController>("DeckbuilderController");
-        Screen = Workshop.GetNode<IrregularWorldMapScreen>("IrregularTileMapScreen");
+        Screen = Workshop.GetNode<IrregularWorldMapScreen>("Cabinet/IrregularTileMapScreen");
     }
 
     public Node3D Shop { get; }

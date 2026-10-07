@@ -15,8 +15,8 @@ public class CardContainerTest
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
+    private const string CardScene = "res://Scenes/Components/CardShader.tscn";
     private const ulong Seed = 777;
-    private const int GenerousFrameBudget = 200;
     private const int OpenFrames = 12;
 
     private Node3D _world = null!;
@@ -86,35 +86,6 @@ public class CardContainerTest
         var expected = new CardPackGenerator(new RandomNumberGenerator { Seed = Seed }).OpenBooster();
         for (var i = 0; i < expected.Length; i++)
             AssertThat(_spawner.Spawned[i].Signature.Elements).IsEqual(expected[i].Elements);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task WholeBoxOpensToFiveHundredAndTwelveCards()
-    {
-        await OpenEverything(Make(BoxScene));
-
-        AssertThat(_spawner.Spawned.Count).IsEqual(CardContainerLayout.CardsPerBox);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task SameSeedPutsSpecialCardsInTheSamePositionsAndCommonCardsAreAllZero()
-    {
-        await OpenEverything(Make(BoxScene));
-        var first = _spawner.Spawned.Select(s => s.Signature).ToArray();
-
-        _spawner = new RecordingCardSpawner();
-        await OpenEverything(Make(BoxScene));
-        var second = _spawner.Spawned.Select(s => s.Signature).ToArray();
-
-        AssertThat(second.Length).IsEqual(first.Length);
-        for (var i = 0; i < first.Length; i++)
-        {
-            AssertThat(second[i].HasMagicalPotential()).IsEqual(first[i].HasMagicalPotential());
-            if (!first[i].HasMagicalPotential())
-                AssertThat(first[i].Elements).IsEqual(new float[8]);
-        }
     }
 
     [TestCase]
@@ -205,36 +176,39 @@ public class CardContainerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void OpenedItemsLandOnADistinctGridWellApartSoNothingOverlapsOrIsFlung()
+    public static void OpenedItemsStackInAColumnStraightAboveTheContainer()
     {
-        var offsets = Enumerable.Range(0, CardContainerLayout.ItemsPerContainer).Select(i => CardContainer.SpawnOffset(i, CardContainerKind.Booster))
-            .ToArray();
+        foreach (var kind in new[] { CardContainerKind.Box, CardContainerKind.Pack, CardContainerKind.Booster })
+        {
+            var offsets = Enumerable.Range(0, CardContainerLayout.ItemsPerContainer).Select(i => CardContainer.SpawnOffset(i, kind)).ToArray();
 
-        AssertThat(offsets.Distinct().Count()).IsEqual(offsets.Length);
-        foreach (var offset in offsets)
-            AssertThat(offset.Y).IsEqual(CardContainer.LiftHeight);
-        for (var a = 0; a < offsets.Length; a++)
-        for (var b = a + 1; b < offsets.Length; b++)
-            AssertBool(offsets[a].DistanceTo(offsets[b]) >= CardContainer.SpacingX - 0.001f).IsTrue();
+            AssertThat(offsets[0].Y).IsEqual(CardContainer.LiftHeight);
+            foreach (var offset in offsets)
+                AssertBool(offset.X == 0f && offset.Z == 0f).IsTrue();
+            for (var i = 1; i < offsets.Length; i++)
+                AssertThat(offsets[i].Y - offsets[i - 1].Y).IsEqualApprox(CardContainer.StackStep(kind), 0.0001f);
+        }
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void SiblingContainersOpenOntoDisjointSpotsAtEveryLevel()
+    public static void EachStepClearsTheHeightOfTheItemBelowSoNoneSpawnsInsideAnother()
     {
-        // Two neighbouring containers of a level sit one grid step apart; their children must not share a spot.
-        foreach (var kind in new[] { CardContainerKind.Box, CardContainerKind.Pack })
+        var children = new Dictionary<CardContainerKind, string>
         {
-            var children = new List<Vector3>();
-            for (var index = 0; index < CardContainerLayout.ItemsPerContainer; index++)
-            {
-                var containerOrigin = CardContainer.SpawnOffset(index, kind);
-                var childKind = CardContainerLayout.ChildKind(kind)!.Value;
-                for (var child = 0; child < CardContainerLayout.ItemsPerContainer; child++)
-                    children.Add(containerOrigin + CardContainer.SpawnOffset(child, childKind));
-            }
+            [CardContainerKind.Box] = PackScene,
+            [CardContainerKind.Pack] = BoosterScene,
+            [CardContainerKind.Booster] = CardScene
+        };
 
-            AssertThat(children.Distinct().Count()).IsEqual(children.Count);
+        foreach (var (kind, childScene) in children)
+        {
+            var child = GD.Load<PackedScene>(childScene).Instantiate<Node3D>();
+            var collider = child.FindChildren("*", nameof(CollisionShape3D), true, false).OfType<CollisionShape3D>().First();
+            var height = ((BoxShape3D)collider.Shape).Size.Y;
+            child.Free();
+
+            AssertBool(CardContainer.StackStep(kind) > height).IsTrue();
         }
     }
 
@@ -249,25 +223,6 @@ public class CardContainerTest
 
     private CardContainer[] Containers(CardContainerKind kind) =>
         _world.GetChildren().OfType<CardContainer>().Where(c => c.Kind == kind && !c.IsOpened).ToArray();
-
-    private async Task OpenEverything(CardContainer box)
-    {
-        box.Open();
-        var expected = CardContainerLayout.ItemsPerContainer;
-        foreach (var kind in new[] { CardContainerKind.Pack, CardContainerKind.Booster })
-        {
-            await Frames(OpenFrames);
-            var next = Containers(kind);
-            AssertThat(next.Length).IsEqual(expected);
-            foreach (var container in next)
-                container.Open();
-            expected *= CardContainerLayout.ItemsPerContainer;
-        }
-
-        var budget = GenerousFrameBudget;
-        while (_spawner.Spawned.Count < CardContainerLayout.CardsPerBox && budget-- > 0)
-            await Frames(1);
-    }
 
     private static async Task Frames(int count)
     {

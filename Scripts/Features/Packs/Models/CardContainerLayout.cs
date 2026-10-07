@@ -23,11 +23,4 @@ public static class CardContainerLayout
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown container kind")
         };
     }
-
-    /// <summary>How many container levels sit below <paramref name="kind" />: 0 for a booster, 1 for a pack, 2 for a box.</summary>
-    public static int LevelsBelow(CardContainerKind kind)
-    {
-        var child = ChildKind(kind);
-        return child is null ? 0 : 1 + LevelsBelow(child.Value);
-    }
 }

@@ -29,7 +29,7 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
 
     /// <summary>Where this terminal's orders appear. Null falls back to the ordering service's own delivery point.</summary>
     [Export]
-    public Marker3D? DeliveryPoint { get; set; }
+    public DeliveryMarker? DeliveryPoint { get; set; }
 
     [Export]
     public OrderTerminalUi? Ui { get; set; }
