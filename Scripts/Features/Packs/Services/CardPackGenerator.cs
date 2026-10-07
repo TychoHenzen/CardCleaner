@@ -23,7 +23,7 @@ public class CardPackGenerator(RandomNumberGenerator rng)
     {
         // Randi covers 2^32 values, a multiple of SpecialCardOdds, so the modulo has no bias.
         var isSpecial = rng.Randi() % SpecialCardOdds == 0;
-        return isSpecial ? NextSpecialSignature() : CommonSignature();
+        return isSpecial ? CardSignature.RandomSpecial(rng) : CommonSignature();
     }
 
     /// <summary>The signatures of the cards in one booster, in spawn order.</summary>
@@ -42,14 +42,5 @@ public class CardPackGenerator(RandomNumberGenerator rng)
         for (var i = 0; i < cards.Length; i++)
             cards[i] = NextCardSignature();
         return cards;
-    }
-
-    private CardSignature NextSpecialSignature()
-    {
-        // A random signature is all-zero only with probability zero, but a special card must never be common.
-        var signature = CardSignature.Random(rng);
-        while (!signature.HasMagicalPotential())
-            signature = CardSignature.Random(rng);
-        return signature;
     }
 }

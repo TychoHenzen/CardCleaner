@@ -118,6 +118,16 @@ public partial class CardSignature : Resource
         return signature;
     }
 
+    /// <summary>A random signature that is never all-zero, so a card made from it always has magical potential.</summary>
+    public static CardSignature RandomSpecial(RandomNumberGenerator rng)
+    {
+        // A random signature is all-zero only with probability zero, but a special card must never be common.
+        var signature = Random(rng);
+        while (!signature.HasMagicalPotential())
+            signature = Random(rng);
+        return signature;
+    }
+
     /// <summary>True when any element is non-zero beyond <see cref="Mathf.IsZeroApprox" /> tolerance. Common cards are all-zero and have no magical potential.</summary>
     public bool HasMagicalPotential()
     {
