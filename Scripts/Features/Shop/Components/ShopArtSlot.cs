@@ -1,15 +1,24 @@
+using System.Collections.Generic;
+using System.Linq;
+using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     Loads one licensed pack mesh at runtime and hides its graybox placeholder.
-///     The pack files are gitignored (see tools/sync-assets.ps1), so a missing or unimported
-///     file leaves the placeholder visible instead of breaking the scene.
+///     The pack files live in the private Assets submodule (see tools/sync-assets.ps1), so a missing or
+///     unimported file leaves the placeholder visible instead of breaking the scene.
+///     The pack FBX files carry no usable texture and are single-sided slabs, so a mesh from a known pack
+///     gets that pack's colour atlas on a double-sided material (see <see cref="PackMaterialCatalog" />).
 /// </summary>
 public partial class ShopArtSlot : Node3D
 {
     private const float DefaultArtScale = 1.0f;
+    private const float PackMaterialRoughness = 0.9f;
+
+    // One material per atlas, shared by every slot of that pack.
+    private static readonly Dictionary<string, StandardMaterial3D> PackMaterials = [];
 
     /// <summary>Resource path of the imported pack mesh, for example an .fbx under Assets/Synty.</summary>
     [Export(PropertyHint.File, "*.fbx,*.tscn")]
@@ -26,11 +35,45 @@ public partial class ShopArtSlot : Node3D
     /// <summary>True when the pack mesh was found and added under this slot.</summary>
     public bool ArtLoaded { get; private set; }
 
+    /// <summary>True when the mesh also got its pack's colour atlas on a double-sided material.</summary>
+    public bool ArtTextured { get; private set; }
+
     public override void _Ready()
     {
         ArtLoaded = TryLoadArt();
         if (ArtLoaded && Placeholder != null)
             Placeholder.Visible = false;
+    }
+
+    private static StandardMaterial3D? PackMaterial(string atlasPath)
+    {
+        if (PackMaterials.TryGetValue(atlasPath, out var cached) && IsInstanceValid(cached))
+            return cached;
+
+        if (!ResourceLoader.Exists(atlasPath) || ResourceLoader.Load<Texture2D>(atlasPath) is not { } atlas)
+            return null;
+
+        var material = new StandardMaterial3D
+        {
+            AlbedoTexture = atlas,
+            CullMode = BaseMaterial3D.CullModeEnum.Disabled,
+            TextureFilter = BaseMaterial3D.TextureFilterEnum.NearestWithMipmaps,
+            Roughness = PackMaterialRoughness
+        };
+        PackMaterials[atlasPath] = material;
+        return material;
+    }
+
+    private bool ApplyPackMaterial(Node3D art)
+    {
+        var atlasPath = PackMaterialCatalog.AtlasPathFor(ArtPath);
+        if (atlasPath == null || PackMaterial(atlasPath) is not { } material)
+            return false;
+
+        var meshes = art.FindChildren("*", nameof(MeshInstance3D), true, false).OfType<MeshInstance3D>();
+        foreach (var mesh in art is MeshInstance3D root ? meshes.Append(root) : meshes)
+            mesh.MaterialOverride = material;
+        return true;
     }
 
     private bool TryLoadArt()
@@ -45,6 +88,7 @@ public partial class ShopArtSlot : Node3D
         var art = scene.Instantiate<Node3D>();
         art.Name = "Art";
         art.Scale = Vector3.One * ArtScale;
+        ArtTextured = ApplyPackMaterial(art);
         AddChild(art);
         return true;
     }
