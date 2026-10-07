@@ -1,10 +1,10 @@
-[gd_resource type="Resource" script_class="OrderCatalog" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="OrderCatalog" format=3 uid="uid://b7um5n4syoyug"]
 
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Models/OrderCatalog.cs" id="OrderCatalogScript"]
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Models/OrderItem.cs" id="OrderItemScript"]
-[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Shelf.tscn" id="Shelf"]
-[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/PackingStation.tscn" id="PackingStation"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/CardboardBox.tscn" id="CardboardBox"]
+[ext_resource type="Script" uid="uid://ddvfbixqpsql6" path="res://Scripts/Features/Shop/Models/OrderCatalog.cs" id="OrderCatalogScript"]
+[ext_resource type="Script" uid="uid://d144tmal3smw7" path="res://Scripts/Features/Shop/Models/OrderItem.cs" id="OrderItemScript"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/PackingStation.tscn" id="PackingStation"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Shelf.tscn" id="Shelf"]
 
 [sub_resource type="Resource" id="ShelfItem"]
 script = ExtResource("OrderItemScript")
@@ -29,4 +29,4 @@ Scene = ExtResource("CardboardBox")
 
 [resource]
 script = ExtResource("OrderCatalogScript")
-Items = Array[ExtResource("OrderItemScript")]([SubResource("ShelfItem"), SubResource("PackingStationItem"), SubResource("CardboardBoxItem")])
+Items = [SubResource("ShelfItem"), SubResource("PackingStationItem"), SubResource("CardboardBoxItem")]

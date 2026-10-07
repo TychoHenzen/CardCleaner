@@ -64,6 +64,8 @@ The `[Tool]` attribute causes Godot to execute scripts in the editor. **Only use
 - Version control noise from random state changes
 - Potential deserialization bugs
 
+**Legitimate preview exception:** `ShopArtSlot` is a `[Tool]` so the editor shows the real art. It sets a node property the scene file would otherwise save (the placeholder's `Visible`), so it restores that property on `NotificationEditorPreSave` and re-applies it on `NotificationEditorPostSave`; `ShopArtSlotEditorSaveTest` fails if any scene stores a hidden placeholder. Copy that pattern for any `[Tool]` preview that mutates other nodes.
+
 **The Fix:** Remove `[Tool]` from runtime-only scripts. If `[Tool]` is truly needed, guard `_Ready()`:
 
 ```csharp
@@ -236,7 +238,7 @@ All art and models live in the private repo `TychoHenzen/cardcleaner-assets`, a 
 
 - To add Synty files, list them in `tools/synty-assets.json`, run `tools/sync-assets.ps1`, open the project in Godot so it imports the FBX files, then commit the new files and their `.import` files inside `Assets/`. The script copies into `Assets/Synty/`. Set `CARDCLEANER_ASSET_SOURCE` to override the source root (default `../CardCleanerAssets`). A missing root, file or uninitialised submodule is an error.
 - Each shop issue adds its own manifest entries.
-- `ShopArtSlot` nodes load a pack mesh at runtime and hide their graybox placeholder. Without the import the scene still loads and shows the placeholders. The editor viewport always shows the placeholders (the script is not a `[Tool]`); the real art appears only in a running game. The pack FBX files have no usable texture and are single-sided, so a slot applies its pack's colour atlas on a double-sided material (`PackMaterialCatalog` maps pack folder to atlas; add a new pack there). Collision is hand-authored and independent of the art.
+- `ShopArtSlot` nodes load a pack mesh at runtime and hide their graybox placeholder. Without the import the scene still loads and shows the placeholders. The script is a `[Tool]`, so the editor viewport shows the real art too; the placeholder is restored around every editor save (`NotificationEditorPreSave` / `PostSave`) so no scene ever stores it hidden, and the loaded `Art` child has no owner and is never saved. Changing `ArtPath` or `ArtScale` in the inspector reloads the preview. The pack FBX files have no usable texture and are single-sided, so a slot applies its pack's colour atlas on a double-sided material (`PackMaterialCatalog` maps pack folder to atlas; add a new pack there). Collision is hand-authored and independent of the art.
 
 ### Backoffice PC Ordering
 

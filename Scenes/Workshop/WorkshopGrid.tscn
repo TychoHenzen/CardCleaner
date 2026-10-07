@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://0lmdmt80x0b4"]
 
-[ext_resource type="MeshLibrary" path="res://Data/Workshop/WorkshopMeshLibrary.tres" id="MeshLibrary"]
+[ext_resource type="MeshLibrary" uid="uid://dtyjkbdb6msr4" path="res://Data/Workshop/WorkshopMeshLibrary.tres" id="MeshLibrary"]
 [ext_resource type="Script" uid="uid://bj54sks6qxa3m" path="res://Scripts/Features/Workshop/Components/WorkshopGrid.cs" id="WorkshopGridScript"]
 
 [sub_resource type="BoxShape3D" id="SlabShape"]

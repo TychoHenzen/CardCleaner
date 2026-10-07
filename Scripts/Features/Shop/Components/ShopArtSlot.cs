@@ -11,22 +11,46 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 ///     unimported file leaves the placeholder visible instead of breaking the scene.
 ///     The pack FBX files carry no usable texture and are single-sided slabs, so a mesh from a known pack
 ///     gets that pack's colour atlas on a double-sided material (see <see cref="PackMaterialCatalog" />).
+///     The script is a [Tool] so the editor viewport shows the real art instead of the placeholder. The
+///     placeholder's Visible flag is an ordinary property that Godot would save into the scene as false, so it is
+///     restored around every editor save (the loaded Art child has no owner and is never saved).
 /// </summary>
+[Tool]
 public partial class ShopArtSlot : Node3D
 {
     private const float DefaultArtScale = 1.0f;
     private const float PackMaterialRoughness = 0.9f;
+    private const string ArtNodeName = "Art";
 
     // One material per atlas, shared by every slot of that pack.
     private static readonly Dictionary<string, StandardMaterial3D> PackMaterials = [];
 
+    private string _artPath = string.Empty;
+    private float _artScale = DefaultArtScale;
+
     /// <summary>Resource path of the imported pack mesh, for example an .fbx under Assets/Synty.</summary>
     [Export(PropertyHint.File, "*.fbx,*.tscn")]
-    public string ArtPath { get; set; } = string.Empty;
+    public string ArtPath
+    {
+        get => _artPath;
+        set
+        {
+            _artPath = value;
+            ReloadInEditor();
+        }
+    }
 
     /// <summary>Uniform scale applied to the imported mesh (the pack FBX files import very small).</summary>
     [Export]
-    public float ArtScale { get; set; } = DefaultArtScale;
+    public float ArtScale
+    {
+        get => _artScale;
+        set
+        {
+            _artScale = value;
+            ReloadInEditor();
+        }
+    }
 
     /// <summary>Graybox stand-in that is hidden once the pack mesh is loaded.</summary>
     [Export]
@@ -40,9 +64,45 @@ public partial class ShopArtSlot : Node3D
 
     public override void _Ready()
     {
+        ShowArt();
+    }
+
+    public override void _Notification(int what)
+    {
+        // Only the editor sends these. Saving with the placeholder hidden would store visible = false in the scene.
+        if (what == NotificationEditorPreSave)
+            SetPlaceholderVisible(true);
+        else if (what == NotificationEditorPostSave)
+            SetPlaceholderVisible(!ArtLoaded);
+    }
+
+    private void ShowArt()
+    {
         ArtLoaded = TryLoadArt();
-        if (ArtLoaded && Placeholder != null)
-            Placeholder.Visible = false;
+        SetPlaceholderVisible(!ArtLoaded);
+    }
+
+    // Inspector edits of ArtPath or ArtScale refresh the preview. While a scene loads, Godot sets the exports
+    // before the node is in the tree, so nothing reloads then and _Ready does the first load.
+    private void ReloadInEditor()
+    {
+        if (!Engine.IsEditorHint() || !IsInsideTree())
+            return;
+
+        if (GetNodeOrNull(ArtNodeName) is { } old)
+        {
+            RemoveChild(old);
+            old.QueueFree();
+        }
+
+        ArtTextured = false;
+        ShowArt();
+    }
+
+    private void SetPlaceholderVisible(bool visible)
+    {
+        if (Placeholder != null)
+            Placeholder.Visible = visible;
     }
 
     private static StandardMaterial3D? PackMaterial(string atlasPath)
@@ -86,7 +146,7 @@ public partial class ShopArtSlot : Node3D
             return false;
 
         var art = scene.Instantiate<Node3D>();
-        art.Name = "Art";
+        art.Name = ArtNodeName;
         art.Scale = Vector3.One * ArtScale;
         ArtTextured = ApplyPackMaterial(art);
         AddChild(art);
