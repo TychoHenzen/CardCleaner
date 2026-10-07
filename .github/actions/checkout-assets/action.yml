@@ -1,0 +1,44 @@
+name: Check out private assets
+description: >
+  Initialises the private Assets submodule (TychoHenzen/cardcleaner-assets) over SSH with a read-only deploy key.
+  Run it after actions/checkout. Pull requests that cannot read the secret (forks, Dependabot) continue without
+  assets and rely on the placeholder fallback; every other event fails when the key is missing.
+
+inputs:
+  key:
+    description: Private half of the read-only deploy key for the assets repository.
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Initialise Assets submodule
+      shell: bash
+      env:
+        ASSETS_KEY: ${{ inputs.key }}
+        EVENT_NAME: ${{ github.event_name }}
+      run: |
+        set -euo pipefail
+        if [ -z "$ASSETS_KEY" ]; then
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            echo "::warning::ASSETS_DEPLOY_KEY is unavailable for this pull request; continuing without the Assets submodule."
+            exit 0
+          fi
+          echo "::error::ASSETS_DEPLOY_KEY secret is empty; cannot fetch the private Assets submodule."
+          exit 1
+        fi
+
+        temp_dir="$RUNNER_TEMP"
+        if command -v cygpath >/dev/null 2>&1; then
+          temp_dir="$(cygpath -u "$RUNNER_TEMP")"
+        fi
+        key_file="$temp_dir/assets_deploy_key"
+        trap 'rm -f "$key_file"' EXIT
+        umask 077
+        printf '%s\n' "$ASSETS_KEY" > "$key_file"
+        chmod 600 "$key_file"
+
+        export GIT_SSH_COMMAND="ssh -i $key_file -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=$temp_dir/assets_known_hosts"
+        git config --local submodule.Assets.url "git@github.com:TychoHenzen/cardcleaner-assets.git"
+        git submodule update --init --depth 1 Assets

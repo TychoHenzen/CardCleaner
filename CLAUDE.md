@@ -221,11 +221,20 @@ Core utilities and interfaces are in `Scripts/Core/`.
 - Review remains read-only until the user explicitly accepts the findings or requests remediation.
 - `/complete-pr` owns the ready-to-merge check, merge, linked-issue confirmation, and remote branch deletion.
 
+### Private Assets Submodule
+
+All art and models live in the private repo `TychoHenzen/cardcleaner-assets`, a git submodule mounted at `Assets/` (so `res://Assets/...` resolves there). It holds the former `Graphics/` folder as `Assets/Graphics/`, the Synty files in `Assets/Synty/`, the card, terrain and material resources, and the Godot `.import` files (tracked there so UIDs stay stable). It does not use Git LFS (about 75 MB, no file over 5 MB); revisit if a single file passes 50 MB.
+
+- Clone with `git clone --recurse-submodules`, or run `git submodule update --init` in an existing clone. An empty `Assets/` means the submodule is not initialised.
+- Changing an asset is two commits: commit and push inside `Assets/` first, then commit the updated `Assets` pointer in this repo. Pushing the pointer before the submodule commit breaks CI.
+- CI fetches the submodule with the read-only deploy key in the `ASSETS_DEPLOY_KEY` secret (`.github/actions/checkout-assets`).
+- `Z:\Tycho\Projects\Assets` is our internal asset collection. Whenever new assets are needed, look there first. The Synty packs are under `Z:\Tycho\Projects\Assets\CardCleanerAssets` (mostly zips; extract one into the sync script's source root, `../CardCleanerAssets` or `CARDCLEANER_ASSET_SOURCE`, before listing its files in `tools/synty-assets.json`).
+
 ### Shop Scene and Licensed Assets
 
-`Scenes/Gameplay/ShopScene.tscn` is the graybox shop (storefront, storage, backoffice). Launch it directly (editor F6); `StartScene.tscn` stays the main scene. Wall, floor, door and counter art comes from the licensed Synty packs, which are never committed:
+`Scenes/Gameplay/ShopScene.tscn` is the graybox shop (storefront, storage, backoffice). Launch it directly (editor F6); `StartScene.tscn` stays the main scene. Wall, floor, door and counter art comes from the licensed Synty packs. Only the files listed in the manifest are committed, and only in the private submodule, never in this repo:
 
-- Run `tools/sync-assets.ps1` once, then open the project in Godot so it imports the FBX files. The script copies the files listed in `tools/synty-assets.json` into the gitignored `Assets/Synty/` folder. Set `CARDCLEANER_ASSET_SOURCE` to override the source root (default `../CardCleanerAssets`). A missing root or file is an error.
+- To add Synty files, list them in `tools/synty-assets.json`, run `tools/sync-assets.ps1`, open the project in Godot so it imports the FBX files, then commit the new files and their `.import` files inside `Assets/`. The script copies into `Assets/Synty/`. Set `CARDCLEANER_ASSET_SOURCE` to override the source root (default `../CardCleanerAssets`). A missing root, file or uninitialised submodule is an error.
 - Each shop issue adds its own manifest entries.
 - `ShopArtSlot` nodes load a pack mesh at runtime and hide their graybox placeholder. Without the import the scene still loads and shows the placeholders. Collision is hand-authored and independent of the art.
 

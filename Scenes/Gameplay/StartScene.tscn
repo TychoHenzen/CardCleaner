@@ -9,7 +9,7 @@
 [ext_resource type="Resource" uid="uid://c1pvj6bchej3" path="res://Assets/CardRarity/Common.tres" id="4_vkee2"]
 [ext_resource type="Resource" uid="uid://crj4wbejtk751" path="res://Assets/CardRarity/Uncommon.tres" id="5_otk7d"]
 [ext_resource type="Script" uid="uid://dckadi8fdva0e" path="res://Scripts/Features/Pause/Controllers/PauseController.cs" id="5_u668n"]
-[ext_resource type="Texture2D" uid="uid://c22xilhi7cap1" path="res://Graphics/tile_0001.png" id="6_28ir6"]
+[ext_resource type="Texture2D" uid="uid://c22xilhi7cap1" path="res://Assets/Graphics/tile_0001.png" id="6_28ir6"]
 [ext_resource type="Resource" uid="uid://cyqbkl4lcnxak" path="res://Assets/CardRarity/Rare.tres" id="6_ypprn"]
 [ext_resource type="Resource" uid="uid://c8eyaxwe0si1t" path="res://Assets/CardRarity/Epic.tres" id="7_ioitf"]
 [ext_resource type="Resource" uid="uid://vnmarlrtxlog" path="res://Assets/CardRarity/Legendary.tres" id="8_3rand"]
