@@ -1,9 +1,9 @@
-[gd_resource type="Resource" script_class="OrderCatalog" load_steps=9 format=3]
+[gd_resource type="Resource" script_class="OrderCatalog" format=3 uid="uid://bxa58gscuyho4"]
 
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Models/OrderCatalog.cs" id="OrderCatalogScript"]
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Models/OrderItem.cs" id="OrderItemScript"]
-[ext_resource type="PackedScene" path="res://Scenes/Workshop/Items/Conveyor.tscn" id="Conveyor"]
 [ext_resource type="PackedScene" path="res://Scenes/Workshop/Items/ArcadeCabinet.tscn" id="ArcadeCabinet"]
+[ext_resource type="PackedScene" path="res://Scenes/Workshop/Items/Conveyor.tscn" id="Conveyor"]
+[ext_resource type="Script" uid="uid://ddvfbixqpsql6" path="res://Scripts/Features/Shop/Models/OrderCatalog.cs" id="OrderCatalogScript"]
+[ext_resource type="Script" uid="uid://d144tmal3smw7" path="res://Scripts/Features/Shop/Models/OrderItem.cs" id="OrderItemScript"]
 [ext_resource type="PackedScene" path="res://Scenes/Workshop/Items/WiringSpool.tscn" id="WiringSpool"]
 
 [sub_resource type="Resource" id="ConveyorItem"]
@@ -29,4 +29,4 @@ Scene = ExtResource("WiringSpool")
 
 [resource]
 script = ExtResource("OrderCatalogScript")
-Items = Array[ExtResource("OrderItemScript")]([SubResource("ConveyorItem"), SubResource("ArcadeCabinetItem"), SubResource("WiringItem")])
+Items = [SubResource("ConveyorItem"), SubResource("ArcadeCabinetItem"), SubResource("WiringItem")]
