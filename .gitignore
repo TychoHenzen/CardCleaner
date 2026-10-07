@@ -4,7 +4,6 @@
 Card_Context.txt
 .Serena
 reports
-Graphics
 .venv-poc
 
 ### Godot ###
@@ -133,5 +132,3 @@ Scripts/Tools/*.png.import
 *.uid
 *.import
 
-# Licensed Synty pack files copied by tools/sync-assets.ps1 (never committed)
-Assets/Synty/

@@ -3,7 +3,7 @@
  <editorsettings>
   <export target="test..tsj" format="json"/>
  </editorsettings>
- <image source="../../Graphics/Terrain/7souls/A2_autotile_sheet.png" width="256" height="240"/>
+ <image source="../../Assets/Graphics/Terrain/7souls/A2_autotile_sheet.png" width="256" height="240"/>
  <tile id="0">
   <properties>
    <property name="biome" type="int" propertytype="Biome" value="0"/>

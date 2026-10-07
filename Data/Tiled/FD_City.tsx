@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.2" name="FD_City" tilewidth="16" tileheight="16" tilecount="2304" columns="48">
- <image source="../../Graphics/Terrain/FantasyDreamland/FD_City.png" width="768" height="768"/>
+ <image source="../../Assets/Graphics/Terrain/FantasyDreamland/FD_City.png" width="768" height="768"/>
  <tile id="1" type="base_grass1">
   <properties>
    <property name="biome" type="int" propertytype="Biome" value="0"/>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.2" name="FDR_Ground_Tiles_Godot" tilewidth="16" tileheight="16" tilecount="480" columns="24">
- <image source="../../Graphics/Terrain/FantasyDreamland/FDR_Ground_Tiles_Godot.png" width="384" height="320"/>
+ <image source="../../Assets/Graphics/Terrain/FantasyDreamland/FDR_Ground_Tiles_Godot.png" width="384" height="320"/>
  <wangsets>
   <wangset name="FDR_grass1" type="mixed" tile="-1">
    <wangcolor name="Foreground" color="#ff0000" tile="-1" probability="1"/>

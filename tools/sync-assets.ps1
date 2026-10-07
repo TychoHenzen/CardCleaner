@@ -1,7 +1,8 @@
 <#
 .SYNOPSIS
-  Copies the licensed Synty files listed in tools/synty-assets.json into the gitignored Assets/Synty folder.
+  Copies the licensed Synty files listed in tools/synty-assets.json into Assets/Synty, inside the private Assets submodule.
 .DESCRIPTION
+  Commit the copied files (and their .import files) inside the Assets submodule, never in this repository.
   The source root comes from the environment variable named by sourceRootEnvVar in the manifest, or from
   defaultSourceRoot (relative to the repository root) when the variable is unset. A missing source root or a
   missing listed file stops the script with a non-zero exit code. Nothing is skipped silently.
@@ -19,6 +20,10 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Split-Path -Parent $scriptDir
 if (-not $ManifestPath) { $ManifestPath = Join-Path $scriptDir 'synty-assets.json' }
 $destinationRoot = Join-Path $repoRoot 'Assets/Synty'
+
+if (-not (Test-Path -LiteralPath (Join-Path $repoRoot 'Assets/.git'))) {
+    throw "The Assets submodule is not initialised. Run: git submodule update --init"
+}
 
 if (-not (Test-Path -LiteralPath $ManifestPath)) {
     throw "Manifest not found: $ManifestPath"

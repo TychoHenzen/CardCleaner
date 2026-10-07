@@ -1,0 +1,40 @@
+name: Check out private assets
+description: >
+  Initialises the private Assets submodule (TychoHenzen/cardcleaner-assets) over SSH with a read-only deploy key.
+  Run it after actions/checkout. The project cannot load without Assets/ (scenes, tile sets and card resources
+  live there), so a missing key fails the step for every event. Pull requests from forks and Dependabot cannot
+  read repository secrets and therefore fail here until the key is also stored as a Dependabot secret.
+
+inputs:
+  key:
+    description: Private half of the read-only deploy key for the assets repository.
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Initialise Assets submodule
+      shell: bash
+      env:
+        ASSETS_KEY: ${{ inputs.key }}
+      run: |
+        set -euo pipefail
+        if [ -z "$ASSETS_KEY" ]; then
+          echo "::error::ASSETS_DEPLOY_KEY is empty (forks and Dependabot cannot read secrets); cannot fetch the private Assets submodule."
+          exit 1
+        fi
+
+        temp_dir="$RUNNER_TEMP"
+        if command -v cygpath >/dev/null 2>&1; then
+          temp_dir="$(cygpath -u "$RUNNER_TEMP")"
+        fi
+        key_file="$temp_dir/assets_deploy_key"
+        trap 'rm -f "$key_file"' EXIT
+        umask 077
+        printf '%s\n' "$ASSETS_KEY" > "$key_file"
+        chmod 600 "$key_file"
+
+        export GIT_SSH_COMMAND="ssh -i $key_file -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=$temp_dir/assets_known_hosts"
+        git config --local submodule.Assets.url "git@github.com:TychoHenzen/cardcleaner-assets.git"
+        git submodule update --init --depth 1 Assets
