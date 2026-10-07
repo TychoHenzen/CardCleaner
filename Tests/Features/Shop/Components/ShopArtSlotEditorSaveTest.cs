@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using CardCleaner.Scripts.Features.Shop.Components;
 using Godot;
 
@@ -61,7 +61,7 @@ public class ShopArtSlotEditorSaveTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void NoSceneStoresAHiddenPlaceholder()
+    public static void NoSceneFileStoresAHiddenPlaceholder()
     {
         var scenes = ScenesWithArtSlots(ScenesRoot);
         AssertThat(scenes.Count).IsGreater(0);
@@ -84,6 +84,20 @@ public class ShopArtSlotEditorSaveTest
         AssertThat(string.Join(", ", hidden)).IsEmpty();
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void AnEditorSaveOfEverySceneWithAnArtSlotStoresNoHiddenPlaceholderAndNoArt()
+    {
+        var scenes = ScenesWithArtSlots(ScenesRoot);
+        AssertThat(scenes.Count).IsGreater(0);
+
+        var problems = new List<string>();
+        foreach (var scenePath in scenes)
+            problems.AddRange(SaveProblems(scenePath));
+
+        AssertThat(string.Join(", ", problems)).IsEmpty();
+    }
+
     private static ShopArtSlot AddSlot(string artPath, out MeshInstance3D placeholder)
     {
         placeholder = new MeshInstance3D();
@@ -92,25 +106,70 @@ public class ShopArtSlotEditorSaveTest
         return AddNode(slot);
     }
 
+    // Every scene under the folder whose instantiated graph holds a slot, so a scene that reaches a slot only
+    // through an instanced sub-scene (the arcade cabinet through the cabinet assembly) is found as well.
     private static List<string> ScenesWithArtSlots(string folder)
     {
         var found = new List<string>();
-        using var directory = DirAccess.Open(folder);
-        if (directory == null)
-            return found;
-
-        foreach (var sub in directory.GetDirectories())
-            found.AddRange(ScenesWithArtSlots($"{folder}/{sub}"));
-
-        foreach (var file in directory.GetFiles())
+        foreach (var scenePath in ScenePaths(folder))
         {
-            var path = $"{folder}/{file}";
-            if (file.EndsWith(".tscn") && File.ReadAllText(ProjectSettings.GlobalizePath(path)).Contains(nameof(ShopArtSlot)))
-                found.Add(path);
+            var root = GD.Load<PackedScene>(scenePath).Instantiate<Node>();
+            if (Slots(root).Any())
+                found.Add(scenePath);
+            root.Free();
         }
 
         return found;
     }
+
+    private static List<string> ScenePaths(string folder)
+    {
+        var paths = new List<string>();
+        using var directory = DirAccess.Open(folder);
+        if (directory == null)
+            return paths;
+
+        foreach (var sub in directory.GetDirectories())
+            paths.AddRange(ScenePaths($"{folder}/{sub}"));
+
+        paths.AddRange(directory.GetFiles().Where(file => file.EndsWith(".tscn")).Select(file => $"{folder}/{file}"));
+        return paths;
+    }
+
+    // Plays what the editor does when it saves a scene whose slots show their art: _Ready has run (art loaded,
+    // placeholders hidden), PreSave is delivered to every node, the scene is packed, PostSave follows. The packed
+    // copy must hold the authored nodes only (the Art child has no owner) and no hidden placeholder.
+    private static List<string> SaveProblems(string scenePath)
+    {
+        var problems = new List<string>();
+        var root = GD.Load<PackedScene>(scenePath).Instantiate<Node>();
+        var authoredNodes = CountNodes(root);
+        AddNode(root);
+        root.PropagateNotification((int)Node.NotificationEditorPreSave);
+        var packed = new PackedScene();
+        var error = packed.Pack(root);
+        root.PropagateNotification((int)Node.NotificationEditorPostSave);
+
+        if (error != Error.Ok)
+        {
+            problems.Add($"{scenePath}: Pack failed with {error}");
+        }
+        else
+        {
+            var saved = packed.Instantiate<Node>();
+            if (CountNodes(saved) != authoredNodes)
+                problems.Add($"{scenePath}: saved {CountNodes(saved)} nodes, authored {authoredNodes}");
+            foreach (var slot in Slots(saved).Where(slot => slot.Placeholder is { Visible: false }))
+                problems.Add($"{scenePath}: {saved.GetPathTo(slot.Placeholder)} saved hidden");
+            saved.Free();
+        }
+
+        root.Free();
+        return problems;
+    }
+
+    private static int CountNodes(Node node) =>
+        1 + node.GetChildren().Sum(CountNodes);
 
     private static IEnumerable<ShopArtSlot> Slots(Node node)
     {
