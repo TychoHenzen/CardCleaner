@@ -53,12 +53,13 @@ function ConvertTo-ResPath {
     return 'res://' + $Path.Substring($RepositoryRoot.Length).TrimStart('\').Replace('\', '/')
 }
 
-# Suite files gdUnit is expected to run: an attribute line starting with [TestSuite], as in TestSuiteNamingTest.
+# Suite files gdUnit is expected to run: an attribute line for TestSuite in any spelling TestSuiteNamingTest accepts
+# ([TestSuite], [TestSuite()], [TestSuiteAttribute], [GdUnit4.TestSuite]).
 function Get-ExpectedSuites {
     param([string]$RepositoryRoot, [switch]$UnitOnly)
 
     $files = Get-ChildItem -LiteralPath (Join-Path $RepositoryRoot 'Tests') -Filter '*.cs' -File -Recurse |
-        Where-Object { Select-String -LiteralPath $_.FullName -Pattern '^\s*\[TestSuite\]' -Quiet }
+        Where-Object { Select-String -LiteralPath $_.FullName -Pattern '^\s*\[(?:GdUnit4\.)?TestSuite(?:Attribute)?(?:\(\s*\))?\]' -Quiet }
     if ($UnitOnly) {
         $files = $files | Where-Object { Select-String -LiteralPath $_.FullName -Pattern '\[TestCategory\("Unit"\)\]' -Quiet }
     }
@@ -166,11 +167,16 @@ function Get-StallPoint {
     return 'before the first suite'
 }
 
+# Kills Godot's whole process tree and confirms the root process is gone, so a resume never overlaps a survivor.
 function Stop-ProcessTree {
-    param([int]$ProcessId)
+    param([System.Diagnostics.Process]$Process)
 
     $ErrorActionPreference = 'Continue'
-    & taskkill.exe /PID $ProcessId /T /F *> $null
+    & taskkill.exe /PID $Process.Id /T /F *> $null
+    $taskkillExit = $LASTEXITCODE
+    if (-not $Process.WaitForExit($KillWaitMilliseconds)) {
+        throw "Could not stop Godot (PID $($Process.Id)); taskkill exit code $taskkillExit"
+    }
 }
 
 # A just-killed Godot can still hold its log open for a moment, so read with shared access and retry briefly.
@@ -212,8 +218,7 @@ function Invoke-GodotWatched {
             $quietSince = Get-Date
         }
         elseif (((Get-Date) - $quietSince).TotalSeconds -ge $StallSeconds) {
-            Stop-ProcessTree -ProcessId $process.Id
-            [void]$process.WaitForExit($KillWaitMilliseconds)
+            Stop-ProcessTree -Process $process
             return [pscustomobject]@{ Stalled = $true; ExitCode = $null }
         }
     }
@@ -302,7 +307,7 @@ $stalledSuites = New-Object 'System.Collections.Generic.HashSet[string]' ([Strin
 $lastFinished = 'none'
 $errors = 0
 $failures = 0
-$completedSince = $null
+$runStartedAt = [DateTime]::UtcNow
 $finalExitCode = $null
 # A full run starts from the Tests folder, -Fast names its suite files, and a resume names its compact targets.
 $targets = if ($Fast) { $expected } else { @('res://Tests') }
@@ -312,7 +317,6 @@ for ($attempt = 0; ; $attempt++) {
     $stdoutPath = Join-Path $reportRoot "godot$suffix.stdout.log"
     $stderrPath = Join-Path $reportRoot "godot$suffix.stderr.log"
     $suiteArguments = @($targets | ForEach-Object { '-a', $_ })
-    $startedAt = [DateTime]::UtcNow
 
     $run = Invoke-GodotWatched -GodotPath $godotPath -Arguments ($baseArguments + $suiteArguments) -WorkingDirectory $repositoryRoot -StdoutPath $stdoutPath -StderrPath $stderrPath
     $progress = Read-SuiteProgress -LogText (Read-SharedText -Path $stdoutPath)
@@ -321,13 +325,13 @@ for ($attempt = 0; ; $attempt++) {
     }
 
     if (-not $run.Stalled) {
-        $completedSince = $startedAt
         $finalExitCode = $run.ExitCode
         break
     }
 
-    # A killed Godot writes no results.xml (GdUnit writes it when the session shuts down), so the suites it
-    # finished are judged from their Statistics lines.
+    # A killed Godot normally writes no results.xml (GdUnit writes it when the session shuts down), so the suites it
+    # finished are judged from their Statistics lines. A report it did write is still read below; counting a
+    # failure from both sources only matters when it is already non-zero.
     $errors += $progress.Errors
     $failures += $progress.Failures
     $point = Get-StallPoint -Progress $progress
@@ -355,15 +359,16 @@ for ($attempt = 0; ; $attempt++) {
     Write-Host "Resuming with $($pending.Count) unfinished suite(s): $($targets -join ' ')"
 }
 
-if ($null -ne $completedSince) {
-    $totals = Read-ReportTotals -ReportRoot $reportRoot -Since $completedSince
-    if ($totals.Files -eq 0) {
-        $stdoutTail = (Get-Content -LiteralPath $stdoutPath -Tail 40) -join [Environment]::NewLine
-        throw "GdUnit did not produce a results.xml report under $reportRoot (exit=$finalExitCode). stdout=$stdoutTail"
-    }
-    $errors += $totals.Errors
-    $failures += $totals.Failures
+# Every report written since the run began counts, and at least one is required: a run whose last attempt was
+# killed after its final suite printed Statistics still has to leave a report before it can pass.
+$totals = Read-ReportTotals -ReportRoot $reportRoot -Since $runStartedAt
+if ($totals.Files -eq 0) {
+    $stdoutTail = (Get-Content -LiteralPath $stdoutPath -Tail 40) -join [Environment]::NewLine
+    $exitText = if ($null -eq $finalExitCode) { 'killed after a stall' } else { "exit=$finalExitCode" }
+    throw "GdUnit did not produce a results.xml report under $reportRoot ($exitText). stdout=$stdoutTail"
 }
+$errors += $totals.Errors
+$failures += $totals.Failures
 
 if ($failures -gt 0 -or $errors -gt 0) {
     throw "GdUnit run is not green: failures=$failures, errors=$errors, reports under $reportRoot"

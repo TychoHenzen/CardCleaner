@@ -17,9 +17,11 @@ public class TestSuiteNamingTest
     private const string TestsRoot = "res://Tests";
 
     // Only an attribute at the start of a line counts, so comments and string literals that mention it do not.
+    // The attribute may be spelled [TestSuite], [TestSuite()], [TestSuiteAttribute] or [GdUnit4.TestSuite]; keep
+    // Get-ExpectedSuites in Scripts/ci/Run-GdUnit.ps1 in step with this pattern.
     // \x7B is the opening brace, escaped so brace-counting tools still see balanced braces in this file.
     private static readonly Regex SuiteDeclaration = new(
-        @"^\s*\[TestSuite\](?<between>[^\x7B;]*?)\bclass\s+(?<name>\w+)",
+        @"^\s*\[(?:GdUnit4\.)?TestSuite(?:Attribute)?(?:\(\s*\))?\](?<between>[^\x7B;]*?)\bclass\s+(?<name>\w+)",
         RegexOptions.Multiline | RegexOptions.Compiled);
 
     private static readonly Regex AbstractModifier = new(@"\babstract\b", RegexOptions.Compiled);
@@ -56,6 +58,17 @@ public class TestSuiteNamingTest
     public static void SuiteClassNamedDifferentlyFromItsFileIsReported()
     {
         const string source = "[TestSuite]\npublic class EleAspectsEnhancedTest\n{\n}\n";
+
+        AssertThat(SkippedSuites("EleAspectsTest.cs", source).ToList()).HasSize(1);
+    }
+
+    [TestCase("[TestSuite()]")]
+    [TestCase("[TestSuiteAttribute]")]
+    [TestCase("[GdUnit4.TestSuite]")]
+    [TestCategory("Unit")]
+    public static void EverySpellingOfTheSuiteAttributeIsRecognized(string attribute)
+    {
+        var source = attribute + "\npublic class EleAspectsEnhancedTest\n{\n}\n";
 
         AssertThat(SkippedSuites("EleAspectsTest.cs", source).ToList()).HasSize(1);
     }
