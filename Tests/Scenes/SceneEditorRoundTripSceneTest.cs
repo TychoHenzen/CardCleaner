@@ -9,7 +9,8 @@ namespace CardCleaner.Tests.Scenes;
 /// kept only when that instance is marked editable. A scene file that overrides a child of an instance without the
 /// editable flag loads fine and loses those values on the first editor save (the node stays, because the instanced
 /// scene still holds it). Packing every scene the way the editor does, from an instance made with the editor's edit
-/// state, and comparing every stored value exposes it without opening the editor.
+/// state, and comparing the stored values exposes it without opening the editor. Resources are compared by file
+/// path, so the contents of inline sub-resources are not checked.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -77,7 +78,8 @@ public class SceneEditorRoundTripSceneTest
             Compare(originalRoot, child, savedRoot, lost);
     }
 
-    // A value as the scene file would state it: nodes by their path from the root, resources by their file.
+    // A value as the scene file would state it: nodes by their path from the root, resources by their file (an inline
+    // sub-resource has no file, so it compares by that alone).
     private static string Describe(Node root, Variant value) => value.Obj switch
     {
         Node node => root.GetPathTo(node).ToString(),
