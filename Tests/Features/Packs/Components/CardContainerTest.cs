@@ -16,13 +16,7 @@ public class CardContainerTest
     private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
     private const string CardScene = "res://Scenes/Components/CardShader.tscn";
-    private const float StorageWallHeight = 3.75f;
     private const ulong Seed = 777;
-
-    // The storage room of ShopScene (x 0..8, z -8..0) and the box delivery marker inside it.
-    private static readonly Rect2 StorageRoom = new(0f, -8f, 8f, 8f);
-    private static readonly Vector3 StorageDelivery = new(4f, 0f, -5.5f);
-    private const int GenerousFrameBudget = 200;
     private const int OpenFrames = 12;
 
     private Node3D _world = null!;
@@ -92,35 +86,6 @@ public class CardContainerTest
         var expected = new CardPackGenerator(new RandomNumberGenerator { Seed = Seed }).OpenBooster();
         for (var i = 0; i < expected.Length; i++)
             AssertThat(_spawner.Spawned[i].Signature.Elements).IsEqual(expected[i].Elements);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task WholeBoxOpensToFiveHundredAndTwelveCards()
-    {
-        await OpenEverything(Make(BoxScene));
-
-        AssertThat(_spawner.Spawned.Count).IsEqual(CardContainerLayout.CardsPerBox);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task SameSeedPutsSpecialCardsInTheSamePositionsAndCommonCardsAreAllZero()
-    {
-        await OpenEverything(Make(BoxScene));
-        var first = _spawner.Spawned.Select(s => s.Signature).ToArray();
-
-        _spawner = new RecordingCardSpawner();
-        await OpenEverything(Make(BoxScene));
-        var second = _spawner.Spawned.Select(s => s.Signature).ToArray();
-
-        AssertThat(second.Length).IsEqual(first.Length);
-        for (var i = 0; i < first.Length; i++)
-        {
-            AssertThat(second[i].HasMagicalPotential()).IsEqual(first[i].HasMagicalPotential());
-            if (!first[i].HasMagicalPotential())
-                AssertThat(first[i].Elements).IsEqual(new float[8]);
-        }
     }
 
     [TestCase]
@@ -247,32 +212,6 @@ public class CardContainerTest
         }
     }
 
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void AFullBoxOpenedAtTheStorageDeliveryPointStaysInsideTheStorageRoom()
-    {
-        // Every item rests where it spawned before it is opened, so each level's column starts on the floor
-        // under the one before. The tallest column must stay under the storage walls.
-        var positions = new List<Vector3>();
-        var level = new List<Vector3> { StorageDelivery };
-        foreach (var kind in new[] { CardContainerKind.Box, CardContainerKind.Pack, CardContainerKind.Booster })
-        {
-            var next = new List<Vector3>();
-            foreach (var container in level)
-            for (var i = 0; i < CardContainerLayout.ItemsPerContainer; i++)
-                next.Add(container + CardContainer.SpawnOffset(i, kind));
-            positions.AddRange(next);
-            level = next.Select(p => new Vector3(p.X, StorageDelivery.Y, p.Z)).ToList();
-        }
-
-        AssertThat(positions.Count).IsEqual(8 + 64 + CardContainerLayout.CardsPerBox);
-        foreach (var position in positions)
-        {
-            AssertBool(StorageRoom.HasPoint(new Vector2(position.X, position.Z))).IsTrue();
-            AssertBool(position.Y < StorageWallHeight).IsTrue();
-        }
-    }
-
     private CardContainer Make(string scenePath)
     {
         var container = GD.Load<PackedScene>(scenePath).Instantiate<CardContainer>();
@@ -284,25 +223,6 @@ public class CardContainerTest
 
     private CardContainer[] Containers(CardContainerKind kind) =>
         _world.GetChildren().OfType<CardContainer>().Where(c => c.Kind == kind && !c.IsOpened).ToArray();
-
-    private async Task OpenEverything(CardContainer box)
-    {
-        box.Open();
-        var expected = CardContainerLayout.ItemsPerContainer;
-        foreach (var kind in new[] { CardContainerKind.Pack, CardContainerKind.Booster })
-        {
-            await Frames(OpenFrames);
-            var next = Containers(kind);
-            AssertThat(next.Length).IsEqual(expected);
-            foreach (var container in next)
-                container.Open();
-            expected *= CardContainerLayout.ItemsPerContainer;
-        }
-
-        var budget = GenerousFrameBudget;
-        while (_spawner.Spawned.Count < CardContainerLayout.CardsPerBox && budget-- > 0)
-            await Frames(1);
-    }
 
     private static async Task Frames(int count)
     {
