@@ -1,11 +1,12 @@
-﻿using CardCleaner.Scripts.Features.Card.Models.Effects;
+﻿using CardCleaner.Scripts.Core.Data;
+using CardCleaner.Scripts.Features.Card.Models.Effects;
 using Godot;
 
-namespace CardCleaner.Scripts.Core.Interfaces;
+namespace CardCleaner.Scripts.Features.Card.Components;
 
 public interface ICardMaterialComponent
 {
-    void SetLayerTextures(Data.LayerData[] layers);
+    void SetLayerTextures(LayerData[] layers);
     ShaderMaterial? ApplyMaterial(MeshInstance3D target);
     void SetGemEmission(int index, Color color, float strength);
 
