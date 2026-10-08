@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace CardCleaner.Scripts.Features.Card.Models.EffectBaking;
 
 /// <summary>
-///     Splits raster art into flat colour regions with the settings Axiom2d used to vectorise all card art
-///     (<c>tools/img-to-shape</c>), so the regions are the ones its shapes would have been. Plain arrays, no Godot.
-///     Not ported: the Scale2x upscale (card art is 256 px, so it is only scaled down) and the contour tracing.
+///     Splits raster art into flat colour regions by flood fill, using Axiom2d's colour and alpha thresholds. The
+///     regions approximate the areas its shapes covered; they are not vector contours. Plain arrays, no Godot.
+///     See <c>docs/CARD_EFFECTS_AXIOM2D.md</c> for where the port differs from Axiom2d.
 /// </summary>
 public static class CardEffectRegionSegmenter
 {
