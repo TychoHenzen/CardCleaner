@@ -120,6 +120,13 @@ public class ShopWorkshopDeliverySceneTest
         _ui.PressItem(cabinet);
 
         var replacement = DeliveredByLastOrder(_terminal);
+        // Reporting the replaced node again would mean the final press never reached the terminal.
+        AssertBool(ReferenceEquals(replacement, first))
+            .OverrideFailureMessage("the final press did not deliver a new item")
+            .IsFalse();
+        AssertBool(GodotObject.IsInstanceValid(replacement) && !replacement.IsQueuedForDeletion())
+            .OverrideFailureMessage("the replacement is not a live node")
+            .IsTrue();
         AssertBool(replacement.GlobalPosition.IsEqualApprox(_delivery.GlobalPosition + OrderingService.SlotOffset(0)))
             .IsTrue();
         AssertThat(_ui.MessageText.Contains("Ordered")).IsTrue();

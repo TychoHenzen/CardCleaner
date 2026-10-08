@@ -63,6 +63,8 @@ public class CardSpawnerSpecialCardTest
         var spawnSpecial = RegisteredCallback("spawn_special", Key.Key4);
 
         spawnSpecial();
+        // Random cards the key queues spawn only in _Process, so run a frame before checking none spawned.
+        _spawner._Process(0);
 
         _spawning.Received(1).SpawnCard(Arg.Is<CardSignature>(signature => signature.HasMagicalPotential()),
             Arg.Any<Transform3D>(), Arg.Any<Node3D>());
