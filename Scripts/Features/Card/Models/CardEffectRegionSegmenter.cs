@@ -11,16 +11,13 @@ namespace CardCleaner.Scripts.Features.Card.Models;
 public static class CardEffectRegionSegmenter
 {
     /// <summary>Largest colour distance (RGB in [0, 1]) between a pixel and its region's running average.</summary>
-    public const float ColorThreshold = 0.1f;
+    internal const float ColorThreshold = 0.1f;
 
     /// <summary>Pixels with a lower alpha byte are transparent and belong to no region.</summary>
-    public const byte AlphaThreshold = 128;
+    internal const byte AlphaThreshold = 128;
 
     /// <summary>A region with fewer pixels than this is dropped.</summary>
-    public const int MinArea = 4;
-
-    /// <summary>A region with fewer pixels than this is merged into its nearest-colour neighbour.</summary>
-    public const int MergeBelow = 5;
+    private const int MinArea = 4;
 
     /// <summary>The longest side of the working image, in pixels.</summary>
     public const int MaxDimension = 128;
@@ -38,8 +35,9 @@ public static class CardEffectRegionSegmenter
             foreach (var pixel in regions[id].Pixels)
                 owner[pixel] = id;
 
-        // Merging up to MergeBelow already absorbs everything under MinArea unless a lone region is left.
-        CardEffectRegionMerger.MergeSmallRegions(regions, owner, work.Width, Math.Max(MergeBelow, MinArea));
+        // The merger absorbs every region under five pixels, so only a lone tiny region stays under MinArea;
+        // Compact drops it.
+        CardEffectRegionMerger.MergeSmallRegions(regions, owner, work.Width);
         return Compact(regions, owner, work.Width, work.Height);
     }
 

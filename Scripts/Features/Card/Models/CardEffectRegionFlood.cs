@@ -38,9 +38,12 @@ internal sealed class CardEffectRegionFlood
         {
             if (_visited[start]) continue;
             if (IsTransparent(start))
+            {
                 _visited[start] = true;
-            else
-                regions.Add(Grow(start));
+                continue;
+            }
+
+            regions.Add(Grow(start));
         }
 
         return regions;

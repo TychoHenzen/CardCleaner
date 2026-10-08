@@ -11,7 +11,7 @@ internal sealed class CardEffectRegion
 
     public List<int> Pixels { get; } = new();
 
-    /// <summary>The average colour of the region's pixels; kept up to date by the segmenter, not by <see cref="Add" />.</summary>
+    /// <summary>The average colour; set on growing and on each merge, not by <see cref="Add" />.</summary>
     public CardEffectRgb Color { get; set; }
 
     /// <summary>The mean of the pixels added so far; only meaningful once there is one.</summary>

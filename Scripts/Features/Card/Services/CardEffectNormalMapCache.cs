@@ -20,7 +20,8 @@ public static class CardEffectNormalMapCache
 
     private static ImageTexture Bake(Texture2D art)
     {
-        var image = art.GetImage() ?? throw new InvalidOperationException($"Art texture {art.ResourcePath} has no image to bake.");
+        var image = art.GetImage()
+                    ?? throw new InvalidOperationException($"Art texture {art.ResourcePath} has no image to bake.");
         if (image.IsCompressed())
             image.Decompress();
 
@@ -28,6 +29,7 @@ public static class CardEffectNormalMapCache
         image.ClearMipmaps();
         image.Convert(Image.Format.Rgba8);
         var map = CardEffectNormalBaker.Bake(image.GetData(), image.GetWidth(), image.GetHeight());
-        return ImageTexture.CreateFromImage(Image.CreateFromData(map.Width, map.Height, false, Image.Format.Rgba8, map.Rgba));
+        var baked = Image.CreateFromData(map.Width, map.Height, false, Image.Format.Rgba8, map.Rgba);
+        return ImageTexture.CreateFromImage(baked);
     }
 }

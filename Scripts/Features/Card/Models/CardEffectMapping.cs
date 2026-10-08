@@ -10,11 +10,11 @@ namespace CardCleaner.Scripts.Features.Card.Models;
 /// </summary>
 public static class CardEffectMapping
 {
-    /// <summary>Intensity below this is <see cref="IntensityTier.Dormant" />.</summary>
-    public const float ActiveThreshold = 0.3f;
+    // Intensity below this is Dormant.
+    private const float ActiveThreshold = 0.3f;
 
-    /// <summary>Intensity at or above this is <see cref="IntensityTier.Intense" />.</summary>
-    public const float IntenseThreshold = 0.7f;
+    // Intensity at or above this is Intense.
+    private const float IntenseThreshold = 0.7f;
 
     public static RarityEffect RarityEffectFor(CardRarity rarity)
     {
@@ -55,13 +55,11 @@ public static class CardEffectMapping
     ///     The card's overall intensity: the mean magnitude of its signature elements, in [0, 1].
     /// </summary>
     /// <remarks>
-    ///     ASSUMPTION: Axiom2d applies the 0.3 and 0.7 thresholds to a single element's magnitude
-    ///     (<c>SignatureProfile.tiers</c>), and its card-level tier (<c>CardSignature::card_tier</c>) is a
-    ///     seeded draw, not a threshold. The issue asks for thresholds on the card's intensity, so a card needs one
-    ///     number. The mean was picked over the strongest element because a random signature has eight elements in
-    ///     [-1, 1], and the strongest is at least 0.7 for about 94% of them, which would make nearly every card
-    ///     Intense. The mean sits near 0.5, so Active stays the common case and Dormant and Intense are the tails.
-    ///     Swap this one method to change the definition.
+    ///     ASSUMPTION: Axiom2d applies the 0.3 and 0.7 thresholds to one element's magnitude and draws a card's tier
+    ///     from a seed, but the issue wants thresholds on the card, so a card needs one number. The mean was picked
+    ///     over the strongest element: the strongest of a random signature's eight elements is at least 0.7 about
+    ///     94% of the time, which would make nearly every card Intense, while the mean sits near 0.5. Swap this one
+    ///     method to change the definition.
     /// </remarks>
     public static float IntensityOf(float[] elements)
     {
