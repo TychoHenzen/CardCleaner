@@ -8,13 +8,7 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 
 public static class SignatureCardHelper
 {
-    public static ulong ComputeSeed(CardSignature signature)
-    {
-        var seed = 17UL;
-        foreach (var v in signature.Elements)
-            seed = seed * 23UL + (ulong)Mathf.RoundToInt(v * 1000);
-        return seed;
-    }
+    public static ulong ComputeSeed(CardSignature signature) => CardSignatureHash.Of(signature);
 
     public static CardRarity DetermineRarity(CardSignature[] signature)
     {
@@ -22,22 +16,32 @@ public static class SignatureCardHelper
         if (signature.All(sig => !sig.HasMagicalPotential()))
             return CardRarity.Common;
 
-        var totalPoints = signature.Sum(sig => sig.Elements.Sum(e =>
-        {
-            var v = Mathf.Abs(Math.Abs(e) - 0.5f);
-            return v switch
-            {
-                < 0.1f => 0,
-                < 0.2f => 1,
-                < 0.3f => 2,
-                < 0.4f => 4,
-                _ => 8
-            };
-        }));
+        return RarityForScore(RarityScore(signature));
+    }
+
+    private static float RarityScore(CardSignature[] signature)
+    {
+        var totalPoints = signature.Sum(sig => sig.Elements.Sum(e => PointsForElement(e)));
         var maxPoints = signature.Length * 8 * 8;
         var rarityRatio = (float)totalPoints / maxPoints;
-        var logScaled = (float)Math.Log10(1f + 9f * rarityRatio);
+        return (float)Math.Log10(1f + 9f * rarityRatio);
+    }
 
+    private static int PointsForElement(float element)
+    {
+        var v = Mathf.Abs(Math.Abs(element) - 0.5f);
+        return v switch
+        {
+            < 0.1f => 0,
+            < 0.2f => 1,
+            < 0.3f => 2,
+            < 0.4f => 4,
+            _ => 8
+        };
+    }
+
+    private static CardRarity RarityForScore(float logScaled)
+    {
         return logScaled switch
         {
             < 0.70f => CardRarity.Common,

@@ -1,5 +1,3 @@
-using CardCleaner.Scripts.Features.Card.Services;
-
 namespace CardCleaner.Scripts.Features.Card.Models.Effects;
 
 /// <summary>
@@ -17,7 +15,7 @@ public static class CardEffectSeed
     /// </remarks>
     public static float For(CardSignature signature)
     {
-        return Mix(SignatureCardHelper.ComputeSeed(signature)) % Range;
+        return Mix(CardSignatureHash.Of(signature)) % Range;
     }
 
     // SplitMix64's finalizer: every input bit changes every output bit.

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Models.Effects;
+using CardCleaner.Scripts.Features.Card.Services;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Models.Effects;
@@ -55,5 +56,20 @@ public class CardEffectSeedTest
 
         // 200 seeds drawn evenly from 10000 values share about two; far more means the seed throws away entropy.
         AssertThat(seeds.Count).IsGreaterEqual(195);
+    }
+
+    [TestCase(new[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f }, 1331286749777UL, 635f)]
+    [TestCase(new[] { 0.7f, -0.5f, 0f, 0f, 0f, 0f, 0f, 0f }, 3640646618177UL, 8634f)]
+    [TestCase(new[] { 0.5f, -0.3f, 0.8f, 0f, 0f, 0f, 0f, 0f }, 2994437780977UL, 8268f)]
+    [TestCase(new[] { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f }, 4890876989777UL, 7309f)]
+    [TestCase(new[] { -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1f }, 18446741845406061393UL, 6728f)]
+    [TestCase(new[] { 0.25f, -0.75f, 0.5f, -0.05f, 1f, -1f, 0.35f, 0.65f }, 2074682020927UL, 4053f)]
+    [TestCategory("Unit")]
+    public static void TheSeedsOfKnownSignaturesArePinned(float[] elements, ulong expectedHash, float expectedScratch)
+    {
+        // Pinned so that a change to the hash or to the seed mixing, which moves every card's scratches, fails here.
+        var signature = new CardSignature(elements);
+        AssertThat(SignatureCardHelper.ComputeSeed(signature)).IsEqual(expectedHash);
+        AssertThat(CardEffectSeed.For(signature)).IsEqual(expectedScratch);
     }
 }
