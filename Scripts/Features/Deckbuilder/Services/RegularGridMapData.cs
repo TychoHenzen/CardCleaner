@@ -261,11 +261,6 @@ public class RegularGridMapData : IMapData
     #region Additional Methods
 
     /// <summary>
-    /// Get the underlying SimpleMapData.
-    /// </summary>
-    public SimpleMapData GetSimpleMapData() => _simpleMapData;
-
-    /// <summary>
     /// Get the tile size in world units.
     /// </summary>
     public float TileSize => _tileSize;
