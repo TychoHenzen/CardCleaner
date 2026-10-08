@@ -60,6 +60,46 @@ public class SceneRoundTripComparerTest
         AssertThat(Lost(original, saved)).IsEqual("metadata/lookup[\"material\"].albedo_color");
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ASubResourceSharedBeforeButSplitAfterIsReported()
+    {
+        var shared = new BoxMesh();
+        var original = BuildTwoMeshTree(shared, shared);
+        var saved = BuildTwoMeshTree(new BoxMesh(), new BoxMesh());
+        AssertThat(Lost(original, saved)).IsEqual("B.mesh (sharing)");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ASubResourceSplitBeforeButSharedAfterIsReported()
+    {
+        var shared = new BoxMesh();
+        var original = BuildTwoMeshTree(new BoxMesh(), new BoxMesh());
+        var saved = BuildTwoMeshTree(shared, shared);
+        AssertThat(Lost(original, saved)).IsEqual("B.mesh (sharing)");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ASubResourceSharedOnBothSidesReportsNothing()
+    {
+        var originalShared = new BoxMesh();
+        var savedShared = new BoxMesh();
+        var original = BuildTwoMeshTree(originalShared, originalShared);
+        var saved = BuildTwoMeshTree(savedShared, savedShared);
+        AssertThat(Lost(original, saved)).IsEmpty();
+    }
+
+    // Two mesh children, A and B, under one root. Passing the same mesh twice shares that one resource between them.
+    private static Node3D BuildTwoMeshTree(Mesh first, Mesh second)
+    {
+        var root = new Node3D { Name = "Fixture" };
+        root.AddChild(new MeshInstance3D { Name = "A", Mesh = first });
+        root.AddChild(new MeshInstance3D { Name = "B", Mesh = second });
+        return root;
+    }
+
     // Shared with SceneEditorRoundTripSceneTest: one placeholder mesh whose box material carries the albedo colour.
     internal static Node3D BuildPlaceholderTree(Color albedo)
     {

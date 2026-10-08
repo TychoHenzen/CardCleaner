@@ -8,6 +8,8 @@ namespace CardCleaner.Tests.Scenes;
 /// Lists the stored values of an original scene tree that its saved copy does not hold. Nodes are matched by their
 /// path from their root. An inline resource (one with no file of its own) is compared by content, and an external
 /// resource by its file path. Arrays and dictionaries are compared entry by entry, and each entry is named in the path.
+/// An inline resource pairs one to one with an inline resource in the other tree, so a resource that two properties
+/// share in one tree must be shared the same way in the other.
 /// </summary>
 internal sealed class SceneRoundTripComparer
 {
@@ -17,7 +19,8 @@ internal sealed class SceneRoundTripComparer
     private readonly Node _originalRoot;
     private readonly Node _savedRoot;
     private readonly List<string> _lost = new();
-    private readonly HashSet<(ulong, ulong)> _visited = new();
+    private readonly Dictionary<ulong, ulong> _savedByOriginal = new();
+    private readonly Dictionary<ulong, ulong> _originalBySaved = new();
 
     private SceneRoundTripComparer(Node originalRoot, Node savedRoot)
     {
@@ -108,10 +111,6 @@ internal sealed class SceneRoundTripComparer
         if (original.GetInstanceId() == saved.GetInstanceId())
             return;
 
-        // Recorded before the content is read, so a resource that refers back to itself is compared once.
-        if (!_visited.Add((original.GetInstanceId(), saved.GetInstanceId())))
-            return;
-
         var inline = IsInline(original);
         if (inline != IsInline(saved))
         {
@@ -126,6 +125,9 @@ internal sealed class SceneRoundTripComparer
             return;
         }
 
+        if (!RecordPair(original, saved, path))
+            return;
+
         if (original.GetClass() != saved.GetClass())
         {
             _lost.Add($"{path} (class {original.GetClass()} became {saved.GetClass()})");
@@ -139,6 +141,29 @@ internal sealed class SceneRoundTripComparer
         }
 
         ComparePropertiesOf(original, saved, path, depth);
+    }
+
+    // Inline resources pair one to one across the two trees. A resource that two properties share in one tree must be
+    // shared by the matching pair in the other, so a pair that breaks this is reported as sharing and not compared.
+    // Returns true for a new pair, whose content still needs comparing. A pair already recorded is equal, which also
+    // stops a resource that refers back to itself.
+    private bool RecordPair(Resource original, Resource saved, string path)
+    {
+        var originalId = original.GetInstanceId();
+        var savedId = saved.GetInstanceId();
+        var originalIsPaired = _savedByOriginal.TryGetValue(originalId, out var pairedSaved);
+        if (originalIsPaired && pairedSaved == savedId)
+            return false;
+
+        if (originalIsPaired || _originalBySaved.ContainsKey(savedId))
+        {
+            _lost.Add($"{path} (sharing)");
+            return false;
+        }
+
+        _savedByOriginal[originalId] = savedId;
+        _originalBySaved[savedId] = originalId;
+        return true;
     }
 
     private void ComparePropertiesOf(Resource original, Resource saved, string path, int depth)
