@@ -8,13 +8,7 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 
 public static class SignatureCardHelper
 {
-    public static ulong ComputeSeed(CardSignature signature)
-    {
-        var seed = 17UL;
-        foreach (var v in signature.Elements)
-            seed = seed * 23UL + (ulong)Mathf.RoundToInt(v * 1000);
-        return seed;
-    }
+    public static ulong ComputeSeed(CardSignature signature) => CardSignatureHash.Of(signature);
 
     public static CardRarity DetermineRarity(CardSignature[] signature)
     {
