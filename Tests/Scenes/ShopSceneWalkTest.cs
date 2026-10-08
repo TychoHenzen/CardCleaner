@@ -20,14 +20,11 @@ public class ShopSceneWalkTest
     {
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
 
-        var player = _shop.GetNode<CharacterBody3D>("Player");
+        // The sweeps move a capsule through the level, so the live body must not be in the way.
+        var player = ShopScenePlayer.Sideline(_shop);
         _spawn = player.Position;
         var shape = (CapsuleShape3D)player.GetNode<CollisionShape3D>("CollisionShape3D").Shape;
         _probe = new ShopSceneProbe(_shop, shape);
-
-        // The sweeps move a capsule through the level, so the live body must not be in the way.
-        _shop.RemoveChild(player);
-        player.Free();
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;

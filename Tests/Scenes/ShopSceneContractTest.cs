@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Player.Controllers;
+using CardCleaner.Scripts.Features.Portal.Components;
 using CardCleaner.Scripts.Features.Shop.Components;
 using Godot;
 
@@ -29,13 +31,10 @@ public class ShopSceneContractTest
         _packed = GD.Load<PackedScene>(ShopSceneProbe.ScenePath);
         _shop = _packed.Instantiate<Node3D>();
 
-        var player = _shop.GetNode<CharacterBody3D>("Player");
+        // The walk checks sweep the player capsule through the level, so the live body must not be in the way.
+        var player = ShopScenePlayer.Sideline(_shop);
         _spawn = player.Position;
         _probe = new ShopSceneProbe(_shop, (CapsuleShape3D)player.GetNode<CollisionShape3D>("CollisionShape3D").Shape);
-
-        // The walk checks sweep the player capsule through the level, so the live body must not be in the way.
-        _shop.RemoveChild(player);
-        player.Free();
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;
@@ -113,6 +112,17 @@ public class ShopSceneContractTest
         AssertBool(_spawn.Y > 0f).IsTrue();
         AssertBool(_probe.SupportedByFloor(_spawn with { Y = 0f })).IsTrue();
         AssertBool(_probe.CapsuleFits(_spawn with { Y = _probe.CapsuleCenterHeight })).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void SidelinedPlayerStaysTheLiveTargetOfBothSeams()
+    {
+        var player = _shop.GetNode<PlayerController>("Player");
+
+        AssertBool(player.IsInsideTree()).IsTrue();
+        AssertThat(_shop.GetNode<WallSeam>("World/Markers/SeamLocation/Seam").Player).IsSame(player);
+        AssertThat(_shop.GetNode<WallSeam>("World/Workshop/ReturnSeam").Player).IsSame(player);
     }
 
     [TestCase]

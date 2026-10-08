@@ -26,10 +26,8 @@ public class ShopArtMaterialSceneTest
     {
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
 
-        // The live player would capture the mouse and is not needed to look at the art.
-        var player = _shop.GetNode<Node>("Player");
-        _shop.RemoveChild(player);
-        player.Free();
+        // The player is not needed to look at the art, so it must not move or take input meanwhile.
+        ShopScenePlayer.Sideline(_shop);
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;
