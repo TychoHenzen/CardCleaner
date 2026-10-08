@@ -65,14 +65,36 @@ public partial class CardShaderRenderer : Node, ICardComponent
         _materialManager.SetGemEmission(index, color, strength);
     }
 
-    public virtual void SetArtEffects(RarityEffect rarity, ConditionEffect condition, float seed, Texture2D? normalMap)
+    public virtual int SetArtEffects(RarityEffect rarity, ConditionEffect condition, float seed, Texture2D? normalMap)
     {
         if (_materialManager == null)
         {
             ILog.Error("Card renderer has no material manager; the art effects were not applied.");
-            return;
+            // 0 names no request, so a map delivered for it is dropped.
+            return 0;
         }
 
-        _materialManager.SetArtEffects(rarity, condition, seed, normalMap);
+        return _materialManager.SetArtEffects(rarity, condition, seed, normalMap);
+    }
+
+    public virtual void SetArtNormalMap(int request, RarityEffect rarity, Texture2D normalMap)
+    {
+        _materialManager?.SetArtNormalMap(request, rarity, normalMap);
+    }
+
+    public bool ArtEffectsEnabled
+    {
+        // Without a material manager no effects can show, so the flag reads false.
+        get => _materialManager?.ArtEffectsEnabled ?? false;
+        set
+        {
+            if (_materialManager == null)
+            {
+                ILog.Error("Card renderer has no material manager; the art effects were not switched.");
+                return;
+            }
+
+            _materialManager.ArtEffectsEnabled = value;
+        }
     }
 }

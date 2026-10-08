@@ -132,6 +132,57 @@ public class SignatureCardArtEffectsTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public async Task GeneratingACardAgainBeforeItsBevelMapArrivesKeepsTheNewerEffects()
+    {
+        var renderer = Assertions.AddNode(CreateRenderer());
+        var first = new CardTemplate();
+        _generator.GenerateCardRenderer(renderer, new CardSignature(RareDormant), first);
+        var firstArt = first.Art.Texture!;
+
+        // A common card has no rarity effect, so generating it supersedes the first card's pending bevel map.
+        var common = new CardSignature();
+        _generator.GenerateCardRenderer(renderer, common, new CardTemplate());
+        var material = renderer.GetNode<CardMaterialManager>("MaterialManager")
+            .ApplyMaterial(Assertions.AddNode(new MeshInstance3D()))!;
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
+
+        // The first card's bevel map arrives now and must not change the effects of the second card.
+        await CardEffectBakeWait.BakeOf(firstArt);
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
+        AssertThat(material.GetShaderParameter("art_normal_map").Obj).IsNull();
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.Worn);
+        AssertThat((float)material.GetShaderParameter("art_seed")).IsEqual(CardEffectSeed.For(common));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ABevelMapArrivingWhileTheEffectsAreOffWaitsUntilTheyAreSwitchedOn()
+    {
+        var renderer = Assertions.AddNode(CreateRenderer());
+        var template = new CardTemplate();
+        var signature = new CardSignature(RareDormant);
+        _generator.GenerateCardRenderer(renderer, signature, template);
+        var material = renderer.GetNode<CardMaterialManager>("MaterialManager")
+            .ApplyMaterial(Assertions.AddNode(new MeshInstance3D()))!;
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
+
+        renderer.ArtEffectsEnabled = false;
+        var map = await CardEffectBakeWait.BakeOf(template.Art.Texture!);
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.None);
+
+        renderer.ArtEffectsEnabled = true;
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.Glow);
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.Worn);
+        AssertThat(material.GetShaderParameter("art_normal_map").As<Texture2D>()).IsSame(map);
+        AssertThat((float)material.GetShaderParameter("art_seed")).IsEqual(CardEffectSeed.For(signature));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void CommonCardHasNoRarityEffectButStillLooksWorn()
     {
         // Intensity is the mean element magnitude, so the all-zero signature of an ordinary pack card is Dormant

@@ -271,6 +271,41 @@ public class CardMaterialManagerTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void AMapForASupersededRequestIsIgnored()
+    {
+        _manager.CardMaterialTemplate = LoadCardMaterial();
+        var superseded = _manager.SetArtEffects(RarityEffect.None, ConditionEffect.Worn, 7f, null);
+        _manager.SetArtEffects(RarityEffect.None, ConditionEffect.Worn, 9f, null);
+        var material = ApplyToNewMesh();
+
+        _manager.SetArtNormalMap(superseded, RarityEffect.Glow, CreateMockTexture());
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
+        AssertThat(material.GetShaderParameter("art_normal_map").Obj).IsNull();
+        AssertThat((float)material.GetShaderParameter("art_seed")).IsEqual(9f);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AMaterialAppliedWhileTheEffectsAreOffShowsNone()
+    {
+        _manager.CardMaterialTemplate = LoadCardMaterial();
+        _manager.SetArtEffects(RarityEffect.Glow, ConditionEffect.Worn, 7f, CreateMockTexture());
+        _manager.ArtEffectsEnabled = false;
+
+        var material = ApplyToNewMesh();
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.None);
+
+        _manager.ArtEffectsEnabled = true;
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.Glow);
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.Worn);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void TheArtTextureStaysAtItsLayerIndexWhenEarlierLayersHaveNoTexture()
     {
         var template = new CardTemplate();

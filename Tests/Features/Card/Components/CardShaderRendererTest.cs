@@ -67,4 +67,18 @@ public class CardShaderRendererTest
 
         Assertions.AssertThat(_renderer).IsNotNull();
     }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ArtEffectsEnabled_WithoutAMaterialManager_ReadsFalseEvenWhenSetTrue()
+    {
+        // Arrange: a renderer that was never set up has no material manager to hold the flag.
+        var unsetUp = Assertions.AddNode(new CardShaderRenderer());
+
+        // Act
+        unsetUp.ArtEffectsEnabled = true;
+
+        // Assert
+        Assertions.AssertThat(unsetUp.ArtEffectsEnabled).IsFalse();
+    }
 }

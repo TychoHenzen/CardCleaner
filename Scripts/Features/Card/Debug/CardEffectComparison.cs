@@ -4,6 +4,7 @@ using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 using CardCleaner.Scripts.Features.Card.Models.Effects;
@@ -17,8 +18,8 @@ namespace CardCleaner.Scripts.Features.Card.Debug;
 ///     cards in the shop. Run <c>Scenes/Debug/CardEffectComparison.tscn</c> with F6; it is not the main scene.
 ///     <para>
 ///         To watch the cost of the effects, key 2 adds 10 cards and key 3 adds 100 (rows below the grid, cycling
-///         through every cell), key 0 removes them, and key E switches every card's effects off and on. The readout
-///         shows the frame time and the GPU time of the view.
+///         through every cell), key 0 removes them, and key E switches every card's effects off and on through
+///         <c>CardShaderRenderer.ArtEffectsEnabled</c>. The readout shows the frame time and the GPU time of the view.
 ///     </para>
 /// </summary>
 public partial class CardEffectComparison : Node3D
@@ -30,7 +31,6 @@ public partial class CardEffectComparison : Node3D
     // The cards stand upright facing the camera, which looks down the -Z axis.
     private static readonly Basis StandingCard = Basis.FromEuler(new Vector3(Mathf.Pi / 2f, 0f, 0f));
 
-    private readonly Dictionary<ShaderMaterial, SavedEffects> _switchedOff = new();
     private ICardSpawningService? _spawner;
     private int _batchCount;
     private double _readoutElapsed;
@@ -110,39 +110,21 @@ public partial class CardEffectComparison : Node3D
         FitCamera();
     }
 
-    /// <summary>Switches the art effects of every card off, or back to what each card was given.</summary>
+    /// <summary>Switches the art effects of every card off, or back on, through each card's renderer.</summary>
     public void SetEffectsEnabled(bool enabled)
     {
         if (enabled == EffectsEnabled) return;
 
         EffectsEnabled = enabled;
-        if (enabled)
-        {
-            foreach (var (material, saved) in _switchedOff)
-            {
-                material.SetShaderParameter("rarity_effect", saved.Rarity);
-                material.SetShaderParameter("condition_effect", saved.Condition);
-            }
-
-            _switchedOff.Clear();
-            return;
-        }
-
-        foreach (var material in CardMaterials())
-        {
-            _switchedOff[material] = new SavedEffects(
-                (int)material.GetShaderParameter("rarity_effect"),
-                (int)material.GetShaderParameter("condition_effect"));
-            material.SetShaderParameter("rarity_effect", (int)RarityEffect.None);
-            material.SetShaderParameter("condition_effect", (int)ConditionEffect.None);
-        }
+        foreach (var renderer in CardRenderers())
+            renderer.ArtEffectsEnabled = enabled;
     }
 
-    private IEnumerable<ShaderMaterial> CardMaterials()
+    private IEnumerable<CardShaderRenderer> CardRenderers()
     {
         return CardParent.GetChildren().Concat(BatchParent.GetChildren())
-            .Select(card => card.GetNodeOrNull<MeshInstance3D>("OuterBox_Baked")?.MaterialOverride)
-            .OfType<ShaderMaterial>();
+            .Where(card => !card.IsQueuedForDeletion())
+            .SelectMany(card => card.GetChildren().OfType<CardShaderRenderer>());
     }
 
     private void FitCamera()
@@ -204,6 +186,4 @@ public partial class CardEffectComparison : Node3D
     {
         return $"{rarity}_{tier}";
     }
-
-    private readonly record struct SavedEffects(int Rarity, int Condition);
 }
