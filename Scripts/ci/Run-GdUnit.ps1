@@ -21,7 +21,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-# Runs on Windows PowerShell 5.1 (local) and PowerShell 7 (CI): no `e escapes, no Split-Path -LeafBase.
+# Runs on Windows PowerShell 5.1 (local) and PowerShell 7 (CI). PowerShell 5.1 has no backtick-e escape for
+# the ESC character, so ESC is written as [char]27 below, and it has no Split-Path -LeafBase.
 # Output growth is checked this often; small against the stall timeout, cheap against a 5-minute run.
 $PollSeconds = 5
 # After taskkill, wait this long for the killed tree to exit and release its log files.
@@ -231,7 +232,7 @@ function Read-ReportTotals {
 
     $reports = @(Get-ChildItem -LiteralPath $ReportRoot -Filter results.xml -File -Recurse |
         Where-Object { $_.LastWriteTimeUtc -ge $Since })
-    $totals = [pscustomobject]@{ Files = $reports.Count; Errors = 0; Failures = 0; Paths = @($reports.FullName) }
+    $totals = [pscustomobject]@{ Files = $reports.Count; Errors = 0; Failures = 0 }
     foreach ($report in $reports) {
         try {
             [xml]$xml = Get-Content -LiteralPath $report.FullName -Raw
