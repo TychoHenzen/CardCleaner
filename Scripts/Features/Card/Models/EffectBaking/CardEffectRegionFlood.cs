@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CardCleaner.Scripts.Features.Card.Models;
+namespace CardCleaner.Scripts.Features.Card.Models.EffectBaking;
 
 /// <summary>
 ///     Axiom2d <c>segment.rs</c>: grows a region from each unvisited opaque pixel, taking neighbours within

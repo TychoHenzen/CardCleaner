@@ -1,4 +1,4 @@
-namespace CardCleaner.Scripts.Features.Card.Models;
+namespace CardCleaner.Scripts.Features.Card.Models.EffectBaking;
 
 /// <summary>
 ///     Art split into colour regions: <see cref="Labels" /> holds one region id per pixel, row by row, or -1 for

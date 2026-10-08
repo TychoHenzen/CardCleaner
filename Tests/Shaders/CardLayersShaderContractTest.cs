@@ -1,8 +1,8 @@
 using System;
 using System.Text.RegularExpressions;
 using CardCleaner.Scripts.Core.Data;
-using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
+using CardCleaner.Scripts.Features.Card.Models.Effects;
 
 namespace CardCleaner.Tests.Shaders;
 

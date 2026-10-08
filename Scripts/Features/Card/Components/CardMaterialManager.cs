@@ -1,9 +1,9 @@
 ﻿using CardCleaner.Scripts.Core.Data;
 using System;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 using Godot.Collections;
+using CardCleaner.Scripts.Features.Card.Models.Effects;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 

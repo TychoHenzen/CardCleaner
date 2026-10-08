@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CardCleaner.Scripts.Features.Card.Models;
+namespace CardCleaner.Scripts.Features.Card.Models.EffectBaking;
 
 /// <summary>
 ///     Splits raster art into flat colour regions with the settings Axiom2d used to vectorise all card art

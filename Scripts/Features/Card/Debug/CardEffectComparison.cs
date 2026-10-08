@@ -2,8 +2,8 @@ using System;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
+using CardCleaner.Scripts.Features.Card.Models.Effects;
 
 namespace CardCleaner.Scripts.Features.Card.Debug;
 

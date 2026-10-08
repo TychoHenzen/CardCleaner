@@ -1,4 +1,4 @@
-namespace CardCleaner.Scripts.Features.Card.Models;
+namespace CardCleaner.Scripts.Features.Card.Models.EffectBaking;
 
 /// <summary>
 ///     A baked bevel map, <see cref="Rgba" /> being four bytes per pixel, row by row. The channels are not a

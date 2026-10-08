@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CardCleaner.Scripts.Features.Card.Models;
+namespace CardCleaner.Scripts.Features.Card.Models.EffectBaking;
 
 /// <summary>One colour region while the segmenter grows and merges it.</summary>
 internal sealed class CardEffectRegion

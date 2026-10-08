@@ -1,4 +1,4 @@
-namespace CardCleaner.Scripts.Features.Card.Models;
+namespace CardCleaner.Scripts.Features.Card.Models.EffectBaking;
 
 internal readonly record struct CardEffectRgb(float R, float G, float B)
 {

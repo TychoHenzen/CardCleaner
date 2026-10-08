@@ -1,8 +1,8 @@
 using System;
 using CardCleaner.Scripts.Core.Enumeration;
-using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Card.Models.Effects;
 
-namespace CardCleaner.Tests.Features.Card.Models;
+namespace CardCleaner.Tests.Features.Card.Models.Effects;
 
 [TestSuite]
 [RequireGodotRuntime]

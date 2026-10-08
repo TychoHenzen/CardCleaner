@@ -1,4 +1,4 @@
-namespace CardCleaner.Scripts.Features.Card.Models;
+namespace CardCleaner.Scripts.Features.Card.Models.Effects;
 
 /// <summary>
 ///     The wear or shimmer an intensity tier puts on the art region (Axiom2d <c>ConditionEffect</c>). The numbers

@@ -1,8 +1,8 @@
 using System.Linq;
-using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
+using CardCleaner.Scripts.Features.Card.Models.EffectBaking;
 
-namespace CardCleaner.Tests.Features.Card.Models;
+namespace CardCleaner.Tests.Features.Card.Models.EffectBaking;
 
 [TestSuite]
 [RequireGodotRuntime]

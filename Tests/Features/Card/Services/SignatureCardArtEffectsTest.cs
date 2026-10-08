@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
 using GdUnit4;
 using Godot;
+using CardCleaner.Scripts.Features.Card.Models.Effects;
 
 namespace CardCleaner.Tests.Features.Card.Services;
 

@@ -1,7 +1,7 @@
 using System;
 using CardCleaner.Scripts.Core.Enumeration;
 
-namespace CardCleaner.Scripts.Features.Card.Models;
+namespace CardCleaner.Scripts.Features.Card.Models.Effects;
 
 /// <summary>
 ///     Which art-region effects a card gets: rarity picks the shine, the signature's intensity tier picks the

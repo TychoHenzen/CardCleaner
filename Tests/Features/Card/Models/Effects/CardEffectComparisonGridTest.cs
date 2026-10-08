@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
-using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Scripts.Features.Card.Models.Effects;
 
-namespace CardCleaner.Tests.Features.Card.Models;
+namespace CardCleaner.Tests.Features.Card.Models.Effects;
 
 /// <summary>
 ///     The comparison view labels each card with a rarity and a tier, so the signature behind a cell has to produce

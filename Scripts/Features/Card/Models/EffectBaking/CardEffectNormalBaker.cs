@@ -1,6 +1,6 @@
 using System;
 
-namespace CardCleaner.Scripts.Features.Card.Models;
+namespace CardCleaner.Scripts.Features.Card.Models.EffectBaking;
 
 /// <summary>
 ///     Bakes raster art into a bevel map: every colour region gets its own bevel, standing in for Axiom2d's

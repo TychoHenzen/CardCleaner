@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
-using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
+using CardCleaner.Scripts.Features.Card.Models.EffectBaking;
 
 namespace CardCleaner.Scripts.Features.Card.Services;
 

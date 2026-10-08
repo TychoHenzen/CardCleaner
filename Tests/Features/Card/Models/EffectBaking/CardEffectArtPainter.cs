@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace CardCleaner.Tests.Features.Card.Models;
+namespace CardCleaner.Tests.Features.Card.Models.EffectBaking;
 
 /// <summary>Builds RGBA art buffers for the card effect tests; not a suite.</summary>
 public static class CardEffectArtPainter

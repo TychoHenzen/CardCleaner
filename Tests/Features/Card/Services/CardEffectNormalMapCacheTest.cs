@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
-using CardCleaner.Tests.Features.Card.Models;
 using Godot;
+using CardCleaner.Scripts.Features.Card.Models.EffectBaking;
+using CardCleaner.Tests.Features.Card.Models.EffectBaking;
 
 namespace CardCleaner.Tests.Features.Card.Services;
 

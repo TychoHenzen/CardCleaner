@@ -1,6 +1,6 @@
 using System;
 
-namespace CardCleaner.Scripts.Features.Card.Models;
+namespace CardCleaner.Scripts.Features.Card.Models.EffectBaking;
 
 /// <summary>
 ///     For each pixel of a mask, the offset to the nearest pixel outside it (8SSEDT: two sweeps of nearest-seed

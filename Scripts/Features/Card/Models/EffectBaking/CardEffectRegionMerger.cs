@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CardCleaner.Scripts.Features.Card.Models;
+namespace CardCleaner.Scripts.Features.Card.Models.EffectBaking;
 
 /// <summary>
 ///     Axiom2d <c>merge_small_regions</c>: merges the first region smaller than <see cref="MergeBelow" /> into its

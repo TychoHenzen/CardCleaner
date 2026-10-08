@@ -1,7 +1,7 @@
 using System;
 using CardCleaner.Scripts.Core.Enumeration;
 
-namespace CardCleaner.Scripts.Features.Card.Models;
+namespace CardCleaner.Scripts.Features.Card.Models.Effects;
 
 /// <summary>
 ///     One signature for every rarity and intensity tier, for the comparison view. Rarity comes from how far each
