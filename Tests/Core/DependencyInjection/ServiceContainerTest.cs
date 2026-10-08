@@ -43,36 +43,6 @@ public class ServiceContainerTest
     }
 
     [TestCase]
-    public void TestRegisterTransient()
-    {
-        _container.RegisterTransient<ITestService, TestServiceImpl>();
-
-        var resolved1 = _container.Resolve<ITestService>();
-        var resolved2 = _container.Resolve<ITestService>();
-
-        Assertions.AssertThat(resolved1).IsNotSame(resolved2); // Different instances (reference check)
-        Assertions.AssertThat(resolved1.GetValue()).IsEqual("test_value");
-        Assertions.AssertThat(resolved2.GetValue()).IsEqual("test_value");
-    }
-
-    [TestCase]
-    public void TestRegisterFactory()
-    {
-        var callCount = 0;
-        _container.RegisterFactory<ITestService>(() =>
-        {
-            callCount++;
-            return new TestServiceImpl();
-        });
-
-        var resolved1 = _container.Resolve<ITestService>();
-        var resolved2 = _container.Resolve<ITestService>();
-
-        Assertions.AssertThat(callCount).IsEqual(2); // Factory called twice
-        Assertions.AssertThat(resolved1).IsNotSame(resolved2); // Different instances (reference check)
-    }
-
-    [TestCase]
     public void TestIsRegistered()
     {
         Assertions.AssertBool(_container.IsRegistered<ITestService>()).IsFalse();
@@ -89,32 +59,5 @@ public class ServiceContainerTest
         Assertions.AssertThrown(() => _container.Resolve<ITestService>())
             .IsInstanceOf<InvalidOperationException>()
             .HasMessage("Service ITestService not registered");
-    }
-
-    [TestCase]
-    public void TestServicePriority()
-    {
-        // Singletons should take precedence over transients
-        var singletonInstance = new TestServiceImpl();
-        _container.RegisterTransient<ITestService, TestServiceImpl>();
-        _container.RegisterSingleton<ITestService>(singletonInstance);
-
-        var resolved = _container.Resolve<ITestService>();
-
-        Assertions.AssertThat(resolved).IsEqual(singletonInstance);
-    }
-
-    [TestCase]
-    public void TestFactoryOverridesSingleton()
-    {
-        var singletonInstance = new TestServiceImpl();
-        _container.RegisterSingleton<ITestService>(singletonInstance);
-
-        var factoryInstance = new TestServiceImpl();
-        _container.RegisterFactory<ITestService>(() => factoryInstance);
-
-        var resolved = _container.Resolve<ITestService>();
-
-        Assertions.AssertThat(resolved).IsEqual(factoryInstance);
     }
 }

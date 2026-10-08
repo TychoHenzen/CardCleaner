@@ -1,6 +1,6 @@
 {
   "profile": "default",
-  "fileCount": 798,
+  "fileCount": 797,
   "files": [
     {
       "path": "addons/tile_editor/AtlasPicker/AtlasGridLayout.cs",
@@ -664,11 +664,6 @@
     },
     {
       "path": "Scripts/Core/DependencyInjection/AutoServiceProvider.cs",
-      "language": "cs",
-      "classification": "production"
-    },
-    {
-      "path": "Scripts/Core/DependencyInjection/Lifetime/ServiceLifetime.cs",
       "language": "cs",
       "classification": "production"
     },

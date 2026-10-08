@@ -12,7 +12,7 @@ using Timer = Godot.Timer;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
-[Service(ServiceLifetime.Singleton, typeof(IGameSessionService))]
+[Service(typeof(IGameSessionService))]
 public partial class GameSessionService : Node, IGameSessionService
 {
     private readonly SessionServices _services = new();

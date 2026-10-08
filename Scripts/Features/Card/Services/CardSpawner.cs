@@ -9,7 +9,7 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 ///     Spawns Card instances one per frame at runtime when pressing 1, 2, or 3, and one special card (magical
 ///     potential, which opens the backoffice seam) when pressing 4, unless <see cref="SpawnKeys" /> is off.
 /// </summary>
-[Service(ServiceLifetime.Singleton, typeof(ICardSpawner))]
+[Service(typeof(ICardSpawner))]
 public partial class CardSpawner : Node3D, ICardSpawner
 {
     // Default values as constants
