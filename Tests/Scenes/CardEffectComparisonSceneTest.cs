@@ -9,6 +9,7 @@ using CardCleaner.Scripts.Core.ServiceProviders;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Debug;
 using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Tests.Features.Card.Services;
 using Godot;
 using CardCleaner.Scripts.Features.Card.Models.Effects;
 
@@ -26,7 +27,6 @@ public class CardEffectComparisonSceneTest
 {
     private const string ScenePath = "res://Scenes/Debug/CardEffectComparison.tscn";
     private const int SettleFrames = 12;
-    private const int MaxBakeFrames = 240;
 
     private static readonly int ArtLayerIndex = ArtIndexOf(new CardTemplate());
 
@@ -47,13 +47,14 @@ public class CardEffectComparisonSceneTest
         _window = new SubViewport { Size = new Vector2I(1280, 720) };
         _window.AddChild(_scene);
         AddNode(_window);
-        await Frames(SettleFrames);
+        await CardEffectBakeWait.Frames(SettleFrames);
     }
 
     [AfterTest]
     public static void Teardown()
     {
         ServiceLocator.ResetForTesting();
+        CardEffectNormalMapCache.ResetForTesting();
     }
 
     [TestCase]
@@ -80,13 +81,15 @@ public class CardEffectComparisonSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void EveryCardShowsTheEffectsOfItsCell()
+    public async Task EveryCardShowsTheEffectsOfItsCell()
     {
-        AssertEveryCellShowsItsEffects();
+        await AssertEveryCellShowsItsEffects();
     }
 
-    private void AssertEveryCellShowsItsEffects()
+    private async Task AssertEveryCellShowsItsEffects()
     {
+        await WaitForEffects("Cards");
+
         foreach (var rarity in Enum.GetValues<CardRarity>())
         foreach (var tier in Enum.GetValues<IntensityTier>())
         {
@@ -129,7 +132,7 @@ public class CardEffectComparisonSceneTest
         var before = _window.GetCamera3D().Position;
 
         _window.Size = new Vector2I(600, 1000);
-        await Frames(2);
+        await CardEffectBakeWait.Frames(2);
 
         AssertThat(_window.GetCamera3D().Position).IsNotEqual(before);
         foreach (var card in Cards("Cards"))
@@ -149,7 +152,7 @@ public class CardEffectComparisonSceneTest
     {
         _scene.SpawnBatch(10);
         _scene.SpawnBatch(100);
-        await WaitForMaterials("Batch");
+        await WaitForEffects("Batch");
 
         var batch = Cards("Batch");
         AssertThat(batch.Length).IsEqual(110);
@@ -160,7 +163,7 @@ public class CardEffectComparisonSceneTest
         }
 
         _scene.ClearBatch();
-        await Frames(2);
+        await CardEffectBakeWait.Frames(2);
         AssertThat(Cards("Batch").Length).IsEqual(0);
     }
 
@@ -169,7 +172,7 @@ public class CardEffectComparisonSceneTest
     public async Task KeyTwoAddsTenCardsAndKeyESwitchesTheEffectsOff()
     {
         _window.PushInput(new InputEventKey { Keycode = Key.Key2, Pressed = true });
-        await WaitForMaterials("Batch");
+        await WaitForEffects("Batch");
         _window.PushInput(new InputEventKey { Keycode = Key.E, Pressed = true });
 
         AssertThat(Cards("Batch").Length).IsEqual(10);
@@ -181,7 +184,8 @@ public class CardEffectComparisonSceneTest
     public async Task AHundredCardsBakeEachArtOnceAndKeepTheirSeeds()
     {
         _scene.SpawnBatch(100);
-        await WaitForMaterials("Batch");
+        await WaitForEffects("Batch");
+        await WaitForEffects("Cards");
 
         var cards = Cards("Batch").Concat(Cards("Cards")).ToArray();
         var withRarity = cards.Select(Material).Where(m => (int)m!.GetShaderParameter("rarity_effect") != 0).ToArray();
@@ -205,8 +209,10 @@ public class CardEffectComparisonSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void TheEffectsCanBeSwitchedOffAndBackOnToCompareFrameTimes()
+    public async Task TheEffectsCanBeSwitchedOffAndBackOnToCompareFrameTimes()
     {
+        // Switch off only once every bevel map is in, so no map arrives while the effects are off.
+        await WaitForEffects("Cards");
         _scene.SetEffectsEnabled(false);
         AssertThat(_scene.EffectsEnabled).IsFalse();
         foreach (var material in Cards("Cards").Select(Material))
@@ -217,7 +223,7 @@ public class CardEffectComparisonSceneTest
 
         _scene.SetEffectsEnabled(true);
         AssertThat(_scene.EffectsEnabled).IsTrue();
-        AssertEveryCellShowsItsEffects();
+        await AssertEveryCellShowsItsEffects();
     }
 
     private CardController[] Cards(string parent)
@@ -246,7 +252,6 @@ public class CardEffectComparisonSceneTest
         return material.GetShaderParameter("art_normal_map").As<Texture2D>();
     }
 
-
     private float ProjectedHeight(Node3D card)
     {
         var half = Vector3.Up * CardEffectComparisonLayout.CardHeight / 2f;
@@ -271,15 +276,23 @@ public class CardEffectComparisonSceneTest
                 .OverrideFailureMessage($"{card.Name} is not fully in view").IsTrue();
     }
 
-    private async Task WaitForMaterials(string parent)
+    /// <summary>
+    ///     Waits until every card under <paramref name="parent" /> has its material and shows its rarity effect, which
+    ///     waits for the art's bevel map to be baked off the main thread.
+    /// </summary>
+    private Task WaitForEffects(string parent)
     {
-        for (var frame = 0; frame < MaxBakeFrames && Cards(parent).Any(card => Material(card) == null); frame++)
-            await Frames(1);
+        return CardEffectBakeWait.Until(() => Cards(parent).All(ShowsItsEffects), $"every {parent} card's effects");
     }
 
-    private static async Task Frames(int count)
+    private static bool ShowsItsEffects(CardController card)
     {
-        for (var i = 0; i < count; i++)
-            await Engine.GetMainLoop().ToSignal(Engine.GetMainLoop(), SceneTree.SignalName.ProcessFrame);
+        var material = Material(card);
+        if (material == null) return false;
+
+        var expected = CardEffectMapping.RarityEffectFor(SignatureCardHelper.DetermineRarity(new[] { card.Signature }));
+        // A card whose art is still baking shows no rarity effect; it switches on together with the bevel map.
+        return (int)material.GetShaderParameter("rarity_effect") == (int)expected;
     }
+
 }

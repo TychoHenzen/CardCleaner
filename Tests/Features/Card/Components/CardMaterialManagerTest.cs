@@ -239,6 +239,38 @@ public class CardMaterialManagerTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void ArtEffectsSetAfterTheMaterialIsAppliedReachTheAppliedMaterial()
+    {
+        // A card's bevel map is baked off the main thread, so it can arrive after the material is on the mesh.
+        var normalMap = CreateMockTexture();
+        _manager.CardMaterialTemplate = LoadCardMaterial();
+        _manager.SetArtEffects(RarityEffect.None, ConditionEffect.Worn, 7f, null);
+        var material = ApplyToNewMesh();
+
+        _manager.SetArtEffects(RarityEffect.Glow, ConditionEffect.Worn, 7f, normalMap);
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.Glow);
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.Worn);
+        AssertThat((float)material.GetShaderParameter("art_seed")).IsEqual(7f);
+        AssertThat(material.GetShaderParameter("art_normal_map").As<Texture2D>()).IsSame(normalMap);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ClearingTheNormalMapAfterTheMaterialIsAppliedClearsItOnTheMaterial()
+    {
+        _manager.CardMaterialTemplate = LoadCardMaterial();
+        _manager.SetArtEffects(RarityEffect.Glow, ConditionEffect.Worn, 7f, CreateMockTexture());
+        var material = ApplyToNewMesh();
+
+        _manager.SetArtEffects(RarityEffect.None, ConditionEffect.Worn, 7f, null);
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
+        AssertThat(material.GetShaderParameter("art_normal_map").Obj).IsNull();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void TheArtTextureStaysAtItsLayerIndexWhenEarlierLayersHaveNoTexture()
     {
         var template = new CardTemplate();

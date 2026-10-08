@@ -12,9 +12,12 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
     // Stands in for a layer that has no texture, so every other layer keeps its index in the shader's arrays.
     private static readonly Lazy<ImageTexture> EmptyLayer = new(CreateEmptyLayer);
 
+    private static readonly string[] ArtEffectParameters =
+        { "rarity_effect", "condition_effect", "art_seed", "art_normal_map" };
+
     private readonly Dictionary<string, Variant> _shaderParameters = new();
 
-    private ShaderMaterial _activeMaterial = null!;
+    private ShaderMaterial? _activeMaterial;
     [Export] public ShaderMaterial CardMaterialTemplate { get; set; } = null!;
 
     public void SetLayerTextures(LayerData[] layers)
@@ -79,11 +82,14 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         _shaderParameters["rarity_effect"] = (int)rarity;
         _shaderParameters["condition_effect"] = (int)condition;
         _shaderParameters["art_seed"] = seed;
+        // Setting a nil map clears it, so the shader keeps its default, which shows no rarity effect.
+        _shaderParameters["art_normal_map"] = normalMap != null ? normalMap : default(Variant);
 
-        if (normalMap != null)
-            _shaderParameters["art_normal_map"] = normalMap;
-        else
-            _shaderParameters.Remove("art_normal_map");
+        // The bevel map is baked off the main thread, so the effects can change after the material is applied.
+        if (_activeMaterial == null) return;
+
+        foreach (var name in ArtEffectParameters)
+            _activeMaterial.SetShaderParameter(name, _shaderParameters[name]);
     }
 
     public ShaderMaterial? ApplyMaterial(MeshInstance3D target)

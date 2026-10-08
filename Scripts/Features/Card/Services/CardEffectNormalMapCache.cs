@@ -1,35 +1,29 @@
 using System;
-using System.Runtime.CompilerServices;
 using Godot;
-using CardCleaner.Scripts.Features.Card.Models.EffectBaking;
 
 namespace CardCleaner.Scripts.Features.Card.Services;
 
 /// <summary>
-///     Bakes a card's art into its bevel map once and hands the same <see cref="ImageTexture" /> back for the same
-///     art texture afterwards. The cache entry lives exactly as long as the art texture does.
+///     Bakes a card's art into its bevel map once, off the main thread, and hands the same
+///     <see cref="ImageTexture" /> to everyone who asks for that art texture.
 /// </summary>
 public static class CardEffectNormalMapCache
 {
-    private static readonly ConditionalWeakTable<Texture2D, ImageTexture> Baked = new();
+    private static CardEffectBakePipeline _pipeline = new();
 
-    public static ImageTexture GetOrBake(Texture2D art)
+    /// <summary>
+    ///     Hands the bevel map of <paramref name="art" /> to <paramref name="onReady" /> on the main thread: at once
+    ///     when it is already baked, otherwise once it is. A request never bakes while the caller waits.
+    /// </summary>
+    public static void Request(Texture2D art, Action<ImageTexture> onReady)
     {
-        return Baked.GetValue(art, Bake);
+        _pipeline.Request(art, onReady);
     }
 
-    private static ImageTexture Bake(Texture2D art)
+    /// <summary>Forgets every map and drops the bakes in flight, so one test's bakes never reach the next.</summary>
+    public static void ResetForTesting()
     {
-        var image = art.GetImage()
-                    ?? throw new InvalidOperationException($"Art texture {art.ResourcePath} has no image to bake.");
-        if (image.IsCompressed())
-            image.Decompress();
-
-        // GetData holds every mip level of an imported texture; the baker wants the base level only.
-        image.ClearMipmaps();
-        image.Convert(Image.Format.Rgba8);
-        var map = CardEffectNormalBaker.Bake(image.GetData(), image.GetWidth(), image.GetHeight());
-        var baked = Image.CreateFromData(map.Width, map.Height, false, Image.Format.Rgba8, map.Rgba);
-        return ImageTexture.CreateFromImage(baked);
+        _pipeline.Stop();
+        _pipeline = new CardEffectBakePipeline();
     }
 }
