@@ -166,6 +166,18 @@ public class CardEffectComparisonSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public async Task KeyTwoAddsTenCardsAndKeyESwitchesTheEffectsOff()
+    {
+        _window.PushInput(new InputEventKey { Keycode = Key.Key2, Pressed = true });
+        await WaitForMaterials("Batch");
+        _window.PushInput(new InputEventKey { Keycode = Key.E, Pressed = true });
+
+        AssertThat(Cards("Batch").Length).IsEqual(10);
+        AssertThat(_scene.EffectsEnabled).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public async Task AHundredCardsBakeEachArtOnceAndKeepTheirSeeds()
     {
         _scene.SpawnBatch(100);
