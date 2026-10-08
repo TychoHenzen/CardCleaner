@@ -109,7 +109,7 @@ public class SignatureCardGenerator : ICardGenerator
             ? CardEffectNormalMapCache.GetOrBake(art)
             : null;
 
-        renderer.SetArtEffects(rarityEffect, conditionEffect, SignatureCardHelper.EffectSeed(signature), normalMap);
+        renderer.SetArtEffects(rarityEffect, conditionEffect, CardEffectSeed.For(signature), normalMap);
     }
 
     private static void SetGemVisuals(

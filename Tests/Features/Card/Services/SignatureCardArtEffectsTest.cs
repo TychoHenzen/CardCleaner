@@ -69,7 +69,7 @@ public class SignatureCardArtEffectsTest
         var again = (float)GenerateAndApply(signature).GetShaderParameter("art_seed");
         var different = (float)GenerateAndApply(other).GetShaderParameter("art_seed");
 
-        AssertThat(first).IsEqual(SignatureCardHelper.EffectSeed(signature));
+        AssertThat(first).IsEqual(CardEffectSeed.For(signature));
         AssertThat(again).IsEqual(first);
         AssertThat(different).IsNotEqual(first);
         AssertThat(first).IsLess(10000f);

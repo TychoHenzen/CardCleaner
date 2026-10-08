@@ -60,7 +60,8 @@ uniform float art_seed = 0.0;
 // Bevel map baked from the art by CardEffectNormalBaker. R, G: bevel normal x, y as 0.5 + 0.5 * n,
 // B: bevel strength (1 on a region edge, 0 beyond the bevel width), A: 1 where the art is opaque.
 // The transparent default has no coverage, so the rarity effects stay invisible until a map is set.
-uniform sampler2D art_normal_map : filter_linear, hint_default_transparent;
+// No repeat: a wrapping, linearly filtered sample would blend the far edge's bevel into the near edge.
+uniform sampler2D art_normal_map : filter_linear, repeat_disable, hint_default_transparent;
 // World direction towards the light that the rarity effects shine from.
 uniform vec3 art_light_direction = vec3(0.35, 0.8, 0.5);
 

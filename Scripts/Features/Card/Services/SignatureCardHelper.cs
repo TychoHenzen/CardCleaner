@@ -8,24 +8,12 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 
 public static class SignatureCardHelper
 {
-    private const ulong EffectSeedRange = 10000UL;
-
     public static ulong ComputeSeed(CardSignature signature)
     {
         var seed = 17UL;
         foreach (var v in signature.Elements)
             seed = seed * 23UL + (ulong)Mathf.RoundToInt(v * 1000);
         return seed;
-    }
-
-    /// <summary>
-    ///     The seed that places a card's scratches, from its signature alone. It is kept below
-    ///     <see cref="EffectSeedRange" /> because the shader feeds it to <c>sin(seed * 0.0001)</c>, which loses its
-    ///     precision on a large float and would scatter the same scratches differently on different GPUs.
-    /// </summary>
-    public static float EffectSeed(CardSignature signature)
-    {
-        return ComputeSeed(signature) % EffectSeedRange;
     }
 
     public static CardRarity DetermineRarity(CardSignature[] signature)
