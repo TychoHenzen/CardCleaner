@@ -116,13 +116,14 @@ public class SignatureCardGenerator : ICardGenerator
             return;
         }
 
-        renderer.SetArtEffects(RarityEffect.None, conditionEffect, seed, null);
+        // The request number lets a map that arrives after a newer generation of this card be ignored.
+        var request = renderer.SetArtEffects(RarityEffect.None, conditionEffect, seed, null);
         var rendererId = renderer.GetInstanceId();
         CardEffectNormalMapCache.Request(art, map =>
         {
             // The card may have been freed while its map was baking.
             if (GodotObject.InstanceFromId(rendererId) is CardShaderRenderer waiting)
-                waiting.SetArtEffects(rarityEffect, conditionEffect, seed, map);
+                waiting.SetArtNormalMap(request, rarityEffect, map);
         });
     }
 

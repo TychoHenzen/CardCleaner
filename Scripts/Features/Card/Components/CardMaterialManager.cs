@@ -18,6 +18,10 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
     private readonly Dictionary<string, Variant> _shaderParameters = new();
 
     private ShaderMaterial? _activeMaterial;
+
+    // Numbers the art-effect requests. A bevel map is applied only while its request is the latest one.
+    private int _artRequest;
+
     [Export] public ShaderMaterial CardMaterialTemplate { get; set; } = null!;
 
     public void SetLayerTextures(LayerData[] layers)
@@ -77,8 +81,9 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         existingStrengths[index] = strength;
     }
 
-    public void SetArtEffects(RarityEffect rarity, ConditionEffect condition, float seed, Texture2D? normalMap)
+    public int SetArtEffects(RarityEffect rarity, ConditionEffect condition, float seed, Texture2D? normalMap)
     {
+        _artRequest++;
         _shaderParameters["rarity_effect"] = (int)rarity;
         _shaderParameters["condition_effect"] = (int)condition;
         _shaderParameters["art_seed"] = seed;
@@ -86,10 +91,27 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         _shaderParameters["art_normal_map"] = normalMap != null ? normalMap : default(Variant);
 
         // The bevel map is baked off the main thread, so the effects can change after the material is applied.
+        if (_activeMaterial != null)
+        {
+            foreach (var name in ArtEffectParameters)
+                _activeMaterial.SetShaderParameter(name, _shaderParameters[name]);
+        }
+
+        return _artRequest;
+    }
+
+    public void SetArtNormalMap(int request, RarityEffect rarity, Texture2D normalMap)
+    {
+        // Before the first request there is no pending map. A map for a superseded request must not overwrite the
+        // effects of the newer request, so it is dropped.
+        if (_artRequest == 0 || request != _artRequest) return;
+
+        _shaderParameters["rarity_effect"] = (int)rarity;
+        _shaderParameters["art_normal_map"] = normalMap;
         if (_activeMaterial == null) return;
 
-        foreach (var name in ArtEffectParameters)
-            _activeMaterial.SetShaderParameter(name, _shaderParameters[name]);
+        _activeMaterial.SetShaderParameter("rarity_effect", _shaderParameters["rarity_effect"]);
+        _activeMaterial.SetShaderParameter("art_normal_map", _shaderParameters["art_normal_map"]);
     }
 
     public ShaderMaterial? ApplyMaterial(MeshInstance3D target)

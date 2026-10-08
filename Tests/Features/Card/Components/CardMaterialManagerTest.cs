@@ -271,6 +271,22 @@ public class CardMaterialManagerTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void AMapForASupersededRequestIsIgnored()
+    {
+        _manager.CardMaterialTemplate = LoadCardMaterial();
+        var superseded = _manager.SetArtEffects(RarityEffect.None, ConditionEffect.Worn, 7f, null);
+        _manager.SetArtEffects(RarityEffect.None, ConditionEffect.Worn, 9f, null);
+        var material = ApplyToNewMesh();
+
+        _manager.SetArtNormalMap(superseded, RarityEffect.Glow, CreateMockTexture());
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
+        AssertThat(material.GetShaderParameter("art_normal_map").Obj).IsNull();
+        AssertThat((float)material.GetShaderParameter("art_seed")).IsEqual(9f);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void TheArtTextureStaysAtItsLayerIndexWhenEarlierLayersHaveNoTexture()
     {
         var template = new CardTemplate();
