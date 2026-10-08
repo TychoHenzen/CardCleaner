@@ -9,8 +9,9 @@ namespace CardCleaner.Tests.Scenes;
 /// kept only when that instance is marked editable. A scene file that overrides a child of an instance without the
 /// editable flag loads fine and loses those values on the first editor save (the node stays, because the instanced
 /// scene still holds it). Packing every scene the way the editor does, from an instance made with the editor's edit
-/// state, and comparing the stored values exposes it without opening the editor. Resources are compared by file
-/// path, so the contents of inline sub-resources are not checked.
+/// state, and comparing the stored values exposes it without opening the editor. Inline sub-resources (meshes,
+/// materials, shapes) are compared by their stored values, not by their path; the comparison is in
+/// <see cref="SceneRoundTripComparer"/>.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -47,45 +48,96 @@ public class SceneEditorRoundTripSceneTest
         }
 
         var saved = packed.Instantiate<Node>();
-        var lost = new List<string>();
-        Compare(original, original, saved, lost);
+        var lost = SceneRoundTripComparer.LostValues(original, saved);
         original.Free();
         saved.Free();
         return lost;
     }
 
-    private static void Compare(Node originalRoot, Node original, Node savedRoot, List<string> lost)
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ComparingTreesThatDifferOnlyInsideAnInlineSubResourceReportsThatPath()
     {
-        var path = originalRoot.GetPathTo(original);
-        var saved = savedRoot.GetNodeOrNull(path);
-        if (saved == null)
+        var original = BuildPlaceholderTree(Colors.Red);
+        var saved = BuildPlaceholderTree(Colors.Blue);
+        try
         {
-            lost.Add($"{path} (node)");
-            return;
+            AssertThat(string.Join(", ", SceneRoundTripComparer.LostValues(original, saved))).IsEqual("Placeholder.mesh.material.albedo_color");
         }
-
-        foreach (var property in original.GetPropertyList())
+        finally
         {
-            if (((PropertyUsageFlags)(long)property["usage"] & PropertyUsageFlags.Storage) == 0)
-                continue;
-
-            var name = (string)property["name"];
-            if (Describe(originalRoot, original.Get(name)) != Describe(savedRoot, saved.Get(name)))
-                lost.Add($"{path}.{name}");
+            original.Free();
+            saved.Free();
         }
-
-        foreach (var child in original.GetChildren())
-            Compare(originalRoot, child, savedRoot, lost);
     }
 
-    // A value as the scene file would state it: nodes by their path from the root, resources by their file (an inline
-    // sub-resource has no file, so it compares by that alone).
-    private static string Describe(Node root, Variant value) => value.Obj switch
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ComparingTreesWithEqualButSeparateInlineSubResourcesReportsNothing()
     {
-        Node node => root.GetPathTo(node).ToString(),
-        Resource resource => resource.ResourcePath,
-        _ => GD.VarToStr(value)
-    };
+        var original = BuildPlaceholderTree(Colors.Red);
+        var saved = BuildPlaceholderTree(Colors.Red);
+        try
+        {
+            AssertThat(string.Join(", ", SceneRoundTripComparer.LostValues(original, saved))).IsEmpty();
+        }
+        finally
+        {
+            original.Free();
+            saved.Free();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void InlineResourcesInAnArrayAreComparedByContent()
+    {
+        var original = new Node3D();
+        var saved = new Node3D();
+        original.SetMeta("items", new Godot.Collections.Array { new StandardMaterial3D { AlbedoColor = Colors.Red }, new StandardMaterial3D { AlbedoColor = Colors.Red } });
+        saved.SetMeta("items", new Godot.Collections.Array { new StandardMaterial3D { AlbedoColor = Colors.Red }, new StandardMaterial3D { AlbedoColor = Colors.Blue } });
+        try
+        {
+            AssertThat(string.Join(", ", SceneRoundTripComparer.LostValues(original, saved))).IsEqual("metadata/items[1].albedo_color");
+        }
+        finally
+        {
+            original.Free();
+            saved.Free();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void InlineResourcesInADictionaryAreComparedByContent()
+    {
+        var original = new Node3D();
+        var saved = new Node3D();
+        original.SetMeta("lookup", new Godot.Collections.Dictionary { { "material", new StandardMaterial3D { AlbedoColor = Colors.Red } } });
+        saved.SetMeta("lookup", new Godot.Collections.Dictionary { { "material", new StandardMaterial3D { AlbedoColor = Colors.Blue } } });
+        try
+        {
+            AssertThat(string.Join(", ", SceneRoundTripComparer.LostValues(original, saved))).IsEqual("metadata/lookup[\"material\"].albedo_color");
+        }
+        finally
+        {
+            original.Free();
+            saved.Free();
+        }
+    }
+
+    private static Node3D BuildPlaceholderTree(Color albedo)
+    {
+        var root = new Node3D { Name = "Fixture" };
+        var placeholder = new MeshInstance3D
+        {
+            Name = "Placeholder",
+            Mesh = new BoxMesh { Material = new StandardMaterial3D { AlbedoColor = albedo } },
+        };
+        root.AddChild(placeholder);
+        placeholder.Owner = root;
+        return root;
+    }
 
     private static List<string> ScenePaths(string folder)
     {
