@@ -111,16 +111,15 @@ public class ShopWorkshopDeliverySceneTest
         _money.Add(TopUp);
         _terminal.Interact();
         var cabinet = IndexOf("arcade_cabinet");
-        var world = _shop.GetNode("World");
         _ui.PressItem(cabinet);
-        var first = (Node3D)world.GetChildren().Last();
+        var first = DeliveredByLastOrder(_terminal);
         for (var order = 1; order < Capacity; order++)
             _ui.PressItem(cabinet);
 
         first.QueueFree();
         _ui.PressItem(cabinet);
 
-        var replacement = (Node3D)world.GetChildren().Last();
+        var replacement = DeliveredByLastOrder(_terminal);
         AssertBool(replacement.GlobalPosition.IsEqualApprox(_delivery.GlobalPosition + OrderingService.SlotOffset(0)))
             .IsTrue();
         AssertThat(_ui.MessageText.Contains("Ordered")).IsTrue();
@@ -152,7 +151,6 @@ public class ShopWorkshopDeliverySceneTest
         _money.Add(TopUp);
         _terminal.Interact();
         var wiring = IndexOf("wiring");
-        var world = _shop.GetNode("World");
         var ceilingClearance = _delivery.GlobalPosition.Y + _delivery.MaxStackHeight;
 
         for (var order = 0; order < 4 * Capacity; order++)
@@ -160,7 +158,7 @@ public class ShopWorkshopDeliverySceneTest
             _ui.PressItem(wiring);
 
             AssertBool(_ui.MessageText.Contains("Ordered")).IsTrue();
-            AssertBool(((Node3D)world.GetChildren().Last()).GlobalPosition.Y < ceilingClearance).IsTrue();
+            AssertBool(DeliveredByLastOrder(_terminal).GlobalPosition.Y < ceilingClearance).IsTrue();
         }
     }
 
@@ -168,7 +166,6 @@ public class ShopWorkshopDeliverySceneTest
     [TestCategory("Unit")]
     public void WorkshopOrdersLeaveTheShopDeliveryGridUntouched()
     {
-        var world = _shop.GetNode("World");
         _money.Add(TopUp);
         _terminal.Interact();
         _ui.PressItem(IndexOf("wiring"));
@@ -178,7 +175,7 @@ public class ShopWorkshopDeliverySceneTest
         _pc.Interact();
         _pcUi.PressItem(0);
 
-        var spawned = (Node3D)world.GetChildren().Last();
+        var spawned = DeliveredByLastOrder(_pc);
         AssertBool(spawned.GlobalPosition.IsEqualApprox(_shopDelivery.GlobalPosition + OrderingService.SlotOffset(0)))
             .IsTrue();
     }
@@ -188,7 +185,6 @@ public class ShopWorkshopDeliverySceneTest
     public void AlternatingOrdersFromBothTerminalsKeepOneConsistentBalanceAndTwoSeparateGrids()
     {
         _money.Add(TopUp);
-        var world = _shop.GetNode("World");
         var expected = _money.Balance;
         var wiringIndex = IndexOf("wiring");
         var wiringPrice = _terminal.Catalog!.Items[wiringIndex].Price;
@@ -202,7 +198,7 @@ public class ShopWorkshopDeliverySceneTest
             _terminal.Close();
             expected -= wiringPrice;
             AssertThat(_money.Balance).IsEqual(expected);
-            var workshopItem = (Node3D)world.GetChildren().Last();
+            var workshopItem = DeliveredByLastOrder(_terminal);
             AssertBool(workshopItem.GlobalPosition.IsEqualApprox(
                 _delivery.GlobalPosition + OrderingService.SlotOffset(round))).IsTrue();
 
@@ -211,7 +207,7 @@ public class ShopWorkshopDeliverySceneTest
             _pc.Close();
             expected -= boxPrice;
             AssertThat(_money.Balance).IsEqual(expected);
-            var shopItem = (Node3D)world.GetChildren().Last();
+            var shopItem = DeliveredByLastOrder(_pc);
             AssertBool(shopItem.GlobalPosition.IsEqualApprox(
                 _shopDelivery.GlobalPosition + OrderingService.SlotOffset(round))).IsTrue();
 
@@ -228,7 +224,7 @@ public class ShopWorkshopDeliverySceneTest
         _terminal.Interact();
         _ui.PressItem(IndexOf("arcade_cabinet"));
         _terminal.Close();
-        var cabinet = (RigidBody3D)_shop.GetNode("World").GetChildren().Last();
+        var cabinet = (RigidBody3D)DeliveredByLastOrder(_terminal);
         for (var i = 0; i < SettleFrames; i++)
             await ISceneRunner.SyncPhysicsFrame;
 
@@ -242,4 +238,14 @@ public class ShopWorkshopDeliverySceneTest
     }
 
     private int IndexOf(string id) => _terminal.Catalog!.Items.ToList().FindIndex(i => i.Id == id);
+
+    /// <summary>The node the terminal's latest order delivered; fails the test when that order was refused.</summary>
+    private static Node3D DeliveredByLastOrder(OrderTerminal terminal)
+    {
+        var order = terminal.LastOrder;
+        AssertBool(order is { Succeeded: true, Spawned: not null })
+            .OverrideFailureMessage("the latest order was not delivered")
+            .IsTrue();
+        return order!.Value.Spawned!;
+    }
 }

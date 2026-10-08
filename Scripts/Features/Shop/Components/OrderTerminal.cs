@@ -42,6 +42,9 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
 
     public bool IsOpen { get; private set; }
 
+    /// <summary>Outcome of the latest order request, or null when that request was not placed.</summary>
+    public OrderResult? LastOrder { get; private set; }
+
     public bool CanInteract => !IsOpen && Catalog != null && Ui != null;
 
     public Node3D InteractionBody => this;
@@ -157,6 +160,7 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
 
     private void OnOrderRequested(OrderItem item)
     {
+        LastOrder = null;
         if (_ordering == null || Ui == null)
         {
             Ui?.ShowMessage("Ordering is unavailable right now.");
@@ -164,6 +168,7 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
         }
 
         var result = _ordering.Order(item, DeliveryPoint);
+        LastOrder = result;
         Ui.ShowMessage(result.Status switch
         {
             OrderStatus.Success => $"Ordered {item.DisplayName}. It is at the delivery point.",
