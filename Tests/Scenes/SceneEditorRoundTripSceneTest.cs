@@ -12,9 +12,10 @@ namespace CardCleaner.Tests.Scenes;
 /// editable flag loads fine and loses those values on the first editor save (the node stays, because the instanced
 /// scene still holds it). Packing every scene the way the editor does, from an instance made with the editor's edit
 /// state, and comparing the stored values exposes it without opening the editor. The scene is saved to a file and
-/// loaded again with the cache ignored, so its inline sub-resources (meshes, materials, shapes) are new objects that
-/// the comparison can change; an in-memory copy shares them with the original and would hide a loss. The comparison
-/// itself is in <see cref="SceneRoundTripComparer"/>.
+/// loaded again with the cache ignored, so the reloaded copy's inline sub-resources (meshes, materials, shapes) are
+/// fresh objects, and a value the save dropped or changed shows up as a difference. An in-memory copy would share them
+/// with the original and hide the loss. The comparer only reads both trees; only the optional test hook changes the
+/// reloaded copy. The comparison itself is in <see cref="SceneRoundTripComparer"/>.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -52,17 +53,10 @@ public class SceneEditorRoundTripSceneTest
         {
             original = scene.Instantiate<Node>(PackedScene.GenEditState.Main);
             packed = new PackedScene();
-            var packError = packed.Pack(original);
-            if (packError != Error.Ok)
-                return [$"Pack failed with {packError}"];
-
-            var saveError = ResourceSaver.Save(packed, path);
-            if (saveError != Error.Ok)
-                return [$"Save failed with {saveError}"];
-
-            reloaded = ResourceLoader.Load<PackedScene>(path, null, ResourceLoader.CacheMode.Ignore);
+            var reload = SaveAndReload(packed, original, path);
+            reloaded = reload.Scene;
             if (reloaded == null)
-                return [$"Load failed for {path}"];
+                return [reload.Failure];
 
             saved = reloaded.Instantiate<Node>(PackedScene.GenEditState.Main);
             afterReload?.Invoke(saved);
@@ -80,107 +74,52 @@ public class SceneEditorRoundTripSceneTest
         }
     }
 
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void ComparingTreesThatDifferOnlyInsideAnInlineSubResourceReportsThatPath()
-    {
-        var original = BuildPlaceholderTree(Colors.Red);
-        var saved = BuildPlaceholderTree(Colors.Blue);
-        try
-        {
-            AssertThat(string.Join(", ", SceneRoundTripComparer.LostValues(original, saved))).IsEqual("Placeholder.mesh.material.albedo_color");
-        }
-        finally
-        {
-            original.Free();
-            saved.Free();
-        }
-    }
+    // The reloaded scene, or the message of the step that failed. Failure is empty when the reload succeeds.
+    private sealed record ReloadResult(PackedScene? Scene, string Failure);
 
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void ComparingTreesWithEqualButSeparateInlineSubResourcesReportsNothing()
+    // Packs the instance into the given pack, saves it to path and loads that file with the cache ignored.
+    // A failed step returns no scene and its message, which the caller reports as a lost value.
+    private static ReloadResult SaveAndReload(PackedScene packed, Node original, string path)
     {
-        var original = BuildPlaceholderTree(Colors.Red);
-        var saved = BuildPlaceholderTree(Colors.Red);
-        try
-        {
-            AssertThat(string.Join(", ", SceneRoundTripComparer.LostValues(original, saved))).IsEmpty();
-        }
-        finally
-        {
-            original.Free();
-            saved.Free();
-        }
-    }
+        var packError = packed.Pack(original);
+        if (packError != Error.Ok)
+            return new ReloadResult(null, $"Pack failed with {packError}");
 
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void InlineResourcesInAnArrayAreComparedByContent()
-    {
-        var original = new Node3D();
-        var saved = new Node3D();
-        original.SetMeta("items", new Godot.Collections.Array { new StandardMaterial3D { AlbedoColor = Colors.Red }, new StandardMaterial3D { AlbedoColor = Colors.Red } });
-        saved.SetMeta("items", new Godot.Collections.Array { new StandardMaterial3D { AlbedoColor = Colors.Red }, new StandardMaterial3D { AlbedoColor = Colors.Blue } });
-        try
-        {
-            AssertThat(string.Join(", ", SceneRoundTripComparer.LostValues(original, saved))).IsEqual("metadata/items[1].albedo_color");
-        }
-        finally
-        {
-            original.Free();
-            saved.Free();
-        }
-    }
+        var saveError = ResourceSaver.Save(packed, path);
+        if (saveError != Error.Ok)
+            return new ReloadResult(null, $"Save failed with {saveError}");
 
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void InlineResourcesInADictionaryAreComparedByContent()
-    {
-        var original = new Node3D();
-        var saved = new Node3D();
-        original.SetMeta("lookup", new Godot.Collections.Dictionary { { "material", new StandardMaterial3D { AlbedoColor = Colors.Red } } });
-        saved.SetMeta("lookup", new Godot.Collections.Dictionary { { "material", new StandardMaterial3D { AlbedoColor = Colors.Blue } } });
-        try
-        {
-            AssertThat(string.Join(", ", SceneRoundTripComparer.LostValues(original, saved))).IsEqual("metadata/lookup[\"material\"].albedo_color");
-        }
-        finally
-        {
-            original.Free();
-            saved.Free();
-        }
+        var reloaded = ResourceLoader.Load<PackedScene>(path, null, ResourceLoader.CacheMode.Ignore);
+        if (reloaded == null)
+            return new ReloadResult(null, $"Load failed for {path}");
+
+        return new ReloadResult(reloaded, string.Empty);
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public static void ARoundTripThatLosesAnInlineValueIsReported()
     {
-        var root = BuildPlaceholderTree(Colors.Red);
-        var fixture = new PackedScene();
-        try
-        {
-            AssertThat(fixture.Pack(root)).IsEqual(Error.Ok);
-            var lost = RoundTripLosses(fixture, saved => ((StandardMaterial3D)((BoxMesh)saved.GetNode<MeshInstance3D>("Placeholder").Mesh).Material).AlbedoColor = Colors.Blue);
-            AssertThat(string.Join(", ", lost)).IsEqual("Placeholder.mesh.material.albedo_color");
-        }
-        finally
-        {
-            fixture.Dispose();
-            root.Free();
-        }
+        var lost = PlaceholderRoundTripLosses(saved => PlaceholderMaterial(saved).AlbedoColor = Colors.Blue);
+        AssertThat(lost).IsEqual("Placeholder.mesh.material.albedo_color");
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public static void ARoundTripWithNoChangeReportsNothing()
     {
-        var root = BuildPlaceholderTree(Colors.Red);
+        AssertThat(PlaceholderRoundTripLosses()).IsEmpty();
+    }
+
+    // Packs a placeholder tree, round-trips it through a file and returns its losses joined, for one assertion.
+    private static string PlaceholderRoundTripLosses(Action<Node>? afterReload = null)
+    {
+        var root = SceneRoundTripComparerTest.BuildPlaceholderTree(Colors.Red);
         var fixture = new PackedScene();
         try
         {
             AssertThat(fixture.Pack(root)).IsEqual(Error.Ok);
-            AssertThat(string.Join(", ", RoundTripLosses(fixture))).IsEmpty();
+            return string.Join(", ", RoundTripLosses(fixture, afterReload));
         }
         finally
         {
@@ -189,18 +128,8 @@ public class SceneEditorRoundTripSceneTest
         }
     }
 
-    private static Node3D BuildPlaceholderTree(Color albedo)
-    {
-        var root = new Node3D { Name = "Fixture" };
-        var placeholder = new MeshInstance3D
-        {
-            Name = "Placeholder",
-            Mesh = new BoxMesh { Material = new StandardMaterial3D { AlbedoColor = albedo } },
-        };
-        root.AddChild(placeholder);
-        placeholder.Owner = root;
-        return root;
-    }
+    private static StandardMaterial3D PlaceholderMaterial(Node root) =>
+        (StandardMaterial3D)((BoxMesh)root.GetNode<MeshInstance3D>("Placeholder").Mesh).Material;
 
     private static List<string> ScenePaths(string folder)
     {

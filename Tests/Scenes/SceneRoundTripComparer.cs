@@ -5,17 +5,14 @@ using Godot;
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// Lists the stored values of an original scene tree that its saved copy does not hold. Nodes are matched by their path
-/// from their root. An inline resource (one with no file of its own) is compared by content, and an external resource by
-/// its file path. Arrays and dictionaries are compared entry by entry, and each entry is named in the path.
+/// Lists the stored values of an original scene tree that its saved copy does not hold. Nodes are matched by their
+/// path from their root. An inline resource (one with no file of its own) is compared by content, and an external
+/// resource by its file path. Arrays and dictionaries are compared entry by entry, and each entry is named in the path.
 /// </summary>
 internal sealed class SceneRoundTripComparer
 {
     // ASSUMPTION: 16 nested levels cover every stored value in Scenes/. Deeper nesting is reported, not compared.
     private const int MaxDepth = 16;
-
-    // Stored properties that a save may legitimately change, keyed "Class.property". Empty: every stored value counts.
-    private static readonly HashSet<string> IgnoredResourceProperties = new();
 
     private readonly Node _originalRoot;
     private readonly Node _savedRoot;
@@ -93,7 +90,8 @@ internal sealed class SceneRoundTripComparer
         }
         else if (original is Node node)
         {
-            if (saved is not Node savedNode || _originalRoot.GetPathTo(node).ToString() != _savedRoot.GetPathTo(savedNode).ToString())
+            if (saved is not Node savedNode
+                || _originalRoot.GetPathTo(node).ToString() != _savedRoot.GetPathTo(savedNode).ToString())
                 _lost.Add(path);
         }
         else if (!ReferenceEquals(original, saved))
@@ -140,12 +138,14 @@ internal sealed class SceneRoundTripComparer
             return;
         }
 
+        ComparePropertiesOf(original, saved, path, depth);
+    }
+
+    private void ComparePropertiesOf(Resource original, Resource saved, string path, int depth)
+    {
         foreach (var property in StoredProperties(original))
         {
             var name = (string)property["name"];
-            if (IgnoredResourceProperties.Contains($"{original.GetClass()}.{name}"))
-                continue;
-
             CompareValue(original.Get(name), saved.Get(name), Member(path, name), depth + 1);
         }
     }
@@ -168,7 +168,11 @@ internal sealed class SceneRoundTripComparer
             CompareValue(original[index], saved[index], $"{path}[{index}]", depth + 1);
     }
 
-    private void CompareDictionaries(Godot.Collections.Dictionary original, Godot.Collections.Dictionary saved, string path, int depth)
+    private void CompareDictionaries(
+        Godot.Collections.Dictionary original,
+        Godot.Collections.Dictionary saved,
+        string path,
+        int depth)
     {
         if (depth >= MaxDepth)
         {
@@ -199,7 +203,8 @@ internal sealed class SceneRoundTripComparer
         return entries;
     }
 
-    // ASSUMPTION: Godot gives an inline sub-resource either no path or a "file::id" path, and no other resource has either.
+    // ASSUMPTION: Godot gives an inline sub-resource either no path or a "file::id" path, and no other resource
+    // has either.
     private static bool IsInline(Resource resource) =>
         string.IsNullOrEmpty(resource.ResourcePath) || resource.ResourcePath.Contains("::");
 
@@ -207,5 +212,6 @@ internal sealed class SceneRoundTripComparer
     private static string Member(string path, string name) => path == "." ? name : $"{path}.{name}";
 
     private static IEnumerable<Godot.Collections.Dictionary> StoredProperties(GodotObject owner) =>
-        owner.GetPropertyList().Where(property => ((PropertyUsageFlags)(long)property["usage"] & PropertyUsageFlags.Storage) != 0);
+        owner.GetPropertyList()
+            .Where(property => ((PropertyUsageFlags)(long)property["usage"] & PropertyUsageFlags.Storage) != 0);
 }
