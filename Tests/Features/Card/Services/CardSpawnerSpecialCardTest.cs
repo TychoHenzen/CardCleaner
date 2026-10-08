@@ -105,7 +105,7 @@ public class CardSpawnerSpecialCardTest
         return callback!;
     }
 
-    /// <summary>Runs one frame more than the queue can hold, so a card queued beyond the expected count shows up.</summary>
+    /// <summary>Runs one frame past the expected count, so a card queued beyond it is spawned and caught.</summary>
     private void AssertRandomCardsSpawnedAfterDraining(int expected)
     {
         for (var frame = 0; frame <= expected; frame++)
