@@ -84,10 +84,17 @@ public partial class CardShaderRenderer : Node, ICardComponent
 
     public bool ArtEffectsEnabled
     {
-        get => _materialManager?.ArtEffectsEnabled ?? true;
+        // Without a material manager no effects can show, so the flag reads false.
+        get => _materialManager?.ArtEffectsEnabled ?? false;
         set
         {
-            if (_materialManager != null) _materialManager.ArtEffectsEnabled = value;
+            if (_materialManager == null)
+            {
+                ILog.Error("Card renderer has no material manager; the art effects were not switched.");
+                return;
+            }
+
+            _materialManager.ArtEffectsEnabled = value;
         }
     }
 }

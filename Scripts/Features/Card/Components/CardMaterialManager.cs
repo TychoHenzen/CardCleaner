@@ -135,7 +135,12 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         // Setting a nil map clears it, so the shader keeps its default, which shows no rarity effect.
         _shaderParameters["art_normal_map"] = _normalMap != null ? _normalMap : default(Variant);
 
-        // The bevel map is baked off the main thread, so the effects can change after the material is applied.
+        WriteArtEffectsToActiveMaterial();
+    }
+
+    // The bevel map is baked off the main thread, so the effects can change after the material is applied.
+    private void WriteArtEffectsToActiveMaterial()
+    {
         if (_activeMaterial == null) return;
 
         foreach (var name in ArtEffectParameters)
