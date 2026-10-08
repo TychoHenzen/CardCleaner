@@ -32,7 +32,7 @@ public class SimpleGeneratedMap : IGeneratedMap
     /// <inheritdoc />
     public bool RemoveEnemyAt(int cellId)
     {
-        var gridPos = _mapDataAdapter.GetGridPosition(cellId);
+        var gridPos = _mapDataAdapter.CellIdToPosition(cellId);
         return _mapData.EnemyPositions.Remove(gridPos);
     }
 

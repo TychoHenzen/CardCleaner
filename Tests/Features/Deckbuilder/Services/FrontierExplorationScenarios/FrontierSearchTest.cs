@@ -22,7 +22,7 @@ public class FrontierSearchTest : FrontierExplorationTestBase
         var behavior = new FrontierExplorationBehavior(gridData, new SimpleVisibilityChecker(), visionRange: 1);
 
         // Update vision from center - with vision range 1, should see immediate neighbors
-        var centerCell = gridData.GetCellId(new Vector2I(1, 1));
+        var centerCell = gridData.PositionToCellId(new Vector2I(1, 1));
         behavior.UpdateVision(centerCell);
 
         // Find nearest frontier - should return an adjacent unvisited cell
@@ -30,7 +30,7 @@ public class FrontierSearchTest : FrontierExplorationTestBase
 
         AssertThat(frontierCell).IsNotNull();
         // Should be adjacent to current position (distance of 1)
-        var frontierPos = gridData.GetGridPosition(frontierCell!.Value);
+        var frontierPos = gridData.CellIdToPosition(frontierCell!.Value);
         var distance = Mathf.Abs(frontierPos.X - 1) + Mathf.Abs(frontierPos.Y - 1);
         AssertThat(distance).IsEqual(1);
     }
@@ -82,7 +82,7 @@ public class FrontierSearchTest : FrontierExplorationTestBase
         var behavior = new FrontierExplorationBehavior(gridData, new SimpleVisibilityChecker(), visionRange: 1);
 
         // Start at (0,0) and update vision
-        var startCell = gridData.GetCellId(new Vector2I(0, 0));
+        var startCell = gridData.PositionToCellId(new Vector2I(0, 0));
         behavior.UpdateVision(startCell);
 
         // Find nearest frontier - should be (0,1) which is adjacent, not (4,0) which is closer Euclidean
@@ -90,7 +90,7 @@ public class FrontierSearchTest : FrontierExplorationTestBase
 
         AssertThat(frontierCell).IsNotNull();
         // Nearest by walking should be (0,1) - one step away
-        var frontierPos = gridData.GetGridPosition(frontierCell!.Value);
+        var frontierPos = gridData.CellIdToPosition(frontierCell!.Value);
         AssertThat(frontierPos).IsEqual(new Vector2I(0, 1));
     }
 
@@ -102,12 +102,12 @@ public class FrontierSearchTest : FrontierExplorationTestBase
         var behavior = new FrontierExplorationBehavior(gridData, new SimpleVisibilityChecker(), visionRange: 10);
 
         // Visit all tiles
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(0, 0)));
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(1, 0)));
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(0, 1)));
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(1, 1)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(0, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(1, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(0, 1)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(1, 1)));
 
-        var frontierCell = behavior.FindNearestFrontierCell(gridData.GetCellId(new Vector2I(0, 0)));
+        var frontierCell = behavior.FindNearestFrontierCell(gridData.PositionToCellId(new Vector2I(0, 0)));
 
         AssertThat(frontierCell).IsNull();
     }
@@ -140,11 +140,11 @@ public class FrontierSearchTest : FrontierExplorationTestBase
         var behavior = new FrontierExplorationBehavior(gridData, new SimpleVisibilityChecker(), visionRange: 1);
 
         // Visit left region
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(0, 0)));
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(1, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(0, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(1, 0)));
 
         // Find frontier - should return null since right region is unreachable
-        var frontier = behavior.FindNearestFrontierCell(gridData.GetCellId(new Vector2I(1, 0)));
+        var frontier = behavior.FindNearestFrontierCell(gridData.PositionToCellId(new Vector2I(1, 0)));
 
         AssertThat(frontier).IsNull();
     }
@@ -157,7 +157,7 @@ public class FrontierSearchTest : FrontierExplorationTestBase
         var behavior = new FrontierExplorationBehavior(gridData, new SimpleVisibilityChecker(), visionRange: 2);
 
         var cellHistory = new List<int>();
-        var currentCell = gridData.GetCellId(new Vector2I(0, 0));
+        var currentCell = gridData.PositionToCellId(new Vector2I(0, 0));
 
         // Simulate 20 exploration steps
         for (var i = 0; i < 20; i++)

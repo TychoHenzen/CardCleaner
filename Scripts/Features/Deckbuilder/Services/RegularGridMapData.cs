@@ -270,15 +270,5 @@ public class RegularGridMapData : IMapData
     /// </summary>
     public Vector2I Size => _simpleMapData.Size;
 
-    /// <summary>
-    /// Convert a Vector2I position to cell ID (convenience method).
-    /// </summary>
-    public int GetCellId(Vector2I gridPos) => PositionToCellId(gridPos);
-
-    /// <summary>
-    /// Convert a cell ID to Vector2I position (convenience method).
-    /// </summary>
-    public Vector2I GetGridPosition(int cellId) => CellIdToPosition(cellId);
-
     #endregion
 }

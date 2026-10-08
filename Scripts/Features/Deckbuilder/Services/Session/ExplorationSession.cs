@@ -125,7 +125,7 @@ internal sealed class ExplorationSession
         if (_playerPosition.HasValue && _world.GridMapData != null)
         {
             // Resume from grid position (regular generator case)
-            return _world.GridMapData.GetCellId(_playerPosition.Value);
+            return _world.GridMapData.PositionToCellId(_playerPosition.Value);
         }
 
         return null;

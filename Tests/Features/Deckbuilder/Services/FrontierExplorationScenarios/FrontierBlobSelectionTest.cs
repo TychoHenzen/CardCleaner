@@ -36,11 +36,11 @@ public class FrontierBlobSelectionTest : FrontierExplorationTestBase
         var behavior = new FrontierExplorationBehavior(gridData, new SimpleVisibilityChecker(), visionRange: 1);
 
         // Visit left region
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(0, 0)));
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(1, 0)));
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(2, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(0, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(1, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(2, 0)));
 
-        var blobs = behavior.FindUnvisitedBlobs(gridData.GetCellId(new Vector2I(2, 0)));
+        var blobs = behavior.FindUnvisitedBlobs(gridData.PositionToCellId(new Vector2I(2, 0)));
 
         // Should find no blobs since right region is unreachable (wall blocks)
         AssertThat(blobs.Count).IsEqual(0);
@@ -71,11 +71,11 @@ public class FrontierBlobSelectionTest : FrontierExplorationTestBase
         behavior.SignificantBlobThreshold = 3; // Set threshold to 3
 
         // Visit only tiles 0 and 1
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(0, 0)));
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(1, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(0, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(1, 0)));
 
         // Find blobs from cell 1
-        var cell1 = gridData.GetCellId(new Vector2I(1, 0));
+        var cell1 = gridData.PositionToCellId(new Vector2I(1, 0));
         var blobs = behavior.FindUnvisitedBlobs(cell1);
 
         // Should find one blob containing all unvisited tiles (2-9)
@@ -84,7 +84,7 @@ public class FrontierBlobSelectionTest : FrontierExplorationTestBase
 
         // FindNearestFrontierCell should return the closest entry point
         var target = behavior.FindNearestFrontierCell(cell1);
-        var targetPos = gridData.GetGridPosition(target!.Value);
+        var targetPos = gridData.CellIdToPosition(target!.Value);
         AssertThat(targetPos).IsEqual(new Vector2I(2, 0)); // Nearest entry point
     }
 
@@ -102,21 +102,21 @@ public class FrontierBlobSelectionTest : FrontierExplorationTestBase
         // Visit the L-shaped corridor except the corner
         // Top row
         for (var x = 0; x <= 4; x++)
-            behavior.UpdateVision(gridData.GetCellId(new Vector2I(x, 0)));
+            behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(x, 0)));
         // Right column (down to 4,4 - don't visit 4,5)
         for (var y = 1; y <= 4; y++)
-            behavior.UpdateVision(gridData.GetCellId(new Vector2I(4, y)));
+            behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(4, y)));
 
         // At this point:
         // - (4,5) is seen from (4,4) but NOT trivially visible because (5,5) is unseen
         // - (5,5) is NOT seen because it's at diagonal distance from (4,4)
 
         // Find frontier - should find (4,5) as entry to the small blob
-        var target = behavior.FindNearestFrontierCell(gridData.GetCellId(new Vector2I(4, 4)));
+        var target = behavior.FindNearestFrontierCell(gridData.PositionToCellId(new Vector2I(4, 4)));
 
         // With high threshold, Phase 2 kicks in and targets nearest small blob
         AssertThat(target).IsNotNull();
-        var targetPos = gridData.GetGridPosition(target!.Value);
+        var targetPos = gridData.CellIdToPosition(target!.Value);
         AssertThat(targetPos).IsEqual(new Vector2I(4, 5));
     }
 
@@ -162,13 +162,13 @@ public class FrontierBlobSelectionTest : FrontierExplorationTestBase
         behavior.SignificantBlobThreshold = 3; // Both blobs are significant
 
         // Visit only tiles 0 and 1
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(0, 0)));
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(1, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(0, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(1, 0)));
 
         // FindNearestFrontierCell should return entry to the CLOSER blob (at x=2)
         // even though the blob at x=6+ is larger
-        var target = behavior.FindNearestFrontierCell(gridData.GetCellId(new Vector2I(1, 0)));
-        var targetPos = gridData.GetGridPosition(target!.Value);
+        var target = behavior.FindNearestFrontierCell(gridData.PositionToCellId(new Vector2I(1, 0)));
+        var targetPos = gridData.CellIdToPosition(target!.Value);
         AssertThat(targetPos).IsEqual(new Vector2I(2, 0)); // Nearest entry point, not largest blob
     }
 }

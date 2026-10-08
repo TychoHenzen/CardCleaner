@@ -55,7 +55,7 @@ public class RaycastVisibilityCheckerTest
         GenerateCollisionShapes(gridData);
 
         var checker = new RaycastVisibilityChecker(_spaceState);
-        var cellId = gridData.GetCellId(new Vector2I(2, 2));
+        var cellId = gridData.PositionToCellId(new Vector2I(2, 2));
 
         var result = checker.CanSee(cellId, cellId, gridData);
 
@@ -69,8 +69,8 @@ public class RaycastVisibilityCheckerTest
         GenerateCollisionShapes(gridData);
 
         var checker = new RaycastVisibilityChecker(_spaceState);
-        var from = gridData.GetCellId(new Vector2I(2, 2));
-        var to = gridData.GetCellId(new Vector2I(3, 2));
+        var from = gridData.PositionToCellId(new Vector2I(2, 2));
+        var to = gridData.PositionToCellId(new Vector2I(3, 2));
 
         var result = checker.CanSee(from, to, gridData);
 
@@ -84,8 +84,8 @@ public class RaycastVisibilityCheckerTest
         GenerateCollisionShapes(gridData);
 
         var checker = new RaycastVisibilityChecker(_spaceState);
-        var from = gridData.GetCellId(new Vector2I(0, 0));
-        var to = gridData.GetCellId(new Vector2I(9, 9));
+        var from = gridData.PositionToCellId(new Vector2I(0, 0));
+        var to = gridData.PositionToCellId(new Vector2I(9, 9));
 
         var result = checker.CanSee(from, to, gridData);
 

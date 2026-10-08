@@ -55,8 +55,8 @@ public class SimpleVisibilityChecker : IVisibilityChecker
     /// </summary>
     private static bool CanSeeBresenham(int fromCellId, int toCellId, RegularGridMapData gridData)
     {
-        var from = gridData.GetGridPosition(fromCellId);
-        var to = gridData.GetGridPosition(toCellId);
+        var from = gridData.CellIdToPosition(fromCellId);
+        var to = gridData.CellIdToPosition(toCellId);
 
         var x0 = from.X;
         var y0 = from.Y;
@@ -105,15 +105,15 @@ public class SimpleVisibilityChecker : IVisibilityChecker
 
     private static bool BlocksVisibility(RegularGridMapData gridData, Vector2I position, int fromCellId)
     {
-        var cellId = gridData.GetCellId(position);
+        var cellId = gridData.PositionToCellId(position);
         return cellId != fromCellId && !gridData.IsTransparent(cellId);
     }
 
     private static bool IsDiagonalCornerBlocked(
         RegularGridMapData gridData, Vector2I horizontalPos, Vector2I verticalPos)
     {
-        var hCellId = gridData.GetCellId(horizontalPos);
-        var vCellId = gridData.GetCellId(verticalPos);
+        var hCellId = gridData.PositionToCellId(horizontalPos);
+        var vCellId = gridData.PositionToCellId(verticalPos);
 
         // If both tiles adjacent to the diagonal are opaque, we can't see through the corner
         return !gridData.IsTransparent(hCellId) && !gridData.IsTransparent(vCellId);

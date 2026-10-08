@@ -3989,9 +3989,9 @@
     }
   ],
   "summary": {
-    "total": 7570,
+    "total": 7568,
     "errors": 0,
-    "warnings": 7570,
+    "warnings": 7568,
     "byRule": {
       "test-only-export": 9,
       "duplicate-block": 68,
@@ -4001,7 +4001,7 @@
       "nesting-depth": 11,
       "param-count": 171,
       "else-branch": 90,
-      "stateless-method": 1555,
+      "stateless-method": 1553,
       "comment-bloat": 49,
       "comment-restates-code": 95,
       "output-parameter": 25,
@@ -4096,7 +4096,7 @@
       "Scripts/Features/Deckbuilder/Services/FrontierExplorationBehavior.cs": 25,
       "Scripts/Features/Deckbuilder/Services/GameSessionService.cs": 30,
       "Scripts/Features/Deckbuilder/Services/GridCellEventAdapter.cs": 4,
-      "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs": 12,
+      "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs": 10,
       "Scripts/Features/Deckbuilder/Services/Session/ExplorationSession.cs": 18,
       "Scripts/Features/Deckbuilder/Services/Session/Generation/MapGenerationCoordinator.cs": 16,
       "Scripts/Features/Deckbuilder/Services/Session/SessionFlow.cs": 12,
@@ -15449,22 +15449,6 @@
       "rule": "stateless-method",
       "severity": "warn",
       "message": "HasStructure() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-      "line": 281,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "GetCellId() never touches instance state — make it a free function",
-      "metric": 1
-    },
-    {
-      "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-      "line": 286,
-      "rule": "stateless-method",
-      "severity": "warn",
-      "message": "GetGridPosition() never touches instance state — make it a free function",
       "metric": 1
     },
     {
@@ -110047,11 +110031,11 @@
     {
       "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
       "errors": 0,
-      "warnings": 12,
+      "warnings": 10,
       "rules": {
         "file-length": 1,
         "complexity": 2,
-        "stateless-method": 4,
+        "stateless-method": 2,
         "line-length": 5
       },
       "items": [
@@ -110093,22 +110077,6 @@
           "rule": "stateless-method",
           "severity": "warn",
           "message": "HasStructure() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-          "line": 281,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetCellId() never touches instance state — make it a free function",
-          "metric": 1
-        },
-        {
-          "file": "Scripts/Features/Deckbuilder/Services/RegularGridMapData.cs",
-          "line": 286,
-          "rule": "stateless-method",
-          "severity": "warn",
-          "message": "GetGridPosition() never touches instance state — make it a free function",
           "metric": 1
         },
         {

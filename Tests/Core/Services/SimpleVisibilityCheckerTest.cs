@@ -25,7 +25,7 @@ public class SimpleVisibilityCheckerTest
     {
         var (_, gridData) = OpenFloorMap.Create(5, 5);
         var position = new Vector2I(2, 2);
-        var cellId = gridData.GetCellId(position);
+        var cellId = gridData.PositionToCellId(position);
 
         var result = _checker.CanSee(cellId, cellId, gridData);
 
@@ -38,8 +38,8 @@ public class SimpleVisibilityCheckerTest
         var (_, gridData) = OpenFloorMap.Create(5, 5);
 
         var result = _checker.CanSee(
-            gridData.GetCellId(new Vector2I(2, 2)),
-            gridData.GetCellId(new Vector2I(3, 2)),
+            gridData.PositionToCellId(new Vector2I(2, 2)),
+            gridData.PositionToCellId(new Vector2I(3, 2)),
             gridData);
 
         AssertBool(result).IsTrue();
@@ -51,8 +51,8 @@ public class SimpleVisibilityCheckerTest
         var (_, gridData) = OpenFloorMap.Create(5, 5);
 
         var result = _checker.CanSee(
-            gridData.GetCellId(new Vector2I(0, 0)),
-            gridData.GetCellId(new Vector2I(4, 4)),
+            gridData.PositionToCellId(new Vector2I(0, 0)),
+            gridData.PositionToCellId(new Vector2I(4, 4)),
             gridData);
 
         AssertBool(result).IsTrue();
@@ -66,8 +66,8 @@ public class SimpleVisibilityCheckerTest
         SetWall(mapData, 2, 0);
 
         var result = _checker.CanSee(
-            gridData.GetCellId(new Vector2I(0, 0)),
-            gridData.GetCellId(new Vector2I(4, 0)),
+            gridData.PositionToCellId(new Vector2I(0, 0)),
+            gridData.PositionToCellId(new Vector2I(4, 0)),
             gridData);
 
         AssertBool(result).IsFalse();
@@ -82,8 +82,8 @@ public class SimpleVisibilityCheckerTest
 
         // Can see the wall tile itself
         var result = _checker.CanSee(
-            gridData.GetCellId(new Vector2I(0, 0)),
-            gridData.GetCellId(new Vector2I(2, 0)),
+            gridData.PositionToCellId(new Vector2I(0, 0)),
+            gridData.PositionToCellId(new Vector2I(2, 0)),
             gridData);
 
         AssertBool(result).IsTrue();
@@ -97,8 +97,8 @@ public class SimpleVisibilityCheckerTest
 
         // Vision check starting from a wall position should still work
         var result = _checker.CanSee(
-            gridData.GetCellId(new Vector2I(0, 0)),
-            gridData.GetCellId(new Vector2I(2, 0)),
+            gridData.PositionToCellId(new Vector2I(0, 0)),
+            gridData.PositionToCellId(new Vector2I(2, 0)),
             gridData);
 
         AssertBool(result).IsTrue();
@@ -116,8 +116,8 @@ public class SimpleVisibilityCheckerTest
         SetWall(mapData, 2, 4);
 
         var result = _checker.CanSee(
-            gridData.GetCellId(new Vector2I(0, 0)),
-            gridData.GetCellId(new Vector2I(4, 0)),
+            gridData.PositionToCellId(new Vector2I(0, 0)),
+            gridData.PositionToCellId(new Vector2I(4, 0)),
             gridData);
 
         AssertBool(result).IsFalse();
@@ -132,8 +132,8 @@ public class SimpleVisibilityCheckerTest
 
         // Should still see (4,0) from (0,0) - wall is not in direct line
         var result = _checker.CanSee(
-            gridData.GetCellId(new Vector2I(0, 0)),
-            gridData.GetCellId(new Vector2I(4, 0)),
+            gridData.PositionToCellId(new Vector2I(0, 0)),
+            gridData.PositionToCellId(new Vector2I(4, 0)),
             gridData);
 
         AssertBool(result).IsTrue();
@@ -145,8 +145,8 @@ public class SimpleVisibilityCheckerTest
         var (_, gridData) = OpenFloorMap.Create(1, 5);
 
         var result = _checker.CanSee(
-            gridData.GetCellId(new Vector2I(0, 0)),
-            gridData.GetCellId(new Vector2I(0, 4)),
+            gridData.PositionToCellId(new Vector2I(0, 0)),
+            gridData.PositionToCellId(new Vector2I(0, 4)),
             gridData);
 
         AssertBool(result).IsTrue();
@@ -159,8 +159,8 @@ public class SimpleVisibilityCheckerTest
         SetWall(mapData, 0, 2);
 
         var result = _checker.CanSee(
-            gridData.GetCellId(new Vector2I(0, 0)),
-            gridData.GetCellId(new Vector2I(0, 4)),
+            gridData.PositionToCellId(new Vector2I(0, 0)),
+            gridData.PositionToCellId(new Vector2I(0, 4)),
             gridData);
 
         AssertBool(result).IsFalse();
@@ -173,8 +173,8 @@ public class SimpleVisibilityCheckerTest
         SetWall(mapData, 5, 5);
 
         // Line from (0,0) to (8,6) should give same result as (8,6) to (0,0)
-        var from1 = gridData.GetCellId(new Vector2I(0, 0));
-        var to1 = gridData.GetCellId(new Vector2I(8, 6));
+        var from1 = gridData.PositionToCellId(new Vector2I(0, 0));
+        var to1 = gridData.PositionToCellId(new Vector2I(8, 6));
 
         var forward = _checker.CanSee(from1, to1, gridData);
         var backward = _checker.CanSee(to1, from1, gridData);
@@ -197,8 +197,8 @@ public class SimpleVisibilityCheckerTest
 
         // Cannot see through the diagonal corner
         var result = _checker.CanSee(
-            gridData.GetCellId(new Vector2I(0, 0)),
-            gridData.GetCellId(new Vector2I(2, 2)),
+            gridData.PositionToCellId(new Vector2I(0, 0)),
+            gridData.PositionToCellId(new Vector2I(2, 2)),
             gridData);
 
         AssertBool(result).IsFalse();
@@ -218,8 +218,8 @@ public class SimpleVisibilityCheckerTest
 
         // Can see through a partial corner (one wall is not enough to block)
         var result = _checker.CanSee(
-            gridData.GetCellId(new Vector2I(0, 0)),
-            gridData.GetCellId(new Vector2I(2, 2)),
+            gridData.PositionToCellId(new Vector2I(0, 0)),
+            gridData.PositionToCellId(new Vector2I(2, 2)),
             gridData);
 
         AssertBool(result).IsTrue();
@@ -233,8 +233,8 @@ public class SimpleVisibilityCheckerTest
         SetWall(mapData, 1, 0);
         SetWall(mapData, 0, 1);
 
-        var from = gridData.GetCellId(new Vector2I(0, 0));
-        var to = gridData.GetCellId(new Vector2I(2, 2));
+        var from = gridData.PositionToCellId(new Vector2I(0, 0));
+        var to = gridData.PositionToCellId(new Vector2I(2, 2));
 
         var forward = _checker.CanSee(from, to, gridData);
         var backward = _checker.CanSee(to, from, gridData);
