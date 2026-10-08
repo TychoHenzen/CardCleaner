@@ -8,7 +8,10 @@ using NSubstitute;
 
 namespace CardCleaner.Tests.Features.Card.Services;
 
-/// <summary>Key 4 spawns a special card, so the backoffice seam can be tested without opening 512 cards.</summary>
+/// <summary>
+///     Key 4 spawns a special card, so the backoffice seam can be tested without opening 512 cards. A scene that
+///     spawns its own cards (the effect comparison) switches the keys off.
+/// </summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class CardSpawnerSpecialCardTest
@@ -54,5 +57,16 @@ public class CardSpawnerSpecialCardTest
         _input.Received(1).RegisterAction(_spawner, "spawn_one", Key.Key1, Arg.Any<Action>());
         _input.Received(1).RegisterAction(_spawner, "spawn_ten", Key.Key2, Arg.Any<Action>());
         _input.Received(1).RegisterAction(_spawner, "spawn_hundred", Key.Key3, Arg.Any<Action>());
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ASpawnerWithItsKeysSwitchedOffRegistersNone()
+    {
+        var quiet = new CardSpawner { SpawnKeys = false };
+
+        AddNode(quiet);
+
+        _input.DidNotReceive().RegisterAction(quiet, Arg.Any<string>(), Arg.Any<Key>(), Arg.Any<Action>());
     }
 }

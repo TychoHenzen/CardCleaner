@@ -7,9 +7,8 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 
 /// <summary>
 ///     Spawns Card instances one per frame at runtime when pressing 1, 2, or 3, and one special card (magical
-///     potential, which opens the backoffice seam) when pressing 4.
+///     potential, which opens the backoffice seam) when pressing 4, unless <see cref="SpawnKeys" /> is off.
 /// </summary>
-/// 
 [Service(ServiceLifetime.Singleton, typeof(ICardSpawner))]
 public partial class CardSpawner : Node3D, ICardSpawner
 {
@@ -22,6 +21,9 @@ public partial class CardSpawner : Node3D, ICardSpawner
 
     private int _spawnQueue;
     [Export] public Vector3 OffsetRange { get; set; } = DefaultOffsetRange;
+
+    /// <summary>Whether keys 1 to 4 spawn cards. A scene that lays out its own cards switches them off.</summary>
+    [Export] public bool SpawnKeys { get; set; } = true;
 
     public override bool _PropertyCanRevert(StringName property)
     {
@@ -45,6 +47,8 @@ public partial class CardSpawner : Node3D, ICardSpawner
     {
         ServiceLocator.Get<ICardSpawningService>(service => _spawningService = service);
         ServiceLocator.Get<RandomNumberGenerator>(rng => _rng = rng);
+        if (!SpawnKeys) return;
+
         ServiceLocator.Get<IInputService>(input =>
         {
             input.RegisterAction(this, "spawn_one", Key.Key1, () => QueueCards(1));

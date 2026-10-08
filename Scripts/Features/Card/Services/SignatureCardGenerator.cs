@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
+using CardCleaner.Scripts.Features.Card.Models.Effects;
 
 namespace CardCleaner.Scripts.Features.Card.Services;
 
@@ -82,8 +83,47 @@ public class SignatureCardGenerator : ICardGenerator
 
         cardTemplate.SetSignatureEdgesVisible(signature.HasMagicalPotential());
 
+        // 5. Art-region effects from the rarity and the signature's intensity.
+        SetArtEffects(renderer, signature, rarity, cardTemplate.Art.Texture);
+
         renderer.NameLabel.Text = rarity.ToString();
         renderer.AttrLabel.Text = signature.ToDebugString();
+    }
+
+    /// <remarks>
+    ///     Intensity is the mean element magnitude (<see cref="CardEffectMapping.IntensityOf" />), so the all-zero
+    ///     signature of an ordinary pack card is Dormant and nearly every common card shows the worn scratches.
+    ///     That is the decided mapping; the owner may revisit it.
+    ///     <para>
+    ///         The rarity effect waits for the art's bevel map, which is baked off the main thread the first time
+    ///         that art is shown; until then the card shows its condition effect only.
+    ///     </para>
+    /// </remarks>
+    private static void SetArtEffects(
+        CardShaderRenderer renderer,
+        CardSignature signature,
+        CardRarity rarity,
+        Texture2D? art)
+    {
+        var rarityEffect = CardEffectMapping.RarityEffectFor(rarity);
+        var conditionEffect = CardEffectMapping.ConditionEffectFor(CardEffectMapping.IntensityOf(signature.Elements));
+        var seed = CardEffectSeed.For(signature);
+
+        // Only the rarity effects read the bevel map, so a card without one does not wait for it.
+        if (rarityEffect == RarityEffect.None || art == null)
+        {
+            renderer.SetArtEffects(rarityEffect, conditionEffect, seed, null);
+            return;
+        }
+
+        renderer.SetArtEffects(RarityEffect.None, conditionEffect, seed, null);
+        var rendererId = renderer.GetInstanceId();
+        CardEffectNormalMapCache.Request(art, map =>
+        {
+            // The card may have been freed while its map was baking.
+            if (GodotObject.InstanceFromId(rendererId) is CardShaderRenderer waiting)
+                waiting.SetArtEffects(rarityEffect, conditionEffect, seed, map);
+        });
     }
 
     private static void SetGemVisuals(

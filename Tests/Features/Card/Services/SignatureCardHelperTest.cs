@@ -12,7 +12,7 @@ namespace CardCleaner.Tests.Features.Card.Services;
 public class SignatureCardHelperTest
 {
     [TestCase]
-    public void TestComputeSeed_AllZeros()
+    public static void TestComputeSeed_AllZeros()
     {
         var signature = new CardSignature();
         var seed = SignatureCardHelper.ComputeSeed(signature);
@@ -53,7 +53,7 @@ public class SignatureCardHelperTest
     [TestCase(new[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.85f }, CardRarity.Legendary)]
     [TestCase(new[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.75f }, CardRarity.Legendary)]
     [TestCase(new[] { -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -0.75f }, CardRarity.Legendary)]
-    public void TestDetermineRarity_Param(float[] elements, CardRarity expectedRarity)
+    public static void TestDetermineRarity_Param(float[] elements, CardRarity expectedRarity)
     {
         var signature = new CardSignature(elements);
         var rarity = SignatureCardHelper.DetermineRarity(new[] { signature });

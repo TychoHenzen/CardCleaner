@@ -1,0 +1,78 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Card/Debug/CardEffectComparison.cs" id="Comparison"]
+[ext_resource type="Script" path="res://Scripts/Core/ServiceProviders/CardServiceProvider.cs" id="CardServiceProvider"]
+[ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardSpawningService.cs" id="CardSpawningService"]
+[ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardSpawner.cs" id="CardSpawner"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/CardShader.tscn" id="CardScene"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Common.tres" id="Common"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Uncommon.tres" id="Uncommon"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Rare.tres" id="Rare"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Epic.tres" id="Epic"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Legendary.tres" id="Legendary"]
+[ext_resource type="Resource" path="res://Assets/CardBases/Weapon.tres" id="Weapon"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Solidum.tres" id="Solidum"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Febris.tres" id="Febris"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Ordinem.tres" id="Ordinem"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Lumines.tres" id="Lumines"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Varias.tres" id="Varias"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Inertiae.tres" id="Inertiae"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Subsidium.tres" id="Subsidium"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Spatium.tres" id="Spatium"]
+
+[sub_resource type="Environment" id="Environment_comparison"]
+background_mode = 1
+background_color = Color(0.18, 0.2, 0.24, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.75, 0.75, 0.78, 1)
+ambient_light_energy = 0.6
+
+[node name="CardEffectComparison" type="Node3D" node_paths=PackedStringArray("CardParent", "LabelParent", "BatchParent", "Camera", "Readout")]
+script = ExtResource("Comparison")
+CardParent = NodePath("Cards")
+LabelParent = NodePath("Labels")
+BatchParent = NodePath("Batch")
+Camera = NodePath("Camera3D")
+Readout = NodePath("Hud/Readout")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_comparison")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.81923, -0.45593, 0.34783, 0, 0.60655, 0.79505, -0.57346, -0.65133, 0.4969, 0, 4, 0)
+light_energy = 1.2
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+fov = 35.0
+
+[node name="Cards" type="Node3D" parent="."]
+script = ExtResource("CardSpawner")
+SpawnKeys = false
+
+[node name="Labels" type="Node3D" parent="."]
+
+[node name="Batch" type="Node3D" parent="."]
+
+[node name="Hud" type="CanvasLayer" parent="."]
+
+[node name="Readout" type="Label" parent="Hud"]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 616.0
+offset_bottom = 92.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+
+[node name="Services" type="Node" parent="."]
+
+[node name="CardServiceProvider" type="Node" parent="Services" node_paths=PackedStringArray("CardRoot")]
+script = ExtResource("CardServiceProvider")
+RarityVisuals = Array[Object]([ExtResource("Common"), ExtResource("Uncommon"), ExtResource("Rare"), ExtResource("Epic"), ExtResource("Legendary")])
+BaseCardTypes = Array[Object]([ExtResource("Weapon")])
+GemVisuals = Array[Object]([ExtResource("Solidum"), ExtResource("Febris"), ExtResource("Ordinem"), ExtResource("Lumines"), ExtResource("Varias"), ExtResource("Inertiae"), ExtResource("Subsidium"), ExtResource("Spatium")])
+CardRoot = NodePath("../../Cards")
+
+[node name="SpawningService" type="Node" parent="Services"]
+script = ExtResource("CardSpawningService")
+CardScene = ExtResource("CardScene")

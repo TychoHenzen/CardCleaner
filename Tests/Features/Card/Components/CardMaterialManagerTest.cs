@@ -1,7 +1,9 @@
-﻿using CardCleaner.Scripts.Core.Data;
+﻿using System;
+using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Features.Card.Components;
 using GdUnit4;
 using Godot;
+using CardCleaner.Scripts.Features.Card.Models.Effects;
 
 namespace CardCleaner.Tests.Features.Card.Components;
 
@@ -204,6 +206,120 @@ public class CardMaterialManagerTest
 
         var material = _manager.ApplyMaterial(meshInstance);
         Assertions.AssertThat(material).IsNotNull();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void SetArtEffectsReachesTheMaterialAsShaderParameters()
+    {
+        var normalMap = CreateMockTexture();
+        _manager.CardMaterialTemplate = LoadCardMaterial();
+
+        _manager.SetArtEffects(RarityEffect.Foil, ConditionEffect.Shiny, 1234f, normalMap);
+        var material = ApplyToNewMesh();
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.Foil);
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.Shiny);
+        AssertThat((float)material.GetShaderParameter("art_seed")).IsEqual(1234f);
+        AssertThat(material.GetShaderParameter("art_normal_map").As<Texture2D>()).IsSame(normalMap);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void SetArtEffectsWithoutANormalMapLeavesTheShaderDefault()
+    {
+        _manager.CardMaterialTemplate = LoadCardMaterial();
+
+        _manager.SetArtEffects(RarityEffect.None, ConditionEffect.Worn, 7f, CreateMockTexture());
+        _manager.SetArtEffects(RarityEffect.None, ConditionEffect.Worn, 7f, null);
+        var material = ApplyToNewMesh();
+
+        AssertThat(material.GetShaderParameter("art_normal_map").Obj).IsNull();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ArtEffectsSetAfterTheMaterialIsAppliedReachTheAppliedMaterial()
+    {
+        // A card's bevel map is baked off the main thread, so it can arrive after the material is on the mesh.
+        var normalMap = CreateMockTexture();
+        _manager.CardMaterialTemplate = LoadCardMaterial();
+        _manager.SetArtEffects(RarityEffect.None, ConditionEffect.Worn, 7f, null);
+        var material = ApplyToNewMesh();
+
+        _manager.SetArtEffects(RarityEffect.Glow, ConditionEffect.Worn, 7f, normalMap);
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.Glow);
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.Worn);
+        AssertThat((float)material.GetShaderParameter("art_seed")).IsEqual(7f);
+        AssertThat(material.GetShaderParameter("art_normal_map").As<Texture2D>()).IsSame(normalMap);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ClearingTheNormalMapAfterTheMaterialIsAppliedClearsItOnTheMaterial()
+    {
+        _manager.CardMaterialTemplate = LoadCardMaterial();
+        _manager.SetArtEffects(RarityEffect.Glow, ConditionEffect.Worn, 7f, CreateMockTexture());
+        var material = ApplyToNewMesh();
+
+        _manager.SetArtEffects(RarityEffect.None, ConditionEffect.Worn, 7f, null);
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
+        AssertThat(material.GetShaderParameter("art_normal_map").Obj).IsNull();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TheArtTextureStaysAtItsLayerIndexWhenEarlierLayersHaveNoTexture()
+    {
+        var template = new CardTemplate();
+        foreach (var layer in template.GatherAllLayers())
+            layer.Texture = CreateMockTexture();
+        template.Symbol.Texture = null;
+        template.Banner.Texture = null;
+        _manager.CardMaterialTemplate = LoadCardMaterial();
+        var artIndex = Array.IndexOf(template.GatherAllLayers(), template.Art);
+
+        _manager.SetLayerTextures(template.GatherAllLayers());
+        var material = ApplyToNewMesh();
+
+        var textures = material.GetShaderParameter("textures").As<Godot.Collections.Array<Texture2D>>();
+        AssertThat(textures.Count).IsEqual(template.GatherAllLayers().Length);
+        AssertThat(textures[artIndex]).IsSame(template.Art.Texture);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ALayerWithoutATextureDrawsNothingInsteadOfShiftingTheOthers()
+    {
+        var layers = new LayerData[]
+        {
+            new() { Texture = CreateMockTexture() },
+            new() { Texture = null },
+            new() { Texture = CreateMockTexture() }
+        };
+        _manager.CardMaterialTemplate = LoadCardMaterial();
+
+        _manager.SetLayerTextures(layers);
+        var material = ApplyToNewMesh();
+
+        var textures = material.GetShaderParameter("textures").As<Godot.Collections.Array<Texture2D>>();
+        AssertThat(textures.Count).IsEqual(3);
+        AssertThat(textures[2]).IsSame(layers[2].Texture);
+        AssertThat(textures[1].GetImage().GetPixel(0, 0).A).IsEqual(0f);
+    }
+
+    private ShaderMaterial ApplyToNewMesh()
+    {
+        var meshInstance = new MeshInstance3D();
+        Assertions.AddNode(meshInstance);
+        return _manager.ApplyMaterial(meshInstance) ?? throw new InvalidOperationException("No material applied");
+    }
+
+    private static ShaderMaterial LoadCardMaterial()
+    {
+        return GD.Load<ShaderMaterial>("res://Assets/Materials/CardMaterial.tres");
     }
 
     private static Texture2D CreateMockTexture()
