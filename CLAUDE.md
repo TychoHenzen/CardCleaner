@@ -136,6 +136,10 @@ The core mechanic uses `CardSignature` - an 8-dimensional vector with values cla
 
 Signatures influence card generation, combat calculations, map generation parameters, and loot drops.
 
+### Card Art Effects
+
+`SignatureCardGenerator` gives every spawned card a rarity effect (embossed, glow, glossy, foil) and a condition effect (worn, shiny) on its art region: `CardEffectMapping` maps the rarity and the signature's intensity tier (mean element magnitude, so the all-zero signature of an ordinary pack card is Dormant and looks worn) to shader ids, and `CardMaterialManager.SetArtEffects` passes them with a per-card seed and the baked bevel map to `Shaders/card_layers.gdshader`. To compare all five rarities by the three tiers side by side, open `Scenes/Debug/CardEffectComparison.tscn` in the editor and press F6 (run current scene); it is not the main scene and spawns real cards through the normal spawning service.
+
 ### World Generation
 
 > **Architecture Document**: See `docs/WORLDGEN_ARCHITECTURE.md` for the complete worldgen architecture, including the Soft WFC approach, weight modifier system, and data definition guides.
