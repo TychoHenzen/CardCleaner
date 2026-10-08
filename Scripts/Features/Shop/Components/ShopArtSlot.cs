@@ -130,10 +130,14 @@ public partial class ShopArtSlot : Node3D
         if (atlasPath == null || PackMaterial(atlasPath) is not { } material)
             return false;
 
+        var textured = false;
         var meshes = art.FindChildren("*", nameof(MeshInstance3D), true, false).OfType<MeshInstance3D>();
         foreach (var mesh in art is MeshInstance3D root ? meshes.Append(root) : meshes)
+        {
             mesh.MaterialOverride = material;
-        return true;
+            textured = true;
+        }
+        return textured;
     }
 
     private bool TryLoadArt()

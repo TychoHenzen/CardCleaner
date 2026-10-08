@@ -9,7 +9,8 @@ namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 /// The graybox shop scene keeps its three named areas, collision, markers, spawn and pack-mesh
-/// slots. The licensed pack files are gitignored, so nothing here requires them to exist.
+/// slots. The licensed pack files live in the private Assets submodule and may be absent, so nothing
+/// here requires them to exist.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]

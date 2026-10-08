@@ -106,7 +106,8 @@ public class BackofficeCatalogTest
             var slot = instance.GetNode<ShopArtSlot>("Art");
             AddNode(instance);
 
-            // The pack files are gitignored, so this machine either swaps in the pack mesh or keeps the placeholder.
+            // The pack files come from the private Assets submodule, which may be missing or unimported here, so
+            // this machine either swaps in the pack mesh or keeps the placeholder.
             var imported = ResourceLoader.Exists(slot.ArtPath);
             AssertBool(slot.ArtLoaded).IsEqual(imported);
             AssertBool(slot.Placeholder!.Visible).IsEqual(!imported);
