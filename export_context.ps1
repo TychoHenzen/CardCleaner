@@ -9,12 +9,13 @@
 # -Full: a narrow set of extensions, Tests/ excluded, and each file's contents after the tree.
 if ($Full) {
     $extensions = '.cs','.json','.xml','.yml','.gdshader','.md'
-    $skipTests = 'Tests/|'
+    $testPatterns = @('Tests/')
 } else {
     $extensions = '.cs','.csproj','.gox','.json','.xml','.yml','.mgcb','.spritefont','.gdshader','.md','.godot','.tscn','.tres','.png'
-    $skipTests = ''
+    $testPatterns = @()
 }
-$excluded = '(/\.vscode/|/\.idea/|' + $skipTests + 'addons/|README\.md|CLAUDE\.md|\.csproj$|\.sln$)'
+$excludedPatterns = @('/\.vscode/', '/\.idea/') + $testPatterns + @('addons/', 'README\.md', 'CLAUDE\.md', '\.csproj$', '\.sln$')
+$excluded = '(' + ($excludedPatterns -join '|') + ')'
 
 $files = git ls-files |
         Where-Object { $extensions -contains ([IO.Path]::GetExtension($_)) } |
@@ -70,11 +71,7 @@ Add-Content $Output ''
 if ($Full) {
     foreach ($file in $files) {
         Add-Content $Output "=== Begin $file ==="
-        if ([IO.Path]::GetExtension($file) -eq '.gox') {
-            Add-Content $Output '[Contents of binary file omitted]'
-        } else {
-            Get-Content $file | Add-Content -Path $Output
-        }
+        Get-Content $file | Add-Content -Path $Output
         Add-Content $Output "=== End $file ===`n"
     }
 }
