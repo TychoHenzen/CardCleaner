@@ -68,19 +68,21 @@ uniform vec3 art_light_direction = vec3(0.35, 0.8, 0.5);
 // Shared. The turn is the value Axiom2d's shaders use, not TAU.
 const float ANGLE_FULL_TURN = 6.28318;
 
-// Embossed: the bevel catches the light.
+// Embossed: the bevel catches the light. The gains and shininess are stronger than the first port's
+// (0.3, 0.6, 32), which barely changed the art of a card seen head-on.
 const float EMBOSS_DIFFUSE_LOW = -0.2;
 const float EMBOSS_DIFFUSE_HIGH = 1.0;
 const float EMBOSS_DIFFUSE_NEUTRAL = 0.5;
-const float EMBOSS_DIFFUSE_GAIN = 0.3;
-const float EMBOSS_SPECULAR_GAIN = 0.6;
-const float EMBOSS_SHININESS = 32.0;
+const float EMBOSS_DIFFUSE_GAIN = 0.9;
+const float EMBOSS_SPECULAR_GAIN = 0.8;
+const float EMBOSS_SHININESS = 16.0;
 
-// Glow: glitter, one randomly tilted facet per cell of the art.
+// Glow: glitter, one randomly tilted facet per cell of the art. Facets are flatter and the
+// highlight wider than the first port's (tilt 0.45, shininess 80), so more of them flash at once.
 const float GLOW_CELLS = 24.0;
 const vec2 GLOW_HASH_WEIGHTS = vec2(73.0, 157.0);
-const float GLOW_FACET_TILT = 0.45;
-const float GLOW_SHININESS = 80.0;
+const float GLOW_FACET_TILT = 0.3;
+const float GLOW_SHININESS = 30.0;
 const float GLOW_SPOT_INNER = 0.2;
 const float GLOW_SPOT_OUTER = 0.45;
 const float GLOW_MAX_ALPHA = 0.9;
