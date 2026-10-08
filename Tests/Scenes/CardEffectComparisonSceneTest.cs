@@ -226,6 +226,23 @@ public class CardEffectComparisonSceneTest
         await AssertEveryCellShowsItsEffects();
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task SwitchingTheEffectsBackOnAfterClearingTheBatchRestoresTheRemainingCards()
+    {
+        _scene.SpawnBatch(10);
+        await WaitForEffects("Batch");
+        await WaitForEffects("Cards");
+
+        _scene.SetEffectsEnabled(false);
+        _scene.ClearBatch();
+        await CardEffectBakeWait.Frames(2);
+        _scene.SetEffectsEnabled(true);
+
+        AssertThat(Cards("Batch").Length).IsEqual(0);
+        await AssertEveryCellShowsItsEffects();
+    }
+
     private CardController[] Cards(string parent)
     {
         return _scene.GetNode(parent).GetChildren().OfType<CardController>()
