@@ -59,7 +59,11 @@ public class TestSuiteNamingTest
     {
         const string source = "[TestSuite]\npublic class EleAspectsEnhancedTest\n{\n}\n";
 
-        AssertThat(SkippedSuites("EleAspectsTest.cs", source).ToList()).HasSize(1);
+        var diagnostics = SkippedSuites("EleAspectsTest.cs", source).ToList();
+
+        AssertThat(diagnostics).HasSize(1);
+        AssertThat(diagnostics[0]).IsEqual(
+            "EleAspectsTest.cs declares suite class EleAspectsEnhancedTest; gdUnit only finds EleAspectsTest");
     }
 
     [TestCase("[TestSuite()]")]

@@ -65,6 +65,7 @@ public class PackMaterialCatalogTest
             .ToList();
 
         AssertThat(string.Join(", ", missing)).IsEmpty();
-        AssertThat(PackMaterialCatalog.AtlasPaths.Count()).IsEqual(3);
+        // An empty catalog would pass the manifest check above without checking a single atlas.
+        AssertThat(PackMaterialCatalog.AtlasPaths.ToList()).IsNotEmpty();
     }
 }
