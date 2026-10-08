@@ -32,6 +32,6 @@ public abstract class ExplorationAITestBase
     /// </summary>
     protected static Vector2I GetCurrentGridPosition(ExplorationAI ai, RegularGridMapData gridData)
     {
-        return gridData.GetGridPosition(ai.CurrentCellId);
+        return gridData.CellIdToPosition(ai.CurrentCellId);
     }
 }

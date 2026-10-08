@@ -206,7 +206,7 @@ public class ExplorationAIFrontierTest : ExplorationAITestBase
         AssertBool(ai.HasFoundEnemy).IsTrue();
         // Check visible enemy cell is one of the enemy positions
         var visibleEnemyPos = ai.VisibleEnemyCellId.HasValue
-            ? gridData.GetGridPosition(ai.VisibleEnemyCellId.Value)
+            ? gridData.CellIdToPosition(ai.VisibleEnemyCellId.Value)
             : (Vector2I?)null;
         AssertBool(
             visibleEnemyPos == new Vector2I(2, 2) || visibleEnemyPos == new Vector2I(4, 4)

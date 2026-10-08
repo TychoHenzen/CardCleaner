@@ -83,7 +83,7 @@ public static class TerrainCollisionShapeGenerator
             if (mapData.IsTransparent(cellId))
                 continue;
 
-            var gridPos = mapData.GetGridPosition(cellId);
+            var gridPos = mapData.CellIdToPosition(cellId);
             var worldPos = new Vector2(gridPos.X * tileSize, gridPos.Y * tileSize);
 
             // Create rectangle shape for the cell
@@ -134,7 +134,7 @@ public static class TerrainCollisionShapeGenerator
             if (visited.Contains(cellId) || mapData.IsTransparent(cellId))
                 continue;
 
-            var startPos = mapData.GetGridPosition(cellId);
+            var startPos = mapData.CellIdToPosition(cellId);
             var rect = ExpandRectangle(mapData, startPos, visited);
             rects.Add(rect);
         }

@@ -41,8 +41,8 @@ public class RaycastVisibilityOpaqueTargetTest
     [TestCase]
     public void CanSeeOpaqueDestinationWhenNothingIsInFront()
     {
-        var from = _gridData.GetCellId(new Vector2I(2, 0));
-        var opaqueTarget = _gridData.GetCellId(new Vector2I(3, 0));
+        var from = _gridData.PositionToCellId(new Vector2I(2, 0));
+        var opaqueTarget = _gridData.PositionToCellId(new Vector2I(3, 0));
 
         AssertBool(_checker.CanSee(from, opaqueTarget, _gridData)).IsTrue();
     }
@@ -50,8 +50,8 @@ public class RaycastVisibilityOpaqueTargetTest
     [TestCase]
     public void CannotSeePastAnOpaqueCellInFront()
     {
-        var from = _gridData.GetCellId(new Vector2I(0, 0));
-        var behindOpaque = _gridData.GetCellId(new Vector2I(4, 0));
+        var from = _gridData.PositionToCellId(new Vector2I(0, 0));
+        var behindOpaque = _gridData.PositionToCellId(new Vector2I(4, 0));
 
         AssertBool(_checker.CanSee(from, behindOpaque, _gridData)).IsFalse();
     }
@@ -59,8 +59,8 @@ public class RaycastVisibilityOpaqueTargetTest
     [TestCase]
     public void CanSeeNearestOpaqueCellFromOpenGround()
     {
-        var from = _gridData.GetCellId(new Vector2I(0, 0));
-        var opaqueTarget = _gridData.GetCellId(new Vector2I(1, 0));
+        var from = _gridData.PositionToCellId(new Vector2I(0, 0));
+        var opaqueTarget = _gridData.PositionToCellId(new Vector2I(1, 0));
 
         AssertBool(_checker.CanSee(from, opaqueTarget, _gridData)).IsTrue();
     }

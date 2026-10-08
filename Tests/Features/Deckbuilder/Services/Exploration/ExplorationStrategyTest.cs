@@ -19,7 +19,7 @@ public class ExplorationStrategyTest
         var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
         var visibilityChecker = new SimpleVisibilityChecker();
         var frontierBehavior = new FrontierExplorationBehavior(gridData, visibilityChecker);
-        var startCell = gridData.GetCellId(new Vector2I(0, 0));
+        var startCell = gridData.PositionToCellId(new Vector2I(0, 0));
         frontierBehavior.UpdateVision(startCell);
 
         var strategy = new FrontierExplorationStrategy();
@@ -45,7 +45,7 @@ public class ExplorationStrategyTest
         var frontierBehavior = new FrontierExplorationBehavior(gridData, visibilityChecker, visionRange: 10);
 
         // With large vision range, all tiles should be trivially visible
-        var startCell = gridData.GetCellId(new Vector2I(0, 0));
+        var startCell = gridData.PositionToCellId(new Vector2I(0, 0));
         frontierBehavior.UpdateVision(startCell);
 
         var strategy = new FrontierExplorationStrategy();
@@ -70,9 +70,9 @@ public class ExplorationStrategyTest
         var frontierBehavior = new FrontierExplorationBehavior(gridData, visibilityChecker);
 
         var strategy = new PathToEnemyStrategy();
-        var visibleEnemyCell = gridData.GetCellId(new Vector2I(3, 3));
-        var lastKnownEnemyCell = gridData.GetCellId(new Vector2I(4, 4));
-        var currentCell = gridData.GetCellId(new Vector2I(0, 0));
+        var visibleEnemyCell = gridData.PositionToCellId(new Vector2I(3, 3));
+        var lastKnownEnemyCell = gridData.PositionToCellId(new Vector2I(4, 4));
+        var currentCell = gridData.PositionToCellId(new Vector2I(0, 0));
 
         var context = new ExplorationContext
         {
@@ -97,8 +97,8 @@ public class ExplorationStrategyTest
         var frontierBehavior = new FrontierExplorationBehavior(gridData, visibilityChecker);
 
         var strategy = new PathToEnemyStrategy();
-        var lastKnownEnemyCell = gridData.GetCellId(new Vector2I(4, 4));
-        var currentCell = gridData.GetCellId(new Vector2I(0, 0));
+        var lastKnownEnemyCell = gridData.PositionToCellId(new Vector2I(4, 4));
+        var currentCell = gridData.PositionToCellId(new Vector2I(0, 0));
 
         var context = new ExplorationContext
         {
@@ -123,7 +123,7 @@ public class ExplorationStrategyTest
         var frontierBehavior = new FrontierExplorationBehavior(gridData, visibilityChecker);
 
         var strategy = new PathToEnemyStrategy();
-        var currentCell = gridData.GetCellId(new Vector2I(0, 0));
+        var currentCell = gridData.PositionToCellId(new Vector2I(0, 0));
 
         var context = new ExplorationContext
         {
@@ -146,9 +146,9 @@ public class ExplorationStrategyTest
         var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
         var visibilityChecker = new SimpleVisibilityChecker();
         var frontierBehavior = new FrontierExplorationBehavior(gridData, visibilityChecker);
-        var currentCell = gridData.GetCellId(new Vector2I(2, 2));
-        var visibleEnemyCell = gridData.GetCellId(new Vector2I(3, 3));
-        var lastKnownEnemyCell = gridData.GetCellId(new Vector2I(4, 4));
+        var currentCell = gridData.PositionToCellId(new Vector2I(2, 2));
+        var visibleEnemyCell = gridData.PositionToCellId(new Vector2I(3, 3));
+        var lastKnownEnemyCell = gridData.PositionToCellId(new Vector2I(4, 4));
 
         var context = new ExplorationContext
         {
@@ -173,10 +173,10 @@ public class ExplorationStrategyTest
         mapData.EnemyPositions.Add(new Vector2I(4, 4));
         var visibilityChecker = new SimpleVisibilityChecker();
         var frontierBehavior = new FrontierExplorationBehavior(gridData, visibilityChecker);
-        var currentCell = gridData.GetCellId(new Vector2I(0, 0));
+        var currentCell = gridData.PositionToCellId(new Vector2I(0, 0));
         frontierBehavior.UpdateVision(currentCell);
 
-        var visibleEnemyCell = gridData.GetCellId(new Vector2I(4, 4));
+        var visibleEnemyCell = gridData.PositionToCellId(new Vector2I(4, 4));
         var context = new ExplorationContext
         {
             MapData = gridData,

@@ -41,7 +41,7 @@ public class GridCellEventAdapter
     /// </summary>
     public Vector2I? GetGridPosition(int cellId)
     {
-        return _gridMapData?.GetGridPosition(cellId);
+        return _gridMapData?.CellIdToPosition(cellId);
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ public class GridCellEventAdapter
         if (_gridMapData != null)
         {
             var gridPositions = new HashSet<Vector2I>(
-                cellIds.Select(id => _gridMapData.GetGridPosition(id)));
+                cellIds.Select(id => _gridMapData.CellIdToPosition(id)));
             gridEvent?.Invoke(gridPositions);
         }
     }
@@ -93,9 +93,9 @@ public class GridCellEventAdapter
         if (_gridMapData != null)
         {
             var seenPositions = new HashSet<Vector2I>(
-                seenCells.Select(id => _gridMapData.GetGridPosition(id)));
+                seenCells.Select(id => _gridMapData.CellIdToPosition(id)));
             var visiblePositions = new HashSet<Vector2I>(
-                visibleCells.Select(id => _gridMapData.GetGridPosition(id)));
+                visibleCells.Select(id => _gridMapData.CellIdToPosition(id)));
             gridEvent?.Invoke(seenPositions, visiblePositions);
         }
     }
@@ -114,11 +114,11 @@ public class GridCellEventAdapter
         if (_gridMapData != null)
         {
             var pathPositions = pathCells
-                .Select(id => _gridMapData.GetGridPosition(id))
+                .Select(id => _gridMapData.CellIdToPosition(id))
                 .ToList();
 
             var targetPosition = targetCell.HasValue
-                ? _gridMapData.GetGridPosition(targetCell.Value)
+                ? _gridMapData.CellIdToPosition(targetCell.Value)
                 : (Vector2I?)null;
 
             gridEvent?.Invoke(pathPositions, targetPosition);
@@ -137,7 +137,7 @@ public class GridCellEventAdapter
 
         if (_gridMapData != null)
         {
-            var gridPos = _gridMapData.GetGridPosition(cellId);
+            var gridPos = _gridMapData.CellIdToPosition(cellId);
             gridEvent?.Invoke(gridPos);
         }
     }

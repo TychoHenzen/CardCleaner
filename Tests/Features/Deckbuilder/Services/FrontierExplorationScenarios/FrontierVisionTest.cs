@@ -21,7 +21,7 @@ public class FrontierVisionTest : FrontierExplorationTestBase
         var behavior = new FrontierExplorationBehavior(gridData, new SimpleVisibilityChecker(), visionRange: 10);
 
         // Update vision from center with large vision range
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(2, 2)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(2, 2)));
 
         // With large vision, we can see the entire map and all neighbors
         // So all tiles should be marked as visited (trivially visible)
@@ -38,10 +38,10 @@ public class FrontierVisionTest : FrontierExplorationTestBase
         var behavior = new FrontierExplorationBehavior(gridData, new SimpleVisibilityChecker(), visionRange: 3);
 
         // Update vision from corner
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(0, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(0, 0)));
 
         // The corner itself is visited
-        AssertBool(behavior.VisitedCells.Contains(gridData.GetCellId(new Vector2I(0, 0)))).IsTrue();
+        AssertBool(behavior.VisitedCells.Contains(gridData.PositionToCellId(new Vector2I(0, 0)))).IsTrue();
 
         // Tiles fully within vision (where all neighbors are also seen) should be visited
         // Tiles at the edge of vision should NOT be trivially visited
@@ -56,7 +56,7 @@ public class FrontierVisionTest : FrontierExplorationTestBase
         var behavior = new FrontierExplorationBehavior(gridData, new SimpleVisibilityChecker(), visionRange: 3);
 
         // Visit corner
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(0, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(0, 0)));
 
         var frontierCells = behavior.FindFrontierCells();
 
@@ -105,14 +105,14 @@ public class FrontierVisionTest : FrontierExplorationTestBase
         var behavior = new FrontierExplorationBehavior(gridData, new SimpleVisibilityChecker(), visionRange: 5);
 
         // Start at (0,0)
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(0, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(0, 0)));
 
         // Tiles around the corner should not be seen (blocked by walls)
-        AssertBool(behavior.SeenCells.Contains(gridData.GetCellId(new Vector2I(3, 2)))).IsFalse();
-        AssertBool(behavior.SeenCells.Contains(gridData.GetCellId(new Vector2I(4, 2)))).IsFalse();
+        AssertBool(behavior.SeenCells.Contains(gridData.PositionToCellId(new Vector2I(3, 2)))).IsFalse();
+        AssertBool(behavior.SeenCells.Contains(gridData.PositionToCellId(new Vector2I(4, 2)))).IsFalse();
 
         // Frontier should exist to explore around the corner
-        var frontier = behavior.FindNearestFrontierCell(gridData.GetCellId(new Vector2I(0, 0)));
+        var frontier = behavior.FindNearestFrontierCell(gridData.PositionToCellId(new Vector2I(0, 0)));
         AssertThat(frontier).IsNotNull();
     }
 
@@ -124,14 +124,14 @@ public class FrontierVisionTest : FrontierExplorationTestBase
         var behavior = new FrontierExplorationBehavior(gridData, new SimpleVisibilityChecker(), visionRange: 5);
 
         // Visit center
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(1, 1)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(1, 1)));
 
         // All tiles should be trivially visible and marked as visited
         AssertBool(behavior.IsFullyExplored()).IsTrue();
         AssertThat(behavior.VisitedCells.Count).IsEqual(9);
 
         // No frontier should exist
-        var frontier = behavior.FindNearestFrontierCell(gridData.GetCellId(new Vector2I(1, 1)));
+        var frontier = behavior.FindNearestFrontierCell(gridData.PositionToCellId(new Vector2I(1, 1)));
         AssertThat(frontier).IsNull();
     }
 
@@ -144,7 +144,7 @@ public class FrontierVisionTest : FrontierExplorationTestBase
         // Visit all tiles
         for (var y = 0; y < 3; y++)
         for (var x = 0; x < 3; x++)
-            behavior.UpdateVision(gridData.GetCellId(new Vector2I(x, y)));
+            behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(x, y)));
 
         AssertBool(behavior.IsFullyExplored()).IsTrue();
     }
@@ -156,7 +156,7 @@ public class FrontierVisionTest : FrontierExplorationTestBase
         var behavior = new FrontierExplorationBehavior(gridData, new SimpleVisibilityChecker(), visionRange: 1);
 
         // Visit only one tile
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(1, 1)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(1, 1)));
 
         AssertBool(behavior.IsFullyExplored()).IsFalse();
     }
@@ -167,7 +167,7 @@ public class FrontierVisionTest : FrontierExplorationTestBase
         var (mapData, gridData) = OpenFloorMap.Create(3, 3);
         var behavior = new FrontierExplorationBehavior(gridData, new SimpleVisibilityChecker(), visionRange: 1);
 
-        var centerCell = gridData.GetCellId(new Vector2I(1, 1));
+        var centerCell = gridData.PositionToCellId(new Vector2I(1, 1));
         behavior.UpdateVision(centerCell);
 
         AssertBool(behavior.VisitedCells.Contains(centerCell)).IsTrue();
@@ -196,9 +196,9 @@ public class FrontierVisionTest : FrontierExplorationTestBase
         var behavior = new FrontierExplorationBehavior(gridData, new SimpleVisibilityChecker(), visionRange: 5);
 
         // Update vision from (0,0) - should not see (2,0) due to wall
-        behavior.UpdateVision(gridData.GetCellId(new Vector2I(0, 0)));
+        behavior.UpdateVision(gridData.PositionToCellId(new Vector2I(0, 0)));
 
-        AssertBool(behavior.SeenCells.Contains(gridData.GetCellId(new Vector2I(0, 0)))).IsTrue();
-        AssertBool(behavior.SeenCells.Contains(gridData.GetCellId(new Vector2I(2, 0)))).IsFalse();
+        AssertBool(behavior.SeenCells.Contains(gridData.PositionToCellId(new Vector2I(0, 0)))).IsTrue();
+        AssertBool(behavior.SeenCells.Contains(gridData.PositionToCellId(new Vector2I(2, 0)))).IsFalse();
     }
 }

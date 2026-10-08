@@ -88,7 +88,7 @@ public class ExplorationAIEnemyPursuitTest : ExplorationAITestBase
 
         // Enemy should be spotted (visible from anywhere with range 10)
         var visibleEnemyPos = ai.VisibleEnemyCellId.HasValue
-            ? gridData.GetGridPosition(ai.VisibleEnemyCellId.Value)
+            ? gridData.CellIdToPosition(ai.VisibleEnemyCellId.Value)
             : (Vector2I?)null;
         AssertThat(visibleEnemyPos).IsEqual(new Vector2I(9, 0));
 

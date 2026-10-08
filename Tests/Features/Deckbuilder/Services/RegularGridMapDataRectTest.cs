@@ -27,7 +27,7 @@ public class RegularGridMapDataRectTest
     {
         var cells = _gridData.GetCellsInRect(new Rect2(0, 0, _tile, _tile)).ToList();
 
-        AssertThat(cells).IsEqual(new System.Collections.Generic.List<int> { _gridData.GetCellId(new Vector2I(0, 0)) });
+        AssertThat(cells).IsEqual(new System.Collections.Generic.List<int> { _gridData.PositionToCellId(new Vector2I(0, 0)) });
     }
 
     [TestCase]
@@ -43,6 +43,6 @@ public class RegularGridMapDataRectTest
     {
         var cells = _gridData.GetCellsInRect(new Rect2(_tile * 1.5f, _tile * 1.5f, 0, 0)).ToList();
 
-        AssertThat(cells).IsEqual(new System.Collections.Generic.List<int> { _gridData.GetCellId(new Vector2I(1, 1)) });
+        AssertThat(cells).IsEqual(new System.Collections.Generic.List<int> { _gridData.PositionToCellId(new Vector2I(1, 1)) });
     }
 }
