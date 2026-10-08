@@ -239,6 +239,107 @@ public class SignatureCardGeneratorTest
         Assertions.AssertThat(_template.GatherAllLayers().Length).IsEqual(27);
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CardCarriesTheEffectIdsMappedFromItsRarityAndIntensity()
+    {
+        // Rare (glow), and a mean element magnitude of 0.15, which is Dormant (worn).
+        var signature = new CardSignature(new[] { 0.7f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
+
+        var material = GenerateAndApply(signature);
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.Glow);
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.Worn);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void IntenseEpicCardGetsGlossyAndShiny()
+    {
+        var signature = CardEffectComparisonGrid.SignatureFor(CardRarity.Epic, IntensityTier.Intense);
+
+        var material = GenerateAndApply(signature);
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.Glossy);
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.Shiny);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CardSeedComesFromTheSignatureAlone()
+    {
+        var signature = new CardSignature(new[] { 0.7f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
+        var other = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
+
+        var first = (float)GenerateAndApply(signature).GetShaderParameter("art_seed");
+        var again = (float)GenerateAndApply(signature).GetShaderParameter("art_seed");
+        var different = (float)GenerateAndApply(other).GetShaderParameter("art_seed");
+
+        AssertThat(first).IsEqual(SignatureCardHelper.EffectSeed(signature));
+        AssertThat(again).IsEqual(first);
+        AssertThat(different).IsNotEqual(first);
+        AssertThat(first).IsLess(10000f);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CardWithRarityEffectCarriesTheBakedNormalMapOfItsArt()
+    {
+        var signature = new CardSignature(new[] { 0.7f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
+        var (renderer, manager) = CreateRealRenderer();
+
+        _generator.GenerateCardRenderer(renderer, signature, _template);
+        var normalMap = ApplyMaterial(manager).GetShaderParameter("art_normal_map").As<Texture2D>();
+
+        AssertThat(_template.Art.Texture).IsNotNull();
+        AssertThat(normalMap).IsNotNull();
+        AssertThat(normalMap).IsSame(CardEffectNormalMapCache.GetOrBake(_template.Art.Texture!));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CommonCardHasNoRarityEffectButStillLooksWorn()
+    {
+        // Intensity is the mean element magnitude, so the all-zero signature of an ordinary pack card is Dormant
+        // and nearly every common card shows the worn scratches. The owner decides later whether that stays.
+        var material = GenerateAndApply(new CardSignature());
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.Worn);
+        AssertThat(material.GetShaderParameter("art_normal_map").Obj).IsNull();
+    }
+
+    private ShaderMaterial GenerateAndApply(CardSignature signature)
+    {
+        var (renderer, manager) = CreateRealRenderer();
+        _generator.GenerateCardRenderer(renderer, signature, new CardTemplate());
+        return ApplyMaterial(manager);
+    }
+
+    private static ShaderMaterial ApplyMaterial(CardMaterialManager manager)
+    {
+        var mesh = Assertions.AddNode(new MeshInstance3D());
+        return manager.ApplyMaterial(mesh) ?? throw new System.InvalidOperationException("No material applied");
+    }
+
+    private static (CardShaderRenderer Renderer, CardMaterialManager Manager) CreateRealRenderer()
+    {
+        var renderer = new CardShaderRenderer();
+        var manager = new CardMaterialManager
+        {
+            Name = "MaterialManager",
+            CardMaterialTemplate = GD.Load<ShaderMaterial>("res://Assets/Materials/CardMaterial.tres")
+        };
+        renderer.AddChild(manager);
+        renderer.NameLabel = new Label3D();
+        renderer.AddChild(renderer.NameLabel);
+        renderer.AttrLabel = new Label3D();
+        renderer.AddChild(renderer.AttrLabel);
+        Assertions.AddNode(renderer);
+        renderer.Setup(renderer);
+        return (renderer, manager);
+    }
+
     private Mocking.MockCardShaderRenderer CreateMockRenderer()
     {
         var renderer = new Mocking.MockCardShaderRenderer();

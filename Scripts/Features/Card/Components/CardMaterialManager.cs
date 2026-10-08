@@ -1,5 +1,7 @@
 ﻿using CardCleaner.Scripts.Core.Data;
+using System;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 using Godot.Collections;
 
@@ -7,6 +9,9 @@ namespace CardCleaner.Scripts.Features.Card.Components;
 
 public partial class CardMaterialManager : Node, ICardMaterialComponent
 {
+    // Stands in for a layer that has no texture, so every other layer keeps its index in the shader's arrays.
+    private static readonly Lazy<ImageTexture> EmptyLayer = new(CreateEmptyLayer);
+
     private readonly Dictionary<string, Variant> _shaderParameters = new();
 
     private ShaderMaterial _activeMaterial = null!;
@@ -21,8 +26,9 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
 
         foreach (var layer in layers)
         {
-            if (layer.Texture != null)
-                texturesArr.Add(layer.Texture);
+            // The shader finds the art layer by its index in GatherAllLayers, so a layer without a texture must
+            // still take its slot.
+            texturesArr.Add(layer.Texture ?? EmptyLayer.Value);
             regionsArr.Add(new Vector4(layer.Region.Position.X, layer.Region.Position.Y, layer.Region.Size.X,
                 layer.Region.Size.Y));
             frontFlagsArr.Add(layer.RenderOnFront);
@@ -68,6 +74,18 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         existingStrengths[index] = strength;
     }
 
+    public void SetArtEffects(RarityEffect rarity, ConditionEffect condition, float seed, Texture2D? normalMap)
+    {
+        _shaderParameters["rarity_effect"] = (int)rarity;
+        _shaderParameters["condition_effect"] = (int)condition;
+        _shaderParameters["art_seed"] = seed;
+
+        if (normalMap != null)
+            _shaderParameters["art_normal_map"] = normalMap;
+        else
+            _shaderParameters.Remove("art_normal_map");
+    }
+
     public ShaderMaterial? ApplyMaterial(MeshInstance3D target)
     {
         if (CardMaterialTemplate == null) return null;
@@ -79,5 +97,12 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         target.MaterialOverride = material;
         _activeMaterial = material;
         return material;
+    }
+
+    private static ImageTexture CreateEmptyLayer()
+    {
+        var image = Image.CreateEmpty(1, 1, false, Image.Format.Rgba8);
+        image.Fill(Colors.Transparent);
+        return ImageTexture.CreateFromImage(image);
     }
 }

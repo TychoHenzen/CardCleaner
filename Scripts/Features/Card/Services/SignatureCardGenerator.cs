@@ -82,8 +82,33 @@ public class SignatureCardGenerator : ICardGenerator
 
         cardTemplate.SetSignatureEdgesVisible(signature.HasMagicalPotential());
 
+        // 5. Art-region effects from the rarity and the signature's intensity.
+        SetArtEffects(renderer, signature, rarity, cardTemplate.Art.Texture);
+
         renderer.NameLabel.Text = rarity.ToString();
         renderer.AttrLabel.Text = signature.ToDebugString();
+    }
+
+    /// <remarks>
+    ///     Intensity is the mean element magnitude (<see cref="CardEffectMapping.IntensityOf" />), so the all-zero
+    ///     signature of an ordinary pack card is Dormant and nearly every common card shows the worn scratches.
+    ///     That is the decided mapping; the owner may revisit it.
+    /// </remarks>
+    private static void SetArtEffects(
+        CardShaderRenderer renderer,
+        CardSignature signature,
+        CardRarity rarity,
+        Texture2D? art)
+    {
+        var rarityEffect = CardEffectMapping.RarityEffectFor(rarity);
+        var conditionEffect = CardEffectMapping.ConditionEffectFor(CardEffectMapping.IntensityOf(signature.Elements));
+
+        // Only the rarity effects read the bevel map, so a card without one skips baking it.
+        var normalMap = rarityEffect != RarityEffect.None && art != null
+            ? CardEffectNormalMapCache.GetOrBake(art)
+            : null;
+
+        renderer.SetArtEffects(rarityEffect, conditionEffect, SignatureCardHelper.EffectSeed(signature), normalMap);
     }
 
     private static void SetGemVisuals(

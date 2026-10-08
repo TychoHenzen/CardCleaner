@@ -1,6 +1,7 @@
 ﻿using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
+using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
@@ -62,5 +63,16 @@ public partial class CardShaderRenderer : Node, ICardComponent
         }
 
         _materialManager.SetGemEmission(index, color, strength);
+    }
+
+    public virtual void SetArtEffects(RarityEffect rarity, ConditionEffect condition, float seed, Texture2D? normalMap)
+    {
+        if (_materialManager == null)
+        {
+            ILog.Error("Card renderer has no material manager; the art effects were not applied.");
+            return;
+        }
+
+        _materialManager.SetArtEffects(rarity, condition, seed, normalMap);
     }
 }
