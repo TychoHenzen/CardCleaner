@@ -24,13 +24,13 @@ public static class SignatureCardTestData
         commonVisual.BaseOptions = new[] { CreateMockTexture() };
         commonVisual.BorderOptions = new[] { CreateMockTexture() };
 
-        //the test base type signature has epic rarity
-        var rareVisual = new RarityVisual();
-        rareVisual.Rarity = CardRarity.Epic;
-        rareVisual.BaseOptions = new[] { CreateMockTexture() };
-        rareVisual.BorderOptions = new[] { CreateMockTexture() };
+        // A card with the test base type's signature scores Epic in SignatureCardHelper.DetermineRarity.
+        var epicVisual = new RarityVisual();
+        epicVisual.Rarity = CardRarity.Epic;
+        epicVisual.BaseOptions = new[] { CreateMockTexture() };
+        epicVisual.BorderOptions = new[] { CreateMockTexture() };
 
-        return new[] { commonVisual, rareVisual };
+        return new[] { commonVisual, epicVisual };
     }
 
     private static BaseCardType[] CreateBaseTypes()
