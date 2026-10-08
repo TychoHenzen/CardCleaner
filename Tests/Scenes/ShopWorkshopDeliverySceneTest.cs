@@ -34,6 +34,7 @@ public class ShopWorkshopDeliverySceneTest
     private OrderTerminalUi _pcUi = null!;
     private OrderTerminalUi _ui = null!;
     private MoneyService _money = null!;
+    private OrderingService _ordering = null!;
     private DeliveryMarker _delivery = null!;
     private Marker3D _shopDelivery = null!;
 
@@ -51,6 +52,7 @@ public class ShopWorkshopDeliverySceneTest
         _delivery = _workshop.GetNode<DeliveryMarker>("DeliveryPoint");
         _shopDelivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
+        _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;
@@ -111,22 +113,12 @@ public class ShopWorkshopDeliverySceneTest
         _money.Add(TopUp);
         _terminal.Interact();
         var cabinet = IndexOf("arcade_cabinet");
-        _ui.PressItem(cabinet);
-        var first = DeliveredByLastOrder(_terminal);
-        for (var order = 1; order < Capacity; order++)
-            _ui.PressItem(cabinet);
+        var first = PressForDelivery(_terminal, cabinet);
+        OrderUntilFull(_terminal, cabinet);
 
         first.QueueFree();
-        _ui.PressItem(cabinet);
+        var replacement = PressForDelivery(_terminal, cabinet);
 
-        var replacement = DeliveredByLastOrder(_terminal);
-        // Reporting the replaced node again would mean the final press never reached the terminal.
-        AssertBool(ReferenceEquals(replacement, first))
-            .OverrideFailureMessage("the final press did not deliver a new item")
-            .IsFalse();
-        AssertBool(GodotObject.IsInstanceValid(replacement) && !replacement.IsQueuedForDeletion())
-            .OverrideFailureMessage("the replacement is not a live node")
-            .IsTrue();
         AssertBool(replacement.GlobalPosition.IsEqualApprox(_delivery.GlobalPosition + OrderingService.SlotOffset(0)))
             .IsTrue();
         AssertThat(_ui.MessageText.Contains("Ordered")).IsTrue();
@@ -139,12 +131,11 @@ public class ShopWorkshopDeliverySceneTest
         _money.Add(TopUp);
         _terminal.Interact();
         var cabinet = IndexOf("arcade_cabinet");
-        for (var order = 0; order < Capacity; order++)
-            _ui.PressItem(cabinet);
+        OrderUntilFull(_terminal, cabinet);
         var balance = _money.Balance;
         var spawned = _shop.GetNode("World").GetChildCount();
 
-        _ui.PressItem(cabinet);
+        PressForRefusal(_terminal, cabinet, OrderStatus.DeliveryFull);
 
         AssertThat(_money.Balance).IsEqual(balance);
         AssertThat(_shop.GetNode("World").GetChildCount()).IsEqual(spawned);
@@ -162,10 +153,10 @@ public class ShopWorkshopDeliverySceneTest
 
         for (var order = 0; order < 4 * Capacity; order++)
         {
-            _ui.PressItem(wiring);
+            var delivered = PressForDelivery(_terminal, wiring);
 
             AssertBool(_ui.MessageText.Contains("Ordered")).IsTrue();
-            AssertBool(DeliveredByLastOrder(_terminal).GlobalPosition.Y < ceilingClearance).IsTrue();
+            AssertBool(delivered.GlobalPosition.Y < ceilingClearance).IsTrue();
         }
     }
 
@@ -175,14 +166,12 @@ public class ShopWorkshopDeliverySceneTest
     {
         _money.Add(TopUp);
         _terminal.Interact();
-        _ui.PressItem(IndexOf("wiring"));
-        _ui.PressItem(IndexOf("wiring"));
+        PressForDelivery(_terminal, IndexOf("wiring"));
+        PressForDelivery(_terminal, IndexOf("wiring"));
         _terminal.Close();
 
         _pc.Interact();
-        _pcUi.PressItem(0);
-
-        var spawned = DeliveredByLastOrder(_pc);
+        var spawned = PressForDelivery(_pc, 0);
         AssertBool(spawned.GlobalPosition.IsEqualApprox(_shopDelivery.GlobalPosition + OrderingService.SlotOffset(0)))
             .IsTrue();
     }
@@ -201,20 +190,18 @@ public class ShopWorkshopDeliverySceneTest
         for (var round = 0; round < Rounds; round++)
         {
             _terminal.Interact();
-            _ui.PressItem(wiringIndex);
+            var workshopItem = PressForDelivery(_terminal, wiringIndex);
             _terminal.Close();
             expected -= wiringPrice;
             AssertThat(_money.Balance).IsEqual(expected);
-            var workshopItem = DeliveredByLastOrder(_terminal);
             AssertBool(workshopItem.GlobalPosition.IsEqualApprox(
                 _delivery.GlobalPosition + OrderingService.SlotOffset(round))).IsTrue();
 
             _pc.Interact();
-            _pcUi.PressItem(boxIndex);
+            var shopItem = PressForDelivery(_pc, boxIndex);
             _pc.Close();
             expected -= boxPrice;
             AssertThat(_money.Balance).IsEqual(expected);
-            var shopItem = DeliveredByLastOrder(_pc);
             AssertBool(shopItem.GlobalPosition.IsEqualApprox(
                 _shopDelivery.GlobalPosition + OrderingService.SlotOffset(round))).IsTrue();
 
@@ -229,14 +216,15 @@ public class ShopWorkshopDeliverySceneTest
     {
         _money.Add(TopUp);
         _terminal.Interact();
-        _ui.PressItem(IndexOf("arcade_cabinet"));
+        var cabinet = (RigidBody3D)PressForDelivery(_terminal, IndexOf("arcade_cabinet"));
         _terminal.Close();
-        var cabinet = (RigidBody3D)DeliveredByLastOrder(_terminal);
         for (var i = 0; i < SettleFrames; i++)
             await ISceneRunner.SyncPhysicsFrame;
 
         var offset = cabinet.GlobalPosition - _delivery.GlobalPosition;
-        AssertBool(cabinet.GlobalBasis.Y.Dot(Vector3.Up) > UprightDot).OverrideFailureMessage($"cabinet tipped: up {cabinet.GlobalBasis.Y}").IsTrue();
+        AssertBool(cabinet.GlobalBasis.Y.Dot(Vector3.Up) > UprightDot)
+            .OverrideFailureMessage($"cabinet tipped: up {cabinet.GlobalBasis.Y}")
+            .IsTrue();
         AssertBool(new Vector2(offset.X, offset.Z).Length() < PadReach && Mathf.Abs(offset.Y) < RestTolerance)
             .OverrideFailureMessage($"cabinet came to rest at {offset} from the pad")
             .IsTrue();
@@ -246,13 +234,80 @@ public class ShopWorkshopDeliverySceneTest
 
     private int IndexOf(string id) => _terminal.Catalog!.Items.ToList().FindIndex(i => i.Id == id);
 
-    /// <summary>The node the terminal's latest order delivered; fails the test when that order was refused.</summary>
-    private static Node3D DeliveredByLastOrder(OrderTerminal terminal)
+    /// <summary>
+    /// Presses an item and reports what it did. The message is cleared first: LastOrder is reset only inside the
+    /// terminal's order handler, so a press that never arrives would otherwise leave the previous result in place.
+    /// </summary>
+    private PressResult Press(OrderTerminal terminal, int index)
     {
-        var order = terminal.LastOrder;
-        AssertBool(order is { Succeeded: true, Spawned: not null })
-            .OverrideFailureMessage("the latest order was not delivered")
+        var ui = terminal.Ui!;
+        var before = _ordering.DeliveredCount;
+        ui.ShowMessage(string.Empty);
+        ui.PressItem(index);
+
+        AssertBool(!string.IsNullOrEmpty(ui.MessageText))
+            .OverrideFailureMessage($"press of item {index} never reached the terminal")
             .IsTrue();
-        return order!.Value.Spawned!;
+        return new PressResult(terminal.LastOrder, _ordering.DeliveredCount - before);
     }
+
+    /// <summary>Checks that a press delivered exactly one live item, and returns that node.</summary>
+    private static Node3D CheckDelivery(int index, PressResult press)
+    {
+        AssertThat(press.Delivered)
+            .OverrideFailureMessage($"press of item {index} delivered {press.Delivered} items ({press.Order?.Status})")
+            .IsEqual(1);
+        AssertBool(press.Order is { Status: OrderStatus.Success, Spawned: not null })
+            .OverrideFailureMessage($"press of item {index} was not a delivery: {press.Order?.Status}")
+            .IsTrue();
+
+        var node = press.Order!.Value.Spawned!;
+        AssertBool(GodotObject.IsInstanceValid(node) && !node.IsQueuedForDeletion())
+            .OverrideFailureMessage($"press of item {index} delivered a node that is not live")
+            .IsTrue();
+        return node;
+    }
+
+    /// <summary>Presses an item the terminal must deliver, and returns the node that press delivered.</summary>
+    private Node3D PressForDelivery(OrderTerminal terminal, int index) => CheckDelivery(index, Press(terminal, index));
+
+    /// <summary>Presses an item the terminal must refuse with <paramref name="status"/>, and nothing is delivered.</summary>
+    private void PressForRefusal(OrderTerminal terminal, int index, OrderStatus status)
+    {
+        var press = Press(terminal, index);
+
+        AssertThat(press.Delivered)
+            .OverrideFailureMessage($"refused press of item {index} delivered {press.Delivered} items")
+            .IsEqual(0);
+        AssertBool(press.Order?.Status == status)
+            .OverrideFailureMessage($"press of item {index} gave {press.Order?.Status}, expected {status}")
+            .IsTrue();
+    }
+
+    /// <summary>
+    /// Orders an item until the terminal refuses one for lack of room, and every order before that must be a delivery.
+    /// A tall item claims more than one slot, so fewer than <see cref="Capacity" /> of them fit.
+    /// </summary>
+    private void OrderUntilFull(OrderTerminal terminal, int index)
+    {
+        // The bound only stops a grid that never fills from looping forever.
+        for (var order = 0; order < 2 * Capacity; order++)
+        {
+            var press = Press(terminal, index);
+            if (press.Delivered == 0)
+            {
+                AssertBool(press.Order?.Status == OrderStatus.DeliveryFull)
+                    .OverrideFailureMessage($"the first refusal was {press.Order?.Status}, expected DeliveryFull")
+                    .IsTrue();
+                return;
+            }
+
+            CheckDelivery(index, press);
+        }
+
+        AssertBool(false).OverrideFailureMessage("the grid never refused an order").IsTrue();
+    }
+
+    /// <summary>What one press did: the terminal's latest result, and how many items ordering delivered.</summary>
+    private readonly record struct PressResult(OrderResult? Order, int Delivered);
 }
