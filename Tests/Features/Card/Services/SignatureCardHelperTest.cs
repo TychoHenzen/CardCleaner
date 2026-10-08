@@ -12,7 +12,7 @@ namespace CardCleaner.Tests.Features.Card.Services;
 public class SignatureCardHelperTest
 {
     [TestCase]
-    public void TestComputeSeed_AllZeros()
+    public static void TestComputeSeed_AllZeros()
     {
         var signature = new CardSignature();
         var seed = SignatureCardHelper.ComputeSeed(signature);
@@ -27,7 +27,7 @@ public class SignatureCardHelperTest
 
         var seed = SignatureCardHelper.EffectSeed(signature);
 
-        // 1331286749777 is the all-zero ComputeSeed above; sin(seed * 0.0001) is only stable on small seeds.
+        // 1331286749777 is the all-zero ComputeSeed above; the shader needs a seed small enough for sin().
         Assertions.AssertThat(seed).IsEqual(9777f);
     }
 
@@ -37,7 +37,8 @@ public class SignatureCardHelperTest
     {
         var first = SignatureCardHelper.EffectSeed(new CardSignature { Solidum = 0.7f, Febris = -0.5f });
         var again = SignatureCardHelper.EffectSeed(new CardSignature { Solidum = 0.7f, Febris = -0.5f });
-        var other = SignatureCardHelper.EffectSeed(new CardSignature { Solidum = 0.5f, Febris = -0.3f, Ordinem = 0.8f });
+        var otherSignature = new CardSignature { Solidum = 0.5f, Febris = -0.3f, Ordinem = 0.8f };
+        var other = SignatureCardHelper.EffectSeed(otherSignature);
 
         Assertions.AssertThat(again).IsEqual(first);
         Assertions.AssertThat(first).IsEqual(8177f);
@@ -78,7 +79,7 @@ public class SignatureCardHelperTest
     [TestCase(new[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.85f }, CardRarity.Legendary)]
     [TestCase(new[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.75f }, CardRarity.Legendary)]
     [TestCase(new[] { -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -0.75f }, CardRarity.Legendary)]
-    public void TestDetermineRarity_Param(float[] elements, CardRarity expectedRarity)
+    public static void TestDetermineRarity_Param(float[] elements, CardRarity expectedRarity)
     {
         var signature = new CardSignature(elements);
         var rarity = SignatureCardHelper.DetermineRarity(new[] { signature });

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
+using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Models;
 
@@ -12,18 +13,15 @@ public class CardEffectNormalBakerTest
     private const int Mid = Size / 2;
     private const byte Flat = 128;
 
-    private static readonly (byte R, byte G, byte B, byte A) Red = (255, 0, 0, 255);
-    private static readonly (byte R, byte G, byte B, byte A) Blue = (0, 0, 255, 255);
-    private static readonly (byte R, byte G, byte B, byte A) Clear = (0, 0, 0, 0);
-
-    private static byte[] Paint(System.Func<int, int, (byte R, byte G, byte B, byte A)> pixelAt)
+    private static CardEffectNormalMap BakeOneColour()
     {
-        return CardEffectArtPainter.Paint(Size, Size, pixelAt);
+        return CardEffectNormalBaker.Bake(CardEffectArtPainter.Fill(Size, Size, Colors.Red), Size, Size);
     }
 
     private static CardEffectNormalMap BakeTwoHalves()
     {
-        return CardEffectNormalBaker.Bake(Paint((x, _) => x < Mid ? Red : Blue), Size, Size);
+        var art = CardEffectArtPainter.TwoHalves(Size, Size, Colors.Red, Colors.Blue);
+        return CardEffectNormalBaker.Bake(art, Size, Size);
     }
 
     private static int At(int x, int y)
@@ -35,7 +33,7 @@ public class CardEffectNormalBakerTest
     [TestCategory("Unit")]
     public static void TheNormalMapHasTheSegmentedSizeAndFourBytesPerPixel()
     {
-        var map = CardEffectNormalBaker.Bake(Paint((_, _) => Red), Size, Size);
+        var map = BakeOneColour();
 
         AssertThat(map.Width).IsEqual(Size);
         AssertThat(map.Height).IsEqual(Size);
@@ -46,7 +44,8 @@ public class CardEffectNormalBakerTest
     [TestCategory("Unit")]
     public static void BakingTheSameArtTwiceIsByteForByteIdentical()
     {
-        var art = Paint((x, y) => (x / 16 + y / 24) % 2 == 0 ? Red : Blue);
+        var art = CardEffectArtPainter.Paint(
+            Size, Size, (x, y) => (x / 16 + y / 24) % 2 == 0 ? Colors.Red : Colors.Blue);
 
         var first = CardEffectNormalBaker.Bake(art, Size, Size);
         var second = CardEffectNormalBaker.Bake(art, Size, Size);
@@ -58,7 +57,7 @@ public class CardEffectNormalBakerTest
     [TestCategory("Unit")]
     public static void TheDeepInteriorOfARegionIsFlat()
     {
-        var map = CardEffectNormalBaker.Bake(Paint((_, _) => Red), Size, Size);
+        var map = BakeOneColour();
 
         var centre = At(Mid, Mid);
         AssertThat(map.Rgba[centre]).IsEqual(Flat);
@@ -71,7 +70,7 @@ public class CardEffectNormalBakerTest
     [TestCategory("Unit")]
     public static void TheEdgeOfARegionTiltsOutwardAndCarriesBevelStrength()
     {
-        var map = CardEffectNormalBaker.Bake(Paint((_, _) => Red), Size, Size);
+        var map = BakeOneColour();
 
         var left = At(0, Mid);
         var right = At(Size - 1, Mid);
@@ -105,7 +104,7 @@ public class CardEffectNormalBakerTest
     [TestCategory("Unit")]
     public static void TheSameShapeInOneColourHasNoBevelWhereTheSeamWouldBe()
     {
-        var map = CardEffectNormalBaker.Bake(Paint((_, _) => Red), Size, Size);
+        var map = BakeOneColour();
 
         var seam = At(Mid - 1, Mid);
 
@@ -127,7 +126,7 @@ public class CardEffectNormalBakerTest
     [TestCategory("Unit")]
     public static void BevelStrengthFallsOffWithDistanceFromTheRegionEdge()
     {
-        var map = CardEffectNormalBaker.Bake(Paint((_, _) => Red), Size, Size);
+        var map = BakeOneColour();
 
         var edge = map.Rgba[At(0, Mid) + 2];
         var inside = map.Rgba[At(2, Mid) + 2];
@@ -139,7 +138,9 @@ public class CardEffectNormalBakerTest
     [TestCategory("Unit")]
     public static void TransparentPixelsAreUncoveredAndCoveredPixelsAreMarkedInAlpha()
     {
-        var map = CardEffectNormalBaker.Bake(Paint((x, _) => x < Mid ? Red : Clear), Size, Size);
+        var art = CardEffectArtPainter.TwoHalves(Size, Size, Colors.Red, Colors.Transparent);
+
+        var map = CardEffectNormalBaker.Bake(art, Size, Size);
 
         AssertThat(map.Rgba[At(10, 10) + 3]).IsEqual((byte)255);
         AssertThat(map.Rgba[At(Size - 10, 10) + 3]).IsEqual((byte)0);
@@ -151,9 +152,10 @@ public class CardEffectNormalBakerTest
     public static void StoredTiltStaysWithinTheMaximumBevelSlope()
     {
         var map = BakeTwoHalves();
-        // A normal tilted by MaxTilt has a horizontal part of MaxTilt / sqrt(1 + MaxTilt^2); allow one byte of rounding.
-        var limit = CardEffectNormalBaker.MaxTilt / MathF.Sqrt(1f + CardEffectNormalBaker.MaxTilt * CardEffectNormalBaker.MaxTilt)
-                    + 2f / 255f;
+        // A normal tilted by MaxTilt has a horizontal part of MaxTilt / sqrt(1 + MaxTilt^2); allow two bytes of
+        // rounding.
+        var tilt = CardEffectNormalBaker.MaxTilt;
+        var limit = tilt / MathF.Sqrt(1f + tilt * tilt) + 2f / 255f;
 
         for (var i = 0; i < map.Rgba.Length; i += 4)
         {

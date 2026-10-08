@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Tests.Features.Card.Models;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Services;
@@ -13,12 +14,8 @@ public class CardEffectNormalMapCacheTest
 
     private static ImageTexture TwoColourArt(int width, int height)
     {
-        var image = Image.CreateEmpty(width, height, false, Image.Format.Rgba8);
-        for (var y = 0; y < height; y++)
-        for (var x = 0; x < width; x++)
-            image.SetPixel(x, y, x < width / 2 ? Colors.Red : Colors.Blue);
-
-        return ImageTexture.CreateFromImage(image);
+        var rgba = CardEffectArtPainter.TwoHalves(width, height, Colors.Red, Colors.Blue);
+        return ImageTexture.CreateFromImage(Image.CreateFromData(width, height, false, Image.Format.Rgba8, rgba));
     }
 
     [TestCase]

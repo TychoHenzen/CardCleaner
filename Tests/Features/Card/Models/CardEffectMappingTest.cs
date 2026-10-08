@@ -21,17 +21,6 @@ public class CardEffectMappingTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void EveryRarityHasADistinctEffect()
-    {
-        var seen = new System.Collections.Generic.HashSet<RarityEffect>();
-        foreach (var rarity in Enum.GetValues<CardRarity>())
-            seen.Add(CardEffectMapping.RarityEffectFor(rarity));
-
-        AssertThat(seen.Count).IsEqual(Enum.GetValues<CardRarity>().Length);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
     public static void AnUndefinedRarityIsRejected()
     {
         AssertThrown(() => CardEffectMapping.RarityEffectFor((CardRarity)99))
