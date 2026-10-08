@@ -19,4 +19,10 @@ public interface ICardMaterialComponent
     ///     Delivers the bevel map of request <paramref name="request" />, unless a newer request has started since.
     /// </summary>
     void SetArtNormalMap(int request, RarityEffect rarity, Texture2D normalMap);
+
+    /// <summary>
+    ///     Whether the art effects show. Switching them off keeps the requested effects, which show again when they are
+    ///     switched back on.
+    /// </summary>
+    bool ArtEffectsEnabled { get; set; }
 }

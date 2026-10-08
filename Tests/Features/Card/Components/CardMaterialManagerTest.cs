@@ -287,6 +287,25 @@ public class CardMaterialManagerTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void AMaterialAppliedWhileTheEffectsAreOffShowsNone()
+    {
+        _manager.CardMaterialTemplate = LoadCardMaterial();
+        _manager.SetArtEffects(RarityEffect.Glow, ConditionEffect.Worn, 7f, CreateMockTexture());
+        _manager.ArtEffectsEnabled = false;
+
+        var material = ApplyToNewMesh();
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.None);
+
+        _manager.ArtEffectsEnabled = true;
+
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.Glow);
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.Worn);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void TheArtTextureStaysAtItsLayerIndexWhenEarlierLayersHaveNoTexture()
     {
         var template = new CardTemplate();

@@ -19,8 +19,27 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
 
     private ShaderMaterial? _activeMaterial;
 
+    // The latest art-effect request as its caller gave it. The shader gets the effective values (WriteArtEffects).
+    private bool _hasArtEffects;
+    private RarityEffect _rarity;
+    private ConditionEffect _condition;
+    private float _seed;
+    private Texture2D? _normalMap;
+
     // Numbers the art-effect requests. A bevel map is applied only while its request is the latest one.
     private int _artRequest;
+
+    private bool _artEffectsEnabled = true;
+
+    public bool ArtEffectsEnabled
+    {
+        get => _artEffectsEnabled;
+        set
+        {
+            _artEffectsEnabled = value;
+            WriteArtEffects();
+        }
+    }
 
     [Export] public ShaderMaterial CardMaterialTemplate { get; set; } = null!;
 
@@ -84,19 +103,12 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
     public int SetArtEffects(RarityEffect rarity, ConditionEffect condition, float seed, Texture2D? normalMap)
     {
         _artRequest++;
-        _shaderParameters["rarity_effect"] = (int)rarity;
-        _shaderParameters["condition_effect"] = (int)condition;
-        _shaderParameters["art_seed"] = seed;
-        // Setting a nil map clears it, so the shader keeps its default, which shows no rarity effect.
-        _shaderParameters["art_normal_map"] = normalMap != null ? normalMap : default(Variant);
-
-        // The bevel map is baked off the main thread, so the effects can change after the material is applied.
-        if (_activeMaterial != null)
-        {
-            foreach (var name in ArtEffectParameters)
-                _activeMaterial.SetShaderParameter(name, _shaderParameters[name]);
-        }
-
+        _hasArtEffects = true;
+        _rarity = rarity;
+        _condition = condition;
+        _seed = seed;
+        _normalMap = normalMap;
+        WriteArtEffects();
         return _artRequest;
     }
 
@@ -106,12 +118,28 @@ public partial class CardMaterialManager : Node, ICardMaterialComponent
         // effects of the newer request, so it is dropped.
         if (_artRequest == 0 || request != _artRequest) return;
 
-        _shaderParameters["rarity_effect"] = (int)rarity;
-        _shaderParameters["art_normal_map"] = normalMap;
+        _rarity = rarity;
+        _normalMap = normalMap;
+        WriteArtEffects();
+    }
+
+    // Writes what the shader gets: the requested effects while they are enabled, none while they are switched off.
+    // ApplyMaterial copies _shaderParameters, so these entries must hold the effective values.
+    private void WriteArtEffects()
+    {
+        if (!_hasArtEffects) return;
+
+        _shaderParameters["rarity_effect"] = (int)(ArtEffectsEnabled ? _rarity : RarityEffect.None);
+        _shaderParameters["condition_effect"] = (int)(ArtEffectsEnabled ? _condition : ConditionEffect.None);
+        _shaderParameters["art_seed"] = _seed;
+        // Setting a nil map clears it, so the shader keeps its default, which shows no rarity effect.
+        _shaderParameters["art_normal_map"] = _normalMap != null ? _normalMap : default(Variant);
+
+        // The bevel map is baked off the main thread, so the effects can change after the material is applied.
         if (_activeMaterial == null) return;
 
-        _activeMaterial.SetShaderParameter("rarity_effect", _shaderParameters["rarity_effect"]);
-        _activeMaterial.SetShaderParameter("art_normal_map", _shaderParameters["art_normal_map"]);
+        foreach (var name in ArtEffectParameters)
+            _activeMaterial.SetShaderParameter(name, _shaderParameters[name]);
     }
 
     public ShaderMaterial? ApplyMaterial(MeshInstance3D target)

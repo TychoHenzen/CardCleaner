@@ -81,4 +81,13 @@ public partial class CardShaderRenderer : Node, ICardComponent
     {
         _materialManager?.SetArtNormalMap(request, rarity, normalMap);
     }
+
+    public bool ArtEffectsEnabled
+    {
+        get => _materialManager?.ArtEffectsEnabled ?? true;
+        set
+        {
+            if (_materialManager != null) _materialManager.ArtEffectsEnabled = value;
+        }
+    }
 }
