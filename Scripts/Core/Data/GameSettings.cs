@@ -9,7 +9,7 @@ namespace CardCleaner.Scripts.Core.Data;
 ///     Configurable game settings that can be set in the editor.
 ///     Add this node to a scene and configure values via Export properties.
 /// </summary>
-[Service(ServiceLifetime.Singleton, typeof(IGameSettings))]
+[Service(typeof(IGameSettings))]
 public partial class GameSettings : Node, IGameSettings
 {
     // Default values as constants

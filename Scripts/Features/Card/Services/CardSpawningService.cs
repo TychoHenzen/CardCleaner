@@ -13,7 +13,7 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 /// <summary>
 /// Handles spawning of card instances with proper generation and setup.
 /// </summary>
-[Service(ServiceLifetime.Singleton, typeof(ICardSpawningService))]
+[Service(typeof(ICardSpawningService))]
 public partial class CardSpawningService : Node, ICardSpawningService, IServiceProvider
 {
     /// <summary>

@@ -113,7 +113,7 @@ public partial class MyNode : Node3D
 The project uses a custom service locator pattern integrated with Godot's autoload system:
 
 - **ServiceLocator** (`Scripts/Core/DependencyInjection/ServiceLocator.cs`): Godot autoload node registered as "Services" that manages the DI container
-- **ServiceContainer**: Supports singleton, transient, and factory registrations
+- **ServiceContainer**: Supports singleton registrations
 - **IServiceProvider**: Nodes implementing this interface and added to the `service_providers` group will have their services registered at startup
 - Services can use async resolution via `ServiceLocator.Get<T>(callback)` for services not yet registered
 

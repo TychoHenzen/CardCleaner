@@ -15,7 +15,7 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 ///     Picks base, border, corners, and banner textures based on signature-derived rarity.
 /// </summary>
 /// 
-[Service(ServiceLifetime.Singleton, typeof(ICardGenerator))]
+[Service(typeof(ICardGenerator))]
 public class SignatureCardGenerator : ICardGenerator
 {
     private BaseCardType[]? _baseTypes;

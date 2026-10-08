@@ -12,7 +12,7 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 ///     stacks on the lowest stack while the item fits under its clearance, and refuses only when none does. Each
 ///     marker keeps its own slots, so two terminals with different markers never share a grid.
 /// </summary>
-[Service(ServiceLifetime.Singleton, typeof(IOrderingService))]
+[Service(typeof(IOrderingService))]
 public partial class OrderingService : Node, IOrderingService
 {
     public const int SlotColumns = 3;

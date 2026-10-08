@@ -81,16 +81,16 @@ public partial class AutoServiceProvider : Node, IServiceProvider
 
         foreach (var serviceType in serviceTypes)
         {
-            RegisterServiceWithLifetime(container, serviceType, node, attribute.Lifetime, nodeType);
-            
+            container.RegisterSingleton(serviceType, node);
+
             if (EnableDebugLogging)
-                ILog.Print($"Registered {nodeType.Name} as {serviceType.Name} ({attribute.Lifetime})");
+                ILog.Print($"Registered {nodeType.Name} as {serviceType.Name}");
         }
 
         // Also register as concrete type if not already included
         if (!serviceTypes.Contains(nodeType))
         {
-            RegisterServiceWithLifetime(container, nodeType, node, attribute.Lifetime, nodeType);
+            container.RegisterSingleton(nodeType, node);
         }
     }
 
@@ -99,27 +99,5 @@ public partial class AutoServiceProvider : Node, IServiceProvider
         return nodeType.GetInterfaces()
             .Where(i => i != typeof(IServiceProvider) && !i.Name.StartsWith("Godot"))
             .ToArray();
-    }
-
-    private static void RegisterServiceWithLifetime(IServiceContainer container, Type serviceType, 
-        Node instance, ServiceLifetime lifetime, Type implementationType)
-    {
-        switch (lifetime)
-        {
-            case ServiceLifetime.Singleton:
-                container.RegisterSingleton(serviceType, instance);
-                break;
-                
-            case ServiceLifetime.Transient:
-                container.RegisterTransient(serviceType, implementationType);
-                break;
-                
-            case ServiceLifetime.Scoped:
-                // For future implementation
-                throw new NotImplementedException("Scoped services not yet implemented");
-                
-            default:
-                throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null);
-        }
     }
 }

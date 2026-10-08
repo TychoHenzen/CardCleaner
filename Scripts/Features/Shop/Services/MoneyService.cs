@@ -7,7 +7,7 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 /// <summary>
 ///     Minimal money balance for the shop. Place it in a scene under an AutoServiceProvider.
 /// </summary>
-[Service(ServiceLifetime.Singleton, typeof(IMoneyService))]
+[Service(typeof(IMoneyService))]
 public partial class MoneyService : Node, IMoneyService
 {
     private const int DefaultStartingBalance = 500;
