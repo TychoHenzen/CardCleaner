@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "dod-guard-monorepo": {
+      "source": {
+        "source": "github",
+        "repo": "TychoHenzen/dod-guard"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "dod-guard@dod-guard-monorepo": true
+  }
+}
