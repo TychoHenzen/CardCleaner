@@ -5,8 +5,10 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
 /// ShopArtSlot reports a pack art scene as textured only when a mesh under it received the pack's atlas.
-/// The scenes here are packed in memory and registered under a pack folder path for one test each, so the slot
-/// loads them through its real path. No file under the private Assets submodule is needed for the negative case.
+/// The scenes are packed in memory and registered under a pack folder path for one test each, so the slot
+/// loads them through its real path and no art file is needed. Both tests still need the pack's imported
+/// colour atlas from the Assets submodule. The mesh test is the control that fails when that atlas is missing,
+/// which keeps the mesh-less test from passing vacuously.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -44,8 +46,7 @@ public class ShopArtSlotTest
             var slot = AddNode(new ShopArtSlot { ArtPath = MeshArtPath });
 
             AssertBool(slot.ArtLoaded).IsTrue();
-            // ASSUMPTION: the SimpleShopInterior atlas is present in the Assets submodule. Without it this control
-            // fails, which keeps the mesh-less case above from passing only because no atlas was applied.
+            // ASSUMPTION: the SimpleShopInterior atlas is imported, since this mesh control needs it to pass.
             AssertBool(slot.ArtTextured).IsTrue();
         }
         finally
