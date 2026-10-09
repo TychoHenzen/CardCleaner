@@ -34,6 +34,8 @@ uniform float strength_curve : hint_range(1.0, 4.0) = 1.3;
 // Layout: constants, then one function per effect (<name>_effect), then the
 // frame and dispatch helpers, then make_art_view() and art_with_effects(), the
 // only two functions fragment() calls. The layer loop knows nothing else about them.
+// fragment() reads the screen-space derivatives of the card face at its top, in uniform
+// control flow; the frame and the view are built only for front art-layer fragments.
 //
 // Numbers that tune a look are named constants. The numbers inside the hash and
 // noise functions (primes, xorshift shifts, Dave Hoskins' constants, the
@@ -187,6 +189,15 @@ struct ArtView {
     vec3 light_dir; // tangent space of the card face, unit length
     vec3 view_dir;  // tangent space of the card face, unit length
     vec3 world_pos;
+};
+
+// Screen-space derivatives of the card face, which its frame is built from. fragment() reads them
+// in uniform control flow, because derivatives are undefined in the per-fragment branches.
+struct ArtDerivatives {
+    vec3 dp1;   // dFdx of the view-space position
+    vec3 dp2;   // dFdy of the view-space position
+    vec2 duv1;  // dFdx of the position on the card face
+    vec2 duv2;  // dFdy of the position on the card face
 };
 
 vec3 half_vector(ArtSurface s) {
@@ -400,11 +411,11 @@ vec3 view_to_face(mat3 face_to_view, vec3 v) {
 
 // Tangent frame of the card face from screen-space derivatives, because the baked card mesh
 // carries no tangents (Christian Schueler's cotangent frame).
-mat3 card_face_frame(vec3 n, vec3 view_pos, vec2 face_uv) {
-    vec3 dp1 = dFdx(view_pos);
-    vec3 dp2 = dFdy(view_pos);
-    vec2 duv1 = dFdx(face_uv);
-    vec2 duv2 = dFdy(face_uv);
+mat3 card_face_frame(vec3 n, ArtDerivatives d) {
+    vec3 dp1 = d.dp1;
+    vec3 dp2 = d.dp2;
+    vec2 duv1 = d.duv1;
+    vec2 duv2 = d.duv2;
     vec3 dp2_perp = cross(dp2, n);
     vec3 dp1_perp = cross(n, dp1);
     vec3 t = dp2_perp * duv1.x + dp1_perp * duv2.x;
@@ -414,10 +425,12 @@ mat3 card_face_frame(vec3 n, vec3 view_pos, vec2 face_uv) {
 }
 
 // The light, the viewer and the fragment in the card face's frame. Godot built-ins are not
-// visible inside functions, so fragment() passes them in. The caller only calls this when an
-// effect is on, which is a uniform, so the derivatives behind the frame are safe.
-ArtView make_art_view(vec3 normal, vec3 view_pos, vec3 view_dir, vec2 face_uv, mat4 view_matrix, mat4 inv_view_matrix) {
-    mat3 face_to_view = card_face_frame(normal, view_pos, face_uv);
+// visible inside functions, so fragment() passes them in. The derivatives arrive already read:
+// fragment() reads them under the uniform art_effects_on test, because they are undefined in the
+// per-fragment branches. fragment() calls this only for front art-layer fragments, so the frame
+// and the view are built only where art_with_effects uses them.
+ArtView make_art_view(vec3 normal, vec3 view_pos, vec3 view_dir, ArtDerivatives derivatives, mat4 view_matrix, mat4 inv_view_matrix) {
+    mat3 face_to_view = card_face_frame(normal, derivatives);
     vec3 light_view = (view_matrix * vec4(normalize(art_light_direction), 0.0)).xyz;
     return ArtView(
         normalize(view_to_face(face_to_view, light_view)),
@@ -494,9 +507,13 @@ void fragment() {
     // The art effects need the light, the viewer and the fragment's world position in the card
     // face's frame. They are a uniform choice, so every fragment takes the same branch.
     bool art_effects_on = rarity_effect != RARITY_NONE || condition_effect != CONDITION_NONE;
-    ArtView art_view = ArtView(vec3(0.0, 0.0, 1.0), vec3(0.0, 0.0, 1.0), vec3(0.0));
+    // Screen-space derivatives are undefined outside uniform control flow, and the per-fragment
+    // checks below (front face, layer, art region) are not uniform, so the derivatives are read
+    // here, under the uniform test. The frame and the view are built later, for front art-layer
+    // fragments only.
+    ArtDerivatives art_derivatives = ArtDerivatives(vec3(0.0), vec3(0.0), vec2(0.0), vec2(0.0));
     if (art_effects_on) {
-        art_view = make_art_view(normalize(NORMAL), VERTEX, VIEW, locUV, VIEW_MATRIX, INV_VIEW_MATRIX);
+        art_derivatives = ArtDerivatives(dFdx(VERTEX), dFdy(VERTEX), dFdx(locUV), dFdy(locUV));
     }
 
     // Blend each layer in order
@@ -508,6 +525,7 @@ void fragment() {
                 vec2 sampleUV = (locUV - r.xy) / r.zw;
                 vec4 sample = texture(textures[i], sampleUV);
                 if (i == ART_LAYER_INDEX && isFront && art_effects_on) {
+                    ArtView art_view = make_art_view(normalize(NORMAL), VERTEX, VIEW, art_derivatives, VIEW_MATRIX, INV_VIEW_MATRIX);
                     sample.rgb = art_with_effects(sample.rgb, sampleUV, art_view);
                 }
 
