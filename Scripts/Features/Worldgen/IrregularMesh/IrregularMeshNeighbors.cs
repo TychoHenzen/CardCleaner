@@ -4,7 +4,7 @@ using System.Linq;
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 /// <summary>
-/// Neighbor lists for an irregular mesh, for WfcNeighborListTopology.
+/// Neighbor lists for an irregular mesh, passed to IWfcTerrainSolver.
 /// Cells are mesh vertices. Neighbors are all vertices sharing any quad with a vertex.
 /// </summary>
 internal static class IrregularMeshNeighbors
@@ -35,12 +35,10 @@ internal static class IrregularMeshNeighbors
         var neighbors = new HashSet<int>();
         var vertex = mesh.Vertices[vertexId];
 
-        // For each quad that has this vertex as a corner
         foreach (var quadId in vertex.AdjacentQuadIds)
         {
             var quad = mesh.Quads[quadId];
 
-            // Add all other vertices of this quad as neighbors
             foreach (var otherVertexId in quad.VertexIds)
             {
                 if (otherVertexId != vertexId)

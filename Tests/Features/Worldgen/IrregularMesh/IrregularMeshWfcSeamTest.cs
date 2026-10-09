@@ -35,6 +35,15 @@ public class IrregularMeshWfcSeamTest
         + @"(?:class|struct|interface|enum|record(?:\s+(?:class|struct))?)\s+(?<name>[A-Za-z_]\w*)",
         RegexOptions.Multiline | RegexOptions.Compiled);
 
+    // The name is the identifier before the parameter list. The ordinary return type holds no ( ; = { }, so an
+    // anonymous method at a line start is no declaration. A top-level tuple return type has its own branch, and a
+    // tuple nested in another type is not matched.
+    private static readonly Regex DelegatePattern = new(
+        @"^[ \t]*(?:\[[^\]\r\n]*\][ \t]*)*"
+        + @"(?:(?:public|internal|private|protected|static|sealed|abstract|partial|readonly|file|ref|unsafe|new)\s+)*"
+        + @"delegate\s+(?:\([^()\r\n]*\)\s+|[^(;={}\r\n]*?\b)(?<name>[A-Za-z_]\w*)(?:<[^>()\r\n]*>)?\s*\(",
+        RegexOptions.Multiline | RegexOptions.Compiled);
+
     // A Wfc sub-namespace reached by a using directive, an alias or a qualified name. The root namespace and the
     // allowed names do not match.
     private static readonly Regex SubNamespaceReference = new(
@@ -75,15 +84,41 @@ public class IrregularMeshWfcSeamTest
             .IsTrue();
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void DelegateDeclarationsAreCollectedAndAnonymousMethodsIgnored()
+    {
+        const string source = "namespace Sample;\n"
+            + "public delegate void SolverCallback(int id);\n"
+            + "public delegate Func<int, string> Builder(int count);\n"
+            + "internal delegate T Selector<T>(T value);\n"
+            + "public delegate (int Count, string Label) PairMaker(int id);\n"
+            + "delegate { return Math.Max(1, 2); }\n";
+
+        var names = DeclaredNames(source);
+
+        AssertThat(names.OrderBy(name => name, StringComparer.Ordinal).ToArray())
+            .IsEqual(new[] { "Builder", "PairMaker", "Selector", "SolverCallback" });
+    }
+
     private static HashSet<string> DeclaredWfcNames()
     {
         var names = new HashSet<string>(StringComparer.Ordinal);
         foreach (var file in CsFiles(WfcRoot))
         {
-            foreach (Match declaration in DeclarationPattern.Matches(Blanked(file)))
-            {
-                names.Add(declaration.Groups["name"].Value);
-            }
+            names.UnionWith(DeclaredNames(File.ReadAllText(file)));
+        }
+
+        return names;
+    }
+
+    private static HashSet<string> DeclaredNames(string source)
+    {
+        var blanked = TestSuiteNamingTest.BlankCommentsAndStrings(source);
+        var names = new HashSet<string>(StringComparer.Ordinal);
+        foreach (Match declaration in DeclarationPattern.Matches(blanked).Concat(DelegatePattern.Matches(blanked)))
+        {
+            names.Add(declaration.Groups["name"].Value);
         }
 
         return names;

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
@@ -13,14 +12,11 @@ internal sealed class MeshTerrainWfcRunner
     private readonly MeshTerrainProjection _projection;
     private readonly MeshForegroundWfc _foregroundWfc;
 
-    public MeshTerrainWfcRunner(
-        IWfcTerrainSolver solver,
-        ITileRegistry? tileRegistry,
-        Dictionary<string, int>? tileToTerrainType)
+    public MeshTerrainWfcRunner(IWfcTerrainSolver solver, Dictionary<string, int>? tileToTerrainType)
     {
         _solver = solver;
-        _projection = new MeshTerrainProjection(tileRegistry, tileToTerrainType);
-        _foregroundWfc = new MeshForegroundWfc(tileRegistry, solver);
+        _projection = new MeshTerrainProjection(solver.TileRegistry, tileToTerrainType);
+        _foregroundWfc = new MeshForegroundWfc(solver);
     }
 
     public IrregularMesh Generate(

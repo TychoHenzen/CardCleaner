@@ -7,24 +7,23 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 
 internal sealed class MeshForegroundWfc
 {
-    private readonly ITileRegistry? _tileRegistry;
     private readonly IWfcTerrainSolver _solver;
 
-    public MeshForegroundWfc(ITileRegistry? tileRegistry, IWfcTerrainSolver solver)
+    public MeshForegroundWfc(IWfcTerrainSolver solver)
     {
-        _tileRegistry = tileRegistry;
         _solver = solver;
     }
 
     public bool Generate(IrregularMesh mesh, BiomeRegistry biomeRegistry, ulong seed)
     {
-        if (_tileRegistry == null)
+        var tileRegistry = _solver.TileRegistry;
+        if (tileRegistry == null)
         {
             GD.PrintErr("[MeshTerrainGen] Cannot run direct mesh WFC without tile registry");
             return false;
         }
 
-        var initialTiles = MeshForegroundTileCandidates.Collect(_tileRegistry, biomeRegistry);
+        var initialTiles = MeshForegroundTileCandidates.Collect(tileRegistry, biomeRegistry);
         if (initialTiles.Count == 0)
         {
             GD.PrintErr("[MeshTerrainGen] No valid tiles for mesh WFC");
@@ -48,11 +47,11 @@ internal sealed class MeshForegroundWfc
         }
 
         GD.Print($"[MeshTerrainGen] Direct mesh WFC succeeded in {solution.Iterations} iterations");
-        AssignTiles(mesh, solution.CollapsedTiles);
+        AssignTiles(mesh, solution.CollapsedTiles, tileRegistry);
         return true;
     }
 
-    private void AssignTiles(IrregularMesh mesh, string?[] collapsedTiles)
+    private static void AssignTiles(IrregularMesh mesh, string?[] collapsedTiles, ITileRegistry tileRegistry)
     {
         var autoTileCount = 0;
 
@@ -67,7 +66,7 @@ internal sealed class MeshForegroundWfc
                 continue;
             }
 
-            var tile = _tileRegistry!.GetTile(tileId);
+            var tile = tileRegistry.GetTile(tileId);
             if (tile?.HasAutoTileVariants == true)
             {
                 vertex.ForegroundTileId = tileId;

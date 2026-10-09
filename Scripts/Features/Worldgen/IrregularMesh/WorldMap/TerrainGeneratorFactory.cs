@@ -13,12 +13,11 @@ internal static class TerrainGeneratorFactory
 {
     internal static MeshTerrainGenerator Create(ITileRegistry? tileRegistry)
     {
-        // The generator's registry drives the background and foreground solves. The caller's registry only
+        // The solver's registry drives the background and foreground solves. The caller's registry only
         // decides passability in the terrain-type map.
-        var generatorRegistry = new TileRegistry();
-        var solver = IWfcTerrainSolver.Create(null, generatorRegistry);
+        var solver = IWfcTerrainSolver.Create(null, new TileRegistry());
         var tileToTerrainType = AssignTerrainTypes(solver.RuleTileIds, tileRegistry);
-        var generator = new MeshTerrainGenerator(solver, tileToTerrainType, generatorRegistry);
+        var generator = new MeshTerrainGenerator(solver, tileToTerrainType);
 
         // Create and register biome registry for card-based generation
         var biomeRegistry = new BiomeRegistry();

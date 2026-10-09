@@ -39,6 +39,8 @@ internal sealed class WfcTerrainSolver : IWfcTerrainSolver
 
     public IReadOnlyList<string> RuleTileIds { get; }
 
+    public ITileRegistry? TileRegistry => _registry;
+
     public WfcGenerationResult GenerateBackground(
         BiomeRegistry biomes,
         Func<Vector2I, BiomeDefinition> getBiomeAt,

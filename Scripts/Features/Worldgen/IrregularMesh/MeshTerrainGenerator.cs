@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -19,14 +18,11 @@ public class MeshTerrainGenerator
     private readonly RuleDrivenMeshTerrain _ruleTerrain;
 
     /// <summary>
-    /// Creates a two-pass terrain generator over a solver, which owns the WFC rules.
+    /// Creates a two-pass terrain generator over a solver, which owns the WFC rules and the tile registry.
     /// </summary>
-    internal MeshTerrainGenerator(
-        IWfcTerrainSolver solver,
-        Dictionary<string, int> tileToTerrainType,
-        ITileRegistry? tileRegistry)
+    internal MeshTerrainGenerator(IWfcTerrainSolver solver, Dictionary<string, int> tileToTerrainType)
     {
-        _terrainWfc = new MeshTerrainWfcRunner(solver, tileRegistry, tileToTerrainType);
+        _terrainWfc = new MeshTerrainWfcRunner(solver, tileToTerrainType);
         _ruleTerrain = new RuleDrivenMeshTerrain(solver, tileToTerrainType);
     }
 
@@ -36,7 +32,7 @@ public class MeshTerrainGenerator
     public MeshTerrainGenerator(
         Dictionary<string, HashSet<string>> adjacencyRules,
         Dictionary<string, int> tileToTerrainType)
-        : this(IWfcTerrainSolver.Create(adjacencyRules, null), tileToTerrainType, null)
+        : this(IWfcTerrainSolver.Create(adjacencyRules, null), tileToTerrainType)
     {
         GD.PrintErr("[MeshTerrainGen] Using legacy constructor without tile registry - two-pass WFC will not work!");
     }

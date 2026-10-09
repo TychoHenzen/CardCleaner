@@ -19,6 +19,12 @@ public interface IWfcTerrainSolver
     IReadOnlyList<string> RuleTileIds { get; }
 
     /// <summary>
+    /// The registry the solver's constraints and gap adjacencies use, or null when it was created without one.
+    /// Callers read it here, so the solver is the single place a registry is chosen.
+    /// </summary>
+    ITileRegistry? TileRegistry { get; }
+
+    /// <summary>
     /// Generates the background grid over the biomes. Only tiles passing the filter take part.
     /// </summary>
     WfcGenerationResult GenerateBackground(
