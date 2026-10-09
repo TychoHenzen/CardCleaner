@@ -26,11 +26,14 @@ powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godo
 
 # Only the [TestCategory("Unit")] suites, as CI runs on pull requests
 powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot exe> -Fast
+
+# Runner fixture: runs Run-GdUnit.ps1 against a fake Godot, so no Godot is needed (CI runs it too)
+powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps1
 ```
 
 Tests use gdUnit4 framework and require the Godot runtime (`[RequireGodotRuntime]` attribute). Test files are in `Tests/` mirroring the `Scripts/` structure.
 
-gdUnit finds a C# suite by its file name, so a `[TestSuite]` class must be named after its file (`TestSuiteNamingTest` enforces this). `Run-GdUnit.ps1` fails when a `[TestSuite]` file never runs. When Godot prints nothing for `-StallSeconds` (180 by default) it kills Godot, names the suite it stalled in, and reruns only the unfinished suites (at most `-MaxResumes` times); a second stall in the same place fails the run. Reports and logs go to `reports/ci`.
+gdUnit finds a C# suite by its file name, so a `[TestSuite]` class must be named after its file (`TestSuiteNamingTest` enforces this). `Run-GdUnit.ps1` fails when a `[TestSuite]` file never runs. When Godot prints nothing for `-StallSeconds` (180 by default) it kills Godot, names the suite it stalled in, and reruns only the unfinished suites (at most `-MaxResumes` times); a second stall in the same place fails the run. Reports and logs go to `reports/ci`. `Test-RunGdUnit.ps1` runs the real runner against a fake Godot and covers its watchdog, resume, repeated-stall, crash and report-aggregation paths. It also checks that the suite-detection patterns in `Run-GdUnit.ps1` match the ones in `TestSuiteNamingTest.cs`.
 
 ## Code Style
 

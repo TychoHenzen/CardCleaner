@@ -102,6 +102,18 @@ jobs:
           path: reports/ci
           if-no-files-found: warn
 
+  runner-fixture:
+    name: GdUnit runner fixture
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Run the runner fixture
+        shell: powershell
+        run: ./Scripts/ci/Test-RunGdUnit.ps1 -RunnerShell pwsh
+
   dependency-audit:
     name: NuGet vulnerability check
     runs-on: windows-latest
