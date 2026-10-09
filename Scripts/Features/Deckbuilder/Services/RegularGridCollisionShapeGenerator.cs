@@ -1,67 +1,15 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
-using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
+using CardCleaner.Scripts.Core.Services;
 using Godot;
 
-namespace CardCleaner.Scripts.Core.Services;
+namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
 /// <summary>
-/// Generates collision shapes for opaque terrain cells.
+/// Generates collision shapes for opaque cells of a regular grid map.
 /// Used with RaycastVisibilityChecker for physics-based line-of-sight.
 /// </summary>
-public static class TerrainCollisionShapeGenerator
+public static class RegularGridCollisionShapeGenerator
 {
-    /// <summary>
-    /// Generate collision shapes for all opaque cells in an irregular mesh.
-    /// </summary>
-    /// <param name="mapData">The map data providing cell transparency info.</param>
-    /// <param name="parent">The collision object to add shapes to.</param>
-    /// <param name="collisionLayer">The collision layer for the shapes.</param>
-    public static void GenerateForIrregularMesh(
-        IrregularMeshMapData mapData,
-        CollisionObject2D parent,
-        uint collisionLayer = RaycastVisibilityChecker.OpaqueTerrainCollisionLayer)
-    {
-        var mesh = mapData.GetMesh();
-        var worldScale = mapData.WorldScale;
-        var worldOffset = mapData.WorldOffset;
-
-        foreach (var quad in mesh.Quads)
-        {
-            // Skip transparent cells
-            if (mapData.IsTransparent(quad.Id))
-                continue;
-
-            // Create convex polygon shape from quad corners
-            var corners = quad.GetCornerPositions();
-            var worldCorners = new Vector2[corners.Length];
-            for (int i = 0; i < corners.Length; i++)
-            {
-                worldCorners[i] = corners[i] * worldScale + worldOffset;
-            }
-
-            var shape = new ConvexPolygonShape2D();
-            shape.Points = worldCorners;
-
-            // Add shape to collision object
-            var ownerId = parent.CreateShapeOwner(parent);
-            parent.ShapeOwnerAddShape(ownerId, shape);
-        }
-
-        // Set collision layer
-        if (parent is Area2D area)
-        {
-            area.CollisionLayer = collisionLayer;
-            area.CollisionMask = 0; // Don't detect anything, just be detected
-        }
-        else if (parent is StaticBody2D staticBody)
-        {
-            staticBody.CollisionLayer = collisionLayer;
-            staticBody.CollisionMask = 0;
-        }
-    }
-
     /// <summary>
     /// Generate collision shapes for opaque cells in a regular grid map.
     /// </summary>
@@ -98,17 +46,7 @@ public static class TerrainCollisionShapeGenerator
             parent.ShapeOwnerSetTransform(ownerId, transform);
         }
 
-        // Set collision layer
-        if (parent is Area2D area)
-        {
-            area.CollisionLayer = collisionLayer;
-            area.CollisionMask = 0;
-        }
-        else if (parent is StaticBody2D staticBody)
-        {
-            staticBody.CollisionLayer = collisionLayer;
-            staticBody.CollisionMask = 0;
-        }
+        CollisionObjectShapes.ApplyTerrainLayer(parent, collisionLayer);
     }
 
     /// <summary>
@@ -155,17 +93,7 @@ public static class TerrainCollisionShapeGenerator
             parent.ShapeOwnerSetTransform(ownerId, transform);
         }
 
-        // Set collision layer
-        if (parent is Area2D area)
-        {
-            area.CollisionLayer = collisionLayer;
-            area.CollisionMask = 0;
-        }
-        else if (parent is StaticBody2D staticBody)
-        {
-            staticBody.CollisionLayer = collisionLayer;
-            staticBody.CollisionMask = 0;
-        }
+        CollisionObjectShapes.ApplyTerrainLayer(parent, collisionLayer);
     }
 
     private static Rect2I ExpandRectangle(RegularGridMapData mapData, Vector2I start, HashSet<int> visited)
@@ -213,19 +141,6 @@ public static class TerrainCollisionShapeGenerator
         for (int x = row.StartX; x < row.StartX + row.Width; x++)
         {
             visited.Add(row.Y * gridWidth + x);
-        }
-    }
-
-    /// <summary>
-    /// Clear all collision shapes from a collision object.
-    /// </summary>
-    public static void ClearShapes(CollisionObject2D parent)
-    {
-        var ownerIds = parent.GetShapeOwners();
-        foreach (var ownerId in ownerIds)
-        {
-            parent.ShapeOwnerClearShapes((uint)ownerId);
-            parent.RemoveShapeOwner((uint)ownerId);
         }
     }
 }

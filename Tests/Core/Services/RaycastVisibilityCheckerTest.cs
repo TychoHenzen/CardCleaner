@@ -141,7 +141,7 @@ public class RaycastVisibilityCheckerTest
 
     private void GenerateCollisionShapes(RegularGridMapData gridData)
     {
-        TerrainCollisionShapeGenerator.ClearShapes(_terrainCollider);
-        TerrainCollisionShapeGenerator.GenerateForRegularGrid(gridData, _terrainCollider, TileSize);
+        CollisionObjectShapes.ClearShapes(_terrainCollider);
+        RegularGridCollisionShapeGenerator.GenerateForRegularGrid(gridData, _terrainCollider, TileSize);
     }
 }

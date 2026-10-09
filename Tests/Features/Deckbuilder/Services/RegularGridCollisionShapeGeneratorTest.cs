@@ -4,15 +4,15 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Tests.TestUtilities.Fixtures;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services;
+namespace CardCleaner.Tests.Features.Deckbuilder.Services;
 
 /// <summary>
-/// Tests for TerrainCollisionShapeGenerator.
+/// Tests for RegularGridCollisionShapeGenerator.
 /// Verifies collision shape generation for opaque terrain cells.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
-public class TerrainCollisionShapeGeneratorTest
+public class RegularGridCollisionShapeGeneratorTest
 {
     private const string Wall = "wall";
 
@@ -26,7 +26,7 @@ public class TerrainCollisionShapeGeneratorTest
         SetWall(mapData, 1, 1);
 
         var staticBody = new StaticBody2D();
-        TerrainCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody);
+        RegularGridCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody);
 
         // Should have exactly one shape owner (for the wall)
         AssertThat(GetShapeOwnerCount(staticBody)).IsEqual(1);
@@ -41,7 +41,7 @@ public class TerrainCollisionShapeGeneratorTest
         // All cells are floors (transparent)
 
         var staticBody = new StaticBody2D();
-        TerrainCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody);
+        RegularGridCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody);
 
         // Should have no shape owners
         AssertThat(GetShapeOwnerCount(staticBody)).IsEqual(0);
@@ -58,7 +58,7 @@ public class TerrainCollisionShapeGeneratorTest
         SetWall(mapData, 4, 4);
 
         var staticBody = new StaticBody2D();
-        TerrainCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody);
+        RegularGridCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody);
 
         // Should have two shape owners
         AssertThat(GetShapeOwnerCount(staticBody)).IsEqual(2);
@@ -73,7 +73,7 @@ public class TerrainCollisionShapeGeneratorTest
         SetWall(mapData, 1, 1);
 
         var staticBody = new StaticBody2D();
-        TerrainCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody);
+        RegularGridCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody);
 
         // Should set the collision layer to OpaqueTerrainCollisionLayer
         AssertThat(staticBody.CollisionLayer).IsEqual(RaycastVisibilityChecker.OpaqueTerrainCollisionLayer);
@@ -89,7 +89,7 @@ public class TerrainCollisionShapeGeneratorTest
         SetWall(mapData, 1, 1);
 
         var area = new Area2D();
-        TerrainCollisionShapeGenerator.GenerateForRegularGrid(gridData, area);
+        RegularGridCollisionShapeGenerator.GenerateForRegularGrid(gridData, area);
 
         // Should set the collision layer to OpaqueTerrainCollisionLayer
         AssertThat(area.CollisionLayer).IsEqual(RaycastVisibilityChecker.OpaqueTerrainCollisionLayer);
@@ -106,7 +106,7 @@ public class TerrainCollisionShapeGeneratorTest
 
         var staticBody = new StaticBody2D();
         const uint customLayer = 1u << 5; // Layer 6
-        TerrainCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody, collisionLayer: customLayer);
+        RegularGridCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody, collisionLayer: customLayer);
 
         AssertThat(staticBody.CollisionLayer).IsEqual(customLayer);
 
@@ -120,13 +120,13 @@ public class TerrainCollisionShapeGeneratorTest
         SetWall(mapData, 1, 1);
 
         var staticBody = new StaticBody2D();
-        TerrainCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody);
+        RegularGridCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody);
 
         // Verify shapes were created
         AssertThat(GetShapeOwnerCount(staticBody)).IsGreater(0);
 
         // Clear shapes
-        TerrainCollisionShapeGenerator.ClearShapes(staticBody);
+        CollisionObjectShapes.ClearShapes(staticBody);
 
         // Verify shapes are gone
         AssertThat(GetShapeOwnerCount(staticBody)).IsEqual(0);
@@ -146,8 +146,8 @@ public class TerrainCollisionShapeGeneratorTest
         var regularBody = new StaticBody2D();
         var optimizedBody = new StaticBody2D();
 
-        TerrainCollisionShapeGenerator.GenerateForRegularGrid(gridData, regularBody);
-        TerrainCollisionShapeGenerator.GenerateOptimizedForRegularGrid(gridData, optimizedBody);
+        RegularGridCollisionShapeGenerator.GenerateForRegularGrid(gridData, regularBody);
+        RegularGridCollisionShapeGenerator.GenerateOptimizedForRegularGrid(gridData, optimizedBody);
 
         // Regular should have 9 shapes (one per cell)
         var regularCount = GetShapeOwnerCount(regularBody);
@@ -170,7 +170,7 @@ public class TerrainCollisionShapeGeneratorTest
             SetWall(mapData, x, 0);
 
         var optimizedBody = new StaticBody2D();
-        TerrainCollisionShapeGenerator.GenerateOptimizedForRegularGrid(gridData, optimizedBody);
+        RegularGridCollisionShapeGenerator.GenerateOptimizedForRegularGrid(gridData, optimizedBody);
 
         // Should merge into a single rectangle
         AssertThat(GetShapeOwnerCount(optimizedBody)).IsEqual(1);
@@ -191,7 +191,7 @@ public class TerrainCollisionShapeGeneratorTest
         SetWall(mapData, 6, 0);
 
         var optimizedBody = new StaticBody2D();
-        TerrainCollisionShapeGenerator.GenerateOptimizedForRegularGrid(gridData, optimizedBody);
+        RegularGridCollisionShapeGenerator.GenerateOptimizedForRegularGrid(gridData, optimizedBody);
 
         // Should have 2 rectangles (one for each contiguous region)
         AssertThat(GetShapeOwnerCount(optimizedBody)).IsEqual(2);
@@ -207,7 +207,7 @@ public class TerrainCollisionShapeGeneratorTest
         const float tileSize = 16f;
 
         var staticBody = new StaticBody2D();
-        TerrainCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody, tileSize);
+        RegularGridCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody, tileSize);
 
         // Get the shape transform
         var ownerIds = staticBody.GetShapeOwners();
@@ -231,7 +231,7 @@ public class TerrainCollisionShapeGeneratorTest
         const float tileSize = 32f;
 
         var staticBody = new StaticBody2D();
-        TerrainCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody, tileSize);
+        RegularGridCollisionShapeGenerator.GenerateForRegularGrid(gridData, staticBody, tileSize);
 
         // Get the shape
         var ownerIds = staticBody.GetShapeOwners();
