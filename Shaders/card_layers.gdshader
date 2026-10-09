@@ -34,8 +34,6 @@ uniform float strength_curve : hint_range(1.0, 4.0) = 1.3;
 // Layout: constants, then one function per effect (<name>_effect), then the
 // frame and dispatch helpers, then make_art_view() and art_with_effects(), the
 // only two functions fragment() calls. The layer loop knows nothing else about them.
-// fragment() reads the screen-space derivatives of the card face at its top, in uniform
-// control flow; the frame and the view are built only for front art-layer fragments.
 //
 // Numbers that tune a look are named constants. The numbers inside the hash and
 // noise functions (primes, xorshift shifts, Dave Hoskins' constants, the
@@ -191,8 +189,7 @@ struct ArtView {
     vec3 world_pos;
 };
 
-// Screen-space derivatives of the card face, which its frame is built from. fragment() reads them
-// in uniform control flow, because derivatives are undefined in the per-fragment branches.
+// Screen-space derivatives of the card face that its frame is built from; read in fragment().
 struct ArtDerivatives {
     vec3 dp1;   // dFdx of the view-space position
     vec3 dp2;   // dFdy of the view-space position
@@ -412,24 +409,18 @@ vec3 view_to_face(mat3 face_to_view, vec3 v) {
 // Tangent frame of the card face from screen-space derivatives, because the baked card mesh
 // carries no tangents (Christian Schueler's cotangent frame).
 mat3 card_face_frame(vec3 n, ArtDerivatives d) {
-    vec3 dp1 = d.dp1;
-    vec3 dp2 = d.dp2;
-    vec2 duv1 = d.duv1;
-    vec2 duv2 = d.duv2;
-    vec3 dp2_perp = cross(dp2, n);
-    vec3 dp1_perp = cross(n, dp1);
-    vec3 t = dp2_perp * duv1.x + dp1_perp * duv2.x;
-    vec3 b = dp2_perp * duv1.y + dp1_perp * duv2.y;
+    vec3 dp2_perp = cross(d.dp2, n);
+    vec3 dp1_perp = cross(n, d.dp1);
+    vec3 t = dp2_perp * d.duv1.x + dp1_perp * d.duv2.x;
+    vec3 b = dp2_perp * d.duv1.y + dp1_perp * d.duv2.y;
     float inv_max = inversesqrt(max(dot(t, t), dot(b, b)));
     return mat3(t * inv_max, b * inv_max, n);
 }
 
 // The light, the viewer and the fragment in the card face's frame. Godot built-ins are not
-// visible inside functions, so fragment() passes them in. The derivatives arrive already read:
-// fragment() reads them under the uniform art_effects_on test, because they are undefined in the
-// per-fragment branches. fragment() calls this only for front art-layer fragments, so the frame
-// and the view are built only where art_with_effects uses them.
-ArtView make_art_view(vec3 normal, vec3 view_pos, vec3 view_dir, ArtDerivatives derivatives, mat4 view_matrix, mat4 inv_view_matrix) {
+// visible inside functions, so fragment() passes them in together with the derivatives.
+ArtView make_art_view(vec3 normal, vec3 view_pos, vec3 view_dir, ArtDerivatives derivatives,
+    mat4 view_matrix, mat4 inv_view_matrix) {
     mat3 face_to_view = card_face_frame(normal, derivatives);
     vec3 light_view = (view_matrix * vec4(normalize(art_light_direction), 0.0)).xyz;
     return ArtView(
@@ -525,7 +516,8 @@ void fragment() {
                 vec2 sampleUV = (locUV - r.xy) / r.zw;
                 vec4 sample = texture(textures[i], sampleUV);
                 if (i == ART_LAYER_INDEX && isFront && art_effects_on) {
-                    ArtView art_view = make_art_view(normalize(NORMAL), VERTEX, VIEW, art_derivatives, VIEW_MATRIX, INV_VIEW_MATRIX);
+                    ArtView art_view = make_art_view(normalize(NORMAL), VERTEX, VIEW, art_derivatives,
+                        VIEW_MATRIX, INV_VIEW_MATRIX);
                     sample.rgb = art_with_effects(sample.rgb, sampleUV, art_view);
                 }
 

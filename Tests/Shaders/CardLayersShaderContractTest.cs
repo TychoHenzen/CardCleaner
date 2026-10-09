@@ -28,6 +28,49 @@ public class CardLayersShaderContractTest
         return int.Parse(match.Groups[1].Value);
     }
 
+    /// <summary>
+    ///     The shader source without comments, so a comment that names a function does not count as a call to it.
+    /// </summary>
+    private static string ShaderCode()
+    {
+        return Regex.Replace(Source(), @"/\*.*?\*/|//[^\n]*", string.Empty, RegexOptions.Singleline);
+    }
+
+    /// <summary>
+    ///     The positions of the braces that open and close a block, as indices into the shader code.
+    /// </summary>
+    private readonly record struct BraceSpan(int Open, int Close)
+    {
+        public bool Contains(int index)
+        {
+            return index > Open && index < Close;
+        }
+    }
+
+    /// <summary>
+    ///     The block whose header is <paramref name="header"/>, a text that ends in '{'.
+    /// </summary>
+    private static BraceSpan BlockSpan(string code, string header)
+    {
+        var start = code.IndexOf(header, StringComparison.Ordinal);
+        AssertThat(start >= 0).OverrideFailureMessage($"{ShaderPath} has no `{header}`").IsTrue();
+        var open = start + header.Length - 1;
+        var depth = 0;
+        for (var i = open; i < code.Length; i++)
+        {
+            if (code[i] == '{')
+                depth++;
+            else if (code[i] == '}' && --depth == 0)
+                return new BraceSpan(open, i);
+        }
+        throw new InvalidOperationException($"{ShaderPath}: `{header}` is never closed");
+    }
+
+    private static int LineOf(string code, int index)
+    {
+        return code.Substring(0, index).Split('\n').Length;
+    }
+
     [TestCase]
     [TestCategory("Unit")]
     public static void EveryRarityEffectHasItsIdInTheShader()
@@ -88,6 +131,48 @@ public class CardLayersShaderContractTest
 
         AssertThat(applications.Count).IsEqual(1);
         AssertThat(guard).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ScreenSpaceDerivativesAreReadOnlyInsideTheUniformArtEffectsBlock()
+    {
+        var code = ShaderCode();
+        var fragment = BlockSpan(code, "void fragment() {");
+        var uniform = BlockSpan(code, "if (art_effects_on) {");
+        var reads = Regex.Matches(code, @"\bdFd[xy]\(");
+
+        AssertThat(fragment.Contains(uniform.Open) && fragment.Contains(uniform.Close))
+            .OverrideFailureMessage($"{ShaderPath}: the art_effects_on block must sit inside fragment()")
+            .IsTrue();
+        AssertThat(reads.Count)
+            .OverrideFailureMessage($"{ShaderPath}: expected the four ArtDerivatives reads")
+            .IsEqual(4);
+        foreach (Match read in reads)
+        {
+            var line = LineOf(code, read.Index);
+            AssertThat(uniform.Contains(read.Index))
+                .OverrideFailureMessage($"{ShaderPath} line {line}: derivative read outside the uniform block")
+                .IsTrue();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void MakeArtViewIsCalledOnceAndOnlyForFrontArtLayerFragments()
+    {
+        var code = ShaderCode();
+        var guard = BlockSpan(code, "if (i == ART_LAYER_INDEX && isFront && art_effects_on) {");
+        // The lookbehind leaves out the definition, "ArtView make_art_view(".
+        var calls = Regex.Matches(code, @"(?<!ArtView )\bmake_art_view\(");
+
+        AssertThat(calls.Count)
+            .OverrideFailureMessage($"{ShaderPath}: expected one make_art_view call")
+            .IsEqual(1);
+        var line = LineOf(code, calls[0].Index);
+        AssertThat(guard.Contains(calls[0].Index))
+            .OverrideFailureMessage($"{ShaderPath} line {line}: make_art_view is outside the front art-layer guard")
+            .IsTrue();
     }
 
     /// <remarks>
