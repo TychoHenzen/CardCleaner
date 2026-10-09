@@ -5,7 +5,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 using Saveable.Extensions;
 
-namespace CardCleaner.Scripts.Core.Services;
+namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 
 /// <summary>
 /// Converts the loosely typed card entries produced by the save system (dictionaries or Newtonsoft

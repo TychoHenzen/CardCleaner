@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Card.Components;
 using Godot;
 
-namespace CardCleaner.Scripts.Core.Utilities;
+namespace CardCleaner.Scripts.Features.Card.Components;
 
 public partial class CsgBaker : CsgBox3D, ICardComponent
 {

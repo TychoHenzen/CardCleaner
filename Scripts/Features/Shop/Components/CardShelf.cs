@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Features.Deckbuilder.Models;
+using CardCleaner.Scripts.Features.Card.Components;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;

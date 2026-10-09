@@ -3,7 +3,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using Godot;
 
-namespace CardCleaner.Scripts.Core.Services;
+namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 
 /// <summary>
 /// Spawns saved cards back into the current scene and hands cards that were held to the player camera.
