@@ -8,7 +8,7 @@ using Saveable;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CardCleaner.Scripts.Core.Services;
+namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 
 [Service]
 public partial class GameSaveService : Node, ISaveable

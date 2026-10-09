@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Card.Services.SaveGame;
 using GdUnit4;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services.SaveGame;
+namespace CardCleaner.Tests.Features.Card.Services.SaveGame;
 
 [TestSuite]
 [RequireGodotRuntime]
