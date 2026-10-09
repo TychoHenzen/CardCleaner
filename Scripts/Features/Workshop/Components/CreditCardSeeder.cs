@@ -1,7 +1,7 @@
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Deckbuilder.Models;
+using CardCleaner.Scripts.Features.Card.Components;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Workshop.Components;

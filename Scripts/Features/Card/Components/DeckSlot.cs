@@ -5,7 +5,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 using CardController = CardCleaner.Scripts.Features.Card.Controllers.CardController;
 
-namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
+namespace CardCleaner.Scripts.Features.Card.Components;
 
 public partial class DeckSlot : Node3D
 {

@@ -3,6 +3,7 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
