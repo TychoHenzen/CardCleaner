@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
@@ -16,53 +14,16 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 /// </summary>
 public class MeshTerrainGenerator
 {
-    private readonly WfcMapGenerator _wfcGenerator;
     private readonly MeshTerrainWfcRunner _terrainWfc;
-    private readonly RuleDrivenMeshTerrain? _ruleTerrain;
+    private readonly RuleDrivenMeshTerrain _ruleTerrain;
 
     /// <summary>
-    /// When true, uses mesh topology for foreground WFC.
-    /// When false, uses legacy grid projection.
+    /// Creates a two-pass terrain generator over a solver, which owns the WFC rules and the tile registry.
     /// </summary>
-    public bool UseDirectMeshWfc { get; set; } = true;
-
-    public int MaxRetries
+    internal MeshTerrainGenerator(IWfcTerrainSolver solver, Dictionary<string, int> tileToTerrainType)
     {
-        get => _wfcGenerator.MaxRetries;
-        set => _wfcGenerator.MaxRetries = value;
-    }
-
-    /// <summary>
-    /// Creates a two-pass terrain generator (preferred constructor).
-    /// </summary>
-    public MeshTerrainGenerator(
-        WfcMapGenerator wfcGenerator,
-        ITileRegistry tileRegistry,
-        CompiledTransitionResolver? transitionResolver = null)
-    {
-        _wfcGenerator = wfcGenerator;
-        _terrainWfc = new MeshTerrainWfcRunner(
-            wfcGenerator,
-            tileRegistry,
-            transitionResolver,
-            null);
-    }
-
-    /// <summary>
-    /// Backward-compatible constructor for old code using adjacency rules directly.
-    /// </summary>
-    public MeshTerrainGenerator(
-        WfcAdjacencyRules adjacencyRules,
-        Dictionary<string, int> tileToTerrainType,
-        ITileRegistry tileRegistry)
-    {
-        _wfcGenerator = new WfcMapGenerator(adjacencyRules, tileRegistry);
-        _terrainWfc = new MeshTerrainWfcRunner(
-            _wfcGenerator,
-            tileRegistry,
-            null,
-            tileToTerrainType);
-        _ruleTerrain = new RuleDrivenMeshTerrain(adjacencyRules, tileToTerrainType);
+        _terrainWfc = new MeshTerrainWfcRunner(solver, tileToTerrainType);
+        _ruleTerrain = new RuleDrivenMeshTerrain(solver, tileToTerrainType);
     }
 
     /// <summary>
@@ -71,22 +32,8 @@ public class MeshTerrainGenerator
     public MeshTerrainGenerator(
         Dictionary<string, HashSet<string>> adjacencyRules,
         Dictionary<string, int> tileToTerrainType)
+        : this(IWfcTerrainSolver.Create(adjacencyRules, null), tileToTerrainType)
     {
-        var wfcRules = new WfcAdjacencyRules(new CompiledTransitionResolver());
-        foreach (var (tile, neighbors) in adjacencyRules)
-        {
-            foreach (var neighbor in neighbors)
-                wfcRules.AddAdjacency(tile, neighbor);
-        }
-
-        _wfcGenerator = new WfcMapGenerator(wfcRules, null);
-        _terrainWfc = new MeshTerrainWfcRunner(
-            _wfcGenerator,
-            null,
-            null,
-            tileToTerrainType);
-        _ruleTerrain = new RuleDrivenMeshTerrain(wfcRules, tileToTerrainType);
-
         GD.PrintErr("[MeshTerrainGen] Using legacy constructor without tile registry - two-pass WFC will not work!");
     }
 
@@ -110,8 +57,7 @@ public class MeshTerrainGenerator
             getBiomeAt,
             effectiveSize,
             bounds,
-            seed,
-            UseDirectMeshWfc);
+            seed);
     }
 
     /// <summary>
@@ -137,7 +83,7 @@ public class MeshTerrainGenerator
     internal IrregularMesh GenerateFromRules(int rings, int seed, int relaxationIterations = 15)
     {
         var mesh = CreateMesh(rings, seed, relaxationIterations);
-        if (_ruleTerrain?.Generate(mesh, (ulong)seed) == true)
+        if (_ruleTerrain.Generate(mesh, (ulong)seed))
             return mesh;
 
         _terrainWfc.ApplyFallbackTerrain(mesh);
@@ -196,8 +142,7 @@ public class MeshTerrainGenerator
             getBiomeAt,
             effectiveSize,
             bounds,
-            (ulong)seed,
-            UseDirectMeshWfc);
+            (ulong)seed);
     }
 
     private IrregularMesh GenerateFallback(int rings, int seed, int relaxationIterations)

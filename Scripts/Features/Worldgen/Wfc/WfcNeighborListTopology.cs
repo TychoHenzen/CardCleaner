@@ -1,85 +1,48 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Features.Worldgen.Wfc;
 
-namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
+namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
-/// WFC topology implementation for irregular mesh.
-/// Cells are mesh vertices. Neighbors are all vertices sharing any quad with a vertex.
+/// WFC topology over any cell graph given as one neighbor array per cell. Adjacency is the neighbor list
+/// alone, so the window-neighbor defaults of <see cref="IWfcTopology"/> apply unchanged.
 /// </summary>
-public class IrregularMeshWfcTopology : IWfcTopology
+public sealed class WfcNeighborListTopology : IWfcTopology
 {
-    private readonly IrregularMesh _mesh;
     private readonly WfcCellState[] _cells;
 
     /// <summary>
-    /// Precomputed neighbor arrays for each vertex (for fast non-alloc access).
-    /// Neighbors = all vertices sharing any quad with this vertex (excluding self).
+    /// Neighbor arrays indexed by cell ID, for non-alloc access.
     /// </summary>
     private readonly int[][] _neighbors;
 
     /// <summary>
-    /// Maximum neighbor count across all vertices.
+    /// Maximum neighbor count across all cells.
     /// </summary>
-    private int _maxNeighborCount;
+    private readonly int _maxNeighborCount;
 
     /// <summary>
-    /// Creates a WFC topology backed by an irregular mesh.
+    /// Creates a topology with one cell per neighbor array, each starting with the same possible tiles.
     /// </summary>
-    /// <param name="mesh">The mesh providing vertex/quad structure.</param>
+    /// <param name="neighbors">Neighbor cell IDs for each cell. The array index is the cell ID.</param>
     /// <param name="initialTiles">Initial possible tiles for all cells.</param>
-    public IrregularMeshWfcTopology(IrregularMesh mesh, IEnumerable<string> initialTiles)
+    public WfcNeighborListTopology(int[][] neighbors, IEnumerable<string> initialTiles)
     {
-        _mesh = mesh;
         var tileList = initialTiles.ToList();
 
-        // Initialize cell states for each vertex
-        _cells = new WfcCellState[mesh.Vertices.Count];
-        for (var i = 0; i < mesh.Vertices.Count; i++)
+        _cells = new WfcCellState[neighbors.Length];
+        for (var i = 0; i < neighbors.Length; i++)
         {
             _cells[i] = new WfcCellState(tileList);
         }
 
-        // Precompute neighbors for each vertex as arrays (for non-alloc access)
-        _neighbors = new int[mesh.Vertices.Count][];
+        _neighbors = neighbors;
         _maxNeighborCount = 0;
-
-        for (var i = 0; i < mesh.Vertices.Count; i++)
+        foreach (var cellNeighbors in neighbors)
         {
-            var neighborSet = ComputeNeighborSet(i);
-            _neighbors[i] = neighborSet.ToArray();
-            _maxNeighborCount = Math.Max(_maxNeighborCount, _neighbors[i].Length);
+            _maxNeighborCount = Math.Max(_maxNeighborCount, cellNeighbors.Length);
         }
-    }
-
-    /// <summary>
-    /// Computes all vertices that share any quad with the given vertex.
-    /// This includes edge-adjacent vertices AND corner-adjacent vertices
-    /// (any vertex in any quad that has this vertex as a corner).
-    /// </summary>
-    private HashSet<int> ComputeNeighborSet(int vertexId)
-    {
-        var neighbors = new HashSet<int>();
-        var vertex = _mesh.Vertices[vertexId];
-
-        // For each quad that has this vertex as a corner
-        foreach (var quadId in vertex.AdjacentQuadIds)
-        {
-            var quad = _mesh.Quads[quadId];
-
-            // Add all other vertices of this quad as neighbors
-            foreach (var otherVertexId in quad.VertexIds)
-            {
-                if (otherVertexId != vertexId)
-                {
-                    neighbors.Add(otherVertexId);
-                }
-            }
-        }
-
-        return neighbors;
     }
 
     /// <inheritdoc />
@@ -174,14 +137,4 @@ public class IrregularMeshWfcTopology : IWfcTopology
         }
         return false;
     }
-
-    /// <summary>
-    /// Gets the mesh this topology is based on.
-    /// </summary>
-    public IrregularMesh Mesh => _mesh;
-
-    /// <summary>
-    /// Gets the vertex corresponding to a cell ID.
-    /// </summary>
-    public MeshVertex GetVertex(int cellId) => _mesh.Vertices[cellId];
 }

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -12,13 +14,23 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 /// </summary>
 internal static class GapTileAdjacencyConfigurator
 {
-    internal static void Configure(WfcAdjacencyRules adjacencyRules, ITileRegistry tileRegistry)
+    /// <summary>
+    /// Adds the gap-tile adjacencies. A tile filter limits which registry tiles take part; by default all do.
+    /// </summary>
+    internal static void Configure(
+        WfcAdjacencyRules adjacencyRules,
+        ITileRegistry tileRegistry,
+        Func<TileDefinition, bool>? tileFilter = null,
+        bool logSummary = true)
     {
         var gapTiles = new List<string>();
         var autoTiles = new List<string>();
 
         foreach (var tile in tileRegistry.GetAllTiles())
         {
+            if (tileFilter != null && !tileFilter(tile))
+                continue;
+
             if (!tile.HasAutoTileVariants)
                 gapTiles.Add(tile.Id);
             else
@@ -26,7 +38,7 @@ internal static class GapTileAdjacencyConfigurator
         }
 
         if (gapTiles.Count > 0)
-            AllowGapTileAdjacencies(adjacencyRules, gapTiles, autoTiles);
+            AllowGapTileAdjacencies(adjacencyRules, gapTiles, autoTiles, logSummary);
 
         // Add auto-tiles with self-adjacency if not already in rules
         foreach (var autoTile in autoTiles)
@@ -38,7 +50,8 @@ internal static class GapTileAdjacencyConfigurator
     private static void AllowGapTileAdjacencies(
         WfcAdjacencyRules adjacencyRules,
         List<string> gapTiles,
-        List<string> autoTiles)
+        List<string> autoTiles,
+        bool logSummary)
     {
         // Gap tiles can all be adjacent to each other and to any auto-tile
         adjacencyRules.AddMutualAdjacencies(gapTiles);
@@ -51,8 +64,11 @@ internal static class GapTileAdjacencyConfigurator
             }
         }
 
-        GD.Print(
-            $"[WFC] Configured {gapTiles.Count} gap tiles for adjacency " +
-            $"(can be next to {autoTiles.Count} auto-tiles)");
+        if (logSummary)
+        {
+            GD.Print(
+                $"[WFC] Configured {gapTiles.Count} gap tiles for adjacency " +
+                $"(can be next to {autoTiles.Count} auto-tiles)");
+        }
     }
 }

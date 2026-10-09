@@ -36,41 +36,6 @@ internal sealed class MeshTerrainProjection
         GD.Print($"[MeshTerrainGen] Mapped {mesh.Quads.Count} quads with backgrounds");
     }
 
-    public void MapForegroundToVertices(
-        IrregularMesh mesh,
-        SimpleMapData foregroundData,
-        (Vector2 Min, Vector2 Max) bounds)
-    {
-        var wfcSize = foregroundData.Size;
-        var meshSize = bounds.Max - bounds.Min;
-        var autoTileCount = 0;
-
-        foreach (var vertex in mesh.Vertices)
-        {
-            var gridPosition = ToGridPosition(vertex.Position, bounds.Min, meshSize, wfcSize);
-            var tileId = foregroundData.TileIds[gridPosition.Y, gridPosition.X];
-            var tile = _tileRegistry?.GetTile(tileId);
-
-            if (tile?.HasAutoTileVariants == true)
-            {
-                vertex.ForegroundTileId = tileId;
-                vertex.TileId = tileId;
-                autoTileCount++;
-            }
-            else
-            {
-                vertex.ForegroundTileId = null;
-                vertex.TileId = null;
-            }
-
-            vertex.TerrainType = tile?.IsPassable == true ? 1 : 0;
-        }
-
-        GD.Print(
-            $"[MeshTerrainGen] Mapped {autoTileCount}/{mesh.Vertices.Count} vertices " +
-            "with auto-tiles (legacy projection)");
-    }
-
     public static void ClearForeground(IrregularMesh mesh)
     {
         foreach (var vertex in mesh.Vertices)

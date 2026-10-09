@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 
@@ -15,12 +13,11 @@ internal static class TerrainGeneratorFactory
 {
     internal static MeshTerrainGenerator Create(ITileRegistry? tileRegistry)
     {
-        var transitionResolver = new CompiledTransitionResolver();
-        var wfcRules = new WfcAdjacencyRules(transitionResolver);
-        var allTerrainIds = wfcRules.AllTileIds.ToList();
-
-        var tileToTerrainType = AssignTerrainTypes(allTerrainIds, tileRegistry);
-        var generator = new MeshTerrainGenerator(wfcRules, tileToTerrainType, new TileRegistry());
+        // The solver's registry drives the background and foreground solves. The caller's registry only
+        // decides passability in the terrain-type map.
+        var solver = IWfcTerrainSolver.Create(null, new TileRegistry());
+        var tileToTerrainType = AssignTerrainTypes(solver.RuleTileIds, tileRegistry);
+        var generator = new MeshTerrainGenerator(solver, tileToTerrainType);
 
         // Create and register biome registry for card-based generation
         var biomeRegistry = new BiomeRegistry();
@@ -33,7 +30,9 @@ internal static class TerrainGeneratorFactory
     /// <summary>
     /// Passable tiles get unique terrain types starting at 1; impassable tiles get 0.
     /// </summary>
-    private static Dictionary<string, int> AssignTerrainTypes(List<string> allTerrainIds, ITileRegistry? tileRegistry)
+    private static Dictionary<string, int> AssignTerrainTypes(
+        IReadOnlyList<string> allTerrainIds,
+        ITileRegistry? tileRegistry)
     {
         var tileToTerrainType = new Dictionary<string, int>();
         var nextTerrainType = 1;
