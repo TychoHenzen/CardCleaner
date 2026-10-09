@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -13,14 +14,12 @@ namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 /// </summary>
 public static class BiomeDataLoader
 {
-    private const string DefaultTilesPath = "res://Data/Tiles/tiles.json";
-
     /// <summary>
     /// Load biome definitions from a tiles JSON file. Returns no biomes when the file is missing or unreadable.
     /// </summary>
     public static Dictionary<string, BiomeData> LoadBiomes(string? path = null)
     {
-        path ??= DefaultTilesPath;
+        path ??= TileDataLoader.DefaultTilesPath;
 
         var absolutePath = ProjectSettings.GlobalizePath(path);
         if (!File.Exists(absolutePath))
@@ -48,7 +47,7 @@ public static class BiomeDataLoader
     {
         try
         {
-            var data = JsonSerializer.Deserialize<BiomesFileData>(json, CreateJsonOptions());
+            var data = JsonSerializer.Deserialize<BiomesFileData>(json, TileDataLoader.CreateJsonOptions());
             if (data?.Biomes == null || data.Biomes.Count == 0)
             {
                 ILog.Print("[BiomeDataLoader] No biomes section found in JSON");
@@ -64,17 +63,6 @@ public static class BiomeDataLoader
             return new Dictionary<string, BiomeData>();
         }
     }
-
-    /// <summary>
-    /// Creates fresh JsonSerializerOptions per call to avoid assembly unload issues.
-    /// See: https://github.com/godotengine/godot/issues/78513
-    /// </summary>
-    private static JsonSerializerOptions CreateJsonOptions() => new()
-    {
-        PropertyNameCaseInsensitive = true,
-        ReadCommentHandling = JsonCommentHandling.Skip,
-        AllowTrailingCommas = true
-    };
 
     private sealed class BiomesFileData
     {

@@ -19,6 +19,7 @@ public class RegularGridCollisionShapeGeneratorTest
     private static int GetShapeOwnerCount(CollisionObject2D body) => body.GetShapeOwners().Length;
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestGeneratesShapesForOpaqueCell()
     {
         var (mapData, gridData) = OpenFloorMap.Create(3, 3);
@@ -35,6 +36,7 @@ public class RegularGridCollisionShapeGeneratorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestNoShapesForTransparentCells()
     {
         var (_, gridData) = OpenFloorMap.Create(3, 3);
@@ -50,6 +52,7 @@ public class RegularGridCollisionShapeGeneratorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestMultipleOpaqueShapes()
     {
         var (mapData, gridData) = OpenFloorMap.Create(5, 5);
@@ -67,6 +70,7 @@ public class RegularGridCollisionShapeGeneratorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestSetsCollisionLayer()
     {
         var (mapData, gridData) = OpenFloorMap.Create(3, 3);
@@ -83,6 +87,7 @@ public class RegularGridCollisionShapeGeneratorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestSetsCollisionLayerForArea2D()
     {
         var (mapData, gridData) = OpenFloorMap.Create(3, 3);
@@ -99,6 +104,7 @@ public class RegularGridCollisionShapeGeneratorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestCustomCollisionLayer()
     {
         var (mapData, gridData) = OpenFloorMap.Create(3, 3);
@@ -114,6 +120,7 @@ public class RegularGridCollisionShapeGeneratorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestClearShapes()
     {
         var (mapData, gridData) = OpenFloorMap.Create(3, 3);
@@ -135,6 +142,7 @@ public class RegularGridCollisionShapeGeneratorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestOptimizedMergingReducesShapeCount()
     {
         var (mapData, gridData) = OpenFloorMap.Create(5, 5);
@@ -162,6 +170,7 @@ public class RegularGridCollisionShapeGeneratorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestOptimizedMergingMergesContiguousRow()
     {
         var (mapData, gridData) = OpenFloorMap.Create(5, 1);
@@ -179,6 +188,7 @@ public class RegularGridCollisionShapeGeneratorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestOptimizedMergingHandlesSeparateRegions()
     {
         var (mapData, gridData) = OpenFloorMap.Create(7, 1);
@@ -200,6 +210,7 @@ public class RegularGridCollisionShapeGeneratorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestShapePositionMatchesTilePosition()
     {
         var (mapData, gridData) = OpenFloorMap.Create(3, 3);
@@ -224,6 +235,7 @@ public class RegularGridCollisionShapeGeneratorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestShapeSizeMatchesTileSize()
     {
         var (mapData, gridData) = OpenFloorMap.Create(3, 3);

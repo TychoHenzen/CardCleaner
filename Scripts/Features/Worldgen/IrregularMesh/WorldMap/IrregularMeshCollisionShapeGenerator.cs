@@ -1,5 +1,4 @@
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;

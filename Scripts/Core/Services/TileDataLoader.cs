@@ -16,7 +16,7 @@ namespace CardCleaner.Scripts.Core.Services;
 /// </summary>
 public static partial class TileDataLoader
 {
-    private const string DefaultTilesPath = "res://Data/Tiles/tiles.json";
+    internal const string DefaultTilesPath = "res://Data/Tiles/tiles.json";
     private const string DefaultTiledPath = "res://Data/Tiled/tileset.tmx";
     private const string DefaultTilesetPath = "res://Assets/Terrain/TileSets/ByPack/FantasyDreamland.tres";
 
@@ -24,7 +24,7 @@ public static partial class TileDataLoader
     /// Creates fresh JsonSerializerOptions per call to avoid assembly unload issues.
     /// See: https://github.com/godotengine/godot/issues/78513
     /// </summary>
-    private static JsonSerializerOptions CreateJsonOptions() => new()
+    internal static JsonSerializerOptions CreateJsonOptions() => new()
     {
         PropertyNameCaseInsensitive = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
