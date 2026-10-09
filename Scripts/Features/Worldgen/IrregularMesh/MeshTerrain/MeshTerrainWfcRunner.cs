@@ -9,17 +9,16 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 
 internal sealed class MeshTerrainWfcRunner
 {
-    private readonly WfcMapGenerator _wfcGenerator;
+    private readonly IWfcTerrainSolver _solver;
     private readonly MeshTerrainProjection _projection;
     private readonly MeshForegroundWfc _foregroundWfc;
 
     public MeshTerrainWfcRunner(
-        WfcMapGenerator wfcGenerator,
         IWfcTerrainSolver solver,
         ITileRegistry? tileRegistry,
         Dictionary<string, int>? tileToTerrainType)
     {
-        _wfcGenerator = wfcGenerator;
+        _solver = solver;
         _projection = new MeshTerrainProjection(tileRegistry, tileToTerrainType);
         _foregroundWfc = new MeshForegroundWfc(tileRegistry, solver);
     }
@@ -30,15 +29,13 @@ internal sealed class MeshTerrainWfcRunner
         Func<Vector2I, BiomeDefinition> getBiomeAt,
         Vector2I effectiveSize,
         (Vector2 Min, Vector2 Max) bounds,
-        ulong seed,
-        bool useDirectMeshWfc)
+        ulong seed)
     {
-        var backgroundResult = _wfcGenerator.GenerateMultiBiome(
+        var backgroundResult = _solver.GenerateBackground(
             biomeRegistry,
             getBiomeAt,
             effectiveSize,
             seed,
-            null,
             tile => !tile.HasAutoTileVariants);
 
         if (!backgroundResult.Success || backgroundResult.MapData == null)
@@ -50,14 +47,13 @@ internal sealed class MeshTerrainWfcRunner
 
         GD.Print($"[MeshTerrainGen] Background WFC succeeded in {backgroundResult.Iterations} iterations");
         MeshTerrainProjection.MapBackgroundToQuads(mesh, backgroundResult.MapData, bounds);
-        GenerateForeground(
-            mesh,
-            biomeRegistry,
-            getBiomeAt,
-            effectiveSize,
-            bounds,
-            seed + 1,
-            useDirectMeshWfc);
+
+        if (!_foregroundWfc.Generate(mesh, biomeRegistry, seed + 1))
+        {
+            GD.PrintErr("[MeshTerrainGen] Direct mesh foreground WFC failed, clearing foreground");
+            MeshTerrainProjection.ClearForeground(mesh);
+        }
+
         mesh.UpdateAllCachedProperties();
         return mesh;
     }
@@ -65,60 +61,5 @@ internal sealed class MeshTerrainWfcRunner
     public void ApplyFallbackTerrain(IrregularMesh mesh)
     {
         _projection.ApplyFallbackTerrain(mesh);
-    }
-
-    private void GenerateForeground(
-        IrregularMesh mesh,
-        BiomeRegistry biomeRegistry,
-        Func<Vector2I, BiomeDefinition> getBiomeAt,
-        Vector2I effectiveSize,
-        (Vector2 Min, Vector2 Max) bounds,
-        ulong seed,
-        bool useDirectMeshWfc)
-    {
-        if (useDirectMeshWfc)
-        {
-            if (!_foregroundWfc.Generate(mesh, biomeRegistry, seed))
-            {
-                GD.PrintErr("[MeshTerrainGen] Direct mesh foreground WFC failed, clearing foreground");
-                MeshTerrainProjection.ClearForeground(mesh);
-            }
-
-            return;
-        }
-
-        GenerateLegacyForeground(
-            mesh,
-            biomeRegistry,
-            getBiomeAt,
-            effectiveSize,
-            bounds,
-            seed);
-    }
-
-    private void GenerateLegacyForeground(
-        IrregularMesh mesh,
-        BiomeRegistry biomeRegistry,
-        Func<Vector2I, BiomeDefinition> getBiomeAt,
-        Vector2I effectiveSize,
-        (Vector2 Min, Vector2 Max) bounds,
-        ulong seed)
-    {
-        var foregroundResult = _wfcGenerator.GenerateMultiBiome(
-            biomeRegistry,
-            getBiomeAt,
-            effectiveSize,
-            seed,
-            null);
-
-        if (!foregroundResult.Success || foregroundResult.MapData == null)
-        {
-            GD.PrintErr($"[MeshTerrainGen] Foreground WFC failed: {foregroundResult.ErrorMessage}");
-            MeshTerrainProjection.ClearForeground(mesh);
-            return;
-        }
-
-        GD.Print($"[MeshTerrainGen] Legacy foreground WFC succeeded in {foregroundResult.Iterations} iterations");
-        _projection.MapForegroundToVertices(mesh, foregroundResult.MapData, bounds);
     }
 }
