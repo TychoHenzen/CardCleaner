@@ -24,12 +24,14 @@ dotnet test --filter "FullyQualifiedName~CardSignatureTest"
 # Run the whole gdUnit suite the way CI does (Windows PowerShell 5.1 or PowerShell 7)
 powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot_v4.7.1-stable_mono_win64.exe>
 
-# Only the [TestCategory("Unit")] suites, as CI runs on pull requests
+# Only the [TestCategory("Unit")] suites, as CI runs on pull requests and pushes to master
 powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot exe> -Fast
 
 # Runner fixture: runs Run-GdUnit.ps1 against a fake Godot, so no Godot is needed (CI runs it too)
 powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps1
 ```
+
+CI scope: pull requests and pushes to `master` run only the Unit suites (`-Fast`). The full suite runs on the weekly schedule (Sunday 03:00 UTC) and on a manual dispatch with `full=true`, for example `gh workflow run ci.yml --ref <branch> -f full=true`. PR CI also fails when the latest scheduled run on `master` is not green. So a green PR or merge run does not prove the full suite; dispatch `full=true` on the commit that needs it.
 
 Tests use gdUnit4 framework and require the Godot runtime (`[RequireGodotRuntime]` attribute). Test files are in `Tests/` mirroring the `Scripts/` structure.
 
@@ -179,7 +181,7 @@ The map generator uses a **two-phase Wave Function Collapse** approach with dual
 
 **Dual-Grid Auto-Tiling**:
 - Visual tiles offset by half a cell from data grid
-- Each visual tile samples 4 data corners → 4-bit bitmask (Corner16 format)
+- Each visual tile samples 4 data corners -> 4-bit bitmask (Corner16 format)
 - The gap constraint ensures each visual tile sees at most ONE auto-tile type
 - `Dominance` property on tiles determines which terrain renders "on top"
 
@@ -191,7 +193,7 @@ The map generator uses a **two-phase Wave Function Collapse** approach with dual
 
 ### Game Session Flow
 
-The `GameSessionService` manages the game loop through states: `WaitingForCards` → `GeneratingMap` → `Exploring` → `InCombat` → `GeneratingLoot` → `SessionComplete`. Key supporting systems:
+The `GameSessionService` manages the game loop through states: `WaitingForCards` -> `GeneratingMap` -> `Exploring` -> `InCombat` -> `GeneratingLoot` -> `SessionComplete`. Key supporting systems:
 
 - **SimpleMapGenerator**: Creates tile-based maps influenced by card signatures
 - **ExplorationAI**: A* pathfinding for autonomous exploration
