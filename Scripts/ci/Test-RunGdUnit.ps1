@@ -676,19 +676,152 @@ function Test-RepeatedStallFails {
 function Test-CrashNoReport {
     param($Context)
 
-    # Deliberately pins today's behaviour: a crash that leaves no report fails the run without a resume. The #193
-    # friction-log proposal would flip this to one resume, which changes the invocation count asserted below.
+    # A crash that leaves no report is an interruption, handled like a stall: the runner names the suite, logs the exit
+    # code in hex and resumes the unfinished suites once. The green resume then passes the run.
     Set-FakePlan -Context $Context -Index 0 -Lines @(
         (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats),
         (Get-SuiteStart $SuiteAlphaTwo),
         'exit -1073741795')
+    Set-FakePlan -Context $Context -Index 1 -Lines @(
+        (Get-SuiteStart $SuiteAlphaTwo), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteBeta), (Get-SuiteStats),
+        'report r1 0 0',
+        'exit 0')
     $result = Invoke-Runner -Context $Context
-    Assert-ExitCode -Result $result -Expected 1 -Message 'a crash without a report fails the run'
-    $missingReport = 'RUNNER-ERROR: GdUnit did not produce a results.xml report under'
-    Assert-Contains $result.Stderr $missingReport 'the runner names the missing report'
-    Assert-Contains $result.Stderr '(exit=-1073741795)' 'the message carries the crash exit code'
+    $output = Get-FlatRunnerOutput $result
+    Assert-ExitCode -Result $result -Expected 0 -Message 'a run that resumes after one crash exits 0'
+    $crashWarning = 'WARNING: GdUnit crashed in ' + $SuiteAlphaTwo + ' (exit 0xC000001D, no results report). ' +
+        'Last result: Statistics: 0 test cases | 0 errors | 0 failures'
+    Assert-Contains $output $crashWarning 'the crash names the unfinished suite and its exit code in hex'
+    $resumeLine = 'Resuming with 2 unfinished suite(s): ' + $SuiteAlphaTwo + ' res://Tests/Beta'
+    Assert-Line $result.Stdout $resumeLine 'the resume names the unfinished suite and the Beta folder'
+    Assert-Line $result.Stdout 'GdUnit passed: 3 of 3 suite files ran.' 'every suite finished across both attempts'
+    $passedWarning = 'WARNING: GdUnit passed after 1 interruption(s): crash 0xC000001D in ' + $SuiteAlphaTwo
+    Assert-Contains $output $passedWarning 'a passing run still reports its crash'
     $tests = @(Get-RunnerTestCalls -Context $Context)
-    Assert-Equal 1 $tests.Count 'a crash is not resumed'
+    Assert-Equal 2 $tests.Count 'one run and one resume'
+    $resumeArguments = '-a ' + $SuiteAlphaTwo + ' -a res://Tests/Beta'
+    Assert-That $tests[1].EndsWith($resumeArguments) 'the resume names only the unfinished suite and the Beta folder'
+}
+
+function Test-RepeatedCrashFails {
+    param($Context)
+
+    Set-FakePlan -Context $Context -Index 0 -Lines @(
+        (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteAlphaTwo),
+        'exit -1073741795')
+    Set-FakePlan -Context $Context -Index 1 -Lines @(
+        (Get-SuiteStart $SuiteAlphaTwo),
+        'exit -1073741795')
+    $result = Invoke-Runner -Context $Context
+    Assert-ExitCode -Result $result -Expected 1 -Message 'a suite that crashes twice fails the run'
+    $twiceError = 'RUNNER-ERROR: GdUnit was interrupted twice in ' + $SuiteAlphaTwo +
+        ' (crash 0xC000001D, then crash 0xC000001D); see '
+    Assert-Contains $result.Stderr $twiceError 'the second crash names the same suite'
+    $tests = @(Get-RunnerTestCalls -Context $Context)
+    Assert-Equal 2 $tests.Count 'no third attempt after the repeated crash'
+}
+
+function Test-StallThenCrashFails {
+    param($Context)
+
+    Set-FakePlan -Context $Context -Index 0 -Lines @(
+        (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteAlphaTwo),
+        'stall')
+    Set-FakePlan -Context $Context -Index 1 -Lines @(
+        (Get-SuiteStart $SuiteAlphaTwo),
+        'exit -1073741795')
+    $result = Invoke-Runner -Context $Context
+    Assert-ExitCode -Result $result -Expected 1 -Message 'a stall and a crash in the same suite fail the run'
+    $repeat = 'RUNNER-ERROR: GdUnit was interrupted twice in ' + $SuiteAlphaTwo +
+        ' (stall, then crash 0xC000001D); see '
+    Assert-Contains $result.Stderr $repeat 'the crash repeats the stall in the same suite'
+    $tests = @(Get-RunnerTestCalls -Context $Context)
+    Assert-Equal 2 $tests.Count 'no third attempt after the repeated interruption'
+    Assert-ProcessesGone -Context $Context
+}
+
+function Test-CrashResumeNoProgressFails {
+    param($Context)
+
+    Set-FakePlan -Context $Context -Index 0 -Lines @(
+        (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteAlphaTwo),
+        'exit -1073741795')
+    Set-FakePlan -Context $Context -Index 1 -Lines @('exit -1073741795')
+    $result = Invoke-Runner -Context $Context
+    Assert-ExitCode -Result $result -Expected 1 -Message 'a resume that crashes without finishing a suite fails the run'
+    $noProgress = 'RUNNER-ERROR: GdUnit crashed (exit 0xC000001D) before the first suite again after resuming, ' +
+        'without finishing any suite (last finished: ' + $SuiteAlpha + ')'
+    Assert-Contains $result.Stderr $noProgress 'the no-progress rule names the crash and the last finished suite'
+    $tests = @(Get-RunnerTestCalls -Context $Context)
+    Assert-Equal 2 $tests.Count 'no third attempt after a resume that finished nothing'
+}
+
+function Test-InterruptionBudget {
+    param($Context)
+
+    Set-FakePlan -Context $Context -Index 0 -Lines @(
+        (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteAlphaTwo),
+        'stall')
+    Set-FakePlan -Context $Context -Index 1 -Lines @(
+        (Get-SuiteStart $SuiteAlphaTwo), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteBeta),
+        'exit -1073741795')
+    $result = Invoke-Runner -Context $Context -MaxResumes 1
+    Assert-ExitCode -Result $result -Expected 1 -Message 'a stall and a crash share the -MaxResumes budget'
+    $budget = 'RUNNER-ERROR: GdUnit was interrupted 2 times (limit 1 resumes); last interruption: ' +
+        'crash 0xC000001D in ' + $SuiteBeta
+    Assert-Contains $result.Stderr $budget 'the second interruption exceeds the shared budget'
+    $tests = @(Get-RunnerTestCalls -Context $Context)
+    Assert-Equal 2 $tests.Count 'no third attempt past the shared budget'
+    Assert-ProcessesGone -Context $Context
+}
+
+# Runs one more scenario in its own fake repository, so its folders also sit under the fixture's temporary root.
+function Invoke-ExitScenario {
+    param($Context, [string]$Name, [string[]]$Lines)
+
+    $scenario = New-ScenarioContext -Name $Name -BuildExe $Context.Fake
+    Set-FakePlan -Context $scenario -Index 0 -Lines $Lines
+    $result = Invoke-Runner -Context $scenario
+    Assert-Equal 1 @(Get-RunnerTestCalls -Context $scenario).Count "$Name runs Godot once"
+    return $result
+}
+
+function Test-GdUnitExitCodes {
+    param($Context)
+
+    # gdUnit's own exit codes keep today's handling, and an abnormal exit after a green report still fails. None of
+    # these scenarios resumes, so each one runs Godot exactly once.
+    $suites = @(
+        (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteAlphaTwo), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteBeta), (Get-SuiteStats))
+    $result = Invoke-ExitScenario -Context $Context -Name 'Exit100' -Lines ($suites + @('report r1 1 0', 'exit 100'))
+    Assert-ExitCode -Result $result -Expected 1 -Message 'exit 100 fails the run'
+    $notGreen = 'RUNNER-ERROR: GdUnit run is not green: failures=1, errors=0'
+    Assert-Contains $result.Stderr $notGreen 'exit 100 fails from its report'
+
+    $result = Invoke-ExitScenario -Context $Context -Name 'Exit101' -Lines ($suites + @('report r1 0 0', 'exit 101'))
+    Assert-ExitCode -Result $result -Expected 0 -Message 'exit 101 with a green report passes'
+    $orphanWarning = 'WARNING: GdUnit reported orphan-node warnings (exit code 101)'
+    Assert-Contains (Get-FlatRunnerOutput $result) $orphanWarning 'exit 101 keeps its orphan-node warning'
+
+    foreach ($code in @(103, 104)) {
+        $result = Invoke-ExitScenario -Context $Context -Name ('Exit' + $code) -Lines @("exit $code")
+        Assert-ExitCode -Result $result -Expected 1 -Message "exit $code fails the run"
+        Assert-Contains $result.Stderr "(exit=$code)" "exit $code fails without a report and is not resumed"
+    }
+
+    $afterGreenLines = $suites + @('report r1 0 0', 'exit -1073741795')
+    $result = Invoke-ExitScenario -Context $Context -Name 'ExitAfterGreen' -Lines $afterGreenLines
+    Assert-ExitCode -Result $result -Expected 1 -Message 'an abnormal exit after a green report fails the run'
+    $afterGreen = 'RUNNER-ERROR: Godot exited with code -1073741795 after a green report'
+    Assert-Contains $result.Stderr $afterGreen 'the abnormal exit after a green report is named'
 }
 
 function Test-ReportAggregation {
@@ -756,7 +889,9 @@ function Test-PatternLockstep {
 
 # Every check in run order. -Only must name one of them (letter case does not matter) and then runs alone.
 $AllChecks = @(
-    'CleanRun', 'Fast', 'StallResumes', 'RepeatedStallFails', 'CrashNoReport', 'ReportAggregation', 'PatternLockstep')
+    'CleanRun', 'Fast', 'StallResumes', 'RepeatedStallFails', 'CrashNoReport', 'RepeatedCrashFails',
+    'StallThenCrashFails', 'CrashResumeNoProgressFails', 'InterruptionBudget', 'GdUnitExitCodes',
+    'ReportAggregation', 'PatternLockstep')
 if ([string]::IsNullOrWhiteSpace($Only)) {
     $checks = $AllChecks
 }
