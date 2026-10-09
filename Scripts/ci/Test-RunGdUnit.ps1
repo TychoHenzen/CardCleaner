@@ -17,7 +17,7 @@ param(
 
     # Runs one check instead of all of them.
     [Parameter()]
-    [ValidateSet('CleanRun', 'Fast', 'StallResumes', 'RepeatedStallFails', 'CrashNoReport', 'ReportAggregation')]
+    [ValidateSet('CleanRun', 'Fast', 'StallResumes', 'RepeatedStallFails', 'CrashNoReport', 'ReportAggregation', 'PatternLockstep')]
     [string]$Only,
 
     # Keeps the temporary fake repositories for inspection.
@@ -221,6 +221,45 @@ public class BetaTest
 }
 '@
 
+# Phantoms: a suite attribute that appears only inside a comment or a string is not a suite, so the runner must not
+# expect these files. The block-comment phantom carries the Unit category too, so -Fast would select it if it counted.
+$PhantomBlockComment = @'
+/*
+[TestSuite]
+[TestCategory("Unit")]
+public class BlockComment
+{
+}
+*/
+'@
+
+$PhantomVerbatim = @'
+var text = @"
+[TestSuite]
+public class Verbatim
+{
+}
+";
+'@
+
+$PhantomRaw = @'
+var text = """
+[TestSuite]
+public class Raw
+{
+}
+""";
+'@
+
+$PhantomNotes = @'
+/* Notes about the Beta suite.
+[TestSuite]
+public class Notes
+{
+}
+*/
+'@
+
 $StaleReportXml = '<?xml version="1.0" encoding="UTF-8"?><testsuites><testsuite><testcase><failure/><failure/><failure/><failure/><failure/></testcase></testsuite></testsuites>'
 
 function Write-FileText {
@@ -310,6 +349,10 @@ function New-ScenarioContext {
     Write-FileText -Path (Join-Path $repo 'Tests\Alpha\AlphaTest.cs') -Text $AlphaSuite
     Write-FileText -Path (Join-Path $repo 'Tests\Alpha\AlphaTwoTest.cs') -Text $AlphaTwoSuite
     Write-FileText -Path (Join-Path $repo 'Tests\Beta\BetaTest.cs') -Text $BetaSuite
+    Write-FileText -Path (Join-Path $repo 'Tests\Beta\Notes.cs') -Text $PhantomNotes
+    Write-FileText -Path (Join-Path $repo 'Tests\Phantom\BlockComment.cs') -Text $PhantomBlockComment
+    Write-FileText -Path (Join-Path $repo 'Tests\Phantom\Verbatim.cs') -Text $PhantomVerbatim
+    Write-FileText -Path (Join-Path $repo 'Tests\Phantom\Raw.cs') -Text $PhantomRaw
     Write-FileText -Path $context.Wrapper -Text $WrapperSource
     return $context
 }
@@ -445,6 +488,15 @@ function Assert-Equal {
     }
 }
 
+function Assert-ExitCode {
+    param($Result, [int]$Expected, [string]$Message)
+
+    if ($Result.ExitCode -ne $Expected) {
+        $errorLine = @($Result.Stderr -split "`r?`n" | Where-Object { $_ -like 'RUNNER-ERROR*' }) | Select-Object -First 1
+        throw "Check failed: $Message (expected exit $Expected, got $($Result.ExitCode)) $errorLine"
+    }
+}
+
 function Assert-Line {
     param([string]$Text, [string]$Expected, [string]$Message)
 
@@ -498,7 +550,7 @@ function Test-CleanRun {
         'report r1 0 0',
         'exit 0')
     $result = Invoke-Runner -Context $Context
-    Assert-Equal 0 $result.ExitCode 'a clean run exits 0'
+    Assert-ExitCode -Result $result -Expected 0 -Message 'a clean run exits 0'
     Assert-Line $result.Stdout ('Using Godot executable: ' + $Context.Console) 'the runner picks the _console variant next to the fake'
     Assert-Line $result.Stdout 'GdUnit passed: 3 of 3 suite files ran.' 'every suite ran once'
     Assert-That (-not (Get-RunnerOutput $result).Contains('WARNING:')) 'a clean run prints no WARNING'
@@ -518,7 +570,7 @@ function Test-Fast {
         'report r1 0 0',
         'exit 0')
     $result = Invoke-Runner -Context $Context -Fast
-    Assert-Equal 0 $result.ExitCode 'a -Fast run exits 0'
+    Assert-ExitCode -Result $result -Expected 0 -Message 'a -Fast run exits 0'
     Assert-Line $result.Stdout 'GdUnit passed: 1 of 1 suite files ran.' 'only the Unit-category suite runs'
     $tests = @(Get-RunnerTestCalls -Context $Context)
     Assert-Equal 1 $tests.Count 'one test invocation'
@@ -540,7 +592,7 @@ function Test-StallResumes {
         'exit 0')
     $result = Invoke-Runner -Context $Context
     $output = Get-FlatRunnerOutput $result
-    Assert-Equal 0 $result.ExitCode 'a run that resumes after one stall exits 0'
+    Assert-ExitCode -Result $result -Expected 0 -Message 'a run that resumes after one stall exits 0'
     Assert-Contains $output ('WARNING: GdUnit stalled in ' + $SuiteAlphaTwo + ' (no output for 10 s). Last result: ' + $SuiteAlphaTwo + ' > First PASSED') 'the stall names the unfinished suite and its last result'
     Assert-Line $result.Stdout ('Resuming with 2 unfinished suite(s): ' + $SuiteAlphaTwo + ' res://Tests/Beta') 'the resume names the unfinished suite and the Beta folder'
     Assert-Line $result.Stdout 'GdUnit passed: 3 of 3 suite files ran.' 'every suite finished across both attempts'
@@ -564,7 +616,7 @@ function Test-RepeatedStallFails {
         (Get-SuiteStart $SuiteAlphaTwo),
         'stall')
     $result = Invoke-Runner -Context $Context
-    Assert-Equal 1 $result.ExitCode 'a suite that stalls twice fails the run'
+    Assert-ExitCode -Result $result -Expected 1 -Message 'a suite that stalls twice fails the run'
     Assert-Contains $result.Stderr ('RUNNER-ERROR: GdUnit stalled twice in ' + $SuiteAlphaTwo + '; see ') 'the second stall names the same suite'
     $tests = @(Get-RunnerTestCalls -Context $Context)
     Assert-Equal 2 $tests.Count 'no third attempt after the repeated stall'
@@ -580,7 +632,7 @@ function Test-CrashNoReport {
         (Get-SuiteStart $SuiteAlphaTwo),
         'exit -1073741795')
     $result = Invoke-Runner -Context $Context
-    Assert-Equal 1 $result.ExitCode 'a crash without a report fails the run'
+    Assert-ExitCode -Result $result -Expected 1 -Message 'a crash without a report fails the run'
     Assert-Contains $result.Stderr 'RUNNER-ERROR: GdUnit did not produce a results.xml report under' 'the runner names the missing report'
     Assert-Contains $result.Stderr '(exit=-1073741795)' 'the message carries the crash exit code'
     $tests = @(Get-RunnerTestCalls -Context $Context)
@@ -605,11 +657,39 @@ function Test-ReportAggregation {
         'report r3 0 1',
         'exit 0')
     $result = Invoke-Runner -Context $Context
-    Assert-Equal 1 $result.ExitCode 'aggregated failures and errors fail the run'
+    Assert-ExitCode -Result $result -Expected 1 -Message 'aggregated failures and errors fail the run'
     Assert-Contains $result.Stderr 'RUNNER-ERROR: GdUnit run is not green: failures=2, errors=2, reports under' 'the stalled attempt errors and both reports are counted, and the stale report is not'
 }
 
-$checks = @('CleanRun', 'Fast', 'StallResumes', 'RepeatedStallFails', 'CrashNoReport', 'ReportAggregation')
+# The runner's suite-detection patterns must match the ones in TestSuiteNamingTest.cs, the C# side that gdUnit's own
+# self-check uses. The runner is parsed, not run, so this compares the shipped text.
+function Test-PatternLockstep {
+    param($Context)
+
+    $tokens = $null
+    $parseErrors = $null
+    $ast = [System.Management.Automation.Language.Parser]::ParseFile($RealRunner, [ref]$tokens, [ref]$parseErrors)
+    Assert-That ($parseErrors.Count -eq 0) 'the runner parses'
+    $runnerValues = @{}
+    $assignments = $ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.AssignmentStatementAst] }, $true)
+    foreach ($assignment in @($assignments)) {
+        $name = $assignment.Left.VariablePath.UserPath
+        if ($name -eq 'SuiteAttributePattern' -or $name -eq 'CodeNoisePattern') {
+            $runnerValues[$name] = Invoke-Expression $assignment.Right.Extent.Text
+        }
+    }
+
+    $source = [IO.File]::ReadAllText((Join-Path $RepositoryRoot 'Tests\TestSuiteNamingTest.cs'))
+    foreach ($name in @('SuiteAttributePattern', 'CodeNoisePattern')) {
+        Assert-That $runnerValues.ContainsKey($name) "the runner declares $name"
+        $match = [regex]::Match($source, 'internal const string ' + $name + ' = @"((?:[^"]|"")*)";')
+        Assert-That $match.Success "TestSuiteNamingTest.cs declares $name as a verbatim const"
+        $csharpValue = $match.Groups[1].Value.Replace('""', '"')
+        Assert-Equal $csharpValue $runnerValues[$name] "$name is identical in the runner and TestSuiteNamingTest.cs"
+    }
+}
+
+$checks = @('CleanRun', 'Fast', 'StallResumes', 'RepeatedStallFails', 'CrashNoReport', 'ReportAggregation', 'PatternLockstep')
 if (-not [string]::IsNullOrWhiteSpace($Only)) {
     $checks = @($Only)
 }

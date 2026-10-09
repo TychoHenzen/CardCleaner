@@ -35,6 +35,11 @@ $StatisticsPattern = [regex]::new('^\s*Statistics: \d+ test cases \| (?<errors>\
 # Only GdUnit's own result shapes: a test's PASSED/FAILED line and a suite's Statistics line. Tests print their
 # own lines too (for example "Atlas Mapping Statistics:"), which must not be reported as results.
 $ResultLinePattern = [regex]::new('^\s*res://\S+ > .+ (PASSED|FAILED)\b|^\s*Statistics: \d+ test cases')
+# Suite detection, shared with Tests/TestSuiteNamingTest.cs. Test-RunGdUnit.ps1 fails when either copy changes alone.
+$SuiteAttributePattern = '^\s*\[(?:GdUnit4\.)?TestSuite(?:Attribute)?(?:\(\s*\))?\]'
+# Comments and literals, in the same alternation order as the C# pattern. Known gaps: strings nested in an interpolation
+# hole, and #if false blocks.
+$CodeNoisePattern = '//[^\n]*|/\*[\s\S]*?\*/|("{3,})[\s\S]*?\1|@"(?:[^"]|"")*"|"(?:[^"\\\n]|\\.)*"|''(?:[^''\\\n]|\\.)+'''
 
 function Resolve-GodotConsole {
     param([string]$Binary)
@@ -54,14 +59,24 @@ function ConvertTo-ResPath {
     return 'res://' + $Path.Substring($RepositoryRoot.Length).TrimStart('\').Replace('\', '/')
 }
 
-# Suite files gdUnit is expected to run: an attribute line for TestSuite in any spelling TestSuiteNamingTest accepts
-# ([TestSuite], [TestSuite()], [TestSuiteAttribute], [GdUnit4.TestSuite]).
+# Blanks every comment and literal to spaces, keeping newlines, so only code can match a suite attribute.
+function Remove-CodeNoise {
+    param([string]$Source)
+
+    $blank = [System.Text.RegularExpressions.MatchEvaluator] { param($match) return ($match.Value -replace '[^\r\n]', ' ') }
+    return [regex]::Replace($Source, $CodeNoisePattern, $blank)
+}
+
+# Suite files gdUnit is expected to run: a suite attribute at the start of a code line, in any spelling that
+# TestSuiteNamingTest accepts. Comments and literals are blanked first, so a suite named only inside them is not expected.
 function Get-ExpectedSuites {
     param([string]$RepositoryRoot, [switch]$UnitOnly)
 
+    $suiteLine = [regex]::new($SuiteAttributePattern, [System.Text.RegularExpressions.RegexOptions]::Multiline)
     $files = Get-ChildItem -LiteralPath (Join-Path $RepositoryRoot 'Tests') -Filter '*.cs' -File -Recurse |
-        Where-Object { Select-String -LiteralPath $_.FullName -Pattern '^\s*\[(?:GdUnit4\.)?TestSuite(?:Attribute)?(?:\(\s*\))?\]' -Quiet }
+        Where-Object { $suiteLine.IsMatch((Remove-CodeNoise -Source ([IO.File]::ReadAllText($_.FullName)))) }
     if ($UnitOnly) {
+        # Read from the raw text: blanking would erase the "Unit" literal this filter names.
         $files = $files | Where-Object { Select-String -LiteralPath $_.FullName -Pattern '\[TestCategory\("Unit"\)\]' -Quiet }
     }
     return @($files | ForEach-Object { ConvertTo-ResPath -RepositoryRoot $RepositoryRoot -Path $_.FullName } | Sort-Object)
