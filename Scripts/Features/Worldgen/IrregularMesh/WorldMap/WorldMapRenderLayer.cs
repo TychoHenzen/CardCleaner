@@ -59,7 +59,7 @@ internal sealed class WorldMapRenderLayer
         foreach (var node in _ownedNodes)
         {
             if (node is StaticBody2D collisionBody)
-                TerrainCollisionShapeGenerator.ClearShapes(collisionBody);
+                CollisionObjectShapes.ClearShapes(collisionBody);
             node.QueueFree();
         }
 
@@ -80,7 +80,7 @@ internal sealed class WorldMapRenderLayer
         var collisionBody = new StaticBody2D { Name = "TerrainCollisionBody" };
         _ownedNodes.Add(collisionBody);
         viewport.AddChild(collisionBody);
-        TerrainCollisionShapeGenerator.GenerateForIrregularMesh(_mapData, collisionBody);
+        IrregularMeshCollisionShapeGenerator.GenerateForIrregularMesh(_mapData, collisionBody);
     }
 
     private void ConfigureViewportAndCamera(SubViewport viewport)

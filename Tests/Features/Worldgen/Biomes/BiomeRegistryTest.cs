@@ -1,3 +1,4 @@
+using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 
@@ -120,6 +121,38 @@ public class BiomeRegistryTest
         AssertThat(_registry.GetBiome("cave")).IsNotNull();
         AssertThat(_registry.GetBiome("volcanic")).IsNotNull();
         AssertThat(_registry.GetBiome("magical")).IsNotNull();
+    }
+
+    [TestCase]
+    public void TestDefaultBiomesKeepTheirTilesJsonContent()
+    {
+        _registry.RegisterDefaultBiomes();
+
+        // Pinned from the biomes section of Data/Tiles/tiles.json on master (#205): affinity signature, blocked
+        // percentage, passable tile count and blocked tile count for each default biome.
+        var expected = new (string Id, float[] Signature, float BlockedPercentage, int Passable, int Blocked)[]
+        {
+            ("plains", [0f, 0f, 0.2f, 0.1f, 0f, 0f, 0.2f, 0f], 0.15f, 5, 3),
+            ("forest", [0f, -0.3f, -0.3f, -0.3f, 0f, 0.2f, 0.3f, 0f], 0.4f, 5, 5),
+            ("desert", [0.3f, 0.7f, 0.3f, 0.4f, 0f, -0.2f, -0.2f, 0.3f], 0.12f, 5, 5),
+            ("tundra", [0.2f, -0.7f, 0.5f, 0.3f, 0f, 0.1f, 0f, -0.1f], 0.22f, 5, 5),
+            ("swamp", [-0.2f, -0.2f, -0.5f, -0.5f, 0f, -0.3f, -0.1f, 0f], 0.35f, 5, 5),
+            ("mountains", [0.7f, -0.2f, 0.4f, 0.2f, 0f, 0.4f, 0f, 0.3f], 0.38f, 5, 5),
+            ("water", [-0.5f, -0.3f, 0.2f, 0.3f, 0.2f, -0.5f, 0.1f, 0f], 0.3f, 4, 3),
+            ("cave", [0.6f, -0.1f, -0.2f, -0.7f, 0f, 0.5f, 0f, -0.3f], 0.35f, 2, 7),
+            ("volcanic", [0.3f, 0.9f, -0.4f, 0.4f, 0f, 0.3f, -0.6f, 0f], 0.3f, 5, 2),
+            ("magical", [-0.2f, 0.1f, -0.6f, 0.5f, 0.5f, -0.3f, 0.3f, 0.4f], 0.25f, 4, 2),
+        };
+
+        foreach (var (id, signature, blockedPercentage, passable, blocked) in expected)
+        {
+            var biome = _registry.GetBiome(id);
+            AssertThat(biome).IsNotNull();
+            AssertBool(biome!.AffinitySignature.Elements.SequenceEqual(signature)).IsTrue();
+            AssertThat(biome.BlockedPercentage).IsEqual(blockedPercentage);
+            AssertThat(biome.PassableTiles.Count).IsEqual(passable);
+            AssertThat(biome.BlockedTiles.Count).IsEqual(blocked);
+        }
     }
 
     [TestCase]
