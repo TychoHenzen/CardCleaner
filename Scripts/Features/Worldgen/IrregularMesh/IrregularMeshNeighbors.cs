@@ -7,7 +7,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 /// Neighbor lists for an irregular mesh, for WfcNeighborListTopology.
 /// Cells are mesh vertices. Neighbors are all vertices sharing any quad with a vertex.
 /// </summary>
-internal static class IrregularMeshWfcTopology
+internal static class IrregularMeshNeighbors
 {
     /// <summary>
     /// Builds the neighbor array of every vertex, indexed by vertex ID.

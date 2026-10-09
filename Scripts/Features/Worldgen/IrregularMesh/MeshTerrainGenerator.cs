@@ -33,18 +33,19 @@ public class MeshTerrainGenerator
     }
 
     /// <summary>
-    /// Creates a two-pass terrain generator (preferred constructor).
+    /// Creates a two-pass terrain generator over an existing map generator.
     /// </summary>
     public MeshTerrainGenerator(
         WfcMapGenerator wfcGenerator,
-        ITileRegistry tileRegistry,
-        CompiledTransitionResolver? transitionResolver = null)
+        ITileRegistry tileRegistry)
     {
         _wfcGenerator = wfcGenerator;
+        // ASSUMPTION: the foreground path reads only the registry and builds its own rules, so a solver with fresh
+        // rules is equivalent here; no caller reaches this constructor.
         _terrainWfc = new MeshTerrainWfcRunner(
             wfcGenerator,
+            IWfcTerrainSolver.Create(null, tileRegistry),
             tileRegistry,
-            transitionResolver,
             null);
     }
 
@@ -57,12 +58,11 @@ public class MeshTerrainGenerator
         ITileRegistry tileRegistry)
     {
         _wfcGenerator = new WfcMapGenerator(adjacencyRules, tileRegistry);
-        _terrainWfc = new MeshTerrainWfcRunner(
-            _wfcGenerator,
-            tileRegistry,
-            null,
-            tileToTerrainType);
-        _ruleTerrain = new RuleDrivenMeshTerrain(adjacencyRules, tileToTerrainType);
+        // ASSUMPTION: the only caller is TerrainGeneratorFactory, whose rules are a fresh compiled rule set. The solver
+        // built here has the same tile ids and adjacency, so the rule-driven path keeps its output for that caller.
+        var solver = IWfcTerrainSolver.Create(null, tileRegistry);
+        _terrainWfc = new MeshTerrainWfcRunner(_wfcGenerator, solver, tileRegistry, tileToTerrainType);
+        _ruleTerrain = new RuleDrivenMeshTerrain(solver, tileToTerrainType);
     }
 
     /// <summary>
@@ -80,12 +80,11 @@ public class MeshTerrainGenerator
         }
 
         _wfcGenerator = new WfcMapGenerator(wfcRules, null);
-        _terrainWfc = new MeshTerrainWfcRunner(
-            _wfcGenerator,
-            null,
-            null,
-            tileToTerrainType);
-        _ruleTerrain = new RuleDrivenMeshTerrain(wfcRules, tileToTerrainType);
+        // The solver builds its own rules from the same dictionary, in the same order.
+        // The background still reads wfcRules.
+        var solver = IWfcTerrainSolver.Create(adjacencyRules, null);
+        _terrainWfc = new MeshTerrainWfcRunner(_wfcGenerator, solver, null, tileToTerrainType);
+        _ruleTerrain = new RuleDrivenMeshTerrain(solver, tileToTerrainType);
 
         GD.PrintErr("[MeshTerrainGen] Using legacy constructor without tile registry - two-pass WFC will not work!");
     }

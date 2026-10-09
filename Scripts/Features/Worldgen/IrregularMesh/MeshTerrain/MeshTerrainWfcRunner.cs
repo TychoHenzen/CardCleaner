@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
@@ -16,13 +15,13 @@ internal sealed class MeshTerrainWfcRunner
 
     public MeshTerrainWfcRunner(
         WfcMapGenerator wfcGenerator,
+        IWfcTerrainSolver solver,
         ITileRegistry? tileRegistry,
-        CompiledTransitionResolver? transitionResolver,
         Dictionary<string, int>? tileToTerrainType)
     {
         _wfcGenerator = wfcGenerator;
         _projection = new MeshTerrainProjection(tileRegistry, tileToTerrainType);
-        _foregroundWfc = new MeshForegroundWfc(tileRegistry, transitionResolver);
+        _foregroundWfc = new MeshForegroundWfc(tileRegistry, solver);
     }
 
     public IrregularMesh Generate(
