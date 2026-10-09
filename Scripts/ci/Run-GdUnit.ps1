@@ -269,7 +269,8 @@ function Invoke-Build {
 
     $stdout = Join-Path $ReportRoot 'dotnet-debug.stdout.log'
     $stderr = Join-Path $ReportRoot 'dotnet-debug.stderr.log'
-    $dotnet = (Get-Command dotnet -CommandType Application).Source
+    # PATH can hold more than one dotnet.exe; take the first, as the shell would.
+    $dotnet = (Get-Command dotnet -CommandType Application | Select-Object -First 1).Source
     $arguments = @('build', 'CardCleaner.csproj', '--configuration', 'Debug', '--no-restore')
     $build = Start-Process -FilePath $dotnet -ArgumentList $arguments -WorkingDirectory $RepositoryRoot -RedirectStandardOutput $stdout -RedirectStandardError $stderr -Wait -PassThru
     if ($build.ExitCode -ne 0) {
