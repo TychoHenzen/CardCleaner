@@ -41,10 +41,15 @@ public class CoreCardBoundaryTest
             .Where(file => file.Folder.StartsWith(CardFolder, StringComparison.Ordinal))
             .SelectMany(file => DeclaredTypeNames(file.Source))
             .ToList();
-        var violations = sources
+        var coreFiles = sources
             .Where(file => file.Folder.StartsWith(CoreFolder, StringComparison.Ordinal))
             .Where(file => !file.Folder.StartsWith(InterfacesFolder, StringComparison.Ordinal))
-            .SelectMany(file => CardViolations(file.Folder, file.Source, cardTypes));
+            .ToList();
+        var violations = coreFiles.SelectMany(file => CardViolations(file.Folder, file.Source, cardTypes));
+
+        // A scan that found no Core file or no Card type passes trivially, so the guard must have seen both.
+        AssertThat(coreFiles).IsNotEmpty();
+        AssertThat(cardTypes).Contains("CardController");
 
         // Joined into one string so a failure names every offending file, not just how many there are.
         AssertThat(string.Join(System.Environment.NewLine, violations)).IsEmpty();

@@ -40,7 +40,10 @@ public partial class GameSaveService : Node, ISaveable
         };
     }
 
-    private const string SavePath = "user://game_save.json";
+    private const string DefaultSavePath = "user://game_save.json";
+    // Tests point this at their own GUID-named file. _ExitTree saves here, so a test that frees the service must not
+    // leave the player's real save overwritten.
+    internal string SavePath { get; set; } = DefaultSavePath;
     private Timer? _autoSaveTimer;
     private ICardSpawningService? _cardSpawningService;
     private List<object>? _pendingCardData;
