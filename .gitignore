@@ -121,6 +121,11 @@ fabric.properties
 /test_output*.txt
 addons/gdUnit4/GdUnitRunner.cfg
 
+# quality-guard scanner and quality-refactor skill output (regenerated every run)
+/.quality/units.json
+/.quality/quality-report.json
+/.quality/responsibility-map.json
+
 # Tiled editor session files
 *.tiled-session
 
