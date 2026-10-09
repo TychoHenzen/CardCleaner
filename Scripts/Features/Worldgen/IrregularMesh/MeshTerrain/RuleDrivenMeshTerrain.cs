@@ -32,7 +32,7 @@ internal sealed class RuleDrivenMeshTerrain
             return false;
         }
 
-        var topology = new IrregularMeshWfcTopology(mesh, tiles);
+        var topology = new WfcNeighborListTopology(IrregularMeshWfcTopology.BuildNeighbors(mesh), tiles);
         var solver = new WfcSolver(new WfcPropagator(_rules), new WfcTileSelector())
         {
             MaxIterations = mesh.Vertices.Count * 2

@@ -44,7 +44,7 @@ internal sealed class MeshForegroundWfc
             $"[MeshTerrainGen] Starting direct mesh WFC with {initialTiles.Count} tiles " +
             $"on {mesh.Vertices.Count} vertices");
 
-        var topology = new IrregularMeshWfcTopology(mesh, initialTiles);
+        var topology = new WfcNeighborListTopology(IrregularMeshWfcTopology.BuildNeighbors(mesh), initialTiles);
         var solver = CreateSolver(mesh);
         var rng = new RandomNumberGenerator { Seed = seed };
         var result = solver.Solve(topology, null, rng);
@@ -91,7 +91,7 @@ internal sealed class MeshForegroundWfc
         return solver;
     }
 
-    private void AssignTiles(IrregularMesh mesh, IrregularMeshWfcTopology topology)
+    private void AssignTiles(IrregularMesh mesh, IWfcTopology topology)
     {
         var autoTileCount = 0;
 
