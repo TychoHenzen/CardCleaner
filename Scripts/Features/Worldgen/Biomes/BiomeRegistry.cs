@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -47,7 +46,7 @@ public class BiomeRegistry
     /// </summary>
     public void LoadFromData(string? path = null)
     {
-        var biomeData = TileDataLoader.LoadBiomes(path);
+        var biomeData = BiomeDataLoader.LoadBiomes(path);
         if (biomeData.Count == 0)
         {
             ILog.Print("[BiomeRegistry] No biomes loaded from data");

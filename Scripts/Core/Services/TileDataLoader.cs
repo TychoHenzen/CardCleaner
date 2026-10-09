@@ -7,7 +7,6 @@ using CardCleaner.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 
 namespace CardCleaner.Scripts.Core.Services;
@@ -130,40 +129,6 @@ public static partial class TileDataLoader
         {
             ILog.Print($"[TileDataLoader] Error loading tiles: {ex.Message}");
             return new TileRegistryResult(DefaultTilesetPath, [], TilesetConfig.Default);
-        }
-    }
-
-    /// <summary>
-    /// Load biome definitions from JSON
-    /// </summary>
-    public static Dictionary<string, BiomeData> LoadBiomes(string? path = null)
-    {
-        path ??= DefaultTilesPath;
-
-        var absolutePath = ProjectSettings.GlobalizePath(path);
-        if (!File.Exists(absolutePath))
-        {
-            ILog.Print($"[TileDataLoader] File not found for biomes: {absolutePath}");
-            return new Dictionary<string, BiomeData>();
-        }
-
-        try
-        {
-            var json = File.ReadAllText(absolutePath);
-            var data = JsonSerializer.Deserialize<TileRegistryData>(json, CreateJsonOptions());
-            if (data?.Biomes == null || data.Biomes.Count == 0)
-            {
-                ILog.Print("[TileDataLoader] No biomes section found in JSON");
-                return new Dictionary<string, BiomeData>();
-            }
-
-            ILog.Print($"[TileDataLoader] Loaded {data.Biomes.Count} biomes from {path}");
-            return data.Biomes;
-        }
-        catch (Exception ex)
-        {
-            ILog.Print($"[TileDataLoader] Error loading biomes: {ex.Message}");
-            return new Dictionary<string, BiomeData>();
         }
     }
 

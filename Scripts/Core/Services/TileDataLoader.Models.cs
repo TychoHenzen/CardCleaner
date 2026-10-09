@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using CardCleaner.Scripts.Features.Worldgen.Biomes;
 
 namespace CardCleaner.Scripts.Core.Services;
 
@@ -15,8 +14,6 @@ public static partial class TileDataLoader
         [JsonPropertyName("tilesetConfig")] public TilesetConfigData? TilesetConfig { get; set; }
 
         [JsonPropertyName("autoTileFormats")] public List<AutoTileFormatData>? AutoTileFormats { get; set; }
-
-        [JsonPropertyName("biomes")] public Dictionary<string, BiomeData>? Biomes { get; set; }
 
         [JsonPropertyName("tiles")] public List<TileData>? Tiles { get; set; }
     }
