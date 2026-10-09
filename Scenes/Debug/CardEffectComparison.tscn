@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Card/Debug/CardEffectComparison.cs" id="Comparison"]
-[ext_resource type="Script" path="res://Scripts/Core/ServiceProviders/CardServiceProvider.cs" id="CardServiceProvider"]
+[ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardServiceProvider.cs" id="CardServiceProvider"]
 [ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardSpawningService.cs" id="CardSpawningService"]
 [ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardSpawner.cs" id="CardSpawner"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/CardShader.tscn" id="CardScene"]

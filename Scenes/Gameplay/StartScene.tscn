@@ -20,7 +20,7 @@
 [ext_resource type="Resource" uid="uid://ddus141l1tre8" path="res://Assets/CardGems/Febris.tres" id="10_3xlss"]
 [ext_resource type="Script" uid="uid://cp4pnjwa1c5ht" path="res://Scripts/Core/DependencyInjection/AutoServiceProvider.cs" id="10_vmjlw"]
 [ext_resource type="Resource" uid="uid://c4f2ur76sh6x4" path="res://Assets/CardGems/Ordinem.tres" id="11_o6inp"]
-[ext_resource type="Script" uid="uid://qra4a46bauvg" path="res://Scripts/Core/ServiceProviders/CardServiceProvider.cs" id="11_r0o6j"]
+[ext_resource type="Script" uid="uid://qra4a46bauvg" path="res://Scripts/Features/Card/Services/CardServiceProvider.cs" id="11_r0o6j"]
 [ext_resource type="Resource" uid="uid://ejpaypuubynl" path="res://Assets/CardGems/Lumines.tres" id="12_f1k1t"]
 [ext_resource type="Resource" uid="uid://dv5fb1isui8m8" path="res://Assets/CardGems/Varias.tres" id="13_6aa2p"]
 [ext_resource type="Resource" uid="uid://kbbcimmj8rjt" path="res://Assets/CardGems/Inertiae.tres" id="14_sstrp"]

@@ -1,11 +1,11 @@
-﻿using CardCleaner.Scripts.Core.ServiceProviders;
+﻿using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using GdUnit4;
 
-namespace CardCleaner.Tests.Core.ServiceProviders;
+namespace CardCleaner.Tests.Features.Card.Services;
 
 [TestSuite]
 [RequireGodotRuntime]

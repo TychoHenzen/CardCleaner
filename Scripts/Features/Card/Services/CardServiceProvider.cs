@@ -1,9 +1,8 @@
 ﻿using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Card.Services;
 using Godot;
 
-namespace CardCleaner.Scripts.Core.ServiceProviders;
+namespace CardCleaner.Scripts.Features.Card.Services;
 
 /// <summary>
 ///     Service provider for card-related services.
