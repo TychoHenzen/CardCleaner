@@ -12,8 +12,8 @@ param(
     [ValidateRange(10, 3600)]
     [int]$StallSeconds = 180,
 
-    # How many times one run may restart Godot on the unfinished suites after a stall. More than a handful
-    # means the run is not converging, so the bound stops a broken run from looping for hours.
+    # How many times one run may restart Godot on the unfinished suites after a stall or a crash. More than a
+    # handful means the run is not converging, so the bound stops a broken run from looping for hours.
     [Parameter()]
     [ValidateRange(0, 10)]
     [int]$MaxResumes = 3
@@ -29,6 +29,9 @@ $PollSeconds = 5
 $KillWaitMilliseconds = 15000
 # Attempts, one second apart, to read a log the killed tree may still hold open.
 $ReadRetries = 10
+# Exit codes gdUnit returns itself (GdUnitTestSessionRunner.gd). Any other exit code from an attempt that wrote no
+# results report is a Godot crash, for example the Windows NTSTATUS 0xC000001D (illegal instruction).
+$GdUnitExitCodes = @(0, 100, 101, 103, 104)
 $AnsiEscape = [regex]::new([string][char]27 + '\[[0-9;]*m')
 $SuiteStartPattern = [regex]::new('^\s*Run Test Suite: (?<suite>res://\S+)')
 $StatisticsPattern = [regex]::new('^\s*Statistics: \d+ test cases \| (?<errors>\d+) errors \| (?<failures>\d+) failures')
@@ -174,7 +177,7 @@ function Get-ResumeTargets {
     return , $targets.ToArray()
 }
 
-# The suite GdUnit was running when it stalled, or $null when the stall came between suites or before the first.
+# The suite GdUnit was running when it was interrupted, or $null when that came between suites or before the first.
 function Get-UnfinishedSuite {
     param($Progress)
 
@@ -188,7 +191,7 @@ function Get-UnfinishedSuite {
     return $last
 }
 
-function Get-StallPoint {
+function Get-InterruptionPoint {
     param($Progress)
 
     $unfinished = Get-UnfinishedSuite -Progress $Progress
@@ -260,11 +263,100 @@ function Invoke-GodotWatched {
     return [pscustomobject]@{ Stalled = $false; ExitCode = $process.ExitCode }
 }
 
+# Process.ExitCode is a signed Int32, so a Windows NTSTATUS such as 0xC000001D arrives negative. Int32.ToString('X8')
+# prints its two's-complement bits, which is the form Windows shows.
+function Format-ExitCode {
+    param([int]$ExitCode)
+
+    return '0x' + $ExitCode.ToString('X8')
+}
+
+# Reports written at or after $Since. A crashed attempt writes none, so this tells a crash from a clean exit.
+function Get-ReportsSince {
+    param([string]$ReportRoot, [datetime]$Since)
+
+    return @(Get-ChildItem -LiteralPath $ReportRoot -Filter results.xml -File -Recurse |
+        Where-Object { $_.LastWriteTimeUtc -ge $Since })
+}
+
+# Why an attempt ended before Godot exited on its own, or $null when it did. A stall is the watchdog's kill. A crash is
+# an exit code gdUnit does not return, from an attempt that wrote no report. Only reports from that attempt count.
+function Get-Interruption {
+    param($Run, [string]$ReportRoot, [datetime]$AttemptStartedAt)
+
+    if ($Run.Stalled) {
+        return [pscustomobject]@{ Kind = 'stall'; Exit = $null }
+    }
+    if ($GdUnitExitCodes -contains $Run.ExitCode) {
+        return $null
+    }
+    if (@(Get-ReportsSince -ReportRoot $ReportRoot -Since $AttemptStartedAt).Count -gt 0) {
+        return $null
+    }
+    $exitHex = Format-ExitCode -ExitCode $Run.ExitCode
+    return [pscustomobject]@{ Kind = 'crash'; Exit = $exitHex }
+}
+
+# Words one interruption for every message the runner prints about it. Kind alone picks the wording, so no call site
+# branches on Kind or Text to build a sentence. $Point says where it happened: "in <suite>", "after <suite>" or
+# "before the first suite". $Earlier is the interruption already recorded for $Suite, when there is one, and the repeat
+# sentence names both causes. It builds the text and returns it with the cause fields; the caller decides whether to
+# warn, throw or record.
+function Format-Interruption {
+    param($Cause, [string]$Point, [string]$LastResult, $Earlier = $null, [string]$Suite = '')
+
+    if ($Cause.Kind -eq 'stall') {
+        $label = 'stall'
+        $verb = 'stalled'
+        $detail = "no output for $StallSeconds s"
+        $resumeVerb = 'stalled'
+    }
+    else {
+        $label = "crash $($Cause.Exit)"
+        $verb = 'crashed'
+        $detail = "exit $($Cause.Exit), no results report"
+        $resumeVerb = "crashed (exit $($Cause.Exit))"
+    }
+    $repeat = $null
+    if ($null -ne $Earlier) {
+        if ($Earlier.Kind -eq 'stall' -and $Cause.Kind -eq 'stall') {
+            $repeat = "GdUnit stalled twice in $Suite"
+        }
+        else {
+            $repeat = "GdUnit was interrupted twice in $Suite ($($Earlier.Label), then $label)"
+        }
+    }
+    return [pscustomobject]@{
+        Kind = $Cause.Kind
+        Label = $label
+        Point = $Point
+        Entry = "$label $Point"
+        Warning = "GdUnit $verb $Point ($detail). Last result: $LastResult"
+        ResumeVerb = $resumeVerb
+        Repeat = $repeat
+    }
+}
+
+# The closing line of a run that passed after interruptions. A run with only stalls keeps its original wording; once a
+# crash is involved, one line names every cause.
+function Format-InterruptionSummary {
+    param($Interruptions)
+
+    # Not @($Interruptions): Windows PowerShell 5.1 throws "Argument types do not match" when it wraps a List[object].
+    $count = $Interruptions.Count
+    $crashes = @($Interruptions | Where-Object { $_.Kind -eq 'crash' })
+    if ($crashes.Count -eq 0) {
+        $points = @($Interruptions | ForEach-Object { $_.Point })
+        return "GdUnit passed after $count stall(s): " + ($points -join '; ')
+    }
+    $entries = @($Interruptions | ForEach-Object { $_.Entry })
+    return "GdUnit passed after $count interruption(s): " + ($entries -join '; ')
+}
+
 function Read-ReportTotals {
     param([string]$ReportRoot, [datetime]$Since)
 
-    $reports = @(Get-ChildItem -LiteralPath $ReportRoot -Filter results.xml -File -Recurse |
-        Where-Object { $_.LastWriteTimeUtc -ge $Since })
+    $reports = @(Get-ReportsSince -ReportRoot $ReportRoot -Since $Since)
     $totals = [pscustomobject]@{ Files = $reports.Count; Errors = 0; Failures = 0 }
     foreach ($report in $reports) {
         try {
@@ -337,9 +429,12 @@ Invoke-Import -GodotPath $godotPath -RepositoryRoot $repositoryRoot -ReportRoot 
 
 $baseArguments = @('--headless', '--path', '.', '-s', 'res://addons/gdUnit4/bin/GdUnitCmdTool.gd', '-c', '--ignoreHeadlessMode', '-rd', 'reports/ci')
 $finished = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
-$stallPoints = New-Object System.Collections.Generic.List[string]
-$stalledSuites = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+$interruptions = New-Object System.Collections.Generic.List[object]
+# Suite -> the first interruption's formatted record, so a second interruption in the same suite fails the run.
+$causeMapType = 'System.Collections.Generic.Dictionary[string,object]'
+$interruptedSuites = New-Object $causeMapType ([StringComparer]::OrdinalIgnoreCase)
 $lastFinished = 'none'
+$lastInterruption = $null
 $errors = 0
 $failures = 0
 $runStartedAt = [DateTime]::UtcNow
@@ -353,38 +448,59 @@ for ($attempt = 0; ; $attempt++) {
     $stderrPath = Join-Path $reportRoot "godot$suffix.stderr.log"
     $suiteArguments = @($targets | ForEach-Object { '-a', $_ })
 
+    $attemptStartedAt = [DateTime]::UtcNow
     $run = Invoke-GodotWatched -GodotPath $godotPath -Arguments ($baseArguments + $suiteArguments) -WorkingDirectory $repositoryRoot -StdoutPath $stdoutPath -StderrPath $stderrPath
     $progress = Read-SuiteProgress -LogText (Read-SharedText -Path $stdoutPath)
     foreach ($suite in $progress.Finished) {
         [void]$finished.Add($suite)
     }
 
-    if (-not $run.Stalled) {
+    $interruption = Get-Interruption -Run $run -ReportRoot $reportRoot -AttemptStartedAt $attemptStartedAt
+    if ($null -eq $interruption) {
         $finalExitCode = $run.ExitCode
         break
     }
 
-    # A killed Godot normally writes no results.xml (GdUnit writes it when the session shuts down), so the suites it
-    # finished are judged from their Statistics lines. A report it did write is still read below; counting a
+    # A killed or crashed Godot normally writes no results.xml (GdUnit writes it when the session shuts down), so the
+    # suites it finished are judged from their Statistics lines. A report it did write is still read below; counting a
     # failure from both sources only matters when it is already non-zero.
     $errors += $progress.Errors
     $failures += $progress.Failures
-    $point = Get-StallPoint -Progress $progress
-    Write-Warning "GdUnit stalled $point (no output for $StallSeconds s). Last result: $($progress.LastResultLine)"
-    $stallPoints.Add($point)
+    $point = Get-InterruptionPoint -Progress $progress
     $unfinished = Get-UnfinishedSuite -Progress $progress
-    if ($null -ne $unfinished -and -not $stalledSuites.Add($unfinished)) {
-        throw "GdUnit stalled twice in $unfinished; see $stdoutPath"
+    $earlier = $null
+    if ($null -ne $unfinished -and $interruptedSuites.ContainsKey($unfinished)) {
+        $earlier = $interruptedSuites[$unfinished]
     }
-    # A resume that finishes no suite is not converging, whether it stalls in a suite, between suites or at startup.
+    $formatArgs = @{
+        Cause = $interruption
+        Point = $point
+        LastResult = $progress.LastResultLine
+        Earlier = $earlier
+        Suite = $unfinished
+    }
+    $formatted = Format-Interruption @formatArgs
+    Write-Warning $formatted.Warning
+    $interruptions.Add($formatted)
+    $lastInterruption = $formatted.Entry
+    if ($null -ne $formatted.Repeat) {
+        throw "$($formatted.Repeat); see $stdoutPath"
+    }
+    if ($null -ne $unfinished) {
+        $interruptedSuites[$unfinished] = $formatted
+    }
+    # A resume that finishes no suite is not converging, whether it is interrupted in a suite, between suites or at
+    # startup.
     if ($attempt -gt 0 -and $progress.Finished.Count -eq 0) {
-        throw "GdUnit stalled $point again after resuming, without finishing any suite (last finished: $lastFinished); see $stdoutPath"
+        throw ("GdUnit $($formatted.ResumeVerb) $point again after resuming, without finishing any suite " +
+            "(last finished: $lastFinished); see $stdoutPath")
     }
     if ($progress.Finished.Count -gt 0) {
         $lastFinished = $progress.Finished[$progress.Finished.Count - 1]
     }
     if ($attempt -ge $MaxResumes) {
-        throw "GdUnit stalled $($stallPoints.Count) times (limit $MaxResumes resumes); last stall $point"
+        $count = $interruptions.Count
+        throw "GdUnit was interrupted $count times (limit $MaxResumes resumes); last interruption: $lastInterruption"
     }
     $pending = @($expected | Where-Object { -not $finished.Contains($_) })
     if ($pending.Count -eq 0) {
@@ -395,11 +511,11 @@ for ($attempt = 0; ; $attempt++) {
 }
 
 # Every report written since the run began counts, and at least one is required: a run whose last attempt was
-# killed after its final suite printed Statistics still has to leave a report before it can pass.
+# interrupted after its final suite printed Statistics still has to leave a report before it can pass.
 $totals = Read-ReportTotals -ReportRoot $reportRoot -Since $runStartedAt
 if ($totals.Files -eq 0) {
     $stdoutTail = (Get-Content -LiteralPath $stdoutPath -Tail 40) -join [Environment]::NewLine
-    $exitText = if ($null -eq $finalExitCode) { 'killed after a stall' } else { "exit=$finalExitCode" }
+    $exitText = if ($null -eq $finalExitCode) { "interrupted: $lastInterruption" } else { "exit=$finalExitCode" }
     throw "GdUnit did not produce a results.xml report under $reportRoot ($exitText). stdout=$stdoutTail"
 }
 $errors += $totals.Errors
@@ -421,7 +537,7 @@ elseif ($null -ne $finalExitCode -and $finalExitCode -ne 0) {
     throw "Godot exited with code $finalExitCode after a green report under $reportRoot"
 }
 
-if ($stallPoints.Count -gt 0) {
-    Write-Warning "GdUnit passed after $($stallPoints.Count) stall(s): $($stallPoints -join '; ')"
+if ($interruptions.Count -gt 0) {
+    Write-Warning (Format-InterruptionSummary -Interruptions $interruptions)
 }
 Write-Host "GdUnit passed: $($finished.Count) of $($expected.Count) suite files ran."

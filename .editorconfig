@@ -12,6 +12,8 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 
 [*.cs]
+# Column limit the project works to; quality-guard uses its own fixed threshold and does not read this.
+max_line_length = 120
 # C# Language version
 csharp_style_namespace_declarations = file_scoped:suggestion
 

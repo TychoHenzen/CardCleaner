@@ -24,16 +24,32 @@ dotnet test --filter "FullyQualifiedName~CardSignatureTest"
 # Run the whole gdUnit suite the way CI does (Windows PowerShell 5.1 or PowerShell 7)
 powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot_v4.7.1-stable_mono_win64.exe>
 
-# Only the [TestCategory("Unit")] suites, as CI runs on pull requests
+# Only the [TestCategory("Unit")] suites, as CI runs on pull requests and pushes to master
 powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot exe> -Fast
 
 # Runner fixture: runs Run-GdUnit.ps1 against a fake Godot, so no Godot is needed (CI runs it too)
 powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps1
 ```
 
+CI scope: pull requests and pushes to `master` run only the Unit suites (`-Fast`). The full suite runs on the weekly
+schedule (Sunday 03:00 UTC) and on a manual dispatch with `full=true`, for example `gh workflow run ci.yml --ref
+<branch> -f full=true`. PR CI also fails when the latest scheduled run on `master` is not green. So a green PR or merge
+run does not prove the full suite; dispatch `full=true` on the branch (or tag) whose head needs it, e.g.
+`gh workflow run ci.yml --ref <branch> -f full=true`.
+
 Tests use gdUnit4 framework and require the Godot runtime (`[RequireGodotRuntime]` attribute). Test files are in `Tests/` mirroring the `Scripts/` structure.
 
-gdUnit finds a C# suite by its file name, so a `[TestSuite]` class must be named after its file (`TestSuiteNamingTest` enforces this). `Run-GdUnit.ps1` fails when a `[TestSuite]` file never runs. When Godot prints nothing for `-StallSeconds` (180 by default) it kills Godot, names the suite it stalled in, and reruns only the unfinished suites (at most `-MaxResumes` times); a second stall in the same place fails the run. Reports and logs go to `reports/ci`. `Test-RunGdUnit.ps1` runs the real runner against a fake Godot and covers its watchdog, resume, repeated-stall, crash and report-aggregation paths. It also checks that the suite-detection patterns in `Run-GdUnit.ps1` match the ones in `TestSuiteNamingTest.cs`.
+gdUnit finds a C# suite by its file name, so a `[TestSuite]` class must be named after its file (`TestSuiteNamingTest`
+enforces this). `Run-GdUnit.ps1` fails when a `[TestSuite]` file never runs. When Godot prints nothing for
+`-StallSeconds` (180 by default) it kills Godot, names the suite it stalled in, and reruns only the unfinished suites
+(at most `-MaxResumes` times). A Godot crash gets the same treatment: an exit code gdUnit does not return (anything but
+0, 100, 101, 103 or 104) from an attempt that wrote no results report is named with its suite, logged in hex (for
+example `0xC000001D`), and the unfinished suites are resumed. Stalls and crashes share the `-MaxResumes` budget; a
+second interruption in the same suite, or a resume that finishes no suite, fails the run. Exits 100, 101, 103 and 104
+keep their own handling and never resume, and an abnormal exit after a green report still fails. Reports and logs go to
+`reports/ci`. `Test-RunGdUnit.ps1` runs the real runner against a fake Godot and covers its watchdog, resume,
+repeated-stall, crash, repeated-crash, exit-code and report-aggregation paths. It also checks that the suite-detection
+patterns in `Run-GdUnit.ps1` match the ones in `TestSuiteNamingTest.cs`.
 
 ## Code Style
 
@@ -179,7 +195,7 @@ The map generator uses a **two-phase Wave Function Collapse** approach with dual
 
 **Dual-Grid Auto-Tiling**:
 - Visual tiles offset by half a cell from data grid
-- Each visual tile samples 4 data corners → 4-bit bitmask (Corner16 format)
+- Each visual tile samples 4 data corners -> 4-bit bitmask (Corner16 format)
 - The gap constraint ensures each visual tile sees at most ONE auto-tile type
 - `Dominance` property on tiles determines which terrain renders "on top"
 
@@ -191,7 +207,8 @@ The map generator uses a **two-phase Wave Function Collapse** approach with dual
 
 ### Game Session Flow
 
-The `GameSessionService` manages the game loop through states: `WaitingForCards` → `GeneratingMap` → `Exploring` → `InCombat` → `GeneratingLoot` → `SessionComplete`. Key supporting systems:
+The `GameSessionService` manages the game loop through states: `WaitingForCards` -> `GeneratingMap` -> `Exploring` ->
+`InCombat` -> `GeneratingLoot` -> `SessionComplete`. Key supporting systems:
 
 - **SimpleMapGenerator**: Creates tile-based maps influenced by card signatures
 - **ExplorationAI**: A* pathfinding for autonomous exploration
