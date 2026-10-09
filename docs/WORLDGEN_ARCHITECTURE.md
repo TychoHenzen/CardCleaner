@@ -949,6 +949,8 @@ public interface IProceduralStructure
 }
 ```
 
+Irregular Map reaches WFC only through `IWfcTerrainSolver`, the front door declared in `Scripts/Features/Worldgen/Wfc/`, and `IrregularMeshWfcSeamTest` fails when a file under `Scripts/Features/Worldgen/IrregularMesh/` names any other type declared there.
+
 ### Weighted Random Selection Algorithm
 
 ```csharp
