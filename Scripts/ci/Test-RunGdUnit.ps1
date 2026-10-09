@@ -15,9 +15,8 @@ param(
     [ValidateSet('powershell.exe', 'pwsh')]
     [string]$RunnerShell = 'powershell.exe',
 
-    # Runs one check instead of all of them.
+    # Runs one check instead of all of them. The name must be one of the checks listed in $AllChecks below.
     [Parameter()]
-    [ValidateSet('CleanRun', 'Fast', 'StallResumes', 'RepeatedStallFails', 'CrashNoReport', 'ReportAggregation', 'PatternLockstep')]
     [string]$Only,
 
     # Keeps the temporary fake repositories for inspection.
@@ -221,6 +220,15 @@ public class BetaTest
 }
 '@
 
+# A real non-Unit suite whose only Unit category is commented out: -Fast must not select it.
+$CommentedUnitSuite = @'
+// [TestCategory("Unit")]
+[TestSuite]
+public class GammaTest
+{
+}
+'@
+
 # Phantoms: a suite attribute that appears only inside a comment or a string is not a suite, so the runner must not
 # expect these files. The block-comment phantom carries the Unit category too, so -Fast would select it if it counted.
 $PhantomBlockComment = @'
@@ -242,6 +250,15 @@ public class Verbatim
 ";
 '@
 
+$PhantomInterpolatedVerbatim = @'
+var text = @$"
+[TestSuite]
+public class Interpolated
+{{
+}}
+";
+'@
+
 $PhantomRaw = @'
 var text = """
 [TestSuite]
@@ -260,7 +277,8 @@ public class Notes
 */
 '@
 
-$StaleReportXml = '<?xml version="1.0" encoding="UTF-8"?><testsuites><testsuite><testcase><failure/><failure/><failure/><failure/><failure/></testcase></testsuite></testsuites>'
+$StaleReportXml = '<?xml version="1.0" encoding="UTF-8"?><testsuites><testsuite>' +
+    '<testcase><failure/><failure/><failure/><failure/><failure/></testcase></testsuite></testsuites>'
 
 function Write-FileText {
     param([string]$Path, [string]$Text)
@@ -285,7 +303,16 @@ function Invoke-NativeQuiet {
     $stdout = Join-Path $Directory ('native-' + [guid]::NewGuid().ToString('N') + '.stdout.txt')
     $stderr = Join-Path $Directory ('native-' + [guid]::NewGuid().ToString('N') + '.stderr.txt')
     $argumentLine = (@($Arguments) | ForEach-Object { ConvertTo-ProcessArgument -Value ([string]$_) }) -join ' '
-    $process = Start-Process -FilePath $FilePath -ArgumentList $argumentLine -RedirectStandardOutput $stdout -RedirectStandardError $stderr -WindowStyle Hidden -Wait -PassThru
+    $startArguments = @{
+        FilePath = $FilePath
+        ArgumentList = $argumentLine
+        RedirectStandardOutput = $stdout
+        RedirectStandardError = $stderr
+        WindowStyle = 'Hidden'
+        Wait = $true
+        PassThru = $true
+    }
+    $process = Start-Process @startArguments
     $stdoutText = ''
     $stderrText = ''
     if (Test-Path -LiteralPath $stdout) {
@@ -307,12 +334,14 @@ function New-FakeBuild {
     New-Item -ItemType Directory -Path $Directory -Force | Out-Null
     $csc = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
     if (-not (Test-Path -LiteralPath $csc -PathType Leaf)) {
-        throw "csc.exe was not found at $csc; the fixture compiles its fake Godot with the in-box .NET Framework compiler."
+        throw ("csc.exe was not found at $csc; " +
+            'the fixture compiles its fake Godot with the in-box .NET Framework compiler.')
     }
     $source = Join-Path $Directory 'FakeGodot.cs'
     $output = Join-Path $Directory 'FakeGodot.exe'
     [IO.File]::WriteAllText($source, $FakeGodotSource)
-    $compile = Invoke-NativeQuiet -FilePath $csc -Arguments @('/nologo', '/target:exe', ('/out:' + $output), $source) -Directory $Directory
+    $compile = Invoke-NativeQuiet -FilePath $csc -Directory $Directory -Arguments @(
+        '/nologo', '/target:exe', ('/out:' + $output), $source)
     if ($compile.ExitCode -ne 0) {
         throw "csc.exe failed with exit code $($compile.ExitCode): $($compile.Stdout)$($compile.Stderr)"
     }
@@ -352,6 +381,7 @@ function New-ScenarioContext {
     Write-FileText -Path (Join-Path $repo 'Tests\Beta\Notes.cs') -Text $PhantomNotes
     Write-FileText -Path (Join-Path $repo 'Tests\Phantom\BlockComment.cs') -Text $PhantomBlockComment
     Write-FileText -Path (Join-Path $repo 'Tests\Phantom\Verbatim.cs') -Text $PhantomVerbatim
+    Write-FileText -Path (Join-Path $repo 'Tests\Phantom\InterpolatedVerbatim.cs') -Text $PhantomInterpolatedVerbatim
     Write-FileText -Path (Join-Path $repo 'Tests\Phantom\Raw.cs') -Text $PhantomRaw
     Write-FileText -Path $context.Wrapper -Text $WrapperSource
     return $context
@@ -417,7 +447,8 @@ function Get-RunnerOutput {
 }
 
 # Write-Warning wraps long messages at the console width, so a line break can fall at a space or inside a long path.
-# Warning checks compare the text with its line breaks removed; the wrap keeps the space it breaks on, so no word merges.
+# Warning checks compare the text with line breaks removed. A wrap keeps the space it breaks on,
+# so no word merges.
 # ASSUMPTION: pwsh 7 wraps warnings the same way; only line breaks are removed, so any wrap position still matches.
 function Get-FlatRunnerOutput {
     param($Result)
@@ -444,18 +475,27 @@ function Invoke-Runner {
     $savedPlan = $env:FAKE_GODOT_PLAN
     $savedState = $env:FAKE_GODOT_STATE
     try {
-        # The runner resolves dotnet with Get-Command and uses its single .Source, so every folder holding a real
-        # dotnet.exe is left off the PATH it sees, and the fake comes first.
+        # The runner takes the first dotnet on PATH, so the fake comes first, and every folder holding a real
+        # dotnet.exe is left off the PATH it sees: no real SDK can be reached.
         $entries = @($savedPath -split ';' | Where-Object {
                 $_.Length -gt 0 -and -not (Test-Path -LiteralPath (Join-Path $_ 'dotnet.exe') -PathType Leaf)
             })
         $env:PATH = (@($Context.Bin) + $entries) -join ';'
         $env:FAKE_GODOT_PLAN = $Context.Plan
         $env:FAKE_GODOT_STATE = $Context.State
-        $process = Start-Process -FilePath $RunnerShell -ArgumentList $argumentLine -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath -WindowStyle Hidden -PassThru
+        $startArguments = @{
+            FilePath = $RunnerShell
+            ArgumentList = $argumentLine
+            RedirectStandardOutput = $stdoutPath
+            RedirectStandardError = $stderrPath
+            WindowStyle = 'Hidden'
+            PassThru = $true
+        }
+        $process = Start-Process @startArguments
         $null = $process.Handle
         if (-not $process.WaitForExit(120000)) {
-            Invoke-NativeQuiet -FilePath 'taskkill.exe' -Arguments @('/PID', [string]$process.Id, '/T', '/F') -Directory $Context.Root | Out-Null
+            $killArguments = @('/PID', [string]$process.Id, '/T', '/F')
+            Invoke-NativeQuiet -FilePath 'taskkill.exe' -Arguments $killArguments -Directory $Context.Root | Out-Null
             throw "Runner did not finish within 120 s in $($Context.Name); its process tree was killed."
         }
         $exitCode = $process.ExitCode
@@ -492,7 +532,8 @@ function Assert-ExitCode {
     param($Result, [int]$Expected, [string]$Message)
 
     if ($Result.ExitCode -ne $Expected) {
-        $errorLine = @($Result.Stderr -split "`r?`n" | Where-Object { $_ -like 'RUNNER-ERROR*' }) | Select-Object -First 1
+        $errorLine = @($Result.Stderr -split "`r?`n" |
+                Where-Object { $_ -like 'RUNNER-ERROR*' }) | Select-Object -First 1
         throw "Check failed: $Message (expected exit $Expected, got $($Result.ExitCode)) $errorLine"
     }
 }
@@ -551,7 +592,8 @@ function Test-CleanRun {
         'exit 0')
     $result = Invoke-Runner -Context $Context
     Assert-ExitCode -Result $result -Expected 0 -Message 'a clean run exits 0'
-    Assert-Line $result.Stdout ('Using Godot executable: ' + $Context.Console) 'the runner picks the _console variant next to the fake'
+    $consoleLine = 'Using Godot executable: ' + $Context.Console
+    Assert-Line $result.Stdout $consoleLine 'the runner picks the _console variant next to the fake'
     Assert-Line $result.Stdout 'GdUnit passed: 3 of 3 suite files ran.' 'every suite ran once'
     Assert-That (-not (Get-RunnerOutput $result).Contains('WARNING:')) 'a clean run prints no WARNING'
     $calls = @(Get-FakeCalls -Context $Context)
@@ -565,6 +607,7 @@ function Test-CleanRun {
 function Test-Fast {
     param($Context)
 
+    Write-FileText -Path (Join-Path $Context.Repo 'Tests\Gamma\GammaTest.cs') -Text $CommentedUnitSuite
     Set-FakePlan -Context $Context -Index 0 -Lines @(
         (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats),
         'report r1 0 0',
@@ -593,14 +636,20 @@ function Test-StallResumes {
     $result = Invoke-Runner -Context $Context
     $output = Get-FlatRunnerOutput $result
     Assert-ExitCode -Result $result -Expected 0 -Message 'a run that resumes after one stall exits 0'
-    Assert-Contains $output ('WARNING: GdUnit stalled in ' + $SuiteAlphaTwo + ' (no output for 10 s). Last result: ' + $SuiteAlphaTwo + ' > First PASSED') 'the stall names the unfinished suite and its last result'
-    Assert-Line $result.Stdout ('Resuming with 2 unfinished suite(s): ' + $SuiteAlphaTwo + ' res://Tests/Beta') 'the resume names the unfinished suite and the Beta folder'
+    $stallWarning = 'WARNING: GdUnit stalled in ' + $SuiteAlphaTwo + ' (no output for 10 s). Last result: ' +
+        $SuiteAlphaTwo + ' > First PASSED'
+    Assert-Contains $output $stallWarning 'the stall names the unfinished suite and its last result'
+    $resumeLine = 'Resuming with 2 unfinished suite(s): ' + $SuiteAlphaTwo + ' res://Tests/Beta'
+    Assert-Line $result.Stdout $resumeLine 'the resume names the unfinished suite and the Beta folder'
     Assert-Line $result.Stdout 'GdUnit passed: 3 of 3 suite files ran.' 'every suite finished across both attempts'
-    Assert-Contains $output ('WARNING: GdUnit passed after 1 stall(s): in ' + $SuiteAlphaTwo) 'a passing run still reports its stall'
+    $passedWarning = 'WARNING: GdUnit passed after 1 stall(s): in ' + $SuiteAlphaTwo
+    Assert-Contains $output $passedWarning 'a passing run still reports its stall'
     $tests = @(Get-RunnerTestCalls -Context $Context)
     Assert-Equal 2 $tests.Count 'one run and one resume'
-    Assert-That $tests[1].EndsWith('-a ' + $SuiteAlphaTwo + ' -a res://Tests/Beta') 'the resume names only the unfinished suite and the Beta folder'
-    Assert-That (Test-Path -LiteralPath (Join-Path $Context.Repo 'reports\ci\godot.resume1.stdout.log') -PathType Leaf) 'the resume writes its own log'
+    $resumeArguments = '-a ' + $SuiteAlphaTwo + ' -a res://Tests/Beta'
+    Assert-That $tests[1].EndsWith($resumeArguments) 'the resume names only the unfinished suite and the Beta folder'
+    $resumeLog = Join-Path $Context.Repo 'reports\ci\godot.resume1.stdout.log'
+    Assert-That (Test-Path -LiteralPath $resumeLog -PathType Leaf) 'the resume writes its own log'
     Assert-ProcessesGone -Context $Context
 }
 
@@ -617,7 +666,8 @@ function Test-RepeatedStallFails {
         'stall')
     $result = Invoke-Runner -Context $Context
     Assert-ExitCode -Result $result -Expected 1 -Message 'a suite that stalls twice fails the run'
-    Assert-Contains $result.Stderr ('RUNNER-ERROR: GdUnit stalled twice in ' + $SuiteAlphaTwo + '; see ') 'the second stall names the same suite'
+    $twiceError = 'RUNNER-ERROR: GdUnit stalled twice in ' + $SuiteAlphaTwo + '; see '
+    Assert-Contains $result.Stderr $twiceError 'the second stall names the same suite'
     $tests = @(Get-RunnerTestCalls -Context $Context)
     Assert-Equal 2 $tests.Count 'no third attempt after the repeated stall'
     Assert-ProcessesGone -Context $Context
@@ -626,14 +676,16 @@ function Test-RepeatedStallFails {
 function Test-CrashNoReport {
     param($Context)
 
-    # #193: flips to resume-once
+    # Deliberately pins today's behaviour: a crash that leaves no report fails the run without a resume. The #193
+    # friction-log proposal would flip this to one resume, which changes the invocation count asserted below.
     Set-FakePlan -Context $Context -Index 0 -Lines @(
         (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats),
         (Get-SuiteStart $SuiteAlphaTwo),
         'exit -1073741795')
     $result = Invoke-Runner -Context $Context
     Assert-ExitCode -Result $result -Expected 1 -Message 'a crash without a report fails the run'
-    Assert-Contains $result.Stderr 'RUNNER-ERROR: GdUnit did not produce a results.xml report under' 'the runner names the missing report'
+    $missingReport = 'RUNNER-ERROR: GdUnit did not produce a results.xml report under'
+    Assert-Contains $result.Stderr $missingReport 'the runner names the missing report'
     Assert-Contains $result.Stderr '(exit=-1073741795)' 'the message carries the crash exit code'
     $tests = @(Get-RunnerTestCalls -Context $Context)
     Assert-Equal 1 $tests.Count 'a crash is not resumed'
@@ -658,7 +710,9 @@ function Test-ReportAggregation {
         'exit 0')
     $result = Invoke-Runner -Context $Context
     Assert-ExitCode -Result $result -Expected 1 -Message 'aggregated failures and errors fail the run'
-    Assert-Contains $result.Stderr 'RUNNER-ERROR: GdUnit run is not green: failures=2, errors=2, reports under' 'the stalled attempt errors and both reports are counted, and the stale report is not'
+    $notGreen = 'RUNNER-ERROR: GdUnit run is not green: failures=2, errors=2, reports under'
+    Assert-Contains $result.Stderr $notGreen ('the stalled attempt errors and both reports are counted, ' +
+        'and the stale report is not')
 }
 
 # The runner's suite-detection patterns must match the ones in TestSuiteNamingTest.cs, the C# side that gdUnit's own
@@ -671,27 +725,47 @@ function Test-PatternLockstep {
     $ast = [System.Management.Automation.Language.Parser]::ParseFile($RealRunner, [ref]$tokens, [ref]$parseErrors)
     Assert-That ($parseErrors.Count -eq 0) 'the runner parses'
     $runnerValues = @{}
-    $assignments = $ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.AssignmentStatementAst] }, $true)
+    $assignments = $ast.FindAll({
+            param($node) $node -is [System.Management.Automation.Language.AssignmentStatementAst]
+        }, $true)
     foreach ($assignment in @($assignments)) {
         $name = $assignment.Left.VariablePath.UserPath
-        if ($name -eq 'SuiteAttributePattern' -or $name -eq 'CodeNoisePattern') {
-            $runnerValues[$name] = Invoke-Expression $assignment.Right.Extent.Text
+        if ($name -ne 'SuiteAttributePattern' -and $name -ne 'CodeNoisePattern') {
+            continue
         }
+        # ASSUMPTION: Windows PowerShell 5.1, the fixture's shell in CI and locally, parses an assignment's value
+        # as a CommandExpressionAst. The value is read from the AST and never executed.
+        $literal = $null
+        if ($assignment.Right -is [System.Management.Automation.Language.CommandExpressionAst]) {
+            $literal = $assignment.Right.Expression
+        }
+        $isLiteral = $literal -is [System.Management.Automation.Language.StringConstantExpressionAst]
+        Assert-That $isLiteral "the runner declares $name as one string literal"
+        $runnerValues[$name] = $literal.Value
     }
 
     $source = [IO.File]::ReadAllText((Join-Path $RepositoryRoot 'Tests\TestSuiteNamingTest.cs'))
     foreach ($name in @('SuiteAttributePattern', 'CodeNoisePattern')) {
         Assert-That $runnerValues.ContainsKey($name) "the runner declares $name"
-        $match = [regex]::Match($source, 'internal const string ' + $name + ' = @"((?:[^"]|"")*)";')
+        $match = [regex]::Match($source, 'internal const string ' + $name + '\s*=\s*@"((?:[^"]|"")*)";')
         Assert-That $match.Success "TestSuiteNamingTest.cs declares $name as a verbatim const"
         $csharpValue = $match.Groups[1].Value.Replace('""', '"')
         Assert-Equal $csharpValue $runnerValues[$name] "$name is identical in the runner and TestSuiteNamingTest.cs"
     }
 }
 
-$checks = @('CleanRun', 'Fast', 'StallResumes', 'RepeatedStallFails', 'CrashNoReport', 'ReportAggregation', 'PatternLockstep')
-if (-not [string]::IsNullOrWhiteSpace($Only)) {
-    $checks = @($Only)
+# Every check in run order. -Only must name one of them (letter case does not matter) and then runs alone.
+$AllChecks = @(
+    'CleanRun', 'Fast', 'StallResumes', 'RepeatedStallFails', 'CrashNoReport', 'ReportAggregation', 'PatternLockstep')
+if ([string]::IsNullOrWhiteSpace($Only)) {
+    $checks = $AllChecks
+}
+else {
+    # The canonical spelling comes from $AllChecks, so -Only fast runs Fast.
+    $checks = @($AllChecks | Where-Object { $_ -eq $Only })
+    if ($checks.Count -eq 0) {
+        throw "Unknown check '$Only'. Valid checks: $($AllChecks -join ', ')"
+    }
 }
 
 $passedCount = 0
@@ -730,7 +804,8 @@ finally {
     }
 }
 
-Write-Host ('Runner fixture: {0} of {1} checks passed in {2} s.' -f $passedCount, $checks.Count, [math]::Round($total.Elapsed.TotalSeconds, 1))
+$elapsedSeconds = [math]::Round($total.Elapsed.TotalSeconds, 1)
+Write-Host ('Runner fixture: {0} of {1} checks passed in {2} s.' -f $passedCount, $checks.Count, $elapsedSeconds)
 if ($setupFailed -or $passedCount -ne $checks.Count) {
     exit 1
 }

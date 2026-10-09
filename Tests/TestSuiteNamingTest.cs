@@ -21,11 +21,12 @@ public class TestSuiteNamingTest
     // Scripts/ci/Run-GdUnit.ps1; Test-RunGdUnit.ps1 fails when the two copies differ.
     internal const string SuiteAttributePattern = @"^\s*\[(?:GdUnit4\.)?TestSuite(?:Attribute)?(?:\(\s*\))?\]";
 
-    // Comments and literals as one alternation, tried left to right, so a "/*" inside a string is string text. Covers
-    // line and block comments, raw, verbatim and regular strings, and char literals. Each match is blanked before suite
-    // attributes are matched. Known gaps: a string nested in an interpolation hole, and #if false blocks. Keep this text
-    // identical to $CodeNoisePattern in Scripts/ci/Run-GdUnit.ps1.
-    internal const string CodeNoisePattern = @"//[^\n]*|/\*[\s\S]*?\*/|(""{3,})[\s\S]*?\1|@""(?:[^""]|"""")*""|""(?:[^""\\\n]|\\.)*""|'(?:[^'\\\n]|\\.)+'";
+    // Comments and literals as one alternation, tried left to right, so a "/*" inside a string is string text.
+    // Covers line and block comments, raw, verbatim and regular strings, and char literals. Each match is blanked
+    // before suite attributes are matched. Known gaps: a string nested in an interpolation hole, and #if false
+    // blocks. Keep this text identical to $CodeNoisePattern in Scripts/ci/Run-GdUnit.ps1.
+    internal const string CodeNoisePattern =
+    @"//[^\n]*|/\*[\s\S]*?\*/|(""{3,})[\s\S]*?\1|@\$?""(?:[^""]|"""")*""|""(?:[^""\\\n]|\\.)*""|'(?:[^'\\\n]|\\.)+'";
 
     // \x7B is the opening brace, escaped so brace-counting tools still see balanced braces in this file.
     private static readonly Regex SuiteDeclaration = new(
@@ -38,7 +39,9 @@ public class TestSuiteNamingTest
 
     private static readonly Regex AbstractModifier = new(@"\babstract\b", RegexOptions.Compiled);
 
-    /// <summary>The source with every comment and string literal blanked to spaces; newlines are kept so line numbers hold.</summary>
+    /// <summary>
+    /// The source with every comment and string literal blanked to spaces; newlines are kept so line numbers hold.
+    /// </summary>
     public static string BlankCommentsAndStrings(string source)
     {
         return CodeNoise.Replace(source, match => NonNewline.Replace(match.Value, " "));
@@ -140,6 +143,16 @@ public class TestSuiteNamingTest
         AssertThat(SkippedSuites("EleAspectsTest.cs", source).ToList()).IsEmpty();
     }
 
+    [TestCase("@$\"")]
+    [TestCase("$@\"")]
+    [TestCategory("Unit")]
+    public static void SuiteAttributeInInterpolatedVerbatimStringIsIgnored(string prefix)
+    {
+        var source = "var text = " + prefix + "\n[TestSuite]\npublic class EleAspectsEnhancedTest\n{{\n}}\n\";\n";
+
+        AssertThat(SkippedSuites("EleAspectsTest.cs", source).ToList()).IsEmpty();
+    }
+
     [TestCase]
     [TestCategory("Unit")]
     public static void SuiteAttributeInRawStringIsIgnored()
@@ -153,7 +166,8 @@ public class TestSuiteNamingTest
     [TestCategory("Unit")]
     public static void SuiteAfterCommentAndStringNoiseIsStillFound()
     {
-        const string source = "/* note */\nvar quote = \"/*\";\n[TestSuite]\npublic class EleAspectsEnhancedTest\n{\n}\n";
+        const string source = "/* note */\nvar quote = \"/*\";\n" +
+            "[TestSuite]\npublic class EleAspectsEnhancedTest\n{\n}\n";
 
         AssertThat(SkippedSuites("EleAspectsTest.cs", source).ToList()).HasSize(1);
     }

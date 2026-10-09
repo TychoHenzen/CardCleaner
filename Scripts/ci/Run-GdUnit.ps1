@@ -39,7 +39,8 @@ $ResultLinePattern = [regex]::new('^\s*res://\S+ > .+ (PASSED|FAILED)\b|^\s*Stat
 $SuiteAttributePattern = '^\s*\[(?:GdUnit4\.)?TestSuite(?:Attribute)?(?:\(\s*\))?\]'
 # Comments and literals, in the same alternation order as the C# pattern. Known gaps: strings nested in an interpolation
 # hole, and #if false blocks.
-$CodeNoisePattern = '//[^\n]*|/\*[\s\S]*?\*/|("{3,})[\s\S]*?\1|@"(?:[^"]|"")*"|"(?:[^"\\\n]|\\.)*"|''(?:[^''\\\n]|\\.)+'''
+$CodeNoisePattern =
+    '//[^\n]*|/\*[\s\S]*?\*/|("{3,})[\s\S]*?\1|@\$?"(?:[^"]|"")*"|"(?:[^"\\\n]|\\.)*"|''(?:[^''\\\n]|\\.)+'''
 
 function Resolve-GodotConsole {
     param([string]$Binary)
@@ -59,16 +60,30 @@ function ConvertTo-ResPath {
     return 'res://' + $Path.Substring($RepositoryRoot.Length).TrimStart('\').Replace('\', '/')
 }
 
-# Blanks every comment and literal to spaces, keeping newlines, so only code can match a suite attribute.
+# Blanks every comment and literal to spaces, keeping newlines, so only code can match a suite attribute. With
+# -KeepStrings only comments are blanked, so string literals such as the "Unit" in [TestCategory("Unit")] survive.
 function Remove-CodeNoise {
-    param([string]$Source)
+    param([string]$Source, [switch]$KeepStrings)
 
-    $blank = [System.Text.RegularExpressions.MatchEvaluator] { param($match) return ($match.Value -replace '[^\r\n]', ' ') }
-    return [regex]::Replace($Source, $CodeNoisePattern, $blank)
+    # ASSUMPTION: PowerShell 7, which runs this in CI, converts these scriptblocks to MatchEvaluator as 5.1 does.
+    $blankAll = [System.Text.RegularExpressions.MatchEvaluator] {
+        param($match)
+        return ($match.Value -replace '[^\r\n]', ' ')
+    }
+    $blankComments = [System.Text.RegularExpressions.MatchEvaluator] {
+        param($match)
+        if ($match.Value.StartsWith('//') -or $match.Value.StartsWith('/*')) {
+            return ($match.Value -replace '[^\r\n]', ' ')
+        }
+        return $match.Value
+    }
+    $evaluator = if ($KeepStrings) { $blankComments } else { $blankAll }
+    return [regex]::Replace($Source, $CodeNoisePattern, $evaluator)
 }
 
 # Suite files gdUnit is expected to run: a suite attribute at the start of a code line, in any spelling that
-# TestSuiteNamingTest accepts. Comments and literals are blanked first, so a suite named only inside them is not expected.
+# TestSuiteNamingTest accepts. Comments and literals are blanked first, so a suite named only inside them
+# is not expected.
 function Get-ExpectedSuites {
     param([string]$RepositoryRoot, [switch]$UnitOnly)
 
@@ -76,8 +91,11 @@ function Get-ExpectedSuites {
     $files = Get-ChildItem -LiteralPath (Join-Path $RepositoryRoot 'Tests') -Filter '*.cs' -File -Recurse |
         Where-Object { $suiteLine.IsMatch((Remove-CodeNoise -Source ([IO.File]::ReadAllText($_.FullName)))) }
     if ($UnitOnly) {
-        # Read from the raw text: blanking would erase the "Unit" literal this filter names.
-        $files = $files | Where-Object { Select-String -LiteralPath $_.FullName -Pattern '\[TestCategory\("Unit"\)\]' -Quiet }
+        # Only comments are blanked: the "Unit" literal must survive, and a commented-out category must not count.
+        $unitCategory = [regex]'\[TestCategory\("Unit"\)\]'
+        $files = $files | Where-Object {
+            $unitCategory.IsMatch((Remove-CodeNoise -Source ([IO.File]::ReadAllText($_.FullName)) -KeepStrings))
+        }
     }
     return @($files | ForEach-Object { ConvertTo-ResPath -RepositoryRoot $RepositoryRoot -Path $_.FullName } | Sort-Object)
 }
