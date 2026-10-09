@@ -1,7 +1,7 @@
-﻿using CardCleaner.Scripts.Core.Utilities;
+﻿using CardCleaner.Scripts.Features.Card.Components;
 using GdUnit4;
 
-namespace CardCleaner.Tests.Core.Utilities;
+namespace CardCleaner.Tests.Features.Card.Components;
 
 [TestSuite]
 [RequireGodotRuntime]
