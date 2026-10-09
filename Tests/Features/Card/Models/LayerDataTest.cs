@@ -1,8 +1,8 @@
 ﻿using GdUnit4;
 using Godot;
-using LayerData = CardCleaner.Scripts.Core.Data.LayerData;
+using LayerData = CardCleaner.Scripts.Features.Card.Models.LayerData;
 
-namespace CardCleaner.Tests.Core.Data;
+namespace CardCleaner.Tests.Features.Card.Models;
 
 [TestSuite]
 [RequireGodotRuntime]

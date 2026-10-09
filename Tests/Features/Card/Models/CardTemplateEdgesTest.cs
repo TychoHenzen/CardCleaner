@@ -1,7 +1,7 @@
 using System.Linq;
-using CardCleaner.Scripts.Core.Data;
+using CardCleaner.Scripts.Features.Card.Models;
 
-namespace CardCleaner.Tests.Core.Data;
+namespace CardCleaner.Tests.Features.Card.Models;
 
 [TestSuite]
 [RequireGodotRuntime]

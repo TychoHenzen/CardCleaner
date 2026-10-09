@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Godot;
 
-namespace CardCleaner.Scripts.Core.Data;
+namespace CardCleaner.Scripts.Features.Card.Models;
 
 public partial class CardTemplate : Resource
 {

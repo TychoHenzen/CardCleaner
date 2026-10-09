@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/Features/Card/Components/FlutterCard.cs" id="4_ycqko"]
 [ext_resource type="Script" uid="uid://bgwgo4ybh5igi" path="res://Scripts/Features/Card/Components/CardShaderRenderer.cs" id="5_1sx76"]
 [ext_resource type="Script" uid="uid://dmqf3ccuvfg32" path="res://Scripts/Features/Card/Controllers/BlacklightController.cs" id="7_hllmr"]
-[ext_resource type="Script" uid="uid://chw4rd8wcr8qv" path="res://Scripts/Core/Utilities/CardSleepEnforcer.cs" id="8_53u5m"]
+[ext_resource type="Script" path="res://Scripts/Features/Card/Components/CardSleepEnforcer.cs" id="8_53u5m"]
 [ext_resource type="Script" uid="uid://6wu6tpceqfcc" path="res://Scripts/Features/Card/Components/CardMaterialManager.cs" id="8_ycqko"]
 [ext_resource type="Material" uid="uid://d368k11s8ohrk" path="res://Assets/Materials/CardMaterial.tres" id="9_r6y7f"]
 

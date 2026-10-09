@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;

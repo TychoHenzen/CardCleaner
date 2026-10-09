@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace CardCleaner.Scripts.Core.Data;
+namespace CardCleaner.Scripts.Features.Card.Models;
 
 [Tool]
 [GlobalClass]

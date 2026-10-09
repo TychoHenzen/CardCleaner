@@ -4,7 +4,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using Godot;
 
-namespace CardCleaner.Scripts.Core.Services;
+namespace CardCleaner.Scripts.Features.Player.Services;
 
 /// <summary>
 ///     Orchestrates player safety resets by coordinating between position tracker and player controller.

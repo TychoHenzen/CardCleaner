@@ -1,7 +1,7 @@
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
-namespace CardCleaner.Scripts.Core.Utilities;
+namespace CardCleaner.Scripts.Features.Card.Components;
 
 /// <summary>
 ///     Forces the card to re-enter sleep if motion is below threshold,

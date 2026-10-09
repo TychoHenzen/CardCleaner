@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Debug;
+using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Card.Models.Effects;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Tests.Features.Card.Services;
 using Godot;
-using CardCleaner.Scripts.Features.Card.Models.Effects;
 
 namespace CardCleaner.Tests.Scenes;
 
