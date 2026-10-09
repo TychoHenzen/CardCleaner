@@ -1,5 +1,6 @@
 ﻿using CardCleaner.Scripts.Features.Card.Components;
 using GdUnit4;
+using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Components;
 
@@ -7,6 +8,8 @@ namespace CardCleaner.Tests.Features.Card.Components;
 [RequireGodotRuntime]
 public class CardSleepEnforcerTest
 {
+    private const string CardShaderScene = "res://Scenes/Components/CardShader.tscn";
+
     private CardSleepEnforcer _enforcer = null!;
 
     [BeforeTest]
@@ -22,7 +25,7 @@ public class CardSleepEnforcerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void DefaultThresholds_AreReasonable()
+    public static void DefaultThresholds_AreReasonable()
     {
         // Arrange
         var defaultEnforcer = new CardSleepEnforcer();
@@ -66,5 +69,16 @@ public class CardSleepEnforcerTest
         _enforcer.PhysicsProcess(0.016); // Simulate one frame
 
         Assertions.AssertThat(_enforcer).IsNotNull();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void CardShaderScene_SleepEnforcerNodeRunsTheMovedScript()
+    {
+        // Arrange - not added to the tree: the check needs only the instanced children, not the card's _Ready
+        var card = AutoFree(GD.Load<PackedScene>(CardShaderScene).Instantiate());
+
+        // Assert - the scene's SleepEnforcer node must carry the script from its new folder
+        Assertions.AssertBool(card.GetNode("SleepEnforcer") is CardSleepEnforcer).IsTrue();
     }
 }

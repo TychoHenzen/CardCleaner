@@ -1,6 +1,4 @@
-﻿// Tests/Features/Card/Models/CardTemplateTest.cs
-
-using CardCleaner.Scripts.Features.Card.Models;
+﻿using CardCleaner.Scripts.Features.Card.Models;
 using GdUnit4;
 
 namespace CardCleaner.Tests.Features.Card.Models;
