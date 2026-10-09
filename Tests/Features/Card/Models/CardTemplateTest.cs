@@ -1,9 +1,9 @@
-﻿// Tests/Core/Data/CardTemplateTest.cs
+﻿// Tests/Features/Card/Models/CardTemplateTest.cs
 
-using CardCleaner.Scripts.Core.Data;
+using CardCleaner.Scripts.Features.Card.Models;
 using GdUnit4;
 
-namespace CardCleaner.Tests.Core.Data;
+namespace CardCleaner.Tests.Features.Card.Models;
 
 [TestSuite]
 [RequireGodotRuntime]

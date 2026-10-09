@@ -52,7 +52,7 @@ public static class SignatureCardHelper
         };
     }
 
-    public static void Apply(RandomNumberGenerator rng, Core.Data.LayerData layer, Texture2D[] options)
+    public static void Apply(RandomNumberGenerator rng, LayerData layer, Texture2D[] options)
     {
         if (options == null || options.Length == 0) return;
         var idx = options.Length == 1

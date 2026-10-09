@@ -1,5 +1,5 @@
 ﻿using System;
-using CardCleaner.Scripts.Core.Data;
+using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Components;
 using GdUnit4;
 using Godot;

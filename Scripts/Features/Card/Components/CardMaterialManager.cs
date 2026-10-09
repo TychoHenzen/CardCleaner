@@ -1,4 +1,4 @@
-﻿using CardCleaner.Scripts.Core.Data;
+﻿using CardCleaner.Scripts.Features.Card.Models;
 using System;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
