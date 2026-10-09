@@ -285,7 +285,7 @@ function Get-Interruption {
     param($Run, [string]$ReportRoot, [datetime]$AttemptStartedAt)
 
     if ($Run.Stalled) {
-        return [pscustomobject]@{ Kind = 'stall'; Text = 'stall'; Exit = $null }
+        return [pscustomobject]@{ Kind = 'stall'; Exit = $null }
     }
     if ($GdUnitExitCodes -contains $Run.ExitCode) {
         return $null
@@ -294,7 +294,63 @@ function Get-Interruption {
         return $null
     }
     $exitHex = Format-ExitCode -ExitCode $Run.ExitCode
-    return [pscustomobject]@{ Kind = 'crash'; Text = "crash $exitHex"; Exit = $exitHex }
+    return [pscustomobject]@{ Kind = 'crash'; Exit = $exitHex }
+}
+
+# Words one interruption for every message the runner prints about it. Kind alone picks the wording, so no call site
+# branches on Kind or Text to build a sentence. $Point says where it happened: "in <suite>", "after <suite>" or
+# "before the first suite". $Earlier is the interruption already recorded for $Suite, when there is one, and the repeat
+# sentence names both causes. It builds the text and returns it with the cause fields; the caller decides whether to
+# warn, throw or record.
+function Format-Interruption {
+    param($Cause, [string]$Point, [string]$LastResult, $Earlier = $null, [string]$Suite = '')
+
+    if ($Cause.Kind -eq 'stall') {
+        $label = 'stall'
+        $verb = 'stalled'
+        $detail = "no output for $StallSeconds s"
+        $resumeVerb = 'stalled'
+    }
+    else {
+        $label = "crash $($Cause.Exit)"
+        $verb = 'crashed'
+        $detail = "exit $($Cause.Exit), no results report"
+        $resumeVerb = "crashed (exit $($Cause.Exit))"
+    }
+    $repeat = $null
+    if ($null -ne $Earlier) {
+        if ($Earlier.Kind -eq 'stall' -and $Cause.Kind -eq 'stall') {
+            $repeat = "GdUnit stalled twice in $Suite"
+        }
+        else {
+            $repeat = "GdUnit was interrupted twice in $Suite ($($Earlier.Label), then $label)"
+        }
+    }
+    return [pscustomobject]@{
+        Kind = $Cause.Kind
+        Label = $label
+        Point = $Point
+        Entry = "$label $Point"
+        Warning = "GdUnit $verb $Point ($detail). Last result: $LastResult"
+        ResumeVerb = $resumeVerb
+        Repeat = $repeat
+    }
+}
+
+# The closing line of a run that passed after interruptions. A run with only stalls keeps its original wording; once a
+# crash is involved, one line names every cause.
+function Format-InterruptionSummary {
+    param($Interruptions)
+
+    # Not @($Interruptions): Windows PowerShell 5.1 throws "Argument types do not match" when it wraps a List[object].
+    $count = $Interruptions.Count
+    $crashes = @($Interruptions | Where-Object { $_.Kind -eq 'crash' })
+    if ($crashes.Count -eq 0) {
+        $points = @($Interruptions | ForEach-Object { $_.Point })
+        return "GdUnit passed after $count stall(s): " + ($points -join '; ')
+    }
+    $entries = @($Interruptions | ForEach-Object { $_.Entry })
+    return "GdUnit passed after $count interruption(s): " + ($entries -join '; ')
 }
 
 function Read-ReportTotals {
@@ -374,8 +430,8 @@ Invoke-Import -GodotPath $godotPath -RepositoryRoot $repositoryRoot -ReportRoot 
 $baseArguments = @('--headless', '--path', '.', '-s', 'res://addons/gdUnit4/bin/GdUnitCmdTool.gd', '-c', '--ignoreHeadlessMode', '-rd', 'reports/ci')
 $finished = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
 $interruptions = New-Object System.Collections.Generic.List[object]
-# Suite -> cause of its first interruption, so a second interruption in the same suite fails the run.
-$causeMapType = 'System.Collections.Generic.Dictionary[string,string]'
+# Suite -> the first interruption's formatted record, so a second interruption in the same suite fails the run.
+$causeMapType = 'System.Collections.Generic.Dictionary[string,object]'
 $interruptedSuites = New-Object $causeMapType ([StringComparer]::OrdinalIgnoreCase)
 $lastFinished = 'none'
 $lastInterruption = $null
@@ -411,31 +467,32 @@ for ($attempt = 0; ; $attempt++) {
     $errors += $progress.Errors
     $failures += $progress.Failures
     $point = Get-InterruptionPoint -Progress $progress
-    $lastResult = $progress.LastResultLine
-    if ($interruption.Kind -eq 'stall') {
-        Write-Warning "GdUnit stalled $point (no output for $StallSeconds s). Last result: $lastResult"
-    }
-    else {
-        Write-Warning "GdUnit crashed $point (exit $($interruption.Exit), no results report). Last result: $lastResult"
-    }
-    $interruptions.Add([pscustomobject]@{ Kind = $interruption.Kind; Text = $interruption.Text; Point = $point })
-    $lastInterruption = "$($interruption.Text) $point"
     $unfinished = Get-UnfinishedSuite -Progress $progress
+    $earlier = $null
+    if ($null -ne $unfinished -and $interruptedSuites.ContainsKey($unfinished)) {
+        $earlier = $interruptedSuites[$unfinished]
+    }
+    $formatArgs = @{
+        Cause = $interruption
+        Point = $point
+        LastResult = $progress.LastResultLine
+        Earlier = $earlier
+        Suite = $unfinished
+    }
+    $formatted = Format-Interruption @formatArgs
+    Write-Warning $formatted.Warning
+    $interruptions.Add($formatted)
+    $lastInterruption = $formatted.Entry
+    if ($null -ne $formatted.Repeat) {
+        throw "$($formatted.Repeat); see $stdoutPath"
+    }
     if ($null -ne $unfinished) {
-        if ($interruptedSuites.ContainsKey($unfinished)) {
-            $first = $interruptedSuites[$unfinished]
-            if ($first -eq 'stall' -and $interruption.Text -eq 'stall') {
-                throw "GdUnit stalled twice in $unfinished; see $stdoutPath"
-            }
-            throw "GdUnit was interrupted twice in $unfinished ($first, then $($interruption.Text)); see $stdoutPath"
-        }
-        $interruptedSuites[$unfinished] = $interruption.Text
+        $interruptedSuites[$unfinished] = $formatted
     }
     # A resume that finishes no suite is not converging, whether it is interrupted in a suite, between suites or at
     # startup.
     if ($attempt -gt 0 -and $progress.Finished.Count -eq 0) {
-        $verb = if ($interruption.Kind -eq 'stall') { 'stalled' } else { "crashed (exit $($interruption.Exit))" }
-        throw ("GdUnit $verb $point again after resuming, without finishing any suite " +
+        throw ("GdUnit $($formatted.ResumeVerb) $point again after resuming, without finishing any suite " +
             "(last finished: $lastFinished); see $stdoutPath")
     }
     if ($progress.Finished.Count -gt 0) {
@@ -481,15 +538,6 @@ elseif ($null -ne $finalExitCode -and $finalExitCode -ne 0) {
 }
 
 if ($interruptions.Count -gt 0) {
-    # A run with only stalls keeps its original wording. Once a crash is involved, one line names every cause.
-    $crashes = @($interruptions | Where-Object { $_.Kind -eq 'crash' })
-    if ($crashes.Count -eq 0) {
-        $points = @($interruptions | ForEach-Object { $_.Point })
-        Write-Warning "GdUnit passed after $($interruptions.Count) stall(s): $($points -join '; ')"
-    }
-    else {
-        $entries = @($interruptions | ForEach-Object { "$($_.Text) $($_.Point)" })
-        Write-Warning "GdUnit passed after $($interruptions.Count) interruption(s): $($entries -join '; ')"
-    }
+    Write-Warning (Format-InterruptionSummary -Interruptions $interruptions)
 }
 Write-Host "GdUnit passed: $($finished.Count) of $($expected.Count) suite files ran."

@@ -34,7 +34,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps
 CI scope: pull requests and pushes to `master` run only the Unit suites (`-Fast`). The full suite runs on the weekly
 schedule (Sunday 03:00 UTC) and on a manual dispatch with `full=true`, for example `gh workflow run ci.yml --ref
 <branch> -f full=true`. PR CI also fails when the latest scheduled run on `master` is not green. So a green PR or merge
-run does not prove the full suite; dispatch `full=true` on the commit that needs it.
+run does not prove the full suite; dispatch `full=true` on the branch (or tag) whose head needs it, e.g.
+`gh workflow run ci.yml --ref <branch> -f full=true`.
 
 Tests use gdUnit4 framework and require the Godot runtime (`[RequireGodotRuntime]` attribute). Test files are in `Tests/` mirroring the `Scripts/` structure.
 

@@ -704,6 +704,44 @@ function Test-CrashNoReport {
     Assert-That $tests[1].EndsWith($resumeArguments) 'the resume names only the unfinished suite and the Beta folder'
 }
 
+function Test-CrashAfterEarlierReportResumes {
+    param($Context)
+
+    # An earlier attempt's green report must not turn a later crash into an exit after a green report. Attempt 0 writes
+    # a report for Alpha and then stalls in AlphaTwo. Attempt 1 finishes AlphaTwo and crashes in Beta without writing a
+    # report of its own, so the crash is resumed. Attempt 2 finishes Beta. A crash in AlphaTwo itself would repeat the
+    # stall in that suite and fail the run, so this crash comes after AlphaTwo has finished.
+    Set-FakePlan -Context $Context -Index 0 -Lines @(
+        (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats),
+        'report r1 0 0',
+        (Get-SuiteStart $SuiteAlphaTwo),
+        'stall')
+    Set-FakePlan -Context $Context -Index 1 -Lines @(
+        (Get-SuiteStart $SuiteAlphaTwo), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteBeta),
+        'exit -1073741795')
+    Set-FakePlan -Context $Context -Index 2 -Lines @(
+        (Get-SuiteStart $SuiteBeta), (Get-SuiteStats),
+        'report r2 0 0',
+        'exit 0')
+    $result = Invoke-Runner -Context $Context
+    $output = Get-FlatRunnerOutput $result
+    Assert-ExitCode -Result $result -Expected 0 -Message 'a crash after an earlier green report resumes and exits 0'
+    $tests = @(Get-RunnerTestCalls -Context $Context)
+    Assert-Equal 3 $tests.Count 'one run, then one resume after the stall and one after the crash'
+    $stallResume = '-a ' + $SuiteAlphaTwo + ' -a res://Tests/Beta'
+    Assert-That $tests[1].EndsWith($stallResume) 'the stall resume names AlphaTwo and the Beta folder'
+    Assert-That $tests[2].EndsWith('-a res://Tests/Beta') 'the crash resume names only the Beta folder'
+    $crashWarning = 'WARNING: GdUnit crashed in ' + $SuiteBeta + ' (exit 0xC000001D, no results report).'
+    Assert-Contains $output $crashWarning 'the crash is judged by its own attempt, not by the earlier report'
+    Assert-Line $result.Stdout 'Resuming with 1 unfinished suite(s): res://Tests/Beta' 'the crash resumes only Beta'
+    Assert-Line $result.Stdout 'GdUnit passed: 3 of 3 suite files ran.' 'every suite finished across the three attempts'
+    $passedWarning = 'WARNING: GdUnit passed after 2 interruption(s): stall in ' + $SuiteAlphaTwo +
+        '; crash 0xC000001D in ' + $SuiteBeta
+    Assert-Contains $output $passedWarning 'the passing run reports both the stall and the crash'
+    Assert-ProcessesGone -Context $Context
+}
+
 function Test-RepeatedCrashFails {
     param($Context)
 
@@ -889,9 +927,9 @@ function Test-PatternLockstep {
 
 # Every check in run order. -Only must name one of them (letter case does not matter) and then runs alone.
 $AllChecks = @(
-    'CleanRun', 'Fast', 'StallResumes', 'RepeatedStallFails', 'CrashNoReport', 'RepeatedCrashFails',
-    'StallThenCrashFails', 'CrashResumeNoProgressFails', 'InterruptionBudget', 'GdUnitExitCodes',
-    'ReportAggregation', 'PatternLockstep')
+    'CleanRun', 'Fast', 'StallResumes', 'RepeatedStallFails', 'CrashNoReport', 'CrashAfterEarlierReportResumes',
+    'RepeatedCrashFails', 'StallThenCrashFails', 'CrashResumeNoProgressFails', 'InterruptionBudget',
+    'GdUnitExitCodes', 'ReportAggregation', 'PatternLockstep')
 if ([string]::IsNullOrWhiteSpace($Only)) {
     $checks = $AllChecks
 }
@@ -903,6 +941,8 @@ else {
     }
 }
 
+# The name column is as wide as the longest check name, so every row lines up whichever checks run.
+$nameWidth = [int]($AllChecks | Measure-Object -Property Length -Maximum).Maximum
 $passedCount = 0
 $setupFailed = $false
 $total = [Diagnostics.Stopwatch]::StartNew()
@@ -923,7 +963,7 @@ try {
             $detail = $_.Exception.Message
         }
         $seconds = [math]::Round(((Get-Date) - $started).TotalSeconds, 1)
-        Write-Host ('{0,-20} {1}  {2,6} s  {3}' -f $check, $status, $seconds, $detail)
+        Write-Host ('{0} {1}  {2,6} s  {3}' -f $check.PadRight($nameWidth), $status, $seconds, $detail)
     }
 }
 catch {
