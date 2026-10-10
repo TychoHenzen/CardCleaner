@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 
@@ -15,7 +16,7 @@ public partial class BiomeGridGenerationTest : BiomeGridIntegrationTestBase
     public void GenerateMultiBiome_WithGradient_CreatesBiomeGrid()
     {
         // Arrange
-        var generator = new WfcMapGenerator(_rules, _tileRegistry);
+        var generator = new WfcMapGenerator(_rules, new TileRegistryWfcCatalog(_tileRegistry));
         var gradient = new FixedGradient(new CardSignature(new[] { 0f, 0.5f, 0f, 0f, 0f, 0f, 0f, 0f }));
 
         // Act
@@ -37,7 +38,7 @@ public partial class BiomeGridGenerationTest : BiomeGridIntegrationTestBase
     public void GenerateMultiBiome_WithoutGradient_StillWorks()
     {
         // Arrange
-        var generator = new WfcMapGenerator(_rules, _tileRegistry);
+        var generator = new WfcMapGenerator(_rules, new TileRegistryWfcCatalog(_tileRegistry));
 
         // Act: Pass null gradient (backwards compatible)
         var result = generator.GenerateMultiBiome(

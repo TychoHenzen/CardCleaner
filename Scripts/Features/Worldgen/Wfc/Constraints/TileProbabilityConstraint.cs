@@ -4,7 +4,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
 /// <summary>
 /// Applies tile probability as a weight modifier during WFC selection.
-/// Uses TileDefinition.Probability for individual tiles and VariationGroup.MaxWeight for grouped tiles.
+/// Uses IWfcTileCatalog.GetProbability for individual tiles and the variation density for grouped tiles.
 /// This enables the TSX probability attribute to control tile density.
 ///
 /// For PerGeneration variation groups (e.g., grass1/grass2/grass3), this constraint

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
@@ -9,14 +10,19 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 internal sealed class MeshTerrainWfcRunner
 {
     private readonly IWfcTerrainSolver _solver;
+    private readonly ITileRegistry? _tileRegistry;
     private readonly MeshTerrainProjection _projection;
     private readonly MeshForegroundWfc _foregroundWfc;
 
-    public MeshTerrainWfcRunner(IWfcTerrainSolver solver, Dictionary<string, int>? tileToTerrainType)
+    public MeshTerrainWfcRunner(
+        IWfcTerrainSolver solver,
+        ITileRegistry? tileRegistry,
+        Dictionary<string, int>? tileToTerrainType)
     {
         _solver = solver;
-        _projection = new MeshTerrainProjection(solver.TileRegistry, tileToTerrainType);
-        _foregroundWfc = new MeshForegroundWfc(solver);
+        _tileRegistry = tileRegistry;
+        _projection = new MeshTerrainProjection(tileRegistry, tileToTerrainType);
+        _foregroundWfc = new MeshForegroundWfc(solver, tileRegistry);
     }
 
     public IrregularMesh Generate(
@@ -32,7 +38,7 @@ internal sealed class MeshTerrainWfcRunner
             getBiomeAt,
             effectiveSize,
             seed,
-            tile => !tile.HasAutoTileVariants);
+            tileId => _tileRegistry?.GetTile(tileId)?.HasAutoTileVariants == false);
 
         if (!backgroundResult.Success || backgroundResult.TileIds == null)
         {

@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -89,7 +90,7 @@ public class ConnectivityVerificationTest
 
         var rules = new WfcAdjacencyRules(pairs.ToArray());
         // Pass tile registry so WfcMapGenerator uses TileDefinition.IsPassable as source of truth
-        return new WfcMapGenerator(rules, _tileRegistry);
+        return new WfcMapGenerator(rules, new TileRegistryWfcCatalog(_tileRegistry));
     }
 
     /// <summary>

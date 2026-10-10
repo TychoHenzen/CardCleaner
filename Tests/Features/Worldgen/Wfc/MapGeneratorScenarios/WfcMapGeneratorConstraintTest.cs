@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Tests.Features.Worldgen.Support;
@@ -26,7 +27,7 @@ public class WfcMapGeneratorConstraintTest : WfcMapGeneratorIntegrationTestBase
 
         // Create tile registry with test tiles
         var tileRegistry = WfcTestFixtures.CreateTestTileRegistry("plains", "A", "B", "C");
-        var generator = new WfcMapGenerator(customRules, tileRegistry);
+        var generator = new WfcMapGenerator(customRules, new TileRegistryWfcCatalog(tileRegistry));
 
         // Create simple biome with A, B, C tiles
         var passable = new TilePool();

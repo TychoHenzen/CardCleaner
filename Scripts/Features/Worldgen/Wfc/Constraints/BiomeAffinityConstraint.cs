@@ -10,7 +10,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// Tiles allowed in biomes with higher strength at a position get boosted.
 /// </summary>
 /// <remarks>
-/// For each biome the tile is allowed in (via TileDefinition.AllowedBiomes),
+/// For each biome the tile is allowed in (via IWfcTileCatalog.IsAllowedInBiome),
 /// the constraint calculates: 1.0 + (biomeStrength * boostFactor).
 /// For tiles in multiple biomes, uses the maximum strength to prevent dilution.
 /// Universal tiles (AllowedBiomes == null) get neutral weighting.
@@ -76,7 +76,7 @@ public class BiomeAffinityConstraint : IWfcConstraint
 
     /// <summary>
     /// Builds a lookup from tile ID to list of biome IDs that the tile is allowed in.
-    /// Uses TileDefinition.AllowedBiomes instead of explicit biome tile pools.
+    /// Uses IWfcTileCatalog.HasBiomeRestriction and IsAllowedInBiome instead of explicit biome tile pools.
     /// </summary>
     private Dictionary<string, List<string>> BuildTileToBiomesMap()
     {

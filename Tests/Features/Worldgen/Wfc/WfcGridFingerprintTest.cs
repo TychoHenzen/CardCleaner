@@ -5,6 +5,7 @@ using System.Text;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -38,7 +39,9 @@ public class WfcGridFingerprintTest
         var gradient = new CardBasedGradient(MapCards(), rng);
         var biomeProvider = new BiomeMapGenerator(biomeRegistry, gradient, GridSize);
         var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
-        var wfcGenerator = new WfcMapGenerator(new WfcAdjacencyRules(transitionPairs), tileRegistry);
+        var wfcGenerator = new WfcMapGenerator(
+            new WfcAdjacencyRules(transitionPairs),
+            new TileRegistryWfcCatalog(tileRegistry));
         var generator = new SimpleMapGenerator(
             rng, biomeProvider, tileRegistry, tileRegistry, wfcGenerator, biomeRegistry, gradient);
 

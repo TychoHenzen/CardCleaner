@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
@@ -96,10 +95,10 @@ public class WfcMapGenerator
         _constraintSet.SetSelectedVariants(selectedVariants);
     }
 
-    public WfcMapGenerator(WfcAdjacencyRules adjacencyRules, ITileRegistry? tileRegistry = null)
+    public WfcMapGenerator(WfcAdjacencyRules adjacencyRules, IWfcTileCatalog? tileCatalog = null)
     {
         _adjacencyRules = adjacencyRules;
-        _tileCatalog = tileRegistry != null ? new TileRegistryWfcCatalog(tileRegistry) : null;
+        _tileCatalog = tileCatalog;
         _blobTracker = new BlobSizeTracker();
         _diminishingReturns = new DiminishingReturnsSoftModifier(_blobTracker);
         _novelty = new NoveltySoftModifier();
@@ -107,12 +106,12 @@ public class WfcMapGenerator
         _spatialCoherence = new SpatialCoherenceConstraint(_tileCatalog);
         _constraintSet = new WfcConstraintSet(_diminishingReturns, _spatialCoherence, _compactness, _tileCatalog);
         _selector = new WfcTileSelector();
-        _tileSetBuilder = new WfcTileSetBuilder(adjacencyRules, tileRegistry);
+        _tileSetBuilder = new WfcTileSetBuilder(adjacencyRules, tileCatalog);
 
         // Allow all non-auto-tiles to be adjacent to each other (for background layer WFC)
-        if (tileRegistry != null)
+        if (tileCatalog != null)
         {
-            GapTileAdjacencyConfigurator.Configure(_adjacencyRules, tileRegistry);
+            GapTileAdjacencyConfigurator.Configure(_adjacencyRules, tileCatalog);
         }
     }
 
@@ -163,7 +162,7 @@ public class WfcMapGenerator
         Vector2I size,
         ulong seed,
         BaselineGradient? gradient = null,
-        Func<TileDefinition, bool>? tileFilter = null)
+        Func<string, bool>? tileFilter = null)
     {
         var tileSets = _tileSetBuilder.ForAllBiomes(biomeRegistry, tileFilter);
         var allTiles = tileSets.AllTiles;

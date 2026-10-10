@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
@@ -19,7 +20,7 @@ public partial class BiomeGridInfluenceTest : BiomeGridIntegrationTestBase
         // We compare maps generated with different gradients.
 
         // Arrange
-        var generator = new WfcMapGenerator(_rules, _tileRegistry);
+        var generator = new WfcMapGenerator(_rules, new TileRegistryWfcCatalog(_tileRegistry));
 
         // Gradient that matches fire biome
         var fireGradient = new FixedGradient(new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }));

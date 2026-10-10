@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -34,7 +35,9 @@ internal sealed class DefaultSessionMapBuilder
         // Create WFC generator with hard constraints (2x2 window, adjacency rules)
         // Pass tile registry so WfcMapGenerator uses TileDefinition.IsPassable for connectivity
         var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
-        var wfcGenerator = new WfcMapGenerator(new WfcAdjacencyRules(transitionPairs), tileRegistry);
+        var wfcGenerator = new WfcMapGenerator(
+            new WfcAdjacencyRules(transitionPairs),
+            new TileRegistryWfcCatalog(tileRegistry));
 
         // Create map generator with WFC for terrain generation
         var mapGenerator = new SimpleMapGenerator(

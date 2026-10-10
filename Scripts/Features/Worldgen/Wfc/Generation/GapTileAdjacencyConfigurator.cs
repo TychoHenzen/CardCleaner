@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -15,26 +13,26 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 internal static class GapTileAdjacencyConfigurator
 {
     /// <summary>
-    /// Adds the gap-tile adjacencies. A tile filter limits which registry tiles take part; by default all do.
+    /// Adds the gap-tile adjacencies. A tile filter limits which catalog tiles take part; by default all do.
     /// </summary>
     internal static void Configure(
         WfcAdjacencyRules adjacencyRules,
-        ITileRegistry tileRegistry,
-        Func<TileDefinition, bool>? tileFilter = null,
+        IWfcTileCatalog tileCatalog,
+        Func<string, bool>? tileFilter = null,
         bool logSummary = true)
     {
         var gapTiles = new List<string>();
         var autoTiles = new List<string>();
 
-        foreach (var tile in tileRegistry.GetAllTiles())
+        foreach (var tileId in tileCatalog.TileIds)
         {
-            if (tileFilter != null && !tileFilter(tile))
+            if (tileFilter != null && !tileFilter(tileId))
                 continue;
 
-            if (!tile.HasAutoTileVariants)
-                gapTiles.Add(tile.Id);
+            if (!tileCatalog.IsAutoTile(tileId))
+                gapTiles.Add(tileId);
             else
-                autoTiles.Add(tile.Id);
+                autoTiles.Add(tileId);
         }
 
         if (gapTiles.Count > 0)
