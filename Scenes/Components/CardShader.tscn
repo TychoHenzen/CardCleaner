@@ -90,16 +90,20 @@ AttrLabel = NodePath("../Description")
 [node name="Title" type="Label3D" parent="."]
 transform = Transform3D(0.05, 0, 0, 0, -2.18557e-09, 0.05, 0, -0.05, -2.18557e-09, 0, 0.006, 0.00742067)
 shaded = true
+render_priority = 1
 text = "test"
 font_size = 120
+outline_size = 0
 
 [node name="Description" type="Label3D" parent="."]
 transform = Transform3D(0.05, 0, 0, 0, -2.18557e-09, 0.05, 0, -0.05, -2.18557e-09, -8.03098e-05, 0.00622179, 0.110162)
 shaded = true
+render_priority = 1
 text = "testafgsasdfasdfasdas
 
 asggasfg"
 font_size = 100
+outline_size = 0
 autowrap_mode = 3
 width = 1000.0
 
