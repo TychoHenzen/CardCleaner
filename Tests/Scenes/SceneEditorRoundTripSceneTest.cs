@@ -37,8 +37,8 @@ public class SceneEditorRoundTripSceneTest
     // Instantiated with the editor's edit state (which restores the editable-instance flags), packed, and
     // instantiated again: any stored value of the first that the second lacks would be deleted from the file by a
     // save. Nodes are matched by their path from the root. The saved text of the pack must keep every node stanza and
-    // editable line of the file's own saved text.
-    private static List<string> LostValues(string scenePath)
+    // editable line of the file's own saved text. SceneStanzaCheckTest runs its fixtures through this same method.
+    internal static List<string> LostValues(string scenePath)
     {
         var file = GD.Load<PackedScene>(scenePath);
         var original = file.Instantiate<Node>(PackedScene.GenEditState.Main);

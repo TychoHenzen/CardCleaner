@@ -102,12 +102,13 @@ public class SceneStanzaCheckTest
 
     // An override on a child of an instance that is not editable is dropped by an editor save (the editor writes only
     // what the outer scene owns), so its stanza disappears. The fixtures override only a group, which the node-property
-    // comparison in SceneEditorRoundTripSceneTest does not see (groups are not stored properties).
+    // comparison in SceneEditorRoundTripSceneTest does not see (groups are not stored properties). The fixtures run
+    // through that test's own LostValues, so they prove the path every scene under res://Scenes takes.
     [TestCase]
     [TestCategory("Unit")]
     public static void AnOverrideOnANonEditableInstanceIsReported()
     {
-        AssertThat(SceneStanzaCheck.MissingAfterEditorSave($"{Fixtures}/RoundTripOverride.tscn"))
+        AssertThat(SceneEditorRoundTripSceneTest.LostValues($"{Fixtures}/RoundTripOverride.tscn"))
             .ContainsExactly("missing node Child/Leaf");
     }
 
@@ -117,7 +118,7 @@ public class SceneStanzaCheckTest
     {
         var path = $"{Fixtures}/RoundTripEditableOverride.tscn";
 
-        AssertThat(SceneStanzaCheck.MissingAfterEditorSave(path)).IsEmpty();
+        AssertThat(SceneEditorRoundTripSceneTest.LostValues(path)).IsEmpty();
         AssertThat(SceneStanzaCheck.CanonicalKeys(path)).Contains("node Child/Leaf", "editable Child");
     }
 }

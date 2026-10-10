@@ -11,42 +11,32 @@ namespace CardCleaner.Tests.Scenes;
 /// <summary>
 /// Compares a scene's canonical save (the loaded file saved again) with an editor-style save (instantiated with the
 /// editor's edit state, packed and saved) as text, and names every node stanza or editable line the first has and the
-/// second lacks. Nodes are keyed by parent path and name, so resource ids, unique ids, parent_id_path, the header,
-/// stanza order and property order do not count. Property values are not compared.
+/// second lacks. Nodes are keyed by the parent= path and name, so resource ids, unique ids, the header, stanza order
+/// and property order do not count, and a parent_id_path attribute is ignored. A node stanza after the root without
+/// parent= is reported as unparsable. Property values are not compared.
 /// </summary>
 public static partial class SceneStanzaCheck
 {
-    public const string TempFilePrefix = "scene-round-trip-";
-
-    /// <summary>Loads, packs and saves the scene twice and returns what the editor-style save lost.</summary>
-    public static List<string> MissingAfterEditorSave(string scenePath)
-    {
-        var file = GD.Load<PackedScene>(scenePath);
-        var instance = file.Instantiate<Node>(PackedScene.GenEditState.Main);
-        try
-        {
-            var packed = new PackedScene();
-            var error = packed.Pack(instance);
-            return error == Error.Ok ? Missing(file, packed) : [$"Pack failed with {error}"];
-        }
-        finally
-        {
-            instance.Free();
-        }
-    }
+    private const string TempFilePrefix = "scene-round-trip-";
 
     /// <summary>
     /// What the editor-style save <paramref name="editorPacked" /> lost from <paramref name="file" />.
     /// </summary>
     public static List<string> Missing(PackedScene file, PackedScene editorPacked) =>
-        Missing(SavedText(file), SavedText(editorPacked));
+        Missing(
+            SavedText(file, file.ResourcePath),
+            SavedText(editorPacked, $"the editor-style pack of {file.ResourcePath}"));
 
     /// <summary>
     /// The keys of the scene's canonical save, as <see cref="Missing(string, string)" /> compares them.
     /// </summary>
     public static IReadOnlySet<string> CanonicalKeys(string scenePath) =>
-        Parse(SavedText(GD.Load<PackedScene>(scenePath))).Keys;
+        Parse(SavedText(GD.Load<PackedScene>(scenePath), scenePath)).Keys;
 
+    /// <summary>
+    /// The unparsable stanzas of either text, then every node or editable key of <paramref name="canonicalText" />
+    /// that <paramref name="savedText" /> lacks, as "missing &lt;key&gt;".
+    /// </summary>
     public static List<string> Missing(string canonicalText, string savedText)
     {
         var canonical = Parse(canonicalText);
@@ -98,15 +88,16 @@ public static partial class SceneStanzaCheck
     [GeneratedRegex("""(?<=[\[\s])(name|parent|path)="((?:[^"\\]|\\.)*)"(?=[\s\]])""")]
     private static partial Regex HeaderAttributes();
 
-    // Saved to a temporary user:// file and read back; the file is deleted again whatever happens.
-    private static string SavedText(PackedScene scene)
+    // Saved to a temporary user:// file and read back; the file is deleted when the save returns or throws.
+    // The name identifies the scene in the failure message, because an in-memory pack has no resource path.
+    private static string SavedText(PackedScene scene, string name)
     {
         var path = $"user://{TempFilePrefix}{Guid.NewGuid():N}.tscn";
         try
         {
             var error = ResourceSaver.Save(scene, path);
             if (error != Error.Ok)
-                throw new InvalidOperationException($"Saving {scene.ResourcePath} to {path} failed with {error}");
+                throw new InvalidOperationException($"Saving {name} to {path} failed with {error}");
 
             return FileAccess.GetFileAsString(path);
         }
