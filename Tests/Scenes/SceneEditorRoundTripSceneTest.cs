@@ -10,7 +10,9 @@ namespace CardCleaner.Tests.Scenes;
 /// editable flag loads fine and loses those values on the first editor save (the node stays, because the instanced
 /// scene still holds it). Packing every scene the way the editor does, from an instance made with the editor's edit
 /// state, and comparing the stored values exposes it without opening the editor. Resources are compared by file
-/// path, so the contents of inline sub-resources are not checked.
+/// path, so the contents of inline sub-resources are not checked. The packed scene is also saved as text and compared
+/// with the file's canonical save: a node stanza or an editable line that the save drops fails the test as well
+/// (<see cref="SceneStanzaCheck" />).
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -34,10 +36,12 @@ public class SceneEditorRoundTripSceneTest
 
     // Instantiated with the editor's edit state (which restores the editable-instance flags), packed, and
     // instantiated again: any stored value of the first that the second lacks would be deleted from the file by a
-    // save. Nodes are matched by their path from the root.
-    private static List<string> LostValues(string scenePath)
+    // save. Nodes are matched by their path from the root. The saved text of the pack must keep every node stanza and
+    // editable line of the file's own saved text. SceneStanzaCheckTest runs its fixtures through this same method.
+    internal static List<string> LostValues(string scenePath)
     {
-        var original = GD.Load<PackedScene>(scenePath).Instantiate<Node>(PackedScene.GenEditState.Main);
+        var file = GD.Load<PackedScene>(scenePath);
+        var original = file.Instantiate<Node>(PackedScene.GenEditState.Main);
         var packed = new PackedScene();
         var error = packed.Pack(original);
         if (error != Error.Ok)
@@ -51,6 +55,7 @@ public class SceneEditorRoundTripSceneTest
         Compare(original, original, saved, lost);
         original.Free();
         saved.Free();
+        lost.AddRange(SceneStanzaCheck.Missing(file, packed));
         return lost;
     }
 

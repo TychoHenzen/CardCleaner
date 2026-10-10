@@ -101,7 +101,16 @@ public override void _Ready()
 
 ### Overriding Nodes Inside an Instanced Scene
 
-An outer scene must not override properties of nodes that belong to an instanced scene (a `[node name="X" parent="Some/Instance"]` stanza with no `type=` or `instance=`) unless that instance is marked editable (`[editable path="Some/Instance"]`). Without the flag the scene loads fine, but the editor silently drops those values on the next save (this deleted the workshop `ReturnSeam` wiring from `ShopScene.tscn` twice). Put the node in the outer scene instead: add a new instance under the instance's root and set its exports on that node, as the backoffice `Seam` and `ReturnSeam` do. `SceneEditorRoundTripSceneTest` packs every scene under `Scenes/` the way the editor does and fails when a stored value is lost.
+An outer scene must not override properties of nodes that belong to an instanced scene (a `[node name="X"
+parent="Some/Instance"]` stanza with no `type=` or `instance=`) unless that instance is marked editable (`[editable
+path="Some/Instance"]`). Without the flag the scene loads fine, but the editor silently drops those values on the next
+save (this deleted the workshop `ReturnSeam` wiring from `ShopScene.tscn` twice). Put the node in the outer scene
+instead: add a new instance under the instance's root and set its exports on that node, as the backoffice `Seam` and
+`ReturnSeam` do. `SceneEditorRoundTripSceneTest` packs every scene under `Scenes/` the way the editor does and fails
+when a stored node value is lost, or when a `[node]` stanza or `[editable]` line of the file's canonical save (the
+loaded file saved again unchanged) is missing from the editor-style save (`SceneStanzaCheck`). A dropped override loses
+its whole stanza, so this also catches an override that changes no stored property, such as a group-only override. The
+test does not compare the contents of inline sub-resources.
 
 ### Export Default Preservation (Inspector Reset Button)
 
