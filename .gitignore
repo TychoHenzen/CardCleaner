@@ -136,6 +136,38 @@ Scripts/Tools/*.png.import
 # Godot auto-generated files
 *.uid
 *.import
+# Godot 4.4+ guidance: commit script and shader .uid files so scene references stay stable across clones
+!Scripts/**/*.uid
+!Tests/**/*.uid
+!Shaders/**/*.uid
+# Sidecars Godot left behind when these sources moved; the files stay on disk but are never tracked
+/Scripts/Core/Data/CardTemplate.cs.uid
+/Scripts/Core/Data/LayerData.cs.uid
+/Scripts/Core/ServiceProviders/CardServiceProvider.cs.uid
+/Scripts/Core/Services/CollisionShapes/RowSpan.cs.uid
+/Scripts/Core/Services/GameSaveService.cs.uid
+/Scripts/Core/Services/PlayerResetService.cs.uid
+/Scripts/Core/Services/SaveGame/SavedCardReader.cs.uid
+/Scripts/Core/Services/SaveGame/SavedCardRecord.cs.uid
+/Scripts/Core/Services/SaveGame/SavedCardRespawner.cs.uid
+/Scripts/Core/Services/TerrainCollisionShapeGenerator.cs.uid
+/Scripts/Core/Utilities/CardSleepEnforcer.cs.uid
+/Scripts/Core/Utilities/CsgBaker.cs.uid
+/Scripts/Features/Deckbuilder/Models/DeckSlot.cs.uid
+/Scripts/Features/Deckbuilder/Services/TerrainSelection.cs.uid
+/Scripts/Features/Worldgen/IrregularMesh/IrregularMeshDebugRenderer.cs.uid
+/Scripts/Features/Worldgen/IrregularMesh/IrregularMeshTest.cs.uid
+/Scripts/Features/Worldgen/Wfc/WfcMapDataAdapter.cs.uid
+/Tests/Core/Data/CardTemplateEdgesTest.cs.uid
+/Tests/Core/Data/CardTemplateTest.cs.uid
+/Tests/Core/Data/LayerDataTest.cs.uid
+/Tests/Core/ServiceProviders/CardServiceProviderTest.cs.uid
+/Tests/Core/Services/TerrainCollisionShapeGeneratorTest.cs.uid
+/Tests/Core/Services/VariationGroupScenarios/TileProbabilityConstraintForTest.cs.uid
+/Tests/Core/Utilities/CardSleepEnforcerTest.cs.uid
+/Tests/Core/Utilities/CsgBakerTest.cs.uid
+/Tests/Scenes/SceneRoundTripComparer.cs.uid
+/Tests/Scenes/SceneRoundTripComparerTest.cs.uid
 
 # Cygwin/MSYS tools (for example grep.exe in Git Bash) write this file when they crash
 *.stackdump
