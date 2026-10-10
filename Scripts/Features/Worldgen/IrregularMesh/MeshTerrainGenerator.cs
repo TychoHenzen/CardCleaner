@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
@@ -32,7 +33,12 @@ public class MeshTerrainGenerator
     public MeshTerrainGenerator(
         Dictionary<string, HashSet<string>> adjacencyRules,
         Dictionary<string, int> tileToTerrainType)
-        : this(IWfcTerrainSolver.Create(adjacencyRules, null), tileToTerrainType)
+        : this(
+            IWfcTerrainSolver.Create(
+                new CompiledTransitionResolver().GetAllTransitionPairs().ToList(),
+                adjacencyRules,
+                null),
+            tileToTerrainType)
     {
         GD.PrintErr("[MeshTerrainGen] Using legacy constructor without tile registry - two-pass WFC will not work!");
     }

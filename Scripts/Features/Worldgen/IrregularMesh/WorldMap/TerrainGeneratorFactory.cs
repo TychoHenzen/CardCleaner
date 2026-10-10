@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 
@@ -15,7 +17,8 @@ internal static class TerrainGeneratorFactory
     {
         // The solver's registry drives the background and foreground solves. The caller's registry only
         // decides passability in the terrain-type map.
-        var solver = IWfcTerrainSolver.Create(null, new TileRegistry());
+        var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
+        var solver = IWfcTerrainSolver.Create(transitionPairs, null, new TileRegistry());
         var tileToTerrainType = AssignTerrainTypes(solver.RuleTileIds, tileRegistry);
         var generator = new MeshTerrainGenerator(solver, tileToTerrainType);
 

@@ -5,7 +5,6 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
@@ -97,11 +96,6 @@ public class WfcMapGenerator
     public void SetSelectedVariants(Dictionary<string, string>? selectedVariants)
     {
         _constraintSet.SetSelectedVariants(selectedVariants);
-    }
-
-    public WfcMapGenerator(CompiledTransitionResolver transitionResolver, ITileRegistry? tileRegistry = null)
-        : this(new WfcAdjacencyRules(transitionResolver), tileRegistry)
-    {
     }
 
     public WfcMapGenerator(WfcAdjacencyRules adjacencyRules, ITileRegistry? tileRegistry = null)

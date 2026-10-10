@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
@@ -38,14 +39,15 @@ public class WfcTerrainSolverRuleTileIdsTest
         AssertBool(withGaps.AllTileIds.Contains(ProbeGapTileId)).IsTrue();
         AssertBool(expected.AllTileIds.Contains(ProbeGapTileId)).IsFalse();
 
-        var solver = IWfcTerrainSolver.Create(adjacency, registry);
+        var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
+        var solver = IWfcTerrainSolver.Create(transitionPairs, adjacency, registry);
 
         AssertString(string.Join("|", solver.RuleTileIds)).IsEqual(string.Join("|", expected.AllTileIds));
     }
 
     private static WfcAdjacencyRules AdjacencyRules(Dictionary<string, HashSet<string>> adjacency)
     {
-        var rules = new WfcAdjacencyRules(new CompiledTransitionResolver());
+        var rules = new WfcAdjacencyRules(new CompiledTransitionResolver().GetAllTransitionPairs().ToList());
         foreach (var (tile, neighbors) in adjacency)
         {
             foreach (var neighbor in neighbors)

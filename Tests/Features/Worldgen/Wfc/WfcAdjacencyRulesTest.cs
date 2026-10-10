@@ -11,12 +11,12 @@ public class WfcAdjacencyRulesTest
     private readonly CompiledTransitionResolver _resolver = new();
 
     [TestCase]
-    public void TestResolverConstructorPopulatesCompiledTransitions()
+    public void TestPairConstructorPopulatesCompiledTransitions()
     {
         var pairs = _resolver.GetAllTransitionPairs().ToList();
         AssertThat(pairs.Count).IsGreater(0);
 
-        var rules = new WfcAdjacencyRules(_resolver);
+        var rules = new WfcAdjacencyRules(pairs);
 
         AssertThat(rules.AllTileIds.Count).IsGreater(0);
         foreach (var (inner, outer) in pairs)

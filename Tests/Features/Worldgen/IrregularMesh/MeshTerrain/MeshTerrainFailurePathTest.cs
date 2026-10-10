@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -28,7 +29,8 @@ public class MeshTerrainFailurePathTest
     {
         // ASSUMPTION: seed 4242 with these cards reaches the foreground step, as MeshTerrainFingerprintTest pins.
         var registry = new TileRegistry();
-        var solver = new FailingSolver(IWfcTerrainSolver.Create(null, registry), AutoTileId(registry));
+        var solver = new FailingSolver(
+            IWfcTerrainSolver.Create(TransitionPairs(), null, registry), AutoTileId(registry));
         var generator = new IrregularMeshNs.MeshTerrainGenerator(solver, new Dictionary<string, int>());
         generator.SetBiomeRegistry(DefaultBiomes());
 
@@ -49,7 +51,8 @@ public class MeshTerrainFailurePathTest
     public static void NoForegroundCandidatesNeverCallsTheSolver()
     {
         var registry = new TileRegistry();
-        var solver = new FailingSolver(IWfcTerrainSolver.Create(null, registry), AutoTileId(registry));
+        var solver = new FailingSolver(
+            IWfcTerrainSolver.Create(TransitionPairs(), null, registry), AutoTileId(registry));
         var mesh = IrregularMeshNs.MeshGenerator.Generate(new IrregularMeshNs.MeshGenerator.GenerationConfig
         {
             Rings = 3,
@@ -75,7 +78,7 @@ public class MeshTerrainFailurePathTest
             { "water", new HashSet<string> { "grass", "water" } }
         };
         var tileToTerrain = new Dictionary<string, int> { { "grass", 5 }, { "water", 0 } };
-        var solver = new FailingSolver(IWfcTerrainSolver.Create(adjacency, null), "grass");
+        var solver = new FailingSolver(IWfcTerrainSolver.Create(TransitionPairs(), adjacency, null), "grass");
         var generator = new IrregularMeshNs.MeshTerrainGenerator(solver, tileToTerrain);
 
         var mesh = generator.GenerateFromRules(3, 777);
@@ -87,6 +90,9 @@ public class MeshTerrainFailurePathTest
         AssertBool(mesh.Vertices.All(vertex => vertex.TerrainType == 1)).IsTrue();
         AssertBool(mesh.Vertices.All(vertex => vertex.TileId == null && vertex.ForegroundTileId == null)).IsTrue();
     }
+
+    private static IReadOnlyList<(string tileA, string tileB)> TransitionPairs() =>
+        new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
 
     private static string AutoTileId(ITileRegistry registry) =>
         registry.GetAllTiles().First(tile => tile.HasAutoTileVariants).Id;

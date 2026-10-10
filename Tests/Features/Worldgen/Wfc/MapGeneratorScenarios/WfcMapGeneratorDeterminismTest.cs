@@ -14,7 +14,7 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestDifferentSeedsProduceDifferentMaps()
     {
-        var generator = new WfcMapGenerator(_resolver);
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
         var biome = _biomeRegistry.GetBiome("plains");
 
         var result1 = generator.Generate(biome!, new Vector2I(8, 8), 111);
@@ -65,7 +65,7 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestSameSeedProducesSameMap()
     {
-        var generator = new WfcMapGenerator(_resolver);
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
         var biome = _biomeRegistry.GetBiome("plains");
 
         var result1 = generator.Generate(biome!, new Vector2I(8, 8), 42);
@@ -93,7 +93,7 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestPassableTilesPopulated()
     {
-        var generator = new WfcMapGenerator(_resolver);
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
         var biome = _biomeRegistry.GetBiome("plains");
 
         var result = generator.Generate(biome!, new Vector2I(10, 10), 12345);
@@ -120,7 +120,7 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestPlayerStartIsPassable()
     {
-        var generator = new WfcMapGenerator(_resolver);
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
         var biome = _biomeRegistry.GetBiome("plains");
 
         var result = generator.Generate(biome!, new Vector2I(10, 10), 12345);

@@ -14,7 +14,7 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestGeneratesValidMapWithForestBiome()
     {
-        var generator = new WfcMapGenerator(_resolver);
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
         var biome = _biomeRegistry.GetBiome("forest");
 
         AssertThat(biome).IsNotNull();
@@ -36,7 +36,7 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestGeneratesValidMapWithPlainsBiome()
     {
-        var generator = new WfcMapGenerator(_resolver);
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
         var biome = _biomeRegistry.GetBiome("plains");
 
         AssertThat(biome).IsNotNull();
@@ -56,7 +56,7 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestNoInvalidAdjacencies()
     {
-        var generator = new WfcMapGenerator(_resolver);
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
         var biome = _biomeRegistry.GetBiome("plains");
 
         var result = generator.Generate(biome!, new Vector2I(8, 8), 42);
@@ -68,7 +68,7 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
         }
 
         var mapData = result.MapData!;
-        var adjacencyRules = new WfcAdjacencyRules(_resolver);
+        var adjacencyRules = new WfcAdjacencyRules(_transitionPairs);
 
         // Check all horizontal adjacencies
         for (var y = 0; y < mapData.Size.Y; y++)
@@ -98,7 +98,7 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestPerformanceUnder500ms()
     {
-        var generator = new WfcMapGenerator(_resolver);
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
         var biome = _biomeRegistry.GetBiome("plains");
 
         var stopwatch = Stopwatch.StartNew();

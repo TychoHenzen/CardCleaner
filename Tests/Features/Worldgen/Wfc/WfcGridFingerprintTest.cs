@@ -37,7 +37,8 @@ public class WfcGridFingerprintTest
         var rng = new RandomNumberGenerator { Seed = GridSeed };
         var gradient = new CardBasedGradient(MapCards(), rng);
         var biomeProvider = new BiomeMapGenerator(biomeRegistry, gradient, GridSize);
-        var wfcGenerator = new WfcMapGenerator(new CompiledTransitionResolver(), tileRegistry);
+        var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
+        var wfcGenerator = new WfcMapGenerator(new WfcAdjacencyRules(transitionPairs), tileRegistry);
         var generator = new SimpleMapGenerator(
             rng, biomeProvider, tileRegistry, tileRegistry, wfcGenerator, biomeRegistry, gradient);
 

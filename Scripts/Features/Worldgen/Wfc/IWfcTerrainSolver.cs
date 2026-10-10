@@ -49,9 +49,10 @@ public interface IWfcTerrainSolver
     WfcGraphSolution SolveGraphWithRules(int[][] neighbors, IReadOnlyCollection<string> initialTiles, ulong seed);
 
     /// <summary>
-    /// Creates a solver whose rules are the compiled transitions plus the given extra adjacencies.
+    /// Creates a solver whose rules are the given transition pairs plus the given extra adjacencies.
     /// </summary>
     static IWfcTerrainSolver Create(
+        IReadOnlyList<(string tileA, string tileB)> transitionPairs,
         IReadOnlyDictionary<string, HashSet<string>>? extraAdjacency,
-        ITileRegistry? tileRegistry) => new WfcTerrainSolver(extraAdjacency, tileRegistry);
+        ITileRegistry? tileRegistry) => new WfcTerrainSolver(transitionPairs, extraAdjacency, tileRegistry);
 }
