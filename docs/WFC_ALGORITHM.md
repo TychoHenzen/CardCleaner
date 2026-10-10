@@ -84,7 +84,9 @@ Pre-computed hard constraints for tile compatibility.
 
 **Storage:** `Dictionary<string, HashSet<string>>` - Tile ID to valid neighbors
 
-**Construction:** From `CompiledTransitionResolver.GetAllTransitionPairs()`
+**Construction:** From transition pairs passed in as data, `new WfcAdjacencyRules(pairs)`.
+The producers (`DefaultSessionMapBuilder`, `TerrainGeneratorFactory`, `MeshTerrainGenerator`)
+get the pairs from `CompiledTransitionResolver.GetAllTransitionPairs()`; Wfc never names the resolver.
 
 **Properties:**
 - Adjacency is symmetric (if A can transition to B, they can be neighbors)
@@ -113,11 +115,13 @@ Single-biome map generation.
 
 **Flow:**
 ```
-1. DetermineInitialTiles(biome):
-   - Extract tiles from biome.PassableTiles pool
-   - Filter: only tiles in _adjacencyRules.AllTileIds
-   - Warns if biome pool contradicts TileRegistry
-   - Returns allTiles: HashSet
+1. _tileSetBuilder.ForBiome(biome):
+   - Walk _adjacencyRules.AllTileIds
+   - Look each id up in the ITileRegistry; skip ids it does not know
+   - Keep tiles where TileDefinition.IsAllowedInBiome(biome.Id) is true
+     (AllowedBiomes null means every biome)
+   - No registry: every lookup is null, so the set is empty; step 2 fails
+   - Returns WfcTileSets; AllTiles: HashSet<string>
 
 2. Validate:
    if allTiles.Count == 0: fail immediately
@@ -141,7 +145,7 @@ Single-biome map generation.
 
 4. solver.SolveWithRetry(CreateGrid, biome, seed, MaxRetries=3)
 
-5. WfcMapDataAdapter.ToTileIds(grid) for the tile ids, plus the biome map
+5. WfcGridTileIds.ToTileIds(grid) for the tile ids, plus the biome map
 
 6. Return WfcGenerationResult
 ```
@@ -927,7 +931,7 @@ readonly struct WfcSolveResult {
 - `WfcAdjacencyRules.cs` - Pre-computed adjacency lookup
 - `Connectivity/PassabilityGraph.cs` - Tarjan's articulation point detection
 - `Modifiers/BlobSizeTracker.cs` - Union-Find for blob sizes
-- `WfcMapDataAdapter.cs` - Grid to tile id conversion
+- `WfcGridTileIds.cs` - Grid to tile id conversion
 
 ---
 

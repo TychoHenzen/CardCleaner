@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 
@@ -20,7 +20,6 @@ public class IrregularMeshWfcSeamTest
 {
     private const string WfcRoot = "res://Scripts/Features/Worldgen/Wfc";
     private const string IrregularMeshRoot = "res://Scripts/Features/Worldgen/IrregularMesh";
-    private const string ProjectRoot = "res://";
 
     // A solver internal that must stay declared under Wfc. If the scan stops seeing it, the forbidden set is empty.
     private const string SolverInternal = "WfcSolver";
@@ -73,7 +72,7 @@ public class IrregularMeshWfcSeamTest
             .ToArray();
         var nameMatch = new Regex(@"\b(?:" + string.Join("|", forbidden.Select(Regex.Escape)) + @")\b");
 
-        var files = CsFiles(IrregularMeshRoot);
+        var files = SourceScan.CsFiles(IrregularMeshRoot);
         AssertThat(files.Count > 0)
             .OverrideFailureMessage($"No .cs files found under {IrregularMeshRoot}")
             .IsTrue();
@@ -104,7 +103,7 @@ public class IrregularMeshWfcSeamTest
     private static HashSet<string> DeclaredWfcNames()
     {
         var names = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var file in CsFiles(WfcRoot))
+        foreach (var file in SourceScan.CsFiles(WfcRoot))
         {
             names.UnionWith(DeclaredNames(File.ReadAllText(file)));
         }
@@ -124,31 +123,16 @@ public class IrregularMeshWfcSeamTest
         return names;
     }
 
-    // ASSUMPTION: the .cs sources are on disk when the suite runs (editor, headless run or CI checkout). An export
-    // without them finds no files and fails the file-count check instead of passing.
-    private static List<string> CsFiles(string resRoot)
-    {
-        return Directory.EnumerateFiles(ProjectSettings.GlobalizePath(resRoot), "*.cs", SearchOption.AllDirectories)
-            .Where(file => Path.GetExtension(file) == ".cs")
-            .OrderBy(file => file, StringComparer.Ordinal)
-            .ToList();
-    }
-
     private static IEnumerable<string> Violations(string osPath, Regex nameMatch)
     {
-        var blanked = Blanked(osPath);
-        var relative = Path.GetRelativePath(ProjectSettings.GlobalizePath(ProjectRoot), osPath).Replace('\\', '/');
+        var blanked = SourceScan.Blanked(osPath);
+        var relative = SourceScan.RelativePath(osPath);
         var matches = nameMatch.Matches(blanked)
             .Concat(SubNamespaceReference.Matches(blanked))
             .OrderBy(match => match.Index);
         foreach (var match in matches)
         {
-            yield return FormattableString.Invariant($"{relative}:{LineOf(blanked, match.Index)} {match.Value}");
+            yield return SourceScan.FormatHit(relative, blanked, match);
         }
     }
-
-    private static string Blanked(string osPath) =>
-        TestSuiteNamingTest.BlankCommentsAndStrings(File.ReadAllText(osPath));
-
-    private static int LineOf(string text, int index) => text.Take(index).Count(c => c == '\n') + 1;
 }

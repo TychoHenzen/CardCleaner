@@ -151,7 +151,7 @@ public class WfcMapGenerator
         using (_profiler.BeginScope("MapDataConversion"))
         {
             biomeMap = BuildBiomeMap(size, _ => biome);
-            tileIds = WfcMapDataAdapter.ToTileIds(grid);
+            tileIds = WfcGridTileIds.ToTileIds(grid);
         }
         return WfcGenerationResult.Succeeded(
             new Vector2I(grid.Width, grid.Height), tileIds, biomeMap, solveResult.Iterations);
@@ -201,7 +201,7 @@ public class WfcMapGenerator
         using (_profiler.BeginScope("MultiBiomeMapDataConversion"))
         {
             biomeMap = BuildBiomeMap(size, getBiomeAt);
-            tileIds = WfcMapDataAdapter.ToTileIds(grid);
+            tileIds = WfcGridTileIds.ToTileIds(grid);
         }
         return WfcGenerationResult.Succeeded(
             new Vector2I(grid.Width, grid.Height), tileIds, biomeMap, solveResult.Iterations);

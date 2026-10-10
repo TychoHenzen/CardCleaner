@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 
@@ -18,7 +17,6 @@ namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 public class WfcUpDependencySeamTest
 {
     private const string WfcRoot = "res://Scripts/Features/Worldgen/Wfc";
-    private const string ProjectRoot = "res://";
 
     // A Wfc file that must stay in the scan. If the scan stops seeing it, the guard could pass on an empty set.
     private const string ScannedFile = "WfcSolver.cs";
@@ -33,7 +31,7 @@ public class WfcUpDependencySeamTest
     [TestCategory("Unit")]
     public static void WfcNamesNeitherSimpleMapDataNorCompiledTransitionResolver()
     {
-        var files = CsFiles(WfcRoot);
+        var files = SourceScan.CsFiles(WfcRoot);
         AssertThat(files.Count > 0)
             .OverrideFailureMessage($"No .cs files found under {WfcRoot}")
             .IsTrue();
@@ -41,7 +39,9 @@ public class WfcUpDependencySeamTest
             .OverrideFailureMessage($"The Wfc scan no longer sees {ScannedFile}, so the guard could pass on nothing")
             .IsTrue();
 
-        var hits = files.SelectMany(file => Violations(RelativePath(file), Blanked(file))).ToList();
+        var hits = files
+            .SelectMany(file => Violations(SourceScan.RelativePath(file), SourceScan.Blanked(file)))
+            .ToList();
         AssertThat(hits.Count == 0)
             .OverrideFailureMessage("Wfc names SimpleMapData or CompiledTransitionResolver:\n"
                 + string.Join("\n", hits))
@@ -72,25 +72,7 @@ public class WfcUpDependencySeamTest
     {
         foreach (Match match in ForbiddenName.Matches(blanked))
         {
-            yield return FormattableString.Invariant($"{relative}:{LineOf(blanked, match.Index)} {match.Value}");
+            yield return SourceScan.FormatHit(relative, blanked, match);
         }
     }
-
-    private static string Blanked(string osPath) =>
-        TestSuiteNamingTest.BlankCommentsAndStrings(File.ReadAllText(osPath));
-
-    private static string RelativePath(string osPath) =>
-        Path.GetRelativePath(ProjectSettings.GlobalizePath(ProjectRoot), osPath).Replace('\\', '/');
-
-    // ASSUMPTION: the .cs sources are on disk when the suite runs (editor, headless run or CI checkout). An export
-    // without them finds no files and fails the file-count check instead of passing.
-    private static List<string> CsFiles(string resRoot)
-    {
-        return Directory.EnumerateFiles(ProjectSettings.GlobalizePath(resRoot), "*.cs", SearchOption.AllDirectories)
-            .Where(file => Path.GetExtension(file) == ".cs")
-            .OrderBy(file => file, StringComparer.Ordinal)
-            .ToList();
-    }
-
-    private static int LineOf(string text, int index) => text.Take(index).Count(c => c == '\n') + 1;
 }

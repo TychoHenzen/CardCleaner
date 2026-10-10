@@ -5,7 +5,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 /// <summary>
 /// Copies a collapsed WfcGrid into the tile grid that WfcGenerationResult carries.
 /// </summary>
-public static class WfcMapDataAdapter
+public static class WfcGridTileIds
 {
     /// <summary>
     /// Converts a fully collapsed WFC grid to a tile id grid indexed [y, x].
