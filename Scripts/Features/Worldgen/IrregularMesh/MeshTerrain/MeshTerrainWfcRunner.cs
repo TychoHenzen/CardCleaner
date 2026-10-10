@@ -14,15 +14,12 @@ internal sealed class MeshTerrainWfcRunner
     private readonly MeshTerrainProjection _projection;
     private readonly MeshForegroundWfc _foregroundWfc;
 
-    public MeshTerrainWfcRunner(
-        IWfcTerrainSolver solver,
-        ITileRegistry? tileRegistry,
-        Dictionary<string, int>? tileToTerrainType)
+    public MeshTerrainWfcRunner(MeshTerrainWfcSetup setup, Dictionary<string, int>? tileToTerrainType)
     {
-        _solver = solver;
-        _tileRegistry = tileRegistry;
-        _projection = new MeshTerrainProjection(tileRegistry, tileToTerrainType);
-        _foregroundWfc = new MeshForegroundWfc(solver, tileRegistry);
+        _solver = setup.Solver;
+        _tileRegistry = setup.TileRegistry;
+        _projection = new MeshTerrainProjection(setup.TileRegistry, tileToTerrainType);
+        _foregroundWfc = new MeshForegroundWfc(setup);
     }
 
     public IrregularMesh Generate(

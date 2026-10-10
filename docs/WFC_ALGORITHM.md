@@ -118,9 +118,9 @@ Single-biome map generation.
 1. _tileSetBuilder.ForBiome(biome):
    - Walk _adjacencyRules.AllTileIds
    - Look each id up through IWfcTileCatalog, WFC's only view of the tile catalog; skip ids it does not know
-   - Keep tiles where TileDefinition.IsAllowedInBiome(biome.Id) is true
-     (AllowedBiomes null means every biome)
-   - No registry: every lookup is null, so the set is empty; step 2 fails
+   - Keep tiles where IWfcTileCatalog.IsAllowedInBiome(tileId, biome.Id) is true
+     (a tile with no biome restriction is allowed in every biome)
+   - No catalog: every id is skipped before any lookup, so the set is empty; step 2 fails
    - Returns WfcTileSets; AllTiles: HashSet<string>
 
 2. Validate:
@@ -135,7 +135,7 @@ Single-biome map generation.
    
    b. Create WfcPropagator(_adjacencyRules)
    
-   c. If EnableConnectivity && _tileRegistry != null:
+   c. If EnableConnectivity && _tileCatalog != null:
       - Create PassabilityGraph
       - Add ConnectivityConstraint to selector
       - Return WfcSolver(propagator, selector, blobTracker, graph, IsPassable)

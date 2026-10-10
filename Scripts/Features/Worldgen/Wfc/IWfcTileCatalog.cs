@@ -5,7 +5,8 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
 /// The tile data the WFC code reads, without the registry that owns it. Unknown tile ids get the neutral answer
-/// documented on each member, so a caller that has not checked <see cref="Contains"/> still gets a safe result.
+/// documented on each member. Where that answer is neutral only for a caller that checked <see cref="Contains"/>
+/// first, the member says so.
 /// </summary>
 public interface IWfcTileCatalog
 {
@@ -36,10 +37,13 @@ public interface IWfcTileCatalog
     /// <summary>Whether the tile may appear in the biome. False for an unknown id.</summary>
     bool IsAllowedInBiome(string tileId, string biomeId);
 
-    /// <summary>Whether two tile ids name the same terrain type, by the registry's rule.</summary>
+    /// <summary>
+    /// Whether two tile ids name the same terrain type, by the registry's rule. For an unknown id, only the same id
+    /// matches.
+    /// </summary>
     bool AreSameTerrainType(string? tileId1, string? tileId2);
 
-    /// <summary>The variation group of the tile, or null when the tile belongs to none.</summary>
+    /// <summary>The variation group of the tile, or null when the tile is unknown or belongs to none.</summary>
     WfcTileVariation? GetVariation(string tileId);
 
     /// <summary>

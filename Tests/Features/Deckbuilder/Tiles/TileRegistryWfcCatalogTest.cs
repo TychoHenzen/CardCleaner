@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Services;
@@ -8,8 +9,8 @@ using Godot;
 namespace CardCleaner.Tests.Features.Deckbuilder.Tiles;
 
 /// <summary>
-/// Pins the answers TileRegistryWfcCatalog gives for the registry shapes WFC meets: unknown ids, gap tiles,
-/// auto-tiles with and without a solid-fill variant, and variation groups.
+/// Pins the answers TileRegistryWfcCatalog gives for the registry shapes WFC meets: unknown ids, known tiles,
+/// gap tiles, auto-tiles with and without a solid-fill variant, and variation groups.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -115,5 +116,58 @@ public class TileRegistryWfcCatalogTest
         AssertFloat(group.Density).IsEqual(2f);
         AssertFloat(group.NormalizedWeight).IsEqual(0.5f);
         AssertBool(catalog.GetVariation("plain") == null).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void UnknownTile_AnswersAreNeutral()
+    {
+        var catalog = new TileRegistryWfcCatalog(new MockTileRegistry());
+
+        AssertBool(catalog.Contains("missing")).IsFalse();
+        AssertBool(catalog.IsPassable("missing")).IsFalse();
+        AssertFloat(catalog.GetProbability("missing")).IsEqual(1f);
+        AssertBool(catalog.HasBiomeRestriction("missing")).IsFalse();
+        AssertBool(catalog.IsAllowedInBiome("missing", "forest")).IsFalse();
+        AssertBool(catalog.AreSameTerrainType("missing", "grass")).IsFalse();
+        AssertBool(catalog.AreSameTerrainType("missing", "missing")).IsTrue();
+        AssertBool(catalog.GetVariation("missing") == null).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void KnownTile_ReadsPassabilityProbabilityBiomeAndTerrainType()
+    {
+        var registry = new MockTileRegistry();
+        registry.RegisterTile(new TileDefinition(
+            "meadow",
+            "Meadow",
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                Probability = 0.25f,
+                AllowedBiomes = new HashSet<string> { "forest" }
+            }));
+        registry.RegisterTile(MockTileRegistry.CreateGapTile("dirt"));
+        registry.RegisterTile(MockTileRegistry.CreateGapTile("flower1"));
+        registry.RegisterTile(MockTileRegistry.CreateGapTile("flower2"));
+        registry.AddVariationGroup(new VariationGroup("flower", VariationMode.PerInstance, new[]
+        {
+            new VariantWeight("flower1", 2f),
+            new VariantWeight("flower2", 1f)
+        }));
+        var catalog = new TileRegistryWfcCatalog(registry);
+
+        AssertBool(catalog.IsPassable("meadow")).IsTrue();
+        AssertFloat(catalog.GetProbability("meadow")).IsEqual(0.25f);
+        AssertBool(catalog.HasBiomeRestriction("meadow")).IsTrue();
+        AssertBool(catalog.IsAllowedInBiome("meadow", "forest")).IsTrue();
+        AssertBool(catalog.IsAllowedInBiome("meadow", "desert")).IsFalse();
+        AssertBool(catalog.HasBiomeRestriction("dirt")).IsFalse();
+        AssertBool(catalog.IsAllowedInBiome("dirt", "desert")).IsTrue();
+        AssertBool(catalog.AreSameTerrainType("meadow", "meadow")).IsTrue();
+        AssertBool(catalog.AreSameTerrainType("flower1", "flower2")).IsTrue();
+        AssertBool(catalog.AreSameTerrainType("meadow", "dirt")).IsFalse();
     }
 }

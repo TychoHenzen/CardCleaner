@@ -89,7 +89,7 @@ public class ConnectivityVerificationTest
         }
 
         var rules = new WfcAdjacencyRules(pairs.ToArray());
-        // Pass tile registry so WfcMapGenerator uses TileDefinition.IsPassable as source of truth
+        // Pass the tile catalog so WfcMapGenerator reads passability from it, as the source of truth
         return new WfcMapGenerator(rules, new TileRegistryWfcCatalog(_tileRegistry));
     }
 

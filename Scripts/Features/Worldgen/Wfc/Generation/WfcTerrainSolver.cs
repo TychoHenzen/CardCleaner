@@ -48,14 +48,14 @@ internal sealed class WfcTerrainSolver : IWfcTerrainSolver
         Func<string, bool> tileFilter) =>
         _mapGenerator.GenerateMultiBiome(biomes, getBiomeAt, size, seed, null, tileFilter);
 
-    public WfcGraphSolution SolveGraphWithRegistry(
+    public WfcGraphSolution SolveGraphWithCatalog(
         int[][] neighbors,
         IReadOnlyCollection<string> initialTiles,
         ulong seed,
         Func<string, bool>? gapTileFilter)
     {
         var catalog = _tileCatalog
-            ?? throw new InvalidOperationException("SolveGraphWithRegistry needs a tile registry");
+            ?? throw new InvalidOperationException("SolveGraphWithCatalog needs a tile catalog");
 
         var topology = new WfcNeighborListTopology(neighbors, initialTiles);
         var rules = new WfcAdjacencyRules(_transitionPairs);

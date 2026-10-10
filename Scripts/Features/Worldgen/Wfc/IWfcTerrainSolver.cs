@@ -29,7 +29,7 @@ public interface IWfcTerrainSolver
     /// <summary>
     /// Solves a cell graph with the catalog's tiles. Gap-tile adjacencies cover the catalog tiles passing the filter.
     /// </summary>
-    WfcGraphSolution SolveGraphWithRegistry(
+    WfcGraphSolution SolveGraphWithCatalog(
         int[][] neighbors,
         IReadOnlyCollection<string> initialTiles,
         ulong seed,

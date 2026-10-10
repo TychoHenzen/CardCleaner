@@ -6,7 +6,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
 /// The base constraints a map generator registers on its tile selector, in registration order.
-/// Registry-backed constraints only exist when a tile registry was supplied.
+/// Catalog-backed constraints only exist when a tile catalog was supplied.
 /// </summary>
 internal sealed class WfcConstraintSet
 {

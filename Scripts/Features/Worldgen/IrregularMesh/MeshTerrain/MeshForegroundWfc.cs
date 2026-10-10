@@ -10,10 +10,10 @@ internal sealed class MeshForegroundWfc
     private readonly IWfcTerrainSolver _solver;
     private readonly ITileRegistry? _tileRegistry;
 
-    public MeshForegroundWfc(IWfcTerrainSolver solver, ITileRegistry? tileRegistry)
+    public MeshForegroundWfc(MeshTerrainWfcSetup setup)
     {
-        _solver = solver;
-        _tileRegistry = tileRegistry;
+        _solver = setup.Solver;
+        _tileRegistry = setup.TileRegistry;
     }
 
     public bool Generate(IrregularMesh mesh, BiomeRegistry biomeRegistry, ulong seed)
@@ -36,7 +36,7 @@ internal sealed class MeshForegroundWfc
             $"[MeshTerrainGen] Starting direct mesh WFC with {initialTiles.Count} tiles " +
             $"on {mesh.Vertices.Count} vertices");
 
-        var solution = _solver.SolveGraphWithRegistry(
+        var solution = _solver.SolveGraphWithCatalog(
             IrregularMeshNeighbors.BuildNeighbors(mesh),
             initialTiles,
             seed,

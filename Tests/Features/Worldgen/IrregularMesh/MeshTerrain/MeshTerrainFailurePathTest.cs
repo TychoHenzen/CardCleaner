@@ -32,12 +32,14 @@ public class MeshTerrainFailurePathTest
         var solver = new FailingSolver(
             IWfcTerrainSolver.Create(TransitionPairs(), null, new TileRegistryWfcCatalog(registry)),
             AutoTileId(registry));
-        var generator = new IrregularMeshNs.MeshTerrainGenerator(solver, registry, new Dictionary<string, int>());
+        var generator = new IrregularMeshNs.MeshTerrainGenerator(
+            new MeshTerrainWfcSetup(solver, registry),
+            new Dictionary<string, int>());
         generator.SetBiomeRegistry(DefaultBiomes());
 
         var mesh = generator.GenerateWithCards(3, TerrainCards(), 4242, relaxationIterations: 8);
 
-        AssertThat(solver.RegistrySolveCalls).IsEqual(1);
+        AssertThat(solver.CatalogSolveCalls).IsEqual(1);
         AssertBool(mesh.Vertices.All(vertex => vertex.ForegroundTileId == null)).IsTrue();
         AssertBool(mesh.Vertices.All(vertex => vertex.TileId == null)).IsTrue();
         // ClearForeground writes terrain type 1. A fresh vertex starts at 0, so a skipped clear is visible here.
@@ -63,10 +65,11 @@ public class MeshTerrainFailurePathTest
         });
 
         // With no biome registered, no terrain tile is allowed in any biome, so the candidate set is empty.
-        var generated = new MeshForegroundWfc(solver, registry).Generate(mesh, new BiomeRegistry(), 4243UL);
+        var foreground = new MeshForegroundWfc(new MeshTerrainWfcSetup(solver, registry));
+        var generated = foreground.Generate(mesh, new BiomeRegistry(), 4243UL);
 
         AssertBool(generated).IsFalse();
-        AssertThat(solver.RegistrySolveCalls).IsEqual(0);
+        AssertThat(solver.CatalogSolveCalls).IsEqual(0);
         AssertBool(mesh.Vertices.All(vertex => vertex.ForegroundTileId == null)).IsTrue();
     }
 
@@ -81,7 +84,7 @@ public class MeshTerrainFailurePathTest
         };
         var tileToTerrain = new Dictionary<string, int> { { "grass", 5 }, { "water", 0 } };
         var solver = new FailingSolver(IWfcTerrainSolver.Create(TransitionPairs(), adjacency, null), "grass");
-        var generator = new IrregularMeshNs.MeshTerrainGenerator(solver, null, tileToTerrain);
+        var generator = new IrregularMeshNs.MeshTerrainGenerator(new MeshTerrainWfcSetup(solver, null), tileToTerrain);
 
         var mesh = generator.GenerateFromRules(3, 777);
 
@@ -127,7 +130,7 @@ public class MeshTerrainFailurePathTest
             _partialTileId = partialTileId;
         }
 
-        public int RegistrySolveCalls { get; private set; }
+        public int CatalogSolveCalls { get; private set; }
 
         public int RuleSolveCalls { get; private set; }
 
@@ -141,13 +144,13 @@ public class MeshTerrainFailurePathTest
             Func<string, bool> tileFilter) =>
             _inner.GenerateBackground(biomes, getBiomeAt, size, seed, tileFilter);
 
-        public WfcGraphSolution SolveGraphWithRegistry(
+        public WfcGraphSolution SolveGraphWithCatalog(
             int[][] neighbors,
             IReadOnlyCollection<string> initialTiles,
             ulong seed,
             Func<string, bool>? gapTileFilter)
         {
-            RegistrySolveCalls++;
+            CatalogSolveCalls++;
             return Failed(neighbors.Length);
         }
 
