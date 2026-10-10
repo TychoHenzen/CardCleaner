@@ -31,6 +31,9 @@ powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godo
 powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps1
 ```
 
+A direct `GdUnitCmdTool.gd` run must pass the same `-rc 100000` as `Run-GdUnit.ps1`, or gdUnit's report cleanup floods
+the log with `ERROR: Delete` lines.
+
 CI scope: pull requests and pushes to `master` run only the Unit suites (`-Fast`). The full suite runs on the weekly
 schedule (Sunday 03:00 UTC) and on a manual dispatch with `full=true`, for example `gh workflow run ci.yml --ref
 <branch> -f full=true`. PR CI also fails when the latest scheduled run on `master` is not green. So a green PR or merge
