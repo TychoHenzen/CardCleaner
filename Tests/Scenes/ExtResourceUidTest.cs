@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -85,13 +86,12 @@ public partial class ExtResourceUidTest
     /// </summary>
     private static List<string> StaleReferencesUnder(string root, Func<string, string?> uidOf)
     {
-        var projectRoot = ProjectSettings.GlobalizePath("res://");
         return Directory.EnumerateFiles(ProjectSettings.GlobalizePath(root), "*.*", SearchOption.AllDirectories)
             .Where(path => path.EndsWith(".tscn", StringComparison.Ordinal)
                 || path.EndsWith(".tres", StringComparison.Ordinal))
             .OrderBy(path => path, StringComparer.Ordinal)
             .SelectMany(path => StaleReferences(
-                Path.GetRelativePath(projectRoot, path).Replace('\\', '/'),
+                SourceScan.RelativePath(path),
                 File.ReadAllText(path),
                 uidOf))
             .ToList();

@@ -140,7 +140,9 @@ Scripts/Tools/*.png.import
 !Scripts/**/*.uid
 !Tests/**/*.uid
 !Shaders/**/*.uid
-# Sidecars Godot left behind when these sources moved; the files stay on disk but are never tracked
+# One-off list of sidecars Godot left behind when these sources moved or were deleted (still on disk locally).
+# Do not add entries: remove a leftover .uid instead (see "Godot .uid Sidecars" in CLAUDE.md). Drop these lines
+# once the files below are gone.
 /Scripts/Core/Data/CardTemplate.cs.uid
 /Scripts/Core/Data/LayerData.cs.uid
 /Scripts/Core/ServiceProviders/CardServiceProvider.cs.uid
