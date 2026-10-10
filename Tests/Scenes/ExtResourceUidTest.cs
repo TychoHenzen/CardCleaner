@@ -19,12 +19,6 @@ public partial class ExtResourceUidTest
 {
     private static readonly string[] ScannedRoots = ["res://Scenes", "res://Data", "res://Assets"];
 
-    // ASSUMPTION: the submodule material keeps its stale foliage UID until the Assets two-commit fix lands (#185).
-    // KnownStaleReferenceIsStillStale fails once it is fixed, so these entries have to be removed then.
-    private const string KnownStaleFile = "Assets/Materials/Conveyor_Straight.tres";
-    private const string KnownStalePath = "res://Assets/Models/Textures/foliage(Clone).png";
-    private const string KnownStaleUid = "uid://cjf73kdfrsdm2";
-
     [GeneratedRegex(@"^\[ext_resource\b(?<attrs>.*)\]\s*$")]
     private static partial Regex ExtResourceLine();
 
@@ -103,29 +97,14 @@ public partial class ExtResourceUidTest
             .ToList();
     }
 
-    private static List<string> ProjectStaleReferences() =>
-        ScannedRoots.SelectMany(root => StaleReferencesUnder(root, ProjectUidOf)).ToList();
-
-    private static bool IsKnownStale(string entry) =>
-        entry.StartsWith(KnownStaleFile + ":", StringComparison.Ordinal)
-        && entry.Contains($": {KnownStalePath} has {KnownStaleUid},", StringComparison.Ordinal);
-
     [TestCase]
     [TestCategory("Unit")]
     public static void EveryExtResourceUidMatchesItsTarget()
     {
-        var stale = ProjectStaleReferences().Where(entry => !IsKnownStale(entry));
+        var stale = ScannedRoots.SelectMany(root => StaleReferencesUnder(root, ProjectUidOf));
 
         // Joined into one string so a failure names every stale reference with its file and line.
         AssertThat(string.Join(System.Environment.NewLine, stale)).IsEmpty();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void KnownStaleReferenceIsStillStale()
-    {
-        // When this fails the Assets fix has landed: remove the KnownStale constants, IsKnownStale and this test.
-        AssertThat(ProjectStaleReferences().Count(IsKnownStale)).IsEqual(1);
     }
 
     [TestCase("res://Scenes")]
