@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
@@ -15,7 +13,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// </summary>
 public class TileProbabilityConstraint : IWfcConstraint
 {
-    private readonly ITileRegistry _tileRegistry;
+    private readonly IWfcTileCatalog _tileCatalog;
 
     // Maps group base name → selected tile ID for this generation
     private Dictionary<string, string>? _selectedVariants;
@@ -23,9 +21,9 @@ public class TileProbabilityConstraint : IWfcConstraint
     /// <summary>Sets the minimum probability modifier for eligible tiles.</summary>
     public float MinModifier { get; set; } = 0.01f;
 
-    public TileProbabilityConstraint(ITileRegistry tileRegistry)
+    public TileProbabilityConstraint(IWfcTileCatalog tileCatalog)
     {
-        _tileRegistry = tileRegistry;
+        _tileCatalog = tileCatalog;
     }
 
     /// <summary>
@@ -40,22 +38,19 @@ public class TileProbabilityConstraint : IWfcConstraint
 
     public float GetProbabilityModifier(WfcConstraintContext context)
     {
-        var tile = _tileRegistry.GetTile(context.TileId);
-        if (tile == null)
+        if (!_tileCatalog.Contains(context.TileId))
             return 1f;
 
         // Check if tile is in a variation group
-        var group = _tileRegistry.GetVariationGroup(context.TileId);
-
-        if (group != null)
+        if (_tileCatalog.GetVariation(context.TileId) is { } group)
         {
             // For grouped tiles, use group's MaxWeight as base density
             // This ensures all variants in a group share the same density
-            var density = group.MaxWeight;
+            var density = group.Density;
 
             // For PerGeneration groups, EXCLUDE non-selected variants
             // Only the pre-selected variant should appear on this map
-            if (group.Mode == VariationMode.PerGeneration)
+            if (group.IsPerGeneration)
             {
                 // Check if we have a selected variant for this group
                 if (_selectedVariants != null &&
@@ -74,11 +69,11 @@ public class TileProbabilityConstraint : IWfcConstraint
 
             // For PerInstance groups, use individual tile's weight within the group
             // This maintains the ratio between variants (poppy weight 2 vs rose weight 1)
-            var normalizedWeight = group.GetNormalizedWeight(context.TileId);
+            var normalizedWeight = group.NormalizedWeight;
             return System.Math.Max(MinModifier, density * normalizedWeight);
         }
 
         // For non-grouped tiles, use direct probability
-        return System.Math.Max(MinModifier, tile.Probability);
+        return System.Math.Max(MinModifier, _tileCatalog.GetProbability(context.TileId));
     }
 }

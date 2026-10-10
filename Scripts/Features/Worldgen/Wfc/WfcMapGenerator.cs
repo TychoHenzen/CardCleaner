@@ -30,7 +30,7 @@ public class WfcMapGenerator
     private readonly CompactnessSoftModifier _compactness;
     private readonly SpatialCoherenceConstraint _spatialCoherence;
     private readonly WfcConstraintSet _constraintSet;
-    private readonly ITileRegistry? _tileRegistry;
+    private readonly IWfcTileCatalog? _tileCatalog;
     private IProfiler _profiler = new NoOpProfiler();
 
     public int MaxRetries { get; set; } = 3;
@@ -99,13 +99,13 @@ public class WfcMapGenerator
     public WfcMapGenerator(WfcAdjacencyRules adjacencyRules, ITileRegistry? tileRegistry = null)
     {
         _adjacencyRules = adjacencyRules;
-        _tileRegistry = tileRegistry;
+        _tileCatalog = tileRegistry != null ? new TileRegistryWfcCatalog(tileRegistry) : null;
         _blobTracker = new BlobSizeTracker();
         _diminishingReturns = new DiminishingReturnsSoftModifier(_blobTracker);
         _novelty = new NoveltySoftModifier();
-        _compactness = new CompactnessSoftModifier(tileRegistry);
-        _spatialCoherence = new SpatialCoherenceConstraint(tileRegistry);
-        _constraintSet = new WfcConstraintSet(_diminishingReturns, _spatialCoherence, _compactness, tileRegistry);
+        _compactness = new CompactnessSoftModifier(_tileCatalog);
+        _spatialCoherence = new SpatialCoherenceConstraint(_tileCatalog);
+        _constraintSet = new WfcConstraintSet(_diminishingReturns, _spatialCoherence, _compactness, _tileCatalog);
         _selector = new WfcTileSelector();
         _tileSetBuilder = new WfcTileSetBuilder(adjacencyRules, tileRegistry);
 
@@ -178,7 +178,7 @@ public class WfcMapGenerator
         {
             ConfigureConstraints();
             var biomeStrengthGrid = new BiomeStrengthGrid(size, gradient, biomeRegistry);
-            _selector.AddConstraint(new BiomeAffinityConstraint(biomeStrengthGrid, biomeRegistry, _tileRegistry));
+            _selector.AddConstraint(new BiomeAffinityConstraint(biomeStrengthGrid, biomeRegistry, _tileCatalog));
         }
 
         var solver = CreateSolver(skipBaseConstraints: gradient != null, size);
@@ -230,14 +230,14 @@ public class WfcMapGenerator
         var propagator = new WfcPropagator(_adjacencyRules);
 
         WfcSolver solver;
-        if (!EnableConnectivity || _tileRegistry == null)
+        if (!EnableConnectivity || _tileCatalog == null)
         {
-            solver = new WfcSolver(propagator, _selector, _blobTracker, _spatialCoherence, _tileRegistry);
+            solver = new WfcSolver(propagator, _selector, _blobTracker, _spatialCoherence, _tileCatalog);
         }
         else
         {
             var passabilityGraph = new PassabilityGraph();
-            bool IsPassable(string tileId) => _tileRegistry.GetTile(tileId)?.IsPassable ?? false;
+            bool IsPassable(string tileId) => _tileCatalog.IsPassable(tileId);
 
             _selector.AddConstraint(new ConnectivityConstraint(passabilityGraph, IsPassable));
             solver = new WfcSolver(
@@ -247,7 +247,7 @@ public class WfcMapGenerator
                 passabilityGraph,
                 IsPassable,
                 _spatialCoherence,
-                _tileRegistry);
+                _tileCatalog);
         }
 
         solver.SetProfiler(_profiler);

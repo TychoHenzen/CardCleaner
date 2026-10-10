@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 
@@ -23,15 +22,15 @@ internal sealed class WfcConstraintSet
         DiminishingReturnsSoftModifier diminishingReturns,
         SpatialCoherenceConstraint spatialCoherence,
         CompactnessSoftModifier compactness,
-        ITileRegistry? tileRegistry)
+        IWfcTileCatalog? tileCatalog)
     {
         _diminishingReturns = diminishingReturns;
         _spatialCoherence = spatialCoherence;
         _compactness = compactness;
-        _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
-        _noSolidFill = tileRegistry != null ? new NoSolidFillConstraint(tileRegistry) : null;
-        _bitmaskValidity = tileRegistry != null ? new BitmaskValidityConstraint(tileRegistry) : null;
-        _tileProbability = tileRegistry != null ? new TileProbabilityConstraint(tileRegistry) : null;
+        _autoTileGap = tileCatalog != null ? new AutoTileGapConstraint(tileCatalog) : null;
+        _noSolidFill = tileCatalog != null ? new NoSolidFillConstraint(tileCatalog) : null;
+        _bitmaskValidity = tileCatalog != null ? new BitmaskValidityConstraint(tileCatalog) : null;
+        _tileProbability = tileCatalog != null ? new TileProbabilityConstraint(tileCatalog) : null;
     }
 
     internal void SetSelectedVariants(Dictionary<string, string>? selectedVariants)

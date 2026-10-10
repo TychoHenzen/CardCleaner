@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Tests.Mocks;
@@ -27,7 +28,7 @@ public class AutoTileGapConstraintTest
     {
         // Use mock registry with controlled tile properties
         _tileRegistry = MockTileRegistry.CreateWithTestTiles();
-        _constraint = new AutoTileGapConstraint(_tileRegistry);
+        _constraint = new AutoTileGapConstraint(new TileRegistryWfcCatalog(_tileRegistry));
         _grid = new WfcGrid(5, 5, AllTiles);
     }
 

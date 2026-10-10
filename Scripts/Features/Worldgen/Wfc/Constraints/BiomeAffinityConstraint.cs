@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 
@@ -20,7 +19,7 @@ public class BiomeAffinityConstraint : IWfcConstraint
 {
     private readonly BiomeStrengthGrid _grid;
     private readonly BiomeRegistry _registry;
-    private readonly ITileRegistry? _tileRegistry;
+    private readonly IWfcTileCatalog? _tileCatalog;
     private readonly Dictionary<string, List<string>> _tileToBiomes;
 
     /// <summary>Controls how biome strength scales tile probability.</summary>
@@ -31,11 +30,11 @@ public class BiomeAffinityConstraint : IWfcConstraint
     /// </summary>
     public float MinModifier { get; set; } = 0.1f;
 
-    public BiomeAffinityConstraint(BiomeStrengthGrid grid, BiomeRegistry registry, ITileRegistry? tileRegistry = null)
+    public BiomeAffinityConstraint(BiomeStrengthGrid grid, BiomeRegistry registry, IWfcTileCatalog? tileCatalog = null)
     {
         _grid = grid;
         _registry = registry;
-        _tileRegistry = tileRegistry;
+        _tileCatalog = tileCatalog;
         _tileToBiomes = BuildTileToBiomesMap();
     }
 
@@ -84,27 +83,27 @@ public class BiomeAffinityConstraint : IWfcConstraint
         var map = new Dictionary<string, List<string>>();
         var allBiomeIds = _registry.GetAllBiomeIds().ToList();
 
-        if (_tileRegistry == null)
+        if (_tileCatalog == null)
             return map;
 
         // For each tile, check which biomes it's allowed in
-        foreach (var tileDef in _tileRegistry.GetAllTiles())
+        foreach (var tileId in _tileCatalog.TileIds)
         {
             var biomeList = new List<string>();
 
             // If AllowedBiomes is null, tile is universal - don't add to map (gets neutral weighting)
             // If AllowedBiomes has specific biomes, add those
-            if (tileDef.AllowedBiomes != null)
+            if (_tileCatalog.HasBiomeRestriction(tileId))
             {
                 foreach (var biomeId in allBiomeIds)
                 {
-                    if (tileDef.IsAllowedInBiome(biomeId))
+                    if (_tileCatalog.IsAllowedInBiome(tileId, biomeId))
                         biomeList.Add(biomeId);
                 }
             }
 
             if (biomeList.Count > 0)
-                map[tileDef.Id] = biomeList;
+                map[tileId] = biomeList;
         }
 
         return map;

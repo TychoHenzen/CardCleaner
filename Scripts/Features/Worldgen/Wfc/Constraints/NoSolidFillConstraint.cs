@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
@@ -15,9 +14,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// </summary>
 public class NoSolidFillConstraint : IWfcConstraint
 {
-    private const int SolidFillBitmask = 15;
-
-    private readonly ITileRegistry _tileRegistry;
+    private readonly IWfcTileCatalog _tileCatalog;
 
     // The four 2x2 window offsets relative to the candidate cell position.
     // Each window is defined by the 3 OTHER cells that would form a 2x2 with the candidate.
@@ -33,9 +30,9 @@ public class NoSolidFillConstraint : IWfcConstraint
         [new Vector2I(1, 0), new Vector2I(0, 1), new Vector2I(1, 1)]
     ];
 
-    public NoSolidFillConstraint(ITileRegistry tileRegistry)
+    public NoSolidFillConstraint(IWfcTileCatalog tileCatalog)
     {
-        _tileRegistry = tileRegistry;
+        _tileCatalog = tileCatalog;
     }
 
     public float GetProbabilityModifier(WfcConstraintContext context)
@@ -45,16 +42,12 @@ public class NoSolidFillConstraint : IWfcConstraint
         if (context.Topology is not WfcGrid grid)
             return 1.0f;
 
-        var candidateTile = _tileRegistry.GetTile(context.TileId);
-        if (candidateTile == null)
-            return 1.0f;
-
         // Only applies to auto-tiles
-        if (!candidateTile.HasAutoTileVariants)
+        if (!_tileCatalog.IsAutoTile(context.TileId))
             return 1.0f;
 
         // Check if THIS tile's auto-tile format lacks bitmask 15
-        var hasSolidFill = HasSolidFillVariant(candidateTile);
+        var hasSolidFill = _tileCatalog.HasSolidFillVariant(context.TileId);
 
         // If this tile has solid fill, no restriction needed
         if (hasSolidFill)
@@ -92,14 +85,14 @@ public class NoSolidFillConstraint : IWfcConstraint
             // Check if all neighbors are the same terrain type
             if (matchingTileId == null)
                 matchingTileId = neighborTileId;
-            else if (!_tileRegistry.AreSameTerrainType(matchingTileId, neighborTileId))
+            else if (!_tileCatalog.AreSameTerrainType(matchingTileId, neighborTileId))
                 return false; // Different terrain types - not a solid region
         }
 
         // All 3 neighbors are the same auto-tile type
         // Check if candidate is also the same type
         return matchingTileId != null &&
-               _tileRegistry.AreSameTerrainType(context.TileId, matchingTileId);
+               _tileCatalog.AreSameTerrainType(context.TileId, matchingTileId);
     }
 
     /// <summary>
@@ -115,16 +108,6 @@ public class NoSolidFillConstraint : IWfcConstraint
             return null;
 
         var tileId = cell.GetCollapsedTile();
-        var tile = _tileRegistry.GetTile(tileId);
-        return tile != null && tile.HasAutoTileVariants ? tileId : null;
-    }
-
-    private static bool HasSolidFillVariant(Features.Deckbuilder.Tiles.TileDefinition tile)
-    {
-        var variants = tile.AutoTileVariants;
-        if (variants == null || variants.Length <= SolidFillBitmask)
-            return false;
-
-        return variants[SolidFillBitmask].HasValue;
+        return _tileCatalog.IsAutoTile(tileId) ? tileId : null;
     }
 }

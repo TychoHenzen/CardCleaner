@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Contracts;
@@ -33,11 +32,11 @@ public class WfcSolver
         WfcTileSelector selector,
         BlobSizeTracker? blobTracker = null,
         SpatialCoherenceConstraint? spatialCoherence = null,
-        ITileRegistry? tileRegistry = null)
+        IWfcTileCatalog? tileCatalog = null)
     {
         _propagator = propagator;
         _selector = selector;
-        _collapseEffects = new WfcCollapseEffects(blobTracker, spatialCoherence, tileRegistry);
+        _collapseEffects = new WfcCollapseEffects(blobTracker, spatialCoherence, tileCatalog);
     }
 
     /// <summary>
@@ -51,14 +50,14 @@ public class WfcSolver
         Connectivity.PassabilityGraph passabilityGraph,
         Func<string, bool> isPassable,
         SpatialCoherenceConstraint? spatialCoherence = null,
-        ITileRegistry? tileRegistry = null)
+        IWfcTileCatalog? tileCatalog = null)
     {
         _propagator = propagator;
         _selector = selector;
         _collapseEffects = new WfcCollapseEffects(
             blobTracker,
             spatialCoherence,
-            tileRegistry,
+            tileCatalog,
             new Connectivity.PassabilityGraphUpdater(passabilityGraph, isPassable));
     }
 

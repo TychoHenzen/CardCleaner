@@ -77,7 +77,7 @@ public partial class BiomeGridInfluenceTest : BiomeGridIntegrationTestBase
         var gradient = new FixedGradient(new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }));
         var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient, _registry);
         var constraint = new Scripts.Features.Worldgen.Wfc.Constraints.BiomeAffinityConstraint(
-            strengthGrid, _registry, _tileRegistry);
+            strengthGrid, _registry, new Scripts.Features.Deckbuilder.Tiles.TileRegistryWfcCatalog(_tileRegistry));
 
         // Act: Check constraint behavior for different tile types
         var grid = new WfcGrid(10, 10, new[] { "fire_tile", "water_tile", "neutral_tile" });

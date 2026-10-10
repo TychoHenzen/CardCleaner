@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
@@ -19,13 +18,13 @@ internal sealed class WfcCollapseEffects
     internal WfcCollapseEffects(
         BlobSizeTracker? blobTracker,
         SpatialCoherenceConstraint? spatialCoherence,
-        ITileRegistry? tileRegistry,
+        IWfcTileCatalog? tileCatalog,
         PassabilityGraphUpdater? passabilityUpdater = null)
     {
         _blobTracker = blobTracker;
         _spatialCoherence = spatialCoherence;
         _passabilityUpdater = passabilityUpdater;
-        _reserver = new MultiCellReserver(tileRegistry);
+        _reserver = new MultiCellReserver(tileCatalog);
     }
 
     /// <summary>

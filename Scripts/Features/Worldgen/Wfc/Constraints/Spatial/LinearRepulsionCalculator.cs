@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
@@ -9,11 +8,11 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// </summary>
 internal sealed class LinearRepulsionCalculator
 {
-    private readonly ITileRegistry _tileRegistry;
+    private readonly IWfcTileCatalog _tileCatalog;
 
-    internal LinearRepulsionCalculator(ITileRegistry tileRegistry)
+    internal LinearRepulsionCalculator(IWfcTileCatalog tileCatalog)
     {
-        _tileRegistry = tileRegistry;
+        _tileCatalog = tileCatalog;
     }
 
     internal float Calculate(WfcConstraintContext context, LinearRepulsionSettings settings)
@@ -57,7 +56,7 @@ internal sealed class LinearRepulsionCalculator
             return 0.0f;
 
         // Same tile type (using terrain type comparison for auto-tiles)
-        if (!_tileRegistry.AreSameTerrainType(context.TileId, cell.GetCollapsedTile()))
+        if (!_tileCatalog.AreSameTerrainType(context.TileId, cell.GetCollapsedTile()))
             return 0.0f;
 
         // Chebyshev distance for grid. Penalty diminishes linearly with distance:

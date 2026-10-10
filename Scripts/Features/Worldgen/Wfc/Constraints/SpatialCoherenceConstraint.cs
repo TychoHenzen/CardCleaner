@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
@@ -10,15 +9,14 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// </summary>
 public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
 {
-    private const int SolidFillBitmask = 15;
-    private readonly ITileRegistry? _tileRegistry;
+    private readonly IWfcTileCatalog? _tileCatalog;
     private readonly LinearRepulsionCalculator? _linearRepulsion;
     private readonly SpatialCoherenceStats _stats = new();
 
-    public SpatialCoherenceConstraint(ITileRegistry? tileRegistry = null)
+    public SpatialCoherenceConstraint(IWfcTileCatalog? tileCatalog = null)
     {
-        _tileRegistry = tileRegistry;
-        _linearRepulsion = tileRegistry != null ? new LinearRepulsionCalculator(tileRegistry) : null;
+        _tileCatalog = tileCatalog;
+        _linearRepulsion = tileCatalog != null ? new LinearRepulsionCalculator(tileCatalog) : null;
     }
 
     /// <summary>
@@ -75,7 +73,7 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
         _stats.RecordCall();
 
         // Check if this is a linear tile (no bitmask 15) - needs different boost logic
-        var isLinearTile = _tileRegistry != null && !HasSolidFillVariant(context.TileId);
+        var isLinearTile = _tileCatalog != null && !HasSolidFillVariant(context.TileId);
 
         // RegionTracker is only used for grid topologies - mesh topologies use neighbor-count approximation
         if (_regionTracker == null && context.Topology is WfcGrid)
@@ -158,18 +156,7 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
 
     private bool HasSolidFillVariant(string tileId)
     {
-        var tile = _tileRegistry?.GetTile(tileId);
-        if (tile == null)
-            return true; // Assume has solid fill if we can't check
-
-        // Non-auto-tiles don't have variants, treat as having solid fill
-        if (!tile.HasAutoTileVariants)
-            return true;
-
-        var variants = tile.AutoTileVariants;
-        if (variants == null || variants.Length <= SolidFillBitmask)
-            return false;
-
-        return variants[SolidFillBitmask].HasValue;
+        // Unknown tiles and non-auto-tiles count as having solid fill
+        return _tileCatalog == null || !_tileCatalog.IsAutoTile(tileId) || _tileCatalog.HasSolidFillVariant(tileId);
     }
 }

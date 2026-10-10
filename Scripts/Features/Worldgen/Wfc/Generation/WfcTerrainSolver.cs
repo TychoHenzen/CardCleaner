@@ -59,6 +59,7 @@ internal sealed class WfcTerrainSolver : IWfcTerrainSolver
         Func<TileDefinition, bool>? gapTileFilter)
     {
         var registry = _registry ?? throw new InvalidOperationException("SolveGraphWithRegistry needs a tile registry");
+        var catalog = new TileRegistryWfcCatalog(registry);
 
         var topology = new WfcNeighborListTopology(neighbors, initialTiles);
         var rules = new WfcAdjacencyRules(_transitionPairs);
@@ -68,20 +69,20 @@ internal sealed class WfcTerrainSolver : IWfcTerrainSolver
         var selector = new WfcTileSelector();
         var blobTracker = new BlobSizeTracker();
         blobTracker.Initialize(neighbors.Length);
-        var spatialCoherence = new SpatialCoherenceConstraint(registry);
+        var spatialCoherence = new SpatialCoherenceConstraint(catalog);
 
         selector.AddConstraint(new DiminishingReturnsSoftModifier(blobTracker));
         selector.AddConstraint(spatialCoherence);
-        selector.AddConstraint(new AutoTileGapConstraint(registry));
-        selector.AddConstraint(new NoSolidFillConstraint(registry));
-        selector.AddConstraint(new TileProbabilityConstraint(registry));
+        selector.AddConstraint(new AutoTileGapConstraint(catalog));
+        selector.AddConstraint(new NoSolidFillConstraint(catalog));
+        selector.AddConstraint(new TileProbabilityConstraint(catalog));
 
         var solver = new WfcSolver(
             propagator,
             selector,
             blobTracker,
             spatialCoherence: spatialCoherence,
-            tileRegistry: registry)
+            tileCatalog: catalog)
         {
             MaxIterations = neighbors.Length * 2
         };

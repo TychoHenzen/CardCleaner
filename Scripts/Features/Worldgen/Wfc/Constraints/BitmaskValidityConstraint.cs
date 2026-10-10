@@ -1,6 +1,3 @@
-using CardCleaner.Features.Worldgen.AutoTiling;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
@@ -8,11 +5,11 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// <summary>Prevents auto-tile placements from creating disallowed bitmask patterns.</summary>
 public class BitmaskValidityConstraint : IWfcConstraint
 {
-    private readonly ITileRegistry _tileRegistry;
+    private readonly IWfcTileCatalog _tileCatalog;
 
-    public BitmaskValidityConstraint(ITileRegistry tileRegistry)
+    public BitmaskValidityConstraint(IWfcTileCatalog tileCatalog)
     {
-        _tileRegistry = tileRegistry;
+        _tileCatalog = tileCatalog;
     }
 
     public float GetProbabilityModifier(WfcConstraintContext context)
@@ -22,16 +19,8 @@ public class BitmaskValidityConstraint : IWfcConstraint
         if (context.Topology is not WfcGrid grid)
             return 1.0f;
 
-        var candidateTile = _tileRegistry.GetTile(context.TileId);
-        if (candidateTile == null)
-            return 1.0f;
-
         // Only check auto-tile placements
-        if (!candidateTile.HasAutoTileVariants)
-            return 1.0f;
-
-        var format = candidateTile.GetAutoTileFormat();
-        if (format == null)
+        if (!_tileCatalog.IsAutoTile(context.TileId))
             return 1.0f;
 
         var position = grid.CellIdToPosition(context.CellId);
@@ -42,19 +31,19 @@ public class BitmaskValidityConstraint : IWfcConstraint
         var dy = position.Y;
 
         // Visual tile at (dx, dy) - candidate is SE corner
-        if (!CheckVisualTileBitmask(context, grid, format, dx, dy, CornerRole.SE))
+        if (!CheckVisualTileBitmask(context, grid, dx, dy, CornerRole.SE))
             return 0.0f;
 
         // Visual tile at (dx+1, dy) - candidate is SW corner
-        if (!CheckVisualTileBitmask(context, grid, format, dx + 1, dy, CornerRole.SW))
+        if (!CheckVisualTileBitmask(context, grid, dx + 1, dy, CornerRole.SW))
             return 0.0f;
 
         // Visual tile at (dx, dy+1) - candidate is NE corner
-        if (!CheckVisualTileBitmask(context, grid, format, dx, dy + 1, CornerRole.NE))
+        if (!CheckVisualTileBitmask(context, grid, dx, dy + 1, CornerRole.NE))
             return 0.0f;
 
         // Visual tile at (dx+1, dy+1) - candidate is NW corner
-        if (!CheckVisualTileBitmask(context, grid, format, dx + 1, dy + 1, CornerRole.NW))
+        if (!CheckVisualTileBitmask(context, grid, dx + 1, dy + 1, CornerRole.NW))
             return 0.0f;
 
         return 1.0f;
@@ -69,7 +58,6 @@ public class BitmaskValidityConstraint : IWfcConstraint
     private bool CheckVisualTileBitmask(
         WfcConstraintContext context,
         WfcGrid grid,
-        AutoTileFormatDefinition format,
         int visualX,
         int visualY,
         CornerRole candidateCorner)
@@ -90,7 +78,7 @@ public class BitmaskValidityConstraint : IWfcConstraint
         if (nwFilled is not bool nw || neFilled is not bool ne || swFilled is not bool sw || seFilled is not bool se)
             return true; // Can't determine - allow for now
 
-        return format.IsBitmaskAllowed(ToBitmask(nw, ne, sw, se));
+        return _tileCatalog.IsBitmaskAllowed(context.TileId, ToBitmask(nw, ne, sw, se)) ?? true;
     }
 
     /// <summary>
@@ -139,8 +127,7 @@ public class BitmaskValidityConstraint : IWfcConstraint
         // Check if it's ANY auto-tile of the same format
         // (Different auto-tile types shouldn't be adjacent per gap constraint,
         // but we check for same-type here)
-        var collapsedTile = _tileRegistry.GetTile(collapsedTileId);
-        if (collapsedTile != null && collapsedTile.HasAutoTileVariants)
+        if (_tileCatalog.IsAutoTile(collapsedTileId))
         {
             // It's an auto-tile, but different type - treat as filled
             // (Gap constraint should prevent this, but handle it anyway)

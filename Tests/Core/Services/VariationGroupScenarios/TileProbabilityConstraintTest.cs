@@ -41,7 +41,7 @@ public class TileProbabilityConstraintTest
         registry.AddVariationGroup(grassGroup);
 
         // Create constraint and set selected variant
-        var constraint = new TileProbabilityConstraint(registry);
+        var constraint = new TileProbabilityConstraint(new TileRegistryWfcCatalog(registry));
         constraint.SetSelectedVariants(new Dictionary<string, string> { { "grass", "grass2" } });
 
         // Create mock context for the selected variant
@@ -72,7 +72,7 @@ public class TileProbabilityConstraintTest
         registry.AddVariationGroup(grassGroup);
 
         // Create constraint and set grass2 as selected
-        var constraint = new TileProbabilityConstraint(registry);
+        var constraint = new TileProbabilityConstraint(new TileRegistryWfcCatalog(registry));
         constraint.SetSelectedVariants(new Dictionary<string, string> { { "grass", "grass2" } });
 
         // Create mock context for NON-selected variants
@@ -104,7 +104,7 @@ public class TileProbabilityConstraintTest
         registry.AddVariationGroup(grassGroup);
 
         // Create constraint WITHOUT setting selected variants
-        var constraint = new TileProbabilityConstraint(registry);
+        var constraint = new TileProbabilityConstraint(new TileRegistryWfcCatalog(registry));
         // constraint.SetSelectedVariants(null); // Not called
 
         // Create contexts for both variants
@@ -136,7 +136,7 @@ public class TileProbabilityConstraintTest
         registry.AddVariationGroup(flowerGroup);
 
         // Create constraint - even with selection set, PerInstance should ignore it
-        var constraint = new TileProbabilityConstraint(registry);
+        var constraint = new TileProbabilityConstraint(new TileRegistryWfcCatalog(registry));
         constraint.SetSelectedVariants(new Dictionary<string, string> { { "flower", "flower_a" } });
 
         var contextA = CreateMockContext("flower_a");
