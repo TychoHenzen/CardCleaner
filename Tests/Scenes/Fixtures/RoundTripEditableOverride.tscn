@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://Tests/Scenes/Fixtures/RoundTripLeaf.tscn" id="1_leaf"]
+
+[node name="Root" type="Node3D"]
+
+[node name="Child" parent="." instance=ExtResource("1_leaf")]
+
+[node name="Leaf" parent="Child" groups=["fixture"]]
+
+[editable path="Child"]
