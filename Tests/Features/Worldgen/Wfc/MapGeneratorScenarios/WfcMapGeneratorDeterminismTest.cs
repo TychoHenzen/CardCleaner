@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Tests.Features.Worldgen.Support;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc.MapGeneratorScenarios;
@@ -14,17 +15,16 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestDifferentSeedsProduceDifferentMaps()
     {
-        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
+        var generator = new WfcMapGenerator(
+            new WfcAdjacencyRules(_transitionPairs),
+            WfcTestFixtures.ProductionCatalog());
         var biome = _biomeRegistry.GetBiome("plains");
 
         var result1 = generator.Generate(biome!, new Vector2I(8, 8), 111);
         var result2 = generator.Generate(biome!, new Vector2I(8, 8), 222);
 
-        if (!result1.Success || !result2.Success)
-        {
-            GD.Print("Skipping seed variation test - generation failed");
-            return;
-        }
+        WfcTestFixtures.AssertSucceeded(result1, "Seed 111 map");
+        WfcTestFixtures.AssertSucceeded(result2, "Seed 222 map");
 
         // Count unique tile types in each map
         var tiles1 = result1.TileIds!;
@@ -40,12 +40,10 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
             }
         }
 
-        // If only one tile type exists, test is inconclusive (skip)
-        if (uniqueTiles.Count <= 1)
-        {
-            GD.Print($"Skipping seed variation test - only {uniqueTiles.Count} tile type(s) available");
-            return;
-        }
+        // One tile type would make the seed comparison meaningless, so the seed 111 map must show at least two
+        AssertThat(uniqueTiles.Count)
+            .OverrideFailureMessage($"Seed 111 map has {uniqueTiles.Count} tile type(s), need at least 2")
+            .IsGreater(1);
 
         // Count how many tiles are different
         var differentCount = 0;
@@ -65,17 +63,16 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestSameSeedProducesSameMap()
     {
-        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
+        var generator = new WfcMapGenerator(
+            new WfcAdjacencyRules(_transitionPairs),
+            WfcTestFixtures.ProductionCatalog());
         var biome = _biomeRegistry.GetBiome("plains");
 
         var result1 = generator.Generate(biome!, new Vector2I(8, 8), 42);
         var result2 = generator.Generate(biome!, new Vector2I(8, 8), 42);
 
-        if (!result1.Success || !result2.Success)
-        {
-            GD.Print("Skipping determinism test - generation failed");
-            return;
-        }
+        WfcTestFixtures.AssertSucceeded(result1, "Seed 42 map, first run");
+        WfcTestFixtures.AssertSucceeded(result2, "Seed 42 map, second run");
 
         var tiles1 = result1.TileIds!;
         var tiles2 = result2.TileIds!;
@@ -93,27 +90,26 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestPassableTilesPopulated()
     {
-        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
+        var catalog = WfcTestFixtures.ProductionCatalog();
+        var generator = new WfcMapGenerator(
+            new WfcAdjacencyRules(_transitionPairs),
+            catalog);
         var biome = _biomeRegistry.GetBiome("plains");
 
         var result = generator.Generate(biome!, new Vector2I(10, 10), 12345);
 
-        if (!result.Success)
-        {
-            GD.Print("Skipping passable tiles test - generation failed");
-            return;
-        }
+        WfcTestFixtures.AssertSucceeded(result, "Seed 12345 map");
 
         var tileIds = result.TileIds!;
         AssertThat(tileIds.GetLength(0)).IsEqual(result.Size.Y);
         AssertThat(tileIds.GetLength(1)).IsEqual(result.Size.X);
 
-        // Passable cells are the cells whose tile is in the biome's passable pool
-        var passableIds = new HashSet<string>(biome!.PassableTiles.GetAllTileIds());
+        // The single-biome path weights tiles uniformly (WfcTileSelector, since 8788c0d), so the biome's passable
+        // pool does not steer it. The map is checked against the registry's passability instead.
         var passableCells = 0;
         foreach (var tileId in tileIds)
         {
-            if (passableIds.Contains(tileId))
+            if (catalog.IsPassable(tileId))
                 passableCells++;
         }
 

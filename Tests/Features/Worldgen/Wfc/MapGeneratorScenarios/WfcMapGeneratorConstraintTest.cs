@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -52,7 +54,8 @@ public class WfcMapGeneratorConstraintTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestRetryOnContradiction()
     {
-        // Create rules that might cause contradictions
+        // Rules with no direct A-C edge. The catalog below makes A, B and C gap tiles, and the gap-tile rule then
+        // allows every pair of them (A-C included), so these rules cannot contradict in this setup.
         var rules = new WfcAdjacencyRules(new[]
         {
             ("A", "B"),  // A can neighbor B
@@ -60,7 +63,8 @@ public class WfcMapGeneratorConstraintTest : WfcMapGeneratorIntegrationTestBase
             // Note: A cannot neighbor C directly
         });
 
-        var generator = new WfcMapGenerator(rules);
+        var tileRegistry = WfcTestFixtures.CreateTestTileRegistry("plains", "A", "B", "C");
+        var generator = new WfcMapGenerator(rules, new TileRegistryWfcCatalog(tileRegistry));
         generator.MaxRetries = 5;
 
         var passable = new TilePool();
@@ -75,14 +79,12 @@ public class WfcMapGeneratorConstraintTest : WfcMapGeneratorIntegrationTestBase
             new TilePool(),
             0.0f);
 
-        // This might fail or succeed depending on collapse order
         var result = generator.Generate(biome, new Vector2I(5, 5), 12345);
 
-        // Just verify it doesn't crash and provides meaningful feedback
-        if (!result.Success)
-        {
-            AssertThat(result.ErrorMessage).IsNotNull();
-            GD.Print($"Expected failure with limited rules: {result.ErrorMessage}");
-        }
+        // Documented outcome with the catalog in place: success, a 5x5 map, and only the rule tiles A, B and C
+        WfcTestFixtures.AssertSucceeded(result, "Retry map");
+        AssertThat(result.Size).IsEqual(new Vector2I(5, 5));
+        var ruleTiles = new HashSet<string> { "A", "B", "C" };
+        AssertBool(result.TileIds!.Cast<string>().All(ruleTiles.Contains)).IsTrue();
     }
 }
