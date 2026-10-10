@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 
@@ -32,9 +31,7 @@ internal sealed class WfcConstraintSet
         _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
         _noSolidFill = tileRegistry != null ? new NoSolidFillConstraint(tileRegistry) : null;
         _bitmaskValidity = tileRegistry != null ? new BitmaskValidityConstraint(tileRegistry) : null;
-        _tileProbability = tileRegistry is TileRegistry concreteRegistry
-            ? new TileProbabilityConstraint(concreteRegistry)
-            : null;
+        _tileProbability = tileRegistry != null ? new TileProbabilityConstraint(tileRegistry) : null;
     }
 
     internal void SetSelectedVariants(Dictionary<string, string>? selectedVariants)

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
@@ -15,7 +15,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// </summary>
 public class TileProbabilityConstraint : IWfcConstraint
 {
-    private readonly TileRegistry _tileRegistry;
+    private readonly ITileRegistry _tileRegistry;
 
     // Maps group base name → selected tile ID for this generation
     private Dictionary<string, string>? _selectedVariants;
@@ -23,7 +23,7 @@ public class TileProbabilityConstraint : IWfcConstraint
     /// <summary>Sets the minimum probability modifier for eligible tiles.</summary>
     public float MinModifier { get; set; } = 0.01f;
 
-    public TileProbabilityConstraint(TileRegistry tileRegistry)
+    public TileProbabilityConstraint(ITileRegistry tileRegistry)
     {
         _tileRegistry = tileRegistry;
     }

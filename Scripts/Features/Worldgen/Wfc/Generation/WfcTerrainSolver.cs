@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
@@ -75,9 +74,7 @@ internal sealed class WfcTerrainSolver : IWfcTerrainSolver
         selector.AddConstraint(spatialCoherence);
         selector.AddConstraint(new AutoTileGapConstraint(registry));
         selector.AddConstraint(new NoSolidFillConstraint(registry));
-
-        if (registry is TileRegistry concreteRegistry)
-            selector.AddConstraint(new TileProbabilityConstraint(concreteRegistry));
+        selector.AddConstraint(new TileProbabilityConstraint(registry));
 
         var solver = new WfcSolver(
             propagator,
