@@ -157,7 +157,7 @@ public class WfcPerformanceBenchmarkTest
     }
 
     [TestCase]
-    public void TestConstraintOverhead_MeasurePerTileTime()
+    public static void TestConstraintOverhead_MeasurePerTileTime()
     {
         // This test measures how long each constraint evaluation takes
         // by comparing WFC with and without constraints

@@ -9,7 +9,8 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
 /// Selects tiles from valid options using weighted probabilities.
-/// Applies soft rules: biome-preferred tiles get full weight, others are penalized.
+/// With a cell and topology, every valid tile gets a uniform base weight, so biome pools do not choose the tile.
+/// ComputeWeights, which feeds the weighted entropy, still applies the biome pool weights.
 /// Supports continuity bias to encourage larger contiguous regions.
 /// Supports pluggable constraints for extensible weight adjustments.
 /// </summary>
@@ -45,8 +46,8 @@ public class WfcTileSelector
     }
 
     /// <summary>
-    /// Penalty multiplier for tiles not in the biome's preferred set.
-    /// Default 0.1 means non-biome tiles are 10x less likely to be selected.
+    /// Penalty for tiles outside the biome pool, used only by ComputeWeights (weighted entropy). Default 0.1.
+    /// SelectTile uses a uniform base weight, so this does not change the chosen tile.
     /// </summary>
     public float NonBiomeTilePenalty { get; set; } = 0.1f;
 
@@ -59,7 +60,8 @@ public class WfcTileSelector
     public float ContinuityBiasMultiplier { get; set; } = 2.0f;
 
     /// <summary>
-    /// Selects a tile from the valid options using biome-weighted probabilities.
+    /// Selects a tile from the valid options. With a cell and topology, every valid tile gets a uniform base weight,
+    /// scaled by the registered constraints and the continuity bias; biome weights are not used on this path.
     /// Topology-agnostic version using cell IDs.
     /// </summary>
     /// <param name="validTiles">Tiles that satisfy hard constraints (from WfcCellState)</param>

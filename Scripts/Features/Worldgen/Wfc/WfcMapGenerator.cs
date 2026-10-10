@@ -15,8 +15,9 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
 /// High-level WFC map generator that produces terrain maps using Wave Function Collapse.
-/// Enforces hard constraints (valid adjacencies from transition map) and
-/// soft constraints (biome preferences via weighted selection).
+/// Enforces hard constraints (valid adjacencies from the transition map) and soft constraints (weights from the
+/// constraints registered on the tile selector). Biome affinity comes from <see cref="GenerateMultiBiome"/> with a
+/// gradient.
 /// </summary>
 public class WfcMapGenerator
 {
@@ -120,6 +121,14 @@ public class WfcMapGenerator
         }
     }
 
+    /// <summary>
+    /// Generates one map for a single biome. The tiles are the adjacency-rule tiles that the tile catalog contains and
+    /// allows in the biome (WfcTileSetBuilder.ForBiome). Each candidate gets a uniform base weight, so biome pool
+    /// weights do not choose the tile; they still feed the weighted entropy that orders cell collapses. For biome
+    /// affinity, use GenerateMultiBiome with a gradient. With a catalog and EnableConnectivity, a disconnected passable
+    /// result is retried with derived seeds, up to MaxConnectivityAttempts, and the call fails if every attempt is
+    /// disconnected.
+    /// </summary>
     public WfcGenerationResult Generate(
         BiomeDefinition biome,
         Vector2I size,
