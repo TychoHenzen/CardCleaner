@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Tests.Features.Worldgen.Support;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc.MapGeneratorScenarios;
@@ -14,21 +15,16 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestGeneratesValidMapWithForestBiome()
     {
-        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
+        var generator = new WfcMapGenerator(
+            new WfcAdjacencyRules(_transitionPairs),
+            WfcTestFixtures.ProductionCatalog());
         var biome = _biomeRegistry.GetBiome("forest");
 
         AssertThat(biome).IsNotNull();
 
         var result = generator.Generate(biome!, new Vector2I(10, 10), 12345);
 
-        // May fail if no valid tiles in biome have adjacency rules
-        if (!result.Success)
-        {
-            GD.Print($"Generation failed (expected if tiles not in transition map): {result.ErrorMessage}");
-            return;
-        }
-
-        AssertBool(result.Success).IsTrue();
+        WfcTestFixtures.AssertSucceeded(result, "Forest 10x10 map");
         AssertThat(result.TileIds).IsNotNull();
         AssertThat(result.Size).IsEqual(new Vector2I(10, 10));
     }
@@ -36,39 +32,33 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestGeneratesValidMapWithPlainsBiome()
     {
-        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
+        var generator = new WfcMapGenerator(
+            new WfcAdjacencyRules(_transitionPairs),
+            WfcTestFixtures.ProductionCatalog());
         var biome = _biomeRegistry.GetBiome("plains");
 
         AssertThat(biome).IsNotNull();
 
         var result = generator.Generate(biome!, new Vector2I(10, 10), 12345);
 
-        if (!result.Success)
-        {
-            GD.Print($"Generation failed (expected if tiles not in transition map): {result.ErrorMessage}");
-            return;
-        }
-
-        AssertBool(result.Success).IsTrue();
+        WfcTestFixtures.AssertSucceeded(result, "Plains 10x10 map");
         AssertThat(result.TileIds).IsNotNull();
     }
 
     [TestCase]
     public void TestNoInvalidAdjacencies()
     {
-        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
+        // WfcMapGenerator adds the gap-tile adjacencies to the rules instance it is given, so the rules checked
+        // below are the ones the solver enforced. ASSUMPTION: a fresh WfcAdjacencyRules would miss those additions.
+        var adjacencyRules = new WfcAdjacencyRules(_transitionPairs);
+        var generator = new WfcMapGenerator(adjacencyRules, WfcTestFixtures.ProductionCatalog());
         var biome = _biomeRegistry.GetBiome("plains");
 
         var result = generator.Generate(biome!, new Vector2I(8, 8), 42);
 
-        if (!result.Success)
-        {
-            GD.Print($"Skipping adjacency test - generation failed: {result.ErrorMessage}");
-            return;
-        }
+        WfcTestFixtures.AssertSucceeded(result, "Plains 8x8 map");
 
         var tileIds = result.TileIds!;
-        var adjacencyRules = new WfcAdjacencyRules(_transitionPairs);
 
         // Check all horizontal adjacencies
         for (var y = 0; y < result.Size.Y; y++)
@@ -98,7 +88,9 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestPerformanceUnder500ms()
     {
-        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
+        var generator = new WfcMapGenerator(
+            new WfcAdjacencyRules(_transitionPairs),
+            WfcTestFixtures.ProductionCatalog());
         var biome = _biomeRegistry.GetBiome("plains");
 
         var stopwatch = Stopwatch.StartNew();
@@ -107,13 +99,7 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
 
         GD.Print($"WFC generation for 20x20: {stopwatch.ElapsedMilliseconds}ms, {result.Iterations} iterations");
 
-        if (result.Success)
-        {
-            AssertThat(stopwatch.ElapsedMilliseconds).IsLess(500);
-        }
-        else
-        {
-            GD.Print($"Generation failed: {result.ErrorMessage}");
-        }
+        WfcTestFixtures.AssertSucceeded(result, "Plains 20x20 map");
+        AssertThat(stopwatch.ElapsedMilliseconds).IsLess(500);
     }
 }

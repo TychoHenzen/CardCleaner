@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -32,7 +33,9 @@ public class WfcPerformanceBenchmarkTest
     [TestCase]
     public void TestDeterminism_SameSeedSameOutput()
     {
-        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
+        var generator = new WfcMapGenerator(
+            new WfcAdjacencyRules(_transitionPairs),
+            WfcTestFixtures.ProductionCatalog());
         var biome = _biomeRegistry.GetBiome("plains");
         AssertThat(biome).IsNotNull();
 
@@ -42,11 +45,8 @@ public class WfcPerformanceBenchmarkTest
         var result1 = generator.Generate(biome!, new Vector2I(size, size), seed);
         var result2 = generator.Generate(biome!, new Vector2I(size, size), seed);
 
-        if (!result1.Success || !result2.Success)
-        {
-            GD.Print($"Skipping determinism test - generation failed");
-            return;
-        }
+        WfcTestFixtures.AssertSucceeded(result1, "Determinism run 1");
+        WfcTestFixtures.AssertSucceeded(result2, "Determinism run 2");
 
         var tiles1 = result1.TileIds!;
         var tiles2 = result2.TileIds!;
@@ -69,7 +69,9 @@ public class WfcPerformanceBenchmarkTest
     [TestCase]
     public void TestPerformance_30x30Grid()
     {
-        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
+        var generator = new WfcMapGenerator(
+            new WfcAdjacencyRules(_transitionPairs),
+            WfcTestFixtures.ProductionCatalog());
         var biome = _biomeRegistry.GetBiome("plains");
         AssertThat(biome).IsNotNull();
 
@@ -87,10 +89,7 @@ public class WfcPerformanceBenchmarkTest
             times[i] = stopwatch.ElapsedMilliseconds;
             iterations[i] = result.Iterations;
 
-            if (!result.Success)
-            {
-                GD.Print($"[Benchmark] Run {i + 1} failed: {result.ErrorMessage}");
-            }
+            WfcTestFixtures.AssertSucceeded(result, $"30x30 run {i + 1}");
         }
 
         var avgTime = times.Average();
@@ -111,7 +110,9 @@ public class WfcPerformanceBenchmarkTest
     [TestCase]
     public void TestPerformance_60x60Grid()
     {
-        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
+        var generator = new WfcMapGenerator(
+            new WfcAdjacencyRules(_transitionPairs),
+            WfcTestFixtures.ProductionCatalog());
         var biome = _biomeRegistry.GetBiome("plains");
         AssertThat(biome).IsNotNull();
 
@@ -129,10 +130,7 @@ public class WfcPerformanceBenchmarkTest
             times[i] = stopwatch.ElapsedMilliseconds;
             iterations[i] = result.Iterations;
 
-            if (!result.Success)
-            {
-                GD.Print($"[Benchmark] Run {i + 1} failed: {result.ErrorMessage}");
-            }
+            WfcTestFixtures.AssertSucceeded(result, $"60x60 run {i + 1}");
         }
 
         var avgTime = times.Average();
@@ -155,7 +153,10 @@ public class WfcPerformanceBenchmarkTest
     {
         // This test measures how long each constraint evaluation takes
         // by comparing WFC with and without constraints
-        var generator = new WfcMapGenerator(WfcTestFixtures.FullAdjacencyRules());
+        var tileRegistry = WfcTestFixtures.CreateTestTileRegistry(WfcTestFixtures.TestBiomeId, "A", "B", "C", "D");
+        var generator = new WfcMapGenerator(
+            WfcTestFixtures.FullAdjacencyRules(),
+            new TileRegistryWfcCatalog(tileRegistry));
         generator.MaxRetries = 1; // Quick fail on contradiction
 
         var biome = WfcTestFixtures.CreateAbcdBiome();
@@ -167,8 +168,9 @@ public class WfcPerformanceBenchmarkTest
         for (var i = 0; i < runs; i++)
         {
             var stopwatch = Stopwatch.StartNew();
-            generator.Generate(biome, new Vector2I(size, size), (ulong)(i * 500 + 99999));
+            var result = generator.Generate(biome, new Vector2I(size, size), (ulong)(i * 500 + 99999));
             stopwatch.Stop();
+            WfcTestFixtures.AssertSucceeded(result, $"40x40 run {i + 1}");
             times[i] = stopwatch.ElapsedMilliseconds;
         }
 

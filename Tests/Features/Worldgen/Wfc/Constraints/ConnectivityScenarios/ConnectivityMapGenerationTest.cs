@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Tests.Features.Worldgen.Support;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc.Constraints.ConnectivityScenarios;
@@ -31,6 +35,11 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
         var biome = new BiomeDefinition("test_biome", new CardSignature(), passable, blocked, 0.0f);
 
         // Custom adjacency rules that include both passable and impassable tiles
+        var catalog = CreateCatalog(
+            "test_biome",
+            ("grass", TilePassability.Passable),
+            ("water", TilePassability.Passable),
+            ("wall", TilePassability.Solid));
         var generator = new WfcMapGenerator(new WfcAdjacencyRules(new[]
         {
             ("grass", "grass"),
@@ -39,7 +48,7 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
             ("water", "water"),
             ("water", "wall"),
             ("wall", "wall")
-        }));
+        }), catalog);
         generator.EnableConnectivity = true;
         generator.MaxRetries = 5;
 
@@ -54,7 +63,8 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
             GD.Print($"Disconnected maps: {string.Join(", ", sweep.DisconnectedMaps)}");
         }
 
-        // All successfully generated maps should have connected passable regions
+        // Every map must generate, and every generated map must have connected passable regions
+        AssertInt(sweep.SuccessCount).IsEqual(mapCount);
         AssertInt(sweep.ConnectedCount).IsEqual(sweep.SuccessCount);
     }
 
@@ -69,7 +79,12 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
             ("X", "X")
         });
 
-        var generator = new WfcMapGenerator(customRules);
+        var catalog = CreateCatalog(
+            "test",
+            ("A", TilePassability.Passable),
+            ("B", TilePassability.Passable),
+            ("X", TilePassability.Solid));
+        var generator = new WfcMapGenerator(customRules, catalog);
         generator.EnableConnectivity = true;
 
         var passable = new TilePool();
@@ -84,16 +99,36 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
         for (var seed = 1; seed <= 10; seed++)
         {
             var result = generator.Generate(biome, new Vector2I(8, 8), (ulong)seed * 100);
-
-            if (!result.Success)
-            {
-                GD.Print($"Seed {seed}: Generation failed - {result.ErrorMessage}");
-                continue;
-            }
+            WfcTestFixtures.AssertSucceeded(result, $"Seed {seed}");
 
             var isConnected = VerifyPassableConnectivity(result.TileIds!, passable);
             AssertBool(isConnected).IsTrue();
         }
+    }
+
+    /// <summary>
+    ///     A catalog over a fresh registry holding only the given tiles, each allowed in the given biome.
+    /// </summary>
+    private static TileRegistryWfcCatalog CreateCatalog(
+        string biomeId,
+        params (string Id, TilePassability Passability)[] tiles)
+    {
+        var registry = new TileRegistry();
+        registry.Clear(); // Clear production tiles loaded by constructor
+        foreach (var (id, passability) in tiles)
+        {
+            registry.RegisterTile(new TileDefinition(
+                id,
+                id,
+                passability,
+                Vector2I.Zero,
+                new TileDefinitionOptions
+                {
+                    AllowedBiomes = new HashSet<string> { biomeId }
+                }));
+        }
+
+        return new TileRegistryWfcCatalog(registry);
     }
 
     private readonly record struct ConnectivitySweep(int SuccessCount, int ConnectedCount, List<int> DisconnectedMaps);
@@ -112,12 +147,7 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
         {
             var seed = (ulong)(i * 12345 + 7);
             var result = generator.Generate(biome, new Vector2I(10, 10), seed);
-
-            if (!result.Success)
-            {
-                GD.Print($"Map {i} generation failed: {result.ErrorMessage}");
-                continue;
-            }
+            WfcTestFixtures.AssertSucceeded(result, $"Map {i} (seed {seed})");
 
             successCount++;
 

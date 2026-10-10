@@ -86,4 +86,20 @@ public static class WfcTestFixtures
 
         return registry;
     }
+
+    /// <summary>
+    ///     A catalog over the production TileRegistry, the pairing WfcGridFingerprintTest pins with the
+    ///     production transition pairs.
+    /// </summary>
+    public static TileRegistryWfcCatalog ProductionCatalog() => new(new TileRegistry());
+
+    /// <summary>
+    ///     Asserts that a generation succeeded, quoting the generator's error message when it did not.
+    /// </summary>
+    public static void AssertSucceeded(WfcGenerationResult result, string label = "Generation")
+    {
+        AssertThat(result.Success)
+            .OverrideFailureMessage($"{label} failed: {result.ErrorMessage}")
+            .IsTrue();
+    }
 }
