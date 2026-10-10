@@ -117,7 +117,7 @@ Single-biome map generation.
 ```
 1. _tileSetBuilder.ForBiome(biome):
    - Walk _adjacencyRules.AllTileIds
-   - Look each id up in the ITileRegistry; skip ids it does not know
+   - Look each id up through IWfcTileCatalog, WFC's only view of the tile catalog; skip ids it does not know
    - Keep tiles where TileDefinition.IsAllowedInBiome(biome.Id) is true
      (AllowedBiomes null means every biome)
    - No registry: every lookup is null, so the set is empty; step 2 fails
