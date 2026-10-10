@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
@@ -21,16 +20,16 @@ internal sealed class MeshTerrainProjection
 
     public static void MapBackgroundToQuads(
         IrregularMesh mesh,
-        SimpleMapData backgroundData,
+        Vector2I size,
+        string[,] tileIds,
         (Vector2 Min, Vector2 Max) bounds)
     {
-        var wfcSize = backgroundData.Size;
         var meshSize = bounds.Max - bounds.Min;
 
         foreach (var quad in mesh.Quads)
         {
-            var gridPosition = ToGridPosition(quad.Centroid, bounds.Min, meshSize, wfcSize);
-            quad.BackgroundTileId = backgroundData.TileIds[gridPosition.Y, gridPosition.X];
+            var gridPosition = ToGridPosition(quad.Centroid, bounds.Min, meshSize, size);
+            quad.BackgroundTileId = tileIds[gridPosition.Y, gridPosition.X];
         }
 
         GD.Print($"[MeshTerrainGen] Mapped {mesh.Quads.Count} quads with backgrounds");

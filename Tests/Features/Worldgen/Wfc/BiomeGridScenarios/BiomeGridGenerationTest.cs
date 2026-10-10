@@ -29,8 +29,8 @@ public partial class BiomeGridGenerationTest : BiomeGridIntegrationTestBase
         // Assert
         // Should succeed (BiomeGrid is created and BiomeAffinityConstraint is registered)
         AssertBool(result.Success).IsTrue();
-        AssertThat(result.MapData).IsNotNull();
-        AssertThat(result.MapData!.Size).IsEqual(new Vector2I(5, 5));
+        AssertThat(result.TileIds).IsNotNull();
+        AssertThat(result.Size).IsEqual(new Vector2I(5, 5));
     }
 
     [TestCase]
@@ -49,6 +49,6 @@ public partial class BiomeGridGenerationTest : BiomeGridIntegrationTestBase
 
         // Assert: Should succeed without BiomeAffinityConstraint
         AssertBool(result.Success).IsTrue();
-        AssertThat(result.MapData).IsNotNull();
+        AssertThat(result.TileIds).IsNotNull();
     }
 }

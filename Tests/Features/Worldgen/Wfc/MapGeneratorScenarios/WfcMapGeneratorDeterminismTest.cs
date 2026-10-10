@@ -14,7 +14,7 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestDifferentSeedsProduceDifferentMaps()
     {
-        var generator = new WfcMapGenerator(_resolver);
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
         var biome = _biomeRegistry.GetBiome("plains");
 
         var result1 = generator.Generate(biome!, new Vector2I(8, 8), 111);
@@ -27,16 +27,16 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
         }
 
         // Count unique tile types in each map
-        var map1 = result1.MapData!;
-        var map2 = result2.MapData!;
+        var tiles1 = result1.TileIds!;
+        var tiles2 = result2.TileIds!;
         var uniqueTiles = new HashSet<string>();
 
         for (var y = 0; y < 8; y++)
         {
             for (var x = 0; x < 8; x++)
             {
-                if (map1.TileIds[y, x] != null)
-                    uniqueTiles.Add(map1.TileIds[y, x]!);
+                if (tiles1[y, x] != null)
+                    uniqueTiles.Add(tiles1[y, x]!);
             }
         }
 
@@ -53,7 +53,7 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
         {
             for (var x = 0; x < 8; x++)
             {
-                if (map1.TileIds[y, x] != map2.TileIds[y, x])
+                if (tiles1[y, x] != tiles2[y, x])
                     differentCount++;
             }
         }
@@ -65,7 +65,7 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestSameSeedProducesSameMap()
     {
-        var generator = new WfcMapGenerator(_resolver);
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
         var biome = _biomeRegistry.GetBiome("plains");
 
         var result1 = generator.Generate(biome!, new Vector2I(8, 8), 42);
@@ -77,15 +77,15 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
             return;
         }
 
-        var map1 = result1.MapData!;
-        var map2 = result2.MapData!;
+        var tiles1 = result1.TileIds!;
+        var tiles2 = result2.TileIds!;
 
         // Maps should be identical
         for (var y = 0; y < 8; y++)
         {
             for (var x = 0; x < 8; x++)
             {
-                AssertString(map1.TileIds[y, x]).IsEqual(map2.TileIds[y, x]);
+                AssertString(tiles1[y, x]).IsEqual(tiles2[y, x]);
             }
         }
     }
@@ -93,7 +93,7 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
     [TestCase]
     public void TestPassableTilesPopulated()
     {
-        var generator = new WfcMapGenerator(_resolver);
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
         var biome = _biomeRegistry.GetBiome("plains");
 
         var result = generator.Generate(biome!, new Vector2I(10, 10), 12345);
@@ -104,36 +104,19 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
             return;
         }
 
-        var mapData = result.MapData!;
+        var tileIds = result.TileIds!;
+        AssertThat(tileIds.GetLength(0)).IsEqual(result.Size.Y);
+        AssertThat(tileIds.GetLength(1)).IsEqual(result.Size.X);
 
-        // PassableTiles should be populated
-        AssertThat(mapData.PassableTiles.Count).IsGreater(0);
-
-        // All entries should be within bounds
-        foreach (var pos in mapData.PassableTiles)
+        // Passable cells are the cells whose tile is in the biome's passable pool
+        var passableIds = new HashSet<string>(biome!.PassableTiles.GetAllTileIds());
+        var passableCells = 0;
+        foreach (var tileId in tileIds)
         {
-            AssertBool(pos.X >= 0 && pos.X < mapData.Size.X).IsTrue();
-            AssertBool(pos.Y >= 0 && pos.Y < mapData.Size.Y).IsTrue();
-        }
-    }
-
-    [TestCase]
-    public void TestPlayerStartIsPassable()
-    {
-        var generator = new WfcMapGenerator(_resolver);
-        var biome = _biomeRegistry.GetBiome("plains");
-
-        var result = generator.Generate(biome!, new Vector2I(10, 10), 12345);
-
-        if (!result.Success)
-        {
-            GD.Print("Skipping player start test - generation failed");
-            return;
+            if (passableIds.Contains(tileId))
+                passableCells++;
         }
 
-        var mapData = result.MapData!;
-
-        // Player start should be a passable tile
-        AssertBool(mapData.PassableTiles.Contains(mapData.PlayerStart)).IsTrue();
+        AssertThat(passableCells).IsGreater(0);
     }
 }

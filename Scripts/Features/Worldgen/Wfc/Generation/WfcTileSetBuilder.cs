@@ -9,7 +9,7 @@ using CardCleaner.Scripts.Features.Worldgen.Wfc.Contracts;
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
-/// Chooses which adjacency-rule tiles take part in a generation, and which of them are passable.
+/// Chooses which adjacency-rule tiles take part in a generation.
 /// </summary>
 internal sealed class WfcTileSetBuilder
 {
@@ -46,7 +46,6 @@ internal sealed class WfcTileSetBuilder
     private WfcTileSets Collect(Func<TileDefinition, bool> isIncluded)
     {
         var allTiles = new HashSet<string>();
-        var passableTiles = new HashSet<string>();
 
         foreach (var tileId in _adjacencyRules.AllTileIds)
         {
@@ -55,11 +54,8 @@ internal sealed class WfcTileSetBuilder
                 continue;
 
             allTiles.Add(tileId);
-
-            if (tileDef.IsPassable)
-                passableTiles.Add(tileId);
         }
 
-        return new WfcTileSets(allTiles, passableTiles);
+        return new WfcTileSets(allTiles);
     }
 }

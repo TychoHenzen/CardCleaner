@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
@@ -17,13 +18,13 @@ namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 [RequireGodotRuntime]
 public class WfcPerformanceBenchmarkTest
 {
-    private CompiledTransitionResolver _resolver = null!;
+    private IReadOnlyList<(string tileA, string tileB)> _transitionPairs = null!;
     private BiomeRegistry _biomeRegistry = null!;
 
     [BeforeTest]
     public void Setup()
     {
-        _resolver = new CompiledTransitionResolver();
+        _transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
         _biomeRegistry = new BiomeRegistry();
         _biomeRegistry.RegisterDefaultBiomes();
     }
@@ -31,7 +32,7 @@ public class WfcPerformanceBenchmarkTest
     [TestCase]
     public void TestDeterminism_SameSeedSameOutput()
     {
-        var generator = new WfcMapGenerator(_resolver);
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
         var biome = _biomeRegistry.GetBiome("plains");
         AssertThat(biome).IsNotNull();
 
@@ -47,8 +48,8 @@ public class WfcPerformanceBenchmarkTest
             return;
         }
 
-        var map1 = result1.MapData!;
-        var map2 = result2.MapData!;
+        var tiles1 = result1.TileIds!;
+        var tiles2 = result2.TileIds!;
 
         // Verify every tile is identical
         var differences = 0;
@@ -56,7 +57,7 @@ public class WfcPerformanceBenchmarkTest
         {
             for (var x = 0; x < size; x++)
             {
-                if (map1.TileIds[y, x] != map2.TileIds[y, x])
+                if (tiles1[y, x] != tiles2[y, x])
                     differences++;
             }
         }
@@ -68,7 +69,7 @@ public class WfcPerformanceBenchmarkTest
     [TestCase]
     public void TestPerformance_30x30Grid()
     {
-        var generator = new WfcMapGenerator(_resolver);
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
         var biome = _biomeRegistry.GetBiome("plains");
         AssertThat(biome).IsNotNull();
 
@@ -110,7 +111,7 @@ public class WfcPerformanceBenchmarkTest
     [TestCase]
     public void TestPerformance_60x60Grid()
     {
-        var generator = new WfcMapGenerator(_resolver);
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(_transitionPairs));
         var biome = _biomeRegistry.GetBiome("plains");
         AssertThat(biome).IsNotNull();
 

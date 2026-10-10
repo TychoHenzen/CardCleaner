@@ -4,7 +4,6 @@ using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
@@ -15,13 +14,18 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 internal sealed class WfcTerrainSolver : IWfcTerrainSolver
 {
+    private readonly IReadOnlyList<(string tileA, string tileB)> _transitionPairs;
     private readonly WfcAdjacencyRules _rules;
     private readonly ITileRegistry? _registry;
     private readonly WfcMapGenerator _mapGenerator;
 
-    public WfcTerrainSolver(IReadOnlyDictionary<string, HashSet<string>>? extraAdjacency, ITileRegistry? tileRegistry)
+    public WfcTerrainSolver(
+        IReadOnlyList<(string tileA, string tileB)> transitionPairs,
+        IReadOnlyDictionary<string, HashSet<string>>? extraAdjacency,
+        ITileRegistry? tileRegistry)
     {
-        _rules = new WfcAdjacencyRules(new CompiledTransitionResolver());
+        _transitionPairs = transitionPairs;
+        _rules = new WfcAdjacencyRules(transitionPairs);
         if (extraAdjacency != null)
         {
             foreach (var (tile, neighbors) in extraAdjacency)
@@ -58,7 +62,7 @@ internal sealed class WfcTerrainSolver : IWfcTerrainSolver
         var registry = _registry ?? throw new InvalidOperationException("SolveGraphWithRegistry needs a tile registry");
 
         var topology = new WfcNeighborListTopology(neighbors, initialTiles);
-        var rules = new WfcAdjacencyRules(new CompiledTransitionResolver());
+        var rules = new WfcAdjacencyRules(_transitionPairs);
         GapTileAdjacencyConfigurator.Configure(rules, registry, gapTileFilter, logSummary: false);
 
         var propagator = new WfcPropagator(rules);

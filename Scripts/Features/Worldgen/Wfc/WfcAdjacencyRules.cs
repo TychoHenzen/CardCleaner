@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
@@ -18,17 +17,8 @@ public class WfcAdjacencyRules
     public IReadOnlySet<string> AllTileIds => _allTileIds;
 
     /// <summary>
-    /// Creates adjacency rules from a compiled transition resolver.
+    /// Creates adjacency rules from transition pairs, added in the order given.
     /// Pre-computes bidirectional adjacency for O(1) queries.
-    /// </summary>
-    public WfcAdjacencyRules(CompiledTransitionResolver resolver)
-    {
-        BuildAdjacencyMap(resolver);
-    }
-
-    /// <summary>
-    /// Creates adjacency rules from explicit transition pairs.
-    /// Useful for testing or custom rule sets.
     /// </summary>
     public WfcAdjacencyRules(IEnumerable<(string tileA, string tileB)> transitionPairs)
     {
@@ -91,21 +81,6 @@ public class WfcAdjacencyRules
         }
 
         return result ?? new HashSet<string>();
-    }
-
-    private void BuildAdjacencyMap(CompiledTransitionResolver resolver)
-    {
-        // Extract all transition pairs from the resolver
-        foreach (var (innerTerrain, outerTerrain) in resolver.GetAllTransitionPairs())
-        {
-            AddTransition(innerTerrain, outerTerrain);
-        }
-
-        // Ensure all tiles can be adjacent to themselves
-        foreach (var tileId in _allTileIds)
-        {
-            _adjacencyMap[tileId].Add(tileId);
-        }
     }
 
     private void AddTransition(string tileA, string tileB)

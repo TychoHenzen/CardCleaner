@@ -1,5 +1,4 @@
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
@@ -52,10 +51,10 @@ public partial class BiomeGridInfluenceTest : BiomeGridIntegrationTestBase
         }
 
         // Count tiles in each map
-        var fireMapFireTiles = CountTiles(fireResult.MapData!, "fire_tile");
-        var fireMapWaterTiles = CountTiles(fireResult.MapData!, "water_tile");
-        var waterMapFireTiles = CountTiles(waterResult.MapData!, "fire_tile");
-        var waterMapWaterTiles = CountTiles(waterResult.MapData!, "water_tile");
+        var fireMapFireTiles = CountTiles(fireResult.Size, fireResult.TileIds!, "fire_tile");
+        var fireMapWaterTiles = CountTiles(fireResult.Size, fireResult.TileIds!, "water_tile");
+        var waterMapFireTiles = CountTiles(waterResult.Size, waterResult.TileIds!, "fire_tile");
+        var waterMapWaterTiles = CountTiles(waterResult.Size, waterResult.TileIds!, "water_tile");
 
         GD.Print($"Fire gradient map: {fireMapFireTiles} fire, {fireMapWaterTiles} water");
         GD.Print($"Water gradient map: {waterMapFireTiles} fire, {waterMapWaterTiles} water");
@@ -120,14 +119,14 @@ public partial class BiomeGridInfluenceTest : BiomeGridIntegrationTestBase
         GD.Print($"Neutral tile modifier: {neutralModifier}");
     }
 
-    private static int CountTiles(SimpleMapData mapData, string tileId)
+    private static int CountTiles(Vector2I size, string[,] tileIds, string tileId)
     {
         var count = 0;
-        for (var y = 0; y < mapData.Size.Y; y++)
+        for (var y = 0; y < size.Y; y++)
         {
-            for (var x = 0; x < mapData.Size.X; x++)
+            for (var x = 0; x < size.X; x++)
             {
-                if (mapData.TileIds[y, x] == tileId)
+                if (tileIds[y, x] == tileId)
                     count++;
             }
         }
