@@ -116,9 +116,8 @@ Single-biome map generation.
 1. DetermineInitialTiles(biome):
    - Extract tiles from biome.PassableTiles pool
    - Filter: only tiles in _adjacencyRules.AllTileIds
-   - Classify passability via _tileRegistry.GetTile(tileId)?.IsPassable
    - Warns if biome pool contradicts TileRegistry
-   - Returns (allTiles: HashSet, passableTiles: HashSet)
+   - Returns allTiles: HashSet
 
 2. Validate:
    if allTiles.Count == 0: fail immediately
@@ -142,7 +141,7 @@ Single-biome map generation.
 
 4. solver.SolveWithRetry(CreateGrid, biome, seed, MaxRetries=3)
 
-5. _adapter.ToTileIds(grid) for the tile ids, plus the biome map
+5. WfcMapDataAdapter.ToTileIds(grid) for the tile ids, plus the biome map
 
 6. Return WfcGenerationResult
 ```
