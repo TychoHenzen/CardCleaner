@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 
@@ -19,12 +17,6 @@ public interface IWfcTerrainSolver
     IReadOnlyList<string> RuleTileIds { get; }
 
     /// <summary>
-    /// The registry the solver's constraints and gap adjacencies use, or null when it was created without one.
-    /// Callers read it here, so the solver is the single place a registry is chosen.
-    /// </summary>
-    ITileRegistry? TileRegistry { get; }
-
-    /// <summary>
     /// Generates the background grid over the biomes. Only tiles passing the filter take part.
     /// </summary>
     WfcGenerationResult GenerateBackground(
@@ -32,16 +24,16 @@ public interface IWfcTerrainSolver
         Func<Vector2I, BiomeDefinition> getBiomeAt,
         Vector2I size,
         ulong seed,
-        Func<TileDefinition, bool> tileFilter);
+        Func<string, bool> tileFilter);
 
     /// <summary>
-    /// Solves a cell graph with the registry's tiles. Gap-tile adjacencies cover the registry tiles passing the filter.
+    /// Solves a cell graph with the catalog's tiles. Gap-tile adjacencies cover the catalog tiles passing the filter.
     /// </summary>
-    WfcGraphSolution SolveGraphWithRegistry(
+    WfcGraphSolution SolveGraphWithCatalog(
         int[][] neighbors,
         IReadOnlyCollection<string> initialTiles,
         ulong seed,
-        Func<TileDefinition, bool>? gapTileFilter);
+        Func<string, bool>? gapTileFilter);
 
     /// <summary>
     /// Solves a cell graph with the solver's own adjacency rules.
@@ -54,5 +46,5 @@ public interface IWfcTerrainSolver
     static IWfcTerrainSolver Create(
         IReadOnlyList<(string tileA, string tileB)> transitionPairs,
         IReadOnlyDictionary<string, HashSet<string>>? extraAdjacency,
-        ITileRegistry? tileRegistry) => new WfcTerrainSolver(transitionPairs, extraAdjacency, tileRegistry);
+        IWfcTileCatalog? tileCatalog) => new WfcTerrainSolver(transitionPairs, extraAdjacency, tileCatalog);
 }

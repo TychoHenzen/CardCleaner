@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 
@@ -8,7 +6,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
 /// The base constraints a map generator registers on its tile selector, in registration order.
-/// Registry-backed constraints only exist when a tile registry was supplied.
+/// Catalog-backed constraints only exist when a tile catalog was supplied.
 /// </summary>
 internal sealed class WfcConstraintSet
 {
@@ -24,17 +22,15 @@ internal sealed class WfcConstraintSet
         DiminishingReturnsSoftModifier diminishingReturns,
         SpatialCoherenceConstraint spatialCoherence,
         CompactnessSoftModifier compactness,
-        ITileRegistry? tileRegistry)
+        IWfcTileCatalog? tileCatalog)
     {
         _diminishingReturns = diminishingReturns;
         _spatialCoherence = spatialCoherence;
         _compactness = compactness;
-        _autoTileGap = tileRegistry != null ? new AutoTileGapConstraint(tileRegistry) : null;
-        _noSolidFill = tileRegistry != null ? new NoSolidFillConstraint(tileRegistry) : null;
-        _bitmaskValidity = tileRegistry != null ? new BitmaskValidityConstraint(tileRegistry) : null;
-        _tileProbability = tileRegistry is TileRegistry concreteRegistry
-            ? new TileProbabilityConstraint(concreteRegistry)
-            : null;
+        _autoTileGap = tileCatalog != null ? new AutoTileGapConstraint(tileCatalog) : null;
+        _noSolidFill = tileCatalog != null ? new NoSolidFillConstraint(tileCatalog) : null;
+        _bitmaskValidity = tileCatalog != null ? new BitmaskValidityConstraint(tileCatalog) : null;
+        _tileProbability = tileCatalog != null ? new TileProbabilityConstraint(tileCatalog) : null;
     }
 
     internal void SetSelectedVariants(Dictionary<string, string>? selectedVariants)

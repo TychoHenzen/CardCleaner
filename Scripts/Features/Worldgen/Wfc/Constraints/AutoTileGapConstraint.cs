@@ -1,25 +1,19 @@
-using CardCleaner.Scripts.Core.Interfaces;
-
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
 /// <summary>Enforces one-tile gaps between different auto-tile terrain types.</summary>
 public class AutoTileGapConstraint : IWfcConstraint
 {
-    private readonly ITileRegistry _tileRegistry;
+    private readonly IWfcTileCatalog _tileCatalog;
 
-    public AutoTileGapConstraint(ITileRegistry tileRegistry)
+    public AutoTileGapConstraint(IWfcTileCatalog tileCatalog)
     {
-        _tileRegistry = tileRegistry;
+        _tileCatalog = tileCatalog;
     }
 
     public float GetProbabilityModifier(WfcConstraintContext context)
     {
-        var candidateTile = _tileRegistry.GetTile(context.TileId);
-        if (candidateTile == null)
-            return 1.0f;
-
         // If candidate is not an auto-tile, it can go anywhere
-        if (!candidateTile.HasAutoTileVariants)
+        if (!_tileCatalog.IsAutoTile(context.TileId))
             return 1.0f;
 
         // Candidate IS an auto-tile - check all neighbors
@@ -37,7 +31,7 @@ public class AutoTileGapConstraint : IWfcConstraint
     {
         foreach (var kvp in context.NeighborInfo!.Value.WindowNeighbors)
         {
-            if (ConflictsWithNeighbor(_tileRegistry, context.TileId, kvp.Value))
+            if (ConflictsWithNeighbor(_tileCatalog, context.TileId, kvp.Value))
                 return true;
         }
 
@@ -55,7 +49,7 @@ public class AutoTileGapConstraint : IWfcConstraint
             if (!neighborCell.IsCollapsed())
                 continue;
 
-            if (ConflictsWithNeighbor(_tileRegistry, context.TileId, neighborCell.GetCollapsedTile()))
+            if (ConflictsWithNeighbor(_tileCatalog, context.TileId, neighborCell.GetCollapsedTile()))
                 return true;
         }
 
@@ -63,12 +57,14 @@ public class AutoTileGapConstraint : IWfcConstraint
     }
 
     // Two auto-tiles may only touch when they are the SAME terrain type (allowing variations).
-    private static bool ConflictsWithNeighbor(ITileRegistry tileRegistry, string candidateTileId, string neighborTileId)
+    private static bool ConflictsWithNeighbor(
+        IWfcTileCatalog tileCatalog,
+        string candidateTileId,
+        string neighborTileId)
     {
-        var neighborTile = tileRegistry.GetTile(neighborTileId);
-        if (neighborTile == null || !neighborTile.HasAutoTileVariants)
+        if (!tileCatalog.IsAutoTile(neighborTileId))
             return false;
 
-        return !tileRegistry.AreSameTerrainType(candidateTileId, neighborTileId);
+        return !tileCatalog.AreSameTerrainType(candidateTileId, neighborTileId);
     }
 }

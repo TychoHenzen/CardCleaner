@@ -1,5 +1,3 @@
-using CardCleaner.Features.Worldgen.AutoTiling;
-using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -10,29 +8,23 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 /// </summary>
 internal sealed class MultiCellReserver
 {
-    private readonly ITileRegistry? _tileRegistry;
+    private readonly IWfcTileCatalog? _tileCatalog;
 
-    internal MultiCellReserver(ITileRegistry? tileRegistry)
+    internal MultiCellReserver(IWfcTileCatalog? tileCatalog)
     {
-        _tileRegistry = tileRegistry;
+        _tileCatalog = tileCatalog;
     }
 
     internal void Reserve(Vector2I anchorPos, string tileId, WfcGrid grid)
     {
-        var bounds = FindAutoTileFormat(tileId)?.GetMaxMultiCellBounds();
+        if (_tileCatalog == null || !_tileCatalog.IsAutoTile(tileId))
+            return;
+
+        var bounds = _tileCatalog.GetMultiCellBounds(tileId);
         if (bounds == null)
             return;
 
         ReserveBlock(anchorPos, bounds.Value.Size, bounds.Value.Offset, grid);
-    }
-
-    private AutoTileFormatDefinition? FindAutoTileFormat(string tileId)
-    {
-        var tileDef = _tileRegistry?.GetTile(tileId);
-        if (tileDef == null || !tileDef.HasAutoTileVariants)
-            return null;
-
-        return tileDef.GetAutoTileFormat();
     }
 
     private static void ReserveBlock(Vector2I anchorPos, Vector2I size, Vector2I offset, WfcGrid grid)

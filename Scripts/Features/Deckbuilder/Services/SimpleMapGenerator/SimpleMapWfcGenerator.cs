@@ -52,7 +52,7 @@ internal sealed class SimpleMapWfcGenerator
             size,
             _context.Rng.Randi(),
             _context.Gradient,
-            tile => !tile.HasAutoTileVariants);
+            tileId => _context.TileRegistry.GetTile(tileId)?.HasAutoTileVariants == false);
 
         if (result.Success && result.TileIds != null)
         {

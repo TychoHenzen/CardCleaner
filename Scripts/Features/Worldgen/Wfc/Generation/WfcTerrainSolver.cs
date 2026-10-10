@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
@@ -16,13 +13,13 @@ internal sealed class WfcTerrainSolver : IWfcTerrainSolver
 {
     private readonly IReadOnlyList<(string tileA, string tileB)> _transitionPairs;
     private readonly WfcAdjacencyRules _rules;
-    private readonly ITileRegistry? _registry;
+    private readonly IWfcTileCatalog? _tileCatalog;
     private readonly WfcMapGenerator _mapGenerator;
 
     public WfcTerrainSolver(
         IReadOnlyList<(string tileA, string tileB)> transitionPairs,
         IReadOnlyDictionary<string, HashSet<string>>? extraAdjacency,
-        ITileRegistry? tileRegistry)
+        IWfcTileCatalog? tileCatalog)
     {
         _transitionPairs = transitionPairs;
         _rules = new WfcAdjacencyRules(transitionPairs);
@@ -37,54 +34,51 @@ internal sealed class WfcTerrainSolver : IWfcTerrainSolver
 
         // Snapshot before the map generator below adds gap tiles to the rules, so the ids are the pre-gap ones.
         RuleTileIds = _rules.AllTileIds.ToList();
-        _registry = tileRegistry;
-        _mapGenerator = new WfcMapGenerator(_rules, tileRegistry);
+        _tileCatalog = tileCatalog;
+        _mapGenerator = new WfcMapGenerator(_rules, tileCatalog);
     }
 
     public IReadOnlyList<string> RuleTileIds { get; }
-
-    public ITileRegistry? TileRegistry => _registry;
 
     public WfcGenerationResult GenerateBackground(
         BiomeRegistry biomes,
         Func<Vector2I, BiomeDefinition> getBiomeAt,
         Vector2I size,
         ulong seed,
-        Func<TileDefinition, bool> tileFilter) =>
+        Func<string, bool> tileFilter) =>
         _mapGenerator.GenerateMultiBiome(biomes, getBiomeAt, size, seed, null, tileFilter);
 
-    public WfcGraphSolution SolveGraphWithRegistry(
+    public WfcGraphSolution SolveGraphWithCatalog(
         int[][] neighbors,
         IReadOnlyCollection<string> initialTiles,
         ulong seed,
-        Func<TileDefinition, bool>? gapTileFilter)
+        Func<string, bool>? gapTileFilter)
     {
-        var registry = _registry ?? throw new InvalidOperationException("SolveGraphWithRegistry needs a tile registry");
+        var catalog = _tileCatalog
+            ?? throw new InvalidOperationException("SolveGraphWithCatalog needs a tile catalog");
 
         var topology = new WfcNeighborListTopology(neighbors, initialTiles);
         var rules = new WfcAdjacencyRules(_transitionPairs);
-        GapTileAdjacencyConfigurator.Configure(rules, registry, gapTileFilter, logSummary: false);
+        GapTileAdjacencyConfigurator.Configure(rules, catalog, gapTileFilter, logSummary: false);
 
         var propagator = new WfcPropagator(rules);
         var selector = new WfcTileSelector();
         var blobTracker = new BlobSizeTracker();
         blobTracker.Initialize(neighbors.Length);
-        var spatialCoherence = new SpatialCoherenceConstraint(registry);
+        var spatialCoherence = new SpatialCoherenceConstraint(catalog);
 
         selector.AddConstraint(new DiminishingReturnsSoftModifier(blobTracker));
         selector.AddConstraint(spatialCoherence);
-        selector.AddConstraint(new AutoTileGapConstraint(registry));
-        selector.AddConstraint(new NoSolidFillConstraint(registry));
-
-        if (registry is TileRegistry concreteRegistry)
-            selector.AddConstraint(new TileProbabilityConstraint(concreteRegistry));
+        selector.AddConstraint(new AutoTileGapConstraint(catalog));
+        selector.AddConstraint(new NoSolidFillConstraint(catalog));
+        selector.AddConstraint(new TileProbabilityConstraint(catalog));
 
         var solver = new WfcSolver(
             propagator,
             selector,
             blobTracker,
             spatialCoherence: spatialCoherence,
-            tileRegistry: registry)
+            tileCatalog: catalog)
         {
             MaxIterations = neighbors.Length * 2
         };

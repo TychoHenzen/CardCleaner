@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Tests.Features.Worldgen.Support;
 using Godot;
@@ -17,7 +18,9 @@ public class WfcMapGeneratorDistributionTest : WfcMapGeneratorIntegrationTestBas
         // Validates that tile distribution is diverse (no single type dominates)
         // Target: each tile type should be 10-30% of the map
         var tileRegistry = WfcTestFixtures.CreateTestTileRegistry(WfcTestFixtures.TestBiomeId, "A", "B", "C", "D");
-        var generator = new WfcMapGenerator(WfcTestFixtures.FullAdjacencyRules(), tileRegistry);
+        var generator = new WfcMapGenerator(
+            WfcTestFixtures.FullAdjacencyRules(),
+            new TileRegistryWfcCatalog(tileRegistry));
         generator.EnableSpatialCoherence = false;
         generator.EnableDiminishingReturns = false;
         generator.EnableCompactness = false;
@@ -55,7 +58,9 @@ public class WfcMapGeneratorDistributionTest : WfcMapGeneratorIntegrationTestBas
         // preventing impossible states where 3+ types meet at a corner.
         // Strict chain: A-C, A-D, B-D are not allowed.
         var tileRegistry = WfcTestFixtures.CreateTestTileRegistry(WfcTestFixtures.TestBiomeId, "A", "B", "C", "D");
-        var generator = new WfcMapGenerator(WfcTestFixtures.StrictChainRules(), tileRegistry);
+        var generator = new WfcMapGenerator(
+            WfcTestFixtures.StrictChainRules(),
+            new TileRegistryWfcCatalog(tileRegistry));
         generator.MaxRetries = 3;
 
         var biome = WfcTestFixtures.CreateAbcdBiome();

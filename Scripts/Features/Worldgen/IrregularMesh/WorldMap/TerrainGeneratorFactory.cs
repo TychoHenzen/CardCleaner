@@ -4,7 +4,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 
@@ -15,12 +15,13 @@ internal static class TerrainGeneratorFactory
 {
     internal static MeshTerrainGenerator Create(ITileRegistry? tileRegistry)
     {
-        // The solver's registry drives the background and foreground solves. The caller's registry only
-        // decides passability in the terrain-type map.
+        // The solver and the mesh code share solverRegistry, which drives the background and foreground solves.
+        // The caller's registry only decides passability in the terrain-type map.
         var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
-        var solver = IWfcTerrainSolver.Create(transitionPairs, null, new TileRegistry());
-        var tileToTerrainType = AssignTerrainTypes(solver.RuleTileIds, tileRegistry);
-        var generator = new MeshTerrainGenerator(solver, tileToTerrainType);
+        var solverRegistry = new TileRegistry();
+        var setup = MeshTerrainWfcSetup.ForRegistry(transitionPairs, solverRegistry);
+        var tileToTerrainType = AssignTerrainTypes(setup.Solver.RuleTileIds, tileRegistry);
+        var generator = new MeshTerrainGenerator(setup, tileToTerrainType);
 
         // Create and register biome registry for card-based generation
         var biomeRegistry = new BiomeRegistry();

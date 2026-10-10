@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Tests.Features.Worldgen.Support;
 using Godot;
@@ -21,7 +22,9 @@ public class WfcMapGeneratorTerrainTypeTest : WfcMapGeneratorIntegrationTestBase
         // In a dual-grid setup, each visual tile samples 4 data cells at its corners.
         // If a visual tile's 4 corners have 3+ distinct terrain types, auto-tiling breaks.
         var tileRegistry = WfcTestFixtures.CreateTestTileRegistry(WfcTestFixtures.TestBiomeId, "A", "B", "C", "D");
-        var generator = new WfcMapGenerator(WfcTestFixtures.FullAdjacencyRules(), tileRegistry);
+        var generator = new WfcMapGenerator(
+            WfcTestFixtures.FullAdjacencyRules(),
+            new TileRegistryWfcCatalog(tileRegistry));
         var biome = WfcTestFixtures.CreateAbcdBiome();
 
         // Generate multiple maps with different seeds

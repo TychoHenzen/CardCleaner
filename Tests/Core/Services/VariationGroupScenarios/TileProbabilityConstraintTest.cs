@@ -12,7 +12,8 @@ namespace CardCleaner.Tests.Core.Services.VariationGroupScenarios;
 
 /// <summary>
 ///     Tests that PerGeneration variant selection excludes non-selected variants during WFC tile
-///     placement; split out of VariationGroupTest.
+///     placement, and that an ungrouped tile uses its probability with the minimum floor while an unknown id
+///     gets 1; split out of VariationGroupTest.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -23,7 +24,8 @@ public class TileProbabilityConstraintTest
     // non-selected variants during WFC tile placement.
 
     [TestCase]
-    public void TestTileProbabilityConstraint_PerGenerationVariant_SelectedGetsFullWeight()
+    [TestCategory("Unit")]
+    public static void TestTileProbabilityConstraint_PerGenerationVariant_SelectedGetsFullWeight()
     {
         // Setup: Create a mock registry with grass variants in a PerGeneration group
         var registry = new MockTileRegistry();
@@ -41,7 +43,7 @@ public class TileProbabilityConstraintTest
         registry.AddVariationGroup(grassGroup);
 
         // Create constraint and set selected variant
-        var constraint = new TileProbabilityConstraintForTest(registry);
+        var constraint = new TileProbabilityConstraint(new TileRegistryWfcCatalog(registry));
         constraint.SetSelectedVariants(new Dictionary<string, string> { { "grass", "grass2" } });
 
         // Create mock context for the selected variant
@@ -55,7 +57,8 @@ public class TileProbabilityConstraintTest
     }
 
     [TestCase]
-    public void TestTileProbabilityConstraint_PerGenerationVariant_NonSelectedGetsZero()
+    [TestCategory("Unit")]
+    public static void TestTileProbabilityConstraint_PerGenerationVariant_NonSelectedGetsZero()
     {
         // Setup: Create a mock registry with grass variants
         var registry = new MockTileRegistry();
@@ -72,7 +75,7 @@ public class TileProbabilityConstraintTest
         registry.AddVariationGroup(grassGroup);
 
         // Create constraint and set grass2 as selected
-        var constraint = new TileProbabilityConstraintForTest(registry);
+        var constraint = new TileProbabilityConstraint(new TileRegistryWfcCatalog(registry));
         constraint.SetSelectedVariants(new Dictionary<string, string> { { "grass", "grass2" } });
 
         // Create mock context for NON-selected variants
@@ -89,7 +92,8 @@ public class TileProbabilityConstraintTest
     }
 
     [TestCase]
-    public void TestTileProbabilityConstraint_NoSelectionMade_AllVariantsAllowed()
+    [TestCategory("Unit")]
+    public static void TestTileProbabilityConstraint_NoSelectionMade_AllVariantsAllowed()
     {
         // Setup: Create registry with PerGeneration group but DON'T set selected variants
         var registry = new MockTileRegistry();
@@ -104,7 +108,7 @@ public class TileProbabilityConstraintTest
         registry.AddVariationGroup(grassGroup);
 
         // Create constraint WITHOUT setting selected variants
-        var constraint = new TileProbabilityConstraintForTest(registry);
+        var constraint = new TileProbabilityConstraint(new TileRegistryWfcCatalog(registry));
         // constraint.SetSelectedVariants(null); // Not called
 
         // Create contexts for both variants
@@ -121,7 +125,8 @@ public class TileProbabilityConstraintTest
     }
 
     [TestCase]
-    public void TestTileProbabilityConstraint_PerInstanceVariant_AllVariantsAllowed()
+    [TestCategory("Unit")]
+    public static void TestTileProbabilityConstraint_PerInstanceVariant_AllVariantsAllowed()
     {
         // Setup: Create registry with PerInstance group (not PerGeneration)
         var registry = new MockTileRegistry();
@@ -136,7 +141,7 @@ public class TileProbabilityConstraintTest
         registry.AddVariationGroup(flowerGroup);
 
         // Create constraint - even with selection set, PerInstance should ignore it
-        var constraint = new TileProbabilityConstraintForTest(registry);
+        var constraint = new TileProbabilityConstraint(new TileRegistryWfcCatalog(registry));
         constraint.SetSelectedVariants(new Dictionary<string, string> { { "flower", "flower_a" } });
 
         var contextA = CreateMockContext("flower_a");
@@ -149,6 +154,43 @@ public class TileProbabilityConstraintTest
         // Assert: PerInstance variants are all allowed (selection only affects PerGeneration)
         AssertThat(modifierA).IsGreater(0f);
         AssertThat(modifierB).IsGreater(0f);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TestTileProbabilityConstraint_UngroupedTile_UsesItsProbability()
+    {
+        var registry = new MockTileRegistry();
+        registry.RegisterTile(CreateGrassTile("moss", 0.5f));
+        var constraint = new TileProbabilityConstraint(new TileRegistryWfcCatalog(registry));
+
+        var modifier = constraint.GetProbabilityModifier(CreateMockContext("moss"));
+
+        AssertThat(modifier).IsEqual(0.5f);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TestTileProbabilityConstraint_UngroupedTileBelowMinModifier_ClampsToMinModifier()
+    {
+        var registry = new MockTileRegistry();
+        registry.RegisterTile(CreateGrassTile("moss", 0f));
+        var constraint = new TileProbabilityConstraint(new TileRegistryWfcCatalog(registry));
+
+        var modifier = constraint.GetProbabilityModifier(CreateMockContext("moss"));
+
+        AssertThat(modifier).IsEqual(constraint.MinModifier);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TestTileProbabilityConstraint_UnknownTile_ReturnsOne()
+    {
+        var constraint = new TileProbabilityConstraint(new TileRegistryWfcCatalog(new MockTileRegistry()));
+
+        var modifier = constraint.GetProbabilityModifier(CreateMockContext("missing"));
+
+        AssertThat(modifier).IsEqual(1f);
     }
 
     private static TileDefinition CreateGrassTile(string id, float probability)

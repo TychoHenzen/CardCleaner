@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
@@ -21,12 +20,11 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 /// </summary>
 public class CompactnessSoftModifier : IWfcConstraint
 {
-    private const int SolidFillBitmask = 15;
-    private readonly ITileRegistry? _tileRegistry;
+    private readonly IWfcTileCatalog? _tileCatalog;
 
-    public CompactnessSoftModifier(ITileRegistry? tileRegistry = null)
+    public CompactnessSoftModifier(IWfcTileCatalog? tileCatalog = null)
     {
-        _tileRegistry = tileRegistry;
+        _tileCatalog = tileCatalog;
     }
 
     /// <summary>
@@ -46,7 +44,7 @@ public class CompactnessSoftModifier : IWfcConstraint
     {
         // Skip compactness boost for tiles without solid fill (e.g., hedges)
         // These should form linear/path-like shapes, not round blobs
-        if (_tileRegistry != null && !HasSolidFillVariant(context.TileId))
+        if (_tileCatalog != null && !HasSolidFillVariant(context.TileId))
             return 1.0f;
 
         // Use precomputed neighbor info if available (optimization)
@@ -65,15 +63,8 @@ public class CompactnessSoftModifier : IWfcConstraint
 
     private bool HasSolidFillVariant(string tileId)
     {
-        var tile = _tileRegistry?.GetTile(tileId);
-        if (tile == null)
-            return true; // Assume has solid fill if we can't check
-
-        var variants = tile.AutoTileVariants;
-        if (variants == null || variants.Length <= SolidFillBitmask)
-            return false;
-
-        return variants[SolidFillBitmask].HasValue;
+        // Unknown tiles count as having solid fill; non-auto-tiles do not
+        return _tileCatalog == null || !_tileCatalog.Contains(tileId) || _tileCatalog.HasSolidFillVariant(tileId);
     }
 
     private static int CountSameTypeNeighbors(WfcConstraintContext context)

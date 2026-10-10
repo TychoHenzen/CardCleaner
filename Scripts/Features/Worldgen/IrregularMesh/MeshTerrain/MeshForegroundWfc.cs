@@ -8,15 +8,17 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 internal sealed class MeshForegroundWfc
 {
     private readonly IWfcTerrainSolver _solver;
+    private readonly ITileRegistry? _tileRegistry;
 
-    public MeshForegroundWfc(IWfcTerrainSolver solver)
+    public MeshForegroundWfc(MeshTerrainWfcSetup setup)
     {
-        _solver = solver;
+        _solver = setup.Solver;
+        _tileRegistry = setup.TileRegistry;
     }
 
     public bool Generate(IrregularMesh mesh, BiomeRegistry biomeRegistry, ulong seed)
     {
-        var tileRegistry = _solver.TileRegistry;
+        var tileRegistry = _tileRegistry;
         if (tileRegistry == null)
         {
             GD.PrintErr("[MeshTerrainGen] Cannot run direct mesh WFC without tile registry");
@@ -34,11 +36,11 @@ internal sealed class MeshForegroundWfc
             $"[MeshTerrainGen] Starting direct mesh WFC with {initialTiles.Count} tiles " +
             $"on {mesh.Vertices.Count} vertices");
 
-        var solution = _solver.SolveGraphWithRegistry(
+        var solution = _solver.SolveGraphWithCatalog(
             IrregularMeshNeighbors.BuildNeighbors(mesh),
             initialTiles,
             seed,
-            MeshForegroundTileCandidates.IsCandidate);
+            tileId => tileRegistry.GetTile(tileId) is { } tile && MeshForegroundTileCandidates.IsCandidate(tile));
 
         if (!solution.Success)
         {
