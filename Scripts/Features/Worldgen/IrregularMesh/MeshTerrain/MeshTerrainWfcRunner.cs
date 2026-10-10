@@ -34,7 +34,7 @@ internal sealed class MeshTerrainWfcRunner
             seed,
             tile => !tile.HasAutoTileVariants);
 
-        if (!backgroundResult.Success || backgroundResult.MapData == null)
+        if (!backgroundResult.Success || backgroundResult.TileIds == null)
         {
             GD.PrintErr($"[MeshTerrainGen] Background WFC failed: {backgroundResult.ErrorMessage}");
             _projection.ApplyFallbackTerrain(mesh);
@@ -42,7 +42,7 @@ internal sealed class MeshTerrainWfcRunner
         }
 
         GD.Print($"[MeshTerrainGen] Background WFC succeeded in {backgroundResult.Iterations} iterations");
-        MeshTerrainProjection.MapBackgroundToQuads(mesh, backgroundResult.MapData, bounds);
+        MeshTerrainProjection.MapBackgroundToQuads(mesh, backgroundResult.Size, backgroundResult.TileIds, bounds);
 
         if (!_foregroundWfc.Generate(mesh, biomeRegistry, seed + 1))
         {

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
@@ -92,7 +91,7 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
                 continue;
             }
 
-            var isConnected = VerifyPassableConnectivity(result.MapData!, passable);
+            var isConnected = VerifyPassableConnectivity(result.TileIds!, passable);
             AssertBool(isConnected).IsTrue();
         }
     }
@@ -123,7 +122,7 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
             successCount++;
 
             // Check connectivity using flood fill
-            if (VerifyPassableConnectivity(result.MapData!, passable))
+            if (VerifyPassableConnectivity(result.TileIds!, passable))
             {
                 connectedCount++;
                 continue;
@@ -136,9 +135,18 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
         return new ConnectivitySweep(successCount, connectedCount, disconnectedMaps);
     }
 
-    private static bool VerifyPassableConnectivity(SimpleMapData mapData, TilePool passableTilePool)
+    private static bool VerifyPassableConnectivity(string[,] tileIds, TilePool passableTilePool)
     {
-        var passablePositions = new HashSet<Vector2I>(mapData.PassableTiles);
+        var passableIds = new HashSet<string>(passableTilePool.GetAllTileIds());
+        var passablePositions = new HashSet<Vector2I>();
+        for (var y = 0; y < tileIds.GetLength(0); y++)
+        {
+            for (var x = 0; x < tileIds.GetLength(1); x++)
+            {
+                if (passableIds.Contains(tileIds[y, x]))
+                    passablePositions.Add(new Vector2I(x, y));
+            }
+        }
 
         if (passablePositions.Count == 0)
             return true; // No passable tiles = trivially connected

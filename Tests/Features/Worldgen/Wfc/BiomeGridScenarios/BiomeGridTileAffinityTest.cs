@@ -31,23 +31,23 @@ public partial class BiomeGridTileAffinityTest : BiomeGridIntegrationTestBase
 
         // Assert: Map should generate successfully
         AssertBool(result.Success).IsTrue();
-        AssertThat(result.MapData).IsNotNull();
+        AssertThat(result.TileIds).IsNotNull();
 
         // Count fire tiles - with matching gradient, fire tiles should be boosted
         var fireTileCount = 0;
-        var mapData = result.MapData!;
-        for (var y = 0; y < mapData.Size.Y; y++)
+        var tileIds = result.TileIds!;
+        for (var y = 0; y < result.Size.Y; y++)
         {
-            for (var x = 0; x < mapData.Size.X; x++)
+            for (var x = 0; x < result.Size.X; x++)
             {
-                if (mapData.TileIds[y, x] == "fire_tile")
+                if (tileIds[y, x] == "fire_tile")
                     fireTileCount++;
             }
         }
 
         // Fire tiles should appear (boosted by positive affinity)
         AssertThat(fireTileCount).IsGreater(0);
-        GD.Print($"Fire tiles with matching gradient: {fireTileCount}/{mapData.Size.X * mapData.Size.Y}");
+        GD.Print($"Fire tiles with matching gradient: {fireTileCount}/{result.Size.X * result.Size.Y}");
     }
 
     [TestCase]

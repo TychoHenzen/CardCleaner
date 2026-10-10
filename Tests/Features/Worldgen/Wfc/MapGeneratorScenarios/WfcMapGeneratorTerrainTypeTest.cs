@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Tests.Features.Worldgen.Support;
 using Godot;
@@ -40,7 +39,7 @@ public class WfcMapGeneratorTerrainTypeTest : WfcMapGeneratorIntegrationTestBase
             }
 
             mapsGenerated++;
-            violationCount += CountVisualTilesWithThreeOrMoreTypes(seed, result.MapData!);
+            violationCount += CountVisualTilesWithThreeOrMoreTypes(seed, result.Size, result.TileIds!);
         }
 
         GD.Print($"Generated {mapsGenerated} maps, found {violationCount} visual tiles with 3+ types");
@@ -58,14 +57,14 @@ public class WfcMapGeneratorTerrainTypeTest : WfcMapGeneratorIntegrationTestBase
     /// Counts visual tiles (corners of 4 data cells) whose corners show three or more distinct terrain types.
     /// The visual grid is (dataWidth+1) x (dataHeight+1).
     /// </summary>
-    private static int CountVisualTilesWithThreeOrMoreTypes(int seed, SimpleMapData mapData)
+    private static int CountVisualTilesWithThreeOrMoreTypes(int seed, Vector2I size, string[,] tileIds)
     {
         var violations = 0;
-        for (var vy = 0; vy <= mapData.Size.Y; vy++)
+        for (var vy = 0; vy <= size.Y; vy++)
         {
-            for (var vx = 0; vx <= mapData.Size.X; vx++)
+            for (var vx = 0; vx <= size.X; vx++)
             {
-                var cornerTypes = SampleCornerTypes(mapData, vx, vy);
+                var cornerTypes = SampleCornerTypes(size, tileIds, vx, vy);
                 if (cornerTypes.Count <= 2)
                     continue;
 
@@ -83,19 +82,19 @@ public class WfcMapGeneratorTerrainTypeTest : WfcMapGeneratorIntegrationTestBase
     /// Samples the 4 data cells at a visual tile's corners: NW data[vy-1, vx-1], NE data[vy-1, vx],
     /// SW data[vy, vx-1] and SE data[vy, vx]. Cells outside the map are skipped.
     /// </summary>
-    private static HashSet<string> SampleCornerTypes(SimpleMapData mapData, int vx, int vy)
+    private static HashSet<string> SampleCornerTypes(Vector2I size, string[,] tileIds, int vx, int vy)
     {
         var cornerTypes = new HashSet<string>();
-        AddTileIfInside(cornerTypes, mapData, vx - 1, vy - 1);
-        AddTileIfInside(cornerTypes, mapData, vx, vy - 1);
-        AddTileIfInside(cornerTypes, mapData, vx - 1, vy);
-        AddTileIfInside(cornerTypes, mapData, vx, vy);
+        AddTileIfInside(cornerTypes, size, tileIds, vx - 1, vy - 1);
+        AddTileIfInside(cornerTypes, size, tileIds, vx, vy - 1);
+        AddTileIfInside(cornerTypes, size, tileIds, vx - 1, vy);
+        AddTileIfInside(cornerTypes, size, tileIds, vx, vy);
         return cornerTypes;
     }
 
-    private static void AddTileIfInside(HashSet<string> types, SimpleMapData mapData, int x, int y)
+    private static void AddTileIfInside(HashSet<string> types, Vector2I size, string[,] tileIds, int x, int y)
     {
-        if (x >= 0 && y >= 0 && x < mapData.Size.X && y < mapData.Size.Y)
-            types.Add(mapData.TileIds[y, x]);
+        if (x >= 0 && y >= 0 && x < size.X && y < size.Y)
+            types.Add(tileIds[y, x]);
     }
 }

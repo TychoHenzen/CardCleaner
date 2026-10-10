@@ -29,8 +29,8 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
         }
 
         AssertBool(result.Success).IsTrue();
-        AssertThat(result.MapData).IsNotNull();
-        AssertThat(result.MapData!.Size).IsEqual(new Vector2I(10, 10));
+        AssertThat(result.TileIds).IsNotNull();
+        AssertThat(result.Size).IsEqual(new Vector2I(10, 10));
     }
 
     [TestCase]
@@ -50,7 +50,7 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
         }
 
         AssertBool(result.Success).IsTrue();
-        AssertThat(result.MapData).IsNotNull();
+        AssertThat(result.TileIds).IsNotNull();
     }
 
     [TestCase]
@@ -67,28 +67,28 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
             return;
         }
 
-        var mapData = result.MapData!;
+        var tileIds = result.TileIds!;
         var adjacencyRules = new WfcAdjacencyRules(_transitionPairs);
 
         // Check all horizontal adjacencies
-        for (var y = 0; y < mapData.Size.Y; y++)
+        for (var y = 0; y < result.Size.Y; y++)
         {
-            for (var x = 0; x < mapData.Size.X - 1; x++)
+            for (var x = 0; x < result.Size.X - 1; x++)
             {
-                var tileA = mapData.TileIds[y, x];
-                var tileB = mapData.TileIds[y, x + 1];
+                var tileA = tileIds[y, x];
+                var tileB = tileIds[y, x + 1];
 
                 AssertBool(adjacencyRules.CanBeAdjacent(tileA, tileB)).IsTrue();
             }
         }
 
         // Check all vertical adjacencies
-        for (var y = 0; y < mapData.Size.Y - 1; y++)
+        for (var y = 0; y < result.Size.Y - 1; y++)
         {
-            for (var x = 0; x < mapData.Size.X; x++)
+            for (var x = 0; x < result.Size.X; x++)
             {
-                var tileA = mapData.TileIds[y, x];
-                var tileB = mapData.TileIds[y + 1, x];
+                var tileA = tileIds[y, x];
+                var tileB = tileIds[y + 1, x];
 
                 AssertBool(adjacencyRules.CanBeAdjacent(tileA, tileB)).IsTrue();
             }

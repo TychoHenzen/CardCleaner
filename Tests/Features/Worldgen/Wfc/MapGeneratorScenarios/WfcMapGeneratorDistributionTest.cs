@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Tests.Features.Worldgen.Support;
 using Godot;
@@ -39,7 +38,7 @@ public class WfcMapGeneratorDistributionTest : WfcMapGeneratorIntegrationTestBas
                 continue;
             }
 
-            if (HasReasonableDistribution(seed, result.MapData!))
+            if (HasReasonableDistribution(seed, result.TileIds!))
                 goodDistributions++;
         }
 
@@ -77,9 +76,9 @@ public class WfcMapGeneratorDistributionTest : WfcMapGeneratorIntegrationTestBas
         AssertThat(successCount).IsGreaterEqual(1);
     }
 
-    private static bool HasReasonableDistribution(int seed, SimpleMapData mapData)
+    private static bool HasReasonableDistribution(int seed, string[,] tileIds)
     {
-        var distribution = RegionAnalyzer.AnalyzeDistribution(mapData.TileIds);
+        var distribution = RegionAnalyzer.AnalyzeDistribution(tileIds);
 
         GD.Print($"Seed {seed}: {distribution.UniqueTileTypes} types, " +
                  $"max={distribution.MaxPercentage:F1}%, min={distribution.MinPercentage:F1}%");

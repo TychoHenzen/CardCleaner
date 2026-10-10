@@ -54,10 +54,10 @@ internal sealed class SimpleMapWfcGenerator
             _context.Gradient,
             tile => !tile.HasAutoTileVariants);
 
-        if (result.Success && result.MapData != null)
+        if (result.Success && result.TileIds != null)
         {
             ILog.Print($"[WFC] Background phase succeeded in {result.Iterations} iterations");
-            CopyLayer(result.MapData.TileIds, layers.BackgroundLayer, size);
+            CopyLayer(result.TileIds, layers.BackgroundLayer, size);
             return;
         }
 
@@ -76,10 +76,10 @@ internal sealed class SimpleMapWfcGenerator
             _context.Rng.Randi(),
             _context.Gradient);
 
-        if (result.Success && result.MapData != null)
+        if (result.Success && result.TileIds != null)
         {
             ILog.Print($"[WFC] Foreground phase succeeded in {result.Iterations} iterations");
-            CopyAutoTileLayer(result.MapData.TileIds, layers.ForegroundLayer, size);
+            CopyAutoTileLayer(result.TileIds, layers.ForegroundLayer, size);
             return;
         }
 

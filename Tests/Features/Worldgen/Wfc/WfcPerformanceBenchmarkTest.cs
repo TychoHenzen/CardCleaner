@@ -48,8 +48,8 @@ public class WfcPerformanceBenchmarkTest
             return;
         }
 
-        var map1 = result1.MapData!;
-        var map2 = result2.MapData!;
+        var tiles1 = result1.TileIds!;
+        var tiles2 = result2.TileIds!;
 
         // Verify every tile is identical
         var differences = 0;
@@ -57,7 +57,7 @@ public class WfcPerformanceBenchmarkTest
         {
             for (var x = 0; x < size; x++)
             {
-                if (map1.TileIds[y, x] != map2.TileIds[y, x])
+                if (tiles1[y, x] != tiles2[y, x])
                     differences++;
             }
         }

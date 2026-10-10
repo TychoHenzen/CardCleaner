@@ -142,7 +142,7 @@ Single-biome map generation.
 
 4. solver.SolveWithRetry(CreateGrid, biome, seed, MaxRetries=3)
 
-5. _adapter.ToSimpleMapData(grid, biome, passableTiles)
+5. _adapter.ToTileIds(grid) for the tile ids, plus the biome map
 
 6. Return WfcGenerationResult
 ```
@@ -893,7 +893,7 @@ readonly struct WfcSolveResult {
    g. If iterations > 10000: fail attempt
 
 5. If attempt succeeds:
-   └─ Convert grid to SimpleMapData
+   └─ Convert grid to tile ids and biome map
    └─ Return WfcGenerationResult.Succeeded
 
 6. If all attempts fail:
@@ -928,7 +928,7 @@ readonly struct WfcSolveResult {
 - `WfcAdjacencyRules.cs` - Pre-computed adjacency lookup
 - `Connectivity/PassabilityGraph.cs` - Tarjan's articulation point detection
 - `Modifiers/BlobSizeTracker.cs` - Union-Find for blob sizes
-- `WfcMapDataAdapter.cs` - Grid to SimpleMapData conversion
+- `WfcMapDataAdapter.cs` - Grid to tile id conversion
 
 ---
 

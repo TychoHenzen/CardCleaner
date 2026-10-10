@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
@@ -24,7 +23,6 @@ public class WfcMapGenerator
 {
     private readonly WfcAdjacencyRules _adjacencyRules;
     private readonly WfcTileSelector _selector;
-    private readonly WfcMapDataAdapter _adapter;
     private readonly WfcTileSetBuilder _tileSetBuilder;
     private readonly BlobSizeTracker _blobTracker;
     private readonly DiminishingReturnsSoftModifier _diminishingReturns;
@@ -109,7 +107,6 @@ public class WfcMapGenerator
         _spatialCoherence = new SpatialCoherenceConstraint(tileRegistry);
         _constraintSet = new WfcConstraintSet(_diminishingReturns, _spatialCoherence, _compactness, tileRegistry);
         _selector = new WfcTileSelector();
-        _adapter = new WfcMapDataAdapter();
         _tileSetBuilder = new WfcTileSetBuilder(adjacencyRules, tileRegistry);
 
         // Allow all non-auto-tiles to be adjacent to each other (for background layer WFC)
@@ -127,7 +124,6 @@ public class WfcMapGenerator
     {
         var initialTileSets = _tileSetBuilder.ForBiome(biome);
         var initialTiles = initialTileSets.AllTiles;
-        var passableSet = initialTileSets.PassableTiles;
         if (initialTiles.Count == 0)
         {
             return WfcGenerationResult.Failed(
@@ -150,12 +146,15 @@ public class WfcMapGenerator
 
         var grid = (WfcGrid)attempt.Topology;
 
-        SimpleMapData mapData;
+        string[,] biomeMap;
+        string[,] tileIds;
         using (_profiler.BeginScope("MapDataConversion"))
         {
-            mapData = _adapter.ToSimpleMapData(grid, biome, passableSet);
+            biomeMap = BuildBiomeMap(size, _ => biome);
+            tileIds = WfcMapDataAdapter.ToTileIds(grid);
         }
-        return WfcGenerationResult.Succeeded(mapData, solveResult.Iterations);
+        return WfcGenerationResult.Succeeded(
+            new Vector2I(grid.Width, grid.Height), tileIds, biomeMap, solveResult.Iterations);
     }
 
     public WfcGenerationResult GenerateMultiBiome(
@@ -168,7 +167,6 @@ public class WfcMapGenerator
     {
         var tileSets = _tileSetBuilder.ForAllBiomes(biomeRegistry, tileFilter);
         var allTiles = tileSets.AllTiles;
-        var passableTiles = tileSets.PassableTiles;
         if (allTiles.Count == 0)
         {
             return WfcGenerationResult.Failed("No valid tiles across all biomes");
@@ -198,13 +196,15 @@ public class WfcMapGenerator
 
         var grid = (WfcGrid)attempt.Topology;
 
-        SimpleMapData mapData;
+        string[,] biomeMap;
+        string[,] tileIds;
         using (_profiler.BeginScope("MultiBiomeMapDataConversion"))
         {
-            var biomeMap = BuildBiomeMap(size, getBiomeAt);
-            mapData = _adapter.ToSimpleMapData(grid, biomeMap, passableTiles);
+            biomeMap = BuildBiomeMap(size, getBiomeAt);
+            tileIds = WfcMapDataAdapter.ToTileIds(grid);
         }
-        return WfcGenerationResult.Succeeded(mapData, solveResult.Iterations);
+        return WfcGenerationResult.Succeeded(
+            new Vector2I(grid.Width, grid.Height), tileIds, biomeMap, solveResult.Iterations);
     }
 
     private WfcSolveAttempt SolveWithProfiling(

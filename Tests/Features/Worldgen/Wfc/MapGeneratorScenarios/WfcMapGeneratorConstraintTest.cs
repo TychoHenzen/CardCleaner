@@ -44,8 +44,8 @@ public class WfcMapGeneratorConstraintTest : WfcMapGeneratorIntegrationTestBase
         var result = generator.Generate(biome, new Vector2I(5, 5), 12345);
 
         AssertBool(result.Success).IsTrue();
-        AssertThat(result.MapData).IsNotNull();
-        AssertThat(result.MapData!.Size).IsEqual(new Vector2I(5, 5));
+        AssertThat(result.TileIds).IsNotNull();
+        AssertThat(result.Size).IsEqual(new Vector2I(5, 5));
     }
 
     [TestCase]
