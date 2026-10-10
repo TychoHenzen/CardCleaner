@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Services;
@@ -101,5 +102,54 @@ public static class WfcTestFixtures
         AssertThat(result.Success)
             .OverrideFailureMessage($"{label} failed: {result.ErrorMessage}")
             .IsTrue();
+    }
+
+    /// <summary>
+    ///     Multiplier on a measured optimized baseline. Raised only on CI evidence, which goes in the commit that
+    ///     raises it.
+    /// </summary>
+    public const double Headroom = 3.0;
+
+    /// <summary>
+    ///     Debug-build cost over the optimized build, rounded up to the next 0.5. The gdUnit runner loads the
+    ///     Debug build, so the budget carries this factor. Release builds use 1.
+    ///     Measured 2026-10-10 on AMD Ryzen 7 7435HS (51c8d93 plus the step 3 edits), max-of-3 averages in ms,
+    ///     Debug over optimized: 30x30 3205.3 over 1314.1 (2.44, the largest, rounded up to 2.5); 20x20 1088.1 over
+    ///     760.8 (1.43); 60x60 13813.6 over 10053.6 (1.37, the optimized max is inflated by a noisy run).
+    /// </summary>
+#if DEBUG
+    public const double BuildFactor = 2.5;
+#else
+    public const double BuildFactor = 1.0;
+#endif
+
+    /// <summary>
+    ///     Time budget for one perf case: the optimized baseline times <see cref="Headroom"/> times
+    ///     <see cref="BuildFactor"/>.
+    /// </summary>
+    public static double PerfBudgetMs(double optimizedBaselineMs) => optimizedBaselineMs * Headroom * BuildFactor;
+
+    /// <summary>
+    ///     Prints the measured and budgeted time on every run so CI logs carry them, then asserts it fits.
+    /// </summary>
+    public static void AssertWithinBudget(string caseName, double measuredMs, double optimizedBaselineMs)
+    {
+        var budgetMs = PerfBudgetMs(optimizedBaselineMs);
+        var ratio = measuredMs / budgetMs;
+        GD.Print(FormattableString.Invariant(
+            $"[PerfBudget] {caseName} measured={measuredMs:F1}ms budget={budgetMs:F1}ms ratio={ratio:F2}"));
+        AssertThat(measuredMs)
+            .OverrideFailureMessage(FormattableString.Invariant(
+                $"{caseName} averaged {measuredMs:F1}ms, over its budget of {budgetMs:F1}ms"))
+            .IsLess(budgetMs);
+    }
+
+    /// <summary>
+    ///     One untimed 10x10 generation on a fresh generator, so JIT cost stays out of the timed runs.
+    /// </summary>
+    public static void WarmUp(IReadOnlyList<(string tileA, string tileB)> transitionPairs, BiomeDefinition biome)
+    {
+        var generator = new WfcMapGenerator(new WfcAdjacencyRules(transitionPairs), ProductionCatalog());
+        AssertSucceeded(generator.Generate(biome, new Vector2I(10, 10), 12345), "10x10 warm-up");
     }
 }
