@@ -24,6 +24,7 @@ public class ServiceLocatorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestGetRegisteredService()
     {
         var testService = new AsyncTestServiceImpl();
@@ -36,6 +37,7 @@ public class ServiceLocatorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestHasService()
     {
         Assertions.AssertBool(ServiceLocator.Has<IAsyncTestService>()).IsFalse();
@@ -46,6 +48,7 @@ public class ServiceLocatorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestGetUnregisteredServiceThrows()
     {
         Assertions.AssertInt(5).IsLess(8);
@@ -55,6 +58,7 @@ public class ServiceLocatorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestAsyncServiceCallback()
     {
         IAsyncTestService? callbackService = null;
@@ -81,6 +85,7 @@ public class ServiceLocatorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestImmediateCallbackForRegisteredService()
     {
         var testService = new AsyncTestServiceImpl();
@@ -101,6 +106,7 @@ public class ServiceLocatorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestMultipleCallbacksForSameService()
     {
         var callback1Executed = false;
@@ -134,6 +140,7 @@ public class ServiceLocatorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestCallbackNotExecutedIfServiceNotRegistered()
     {
         var callbackExecuted = false;
@@ -147,6 +154,7 @@ public class ServiceLocatorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestContainerAccessibility()
     {
         var container = ServiceLocator.Container;
@@ -156,6 +164,7 @@ public class ServiceLocatorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestServiceRegistrationViaContainer()
     {
         // Test that we can register services directly via the container
@@ -169,6 +178,7 @@ public class ServiceLocatorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public async Task TestServiceProviderGroupHandling()
     {
         // Create a test service provider that implements both Node and IServiceProvider
@@ -177,20 +187,80 @@ public class ServiceLocatorTest
 
         // Actually trigger the service registration process
         ServiceLocator.ResetForTesting();
-        var serviceLocator = new ServiceLocator();
-        Assertions.AddNode(serviceLocator);
+        var containerBefore = ServiceLocator.Container;
+        var serviceLocator = Assertions.AddNode(new ServiceLocator(), autoFree: false);
+        try
+        {
+            // Add the provider as a child so it's in the scene tree
+            serviceLocator.AddChild(testProvider);
 
-        // Add the provider as a child so it's in the scene tree
-        serviceLocator.AddChild(testProvider);
+            // Trigger the registration process (normally happens in _Ready via CallDeferred)
+            serviceLocator.CallDeferred(ServiceLocator.MethodName.ResolveServices);
 
-        // Trigger the registration process (normally happens in _Ready via CallDeferred)
-        serviceLocator.CallDeferred(ServiceLocator.MethodName.ResolveServices);
+            // Wait for deferred call to complete
+            await serviceLocator.ToSignal(serviceLocator.GetTree(), SceneTree.SignalName.ProcessFrame);
 
-        // Wait for deferred call to complete
-        await serviceLocator.ToSignal(serviceLocator.GetTree(), SceneTree.SignalName.ProcessFrame);
+            // Verify the service was registered
+            Assertions.AssertThat(testProvider.RegisterServicesCalled).IsTrue();
+            Assertions.AssertBool(ServiceLocator.Has<IAsyncTestService>()).IsTrue();
+        }
+        finally
+        {
+            // The test frees its locator itself, so the instance it replaced is restored before the next test
+            serviceLocator.GetParent()?.RemoveChild(serviceLocator);
+            serviceLocator.Free();
+        }
 
-        // Verify the service was registered
-        Assertions.AssertThat(testProvider.RegisterServicesCalled).IsTrue();
-        Assertions.AssertBool(ServiceLocator.Has<IAsyncTestService>()).IsTrue();
+        Assertions.AssertThat(ServiceLocator.Container)
+            .OverrideFailureMessage("freeing the locator must restore the instance current before this test")
+            .IsSame(containerBefore);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TestSecondLocatorLeavingTreeRestoresReplacedInstance()
+    {
+        // Arrange - the first locator becomes the static instance, then the second replaces it on _Ready.
+        // The test frees both locators itself, so the restore does not depend on gdUnit's auto-free.
+        var containerBefore = ServiceLocator.Container;
+        var first = Assertions.AddNode(new ServiceLocator(), autoFree: false);
+        try
+        {
+            var second = new ServiceLocator();
+            first.AddChild(second);
+
+            // Act - the second locator leaves the tree and is freed by the test
+            try
+            {
+                first.RemoveChild(second);
+            }
+            finally
+            {
+                second.Free();
+            }
+
+            // Assert - the first locator is the instance again, so its services reinitialize into it
+            ServiceLocator.ReinitializeServices();
+            var inputService = ServiceLocator.Get<IInputService>() as Node;
+            Assertions.AssertThat(inputService)
+                .OverrideFailureMessage("IInputService must resolve once the second locator has left the tree")
+                .IsNotNull();
+            Assertions.AssertBool(GodotObject.IsInstanceValid(inputService))
+                .OverrideFailureMessage("IInputService must still be a live node")
+                .IsTrue();
+            Assertions.AssertThat(inputService?.GetParent())
+                .OverrideFailureMessage("IInputService must be parented to the first locator")
+                .IsSame(first);
+        }
+        finally
+        {
+            // Leaving the tree hands the static instance back to the one that was current before this test
+            first.GetParent()?.RemoveChild(first);
+            first.Free();
+        }
+
+        Assertions.AssertThat(ServiceLocator.Container)
+            .OverrideFailureMessage("freeing the first locator must restore the instance current before this test")
+            .IsSame(containerBefore);
     }
 }

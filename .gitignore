@@ -137,3 +137,6 @@ Scripts/Tools/*.png.import
 *.uid
 *.import
 
+# Cygwin/MSYS tools (for example grep.exe in Git Bash) write this file when they crash
+*.stackdump
+

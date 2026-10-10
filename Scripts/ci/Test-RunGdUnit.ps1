@@ -601,7 +601,8 @@ function Test-CleanRun {
     Assert-Equal 1 @($calls | Where-Object { $_ -like '* --import *' }).Count 'one project import'
     $tests = @(Get-RunnerTestCalls -Context $Context)
     Assert-Equal 1 $tests.Count 'one test invocation'
-    Assert-That $tests[0].EndsWith('-rd reports/ci -a res://Tests') 'a full run starts from the Tests folder'
+    $fullRunArguments = '-rd reports/ci -rc 100000 -a res://Tests'
+    Assert-That $tests[0].EndsWith($fullRunArguments) 'a full run passes -rc 100000 and starts from the Tests folder'
 }
 
 function Test-Fast {

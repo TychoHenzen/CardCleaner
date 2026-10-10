@@ -427,7 +427,11 @@ if ($expected.Count -eq 0) {
 Invoke-Build -RepositoryRoot $repositoryRoot -ReportRoot $reportRoot
 Invoke-Import -GodotPath $godotPath -RepositoryRoot $repositoryRoot -ReportRoot $reportRoot
 
-$baseArguments = @('--headless', '--path', '.', '-s', 'res://addons/gdUnit4/bin/GdUnitCmdTool.gd', '-c', '--ignoreHeadlessMode', '-rd', 'reports/ci')
+# -rc 100000 stops gdUnit's report cleanup from trying (and failing) to delete old report_N folders (#198).
+$baseArguments = @(
+    '--headless', '--path', '.', '-s', 'res://addons/gdUnit4/bin/GdUnitCmdTool.gd', '-c', '--ignoreHeadlessMode',
+    '-rd', 'reports/ci', '-rc', '100000'
+)
 $finished = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
 $interruptions = New-Object System.Collections.Generic.List[object]
 # Suite -> the first interruption's formatted record, so a second interruption in the same suite fails the run.
