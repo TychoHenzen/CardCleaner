@@ -364,4 +364,41 @@ public class PassabilityGraphTest
         AssertThat(_graph.GetClosestDisconnectedPair().HasValue).IsFalse();
         AssertThat(_graph.GetComponents().Count).IsEqual(0);
     }
+
+    // ========== Factory from a tile grid (#213) ==========
+
+    [TestCase]
+    public static void FromTileIds_NoPassableCells_IsConnected()
+    {
+        var tileIds = new[,] { { "wall", "wall" }, { "wall", "wall" } };
+
+        var graph = PassabilityGraph.FromTileIds(tileIds, id => id != "wall");
+
+        AssertInt(graph.NodeCount).IsEqual(0);
+        AssertBool(graph.HasDisconnectedRegions()).IsFalse();
+    }
+
+    [TestCase]
+    public static void FromTileIds_LShapedRegion_IsConnected()
+    {
+        // Passable cells (0,0), (1,0) and (1,1) join through right and down neighbours.
+        var tileIds = new[,] { { "floor", "floor" }, { "wall", "floor" } };
+
+        var graph = PassabilityGraph.FromTileIds(tileIds, id => id == "floor");
+
+        AssertInt(graph.NodeCount).IsEqual(3);
+        AssertBool(graph.HasDisconnectedRegions()).IsFalse();
+    }
+
+    [TestCase]
+    public static void FromTileIds_TwoIslands_IsDisconnected()
+    {
+        // Diagonal cells are not 4-neighbours, so (0,0) and (1,1) are two islands.
+        var tileIds = new[,] { { "floor", "wall" }, { "wall", "floor" } };
+
+        var graph = PassabilityGraph.FromTileIds(tileIds, id => id == "floor");
+
+        AssertInt(graph.NodeCount).IsEqual(2);
+        AssertBool(graph.HasDisconnectedRegions()).IsTrue();
+    }
 }

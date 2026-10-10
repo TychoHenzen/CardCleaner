@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -21,6 +22,46 @@ public class PassabilityGraph
     private List<HashSet<Vector2I>>? _cachedComponents;
     private ClosestPair? _cachedClosestPair;
     private List<ClosestPair>? _cachedAllClosestPairs;
+
+    /// <summary>
+    /// Builds the passability graph of a tile grid. Every passable cell becomes a node, joined to its passable
+    /// right and down neighbours, so connected components match the 4-connected regions of passable cells.
+    /// </summary>
+    /// <param name="tileIds">Tile ids indexed as [row, column].</param>
+    /// <param name="isPassable">Returns true for tile ids that can be walked on.</param>
+    public static PassabilityGraph FromTileIds(string[,] tileIds, Func<string, bool> isPassable)
+    {
+        var graph = new PassabilityGraph();
+        var height = tileIds.GetLength(0);
+        var width = tileIds.GetLength(1);
+
+        var passable = new bool[height, width];
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                passable[y, x] = isPassable(tileIds[y, x]);
+            }
+        }
+
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                if (!passable[y, x])
+                    continue;
+
+                var position = new Vector2I(x, y);
+                graph.AddNode(position);
+                if (x + 1 < width && passable[y, x + 1])
+                    graph.AddEdge(position, new Vector2I(x + 1, y));
+                if (y + 1 < height && passable[y + 1, x])
+                    graph.AddEdge(position, new Vector2I(x, y + 1));
+            }
+        }
+
+        return graph;
+    }
 
     /// <summary>
     /// Number of nodes in the graph.

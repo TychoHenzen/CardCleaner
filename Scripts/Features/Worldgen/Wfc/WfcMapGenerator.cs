@@ -34,6 +34,11 @@ public class WfcMapGenerator
 
     public int MaxRetries { get; set; } = 3;
 
+    /// <summary>
+    /// How many derived seeds Generate tries before it reports a disconnected passable region. Values below 1 act as 1.
+    /// </summary>
+    public int MaxConnectivityAttempts { get; set; } = 5;
+
     public float NonBiomeTilePenalty
     {
         get => _selector.NonBiomeTilePenalty;
@@ -129,6 +134,34 @@ public class WfcMapGenerator
                 "No valid tiles found: biome tiles have no overlap with adjacency rules");
         }
 
+        var attemptCap = Math.Max(1, MaxConnectivityAttempts);
+        for (var attempt = 0; attempt < attemptCap; attempt++)
+        {
+            var attemptSeed = attempt == 0 ? seed : unchecked(seed + (ulong)attempt * 0x9E3779B97F4A7C15UL);
+            // ASSUMPTION: GenerateOnce builds a new solver, grid and passability graph, so a rejected attempt
+            // leaves no state behind for the next one.
+            var result = GenerateOnce(biome, size, attemptSeed, initialTiles);
+            if (!result.Success || !EnableConnectivity || _tileCatalog == null)
+            {
+                return result;
+            }
+
+            var graph = PassabilityGraph.FromTileIds(result.TileIds!, _tileCatalog.IsPassable);
+            if (!graph.HasDisconnectedRegions())
+            {
+                return result;
+            }
+        }
+
+        return WfcGenerationResult.Failed($"Passable cells disconnected after {attemptCap} attempts (seed {seed})");
+    }
+
+    private WfcGenerationResult GenerateOnce(
+        BiomeDefinition biome,
+        Vector2I size,
+        ulong seed,
+        IReadOnlyCollection<string> initialTiles)
+    {
         // Initialize spatial coherence for this map size
         _spatialCoherence.Reset(size.X, size.Y);
 
