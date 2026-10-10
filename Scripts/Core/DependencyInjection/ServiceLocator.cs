@@ -22,7 +22,8 @@ public partial class ServiceLocator : Node
     private readonly Dictionary<Type, List<Action<object>>> _pendingCallbacks = new();
     private IServiceContainer _container = new ServiceContainer();
 
-    // The instance this node replaced in _Ready; _ExitTree puts it back while this node is still the instance.
+    // The instance this node replaced in _Ready. _ExitTree restores it while this node is still the instance and
+    // the replaced instance is still valid (GodotObject.IsInstanceValid).
     private ServiceLocator? _replacedInstance;
 
 

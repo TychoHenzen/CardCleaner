@@ -602,7 +602,7 @@ function Test-CleanRun {
     $tests = @(Get-RunnerTestCalls -Context $Context)
     Assert-Equal 1 $tests.Count 'one test invocation'
     $fullRunArguments = '-rd reports/ci -rc 100000 -a res://Tests'
-    Assert-That $tests[0].EndsWith($fullRunArguments) 'a full run starts from the Tests folder'
+    Assert-That $tests[0].EndsWith($fullRunArguments) 'a full run passes -rc 100000 and starts from the Tests folder'
 }
 
 function Test-Fast {

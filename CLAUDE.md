@@ -31,8 +31,9 @@ powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godo
 powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps1
 ```
 
-A direct `GdUnitCmdTool.gd` run must pass the same `-rc 100000` as `Run-GdUnit.ps1`, or gdUnit's report cleanup floods
-the log with `ERROR: Delete` lines.
+A direct `GdUnitCmdTool.gd` run that passes a relative `-rd` (as `Run-GdUnit.ps1` does with `-rd reports/ci`) must
+also pass `-rc 100000`, or gdUnit's report cleanup doubles every delete path and floods the log with `ERROR: Delete`
+lines. A run without `-rd` uses gdUnit's absolute default report path, where cleanup works and needs no `-rc`.
 
 CI scope: pull requests and pushes to `master` run only the Unit suites (`-Fast`). The full suite runs on the weekly
 schedule (Sunday 03:00 UTC) and on a manual dispatch with `full=true`, for example `gh workflow run ci.yml --ref

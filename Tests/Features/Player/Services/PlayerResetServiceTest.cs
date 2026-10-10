@@ -1,8 +1,6 @@
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Player.Controllers;
-using CardCleaner.Scripts.Features.Player.Services;
 using GdUnit4;
 using Godot;
 
@@ -15,22 +13,27 @@ public class PlayerResetServiceTest
     private const string PlayerScene = "res://Scenes/Components/player.tscn";
     private static readonly Vector3 SafePosition = new(0f, 1f, 0f);
 
-    private PlayerResetService _resetService = null!;
     private IPlayerResetService _service = null!;
+    private Node? _serviceNode;
+    private Node? _inputNode;
 
     [BeforeTest]
     public void Setup()
     {
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();
-        _resetService = new PlayerResetService();
-        AddNode(_resetService);
-        ServiceLocator.Container.RegisterSingleton<IPlayerResetService>(_resetService);
+        ServiceLocator.ReinitializeServices();
         _service = ServiceLocator.Container.Resolve<IPlayerResetService>();
+        _serviceNode = (Node)_service;
+        _inputNode = (Node)ServiceLocator.Container.Resolve<IInputService>();
     }
 
     [AfterTest]
-    public static void TearDown() => ServiceLocator.ResetForTesting();
+    public void TearDown()
+    {
+        // The player registers its input actions on this InputService, so drop it before the player is freed.
+        _inputNode?.QueueFree();
+        _serviceNode?.QueueFree();
+        ServiceLocator.ResetForTesting();
+    }
 
     [TestCase]
     [TestCategory("Unit")]
