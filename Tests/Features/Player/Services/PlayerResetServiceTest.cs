@@ -21,9 +21,6 @@ public class PlayerResetServiceTest
     [BeforeTest]
     public void Setup()
     {
-        // ASSUMPTION: ServiceLocatorTest leaves the static ServiceLocator instance pointing at a freed node, so any
-        // native call on it (AddChild in ReinitializeServices) throws. This suite registers its own services through
-        // the container's managed API and never calls into the autoload node.
         ServiceLocator.ResetForTesting();
         ServiceLocator.Container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();
         _resetService = new PlayerResetService();

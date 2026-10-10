@@ -193,4 +193,30 @@ public class ServiceLocatorTest
         Assertions.AssertThat(testProvider.RegisterServicesCalled).IsTrue();
         Assertions.AssertBool(ServiceLocator.Has<IAsyncTestService>()).IsTrue();
     }
+
+    [TestCase]
+    public static void TestSecondLocatorLeavingTreeRestoresReplacedInstance()
+    {
+        // Arrange - the first locator becomes the static instance, then the second replaces it on _Ready
+        var first = new ServiceLocator();
+        Assertions.AddNode(first);
+        var second = new ServiceLocator();
+        first.AddChild(second);
+
+        // Act - the second locator leaves the tree and is freed by the test, not by gdUnit's auto-free
+        try
+        {
+            first.RemoveChild(second);
+        }
+        finally
+        {
+            second.Free();
+        }
+
+        // Assert - the first locator is the instance again, so its services reinitialize into it
+        ServiceLocator.ReinitializeServices();
+        var inputService = ServiceLocator.Get<IInputService>() as Node;
+        Assertions.AssertBool(inputService != null && GodotObject.IsInstanceValid(inputService)).IsTrue();
+        Assertions.AssertBool(ReferenceEquals(inputService?.GetParent(), first)).IsTrue();
+    }
 }

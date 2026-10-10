@@ -22,6 +22,9 @@ public partial class ServiceLocator : Node
     private readonly Dictionary<Type, List<Action<object>>> _pendingCallbacks = new();
     private IServiceContainer _container = new ServiceContainer();
 
+    // The instance this node replaced in _Ready; _ExitTree puts it back while this node is still the instance.
+    private ServiceLocator? _replacedInstance;
+
 
     public static IServiceContainer Container => _instance._container;
 
@@ -30,6 +33,7 @@ public partial class ServiceLocator : Node
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if (_instance != null)
             ILog.Error("!!!Duplicate service locator!!!");
+        _replacedInstance = _instance;
         _instance = this;
 
         // Transfer any callbacks that were registered before _instance existed
@@ -47,6 +51,16 @@ public partial class ServiceLocator : Node
         StaticPendingCallbacks.Clear();
 
         CallDeferred(MethodName.ResolveServices);
+    }
+
+    public override void _ExitTree()
+    {
+        // ASSUMPTION: with no live replaced instance (only the autoload, which exits at quit), the static is kept.
+        // A replaced instance freed earlier is not walked past. No requirement states either case.
+        var replaced = _replacedInstance;
+        if (ReferenceEquals(_instance, this) && replaced != null && GodotObject.IsInstanceValid(replaced))
+            _instance = replaced;
+        _replacedInstance = null;
     }
 
     public static void ReinitializeServices()
