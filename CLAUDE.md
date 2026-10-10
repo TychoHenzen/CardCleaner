@@ -99,6 +99,16 @@ public override void _Ready()
 }
 ```
 
+### Godot .uid Sidecars
+
+Godot 4.4+ gives every script and shader a `.uid` sidecar, and scenes reference them by that UID. Sidecars under
+`Scripts/`, `Tests/` and `Shaders/` are committed (`.gitignore` negates `*.uid` for those roots), so a fresh clone keeps
+the same UIDs; `addons/` sidecars stay ignored. Move or rename a source together with its `.uid` (both in one `git mv`,
+or through the editor's FileSystem dock). A new folder of scripts or shaders outside those roots needs its own negation
+in `.gitignore`. A `.uid` whose source is gone is removed, not ignored: this is an exception to the rule of adding an
+ignore entry for a generated file, because no workflow needs a sidecar without its source. `ExtResourceUidTest` fails
+when a scene's `ext_resource` UID does not match its target.
+
 ### Overriding Nodes Inside an Instanced Scene
 
 An outer scene must not override properties of nodes that belong to an instanced scene (a `[node name="X"

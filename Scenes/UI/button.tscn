@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=4 uid="uid://cdbi77q8mi6sd"]
 
-[ext_resource type="PackedScene" uid="uid://cndnmbxkj6gcw" path="res://Assets/Models/Button.fbx" id="1_1cmwl"]
+[ext_resource type="PackedScene" uid="uid://beknnky3w8qgv" path="res://Assets/Models/Button.fbx" id="1_1cmwl"]
 [ext_resource type="Script" uid="uid://bb1urfpacu1wh" path="res://Scripts/Features/Deckbuilder/Components/InteractableButton.cs" id="2_0kpiu"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_0kpiu"]
