@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Composition;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
@@ -37,7 +38,7 @@ public class ILogSinkTest
     [TestCategory("Unit")]
     public static void TestSinkIsTheRegisteredLoggerWhileTheLocatorRuns()
     {
-        ServiceLocator.ReinitializeServices();
+        CompositionRoot.ReinitializeServices();
 
         Assertions.AssertBool(ReferenceEquals(ILog.Sink, ServiceLocator.Get<ILog>())).IsTrue();
     }
@@ -55,7 +56,7 @@ public class ILogSinkTest
         }
         finally
         {
-            ServiceLocator.ReinitializeServices();
+            CompositionRoot.ReinitializeServices();
         }
     }
 

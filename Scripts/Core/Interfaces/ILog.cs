@@ -6,8 +6,8 @@ namespace CardCleaner.Scripts.Core.Interfaces;
 public interface ILog
 {
     /// <summary>
-    /// Logger that the static helpers below write to. ServiceLocator sets it to the ILog it registers and clears it
-    /// on reset or replacement. While it is null, the helpers fall back to GD output.
+    /// Logger that the static helpers below write to. The composition root sets it, through ServiceLocator, to the
+    /// ILog it registers, and ServiceLocator clears it on reset. While it is null, the helpers fall back to GD output.
     /// </summary>
     public static ILog? Sink { get; set; }
 

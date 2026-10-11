@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Composition;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Player.Controllers;
@@ -20,7 +21,7 @@ public class PlayerResetServiceTest
     [BeforeTest]
     public void Setup()
     {
-        ServiceLocator.ReinitializeServices();
+        CompositionRoot.ReinitializeServices();
         _service = ServiceLocator.Container.Resolve<IPlayerResetService>();
         _serviceNode = (Node)_service;
         _inputNode = (Node)ServiceLocator.Container.Resolve<IInputService>();
