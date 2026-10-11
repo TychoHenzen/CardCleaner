@@ -1,5 +1,5 @@
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Components.WorldMapTerrainRendererSupport;
 

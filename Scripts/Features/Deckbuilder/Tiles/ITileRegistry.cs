@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
-namespace CardCleaner.Scripts.Core.Interfaces;
+namespace CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
 public interface ITileRegistry
 {
