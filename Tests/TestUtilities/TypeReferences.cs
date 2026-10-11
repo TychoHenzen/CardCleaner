@@ -23,6 +23,18 @@ internal static class TypeReferences
 
     internal static IEnumerable<Type> Of(Type type) => Named(type).SelectMany(Unwrap).Distinct();
 
+    // One "Type -> Named.Type" line per distinct type that the given type names and the filter selects, so a boundary
+    // failure lists every offending reference in a stable order.
+    internal static IEnumerable<string> Lines(Type type, Func<Type, bool> selected) =>
+        Of(type)
+            .Where(selected)
+            .Select(named => $"{type.FullName} -> {named.FullName ?? named.Name}")
+            .OrderBy(line => line, StringComparer.Ordinal);
+
+    // True when the namespace is the root itself or nested under it.
+    internal static bool InNamespace(string? name, string root) =>
+        name != null && (name == root || name.StartsWith(root + ".", StringComparison.Ordinal));
+
     private static List<Type> Named(Type type)
     {
         var named = new List<Type>();

@@ -29,8 +29,8 @@ public class DependencyInjectionBoundaryTest
     [TestCategory("Unit")]
     public static void NoDiTypeNamesAFeatureServiceOrCompositionType()
     {
-        var types = typeof(ILog).Assembly.GetTypes().Where(type => IsIn(type.Namespace, DiNamespace)).ToList();
-        var hits = types.SelectMany(type => ForbiddenReferences(type, IsForbiddenFromDi)).ToList();
+        var types = typeof(ILog).Assembly.GetTypes().Where(type => IsIn(type, DiNamespace)).ToList();
+        var hits = types.SelectMany(type => TypeReferences.Lines(type, IsForbiddenFromDi)).ToList();
 
         // A scan that sees too few types passes trivially, so it must find the whole folder, the locator included.
         AssertInt(types.Count(type => !type.IsNested)).IsGreater(3);
@@ -44,8 +44,8 @@ public class DependencyInjectionBoundaryTest
     [TestCategory("Unit")]
     public static void NoFeatureTypeNamesTheCompositionRoot()
     {
-        var features = typeof(ILog).Assembly.GetTypes().Where(type => IsIn(type.Namespace, FeaturesNamespace)).ToList();
-        var hits = features.SelectMany(type => ForbiddenReferences(type, IsComposition)).ToList();
+        var features = typeof(ILog).Assembly.GetTypes().Where(type => IsIn(type, FeaturesNamespace)).ToList();
+        var hits = features.SelectMany(type => TypeReferences.Lines(type, IsComposition)).ToList();
 
         AssertInt(features.Count).IsGreater(100);
         AssertThat(string.Join(System.Environment.NewLine, hits)).IsEmpty();
@@ -84,26 +84,17 @@ public class DependencyInjectionBoundaryTest
 
     // The probes live in this test's namespace, which the DI and Features filters never select.
     private static List<string> ProbeHits(Type probe, Func<Type, bool> isForbidden) =>
-        ForbiddenReferences(probe, isForbidden).ToList();
+        TypeReferences.Lines(probe, isForbidden).ToList();
 
     private static List<string> Hit(string probe, Type foreign) =>
         new() { $"{typeof(DependencyInjectionBoundaryTest).FullName}+{probe} -> {foreign.FullName}" };
 
-    // One "Contract -> Foreign.Type" line per distinct type the contract names that the filter selects.
-    private static IEnumerable<string> ForbiddenReferences(Type contract, Func<Type, bool> isForbidden) =>
-        TypeReferences.Of(contract)
-            .Where(isForbidden)
-            .Select(type => $"{contract.FullName} -> {type.FullName ?? type.Name}")
-            .OrderBy(line => line, StringComparer.Ordinal);
-
     private static bool IsForbiddenFromDi(Type type) =>
-        IsIn(type.Namespace, FeaturesNamespace) || IsIn(type.Namespace, CoreServicesNamespace) ||
-        IsIn(type.Namespace, CompositionNamespace);
+        IsIn(type, FeaturesNamespace) || IsIn(type, CoreServicesNamespace) || IsIn(type, CompositionNamespace);
 
-    private static bool IsComposition(Type type) => IsIn(type.Namespace, CompositionNamespace);
+    private static bool IsComposition(Type type) => IsIn(type, CompositionNamespace);
 
-    private static bool IsIn(string? name, string root) =>
-        name != null && (name == root || name.StartsWith(root + ".", StringComparison.Ordinal));
+    private static bool IsIn(Type type, string root) => TypeReferences.InNamespace(type.Namespace, root);
 
     private static class ProbeCoreService
     {

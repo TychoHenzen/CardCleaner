@@ -42,7 +42,7 @@ public class ContractsLayerBoundaryTest
     public static void NoContractTypeNamesATypeOutsideTheContractsLayer()
     {
         var contracts = typeof(ILog).Assembly.GetTypes().Where(type => IsContract(type.Namespace)).ToList();
-        var hits = contracts.SelectMany(type => ForeignReferences(type, IsAllowed)).ToList();
+        var hits = contracts.SelectMany(type => TypeReferences.Lines(type, named => !IsAllowed(named))).ToList();
 
         // A scan that sees too few types passes trivially, so it must find the whole layer, including the two types
         // whose references #167 cut (ILog's locator calls, MapGenerationConfig's biome registry).
@@ -117,31 +117,21 @@ public class ContractsLayerBoundaryTest
 
     // The probes live in this test's namespace, which stands in for the contracts namespace here.
     private static List<string> ProbeHits(Type probe) =>
-        ForeignReferences(probe, type => IsAllowed(type) || type.Namespace == probe.Namespace).ToList();
+        TypeReferences.Lines(probe, type => !IsAllowed(type) && type.Namespace != probe.Namespace).ToList();
 
     private static List<string> Hit(string probe, Type foreign) =>
         new() { $"{typeof(ContractsLayerBoundaryTest).FullName}+{probe} -> {foreign.FullName}" };
 
-    // One "Contract -> Foreign.Type" line per distinct type the contract names that the filter does not allow.
-    private static IEnumerable<string> ForeignReferences(Type contract, Func<Type, bool> isAllowed) =>
-        TypeReferences.Of(contract)
-            .Where(type => !isAllowed(type))
-            .Select(type => $"{contract.FullName} -> {type.FullName ?? type.Name}")
-            .OrderBy(line => line, StringComparer.Ordinal);
-
-    private static bool IsContract(string? name) => name != null && IsRoot(name, ContractsNamespace);
+    private static bool IsContract(string? name) => TypeReferences.InNamespace(name, ContractsNamespace);
 
     private static bool IsAllowed(Type type)
     {
         var name = type.Namespace;
         if (name == null)
             return type.Name.StartsWith('<'); // compiler-generated helpers such as <PrivateImplementationDetails>
-        return IsContract(name) || IsRoot(name, "System") || IsRoot(name, "Godot") ||
-            AllowedTypes.Contains(type.FullName ?? "");
+        return IsContract(name) || TypeReferences.InNamespace(name, "System") ||
+            TypeReferences.InNamespace(name, "Godot") || AllowedTypes.Contains(type.FullName ?? "");
     }
-
-    private static bool IsRoot(string name, string root) =>
-        name == root || name.StartsWith(root + ".", StringComparison.Ordinal);
 
     private interface ProbeFeatureSignature
     {

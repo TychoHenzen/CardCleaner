@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
@@ -15,6 +16,9 @@ namespace CardCleaner.Scripts.Composition;
 /// </summary>
 public partial class CompositionRoot : Node
 {
+    // Node services the last Compose added as children; the next Compose frees them before it builds new ones.
+    private readonly List<Node> _ownedNodes = new();
+
     public override void _Ready()
     {
         if (!IsAutoload())
@@ -23,13 +27,16 @@ public partial class CompositionRoot : Node
             return;
         }
 
-        // ASSUMPTION: the deferred call runs after the main scene's service providers enter the tree, as the
-        // ServiceLocator._Ready call did before the split. No requirement states this ordering.
-        CallDeferred(MethodName.Compose);
+        ScheduleCompose();
     }
 
+    // ASSUMPTION: the deferred call runs after the main scene's service providers enter the tree, as the
+    // ServiceLocator._Ready call did before the split. No requirement states this ordering.
+    internal void ScheduleCompose() => CallDeferred(MethodName.Compose);
+
     /// <summary>
-    ///     Test-only: clears the container, then composes it again on the autoload synchronously.
+    ///     Test-only: clears the container, then composes it again on the autoload synchronously. The new composition
+    ///     frees the node services the previous one added.
     /// </summary>
     public static void ReinitializeServices()
     {
@@ -41,6 +48,7 @@ public partial class CompositionRoot : Node
 
     private void Compose()
     {
+        FreeOwnedNodes();
         RegisterCoreServices(ServiceLocator.Container);
         RegisterFromProviders(ServiceLocator.Container);
         ServiceLocator.ExecutePendingCallbacks();
@@ -55,10 +63,9 @@ public partial class CompositionRoot : Node
         ServiceLocator.SyncLogSink();
 
         var inputService = new InputService();
-        AddChild(inputService);
+        AddOwnedChild(inputService);
         container.RegisterSingleton<IInputService>(inputService);
 
-        // Register TileRegistry as both ITileRegistry and ITileMetadataProvider
         var tileRegistry = new TileRegistry();
         container.RegisterSingleton<ITileRegistry>(tileRegistry);
         container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
@@ -67,8 +74,23 @@ public partial class CompositionRoot : Node
         container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();
 
         var playerResetService = new PlayerResetService();
-        AddChild(playerResetService);
+        AddOwnedChild(playerResetService);
         container.RegisterSingleton<IPlayerResetService>(playerResetService);
+    }
+
+    private void AddOwnedChild(Node node)
+    {
+        AddChild(node);
+        _ownedNodes.Add(node);
+    }
+
+    // A test may already have freed or queued these nodes itself, so only live, unqueued ones are freed here.
+    private void FreeOwnedNodes()
+    {
+        foreach (var node in _ownedNodes)
+            if (IsInstanceValid(node) && !node.IsQueuedForDeletion())
+                node.QueueFree();
+        _ownedNodes.Clear();
     }
 
     private void RegisterFromProviders(IServiceContainer container)
