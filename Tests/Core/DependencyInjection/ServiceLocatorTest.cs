@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Composition;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Tests.Mocking;
@@ -179,88 +180,67 @@ public class ServiceLocatorTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task TestServiceProviderGroupHandling()
+    public static void AutoloadRootRegistersServiceProvidersOnReinitialize()
     {
-        // Create a test service provider that implements both Node and IServiceProvider
-        var testProvider = new TestServiceProvider();
-        testProvider.AddToGroup("service_providers");
-
-        // Actually trigger the service registration process
-        ServiceLocator.ResetForTesting();
-        var containerBefore = ServiceLocator.Container;
-        var serviceLocator = Assertions.AddNode(new ServiceLocator(), autoFree: false);
+        // Arrange - a provider in the service_providers group, in the tree the way a scene provider is
+        var provider = Assertions.AddNode(new TestServiceProvider());
+        provider.AddToGroup("service_providers");
+        var created = Array.Empty<Node>();
         try
         {
-            // Add the provider as a child so it's in the scene tree
-            serviceLocator.AddChild(testProvider);
+            // Act - the autoload composes synchronously, which calls RegisterServices on every provider in the group
+            CompositionRoot.ReinitializeServices();
+            created = ReinitializedNodes();
 
-            // Trigger the registration process (normally happens in _Ready via CallDeferred)
-            serviceLocator.CallDeferred(ServiceLocator.MethodName.ResolveServices);
-
-            // Wait for deferred call to complete
-            await serviceLocator.ToSignal(serviceLocator.GetTree(), SceneTree.SignalName.ProcessFrame);
-
-            // Verify the service was registered
-            Assertions.AssertThat(testProvider.RegisterServicesCalled).IsTrue();
+            // Assert
+            Assertions.AssertBool(provider.RegisterServicesCalled).IsTrue();
             Assertions.AssertBool(ServiceLocator.Has<IAsyncTestService>()).IsTrue();
         }
         finally
         {
-            // The test frees its locator itself, so the instance it replaced is restored before the next test
-            serviceLocator.GetParent()?.RemoveChild(serviceLocator);
-            serviceLocator.Free();
+            QueueFreeAll(created);
         }
-
-        Assertions.AssertThat(ServiceLocator.Container)
-            .OverrideFailureMessage("freeing the locator must restore the instance current before this test")
-            .IsSame(containerBefore);
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void TestSecondLocatorLeavingTreeRestoresReplacedInstance()
+    public static async Task SecondRootLeavesContainerAndSinkUnchanged()
     {
-        // Arrange - the first locator becomes the static instance, then the second replaces it on _Ready.
-        // The test frees both locators itself, so the restore does not depend on gdUnit's auto-free.
-        var containerBefore = ServiceLocator.Container;
-        var first = Assertions.AddNode(new ServiceLocator(), autoFree: false);
+        // Arrange - the autoload has composed, so the container, the ILog sink and the services are all set
+        CompositionRoot.ReinitializeServices();
+        var created = ReinitializedNodes();
+        var container = ServiceLocator.Container;
+        var sink = ILog.Sink;
+        var log = ServiceLocator.Get<ILog>();
+        var input = ServiceLocator.Get<IInputService>();
+        var second = Assertions.AddNode(new CompositionRoot(), autoFree: false);
         try
         {
-            var second = new ServiceLocator();
-            first.AddChild(second);
+            // Act - the second root enters the tree; it logs an error and must leave every registration alone
+            await second.ToSignal(second.GetTree(), SceneTree.SignalName.ProcessFrame);
 
-            // Act - the second locator leaves the tree and is freed by the test
-            try
-            {
-                first.RemoveChild(second);
-            }
-            finally
-            {
-                second.Free();
-            }
-
-            // Assert - the first locator is the instance again, so its services reinitialize into it
-            ServiceLocator.ReinitializeServices();
-            var inputService = ServiceLocator.Get<IInputService>() as Node;
-            Assertions.AssertThat(inputService)
-                .OverrideFailureMessage("IInputService must resolve once the second locator has left the tree")
-                .IsNotNull();
-            Assertions.AssertBool(GodotObject.IsInstanceValid(inputService))
-                .OverrideFailureMessage("IInputService must still be a live node")
-                .IsTrue();
-            Assertions.AssertThat(inputService?.GetParent())
-                .OverrideFailureMessage("IInputService must be parented to the first locator")
-                .IsSame(first);
+            // Assert
+            Assertions.AssertThat(ServiceLocator.Container).IsSame(container);
+            Assertions.AssertThat(ILog.Sink).IsSame(sink);
+            Assertions.AssertThat(ServiceLocator.Get<ILog>()).IsSame(log);
+            Assertions.AssertThat(ServiceLocator.Get<IInputService>()).IsSame(input);
         }
         finally
         {
-            // Leaving the tree hands the static instance back to the one that was current before this test
-            first.GetParent()?.RemoveChild(first);
-            first.Free();
+            // The second root frees whatever it composed; the nodes the autoload created are freed by the test
+            second.GetParent()?.RemoveChild(second);
+            second.Free();
+            QueueFreeAll(created);
         }
+    }
 
-        Assertions.AssertThat(ServiceLocator.Container)
-            .OverrideFailureMessage("freeing the first locator must restore the instance current before this test")
-            .IsSame(containerBefore);
+    // Reinitialize adds an input service and a player reset service to the autoload; the tests free them.
+    private static Node[] ReinitializedNodes() =>
+        new[] { (Node)ServiceLocator.Get<IInputService>(), (Node)ServiceLocator.Get<IPlayerResetService>() };
+
+    private static void QueueFreeAll(Node[] nodes)
+    {
+        foreach (var node in nodes)
+            node.QueueFree();
     }
 }

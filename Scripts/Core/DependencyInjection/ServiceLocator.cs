@@ -2,144 +2,44 @@
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Scripts.Features.Player.Services;
-using Godot;
-using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
 namespace CardCleaner.Scripts.Core.DependencyInjection;
 
 /// <summary>
-///     Global service locator that integrates with Godot's autoload system.
-///     Add this as an autoload named "Services" in project settings.
+///     Static lookup for the service container. The composition root (the "Services" autoload in
+///     Scripts/Composition/CompositionRoot.cs) fills the container. This class registers nothing itself and names no
+///     feature or composition type.
 /// </summary>
-public partial class ServiceLocator : Node
+public static class ServiceLocator
 {
-    private static ServiceLocator _instance = null!;
+    private static IServiceContainer _container = new ServiceContainer();
 
-    // Static pending callbacks for when Get<T>(callback) is called before _instance exists
-    private static readonly Dictionary<Type, List<Action<object>>> StaticPendingCallbacks = new();
-    private readonly Dictionary<Type, List<Action<object>>> _pendingCallbacks = new();
-    private IServiceContainer _container = new ServiceContainer();
+    // Callbacks from Get<T>(callback), run by ExecutePendingCallbacks once their service is registered.
+    private static readonly Dictionary<Type, List<Action<object>>> PendingCallbacks = new();
 
-    // The instance this node replaced in _Ready. _ExitTree restores it while this node is still the instance and
-    // the replaced instance is still valid (GodotObject.IsInstanceValid).
-    private ServiceLocator? _replacedInstance;
-
-
-    public static IServiceContainer Container => _instance._container;
-
-    public override void _Ready()
-    {
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        if (_instance != null)
-            ILog.Error("!!!Duplicate service locator!!!");
-        _replacedInstance = _instance;
-        _instance = this;
-        SyncLogSink();
-
-        // Transfer any callbacks that were registered before _instance existed
-        foreach (var kvp in StaticPendingCallbacks)
-        {
-            if (!_pendingCallbacks.TryGetValue(kvp.Key, out var list))
-            {
-                list = new List<Action<object>>();
-                _pendingCallbacks[kvp.Key] = list;
-            }
-
-            list.AddRange(kvp.Value);
-        }
-
-        StaticPendingCallbacks.Clear();
-
-        CallDeferred(MethodName.ResolveServices);
-    }
-
-    public override void _ExitTree()
-    {
-        // ASSUMPTION: with no live replaced instance (only the autoload, which exits at quit), the static is kept.
-        // A replaced instance freed earlier is not walked past. No requirement states either case.
-        var replaced = _replacedInstance;
-        if (ReferenceEquals(_instance, this) && replaced != null && GodotObject.IsInstanceValid(replaced))
-        {
-            _instance = replaced;
-            SyncLogSink();
-        }
-        _replacedInstance = null;
-    }
-
-    public static void ReinitializeServices()
-    {
-        ResetForTesting();
-        _instance.ResolveServices();
-    }
+    public static IServiceContainer Container => _container;
 
     public static void ResetForTesting()
     {
-        _instance._container = new ServiceContainer();
-        _instance._pendingCallbacks.Clear();
+        _container = new ServiceContainer();
+        PendingCallbacks.Clear();
         SyncLogSink();
     }
 
-    // The sink mirrors the current instance's ILog registration, the same source that Has and Get read.
-    private static void SyncLogSink()
+    // The sink mirrors the ILog in the current container, the same source that Has and Get read.
+    internal static void SyncLogSink()
     {
-        ILog.Sink = _instance._container.IsRegistered<ILog>() ? _instance._container.Resolve<ILog>() : null;
-    }
-
-    private void ResolveServices()
-    {
-        // Register core services
-        RegisterCoreServices();
-
-        // Find and register services from providers
-        RegisterFromProviders();
-        // Execute any pending callbacks after all services are registered
-        ExecutePendingCallbacks();
-    }
-
-    private void RegisterCoreServices()
-    {
-        _container.RegisterSingleton(new RandomNumberGenerator());
-
-        _container.RegisterSingleton<ILog, LoggingService>();
-        // Set before the services below are built: their constructors and _Ready already log through ILog.
-        SyncLogSink();
-
-        var inputService = new InputService();
-        AddChild(inputService);
-        _container.RegisterSingleton<IInputService>(inputService);
-
-        // Register TileRegistry as both ITileRegistry and ITileMetadataProvider
-        var tileRegistry = new TileRegistry();
-        _container.RegisterSingleton<ITileRegistry>(tileRegistry);
-        _container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
-
-        _container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
-        _container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();
-
-        var playerResetService = new PlayerResetService();
-        AddChild(playerResetService);
-        _container.RegisterSingleton<IPlayerResetService>(playerResetService);
-    }
-
-    private void RegisterFromProviders()
-    {
-        var providers = GetTree().GetNodesInGroup("service_providers");
-        foreach (var node in providers)
-            if (node is IServiceProvider provider)
-                provider.RegisterServices(_container);
+        ILog.Sink = _container.IsRegistered<ILog>() ? _container.Resolve<ILog>() : null;
     }
 
     public static void ExecutePendingCallbacks()
     {
-        foreach (var keyValuePair in _instance._pendingCallbacks.ToList())
+        foreach (var keyValuePair in PendingCallbacks.ToList())
         {
-            if (!_instance._container.IsRegistered(keyValuePair.Key))
+            if (!_container.IsRegistered(keyValuePair.Key))
                 continue;
 
-            var service = _instance._container.Resolve(keyValuePair.Key);
+            var service = _container.Resolve(keyValuePair.Key);
             foreach (var callback in keyValuePair.Value)
             {
                 ILog.Print($"Running callback for {keyValuePair.Key.Name}");
@@ -147,7 +47,7 @@ public partial class ServiceLocator : Node
             }
 
             ILog.Print($"Removing callback for {keyValuePair.Key.Name}");
-            _instance._pendingCallbacks.Remove(keyValuePair.Key);
+            PendingCallbacks.Remove(keyValuePair.Key);
         }
     }
 
@@ -160,20 +60,6 @@ public partial class ServiceLocator : Node
     {
         var serviceType = typeof(T);
 
-        // If _instance doesn't exist yet, queue in static callbacks
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        if (_instance == null)
-        {
-            if (!StaticPendingCallbacks.TryGetValue(serviceType, out var staticList))
-            {
-                staticList = new List<Action<object>>();
-                StaticPendingCallbacks[serviceType] = staticList;
-            }
-
-            staticList.Add(obj => callback((T)obj));
-            return;
-        }
-
         // If service is already available, call callback immediately
         if (Container.IsRegistered<T>())
         {
@@ -182,10 +68,10 @@ public partial class ServiceLocator : Node
         }
 
         // Otherwise, store callback for later execution
-        if (!_instance._pendingCallbacks.TryGetValue(serviceType, out var value))
+        if (!PendingCallbacks.TryGetValue(serviceType, out var value))
         {
             value = new List<Action<object>>();
-            _instance._pendingCallbacks[serviceType] = value;
+            PendingCallbacks[serviceType] = value;
         }
 
         value.Add(obj => callback((T)obj));
@@ -193,6 +79,6 @@ public partial class ServiceLocator : Node
 
     public static bool Has<T>() where T : class
     {
-        return _instance != null && Container.IsRegistered<T>();
+        return Container.IsRegistered<T>();
     }
 }
