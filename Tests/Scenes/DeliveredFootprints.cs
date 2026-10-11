@@ -5,8 +5,9 @@ using Godot;
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// The top-down footprints of delivered items: the world bounds of each collision shape, triggers included, so a
-/// scene test can assert that two items never share ground seen from above.
+/// The top-down footprints of delivered items: the world bounds of each enabled collision shape, so a scene test can
+/// assert that two items never share ground seen from above. The oracle is deliberately stricter than
+/// <c>DeliveryMarker</c>: every enabled shape counts, triggers included whatever their group, and heights are ignored.
 /// </summary>
 internal static class DeliveredFootprints
 {
@@ -29,7 +30,8 @@ internal static class DeliveredFootprints
     }
 
     /// <summary>
-    /// The top-down bounds of every enabled collision shape under an item, with each shape's node path.
+    /// The top-down bounds of every enabled collision shape under an item, with the path of each shape node from the
+    /// item.
     /// </summary>
     internal static List<(string Path, Rect2 Area)> Footprints(Node3D item) =>
         item.FindChildren("*", nameof(CollisionShape3D), true, false)
@@ -39,7 +41,7 @@ internal static class DeliveredFootprints
             {
                 var bounds = collider.GlobalTransform * collider.Shape!.GetDebugMesh().GetAabb();
                 var area = new Rect2(bounds.Position.X, bounds.Position.Z, bounds.Size.X, bounds.Size.Z);
-                return (item.GetPathTo(collider.GetParent()).ToString(), area);
+                return (item.GetPathTo(collider).ToString(), area);
             })
             .ToList();
 }

@@ -9,8 +9,9 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 /// <summary>
 ///     Charges the <see cref="IMoneyService" /> and instances the ordered scene at a <see cref="DeliveryMarker" />.
 ///     The marker decides where each delivery goes: it tracks its own occupancy, fills its ground slots first, then
-///     stacks on the lowest stack while the item fits under its clearance, and refuses only when none does. Each
-///     marker keeps its own slots, so two terminals with different markers never share a grid.
+///     stacks on the lowest stack. It skips a slot where the item would leave its floor clearance or overlap an
+///     occupant, and refuses the order when no slot is left under its ceiling clearance. Each marker keeps its own
+///     slots, so two terminals with different markers never share a grid.
 /// </summary>
 [Service(typeof(IOrderingService))]
 public partial class OrderingService : Node, IOrderingService
@@ -18,10 +19,15 @@ public partial class OrderingService : Node, IOrderingService
     public const int SlotColumns = 3;
     public const int SlotRows = 2;
 
-    /// <summary>Wider than the widest orderable item (the 2.1 m shelf). The marker refuses overlaps too.</summary>
+    /// <summary>
+    ///     Fits the 2.1 m shelf in one column. A wider footprint, such as an arcade cabinet with its holders, takes the
+    ///     next slot that clears every shape.
+    /// </summary>
     public const float SlotSpacingX = 2.3f;
 
-    /// <summary>Deeper than the deepest orderable item (the 1 m shelf).</summary>
+    /// <summary>
+    ///     Fits the 1 m deep shelf in one row. A deeper footprint takes the next slot that clears every shape.
+    /// </summary>
     public const float SlotSpacingZ = 1.5f;
 
     private const int SlotCount = SlotColumns * SlotRows;
