@@ -416,6 +416,14 @@ $godotPath = Resolve-GodotConsole -Binary $GodotBinary
 $repositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 $reportRoot = Join-Path $repositoryRoot 'reports\ci'
 New-Item -ItemType Directory -Path $reportRoot -Force | Out-Null
+# One line per interruption. CI uploads reports/ci whenever this file exists, so a run that resumes to green still
+# keeps the logs of the attempt that crashed or stalled.
+$interruptionMarker = Join-Path $reportRoot 'interruptions.txt'
+# ASSUMPTION: a marker in reports/ci comes from an earlier run in this checkout (CI starts from a fresh checkout), so
+# it is removed here; otherwise a clean local rerun would still look interrupted. Only this one file is removed.
+if (Test-Path -LiteralPath $interruptionMarker -PathType Leaf) {
+    Remove-Item -LiteralPath $interruptionMarker -Force
+}
 Write-Host "Using Godot executable: $godotPath"
 
 $allSuites = Get-ExpectedSuites -RepositoryRoot $repositoryRoot
@@ -486,6 +494,10 @@ for ($attempt = 0; ; $attempt++) {
     $formatted = Format-Interruption @formatArgs
     Write-Warning $formatted.Warning
     $interruptions.Add($formatted)
+    # Written before any of the throws below, so the interruption that fails a run is recorded too. [IO.File] writes
+    # the same bytes under Windows PowerShell 5.1 and PowerShell 7.
+    $markerLine = "$($formatted.Entry) (logs: godot$suffix.stdout.log, godot$suffix.stderr.log)"
+    [IO.File]::AppendAllText($interruptionMarker, $markerLine + [Environment]::NewLine)
     $lastInterruption = $formatted.Entry
     if ($null -ne $formatted.Repeat) {
         throw "$($formatted.Repeat); see $stdoutPath"

@@ -1,8 +1,8 @@
 # Fake-Godot integration fixture for Scripts/ci/Run-GdUnit.ps1.
 #
 # The runner runs against a fake Godot executable, compiled here with the in-box .NET Framework csc.exe, inside a
-# temporary fake repository. The watchdog, process-tree kill, resume targets, repeated-stall failure, crash handling
-# and report aggregation are therefore checked without a real Godot. Windows PowerShell 5.1 runs it locally; CI passes
+# temporary fake repository. The watchdog, process-tree kill, resume targets, repeated-stall failure, crash handling,
+# interruption marker and report aggregation are therefore checked without a real Godot. Windows PowerShell 5.1 runs it locally; CI passes
 # -RunnerShell pwsh so the runner itself runs under PowerShell 7.
 #
 # Usage: powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps1 [-Only <check>] [-KeepTemp]
@@ -575,6 +575,23 @@ function Assert-ProcessesGone {
     throw "Check failed: stalled fake process(es) survived the kill: $survivors"
 }
 
+function Get-InterruptionMarkerPath {
+    param($Context)
+
+    return Join-Path $Context.Repo 'reports\ci\interruptions.txt'
+}
+
+# The marker's lines, or an empty array when the runner left no marker.
+function Get-InterruptionMarkerLines {
+    param($Context)
+
+    $path = Get-InterruptionMarkerPath -Context $Context
+    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+        return @()
+    }
+    return @([IO.File]::ReadAllLines($path))
+}
+
 function Get-RunnerTestCalls {
     param($Context)
 
@@ -590,8 +607,12 @@ function Test-CleanRun {
         (Get-SuiteStart $SuiteBeta), (Get-SuiteStats),
         'report r1 0 0',
         'exit 0')
+    # A marker left by an earlier run in the same checkout must not make a clean run look interrupted.
+    Write-FileText -Path (Get-InterruptionMarkerPath -Context $Context) -Text ('stall in ' + $SuiteBeta)
     $result = Invoke-Runner -Context $Context
     Assert-ExitCode -Result $result -Expected 0 -Message 'a clean run exits 0'
+    $markerGone = -not (Test-Path -LiteralPath (Get-InterruptionMarkerPath -Context $Context))
+    Assert-That $markerGone 'a clean run removes the stale interruption marker and writes none'
     $consoleLine = 'Using Godot executable: ' + $Context.Console
     Assert-Line $result.Stdout $consoleLine 'the runner picks the _console variant next to the fake'
     Assert-Line $result.Stdout 'GdUnit passed: 3 of 3 suite files ran.' 'every suite ran once'
@@ -651,6 +672,10 @@ function Test-StallResumes {
     Assert-That $tests[1].EndsWith($resumeArguments) 'the resume names only the unfinished suite and the Beta folder'
     $resumeLog = Join-Path $Context.Repo 'reports\ci\godot.resume1.stdout.log'
     Assert-That (Test-Path -LiteralPath $resumeLog -PathType Leaf) 'the resume writes its own log'
+    $marker = @(Get-InterruptionMarkerLines -Context $Context)
+    $stallLine = 'stall in ' + $SuiteAlphaTwo + ' (logs: godot.stdout.log, godot.stderr.log)'
+    Assert-Equal 1 $marker.Count 'the stall writes one interruption marker line'
+    Assert-Equal $stallLine $marker[0] 'the marker names the stalled suite and its logs'
     Assert-ProcessesGone -Context $Context
 }
 
@@ -703,6 +728,10 @@ function Test-CrashNoReport {
     Assert-Equal 2 $tests.Count 'one run and one resume'
     $resumeArguments = '-a ' + $SuiteAlphaTwo + ' -a res://Tests/Beta'
     Assert-That $tests[1].EndsWith($resumeArguments) 'the resume names only the unfinished suite and the Beta folder'
+    $marker = @(Get-InterruptionMarkerLines -Context $Context)
+    $crashLine = 'crash 0xC000001D in ' + $SuiteAlphaTwo + ' (logs: godot.stdout.log, godot.stderr.log)'
+    Assert-Equal 1 $marker.Count 'the crash writes one interruption marker line'
+    Assert-Equal $crashLine $marker[0] 'the marker names the crashed suite, its exit code in hex and its logs'
 }
 
 function Test-CrashAfterEarlierReportResumes {
@@ -740,6 +769,12 @@ function Test-CrashAfterEarlierReportResumes {
     $passedWarning = 'WARNING: GdUnit passed after 2 interruption(s): stall in ' + $SuiteAlphaTwo +
         '; crash 0xC000001D in ' + $SuiteBeta
     Assert-Contains $output $passedWarning 'the passing run reports both the stall and the crash'
+    $marker = @(Get-InterruptionMarkerLines -Context $Context)
+    Assert-Equal 2 $marker.Count 'each interruption appends its own marker line'
+    $stallLine = 'stall in ' + $SuiteAlphaTwo + ' (logs: godot.stdout.log, godot.stderr.log)'
+    Assert-Equal $stallLine $marker[0] 'the first marker line is the stall of the first attempt'
+    $crashLine = 'crash 0xC000001D in ' + $SuiteBeta + ' (logs: godot.resume1.stdout.log, godot.resume1.stderr.log)'
+    Assert-Equal $crashLine $marker[1] 'the second marker line is the crash of the first resume'
     Assert-ProcessesGone -Context $Context
 }
 
