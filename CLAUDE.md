@@ -152,14 +152,19 @@ public partial class MyNode : Node3D
 
 ### Dependency Injection
 
-The project uses a custom service locator pattern integrated with Godot's autoload system:
+The project uses a custom service locator pattern, split into a static lookup and a composition root:
 
-- **ServiceLocator** (`Scripts/Core/DependencyInjection/ServiceLocator.cs`): Godot autoload node registered as "Services" that manages the DI container
+- **ServiceLocator** (`Scripts/Core/DependencyInjection/ServiceLocator.cs`): static lookup over the DI container.
+  It names no feature or composition type; `DependencyInjectionBoundaryTest` enforces that.
+- **CompositionRoot** (`Scripts/Composition/CompositionRoot.cs`): the "Services" autoload. It registers the core
+  services, then every node in the `service_providers` group, then runs the pending callbacks. Only that autoload
+  composes; any other instance logs an error and changes nothing.
 - **ServiceContainer**: Supports singleton registrations
 - **IServiceProvider**: Nodes implementing this interface and added to the `service_providers` group will have their services registered at startup
 - Services can use async resolution via `ServiceLocator.Get<T>(callback)` for services not yet registered
 
-Access services via `ServiceLocator.Get<T>()` or `ServiceLocator.Container.Resolve<T>()`.
+Access services via `ServiceLocator.Get<T>()` or `ServiceLocator.Container.Resolve<T>()`. Tests rebuild the container
+with `CompositionRoot.ReinitializeServices()` and clear it with `ServiceLocator.ResetForTesting()`.
 
 ### Card Signature System
 
