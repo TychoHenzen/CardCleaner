@@ -73,7 +73,7 @@ public class CardControllerInteractionTest : CardControllerTestBase
         _cardController.Highlight();
 
         // Assert
-        var outline = _cardController.GetNode<CsgBox3D>("OutlineBox");
+        var outline = _cardController.GetNode<MeshInstance3D>("OutlineBox");
         Assertions.AssertBool(outline.Visible).IsTrue();
     }
 
@@ -88,13 +88,13 @@ public class CardControllerInteractionTest : CardControllerTestBase
         _cardController.ClearHighlight();
 
         // Assert
-        var outline = _cardController.GetNode<CsgBox3D>("OutlineBox");
+        var outline = _cardController.GetNode<MeshInstance3D>("OutlineBox");
         Assertions.AssertBool(outline.Visible).IsFalse();
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void Highlight_WithoutOutlineBox_DoesNotCrash()
+    public static void Highlight_WithoutOutlineBox_DoesNotCrash()
     {
         // Arrange
         var cardWithoutOutline = new CardController();

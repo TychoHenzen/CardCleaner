@@ -32,13 +32,13 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
 
     public void Highlight()
     {
-        var outline = GetNodeOrNull<CsgBox3D>("OutlineBox");
+        var outline = GetNodeOrNull<Node3D>("OutlineBox");
         if (outline != null) outline.Visible = true;
     }
 
     public void ClearHighlight()
     {
-        var outline = GetNodeOrNull<CsgBox3D>("OutlineBox");
+        var outline = GetNodeOrNull<Node3D>("OutlineBox");
         if (outline != null) outline.Visible = false;
     }
 

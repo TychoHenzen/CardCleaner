@@ -1,7 +1,6 @@
-[gd_scene load_steps=12 format=3 uid="uid://oqrxpyj8qkim"]
+[gd_scene load_steps=13 format=3 uid="uid://oqrxpyj8qkim"]
 
 [ext_resource type="Script" uid="uid://blu0six20pl7f" path="res://Scripts/Features/Card/Controllers/CardController.cs" id="1_btmnp"]
-[ext_resource type="Script" path="res://Scripts/Features/Card/Components/CsgBaker.cs" id="2_hllmr"]
 [ext_resource type="Script" uid="uid://bsbw0i4pq1mve" path="res://Scripts/Features/Card/Components/CardDesigner.cs" id="3_53u5m"]
 [ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/Features/Card/Components/FlutterCard.cs" id="4_ycqko"]
 [ext_resource type="Script" uid="uid://bgwgo4ybh5igi" path="res://Scripts/Features/Card/Components/CardShaderRenderer.cs" id="5_1sx76"]
@@ -9,6 +8,7 @@
 [ext_resource type="Script" path="res://Scripts/Features/Card/Components/CardSleepEnforcer.cs" id="8_53u5m"]
 [ext_resource type="Script" uid="uid://6wu6tpceqfcc" path="res://Scripts/Features/Card/Components/CardMaterialManager.cs" id="8_ycqko"]
 [ext_resource type="Material" uid="uid://d368k11s8ohrk" path="res://Assets/Materials/CardMaterial.tres" id="9_r6y7f"]
+[ext_resource type="ArrayMesh" path="res://Data/Card/CardMesh.tres" id="10_cardmesh"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kudhx"]
 size = Vector3(0.32, 0.005, 0.45)
@@ -16,6 +16,11 @@ size = Vector3(0.32, 0.005, 0.45)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3m7nw"]
 emission_enabled = true
 emission = Color(1, 1, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_outline"]
+size = Vector3(0.33, 0.015, 0.46)
+flip_faces = true
+material = SubResource("StandardMaterial3D_3m7nw")
 
 [node name="Card" type="RigidBody3D"]
 physics_interpolation_mode = 2
@@ -26,44 +31,6 @@ linear_damp = 0.1
 angular_damp_mode = 1
 angular_damp = 0.05
 script = ExtResource("1_btmnp")
-
-[node name="OuterBox" type="CSGBox3D" parent="."]
-visible = false
-size = Vector3(0.32, 0.005, 0.45)
-script = ExtResource("2_hllmr")
-
-[node name="Combiner" type="CSGCombiner3D" parent="OuterBox"]
-operation = 1
-
-[node name="CSGCylinder3D" type="CSGCylinder3D" parent="OuterBox/Combiner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.128, 0, -0.193)
-radius = 0.032
-height = 0.005
-sides = 16
-
-[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="OuterBox/Combiner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.128, 0, -0.193)
-radius = 0.032
-height = 0.005
-sides = 16
-
-[node name="CSGCylinder3D3" type="CSGCylinder3D" parent="OuterBox/Combiner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.128, 0, 0.193)
-radius = 0.032
-height = 0.005
-sides = 16
-
-[node name="CSGCylinder3D4" type="CSGCylinder3D" parent="OuterBox/Combiner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.128, 0, 0.193)
-radius = 0.032
-height = 0.005
-sides = 16
-
-[node name="CSGBox3D" type="CSGBox3D" parent="OuterBox/Combiner"]
-size = Vector3(0.32, 0.007, 0.386)
-
-[node name="CSGBox3D2" type="CSGBox3D" parent="OuterBox/Combiner"]
-size = Vector3(0.256, 0.007, 0.45)
 
 [node name="CardCollision" type="CollisionShape3D" parent="."]
 shape = SubResource("BoxShape3D_kudhx")
@@ -76,11 +43,9 @@ Height = 0.45
 [node name="Flutter" type="Node" parent="."]
 script = ExtResource("4_ycqko")
 
-[node name="OutlineBox" type="CSGBox3D" parent="."]
+[node name="OutlineBox" type="MeshInstance3D" parent="."]
 visible = false
-flip_faces = true
-size = Vector3(0.33, 0.015, 0.46)
-material = SubResource("StandardMaterial3D_3m7nw")
+mesh = SubResource("BoxMesh_outline")
 
 [node name="CardRenderer" type="Node" parent="." node_paths=PackedStringArray("NameLabel", "AttrLabel")]
 script = ExtResource("5_1sx76")
@@ -116,3 +81,6 @@ script = ExtResource("7_hllmr")
 [node name="MaterialManager" type="Node" parent="."]
 script = ExtResource("8_ycqko")
 CardMaterialTemplate = ExtResource("9_r6y7f")
+
+[node name="OuterBox_Baked" type="MeshInstance3D" parent="."]
+mesh = ExtResource("10_cardmesh")
