@@ -23,7 +23,7 @@ public partial class CardDesigner : Node, ICardComponent
     private CsgCylinder3D[] _cornerCylinders = Array.Empty<CsgCylinder3D>();
     private float _height = DefaultHeight;
     private CsgBox3D? _outerBox;
-    private CsgBox3D? _outlineBox;
+    private MeshInstance3D? _outlineBox;
     private float _thickness = DefaultThickness;
     private CsgBox3D[] _trimBoxes = Array.Empty<CsgBox3D>();
     private float _width = DefaultWidth;
@@ -115,7 +115,7 @@ public partial class CardDesigner : Node, ICardComponent
         _collisionBoxShape = _collisionShape.Shape as BoxShape3D ??
                              throw new InvalidOperationException("CardCollision shape is not BoxShape3D");
 
-        _outlineBox = cardRoot.GetNodeOrNull<CsgBox3D>("OutlineBox");
+        _outlineBox = cardRoot.GetNodeOrNull<MeshInstance3D>("OutlineBox");
         if (_outlineBox != null)
             _outlineBox.Visible = false;
 
@@ -151,8 +151,5 @@ public partial class CardDesigner : Node, ICardComponent
         }
 
         _collisionBoxShape.Size = new Vector3(Width, Thickness, Height);
-
-        if (_outlineBox != null)
-            _outlineBox.Size = new Vector3(Width + OutlineMargin, Thickness + OutlineMargin, Height + OutlineMargin);
     }
 }

@@ -47,7 +47,7 @@ public abstract class CardControllerTestBase
         _cardController.AddChild(collisionShape);
 
         // Add outline box for highlighting
-        var outlineBox = new CsgBox3D { Name = "OutlineBox", Visible = false };
+        var outlineBox = new MeshInstance3D { Name = "OutlineBox", Visible = false, Mesh = new BoxMesh() };
         _cardController.AddChild(outlineBox);
 
         // Add some mock card components

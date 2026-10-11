@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://oqrxpyj8qkim"]
+[gd_scene load_steps=13 format=3 uid="uid://oqrxpyj8qkim"]
 
 [ext_resource type="Script" uid="uid://blu0six20pl7f" path="res://Scripts/Features/Card/Controllers/CardController.cs" id="1_btmnp"]
 [ext_resource type="Script" path="res://Scripts/Features/Card/Components/CsgBaker.cs" id="2_hllmr"]
@@ -16,6 +16,11 @@ size = Vector3(0.32, 0.005, 0.45)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3m7nw"]
 emission_enabled = true
 emission = Color(1, 1, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_outline"]
+size = Vector3(0.33, 0.015, 0.46)
+flip_faces = true
+material = SubResource("StandardMaterial3D_3m7nw")
 
 [node name="Card" type="RigidBody3D"]
 physics_interpolation_mode = 2
@@ -76,11 +81,9 @@ Height = 0.45
 [node name="Flutter" type="Node" parent="."]
 script = ExtResource("4_ycqko")
 
-[node name="OutlineBox" type="CSGBox3D" parent="."]
+[node name="OutlineBox" type="MeshInstance3D" parent="."]
 visible = false
-flip_faces = true
-size = Vector3(0.33, 0.015, 0.46)
-material = SubResource("StandardMaterial3D_3m7nw")
+mesh = SubResource("BoxMesh_outline")
 
 [node name="CardRenderer" type="Node" parent="." node_paths=PackedStringArray("NameLabel", "AttrLabel")]
 script = ExtResource("5_1sx76")
