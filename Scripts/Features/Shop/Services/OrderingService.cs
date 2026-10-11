@@ -92,7 +92,9 @@ public partial class OrderingService : Node, IOrderingService
         return new OrderResult(OrderStatus.Success, instance);
     }
 
-    /// <summary>Offset from the delivery point of slot <paramref name="index" />: a grid centred on the marker.</summary>
+    /// <summary>
+    ///     Offset from the delivery point of slot <paramref name="index" />: a grid centred on the marker.
+    /// </summary>
     public static Vector3 SlotOffset(int index)
     {
         var column = index % SlotColumns;

@@ -121,7 +121,7 @@ public partial class DeliveryMarker : Marker3D
 
         // ASSUMPTION: the occupant's height range is taken from its footprint shapes only, so a trigger that does not
         // count toward the footprint does not raise the item for the height check either.
-        var lowest = shapes.Min(box => box.Position.Y) - GlobalPosition.Y;
+        var lowest = ItemBottom(shapes, occupant.GlobalPosition.Y) - GlobalPosition.Y;
         var highest = shapes.Max(box => box.End.Y) - GlobalPosition.Y;
         return new Occupant(shapes, lowest, highest);
     }
@@ -144,7 +144,7 @@ public partial class DeliveryMarker : Marker3D
     ///     Whether an item with the given local shapes can stand at <paramref name="offset" /> from this marker. It is
     ///     refused when one of its shapes leaves <see cref="FloorClearance" /> (when one is set), or overlaps, seen
     ///     from above, a shape of an occupant whose height range overlaps the item's own. Heights are compared for
-    ///     each item as a whole, not shape by shape, and the item's range starts no lower than its feet.
+    ///     each item as a whole, not shape by shape, and no item's range, incoming or delivered, starts below its feet.
     /// </summary>
     private bool Fits(Aabb[] localShapes, Aabb localBounds, Vector3 offset, IReadOnlyList<Occupant> occupants)
     {
@@ -152,10 +152,7 @@ public partial class DeliveryMarker : Marker3D
         if (FloorClearance.HasArea() && !shapes.All(WithinClearance))
             return false;
 
-        // ASSUMPTION: the item rests on its origin (FindPlacement takes the origin to be its feet), so shape bounds
-        // below the origin are no real reach downward. The workshop conveyor's tilted belt has such bounds; counting
-        // them would put a stacked conveyor's lowest point under the top it rests on and refuse a free stack.
-        var lowest = Mathf.Max(localBounds.Position.Y, 0f) + offset.Y;
+        var lowest = ItemBottom(localShapes, 0f) + offset.Y;
         var highest = localBounds.End.Y + offset.Y;
         foreach (var occupant in occupants)
         {
@@ -166,6 +163,14 @@ public partial class DeliveryMarker : Marker3D
 
         return true;
     }
+
+    // ASSUMPTION: an item rests on its origin (FindPlacement takes the origin to be its feet), so shape bounds below
+    // the origin are no real reach downward. The workshop conveyor's tilted belt has such bounds; counting them would
+    // put a stacked conveyor's lowest point under the top it rests on and refuse a free stack. Delivered items are read
+    // the same way, so an item's reach below its feet is the same once placed as it was while arriving.
+    // An item with no shapes has no bound at all, so its bottom is its feet.
+    private static float ItemBottom(IEnumerable<Aabb> shapes, float feetY) =>
+        Mathf.Max(shapes.Select(box => box.Position.Y).DefaultIfEmpty(feetY).Min(), feetY);
 
     /// <summary>Whether a world-space box stays inside <see cref="FloorClearance" />, to within the epsilon.</summary>
     private bool WithinClearance(Aabb shape)
@@ -256,7 +261,7 @@ public partial class DeliveryMarker : Marker3D
 
     /// <summary>A delivered item as the incoming-shape check sees it.</summary>
     /// <param name="Shapes">Its footprint boxes in world space.</param>
-    /// <param name="Bottom">The lowest point of the item, in metres above this marker.</param>
+    /// <param name="Bottom">The lowest point of the item, never below its feet, in metres above this marker.</param>
     /// <param name="Top">The highest point of the item, in metres above this marker.</param>
     private readonly record struct Occupant(IReadOnlyList<Aabb> Shapes, float Bottom, float Top);
 }
