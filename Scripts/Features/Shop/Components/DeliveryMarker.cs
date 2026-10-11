@@ -7,11 +7,11 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     A delivery area for a room with a ceiling. Each footprint shape of a delivered item takes the slot cells it
-///     covers from above, and a shape past the last row takes none. An item goes on the first free ground slot where
-///     its shapes stay inside <see cref="FloorClearance" /> (when one is set) and overlap no shape of an item in the
-///     same height range. Otherwise it goes on the lowest stack that still fits under <see cref="MaxStackHeight" />,
-///     and is refused when none does. The footprint is the solid shapes plus the triggers under a node in
-///     <see cref="FootprintGroup" />; other triggers take no space.
+///     covers from above, and a shape past the last row takes none. An item fits a slot when its shapes stay inside
+///     <see cref="FloorClearance" /> (when one is set) and overlap no shape of an item in the same height range. It
+///     goes on the first free ground slot it fits, otherwise on the lowest stack it fits that keeps it under
+///     <see cref="MaxStackHeight" />, and is refused when there is none. The footprint is the solid shapes plus the
+///     triggers under a node in <see cref="FootprintGroup" />; other triggers take no space.
 /// </summary>
 public partial class DeliveryMarker : Marker3D
 {
@@ -46,9 +46,9 @@ public partial class DeliveryMarker : Marker3D
     public Rect2 FloorClearance { get; set; }
 
     /// <summary>
-    ///     Where the next item should go: the first free ground slot the item fits on, otherwise the lowest stack top
-    ///     that still leaves room for <paramref name="item" />. Null when the area has no clearance left. Items that no
-    ///     longer touch any cell are forgotten, so only live occupants are ever retained.
+    ///     Where the next item should go: the first free ground slot <paramref name="item" /> fits on, otherwise the
+    ///     lowest stack it fits on under <see cref="MaxStackHeight" />. Null when no slot is left. Items that no longer
+    ///     touch any cell are forgotten, so only live occupants are ever retained.
     /// </summary>
     /// <param name="slotCount">How many slots the area has.</param>
     /// <param name="slotOffset">Offset of a slot's centre from this marker.</param>
@@ -142,8 +142,9 @@ public partial class DeliveryMarker : Marker3D
 
     /// <summary>
     ///     Whether an item with the given local shapes can stand at <paramref name="offset" /> from this marker. It is
-    ///     refused when one of its shapes overlaps, seen from above, a shape of an occupant whose height range overlaps
-    ///     the item's own. Heights are compared for each item as a whole, not shape by shape.
+    ///     refused when one of its shapes leaves <see cref="FloorClearance" /> (when one is set), or overlaps, seen
+    ///     from above, a shape of an occupant whose height range overlaps the item's own. Heights are compared for
+    ///     each item as a whole, not shape by shape, and the item's range starts no lower than its feet.
     /// </summary>
     private bool Fits(Aabb[] localShapes, Aabb localBounds, Vector3 offset, IReadOnlyList<Occupant> occupants)
     {
@@ -151,7 +152,10 @@ public partial class DeliveryMarker : Marker3D
         if (FloorClearance.HasArea() && !shapes.All(WithinClearance))
             return false;
 
-        var lowest = localBounds.Position.Y + offset.Y;
+        // ASSUMPTION: the item rests on its origin (FindPlacement takes the origin to be its feet), so shape bounds
+        // below the origin are no real reach downward. The workshop conveyor's tilted belt has such bounds; counting
+        // them would put a stacked conveyor's lowest point under the top it rests on and refuse a free stack.
+        var lowest = Mathf.Max(localBounds.Position.Y, 0f) + offset.Y;
         var highest = localBounds.End.Y + offset.Y;
         foreach (var occupant in occupants)
         {

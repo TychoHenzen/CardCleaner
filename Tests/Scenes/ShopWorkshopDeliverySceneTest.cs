@@ -226,6 +226,26 @@ public class ShopWorkshopDeliverySceneTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void ConveyorsStackOnConveyorsOnceTheGroundIsFull()
+    {
+        _money.Add(TopUp);
+        _terminal.Interact();
+        var conveyor = IndexOf("conveyor");
+        for (var order = 0; order < Capacity; order++)
+            _presses.PressForDelivery(_terminal, conveyor);
+
+        // The belt's collider is tilted, so its bounds dip below the conveyor's feet. It must still stack.
+        var stacked = _presses.PressForDelivery(_terminal, conveyor);
+
+        var offset = stacked.GlobalPosition - _delivery.GlobalPosition;
+        var slot = OrderingService.SlotOffset(0);
+        AssertBool(Mathf.IsEqualApprox(offset.X, slot.X) && Mathf.IsEqualApprox(offset.Z, slot.Z) && offset.Y > 0f)
+            .OverrideFailureMessage($"the stacked conveyor is at {offset} from the marker, expected above slot 0")
+            .IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void WorkshopOrdersLeaveTheShopDeliveryGridUntouched()
     {
         _money.Add(TopUp);
@@ -299,10 +319,10 @@ public class ShopWorkshopDeliverySceneTest
     private int IndexOf(string id) => _terminal.Catalog!.Items.ToList().FindIndex(i => i.Id == id);
 
     /// <summary>
-    /// Probes every collision shape of a delivered item in its place against the workshop's bodies. The item's own
-    /// bodies are excluded, and each shape is lifted by the probe inset so the floor it stands on is not reported.
-    /// Footprint triggers (holders under a node in the delivery_footprint group) are probed too, since the item carries
-    /// them. Other triggers are skipped, so a report means a solid shape or footprint holder inside workshop geometry.
+    /// Probes every enabled collision shape of a delivered item in its place against the workshop's bodies, triggers
+    /// included, since the item carries its holders. The item's own bodies are excluded, and each shape is lifted by
+    /// the probe inset so the floor it stands on is not reported. A report means a shape of the item is inside
+    /// workshop geometry.
     /// </summary>
     private List<string> ProbeAgainstWorkshop(Node3D item)
     {
@@ -316,8 +336,7 @@ public class ShopWorkshopDeliverySceneTest
         var hits = new List<string>();
         foreach (var collider in item.FindChildren("*", nameof(CollisionShape3D), true, false)
                      .OfType<CollisionShape3D>()
-                     .Where(c => c is { Disabled: false, Shape: not null }
-                                  && (c.GetParent() is not Area3D || CountsAsFootprint(c, item))))
+                     .Where(c => c is { Disabled: false, Shape: not null }))
         {
             var query = new PhysicsShapeQueryParameters3D
             {
@@ -332,17 +351,5 @@ public class ShopWorkshopDeliverySceneTest
         }
 
         return hits;
-    }
-
-    // A trigger counts toward the probe only under a node in the delivery footprint group, as DeliveryMarker counts it.
-    private static bool CountsAsFootprint(Node collider, Node item)
-    {
-        for (var step = collider.GetParent(); step != null && step != item; step = step.GetParent())
-        {
-            if (step.IsInGroup(DeliveryMarker.FootprintGroup))
-                return true;
-        }
-
-        return false;
     }
 }
