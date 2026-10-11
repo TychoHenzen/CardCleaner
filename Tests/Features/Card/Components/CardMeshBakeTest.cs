@@ -36,18 +36,12 @@ public class CardMeshBakeTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static async Task RecipeMatchesTodaysRuntimeBake()
+    public static void SpawnedCardUsesCommittedMesh()
     {
-        var committed = ResourceLoader.Load<ArrayMesh>(MeshPath);
-        Assertions.AssertThat(committed).IsNotNull();
         var card = ResourceLoader.Load<PackedScene>(CardScenePath).Instantiate<Node3D>();
         Assertions.AddNode(card);
-        await CardEffectBakeWait.Until(
-            () => card.GetNodeOrNull<MeshInstance3D>("OuterBox_Baked") != null,
-            "the runtime card bake");
-        var runtime = card.GetNode<MeshInstance3D>("OuterBox_Baked").Mesh as ArrayMesh;
-        Assertions.AssertThat(runtime).IsNotNull();
-        AssertSameMesh(runtime!, committed!);
+        var body = card.GetNode<MeshInstance3D>("OuterBox_Baked");
+        Assertions.AssertString(body.Mesh.ResourcePath).IsEqual(MeshPath);
     }
 
     [TestCase]

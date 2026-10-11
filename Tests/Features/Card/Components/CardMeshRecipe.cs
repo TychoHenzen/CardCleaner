@@ -13,7 +13,7 @@ public static class CardMeshRecipe
 
     private const float InnerThicknessOffset = 0.002f;
 
-    // Same order as the Combiner children in the card scene, so the boolean sees its operands in the same order.
+    // Order of the Combiner children the committed mesh was baked from, so the boolean sees the same operands.
     private static readonly string[] CornerNames =
     {
         "CSGCylinder3D", "CSGCylinder3D2", "CSGCylinder3D3", "CSGCylinder3D4",
@@ -75,7 +75,7 @@ public static class CardMeshRecipe
         return baked == null ? null : RemapBoxUVs(baked, width, height);
     }
 
-    // Moved verbatim from CsgBaker.cs; the UV rules are part of the committed mesh.
+    // Verbatim copy of the runtime UV rules; they are part of the committed mesh.
     private static ArrayMesh RemapBoxUVs(ArrayMesh source, float width, float height)
     {
         var result = new ArrayMesh();

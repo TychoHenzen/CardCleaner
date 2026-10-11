@@ -94,7 +94,7 @@ public class CardControllerInteractionTest : CardControllerTestBase
 
     [TestCase]
     [TestCategory("Unit")]
-    public void Highlight_WithoutOutlineBox_DoesNotCrash()
+    public static void Highlight_WithoutOutlineBox_DoesNotCrash()
     {
         // Arrange
         var cardWithoutOutline = new CardController();

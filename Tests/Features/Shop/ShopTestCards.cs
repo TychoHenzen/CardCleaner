@@ -16,9 +16,6 @@ public static class ShopTestCards
     public static CardController Create(CardSignature? signature)
     {
         var card = new CardController { Name = $"Card{++_created}", Signature = signature! };
-        var outer = new CsgBox3D { Name = "OuterBox" };
-        outer.AddChild(new CsgCombiner3D { Name = "Combiner" });
-        card.AddChild(outer);
         card.AddChild(new CollisionShape3D { Name = "CardCollision", Shape = new BoxShape3D { Size = CardSize } });
         card.AddChild(new CardDesigner { Name = "Designer" });
         return card;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CardCleaner.Scripts.Features.Card.Components;
 using GdUnit4;
 using Godot;
@@ -34,11 +34,11 @@ public class CardDesignerTest
     {
         var originalWidth = _designer.Width;
 
-        // Setting same value should not trigger update
+        // Setting the same value keeps it
         _designer.Width = originalWidth;
         Assertions.AssertFloat(_designer.Width).IsEqual(originalWidth);
 
-        // Setting different value should update
+        // Setting a different value stores it
         _designer.Width = 1.0f;
         Assertions.AssertFloat(_designer.Width).IsEqual(1.0f);
     }
@@ -50,7 +50,7 @@ public class CardDesignerTest
         _designer.Width = 0.1f; // Minimum
         Assertions.AssertFloat(_designer.Width).IsEqual(0.1f);
 
-        _designer.Width = 3.0f; // Maximum  
+        _designer.Width = 3.0f; // Maximum
         Assertions.AssertFloat(_designer.Width).IsEqual(3.0f);
 
         _designer.Height = 0.1f;
@@ -68,24 +68,21 @@ public class CardDesignerTest
         Assertions.AddNode(temp);
         Assertions.AssertThrown(() => _designer.Setup(temp))
             .IsInstanceOf<InvalidOperationException>()
-            .HasMessage("OuterBox node not found");
+            .HasMessage("CardCollision node not found");
     }
 
     [TestCase]
-    public void TestBevelConfiguration()
+    public void Setup_SizesCollisionToDimensions()
     {
-        _designer.BevelSize = 0.05f;
-        _designer.BevelSides = 8;
+        _designer.Width = 0.4f;
+        _designer.Height = 0.6f;
+        _designer.Thickness = 0.01f;
 
-        Assertions.AssertFloat(_designer.BevelSize).IsEqual(0.05f);
-        Assertions.AssertThat(_designer.BevelSides).IsEqual(8);
-    }
+        _designer.Setup(_cardRoot);
 
-    [TestCase]
-    public void TestOutlineMargin()
-    {
-        _designer.OutlineMargin = 0.02f;
-        Assertions.AssertFloat(_designer.OutlineMargin).IsEqual(0.02f);
+        var shape = _cardRoot.GetNode<CollisionShape3D>("CardCollision").Shape as BoxShape3D;
+        Assertions.AssertThat(shape).IsNotNull();
+        Assertions.AssertThat(shape!.Size).IsEqual(new Vector3(0.4f, 0.01f, 0.6f));
     }
 
     private static Node3D CreateMockCardRoot()
@@ -94,38 +91,10 @@ public class CardDesignerTest
         root.Name = "CardRoot";
 
         // Create minimal required node structure for testing
-        var outerBox = new CsgBox3D();
-        outerBox.Name = "OuterBox";
-        root.AddChild(outerBox);
-
-        var combiner = new CsgCombiner3D();
-        combiner.Name = "Combiner";
-        outerBox.AddChild(combiner);
-
-        // Add corner cylinders
-        for (var i = 1; i <= 4; i++)
-        {
-            var cylinder = new CsgCylinder3D();
-            cylinder.Name = $"Corner{i}";
-            combiner.AddChild(cylinder);
-        }
-
-        // Add trim boxes
-        for (var i = 1; i <= 2; i++)
-        {
-            var trimBox = new CsgBox3D();
-            trimBox.Name = $"TrimBox{i}";
-            combiner.AddChild(trimBox);
-        }
-
         var collision = new CollisionShape3D();
         collision.Name = "CardCollision";
         collision.Shape = new BoxShape3D();
         root.AddChild(collision);
-
-        var outlineBox = new CsgBox3D();
-        outlineBox.Name = "OutlineBox";
-        root.AddChild(outlineBox);
 
         return root;
     }
