@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Enumeration;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
-namespace CardCleaner.Scripts.Core.Interfaces;
+namespace CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
 /// <summary>
 /// Provides tile classification and query methods for dynamic tile selection.

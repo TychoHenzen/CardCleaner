@@ -1,6 +1,5 @@
 ﻿using System;
 using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;

@@ -13,7 +13,6 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session.Generation;
 internal sealed class MapGenerationCoordinator
 {
     private readonly Node _owner;
-    private readonly SessionServices _services;
     private readonly SessionWorld _world;
     private readonly GridCellEventAdapter _eventAdapter;
     private readonly GenerationTracker _tracker;
@@ -37,7 +36,6 @@ internal sealed class MapGenerationCoordinator
         GenerationTracker tracker)
     {
         _owner = owner;
-        _services = services;
         _world = world;
         _eventAdapter = eventAdapter;
         _tracker = tracker;
@@ -140,8 +138,7 @@ internal sealed class MapGenerationCoordinator
         {
             Size = request.MapSize,
             Seed = request.Seed,
-            MapSeeds = request.MapSeeds,
-            BiomeRegistry = _services.BiomeRegistry
+            MapSeeds = request.MapSeeds
         };
 
         // Generate using the custom generator

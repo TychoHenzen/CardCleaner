@@ -17,6 +17,7 @@ public class IrregularMeshMapGenerator : IMapGenerator
 {
     private readonly Dictionary<string, HashSet<string>>? _adjacencyRules;
     private readonly Dictionary<string, int>? _tileToTerrainType;
+    private readonly BiomeRegistry? _biomeRegistry;
 
     /// <summary>
     /// World scale for mesh coordinates.
@@ -45,12 +46,15 @@ public class IrregularMeshMapGenerator : IMapGenerator
     /// </summary>
     /// <param name="adjacencyRules">WFC adjacency rules.</param>
     /// <param name="tileToTerrainType">Mapping from tile ID to terrain type.</param>
+    /// <param name="biomeRegistry">Biomes for card-based terrain.</param>
     public IrregularMeshMapGenerator(
         Dictionary<string, HashSet<string>> adjacencyRules,
-        Dictionary<string, int> tileToTerrainType)
+        Dictionary<string, int> tileToTerrainType,
+        BiomeRegistry biomeRegistry)
     {
         _adjacencyRules = adjacencyRules;
         _tileToTerrainType = tileToTerrainType;
+        _biomeRegistry = biomeRegistry;
     }
 
     /// <inheritdoc />
@@ -133,10 +137,10 @@ public class IrregularMeshMapGenerator : IMapGenerator
         var rings = CalculateRings(config);
         progress?.Report(0.2f);
 
-        if (_adjacencyRules != null && _tileToTerrainType != null)
+        if (_adjacencyRules != null && _tileToTerrainType != null && _biomeRegistry != null)
         {
             var terrainGen = new MeshTerrainGenerator(_adjacencyRules, _tileToTerrainType);
-            return BuildWfcMesh(terrainGen, config, rings);
+            return BuildWfcMesh(terrainGen, _biomeRegistry, config, rings);
         }
 
         var mesh = GenerateDefaultGeometry(config, rings);
@@ -147,13 +151,11 @@ public class IrregularMeshMapGenerator : IMapGenerator
         return mesh;
     }
 
-    private static IrregularMesh BuildWfcMesh(MeshTerrainGenerator terrainGen, MapGenerationConfig config, int rings)
+    private static IrregularMesh BuildWfcMesh(MeshTerrainGenerator terrainGen, BiomeRegistry biomeRegistry,
+        MapGenerationConfig config, int rings)
     {
         // Set biome registry for card-based generation
-        if (config.BiomeRegistry != null)
-        {
-            terrainGen.SetBiomeRegistry(config.BiomeRegistry);
-        }
+        terrainGen.SetBiomeRegistry(biomeRegistry);
 
         // Use card-based gradient if cards are provided
         if (config.MapSeeds.Length > 0)
@@ -162,7 +164,7 @@ public class IrregularMeshMapGenerator : IMapGenerator
             return terrainGen.GenerateWithCards(rings, config.MapSeeds, (int)config.Seed);
         }
 
-        return terrainGen.Generate(rings, config.BiomeRegistry?.GetBiome("plains"), (int)config.Seed);
+        return terrainGen.Generate(rings, biomeRegistry.GetBiome("plains"), (int)config.Seed);
     }
 
     private static IrregularMesh GenerateDefaultGeometry(MapGenerationConfig config, int rings)

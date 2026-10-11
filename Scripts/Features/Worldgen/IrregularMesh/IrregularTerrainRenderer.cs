@@ -1,10 +1,10 @@
 using System.Linq;
-using CardCleaner.Scripts.Core.Interfaces;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 using Godot;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Rendering;
 

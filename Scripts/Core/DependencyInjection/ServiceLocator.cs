@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Player.Services;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
@@ -36,6 +37,7 @@ public partial class ServiceLocator : Node
             ILog.Error("!!!Duplicate service locator!!!");
         _replacedInstance = _instance;
         _instance = this;
+        SyncLogSink();
 
         // Transfer any callbacks that were registered before _instance existed
         foreach (var kvp in StaticPendingCallbacks)
@@ -60,7 +62,10 @@ public partial class ServiceLocator : Node
         // A replaced instance freed earlier is not walked past. No requirement states either case.
         var replaced = _replacedInstance;
         if (ReferenceEquals(_instance, this) && replaced != null && GodotObject.IsInstanceValid(replaced))
+        {
             _instance = replaced;
+            SyncLogSink();
+        }
         _replacedInstance = null;
     }
 
@@ -74,6 +79,13 @@ public partial class ServiceLocator : Node
     {
         _instance._container = new ServiceContainer();
         _instance._pendingCallbacks.Clear();
+        SyncLogSink();
+    }
+
+    // The sink mirrors the current instance's ILog registration, the same source that Has and Get read.
+    private static void SyncLogSink()
+    {
+        ILog.Sink = _instance._container.IsRegistered<ILog>() ? _instance._container.Resolve<ILog>() : null;
     }
 
     private void ResolveServices()
@@ -92,6 +104,8 @@ public partial class ServiceLocator : Node
         _container.RegisterSingleton(new RandomNumberGenerator());
 
         _container.RegisterSingleton<ILog, LoggingService>();
+        // Set before the services below are built: their constructors and _Ready already log through ILog.
+        SyncLogSink();
 
         var inputService = new InputService();
         AddChild(inputService);

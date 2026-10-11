@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.Session.Generation;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 using Timer = Godot.Timer;

@@ -2,8 +2,8 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug;
 
 using Godot;
 using System;
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug.Painting;
 
 /// <summary>
