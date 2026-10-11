@@ -1,7 +1,6 @@
 ﻿using Godot;
-using CardCleaner.Scripts.Features.Card.Components;
 
-namespace CardCleaner.Scripts.Core.Interfaces;
+namespace CardCleaner.Scripts.Features.Card.Components;
 
 public interface ICardHolder
 {
