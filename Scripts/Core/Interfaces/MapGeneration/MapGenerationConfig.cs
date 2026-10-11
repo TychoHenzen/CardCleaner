@@ -1,5 +1,4 @@
 using System;
-using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Core.Interfaces;
@@ -23,5 +22,6 @@ public class MapGenerationConfig
     /// <summary>
     /// Card signatures used to influence biome distribution.
     /// </summary>
-    public CardSignature[] MapSeeds { get; init; } = Array.Empty<CardSignature>();
+    public CardCleaner.Scripts.Features.Card.Models.CardSignature[] MapSeeds { get; init; } =
+        Array.Empty<CardCleaner.Scripts.Features.Card.Models.CardSignature>();
 }
