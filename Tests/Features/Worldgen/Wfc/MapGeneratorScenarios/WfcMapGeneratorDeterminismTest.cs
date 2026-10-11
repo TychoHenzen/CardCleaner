@@ -104,8 +104,8 @@ public class WfcMapGeneratorDeterminismTest : WfcMapGeneratorIntegrationTestBase
         AssertThat(tileIds.GetLength(0)).IsEqual(result.Size.Y);
         AssertThat(tileIds.GetLength(1)).IsEqual(result.Size.X);
 
-        // The single-biome path weights tiles uniformly (WfcTileSelector, since 8788c0d), so the biome's passable
-        // pool does not steer it. The map is checked against the registry's passability instead.
+        // The single-biome path chooses tiles with a uniform base weight (WfcTileSelector.SelectTile), so the
+        // biome's passable pool does not steer it. The map is checked against the registry's passability instead.
         var passableCells = 0;
         foreach (var tileId in tileIds)
         {

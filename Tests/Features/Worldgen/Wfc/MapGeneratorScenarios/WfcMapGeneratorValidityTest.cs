@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -55,6 +54,7 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
     /// </summary>
     private static readonly ulong[] ForcedBoundarySeeds = { 1, 2, 3, 4, 5 };
     private static readonly Vector2I ForcedBoundarySize = new(16, 16);
+    private static readonly string[] ForcedBoundaryAutoTiles = { "A1", "A2", "B" };
 
     [TestCase]
     public static void TestNoInvalidAdjacencies()
@@ -79,6 +79,15 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
         var edge = new List<string>();
         foreach (var map in maps.Where(map => map.Result.Success))
         {
+            // Zero violations prove something only when every auto-tile is on the map, so the solver had to keep
+            // A1 from A2 and terrain a from terrain b.
+            var counts = CountTiles(map.Result.TileIds!);
+            GD.Print($"[ForcedBoundary] seed={map.Seed} tiles: " +
+                     string.Join(", ", counts.OrderBy(pair => pair.Key).Select(pair => $"{pair.Key}={pair.Value}")));
+            var missing = ForcedBoundaryAutoTiles.Where(tileId => !counts.ContainsKey(tileId)).ToList();
+            if (missing.Count > 0)
+                failures.Add($"seed {map.Seed}: no {string.Join(", ", missing)} on the map, so no boundary is forced");
+
             var found = FindBoundaryViolations(map.Result.TileIds!, map.Rules, catalog);
             GD.Print($"[ForcedBoundary] seed={map.Seed} adjacency={found.Adjacency.Count} " +
                      $"terrain={found.Terrain.Count} edge={found.Edge.Count}");
@@ -98,6 +107,59 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
             ? "No forced-boundary violations"
             : string.Join(System.Environment.NewLine, failures);
         AssertThat(failures.Count == 0).OverrideFailureMessage(message).IsTrue();
+    }
+
+    private static readonly ulong[] ProductionAdjacencySeeds = { 1, 2, 3 };
+    private static readonly Vector2I ProductionAdjacencySize = new(32, 32);
+
+    /// <summary>
+    ///     Production tiles and transition pairs: every orthogonal pair on a generated map is one the rules allow.
+    /// </summary>
+    /// <remarks>
+    ///     A regression guard on the real rules, not a mutation test. With the gap-tile adjacencies added, the
+    ///     production rules forbid only one pair of the plains candidates (hedge1 beside hedge2), so this case stays
+    ///     green when the propagator ignores the rules. TestNoInvalidAdjacencies is the case that fails then. Forest
+    ///     has the same candidates and, with uniform base weights, the same maps, so only plains is generated.
+    /// </remarks>
+    [TestCase]
+    public void TestProductionMapsObeyAdjacencyRules()
+    {
+        var biome = _biomeRegistry.GetBiome("plains");
+        AssertThat(biome).IsNotNull();
+        var failures = new List<string>();
+        foreach (var seed in ProductionAdjacencySeeds)
+        {
+            // The generator adds the gap-tile adjacencies to these rules, so the map is checked against the rules
+            // its own solver enforced. Connectivity is off so that only the adjacency rules decide the map.
+            var rules = new WfcAdjacencyRules(_transitionPairs);
+            var generator = new WfcMapGenerator(rules, WfcTestFixtures.ProductionCatalog())
+            {
+                EnableConnectivity = false,
+            };
+            var result = generator.Generate(biome!, ProductionAdjacencySize, seed);
+            WfcTestFixtures.AssertSucceeded(result, $"Plains 32x32 map, seed {seed}");
+
+            var violations = new List<string>();
+            CollectRuleViolations(result.TileIds!, rules, violations);
+            GD.Print($"[ProductionAdjacency] seed={seed} violations={violations.Count}");
+            failures.AddRange(violations.Select(violation => $"seed {seed}: {violation}"));
+        }
+
+        var message = failures.Count == 0
+            ? "No adjacency violations"
+            : $"{failures.Count} orthogonal pair(s) break the rules, first {failures[0]}";
+        AssertThat(failures.Count == 0).OverrideFailureMessage(message).IsTrue();
+    }
+
+    private static Dictionary<string, int> CountTiles(string[,] tiles)
+    {
+        var counts = new Dictionary<string, int>();
+        foreach (var tileId in tiles)
+        {
+            counts[tileId] = counts.TryGetValue(tileId, out var count) ? count + 1 : 1;
+        }
+
+        return counts;
     }
 
     private static WfcAdjacencyRules ForcedBoundaryRules() => new WfcAdjacencyRules(new[]
@@ -126,7 +188,7 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
     /// </summary>
     /// <remarks>
     ///     Finding, not asserted: only map edges are checked for (iii). BitmaskValidityConstraint returns neutral for
-    ///     gap-tile candidates (BitmaskValidityConstraint.cs, lines 22-24), so a gap tile placed beside two auto-tiles
+    ///     gap-tile candidates (it checks auto-tile placements only), so a gap tile placed beside two auto-tiles
     ///     can complete a straight-edge bitmask inside the map that no check rejects. Edge corners outside the map are
     ///     known when an auto-tile is placed, so the constraint decides edge pairs in full.
     /// </remarks>
@@ -210,8 +272,9 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
         }
     }
 
-    // Optimized max-of-3 average, measured 2026-10-10 on 51c8d93 plus the step 3 edits: run averages 760.8, 710.7 and
-    // 736.0 ms. See WfcTestFixtures.PerfBudgetMs.
+    // Max-of-3 average of three process runs, measured 2026-10-10 on AMD Ryzen 7 7435HS with the production tile
+    // catalog and an optimized build (-p:Optimize=true): run averages 760.8, 710.7 and 736.0 ms. See
+    // WfcTestFixtures.PerfBudgetMs.
     private const double OptimizedBaseline20x20Ms = 760.8;
 
     [TestCase]

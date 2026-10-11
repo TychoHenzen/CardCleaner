@@ -17,7 +17,7 @@ namespace CardCleaner.Tests.Features.Worldgen.Wfc.MapGeneratorScenarios;
 public class WfcMapGeneratorConstraintTest : WfcMapGeneratorIntegrationTestBase
 {
     [TestCase]
-    public void TestCustomAdjacencyRulesWork()
+    public static void TestCustomAdjacencyRulesWork()
     {
         // Create custom rules for testing without relying on transition map
         var customRules = new WfcAdjacencyRules(new[]
@@ -52,10 +52,11 @@ public class WfcMapGeneratorConstraintTest : WfcMapGeneratorIntegrationTestBase
     }
 
     [TestCase]
-    public void TestRetryOnContradiction()
+    public static void TestRulesWithoutDirectEdgeSucceedAsGapTiles()
     {
         // Rules with no direct A-C edge. The catalog below makes A, B and C gap tiles, and the gap-tile rule then
-        // allows every pair of them (A-C included), so these rules cannot contradict in this setup.
+        // allows every pair of them (A-C included), so these rules cannot contradict in this setup. This case was
+        // TestRetryOnContradiction; no test here forces a contradiction, so it no longer claims retry coverage.
         var rules = new WfcAdjacencyRules(new[]
         {
             ("A", "B"),  // A can neighbor B

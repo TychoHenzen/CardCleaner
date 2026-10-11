@@ -46,8 +46,8 @@ public class WfcTileSelector
     }
 
     /// <summary>
-    /// Penalty for tiles outside the biome pool, used only by ComputeWeights (weighted entropy). Default 0.1.
-    /// SelectTile uses a uniform base weight, so this does not change the chosen tile.
+    /// Penalty for tiles outside the biome pool. ComputeWeights always applies it; SelectTile only without a cell and
+    /// topology, so the solver's tile choice does not depend on it.
     /// </summary>
     public float NonBiomeTilePenalty { get; set; } = 0.1f;
 
@@ -62,7 +62,7 @@ public class WfcTileSelector
     /// <summary>
     /// Selects a tile from the valid options. With a cell and topology, every valid tile gets a uniform base weight,
     /// scaled by the registered constraints and the continuity bias; biome weights are not used on this path.
-    /// Topology-agnostic version using cell IDs.
+    /// Without them, each tile gets its biome pool weight, or DefaultTileWeight times NonBiomeTilePenalty.
     /// </summary>
     /// <param name="validTiles">Tiles that satisfy hard constraints (from WfcCellState)</param>
     /// <param name="biome">Current biome for soft rule weights</param>

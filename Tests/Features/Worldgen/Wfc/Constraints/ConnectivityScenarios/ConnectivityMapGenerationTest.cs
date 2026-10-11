@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Enumeration;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -20,7 +19,7 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
     // ========== Test Case 6: MapGeneration_10x10_AlwaysConnected ==========
 
     [TestCase]
-    public void MapGeneration_10x10_AlwaysConnected()
+    public static void MapGeneration_10x10_AlwaysConnected()
     {
         // Integration test: Generate 100 10x10 maps and verify all have connected passable regions
         var (generator, biome) = CreateSweepSetup();
@@ -43,7 +42,7 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
     }
 
     [TestCase]
-    public void MapGeneration_WithConnectivityEnabled_HasConnectedRegions()
+    public static void MapGeneration_WithConnectivityEnabled_HasConnectedRegions()
     {
         // Simpler test case: generate a few maps and verify connectivity
         var customRules = new WfcAdjacencyRules(new[]
@@ -134,25 +133,8 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
     /// </summary>
     private static TileRegistryWfcCatalog CreateCatalog(
         string biomeId,
-        params (string Id, TilePassability Passability)[] tiles)
-    {
-        var registry = new TileRegistry();
-        registry.Clear(); // Clear production tiles loaded by constructor
-        foreach (var (id, passability) in tiles)
-        {
-            registry.RegisterTile(new TileDefinition(
-                id,
-                id,
-                passability,
-                Vector2I.Zero,
-                new TileDefinitionOptions
-                {
-                    AllowedBiomes = new HashSet<string> { biomeId }
-                }));
-        }
-
-        return new TileRegistryWfcCatalog(registry);
-    }
+        params (string Id, TilePassability Passability)[] tiles) =>
+        new(WfcTestFixtures.CreateTestTileRegistry(biomeId, tiles));
 
     /// <summary>
     ///     The passable pool of the sweep biome. Wall is not in it.
@@ -168,7 +150,9 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
     /// <summary>
     ///     Generator and biome for the 10x10 sweep. A null cap keeps the generator's default attempt cap.
     /// </summary>
-    private static (WfcMapGenerator Generator, BiomeDefinition Biome) CreateSweepSetup(
+    private sealed record SweepSetup(WfcMapGenerator Generator, BiomeDefinition Biome);
+
+    private static SweepSetup CreateSweepSetup(
         int? maxConnectivityAttempts = null)
     {
         var blocked = new TilePool();
@@ -198,7 +182,7 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
             generator.MaxConnectivityAttempts = maxConnectivityAttempts.Value;
         }
 
-        return (generator, biome);
+        return new SweepSetup(generator, biome);
     }
 
     private static void AssertSameTileIds(string[,] expected, string[,] actual)

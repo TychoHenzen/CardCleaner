@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -68,16 +69,24 @@ public static class WfcTestFixtures
     /// <summary>
     ///     Creates a TileRegistry with the specified tiles allowed in the given biome.
     /// </summary>
-    public static TileRegistry CreateTestTileRegistry(string biomeId, params string[] tileIds)
+    public static TileRegistry CreateTestTileRegistry(string biomeId, params string[] tileIds) =>
+        CreateTestTileRegistry(biomeId, tileIds.Select(tileId => (tileId, TilePassability.Passable)).ToArray());
+
+    /// <summary>
+    ///     Creates a TileRegistry with the specified tiles, each with its own passability, allowed in the given biome.
+    /// </summary>
+    public static TileRegistry CreateTestTileRegistry(
+        string biomeId,
+        params (string Id, TilePassability Passability)[] tiles)
     {
         var registry = new TileRegistry();
         registry.Clear(); // Clear production tiles loaded by constructor
-        foreach (var tileId in tileIds)
+        foreach (var (tileId, passability) in tiles)
         {
             registry.RegisterTile(new TileDefinition(
                 tileId,
                 tileId,
-                TilePassability.Passable,
+                passability,
                 Vector2I.Zero,
                 new TileDefinitionOptions
                 {
@@ -113,9 +122,10 @@ public static class WfcTestFixtures
     /// <summary>
     ///     Debug-build cost over the optimized build, rounded up to the next 0.5. The gdUnit runner loads the
     ///     Debug build, so the budget carries this factor. Release builds use 1.
-    ///     Measured 2026-10-10 on AMD Ryzen 7 7435HS (51c8d93 plus the step 3 edits), max-of-3 averages in ms,
-    ///     Debug over optimized: 30x30 3205.3 over 1314.1 (2.44, the largest, rounded up to 2.5); 20x20 1088.1 over
-    ///     760.8 (1.43); 60x60 13813.6 over 10053.6 (1.37, the optimized max is inflated by a noisy run).
+    ///     Measured 2026-10-10 on AMD Ryzen 7 7435HS with the production tile catalog, max-of-3 averages in ms of
+    ///     the perf cases, Debug build over an optimized build (-p:Optimize=true): 30x30 3205.3 over 1314.1 (2.44,
+    ///     the largest, rounded up to 2.5); 20x20 1088.1 over 760.8 (1.43); 60x60 13813.6 over 10053.6 (1.37, the
+    ///     optimized max is inflated by a noisy run).
     /// </summary>
 #if DEBUG
     public const double BuildFactor = 2.5;

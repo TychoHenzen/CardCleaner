@@ -19,10 +19,12 @@ namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 [RequireGodotRuntime]
 public class WfcPerformanceBenchmarkTest
 {
-    // Optimized max-of-3 averages, measured 2026-10-10 on 51c8d93 plus the step 3 edits (AMD Ryzen 7 7435HS). Run
-    // averages for 30x30: 1305.6, 1306.5, 1314.1 ms. See WfcTestFixtures.PerfBudgetMs and BuildFactor.
+    // Max-of-3 averages of three process runs, measured 2026-10-10 on AMD Ryzen 7 7435HS with the production tile
+    // catalog and an optimized build (-p:Optimize=true). Run averages for 30x30: 1305.6, 1306.5, 1314.1 ms. See
+    // WfcTestFixtures.PerfBudgetMs and BuildFactor.
     private const double OptimizedBaseline30x30Ms = 1314.1;
-    // Run averages for 60x60: 6641.4, 10053.6, 6261.8 ms. Run 2 is noisy (one run took 15284 ms), so its max is high.
+    // Run averages for 60x60: 6641.4, 10053.6, 6261.8 ms. Run 2 is noisy (one run took 15284 ms), so its max is high
+    // and this budget is a coarse guard; the median run would give a budget of 49810 ms.
     private const double OptimizedBaseline60x60Ms = 10053.6;
 
     private IReadOnlyList<(string tileA, string tileB)> _transitionPairs = null!;

@@ -36,7 +36,8 @@ public class WfcMapGenerator
     public int MaxRetries { get; set; } = 3;
 
     /// <summary>
-    /// How many derived seeds Generate tries before it reports a disconnected passable region. Values below 1 act as 1.
+    /// How many attempts Generate makes, the caller's seed first and then derived seeds, before it reports a
+    /// disconnected passable region. Values below 1 act as 1.
     /// </summary>
     public int MaxConnectivityAttempts { get; set; } = 5;
 
@@ -127,7 +128,7 @@ public class WfcMapGenerator
     /// weights do not choose the tile; they still feed the weighted entropy that orders cell collapses. For biome
     /// affinity, use GenerateMultiBiome with a gradient. With a catalog and EnableConnectivity, a disconnected passable
     /// result is retried with derived seeds, up to MaxConnectivityAttempts, and the call fails if every attempt is
-    /// disconnected.
+    /// disconnected. A solver failure on any attempt ends the call; the solver has already retried that seed.
     /// </summary>
     public WfcGenerationResult Generate(
         BiomeDefinition biome,
@@ -150,6 +151,12 @@ public class WfcMapGenerator
             // ASSUMPTION: GenerateOnce builds a new solver, grid and passability graph, so a rejected attempt
             // leaves no state behind for the next one.
             var result = GenerateOnce(biome, size, attemptSeed, initialTiles);
+            if (!result.Success && attempt > 0)
+            {
+                return WfcGenerationResult.Failed(
+                    $"Connectivity attempt {attempt + 1} (seed {attemptSeed}) failed: {result.ErrorMessage}");
+            }
+
             if (!result.Success || !EnableConnectivity || _tileCatalog == null)
             {
                 return result;
@@ -198,6 +205,11 @@ public class WfcMapGenerator
             new Vector2I(grid.Width, grid.Height), tileIds, biomeMap, solveResult.Iterations);
     }
 
+    /// <summary>
+    /// Generates one map across all registered biomes; with a gradient, BiomeAffinityConstraint weights tiles toward
+    /// the local biome. Unlike Generate, there is no post-solve connectivity check or retry: with a catalog and
+    /// EnableConnectivity only the reactive ConnectivityConstraint runs, so a disconnected map can be returned.
+    /// </summary>
     public WfcGenerationResult GenerateMultiBiome(
         BiomeRegistry biomeRegistry,
         Func<Vector2I, BiomeDefinition> getBiomeAt,
