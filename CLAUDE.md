@@ -55,9 +55,10 @@ keep their own handling and never resume, and an abnormal exit after a green rep
 also appends a line such as `crash 0xC000001D in <suite> (logs: ...)` to `reports/ci/interruptions.txt` (a marker left
 by an earlier run is removed at start). CI uploads `reports/ci` as the `gdunit-reports` artifact on failure, on the
 weekly and `full=true` runs, and whenever that marker exists, so a crash inside a run that resumed to green keeps its
-logs. `Test-RunGdUnit.ps1` runs the real runner against a fake Godot and covers its watchdog, resume, repeated-stall,
-crash, repeated-crash, exit-code, interruption-marker and report-aggregation paths. It also checks that the suite-detection
-patterns in `Run-GdUnit.ps1` match the ones in `TestSuiteNamingTest.cs`.
+logs. `Test-RunGdUnit.ps1` runs the real runner against a fake Godot and covers its build wait (a build that leaves a
+worker running), build failure, watchdog, resume, repeated-stall, crash, repeated-crash, exit-code, interruption-marker
+and report-aggregation paths. It also checks that the suite-detection patterns in `Run-GdUnit.ps1` match the ones in
+`TestSuiteNamingTest.cs`.
 
 ## Code Style
 
