@@ -301,7 +301,8 @@ public class ShopWorkshopDeliverySceneTest
     /// <summary>
     /// Probes every collision shape of a delivered item in its place against the workshop's bodies. The item's own
     /// bodies are excluded, and each shape is lifted by the probe inset so the floor it stands on is not reported.
-    /// Triggers are skipped, so only solid geometry the item would sink into is reported.
+    /// Footprint triggers (holders under a node in the delivery_footprint group) are probed too, since the item carries
+    /// them. Other triggers are skipped, so a report means a solid shape or footprint holder inside workshop geometry.
     /// </summary>
     private List<string> ProbeAgainstWorkshop(Node3D item)
     {
@@ -315,7 +316,8 @@ public class ShopWorkshopDeliverySceneTest
         var hits = new List<string>();
         foreach (var collider in item.FindChildren("*", nameof(CollisionShape3D), true, false)
                      .OfType<CollisionShape3D>()
-                     .Where(c => c is { Disabled: false, Shape: not null } && c.GetParent() is not Area3D))
+                     .Where(c => c is { Disabled: false, Shape: not null }
+                                  && (c.GetParent() is not Area3D || CountsAsFootprint(c, item))))
         {
             var query = new PhysicsShapeQueryParameters3D
             {
@@ -330,5 +332,17 @@ public class ShopWorkshopDeliverySceneTest
         }
 
         return hits;
+    }
+
+    // A trigger counts toward the probe only under a node in the delivery footprint group, as DeliveryMarker counts it.
+    private static bool CountsAsFootprint(Node collider, Node item)
+    {
+        for (var step = collider.GetParent(); step != null && step != item; step = step.GetParent())
+        {
+            if (step.IsInGroup(DeliveryMarker.FootprintGroup))
+                return true;
+        }
+
+        return false;
     }
 }
