@@ -2,8 +2,8 @@
 #
 # The runner runs against a fake Godot executable, compiled here with the in-box .NET Framework csc.exe, inside a
 # temporary fake repository. The watchdog, process-tree kill, resume targets, repeated-stall failure, crash handling,
-# interruption marker and report aggregation are therefore checked without a real Godot. Windows PowerShell 5.1 runs it locally; CI passes
-# -RunnerShell pwsh so the runner itself runs under PowerShell 7.
+# interruption marker and report aggregation are therefore checked without a real Godot. Windows PowerShell 5.1 runs
+# it locally; CI passes -RunnerShell pwsh so the runner itself runs under PowerShell 7.
 #
 # Usage: powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps1 [-Only <check>] [-KeepTemp]
 # Exit code 0 when every check passes, 1 otherwise.

@@ -496,7 +496,7 @@ for ($attempt = 0; ; $attempt++) {
     $interruptions.Add($formatted)
     # Written before any of the throws below, so the interruption that fails a run is recorded too. [IO.File] writes
     # the same bytes under Windows PowerShell 5.1 and PowerShell 7.
-    $markerLine = "$($formatted.Entry) (logs: godot$suffix.stdout.log, godot$suffix.stderr.log)"
+    $markerLine = "$($formatted.Entry) (logs: $(Split-Path -Leaf $stdoutPath), $(Split-Path -Leaf $stderrPath))"
     [IO.File]::AppendAllText($interruptionMarker, $markerLine + [Environment]::NewLine)
     $lastInterruption = $formatted.Entry
     if ($null -ne $formatted.Repeat) {
