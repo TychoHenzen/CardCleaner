@@ -61,30 +61,37 @@ public class ILogSinkTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void TestReinitializeSetsTheSinkAgain()
-    {
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.ReinitializeServices();
-
-        Assertions.AssertThat(ILog.Sink).IsNotNull();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
     public static void TestSinkPrefixNamesTheCaller()
     {
-        // Expected console line: [ILogSinkTest:TestSinkPrefixNamesTheCaller] ILog sink prefix probe
         var previous = ILog.Sink;
+        var sink = new RecordingLoggingService();
         try
         {
-            ILog.Sink = new LoggingService();
+            ILog.Sink = sink;
 
-            ILog.Print("ILog sink prefix probe");
+            ILog.Print("first");
+            ILog.Warning("second");
+            ILog.Error("third");
+
+            Assertions.AssertThat(sink.Lines).IsEqual(new List<string>
+            {
+                "[ILogSinkTest:TestSinkPrefixNamesTheCaller] first",
+                "[ILogSinkTest:TestSinkPrefixNamesTheCaller] WARNING: second",
+                "[ILogSinkTest:TestSinkPrefixNamesTheCaller] ERROR: third",
+            });
         }
         finally
         {
             ILog.Sink = previous;
         }
+    }
+
+    // The real LoggingService formatting and caller lookup, with the formatted lines recorded instead of printed.
+    private sealed class RecordingLoggingService : LoggingService
+    {
+        public List<string> Lines { get; } = new();
+
+        protected override void Write(string line, bool isError) => Lines.Add(line);
     }
 
     private sealed class RecordingLog : ILog

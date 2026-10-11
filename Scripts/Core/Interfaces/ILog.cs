@@ -16,7 +16,8 @@ public interface ILog
     void LogError(string message);
     void LogError(string message, Exception exception);
 
-    // ASSUMPTION: LoggingService.GetCallerPrefix reads stack frame 3, so each helper must call the sink directly.
+    // ASSUMPTION: LoggingService.GetCallerPrefix reads stack frame 3, so Print, Warning and Error each call the sink
+    // directly. ExportCheck goes through Error, so its lines name ILog:ExportCheck, as they did before the sink.
     public static void Print(string message)
     {
         var sink = Sink;

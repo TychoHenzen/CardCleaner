@@ -11,7 +11,7 @@ namespace CardCleaner.Tests.Core;
 /// <summary>
 /// Scripts/Core may not depend on the Card feature (#172). Its files outside Scripts/Core/Interfaces may not name the
 /// Features.Card namespace or any type declared under Scripts/Features/Card. The interfaces are guarded instead by
-/// ContractsLayerBoundaryTest (#167), which keeps every feature namespace and the service locator out of them.
+/// ContractsLayerBoundaryTest (#167), which lets them name only contracts, System and Godot types and two listed types.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
