@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -9,10 +10,10 @@ namespace CardCleaner.Tests.Scenes;
 /// kept only when that instance is marked editable. A scene file that overrides a child of an instance without the
 /// editable flag loads fine and loses those values on the first editor save (the node stays, because the instanced
 /// scene still holds it). Packing every scene the way the editor does, from an instance made with the editor's edit
-/// state, and comparing the stored values exposes it without opening the editor. Resources are compared by file
-/// path, so the contents of inline sub-resources are not checked. The packed scene is also saved as text and compared
-/// with the file's canonical save: a node stanza or an editable line that the save drops fails the test as well
-/// (<see cref="SceneStanzaCheck" />).
+/// state, and comparing the stored values and node groups exposes it without opening the editor. Resources are
+/// compared by file path, so the contents of inline sub-resources are not checked. The packed scene is also saved as
+/// text and compared with the file's canonical save: a node stanza or an editable line that the save drops fails the
+/// test as well (<see cref="SceneStanzaCheck" />).
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -79,6 +80,9 @@ public class SceneEditorRoundTripSceneTest
                 lost.Add($"{path}.{name}");
         }
 
+        if (Groups(original) != Groups(saved))
+            lost.Add($"{path} groups [{Groups(original)}]");
+
         foreach (var child in original.GetChildren())
             Compare(originalRoot, child, savedRoot, lost);
     }
@@ -91,6 +95,10 @@ public class SceneEditorRoundTripSceneTest
         Resource resource => resource.ResourcePath,
         _ => GD.VarToStr(value)
     };
+
+    // The node's groups in a stable order. Groups are not properties, so the property comparison misses a lost one.
+    private static string Groups(Node node) =>
+        string.Join(", ", node.GetGroups().Select(group => group.ToString()).Order(StringComparer.Ordinal));
 
     private static List<string> ScenePaths(string folder)
     {

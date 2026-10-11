@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
@@ -20,6 +21,7 @@ namespace CardCleaner.Tests.Scenes;
 public class ShopWorkshopOrderingSceneTest
 {
     private const float StandingDistanceToTerminal = 2.0f;
+    private const float FloorTolerance = 0.001f;
     private const float OfficeReach = 4f;
     private static readonly string[] ExpectedItems = ["conveyor", "arcade_cabinet", "wiring"];
 
@@ -144,6 +146,7 @@ public class ShopWorkshopOrderingSceneTest
     {
         var world = _shop.GetNode("World");
         _terminal.Interact();
+        var delivered = new List<Node3D>();
 
         for (var i = 0; i < ExpectedItems.Length; i++)
         {
@@ -157,9 +160,15 @@ public class ShopWorkshopOrderingSceneTest
             AssertThat(_money.Balance).IsEqual(balance - item.Price);
             AssertThat(world.GetChildCount()).IsEqual(before + 1);
             var spawned = (Node3D)world.GetChildren().Last();
+            delivered.Add(spawned);
             AssertBool(spawned.GlobalPosition.IsEqualApprox(
                 _delivery.GlobalPosition + OrderingService.SlotOffset(i))).IsTrue();
+            AssertFloat(spawned.GlobalPosition.Y - _delivery.GlobalPosition.Y)
+                .OverrideFailureMessage($"{item.Id} was delivered at {spawned.GlobalPosition}, not on the floor")
+                .IsEqualApprox(0f, FloorTolerance);
         }
+
+        AssertThat(string.Join(", ", DeliveredFootprints.OverlapsBetween(delivered))).IsEmpty();
     }
 
     [TestCase]

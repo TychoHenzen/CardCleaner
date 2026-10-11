@@ -156,6 +156,7 @@ mesh = SubResource("TerminalHighlightMesh")
 [node name="DeliveryPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0, -9.6)
 script = ExtResource("DeliveryMarker")
+FloorClearance = Rect2(-8.6, -3.2, 17.6, 6.6)
 
 [node name="Pad" type="MeshInstance3D" parent="DeliveryPoint"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)

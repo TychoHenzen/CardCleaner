@@ -17,6 +17,19 @@ public class OrderingServiceTest
     private const float SpoolHeight = 0.1f;
     private const int ManyDeliveries = 40;
     private const float PartialShove = 0.9f;
+    private const float BeltCentre = 0.05f;
+    private const float BeltHeight = 0.2f;
+    private const float TileHeight = 0.1f;
+    private const float ArmCube = 0.5f;
+    private const float PostWidth = 0.4f;
+    private const float PostHeight = 1f;
+    private const float TallHeight = 2f;
+    private const float HatWidth = 2f;
+    private const float HatHeight = 0.3f;
+    private const float HatCentreY = 0.05f;
+    private const float SlabDepth = 1f;
+    private const float NeighbourWidth = 3f;
+    private const float NeighbourHeight = 0.95f;
     private static readonly Vector3 DeliveryPosition = new(4f, 0f, -5f);
 
     private Node3D _world = null!;
@@ -201,12 +214,16 @@ public class OrderingServiceTest
         var second = _ordering.Order(_crate);
         var elsewhereAgain = _ordering.Order(_crate, other);
 
-        AssertBool(elsewhere.Spawned!.GlobalPosition.IsEqualApprox(other.GlobalPosition + OrderingService.SlotOffset(0)))
+        AssertBool(elsewhere.Spawned!.GlobalPosition.IsEqualApprox(
+            other.GlobalPosition + OrderingService.SlotOffset(0)))
             .IsTrue();
-        AssertBool(elsewhereAgain.Spawned!.GlobalPosition.IsEqualApprox(other.GlobalPosition + OrderingService.SlotOffset(1)))
+        AssertBool(elsewhereAgain.Spawned!.GlobalPosition.IsEqualApprox(
+            other.GlobalPosition + OrderingService.SlotOffset(1)))
             .IsTrue();
-        AssertBool(first.Spawned!.GlobalPosition.IsEqualApprox(DeliveryPosition + OrderingService.SlotOffset(0))).IsTrue();
-        AssertBool(second.Spawned!.GlobalPosition.IsEqualApprox(DeliveryPosition + OrderingService.SlotOffset(1))).IsTrue();
+        AssertBool(first.Spawned!.GlobalPosition.IsEqualApprox(
+            DeliveryPosition + OrderingService.SlotOffset(0))).IsTrue();
+        AssertBool(second.Spawned!.GlobalPosition.IsEqualApprox(
+            DeliveryPosition + OrderingService.SlotOffset(1))).IsTrue();
         AssertThat(_ordering.DeliveredCount).IsEqual(4);
     }
 
@@ -251,7 +268,8 @@ public class OrderingServiceTest
             var result = _ordering.Order(spool, ground);
 
             AssertBool(result.Succeeded).IsTrue();
-            AssertBool(result.Spawned!.GlobalPosition.Y + SpoolHeight <= ground.GlobalPosition.Y + ground.MaxStackHeight)
+            AssertBool(result.Spawned!.GlobalPosition.Y + SpoolHeight
+                       <= ground.GlobalPosition.Y + ground.MaxStackHeight)
                 .IsTrue();
             if (order >= perLayer)
                 AssertBool(result.Spawned.GlobalPosition.Y > ground.GlobalPosition.Y).IsTrue();
@@ -341,7 +359,8 @@ public class OrderingServiceTest
         var delivered = Enumerable.Range(0, OrderingService.SlotColumns * OrderingService.SlotRows)
             .Select(_ => _ordering.Order(cabinet, ground).Spawned!).ToList();
 
-        // Slot 0 and slot 1 sit side by side; park the first item on their shared edge and carry slot 1's own item away: both stay taken.
+        // Slot 0 and slot 1 sit side by side; park the first item on their shared edge and carry slot 1's own item
+        // away: both stay taken.
         delivered[0].GlobalPosition = ground.GlobalPosition + OrderingService.SlotOffset(0)
                                       + new Vector3(OrderingService.SlotSpacingX / 2f, 0f, 0f);
         delivered[1].GlobalPosition += new Vector3(30f, 0f, 0f);
@@ -382,6 +401,149 @@ public class OrderingServiceTest
         AssertBool(_ordering.Order(MakeItem("cheap", 1)).Succeeded).IsTrue();
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ItemsWhoseReachLandsOnANeighbourTakeTheNextSlotThatClearsEveryShape()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
+        var reacher = MakeReacher();
+
+        // Slot 1 and slot 4 are refused: their reach boxes land on the reach boxes of the items beside them.
+        int[] expectedSlots = [0, 2, 3, 5];
+        for (var order = 0; order < expectedSlots.Length; order++)
+        {
+            var delivered = _ordering.Order(reacher, ground);
+            AssertBool(delivered.Succeeded).IsTrue();
+            var at = delivered.Spawned!.GlobalPosition;
+            var expected = ground.GlobalPosition + OrderingService.SlotOffset(expectedSlots[order]);
+            AssertBool(at.IsEqualApprox(expected))
+                .OverrideFailureMessage($"reacher {order} landed at {at}, expected {expected}")
+                .IsTrue();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void FloorClearanceRefusesASlotWhereTheItemWouldReachPastIt()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
+        ground.FloorClearance = new Rect2(-6f, -1.5f, 12f, 4.5f);
+        var reacher = MakeReacher();
+
+        // The reach of slots 3 to 5 runs past the clearance's far edge (z 3.0), so the third order stacks on slot 0.
+        var firstAt = DeliveredAt(_ordering.Order(reacher, ground), "first");
+        var secondAt = DeliveredAt(_ordering.Order(reacher, ground), "second");
+        var thirdAt = DeliveredAt(_ordering.Order(reacher, ground), "third");
+
+        var firstSlot = ground.GlobalPosition + OrderingService.SlotOffset(0);
+        var secondSlot = ground.GlobalPosition + OrderingService.SlotOffset(2);
+        // The reacher's cube is 1 m tall, so the third order rests on the first one's top plus the stack gap.
+        var stacked = firstSlot + Vector3.Up * (1f + DeliveryMarker.StackGap);
+        AssertBool(firstAt.IsEqualApprox(firstSlot))
+            .OverrideFailureMessage($"first order landed at {firstAt}, expected {firstSlot}")
+            .IsTrue();
+        AssertBool(secondAt.IsEqualApprox(secondSlot))
+            .OverrideFailureMessage($"second order landed at {secondAt}, expected {secondSlot}")
+            .IsTrue();
+        AssertBool(thirdAt.IsEqualApprox(stacked))
+            .OverrideFailureMessage($"third order landed at {thirdAt}, expected {stacked}")
+            .IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ItemsReachingBelowTheirFeetStackOnEachOtherOnceTheGroundIsFull()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
+        // Like the workshop conveyor, whose tilted belt has axis-aligned bounds that dip below the item's origin.
+        var belt = MakeShapesItem("belt", 1, (new Vector3(0f, BeltCentre, 0f), new Vector3(1f, BeltHeight, 1f)));
+        for (var order = 0; order < OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+            DeliveredAt(_ordering.Order(belt, ground), $"ground order {order}");
+
+        var stackedAt = DeliveredAt(_ordering.Order(belt, ground), "stacked");
+
+        var beltTop = BeltCentre + BeltHeight / 2f;
+        var expected = ground.GlobalPosition + OrderingService.SlotOffset(0)
+                       + Vector3.Up * (beltTop + DeliveryMarker.StackGap);
+        AssertBool(stackedAt.IsEqualApprox(expected))
+            .OverrideFailureMessage($"stacked belt landed at {stackedAt}, expected {expected}")
+            .IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AStackedItemReachingBelowItsFeetDoesNotBlockANeighbourBelowThem()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
+        DeliveredAt(_ordering.Order(MakeBoxItem("post", 1, PostWidth, PostHeight), ground), "post");
+
+        // Five tall items fill slots 1 to 5; the one on slot 1 is removed below to open that slot.
+        var tall = MakeBoxItem("tall", 1, PostWidth, TallHeight);
+        var slotOne = _ordering.Order(tall, ground);
+        var slotOneAt = DeliveredAt(slotOne, "tall on slot 1");
+        AssertBool(slotOneAt.IsEqualApprox(ground.GlobalPosition + OrderingService.SlotOffset(1)))
+            .OverrideFailureMessage($"tall landed at {slotOneAt}, expected slot 1")
+            .IsTrue();
+        for (var order = 2; order < OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+            DeliveredAt(_ordering.Order(tall, ground), $"tall {order}");
+
+        // The hat's box dips 0.1 m below its feet, so it stacks on the post at the usual lift.
+        var hat = MakeShapesItem(
+            "hat",
+            1,
+            (new Vector3(0f, HatCentreY, 0f), new Vector3(HatWidth, HatHeight, SlabDepth)));
+        var hatAt = DeliveredAt(_ordering.Order(hat, ground), "hat");
+        var hatFeet = ground.GlobalPosition + OrderingService.SlotOffset(0)
+                      + Vector3.Up * (PostHeight + DeliveryMarker.StackGap);
+        AssertBool(hatAt.IsEqualApprox(hatFeet))
+            .OverrideFailureMessage($"hat landed at {hatAt}, expected {hatFeet}")
+            .IsTrue();
+
+        slotOne.Spawned!.QueueFree();
+        // Its top stands below the hat's feet, yet its box overlaps the hat's box seen from above.
+        var neighbour = MakeShapesItem(
+            "neighbour",
+            1,
+            (new Vector3(0f, NeighbourHeight / 2f, 0f), new Vector3(NeighbourWidth, NeighbourHeight, SlabDepth)));
+        var neighbourAt = DeliveredAt(_ordering.Order(neighbour, ground), "neighbour");
+        var slotOneGround = ground.GlobalPosition + OrderingService.SlotOffset(1);
+        AssertBool(neighbourAt.IsEqualApprox(slotOneGround))
+            .OverrideFailureMessage($"neighbour landed at {neighbourAt}, expected {slotOneGround}")
+            .IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AStackWhoseShapesLandOnANeighbourIsSkippedForTheNextLowestStack()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
+        var tile = MakeBoxItem("tile", 1, ArmCube, TileHeight);
+        for (var order = 0; order < OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+            DeliveredAt(_ordering.Order(tile, ground), $"tile {order}");
+        var rightArm = MakeArm("right_arm", OrderingService.SlotSpacingX);
+        var leftArm = MakeArm("left_arm", -OrderingService.SlotSpacingX);
+
+        // The right arm stacks on slot 0 and reaches over slot 1. On slot 2, the next lowest stack, the left arm would
+        // reach over slot 1 at the same height, so it goes on slot 3.
+        var rightAt = DeliveredAt(_ordering.Order(rightArm, ground), "right arm");
+        var leftAt = DeliveredAt(_ordering.Order(leftArm, ground), "left arm");
+
+        var lift = Vector3.Up * (TileHeight + DeliveryMarker.StackGap);
+        var rightSlot = ground.GlobalPosition + OrderingService.SlotOffset(0) + lift;
+        var leftSlot = ground.GlobalPosition + OrderingService.SlotOffset(3) + lift;
+        AssertBool(rightAt.IsEqualApprox(rightSlot))
+            .OverrideFailureMessage($"right arm landed at {rightAt}, expected {rightSlot}")
+            .IsTrue();
+        AssertBool(leftAt.IsEqualApprox(leftSlot))
+            .OverrideFailureMessage($"left arm landed at {leftAt}, expected {leftSlot}")
+            .IsTrue();
+    }
+
     private DeliveryMarker AddGroundMarker()
     {
         var ground = new DeliveryMarker { Position = new Vector3(-20f, 0f, 3f) };
@@ -389,20 +551,61 @@ public class OrderingServiceTest
         return ground;
     }
 
+    /// <summary>Asserts that an order was delivered and returns where the item landed.</summary>
+    private static Vector3 DeliveredAt(OrderResult result, string order)
+    {
+        AssertBool(result.Succeeded)
+            .OverrideFailureMessage($"{order} order was not delivered: {result.Status}")
+            .IsTrue();
+        return result.Spawned!.GlobalPosition;
+    }
+
     private List<Node3D> SpawnedItems() =>
         _world.GetChildren().OfType<Node3D>().Where(n => n is not DeliveryMarker).ToList();
 
-    private static OrderItem MakeBoxItem(string id, int price, float width, float height)
+    /// <summary>A square box of the given width and height standing on the item's origin.</summary>
+    private static OrderItem MakeBoxItem(string id, int price, float width, float height) =>
+        MakeShapesItem(id, price, (new Vector3(0f, height / 2f, 0f), new Vector3(width, height, width)));
+
+    /// <summary>
+    /// A body with a reach: a 1 m cube standing on the floor, and two low boxes three metres out in front.
+    /// </summary>
+    private static OrderItem MakeReacher() =>
+        MakeShapesItem(
+            "reacher",
+            1,
+            (new Vector3(0f, 0.5f, 0f), new Vector3(1f, 1f, 1f)),
+            (new Vector3(-2.3f, 0.1f, 3f), new Vector3(0.5f, 0.2f, 0.5f)),
+            (new Vector3(0f, 0.1f, 3f), new Vector3(0.5f, 0.2f, 0.5f)));
+
+    /// <summary>
+    /// A cube standing on the floor and a second cube of the same size <paramref name="reachX" /> metres along X.
+    /// </summary>
+    private static OrderItem MakeArm(string id, float reachX) =>
+        MakeShapesItem(
+            id,
+            1,
+            (new Vector3(0f, ArmCube / 2f, 0f), Vector3.One * ArmCube),
+            (new Vector3(reachX, ArmCube / 2f, 0f), Vector3.One * ArmCube));
+
+    /// <summary>
+    /// An item whose footprint is the given boxes, each as a centre and a size in the item's own space.
+    /// </summary>
+    private static OrderItem MakeShapesItem(string id, int price, params (Vector3 Centre, Vector3 Size)[] shapes)
     {
-        var root = new Node3D { Name = "Box" };
-        var collider = new CollisionShape3D
+        var root = new Node3D { Name = "Shapes" };
+        for (var i = 0; i < shapes.Length; i++)
         {
-            Name = "CollisionShape3D",
-            Shape = new BoxShape3D { Size = new Vector3(width, height, width) },
-            Position = new Vector3(0f, height / 2f, 0f)
-        };
-        root.AddChild(collider);
-        collider.Owner = root;
+            var collider = new CollisionShape3D
+            {
+                Name = $"CollisionShape3D{i}",
+                Shape = new BoxShape3D { Size = shapes[i].Size },
+                Position = shapes[i].Centre
+            };
+            root.AddChild(collider);
+            collider.Owner = root;
+        }
+
         var packed = new PackedScene();
         packed.Pack(root);
         root.Free();

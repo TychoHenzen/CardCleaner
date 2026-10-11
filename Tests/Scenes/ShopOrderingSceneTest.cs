@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Data;
@@ -21,6 +22,9 @@ public class ShopOrderingSceneTest
 {
     private const uint InteractionMask = 6;
     private const float StandingDistanceToPc = 2.9f;
+    private const int ShelvesUntilFull = 18;
+    private const float ShelfHeight = 1.07f;
+    private const float HeightTolerance = 0.001f;
     private static readonly string[] ExpectedItems = ["shelf", "bulk_packing_station", "cardboard_box"];
 
     private Node3D _shop = null!;
@@ -205,6 +209,34 @@ public class ShopOrderingSceneTest
             AssertBool(Mathf.Abs(local.X) + widestItem / 2f < shape.Size.X / 2f).IsTrue();
             AssertBool(Mathf.Abs(local.Z) + deepestItem / 2f < shape.Size.Z / 2f).IsTrue();
         }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ShelvesFillTheGridAndStackOnTheShelfBoxNotOnItsCardHolders()
+    {
+        var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;
+        var shelf = _terminal.Catalog!.Items.ToList().FindIndex(item => item.Id == "shelf");
+        _money.Add(_terminal.Catalog.Items[shelf].Price * 2 * ShelvesUntilFull);
+        _terminal.Interact();
+
+        // The bound only stops a grid that never fills from looping forever.
+        var delivered = new List<Node3D>();
+        for (var order = 0; order < 2 * ShelvesUntilFull; order++)
+        {
+            _ui.PressItem(shelf);
+            if (_terminal.LastOrder is not { Status: OrderStatus.Success, Spawned: { } spawned })
+                break;
+            delivered.Add(spawned);
+        }
+
+        AssertThat(_terminal.LastOrder?.Status).IsEqual(OrderStatus.DeliveryFull);
+        AssertThat(delivered.Count).IsEqual(ShelvesUntilFull);
+        // The first shelf of the second layer rests on the shelf box below it. Its card holders' triggers reach above
+        // the box, so a footprint that counted them would lift it higher.
+        var firstStacked = delivered[OrderingService.SlotColumns * OrderingService.SlotRows];
+        AssertFloat(firstStacked.GlobalPosition.Y - delivery.Y)
+            .IsEqualApprox(ShelfHeight + DeliveryMarker.StackGap, HeightTolerance);
     }
 
     [TestCase]
