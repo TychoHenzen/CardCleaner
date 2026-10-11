@@ -1,9 +1,10 @@
 # Fake-Godot integration fixture for Scripts/ci/Run-GdUnit.ps1.
 #
 # The runner runs against a fake Godot executable, compiled here with the in-box .NET Framework csc.exe, inside a
-# temporary fake repository. The watchdog, process-tree kill, resume targets, repeated-stall failure, crash handling,
-# interruption marker and report aggregation are therefore checked without a real Godot. Windows PowerShell 5.1 runs
-# it locally; CI passes -RunnerShell pwsh so the runner itself runs under PowerShell 7.
+# temporary fake repository. The build wait (a build that leaves a worker running), a failed build, the watchdog,
+# process-tree kill, resume targets, repeated-stall failure, crash handling, interruption marker and report
+# aggregation are therefore checked without a real Godot. Windows PowerShell 5.1 runs it locally; CI passes
+# -RunnerShell pwsh so the runner itself runs under PowerShell 7.
 #
 # Usage: powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps1 [-Only <check>] [-KeepTemp]
 # Exit code 0 when every check passes, 1 otherwise.
@@ -49,8 +50,9 @@ using System.Threading;
 
 internal static class FakeGodot
 {
-    // One compiled program plays three roles: dotnet (build succeeds), a grandchild started by a stall (sleep),
-    // and Godot itself, which replays the next plan file named by FAKE_GODOT_PLAN.
+    // One compiled program plays three roles: dotnet (build, which replays build.txt when the scenario writes one),
+    // a grandchild started by a stall or a lingering build (sleep), and Godot itself, which replays the next plan file
+    // named by FAKE_GODOT_PLAN.
     private static int Main(string[] args)
     {
         string self = Assembly.GetEntryAssembly().Location;
@@ -61,7 +63,7 @@ internal static class FakeGodot
             Log(state, "dotnet", args);
             if (args.Length > 0 && args[0] == "build")
             {
-                return 0;
+                return RunBuild(state, Environment.GetEnvironmentVariable("FAKE_GODOT_PLAN"));
             }
             Console.Out.WriteLine("FAKE: unexpected dotnet invocation");
             Console.Out.Flush();
@@ -73,6 +75,58 @@ internal static class FakeGodot
             return 0;
         }
         return RunGodot(args, self, state, Environment.GetEnvironmentVariable("FAKE_GODOT_PLAN"));
+    }
+
+    // build.txt in the plan folder, when a scenario writes it: "linger" leaves a worker running after the build exits,
+    // as MSBuild node reuse does, and "exit <n>" fails the build with exit code n. Without the file the build succeeds.
+    private static int RunBuild(string state, string plan)
+    {
+        string planPath = Path.Combine(plan, "build.txt");
+        if (!File.Exists(planPath))
+        {
+            return 0;
+        }
+        foreach (string raw in File.ReadAllLines(planPath))
+        {
+            string line = raw.TrimEnd();
+            if (line == "linger")
+            {
+                Linger(state);
+            }
+            else if (line.StartsWith("exit ", StringComparison.Ordinal))
+            {
+                int code = int.Parse(line.Substring(5));
+                if (code != 0)
+                {
+                    Console.Error.WriteLine("FAKE: build failed");
+                    Console.Error.Flush();
+                }
+                return code;
+            }
+            else if (line.Length > 0)
+            {
+                Console.Out.WriteLine("FAKE: unknown build directive " + line);
+                Console.Out.Flush();
+                return 97;
+            }
+        }
+        return 0;
+    }
+
+    // The dotnet copy cannot play sleep (its role is checked first), so the worker is the FakeGodot.exe next to it.
+    // The pause first puts the build well past its start, as a real MSBuild node starts mid-build, so a runner that
+    // waits on the whole process tree has already begun tracking it.
+    // ASSUMPTION: an MSBuild node inherits no handles from the build, so the worker is started through the shell, which
+    // passes none; it then cannot hold the runner's or the build's redirected output files open.
+    private static void Linger(string state)
+    {
+        Thread.Sleep(2500);
+        string self = Assembly.GetEntryAssembly().Location;
+        var psi = new ProcessStartInfo(Path.Combine(Path.GetDirectoryName(self), "FakeGodot.exe"), "sleep");
+        psi.UseShellExecute = true;
+        psi.WindowStyle = ProcessWindowStyle.Hidden;
+        Process child = Process.Start(psi);
+        File.AppendAllText(Path.Combine(state, "pids.txt"), child.Id + " FakeGodot" + Environment.NewLine);
     }
 
     private static int RunGodot(string[] args, string self, string state, string plan)
@@ -393,6 +447,13 @@ function Set-FakePlan {
     [IO.File]::WriteAllLines((Join-Path $Context.Plan ('run' + $Index + '.txt')), [string[]]$Lines)
 }
 
+# The fake build's own plan: 'linger' leaves a worker running after the build exits, 'exit <n>' fails the build.
+function Set-FakeBuildPlan {
+    param($Context, [string[]]$Lines)
+
+    [IO.File]::WriteAllLines((Join-Path $Context.Plan 'build.txt'), [string[]]$Lines)
+}
+
 function Get-SuiteStart {
     param([string]$Suite)
 
@@ -559,7 +620,7 @@ function Assert-ProcessesGone {
     param($Context)
 
     $records = @(Get-FakeProcessRecords -Context $Context)
-    Assert-That ($records.Count -gt 0) 'a stalled fake recorded its process IDs'
+    Assert-That ($records.Count -gt 0) 'a fake recorded its process IDs'
     $alive = @()
     for ($attempt = 0; $attempt -lt 10; $attempt++) {
         $alive = @($records | Where-Object {
@@ -572,7 +633,20 @@ function Assert-ProcessesGone {
         Start-Sleep -Milliseconds 500
     }
     $survivors = @($alive | ForEach-Object { "$($_.Id) $($_.Name)" }) -join ', '
-    throw "Check failed: stalled fake process(es) survived the kill: $survivors"
+    throw "Check failed: fake process(es) are still running: $survivors"
+}
+
+# Stops every fake process a scenario recorded that is still running. A worker a build leaves running is meant to
+# outlive the build, so the runner does not stop it; the scenario does.
+function Stop-FakeProcesses {
+    param($Context)
+
+    foreach ($record in @(Get-FakeProcessRecords -Context $Context)) {
+        $live = Get-Process -Id $record.Id -ErrorAction SilentlyContinue
+        if ($null -ne $live -and $live.ProcessName -eq $record.Name) {
+            Stop-Process -Id $record.Id -Force -ErrorAction SilentlyContinue
+        }
+    }
 }
 
 function Get-InterruptionMarkerPath {
@@ -624,6 +698,53 @@ function Test-CleanRun {
     Assert-Equal 1 $tests.Count 'one test invocation'
     $fullRunArguments = '-rd reports/ci -rc 100000 -a res://Tests'
     Assert-That $tests[0].EndsWith($fullRunArguments) 'a full run passes -rc 100000 and starts from the Tests folder'
+}
+
+function Test-BuildLeavesWorkerRunning {
+    param($Context)
+
+    # A build that exits 0 but leaves a worker running (MSBuild node reuse) must not hold the runner until that worker
+    # exits: the runner waits on dotnet itself. The fixture's 120 s runner timeout turns a tree wait into a failure.
+    Set-FakeBuildPlan -Context $Context -Lines @('linger', 'exit 0')
+    Set-FakePlan -Context $Context -Index 0 -Lines @(
+        (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteAlphaTwo), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteBeta), (Get-SuiteStats),
+        'report r1 0 0',
+        'exit 0')
+    try {
+        $result = Invoke-Runner -Context $Context
+        $passMessage = 'a build that leaves a worker running still lets the run pass'
+        Assert-ExitCode -Result $result -Expected 0 -Message $passMessage
+        Assert-Line $result.Stdout 'GdUnit passed: 3 of 3 suite files ran.' 'every suite ran once'
+        $calls = @(Get-FakeCalls -Context $Context)
+        Assert-Equal 1 @($calls | Where-Object { $_ -like 'dotnet build *' }).Count 'one solution build'
+        Assert-Equal 1 @($calls | Where-Object { $_ -like '* --import *' }).Count 'one project import'
+        $records = @(Get-FakeProcessRecords -Context $Context)
+        Assert-Equal 1 $records.Count 'the build recorded the worker it left running'
+        $worker = Get-Process -Id $records[0].Id -ErrorAction SilentlyContinue
+        $workerAlive = $null -ne $worker -and $worker.ProcessName -eq $records[0].Name
+        Assert-That $workerAlive 'the worker outlived the run, so the import started while it was still running'
+    }
+    finally {
+        Stop-FakeProcesses -Context $Context
+    }
+    Assert-ProcessesGone -Context $Context
+}
+
+function Test-BuildFails {
+    param($Context)
+
+    Set-FakeBuildPlan -Context $Context -Lines @('exit 3')
+    Set-FakePlan -Context $Context -Index 0 -Lines @('exit 0')
+    $result = Invoke-Runner -Context $Context
+    Assert-ExitCode -Result $result -Expected 1 -Message 'a failed build fails the run'
+    $buildError = 'RUNNER-ERROR: Godot test solution build failed with exit code 3: FAKE: build failed'
+    Assert-Contains $result.Stderr $buildError 'the build failure names its exit code and the tail of its stderr'
+    $calls = @(Get-FakeCalls -Context $Context)
+    Assert-Equal 1 @($calls | Where-Object { $_ -like 'dotnet build *' }).Count 'one solution build'
+    Assert-Equal 0 @($calls | Where-Object { $_ -like '* --import *' }).Count 'no project import after a failed build'
+    Assert-Equal 0 @(Get-RunnerTestCalls -Context $Context).Count 'no test run after a failed build'
 }
 
 function Test-Fast {
@@ -963,9 +1084,9 @@ function Test-PatternLockstep {
 
 # Every check in run order. -Only must name one of them (letter case does not matter) and then runs alone.
 $AllChecks = @(
-    'CleanRun', 'Fast', 'StallResumes', 'RepeatedStallFails', 'CrashNoReport', 'CrashAfterEarlierReportResumes',
-    'RepeatedCrashFails', 'StallThenCrashFails', 'CrashResumeNoProgressFails', 'InterruptionBudget',
-    'GdUnitExitCodes', 'ReportAggregation', 'PatternLockstep')
+    'CleanRun', 'BuildLeavesWorkerRunning', 'BuildFails', 'Fast', 'StallResumes', 'RepeatedStallFails',
+    'CrashNoReport', 'CrashAfterEarlierReportResumes', 'RepeatedCrashFails', 'StallThenCrashFails',
+    'CrashResumeNoProgressFails', 'InterruptionBudget', 'GdUnitExitCodes', 'ReportAggregation', 'PatternLockstep')
 if ([string]::IsNullOrWhiteSpace($Only)) {
     $checks = $AllChecks
 }

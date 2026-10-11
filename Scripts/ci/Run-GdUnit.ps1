@@ -382,7 +382,11 @@ function Invoke-Build {
     # PATH can hold more than one dotnet.exe; take the first, as the shell would.
     $dotnet = (Get-Command dotnet -CommandType Application | Select-Object -First 1).Source
     $arguments = @('build', 'CardCleaner.csproj', '--configuration', 'Debug', '--no-restore')
-    $build = Start-Process -FilePath $dotnet -ArgumentList $arguments -WorkingDirectory $RepositoryRoot -RedirectStandardOutput $stdout -RedirectStandardError $stderr -Wait -PassThru
+    # Not -Wait: that also waits for every process the build leaves running, such as an MSBuild node kept for reuse,
+    # until its idle timeout. Only dotnet itself is waited on, as Invoke-GodotWatched waits on Godot.
+    $build = Start-Process -FilePath $dotnet -ArgumentList $arguments -WorkingDirectory $RepositoryRoot -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru
+    $null = $build.Handle # keeps ExitCode readable after exit
+    $build.WaitForExit()
     if ($build.ExitCode -ne 0) {
         $tail = if (Test-Path -LiteralPath $stderr) { (Get-Content -LiteralPath $stderr -Tail 40) -join [Environment]::NewLine } else { '<missing>' }
         throw "Godot test solution build failed with exit code $($build.ExitCode): $tail"
