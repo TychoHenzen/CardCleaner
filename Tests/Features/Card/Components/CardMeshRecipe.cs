@@ -3,8 +3,10 @@ using Godot;
 namespace CardCleaner.Tests.Features.Card.Components;
 
 /// <summary>
-/// The card's authoring CSG tree and its bake, with the numbers CardDesigner.UpdateShape wrote at runtime.
-/// Test code only: the shipped mesh is res://Data/Card/CardMesh.tres, and nothing at runtime uses this recipe.
+/// The source of the card's shape: a CSG tree and its bake, which produce res://Data/Card/CardMesh.tres.
+/// The sizes are computed from width, height and bevel, not copied from the old scene text, because the runtime
+/// CSG the mesh replaced computed them the same way (the scene's stored numbers differ by a float32 ulp).
+/// Test code only: nothing at runtime uses this recipe. CardMeshBakeTest regenerates the mesh from it.
 /// </summary>
 public static class CardMeshRecipe
 {
@@ -38,7 +40,7 @@ public static class CardMeshRecipe
         var halfH = height * 0.5f - bevelSize;
         foreach (var name in CornerNames)
         {
-            // The name suffix picks the quadrant, as CardDesigner.UpdateShape did.
+            // The name suffix picks the quadrant: 2 and 3 sit at negative X, 3 and 4 at positive Z.
             var negX = name.EndsWith('2') || name.EndsWith('3');
             var negZ = name.EndsWith('3') || name.EndsWith('4');
             var origin = new Vector3(negX ? -halfW : halfW, 0, negZ ? halfH : -halfH);
@@ -66,7 +68,7 @@ public static class CardMeshRecipe
     }
 
     /// <summary>
-    /// Bakes the tree the way CsgBaker did, then remaps the box UVs. Godot builds CSG geometry in a deferred update,
+    /// Bakes the tree into a static mesh, then remaps the box UVs. Godot builds CSG geometry in a deferred update,
     /// so this returns null until the tree has been updated; callers wait for a non-null result.
     /// </summary>
     public static ArrayMesh? TryBake(CsgShape3D root, float width, float height)
@@ -75,7 +77,9 @@ public static class CardMeshRecipe
         return baked == null ? null : RemapBoxUVs(baked, width, height);
     }
 
-    // Verbatim copy of the runtime UV rules; they are part of the committed mesh.
+    // The UV layout the card material expects: the +Y face maps to the left half of the texture, the -Y face to the
+    // right half, and the edges to the full width. The committed mesh stores these UVs, so changing them changes the
+    // mesh and needs a regeneration.
     private static ArrayMesh RemapBoxUVs(ArrayMesh source, float width, float height)
     {
         var result = new ArrayMesh();

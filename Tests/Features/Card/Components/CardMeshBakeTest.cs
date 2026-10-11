@@ -44,10 +44,11 @@ public class CardMeshBakeTest
         Assertions.AssertString(body.Mesh.ResourcePath).IsEqual(MeshPath);
     }
 
+    // Rewrites Data/Card/CardMesh.tres from CardMeshRecipe. See "Card Mesh" in CLAUDE.md for the command and for the
+    // scene values to update after a shape change. Without the switch it does nothing, so normal runs pass it.
     [TestCase]
     public static async Task RegenerateCommittedMesh()
     {
-        // Only a run started with CARDCLEANER_REGENERATE_CARD_MESH=1 writes the committed file.
         if (OS.GetEnvironment(RegenerateSwitch) != "1") return;
 
         var root = CardMeshRecipe.BuildCsg(Width, Height, Thickness);

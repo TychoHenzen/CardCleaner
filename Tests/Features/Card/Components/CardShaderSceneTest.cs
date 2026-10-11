@@ -12,6 +12,9 @@ public class CardShaderSceneTest
 {
     private const string CardScenePath = "res://Scenes/Components/CardShader.tscn";
 
+    // The outline is the card mesh grown by this much on every axis, so a re-baked mesh must bring the outline along.
+    private const float OutlineMargin = 0.01f;
+
     [TestCase]
     [TestCategory("Unit")]
     public static void OutlineBox_IsHiddenFlippedBoxMesh()
@@ -25,7 +28,11 @@ public class CardShaderSceneTest
         var box = outline.Mesh as BoxMesh;
         Assertions.AssertThat(box).IsNotNull();
         Assertions.AssertBool(box!.FlipFaces).IsTrue();
-        Assertions.AssertBool(box.Size.IsEqualApprox(new Vector3(0.33f, 0.015f, 0.46f))).IsTrue();
+        var bodySize = card.GetNode<MeshInstance3D>("OuterBox_Baked").Mesh.GetAabb().Size;
+        var expected = bodySize + Vector3.One * OutlineMargin;
+        Assertions.AssertBool(box.Size.IsEqualApprox(expected))
+            .OverrideFailureMessage($"OutlineBox size {box.Size} should be the card mesh size plus margin, {expected}")
+            .IsTrue();
 
         var material = box.Material as StandardMaterial3D;
         Assertions.AssertThat(material).IsNotNull();
