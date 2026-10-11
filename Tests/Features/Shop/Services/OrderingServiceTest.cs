@@ -382,6 +382,59 @@ public class OrderingServiceTest
         AssertBool(_ordering.Order(MakeItem("cheap", 1)).Succeeded).IsTrue();
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ItemsWhoseReachLandsOnANeighbourTakeTheNextSlotThatClearsEveryShape()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
+        var reacher = MakeReacher();
+
+        // Slot 1 and slot 4 are refused: their reach boxes land on the reach boxes of the items beside them.
+        int[] expectedSlots = [0, 2, 3, 5];
+        for (var order = 0; order < expectedSlots.Length; order++)
+        {
+            var delivered = _ordering.Order(reacher, ground);
+            AssertBool(delivered.Succeeded).IsTrue();
+            var at = delivered.Spawned!.GlobalPosition;
+            var expected = ground.GlobalPosition + OrderingService.SlotOffset(expectedSlots[order]);
+            AssertBool(at.IsEqualApprox(expected))
+                .OverrideFailureMessage($"reacher {order} landed at {at}, expected {expected}")
+                .IsTrue();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void FloorClearanceRefusesASlotWhereTheItemWouldReachPastIt()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
+        ground.FloorClearance = new Rect2(-6f, -1.5f, 12f, 4.5f);
+        var reacher = MakeReacher();
+
+        // The reach of slots 3 to 5 runs past the clearance's far edge (z 3.0), so the third order stacks on slot 0.
+        var first = _ordering.Order(reacher, ground);
+        var second = _ordering.Order(reacher, ground);
+        var third = _ordering.Order(reacher, ground);
+
+        var firstAt = first.Spawned!.GlobalPosition;
+        var secondAt = second.Spawned!.GlobalPosition;
+        var thirdAt = third.Spawned!.GlobalPosition;
+        var firstSlot = ground.GlobalPosition + OrderingService.SlotOffset(0);
+        var secondSlot = ground.GlobalPosition + OrderingService.SlotOffset(2);
+        var stacked = firstSlot + Vector3.Up * 1.02f;
+        AssertBool(firstAt.IsEqualApprox(firstSlot))
+            .OverrideFailureMessage($"first order landed at {firstAt}, expected {firstSlot}")
+            .IsTrue();
+        AssertBool(secondAt.IsEqualApprox(secondSlot))
+            .OverrideFailureMessage($"second order landed at {secondAt}, expected {secondSlot}")
+            .IsTrue();
+        AssertBool(thirdAt.IsEqualApprox(stacked))
+            .OverrideFailureMessage($"third order landed at {thirdAt}, expected {stacked}")
+            .IsTrue();
+    }
+
     private DeliveryMarker AddGroundMarker()
     {
         var ground = new DeliveryMarker { Position = new Vector3(-20f, 0f, 3f) };
@@ -407,6 +460,40 @@ public class OrderingServiceTest
         packed.Pack(root);
         root.Free();
         return new OrderItem { Id = id, DisplayName = id, Price = price, Scene = packed };
+    }
+
+    /// <summary>
+    /// A body with a reach: a 1 m cube standing on the floor, and two low boxes three metres out in front.
+    /// </summary>
+    private static OrderItem MakeReacher() =>
+        MakeShapesItem(
+            "reacher",
+            (new Vector3(0f, 0.5f, 0f), new Vector3(1f, 1f, 1f)),
+            (new Vector3(-2.3f, 0.1f, 3f), new Vector3(0.5f, 0.2f, 0.5f)),
+            (new Vector3(0f, 0.1f, 3f), new Vector3(0.5f, 0.2f, 0.5f)));
+
+    /// <summary>
+    /// An item whose footprint is the given boxes, each as a centre and a size in the item's own space.
+    /// </summary>
+    private static OrderItem MakeShapesItem(string id, params (Vector3 Centre, Vector3 Size)[] shapes)
+    {
+        var root = new Node3D { Name = "Shapes" };
+        for (var i = 0; i < shapes.Length; i++)
+        {
+            var collider = new CollisionShape3D
+            {
+                Name = $"CollisionShape3D{i}",
+                Shape = new BoxShape3D { Size = shapes[i].Size },
+                Position = shapes[i].Centre
+            };
+            root.AddChild(collider);
+            collider.Owner = root;
+        }
+
+        var packed = new PackedScene();
+        packed.Pack(root);
+        root.Free();
+        return new OrderItem { Id = id, DisplayName = id, Price = 1, Scene = packed };
     }
 
     private static OrderItem MakeItem(string id, int price)

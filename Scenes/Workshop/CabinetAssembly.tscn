@@ -61,12 +61,12 @@ Placeholder = NodePath("Placeholder")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.12, 0.36)
 mesh = SubResource("CabinetMesh")
 
-[node name="DeckSlot" parent="." instance=ExtResource("DeckSlot")]
+[node name="DeckSlot" parent="." groups=["delivery_footprint"] instance=ExtResource("DeckSlot")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 3.15)
 PositionOffset = Vector3(0, 0.135, 0.2)
 StackOffset = Vector3(0, 0.005, 0)
 
-[node name="CardSlot" parent="." instance=ExtResource("CardSlot")]
+[node name="CardSlot" parent="." groups=["delivery_footprint"] instance=ExtResource("CardSlot")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.152501, 3.15)
 PositionOffset = Vector3(0, 0.01, 0.2)
 

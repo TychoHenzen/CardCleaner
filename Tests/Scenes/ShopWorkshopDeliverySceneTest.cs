@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
@@ -26,6 +27,11 @@ public class ShopWorkshopDeliverySceneTest
     private const float UprightDot = 0.95f;
     private const float PadReach = 3.5f;
     private const float RestTolerance = 0.1f;
+    private const float ClearanceBottom = 0.02f;
+    private const float ClearanceTop = 2.2f;
+
+    // A cabinet with its holders spans two columns, so the second goes to the first free cell, the far column.
+    private static readonly int[] CabinetSlots = [0, 2];
 
     private Node3D _shop = null!;
     private Node3D _workshop = null!;
@@ -34,7 +40,7 @@ public class ShopWorkshopDeliverySceneTest
     private OrderTerminalUi _pcUi = null!;
     private OrderTerminalUi _ui = null!;
     private MoneyService _money = null!;
-    private OrderingService _ordering = null!;
+    private TerminalPresses _presses = null!;
     private DeliveryMarker _delivery = null!;
     private Marker3D _shopDelivery = null!;
 
@@ -52,7 +58,7 @@ public class ShopWorkshopDeliverySceneTest
         _delivery = _workshop.GetNode<DeliveryMarker>("DeliveryPoint");
         _shopDelivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
-        _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
+        _presses = new TerminalPresses(_shop.GetNode<OrderingService>("Services/OrderingService"), Capacity);
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;
@@ -97,6 +103,37 @@ public class ShopWorkshopDeliverySceneTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void DeliveryClearanceIsFreeOfWorkshopGeometry()
+    {
+        var clearance = _delivery.FloorClearance;
+        AssertBool(clearance.HasArea())
+            .OverrideFailureMessage($"the delivery point declares no floor clearance: {clearance}")
+            .IsTrue();
+
+        var space = _shop.GetWorld3D().DirectSpaceState;
+        var height = ClearanceTop - ClearanceBottom;
+        var centre = clearance.GetCenter();
+        // The walls stand on the clearance's edges, so a box exactly that size only touches them. Inset it on X and Z.
+        var size = new Vector3(clearance.Size.X - 2f * ProbeInset, height, clearance.Size.Y - 2f * ProbeInset);
+        var query = new PhysicsShapeQueryParameters3D
+        {
+            Shape = new BoxShape3D { Size = size },
+            Transform = new Transform3D(Basis.Identity,
+                _delivery.GlobalPosition + new Vector3(centre.X, ClearanceBottom + height / 2f, centre.Y)),
+            CollideWithBodies = true,
+            CollideWithAreas = false
+        };
+
+        var hits = space.IntersectShape(query, 64);
+        var colliders = string.Join(", ",
+            hits.Select(hit => hit["collider"].Obj is Node node ? node.GetPath().ToString() : "?"));
+        AssertThat(hits.Count)
+            .OverrideFailureMessage($"bodies inside the delivery clearance: {colliders}")
+            .IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void TallestItemInTheSingleLayerClearsTheCeiling()
     {
         var ceiling = _workshop.GetNode<StaticBody3D>("WorkshopGrid/Ceiling");
@@ -113,11 +150,11 @@ public class ShopWorkshopDeliverySceneTest
         _money.Add(TopUp);
         _terminal.Interact();
         var cabinet = IndexOf("arcade_cabinet");
-        var first = PressForDelivery(_terminal, cabinet);
-        OrderUntilFull(_terminal, cabinet);
+        var first = _presses.PressForDelivery(_terminal, cabinet);
+        _presses.OrderUntilFull(_terminal, cabinet);
 
         first.QueueFree();
-        var replacement = PressForDelivery(_terminal, cabinet);
+        var replacement = _presses.PressForDelivery(_terminal, cabinet);
 
         AssertBool(replacement.GlobalPosition.IsEqualApprox(_delivery.GlobalPosition + OrderingService.SlotOffset(0)))
             .IsTrue();
@@ -131,15 +168,42 @@ public class ShopWorkshopDeliverySceneTest
         _money.Add(TopUp);
         _terminal.Interact();
         var cabinet = IndexOf("arcade_cabinet");
-        OrderUntilFull(_terminal, cabinet);
+        _presses.OrderUntilFull(_terminal, cabinet);
         var balance = _money.Balance;
         var spawned = _shop.GetNode("World").GetChildCount();
 
-        PressForRefusal(_terminal, cabinet, OrderStatus.DeliveryFull);
+        _presses.PressForRefusal(_terminal, cabinet, OrderStatus.DeliveryFull);
 
         AssertThat(_money.Balance).IsEqual(balance);
         AssertThat(_shop.GetNode("World").GetChildCount()).IsEqual(spawned);
         AssertBool(_ui.MessageText.StartsWith("The delivery area is full")).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void OrderedCabinetsFillTheGridTwoAtATimeAndNeverReachEachOthersHolders()
+    {
+        _money.Add(TopUp);
+        _terminal.Interact();
+
+        var cabinets = _presses.OrderUntilFull(_terminal, IndexOf("arcade_cabinet"));
+
+        AssertThat(string.Join(", ", DeliveredFootprints.OverlapsBetween(cabinets))).IsEmpty();
+        var offsets = string.Join(", ", cabinets.Select(cabinet => cabinet.GlobalPosition - _delivery.GlobalPosition));
+        AssertThat(cabinets.Count)
+            .OverrideFailureMessage($"delivered {cabinets.Count} cabinets at offsets {offsets}")
+            .IsEqual(CabinetSlots.Length);
+        for (var i = 0; i < cabinets.Count; i++)
+        {
+            var expected = _delivery.GlobalPosition + OrderingService.SlotOffset(CabinetSlots[i]);
+            AssertBool(cabinets[i].GlobalPosition.IsEqualApprox(expected))
+                .OverrideFailureMessage(
+                    $"cabinet {i} is at {cabinets[i].GlobalPosition}, expected slot {CabinetSlots[i]}")
+                .IsTrue();
+        }
+
+        foreach (var cabinet in cabinets)
+            AssertThat(string.Join(", ", ProbeAgainstWorkshop(cabinet))).IsEmpty();
     }
 
     [TestCase]
@@ -153,7 +217,7 @@ public class ShopWorkshopDeliverySceneTest
 
         for (var order = 0; order < 4 * Capacity; order++)
         {
-            var delivered = PressForDelivery(_terminal, wiring);
+            var delivered = _presses.PressForDelivery(_terminal, wiring);
 
             AssertBool(_ui.MessageText.Contains("Ordered")).IsTrue();
             AssertBool(delivered.GlobalPosition.Y < ceilingClearance).IsTrue();
@@ -166,12 +230,12 @@ public class ShopWorkshopDeliverySceneTest
     {
         _money.Add(TopUp);
         _terminal.Interact();
-        PressForDelivery(_terminal, IndexOf("wiring"));
-        PressForDelivery(_terminal, IndexOf("wiring"));
+        _presses.PressForDelivery(_terminal, IndexOf("wiring"));
+        _presses.PressForDelivery(_terminal, IndexOf("wiring"));
         _terminal.Close();
 
         _pc.Interact();
-        var spawned = PressForDelivery(_pc, 0);
+        var spawned = _presses.PressForDelivery(_pc, 0);
         AssertBool(spawned.GlobalPosition.IsEqualApprox(_shopDelivery.GlobalPosition + OrderingService.SlotOffset(0)))
             .IsTrue();
     }
@@ -190,7 +254,7 @@ public class ShopWorkshopDeliverySceneTest
         for (var round = 0; round < Rounds; round++)
         {
             _terminal.Interact();
-            var workshopItem = PressForDelivery(_terminal, wiringIndex);
+            var workshopItem = _presses.PressForDelivery(_terminal, wiringIndex);
             _terminal.Close();
             expected -= wiringPrice;
             AssertThat(_money.Balance).IsEqual(expected);
@@ -198,7 +262,7 @@ public class ShopWorkshopDeliverySceneTest
                 _delivery.GlobalPosition + OrderingService.SlotOffset(round))).IsTrue();
 
             _pc.Interact();
-            var shopItem = PressForDelivery(_pc, boxIndex);
+            var shopItem = _presses.PressForDelivery(_pc, boxIndex);
             _pc.Close();
             expected -= boxPrice;
             AssertThat(_money.Balance).IsEqual(expected);
@@ -216,7 +280,7 @@ public class ShopWorkshopDeliverySceneTest
     {
         _money.Add(TopUp);
         _terminal.Interact();
-        var cabinet = (RigidBody3D)PressForDelivery(_terminal, IndexOf("arcade_cabinet"));
+        var cabinet = (RigidBody3D)_presses.PressForDelivery(_terminal, IndexOf("arcade_cabinet"));
         _terminal.Close();
         for (var i = 0; i < SettleFrames; i++)
             await ISceneRunner.SyncPhysicsFrame;
@@ -235,79 +299,36 @@ public class ShopWorkshopDeliverySceneTest
     private int IndexOf(string id) => _terminal.Catalog!.Items.ToList().FindIndex(i => i.Id == id);
 
     /// <summary>
-    /// Presses an item and reports what it did. The message is cleared first: LastOrder is reset only inside the
-    /// terminal's order handler, so a press that never arrives would otherwise leave the previous result in place.
+    /// Probes every collision shape of a delivered item in its place against the workshop's bodies. The item's own
+    /// bodies are excluded, and each shape is lifted by the probe inset so the floor it stands on is not reported.
+    /// Triggers are skipped, so only solid geometry the item would sink into is reported.
     /// </summary>
-    private PressResult Press(OrderTerminal terminal, int index)
+    private List<string> ProbeAgainstWorkshop(Node3D item)
     {
-        var ui = terminal.Ui!;
-        var before = _ordering.DeliveredCount;
-        ui.ShowMessage(string.Empty);
-        ui.PressItem(index);
+        var space = _shop.GetWorld3D().DirectSpaceState;
+        var own = new Godot.Collections.Array<Rid>();
+        if (item is CollisionObject3D root)
+            own.Add(root.GetRid());
+        foreach (var body in item.FindChildren("*", nameof(CollisionObject3D), true, false).OfType<CollisionObject3D>())
+            own.Add(body.GetRid());
 
-        AssertBool(!string.IsNullOrEmpty(ui.MessageText))
-            .OverrideFailureMessage($"press of item {index} never reached the terminal")
-            .IsTrue();
-        return new PressResult(terminal.LastOrder, _ordering.DeliveredCount - before);
-    }
-
-    /// <summary>Checks that a press delivered exactly one live item, and returns that node.</summary>
-    private static Node3D CheckDelivery(int index, PressResult press)
-    {
-        AssertThat(press.Delivered)
-            .OverrideFailureMessage($"press of item {index} delivered {press.Delivered} items ({press.Order?.Status})")
-            .IsEqual(1);
-        AssertBool(press.Order is { Status: OrderStatus.Success, Spawned: not null })
-            .OverrideFailureMessage($"press of item {index} was not a delivery: {press.Order?.Status}")
-            .IsTrue();
-
-        var node = press.Order!.Value.Spawned!;
-        AssertBool(GodotObject.IsInstanceValid(node) && !node.IsQueuedForDeletion())
-            .OverrideFailureMessage($"press of item {index} delivered a node that is not live")
-            .IsTrue();
-        return node;
-    }
-
-    /// <summary>Presses an item the terminal must deliver, and returns the node that press delivered.</summary>
-    private Node3D PressForDelivery(OrderTerminal terminal, int index) => CheckDelivery(index, Press(terminal, index));
-
-    /// <summary>Presses an item the terminal must refuse with <paramref name="status"/>, and nothing is delivered.</summary>
-    private void PressForRefusal(OrderTerminal terminal, int index, OrderStatus status)
-    {
-        var press = Press(terminal, index);
-
-        AssertThat(press.Delivered)
-            .OverrideFailureMessage($"refused press of item {index} delivered {press.Delivered} items")
-            .IsEqual(0);
-        AssertBool(press.Order?.Status == status)
-            .OverrideFailureMessage($"press of item {index} gave {press.Order?.Status}, expected {status}")
-            .IsTrue();
-    }
-
-    /// <summary>
-    /// Orders an item until the terminal refuses one for lack of room, and every order before that must be a delivery.
-    /// A tall item claims more than one slot, so fewer than <see cref="Capacity" /> of them fit.
-    /// </summary>
-    private void OrderUntilFull(OrderTerminal terminal, int index)
-    {
-        // The bound only stops a grid that never fills from looping forever.
-        for (var order = 0; order < 2 * Capacity; order++)
+        var hits = new List<string>();
+        foreach (var collider in item.FindChildren("*", nameof(CollisionShape3D), true, false)
+                     .OfType<CollisionShape3D>()
+                     .Where(c => c is { Disabled: false, Shape: not null } && c.GetParent() is not Area3D))
         {
-            var press = Press(terminal, index);
-            if (press.Delivered == 0)
+            var query = new PhysicsShapeQueryParameters3D
             {
-                AssertBool(press.Order?.Status == OrderStatus.DeliveryFull)
-                    .OverrideFailureMessage($"the first refusal was {press.Order?.Status}, expected DeliveryFull")
-                    .IsTrue();
-                return;
-            }
-
-            CheckDelivery(index, press);
+                Shape = collider.Shape,
+                Transform = new Transform3D(collider.GlobalBasis, collider.GlobalPosition + Vector3.Up * ProbeInset),
+                CollideWithBodies = true,
+                CollideWithAreas = false,
+                Exclude = own
+            };
+            if (space.IntersectShape(query, 1).Count > 0)
+                hits.Add($"{item.GetPathTo(collider)} is inside workshop geometry");
         }
 
-        AssertBool(false).OverrideFailureMessage("the grid never refused an order").IsTrue();
+        return hits;
     }
-
-    /// <summary>What one press did: the terminal's latest result, and how many items ordering delivered.</summary>
-    private readonly record struct PressResult(OrderResult? Order, int Delivered);
 }

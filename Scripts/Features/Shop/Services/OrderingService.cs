@@ -18,7 +18,7 @@ public partial class OrderingService : Node, IOrderingService
     public const int SlotColumns = 3;
     public const int SlotRows = 2;
 
-    /// <summary>Wider than the widest orderable item (the 2.1 m shelf), so neighbours never overlap.</summary>
+    /// <summary>Wider than the widest orderable item (the 2.1 m shelf). The marker refuses overlaps too.</summary>
     public const float SlotSpacingX = 2.3f;
 
     /// <summary>Deeper than the deepest orderable item (the 1 m shelf).</summary>
