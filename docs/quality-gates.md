@@ -17,4 +17,4 @@ The repository uses a small set of reproducible gates for the C# Godot project. 
 - Audit the complete dependency graph with `dotnet list CardCleaner.csproj package --vulnerable --include-transitive`.
 - Lint workflows with `go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12`.
 
-The GdUnit runner requires a newly generated `reports/ci/**/results.xml` and fails when its latest report contains failures or errors. GdUnit exit code `101` is retained as a warning for orphan-node reports; CI uploads `reports/ci` when the Windows build/test job fails.
+The GdUnit runner requires a newly generated `reports/ci/**/results.xml` and fails when its latest report contains failures or errors. GdUnit exit code `101` is retained as a warning for orphan-node reports; CI uploads `reports/ci` when the Windows build/test job fails, on the weekly and `full=true` runs, and whenever the runner recorded a stall or crash in `reports/ci/interruptions.txt` (so a run that resumed to green keeps its logs).

@@ -95,7 +95,9 @@ jobs:
           }
 
       - name: Upload GdUnit reports
-        if: failure() || github.event_name == 'schedule' || inputs.full
+        # Run-GdUnit.ps1 writes interruptions.txt when Godot crashed or stalled, so a run that resumed to green keeps
+        # the logs of the interrupted attempt.
+        if: failure() || github.event_name == 'schedule' || inputs.full || hashFiles('reports/ci/interruptions.txt') != ''
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: gdunit-reports
