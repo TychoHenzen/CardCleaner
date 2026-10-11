@@ -15,8 +15,9 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
 /// High-level WFC map generator that produces terrain maps using Wave Function Collapse.
-/// Enforces hard constraints (valid adjacencies from transition map) and
-/// soft constraints (biome preferences via weighted selection).
+/// Enforces hard constraints (valid adjacencies from the transition map) and soft constraints (weights from the
+/// constraints registered on the tile selector). Biome affinity comes from <see cref="GenerateMultiBiome"/> with a
+/// gradient.
 /// </summary>
 public class WfcMapGenerator
 {
@@ -33,6 +34,12 @@ public class WfcMapGenerator
     private IProfiler _profiler = new NoOpProfiler();
 
     public int MaxRetries { get; set; } = 3;
+
+    /// <summary>
+    /// How many attempts Generate makes, the caller's seed first and then derived seeds, before it reports a
+    /// disconnected passable region. Values below 1 act as 1.
+    /// </summary>
+    public int MaxConnectivityAttempts { get; set; } = 5;
 
     public float NonBiomeTilePenalty
     {
@@ -115,6 +122,14 @@ public class WfcMapGenerator
         }
     }
 
+    /// <summary>
+    /// Generates one map for a single biome. The tiles are the adjacency-rule tiles that the tile catalog contains and
+    /// allows in the biome (WfcTileSetBuilder.ForBiome). Each candidate gets a uniform base weight, so biome pool
+    /// weights do not choose the tile; they still feed the weighted entropy that orders cell collapses. For biome
+    /// affinity, use GenerateMultiBiome with a gradient. With a catalog and EnableConnectivity, a disconnected passable
+    /// result is retried with derived seeds, up to MaxConnectivityAttempts, and the call fails if every attempt is
+    /// disconnected. A solver failure on any attempt ends the call; the solver has already retried that seed.
+    /// </summary>
     public WfcGenerationResult Generate(
         BiomeDefinition biome,
         Vector2I size,
@@ -129,6 +144,40 @@ public class WfcMapGenerator
                 "No valid tiles found: biome tiles have no overlap with adjacency rules");
         }
 
+        var attemptCap = Math.Max(1, MaxConnectivityAttempts);
+        for (var attempt = 0; attempt < attemptCap; attempt++)
+        {
+            var attemptSeed = attempt == 0 ? seed : unchecked(seed + (ulong)attempt * 0x9E3779B97F4A7C15UL);
+            // ASSUMPTION: GenerateOnce builds a new solver, grid and passability graph, so a rejected attempt
+            // leaves no state behind for the next one.
+            var result = GenerateOnce(biome, size, attemptSeed, initialTiles);
+            if (!result.Success && attempt > 0)
+            {
+                return WfcGenerationResult.Failed(
+                    $"Connectivity attempt {attempt + 1} (seed {attemptSeed}) failed: {result.ErrorMessage}");
+            }
+
+            if (!result.Success || !EnableConnectivity || _tileCatalog == null)
+            {
+                return result;
+            }
+
+            var graph = PassabilityGraph.FromTileIds(result.TileIds!, _tileCatalog.IsPassable);
+            if (!graph.HasDisconnectedRegions())
+            {
+                return result;
+            }
+        }
+
+        return WfcGenerationResult.Failed($"Passable cells disconnected after {attemptCap} attempts (seed {seed})");
+    }
+
+    private WfcGenerationResult GenerateOnce(
+        BiomeDefinition biome,
+        Vector2I size,
+        ulong seed,
+        IReadOnlyCollection<string> initialTiles)
+    {
         // Initialize spatial coherence for this map size
         _spatialCoherence.Reset(size.X, size.Y);
 
@@ -156,6 +205,11 @@ public class WfcMapGenerator
             new Vector2I(grid.Width, grid.Height), tileIds, biomeMap, solveResult.Iterations);
     }
 
+    /// <summary>
+    /// Generates one map across all registered biomes; with a gradient, BiomeAffinityConstraint weights tiles toward
+    /// the local biome. Unlike Generate, there is no post-solve connectivity check or retry: with a catalog and
+    /// EnableConnectivity only the reactive ConnectivityConstraint runs, so a disconnected map can be returned.
+    /// </summary>
     public WfcGenerationResult GenerateMultiBiome(
         BiomeRegistry biomeRegistry,
         Func<Vector2I, BiomeDefinition> getBiomeAt,

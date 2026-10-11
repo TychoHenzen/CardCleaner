@@ -364,4 +364,57 @@ public class PassabilityGraphTest
         AssertThat(_graph.GetClosestDisconnectedPair().HasValue).IsFalse();
         AssertThat(_graph.GetComponents().Count).IsEqual(0);
     }
+
+    // ========== Factory from a tile grid (#213) ==========
+
+    [TestCase]
+    public static void FromTileIds_NoPassableCells_IsConnected()
+    {
+        var tileIds = new[,] { { "wall", "wall" }, { "wall", "wall" } };
+
+        var graph = PassabilityGraph.FromTileIds(tileIds, id => id != "wall");
+
+        AssertInt(graph.NodeCount).IsEqual(0);
+        AssertBool(graph.HasDisconnectedRegions()).IsFalse();
+    }
+
+    [TestCase]
+    public static void FromTileIds_LShapedRegion_IsConnected()
+    {
+        // Passable cells (0,0), (1,0) and (1,1) join through right and down neighbours.
+        var tileIds = new[,] { { "floor", "floor" }, { "wall", "floor" } };
+
+        var graph = PassabilityGraph.FromTileIds(tileIds, id => id == "floor");
+
+        AssertInt(graph.NodeCount).IsEqual(3);
+        AssertBool(graph.HasDisconnectedRegions()).IsFalse();
+    }
+
+    [TestCase]
+    public static void FromTileIds_TwoIslands_IsDisconnected()
+    {
+        // Diagonal cells are not 4-neighbours, so (0,0) and (1,1) are two islands.
+        var tileIds = new[,] { { "floor", "wall" }, { "wall", "floor" } };
+
+        var graph = PassabilityGraph.FromTileIds(tileIds, id => id == "floor");
+
+        AssertInt(graph.NodeCount).IsEqual(2);
+        AssertBool(graph.HasDisconnectedRegions()).IsTrue();
+    }
+
+    [TestCase]
+    public static void FromTileIds_NonSquareGrid_ReadsRowsThenColumns()
+    {
+        // Two rows of three columns: the passable top row ends at column 2, row 0. Reading the array as
+        // [column, row] would go out of range or place the nodes on a vertical line instead.
+        var tileIds = new[,] { { "floor", "floor", "floor" }, { "wall", "wall", "floor" } };
+
+        var graph = PassabilityGraph.FromTileIds(tileIds, id => id == "floor");
+
+        AssertInt(graph.NodeCount).IsEqual(4);
+        AssertBool(graph.ContainsNode(new Vector2I(2, 0))).IsTrue();
+        AssertBool(graph.ContainsNode(new Vector2I(2, 1))).IsTrue();
+        AssertBool(graph.ContainsNode(new Vector2I(0, 1))).IsFalse();
+        AssertBool(graph.HasDisconnectedRegions()).IsFalse();
+    }
 }
