@@ -32,6 +32,7 @@ public sealed class WorkshopSceneRig
         DeckHolder = Workshop.GetNode<DeckSlot>("Cabinet/Assembly/DeckSlot");
         CardHolder = Workshop.GetNode<DeckSlot>("Cabinet/Assembly/CardSlot");
         Button = Workshop.GetNode<InteractableButton>("Cabinet/Assembly/Button/StaticBody3D");
+        KindButton = Workshop.GetNode<InteractableButton>("Cabinet/MapKindButton/StaticBody3D");
         Controller = Workshop.GetNode<DeckBuilderController>("DeckbuilderController");
         Screen = Workshop.GetNode<IrregularWorldMapScreen>("Cabinet/IrregularTileMapScreen");
     }
@@ -43,6 +44,7 @@ public sealed class WorkshopSceneRig
     public DeckSlot DeckHolder { get; }
     public DeckSlot CardHolder { get; }
     public InteractableButton Button { get; }
+    public InteractableButton KindButton { get; }
     public DeckBuilderController Controller { get; }
     public IrregularWorldMapScreen Screen { get; }
 
@@ -60,6 +62,17 @@ public sealed class WorkshopSceneRig
         AddNode(rig.Shop);
         await Settle();
         return rig;
+    }
+
+    /// <summary>
+    /// Presses the cabinet's map kind toggle until the controller has the wanted kind; the scene starts on the grid.
+    /// </summary>
+    public void PickKind(MapGenerationType kind)
+    {
+        for (var press = 0; press < 2 && Controller.MapType != kind; press++)
+            KindButton.Interact();
+
+        AssertThat(Controller.MapType).IsEqual(kind);
     }
 
     /// <summary>Drops a card on top of the holder, the way a hand releases one.</summary>

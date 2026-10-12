@@ -265,7 +265,10 @@ internal sealed class WorldMapRuntime
     private void OnLootGenerated(List<CardSignature> lootSignatures)
     {
         ILog.Print($"Loot generated: {lootSignatures.Count} cards");
-        LootCardSpawner.Spawn(lootSignatures);
+        if (ILog.ExportCheck(_screen.LootSpawnPoint, nameof(SimpleWorldMapScreen.LootSpawnPoint), _screen))
+            return;
+
+        LootCardSpawner.Spawn(lootSignatures, _screen.LootSpawnPoint!.GlobalTransform);
     }
 
     private void ShowStatus(string text)

@@ -37,7 +37,6 @@ internal sealed class SessionFlow
         _world = world;
         _eventAdapter = eventAdapter;
         _exploration = exploration;
-        _exploration.EnemyEncountered += () => EnterState(SessionState.InCombat);
     }
 
     internal SessionState State

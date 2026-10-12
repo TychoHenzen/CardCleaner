@@ -46,9 +46,10 @@ public class ShopWorkshopSceneContractTest
         AssertSame(controller.AbilityDeckSlot, _workshop.GetNode("Cabinet/Assembly/DeckSlot"));
         AssertSame(controller.MapCardSlot, _workshop.GetNode("Cabinet/Assembly/CardSlot"));
         AssertSame(controller.ActivateButton, _workshop.GetNode("Cabinet/Assembly/Button/StaticBody3D"));
+        AssertSame(controller.MapKindButton, _workshop.GetNode("Cabinet/MapKindButton/StaticBody3D"));
         AssertSame(controller.WorldTileMapScreenScene, _workshop.GetNode("Cabinet/SimpleTileMapScreen"));
         AssertSame(controller.IrregularMapScreen, _workshop.GetNode("Cabinet/IrregularTileMapScreen"));
-        AssertThat(controller.MapType).IsEqual(MapGenerationType.IrregularMesh);
+        AssertThat(controller.MapType).IsEqual(MapGenerationType.RegularGrid);
     }
 
     [TestCase]

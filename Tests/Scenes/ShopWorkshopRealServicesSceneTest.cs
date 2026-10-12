@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
+using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -16,13 +17,17 @@ namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 /// The workshop cabinet against the registration the shop scene really produces: its own service providers
-/// register into the container, the real spawning service seats the credit card, and the button runs a session.
+/// register into the container, the real spawning service seats the credit card, the kind toggle picks the irregular
+/// map, and the button runs a session on it.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class ShopWorkshopRealServicesSceneTest
 {
     private const int SmallMeshRings = 3;
+
+    // Frames to wait for the explorer's first step once the map is up; a step takes a fraction of a second.
+    private const int FirstStepFrameBudget = 300;
 
     private SceneTree _tree = null!;
     private Node? _previousScene;
@@ -85,13 +90,21 @@ public class ShopWorkshopRealServicesSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task SecondCardLightsTheButtonAndPressingItStartsTheSession()
+    public async Task TogglePicksTheIrregularMapAndPressingTheButtonExploresIt()
     {
         var workshop = _shop.GetNode<Node3D>("World/Workshop");
         var button = workshop.GetNode<InteractableButton>("Cabinet/Assembly/Button/StaticBody3D");
+        var toggle = workshop.GetNode<InteractableButton>("Cabinet/MapKindButton/StaticBody3D");
+        var controller = workshop.GetNode<DeckBuilderController>("DeckbuilderController");
         var cards = workshop.GetNode<DeckSlot>("Cabinet/Assembly/CardSlot");
         var screen = workshop.GetNode<IrregularWorldMapScreen>("Cabinet/IrregularTileMapScreen");
         AssertBool(button.Enabled).IsFalse();
+        AssertThat(controller.MapType).IsEqual(MapGenerationType.RegularGrid);
+
+        toggle.Interact();
+        AssertThat(controller.MapType).IsEqual(MapGenerationType.IrregularMesh);
+        var steps = 0;
+        screen.PlayerMoved += (_, _) => steps++;
 
         var card = ShopTestCards.Create(new CardSignature { Febris = 0.4f });
         workshop.AddChild(card);
@@ -100,9 +113,14 @@ public class ShopWorkshopRealServicesSceneTest
         AssertBool(button.Enabled).IsTrue();
 
         button.Interact();
-        await WorkshopSceneRig.Settle();
+        AssertBool(toggle.Enabled).IsFalse();
+        for (var frame = 0; frame < FirstStepFrameBudget && steps == 0; frame++)
+            await ISceneRunner.SyncProcessFrame;
 
+        AssertBool(screen.Visible).IsTrue();
         AssertBool(screen.IsInitialized).IsTrue();
+        AssertThat(steps).OverrideFailureMessage("The explorer never stepped on the irregular map").IsGreater(0);
+        AssertBool(toggle.Enabled).IsFalse();
         AssertBool(workshop.GetNode<DeckSlot>("Cabinet/Assembly/DeckSlot").HasCards).IsFalse();
         AssertBool(cards.HasCards).IsFalse();
     }

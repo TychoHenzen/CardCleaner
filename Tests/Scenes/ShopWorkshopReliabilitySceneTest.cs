@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using Godot;
 
@@ -24,6 +25,7 @@ public class ShopWorkshopReliabilitySceneTest
     {
         _rig = await WorkshopSceneRig.Create();
         _rig.Screen.MeshRings = SmallMeshRings;
+        _rig.PickKind(MapGenerationType.IrregularMesh);
     }
 
     [AfterTest]
@@ -42,6 +44,7 @@ public class ShopWorkshopReliabilitySceneTest
 
         AssertBool(_rig.Button.Enabled).IsTrue();
         AssertBool(_rig.Button.ButtonMesh!.Visible).IsTrue();
+        AssertBool(_rig.KindButton.Enabled).IsFalse();
 
         _rig.Button.Interact();
         await WorkshopSceneRig.Settle();
@@ -49,6 +52,8 @@ public class ShopWorkshopReliabilitySceneTest
         AssertBool(_rig.Button.Enabled).IsFalse();
         AssertBool(_rig.Button.ButtonMesh!.Visible).IsFalse();
         AssertBool(_rig.Screen.IsInitialized).IsFalse();
+        AssertBool(_rig.KindButton.Enabled).IsTrue();
+        AssertThat(_rig.Controller.MapType).IsEqual(MapGenerationType.IrregularMesh);
     }
 
     [TestCase]
