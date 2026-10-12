@@ -13,12 +13,11 @@ internal sealed record MeshTerrainWfcSetup(IWfcTerrainSolver Solver, ITileRegist
 {
     public static MeshTerrainWfcSetup ForRegistry(
         IReadOnlyList<(string tileA, string tileB)> transitionPairs,
-        ITileRegistry? registry,
-        IReadOnlyDictionary<string, HashSet<string>>? extraAdjacency = null)
+        ITileRegistry? registry)
     {
         var solver = IWfcTerrainSolver.Create(
             transitionPairs,
-            extraAdjacency,
+            null,
             registry != null ? new TileRegistryWfcCatalog(registry) : null);
         return new MeshTerrainWfcSetup(solver, registry);
     }

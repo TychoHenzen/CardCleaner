@@ -15,8 +15,8 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh.MeshTerrain;
 
 /// <summary>
 /// Pins what mesh terrain does when a WFC solve fails: a failed foreground solve clears the foreground and keeps
-/// the backgrounds, an empty candidate set never reaches the solver, and a failed rule solve applies the fallback.
-/// The stub solver delegates background generation and rule ids to a real solver and fails both solve methods.
+/// the backgrounds, and an empty candidate set never reaches the solver.
+/// The stub solver delegates background generation and rule ids to a real solver and fails the catalog solve.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -72,29 +72,6 @@ public class MeshTerrainFailurePathTest
         AssertBool(mesh.Vertices.All(vertex => vertex.ForegroundTileId == null)).IsTrue();
     }
 
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void FailedRuleSolveAppliesFallbackTerrain()
-    {
-        var adjacency = new Dictionary<string, HashSet<string>>
-        {
-            { "grass", new HashSet<string> { "grass", "water" } },
-            { "water", new HashSet<string> { "grass", "water" } }
-        };
-        var tileToTerrain = new Dictionary<string, int> { { "grass", 5 }, { "water", 0 } };
-        var solver = new FailingSolver(IWfcTerrainSolver.Create(TransitionPairs(), adjacency, null), "grass");
-        var generator = new IrregularMeshNs.MeshTerrainGenerator(new MeshTerrainWfcSetup(solver, null), tileToTerrain);
-
-        var mesh = generator.GenerateFromRules(3, 777);
-
-        AssertThat(solver.RuleSolveCalls).IsEqual(1);
-        // The dictionary path has no registry, so the fallback tile is "floor". The map does not name it, so its
-        // terrain type is 1.
-        AssertBool(mesh.Quads.All(quad => quad.BackgroundTileId == "floor")).IsTrue();
-        AssertBool(mesh.Vertices.All(vertex => vertex.TerrainType == 1)).IsTrue();
-        AssertBool(mesh.Vertices.All(vertex => vertex.TileId == null && vertex.ForegroundTileId == null)).IsTrue();
-    }
-
     private static IReadOnlyList<(string tileA, string tileB)> TransitionPairs() =>
         new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
 
@@ -115,8 +92,8 @@ public class MeshTerrainFailurePathTest
     };
 
     /// <summary>
-    /// Delegates background generation and rule ids to a real solver. Both solve methods fail and count their calls.
-    /// The failed solutions name a tile on every cell, so a branch that ignores Success would assign it.
+    /// Delegates background generation and rule ids to a real solver. The catalog solve fails and counts its calls.
+    /// The failed solution names a tile on every cell, so a branch that ignores Success would assign it.
     /// </summary>
     private sealed class FailingSolver : IWfcTerrainSolver
     {
@@ -130,8 +107,6 @@ public class MeshTerrainFailurePathTest
         }
 
         public int CatalogSolveCalls { get; private set; }
-
-        public int RuleSolveCalls { get; private set; }
 
         public IReadOnlyList<string> RuleTileIds => _inner.RuleTileIds;
 
@@ -150,15 +125,6 @@ public class MeshTerrainFailurePathTest
             Func<string, bool>? gapTileFilter)
         {
             CatalogSolveCalls++;
-            return Failed(neighbors.Length);
-        }
-
-        public WfcGraphSolution SolveGraphWithRules(
-            int[][] neighbors,
-            IReadOnlyCollection<string> initialTiles,
-            ulong seed)
-        {
-            RuleSolveCalls++;
             return Failed(neighbors.Length);
         }
 

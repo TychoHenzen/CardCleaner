@@ -19,48 +19,4 @@ internal static class QuadCornerCounter
 
         return count;
     }
-
-    /// <summary>
-    /// True when any corner of the quad carries a structure.
-    /// </summary>
-    internal static bool HasStructureCorner(IrregularMesh mesh, MeshQuad quad)
-    {
-        foreach (var vid in quad.VertexIds)
-        {
-            if (mesh.Vertices[vid].HasStructure)
-                return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// True when any corner of the quad carries a structure that blocks line of sight.
-    /// </summary>
-    internal static bool HasSightBlockingCorner(IrregularMesh mesh, MeshQuad quad)
-    {
-        foreach (var vid in quad.VertexIds)
-        {
-            if (mesh.Vertices[vid].Structure == StructureType.Wall)
-                return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Filled corners that do not carry a blocking structure.
-    /// </summary>
-    internal static int CountPassableCorners(IrregularMesh mesh, MeshQuad quad)
-    {
-        int count = 0;
-        foreach (var vid in quad.VertexIds)
-        {
-            var vertex = mesh.Vertices[vid];
-            if (!vertex.HasStructure && vertex.TerrainType > 0)
-                count++;
-        }
-
-        return count;
-    }
 }

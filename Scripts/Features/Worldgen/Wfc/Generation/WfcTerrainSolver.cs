@@ -86,17 +86,6 @@ internal sealed class WfcTerrainSolver : IWfcTerrainSolver
         return ToGraphSolution(result, topology, neighbors.Length);
     }
 
-    public WfcGraphSolution SolveGraphWithRules(int[][] neighbors, IReadOnlyCollection<string> initialTiles, ulong seed)
-    {
-        var topology = new WfcNeighborListTopology(neighbors, initialTiles);
-        var solver = new WfcSolver(new WfcPropagator(_rules), new WfcTileSelector())
-        {
-            MaxIterations = neighbors.Length * 2
-        };
-        var result = solver.Solve(topology, null, new RandomNumberGenerator { Seed = seed });
-        return ToGraphSolution(result, topology, neighbors.Length);
-    }
-
     private static WfcGraphSolution ToGraphSolution(WfcSolveResult result, IWfcTopology topology, int cellCount)
     {
         var collapsedTiles = new string?[cellCount];

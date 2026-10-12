@@ -126,21 +126,4 @@ public class IrregularWorldMapScreenCombatFlowTest
         AssertBool(handler.IsInCombat).IsFalse();
         AssertThat(handler.CurrentEnemyCellId).IsEqual(-1);
     }
-
-    [TestCase]
-    public async Task WfcGeneratedMapFightsEnemiesWithTheGivenAbilities()
-    {
-        var adjacency = new Dictionary<string, HashSet<string>>
-        {
-            { "grass", new HashSet<string> { "grass", "sand" } },
-            { "sand", new HashSet<string> { "grass", "sand" } }
-        };
-        var tileToTerrain = new Dictionary<string, int> { { "grass", 1 }, { "sand", 2 } };
-        var defeated = false;
-        _screen.EnemyDefeated += _ => defeated = true;
-
-        _screen.GenerateMapWithWfc(Seed, adjacency, tileToTerrain, new[] { StrongAbility() });
-
-        AssertBool(await WaitUntil(() => defeated, EncounterTimeoutSeconds)).IsTrue();
-    }
 }

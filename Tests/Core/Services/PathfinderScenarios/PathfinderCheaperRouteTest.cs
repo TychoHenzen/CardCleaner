@@ -53,7 +53,6 @@ public class PathfinderCheaperRouteTest
         public string GetTerrainType(int cellId) => "floor";
         public bool IsPassable(int cellId) => true;
         public bool IsTransparent(int cellId) => true;
-        public bool HasStructure(int cellId) => false;
 
         public IEnumerable<int> GetAdjacentCells(int cellId)
         {

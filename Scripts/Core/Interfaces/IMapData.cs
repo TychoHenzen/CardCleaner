@@ -56,11 +56,6 @@ public interface IMapData
     /// </summary>
     bool IsTransparent(int cellId);
 
-    /// <summary>
-    /// Check if a cell has a structure that blocks movement.
-    /// </summary>
-    bool HasStructure(int cellId);
-
     #endregion
 
     #region Adjacency

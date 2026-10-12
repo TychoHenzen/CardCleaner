@@ -148,7 +148,7 @@ public class MeshQuad
         return VertexIds.All(id =>
         {
             var vertex = _mesh.Vertices[id];
-            return !vertex.HasStructure && IsTerrainPassable(vertex.TerrainType);
+            return IsTerrainPassable(vertex.TerrainType);
         });
     }
 

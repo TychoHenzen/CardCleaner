@@ -14,7 +14,6 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh.WorldMap;
 [RequireGodotRuntime]
 public class IrregularMeshCollisionShapeGeneratorTest
 {
-    private const int CenterVertex = 4;
     private const float WorldScale = 2f;
     private static readonly Vector2 WorldOffset = new(10f, 20f);
 
@@ -43,22 +42,6 @@ public class IrregularMeshCollisionShapeGeneratorTest
         IrregularMeshCollisionShapeGenerator.GenerateForIrregularMesh(mapData, staticBody);
 
         AssertThat(staticBody.GetShapeOwners().Length).IsEqual(2);
-        staticBody.Free();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void TestEveryQuadIsOpaqueWhenTheCenterVertexHoldsAWall()
-    {
-        var mesh = CreateTwoByTwoMesh();
-        var placement = new IrregularMeshNs.StructurePlacement(mesh);
-        AssertBool(placement.PlaceStructure(CenterVertex, IrregularMeshNs.StructureType.Wall)).IsTrue();
-        var mapData = new IrregularMeshNs.IrregularMeshMapData(mesh);
-        var staticBody = new StaticBody2D();
-
-        IrregularMeshCollisionShapeGenerator.GenerateForIrregularMesh(mapData, staticBody);
-
-        AssertThat(staticBody.GetShapeOwners().Length).IsEqual(4);
         staticBody.Free();
     }
 

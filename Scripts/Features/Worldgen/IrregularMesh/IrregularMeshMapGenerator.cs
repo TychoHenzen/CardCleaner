@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -15,10 +14,6 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 /// </summary>
 public class IrregularMeshMapGenerator : IMapGenerator
 {
-    private readonly Dictionary<string, HashSet<string>>? _adjacencyRules;
-    private readonly Dictionary<string, int>? _tileToTerrainType;
-    private readonly BiomeRegistry? _biomeRegistry;
-
     /// <summary>
     /// World scale for mesh coordinates.
     /// </summary>
@@ -39,22 +34,6 @@ public class IrregularMeshMapGenerator : IMapGenerator
     /// </summary>
     public IrregularMeshMapGenerator()
     {
-    }
-
-    /// <summary>
-    /// Creates a generator with WFC terrain assignment.
-    /// </summary>
-    /// <param name="adjacencyRules">WFC adjacency rules.</param>
-    /// <param name="tileToTerrainType">Mapping from tile ID to terrain type.</param>
-    /// <param name="biomeRegistry">Biomes for card-based terrain.</param>
-    public IrregularMeshMapGenerator(
-        Dictionary<string, HashSet<string>> adjacencyRules,
-        Dictionary<string, int> tileToTerrainType,
-        BiomeRegistry biomeRegistry)
-    {
-        _adjacencyRules = adjacencyRules;
-        _tileToTerrainType = tileToTerrainType;
-        _biomeRegistry = biomeRegistry;
     }
 
     /// <inheritdoc />
@@ -86,8 +65,7 @@ public class IrregularMeshMapGenerator : IMapGenerator
         // Create map data adapter
         var mapData = new IrregularMeshMapData(mesh)
         {
-            WorldScale = WorldScale,
-            PassableTerrainType = 1 // Terrain type 1 is passable
+            WorldScale = WorldScale
         };
 
         var passableCells = FindPassableCellsWithFallback(mesh, mapData);
@@ -132,16 +110,10 @@ public class IrregularMeshMapGenerator : IMapGenerator
         return rings;
     }
 
-    private IrregularMesh BuildMesh(MapGenerationConfig config, RandomNumberGenerator rng, IProgress<float>? progress)
+    private static IrregularMesh BuildMesh(MapGenerationConfig config, RandomNumberGenerator rng, IProgress<float>? progress)
     {
         var rings = CalculateRings(config);
         progress?.Report(0.2f);
-
-        if (_adjacencyRules != null && _tileToTerrainType != null && _biomeRegistry != null)
-        {
-            var terrainGen = new MeshTerrainGenerator(_adjacencyRules, _tileToTerrainType);
-            return BuildWfcMesh(terrainGen, _biomeRegistry, config, rings);
-        }
 
         var mesh = GenerateDefaultGeometry(config, rings);
 
@@ -149,22 +121,6 @@ public class IrregularMeshMapGenerator : IMapGenerator
         progress?.Report(0.4f);
         AssignDefaultTerrain(mesh, rng);
         return mesh;
-    }
-
-    private static IrregularMesh BuildWfcMesh(MeshTerrainGenerator terrainGen, BiomeRegistry biomeRegistry,
-        MapGenerationConfig config, int rings)
-    {
-        // Set biome registry for card-based generation
-        terrainGen.SetBiomeRegistry(biomeRegistry);
-
-        // Use card-based gradient if cards are provided
-        if (config.MapSeeds.Length > 0)
-        {
-            GD.Print($"[IrregularMeshMapGenerator] Using card-based gradient with {config.MapSeeds.Length} cards");
-            return terrainGen.GenerateWithCards(rings, config.MapSeeds, (int)config.Seed);
-        }
-
-        return terrainGen.Generate(rings, biomeRegistry.GetBiome("plains"), (int)config.Seed);
     }
 
     private static IrregularMesh GenerateDefaultGeometry(MapGenerationConfig config, int rings)

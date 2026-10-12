@@ -19,11 +19,6 @@ public class IrregularMeshMapData : IMapData
     private readonly List<int> _enemySpawnCells = new();
 
     /// <summary>
-    /// Terrain type considered passable (default: terrain type 1).
-    /// </summary>
-    public int PassableTerrainType { get; set; } = 1;
-
-    /// <summary>
     /// Scale factor for converting mesh coordinates to world coordinates.
     /// </summary>
     public float WorldScale { get; set; } = 1f;
@@ -100,16 +95,11 @@ public class IrregularMeshMapData : IMapData
         if (_structureCells.Contains(cellId))
             return false;
 
-        // A structure on any corner vertex blocks the quad, as MeshQuad.IsPassable does
-        if (QuadCornerCounter.HasStructureCorner(_mesh, _mesh.Quads[cellId]))
-            return false;
-
         // Cell is passable if MAJORITY (at least 2 of 4) corner vertices have passable terrain
         // This allows traversal near terrain edges and provides better connectivity
-        // NOTE: Terrain type 0 = impassable, any terrain type > 0 = passable
-        // Changed from == PassableTerrainType to > 0 because terrain generator
+        // NOTE: Terrain type 0 = impassable, any terrain type > 0 = passable; the terrain generator
         // assigns unique types (1, 2, 3, etc.) to different passable terrain tiles
-        int passableCount = QuadCornerCounter.CountPassableCorners(_mesh, _mesh.Quads[cellId]);
+        int passableCount = QuadCornerCounter.CountFilledCorners(_mesh, _mesh.Quads[cellId]);
         return passableCount >= 2;
     }
 
@@ -118,17 +108,8 @@ public class IrregularMeshMapData : IMapData
         if (!IsValidCell(cellId))
             return false;
 
-        // Terrain is transparent; cell structures and walls on a corner vertex block line of sight
-        // (fences and other vertex structures block movement only)
-        if (_structureCells.Contains(cellId))
-            return false;
-
-        return !QuadCornerCounter.HasSightBlockingCorner(_mesh, _mesh.Quads[cellId]);
-    }
-
-    public bool HasStructure(int cellId)
-    {
-        return _structureCells.Contains(cellId);
+        // Terrain is transparent; only a cell structure blocks line of sight
+        return !_structureCells.Contains(cellId);
     }
 
     public IEnumerable<int> GetAdjacentCells(int cellId)

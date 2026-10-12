@@ -36,11 +36,6 @@ public interface IWfcTerrainSolver
         Func<string, bool>? gapTileFilter);
 
     /// <summary>
-    /// Solves a cell graph with the solver's own adjacency rules.
-    /// </summary>
-    WfcGraphSolution SolveGraphWithRules(int[][] neighbors, IReadOnlyCollection<string> initialTiles, ulong seed);
-
-    /// <summary>
     /// Creates a solver whose rules are the given transition pairs plus the given extra adjacencies.
     /// </summary>
     static IWfcTerrainSolver Create(

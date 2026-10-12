@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 
@@ -15,7 +14,6 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 public class MeshTerrainGenerator
 {
     private readonly MeshTerrainWfcRunner _terrainWfc;
-    private readonly RuleDrivenMeshTerrain _ruleTerrain;
 
     /// <summary>
     /// Creates a two-pass terrain generator over a solver and the registry its catalog wraps.
@@ -23,76 +21,6 @@ public class MeshTerrainGenerator
     internal MeshTerrainGenerator(MeshTerrainWfcSetup setup, Dictionary<string, int> tileToTerrainType)
     {
         _terrainWfc = new MeshTerrainWfcRunner(setup, tileToTerrainType);
-        _ruleTerrain = new RuleDrivenMeshTerrain(setup.Solver, tileToTerrainType);
-    }
-
-    /// <summary>
-    /// Even older backward-compatible constructor using raw dictionaries.
-    /// </summary>
-    public MeshTerrainGenerator(
-        Dictionary<string, HashSet<string>> adjacencyRules,
-        Dictionary<string, int> tileToTerrainType)
-        : this(
-            MeshTerrainWfcSetup.ForRegistry(
-                new CompiledTransitionResolver().GetAllTransitionPairs().ToList(),
-                null,
-                adjacencyRules),
-            tileToTerrainType)
-    {
-        GD.PrintErr("[MeshTerrainGen] Using legacy constructor without tile registry - two-pass WFC will not work!");
-    }
-
-    /// <summary>
-    /// Generates terrain using two-pass WFC matching SimpleMapGenerator.
-    /// </summary>
-    public IrregularMesh Generate(
-        int rings,
-        BiomeRegistry biomeRegistry,
-        Func<Vector2I, BiomeDefinition> getBiomeAt,
-        ulong seed,
-        int relaxationIterations = 15)
-    {
-        var mesh = CreateMesh(rings, (int)seed, relaxationIterations);
-        var bounds = mesh.Bounds;
-        var effectiveSize = GetEffectiveSize(bounds);
-        LogMeshSummary(mesh, effectiveSize);
-        return _terrainWfc.Generate(
-            mesh,
-            biomeRegistry,
-            getBiomeAt,
-            effectiveSize,
-            bounds,
-            seed);
-    }
-
-    /// <summary>
-    /// Backward-compatible Generate method for old code (single biome).
-    /// </summary>
-    public IrregularMesh Generate(
-        int rings,
-        BiomeDefinition? biome = null,
-        int seed = 0,
-        int relaxationIterations = 15)
-    {
-        if (biome == null)
-            return GenerateFallback(rings, seed, relaxationIterations);
-
-        var registry = new BiomeRegistry();
-        return Generate(rings, registry, _ => biome, (ulong)seed, relaxationIterations);
-    }
-
-    /// <summary>
-    /// Generates terrain by running WFC over the adjacency rules and tile mapping given at construction.
-    /// Uses fallback terrain when the generator has no rules or the solve fails.
-    /// </summary>
-    internal IrregularMesh GenerateFromRules(int rings, int seed, int relaxationIterations = 15)
-    {
-        var mesh = CreateMesh(rings, seed, relaxationIterations);
-        if (_ruleTerrain.Generate(mesh, (ulong)seed))
-            return mesh;
-
-        _terrainWfc.ApplyFallbackTerrain(mesh);
-        return mesh;
     }
 
     private BiomeRegistry? _biomeRegistry;
@@ -150,7 +78,10 @@ public class MeshTerrainGenerator
             (ulong)seed);
     }
 
-    private IrregularMesh GenerateFallback(int rings, int seed, int relaxationIterations)
+    /// <summary>
+    /// Generates a mesh with the fallback terrain, for a map started without cards.
+    /// </summary>
+    internal IrregularMesh GenerateFallback(int rings, int seed, int relaxationIterations)
     {
         var mesh = CreateMesh(rings, seed, relaxationIterations);
         _terrainWfc.ApplyFallbackTerrain(mesh);
@@ -186,12 +117,5 @@ public class MeshTerrainGenerator
             return biomeRegistry.FindClosestBySignature(signature)
                 ?? biomeRegistry.GetAllBiomes().First();
         };
-    }
-
-    private static void LogMeshSummary(IrregularMesh mesh, Vector2I effectiveSize)
-    {
-        GD.Print(
-            $"[MeshTerrainGen] Mesh: {mesh.Vertices.Count} vertices, " +
-            $"{mesh.Quads.Count} quads, effective size: {effectiveSize}");
     }
 }

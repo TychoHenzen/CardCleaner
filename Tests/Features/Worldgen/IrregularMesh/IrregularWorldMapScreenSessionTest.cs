@@ -79,24 +79,5 @@ public class IrregularWorldMapScreenSessionTest
         AssertThat(TerrainOf(deferred.Mesh!)).IsEqual(TerrainOf(reference.Mesh!));
     }
 
-    [TestCase]
-    public async Task DeferredGenerateMapWithWfcKeepsItsRules()
-    {
-        var adjacency = new Dictionary<string, HashSet<string>> { { "water", new HashSet<string> { "water" } } };
-        var tileToTerrain = new Dictionary<string, int> { { "water", 0 } };
-
-        var reference = CreateScreen();
-        AddNode(reference);
-        await ISceneRunner.SyncProcessFrame;
-        reference.GenerateMapWithWfc(Seed, adjacency, tileToTerrain);
-
-        var deferred = CreateScreen();
-        deferred.GenerateMapWithWfc(Seed, adjacency, tileToTerrain);
-        AddNode(deferred);
-        await ISceneRunner.SyncProcessFrame;
-
-        AssertThat(TerrainOf(deferred.Mesh!)).IsEqual(TerrainOf(reference.Mesh!));
-    }
-
     private static bool IsInstanceValid(GodotObject obj) => GodotObject.IsInstanceValid(obj);
 }

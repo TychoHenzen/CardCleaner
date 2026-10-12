@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,16 +11,15 @@ using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh.MeshTerrain;
 
 /// <summary>
-/// Pins the terrain that mesh generation produces for two fixed-seed paths: the factory path with cards
-/// (background WFC plus mesh foreground WFC) and the dictionary rules path. A refactor of the WFC front door
-/// must reproduce these fingerprints exactly. The golden values were recorded on master 857068e.
+/// Pins the terrain that mesh generation produces for the fixed-seed factory path with cards
+/// (background WFC plus mesh foreground WFC). A refactor of the WFC front door
+/// must reproduce this fingerprint exactly. The golden value was recorded on master 857068e.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class MeshTerrainFingerprintTest
 {
     private const string FactoryGolden = "f6d30692addfccf5cae860c8a3885223b81ad0bd4963d4c100b270556d6621ff";
-    private const string RulesGolden = "68bf23cfce9a2bbd9d69c863bcd9e77b7830d5a402c10e3f9af328be929f8f2e";
 
     [TestCase]
     [TestCategory("Unit")]
@@ -43,31 +41,6 @@ public class MeshTerrainFingerprintTest
         var hash = Fingerprint(mesh);
         GD.Print($"[MeshTerrainFingerprint] factory seed 4242 hash {hash}");
         AssertString(hash).IsEqual(FactoryGolden);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void DictionaryRulesPathMatchesMasterFingerprint()
-    {
-        var adjacency = new Dictionary<string, HashSet<string>>
-        {
-            { "grass", new HashSet<string> { "grass", "water" } },
-            { "water", new HashSet<string> { "grass", "water" } }
-        };
-        var tileToTerrain = new Dictionary<string, int> { { "grass", 5 }, { "water", 0 } };
-        var mesh = new IrregularMeshNs.MeshTerrainGenerator(adjacency, tileToTerrain).GenerateFromRules(3, 777);
-
-        var terrainTypes = mesh.Vertices
-            .Select(vertex => vertex.TerrainType)
-            .Distinct()
-            .OrderBy(type => type)
-            .ToArray();
-        // ASSUMPTION: a real solve on seed 777 uses both mapped terrain types; the fallback writes only type 1 here.
-        AssertThat(terrainTypes).IsEqual(new[] { 0, 5 });
-
-        var hash = Fingerprint(mesh);
-        GD.Print($"[MeshTerrainFingerprint] rules seed 777 hash {hash}");
-        AssertString(hash).IsEqual(RulesGolden);
     }
 
     private static CardSignature[] TerrainCards() => new[]
