@@ -18,7 +18,6 @@ public class RaycastVisibilityCheckerTest
     private const float TileSize = 16f;
 
     private Node2D _root = null!;
-    private StaticBody2D _terrainCollider = null!;
     private World2D _world = null!;
     private PhysicsDirectSpaceState2D _spaceState = null!;
 
@@ -33,9 +32,6 @@ public class RaycastVisibilityCheckerTest
         var viewport = new SubViewport();
         viewport.World2D = new World2D();
         _root.AddChild(viewport);
-
-        _terrainCollider = new StaticBody2D();
-        viewport.AddChild(_terrainCollider);
 
         _world = viewport.World2D;
         _spaceState = _world.DirectSpaceState;
@@ -52,7 +48,6 @@ public class RaycastVisibilityCheckerTest
     public void TestCanSeeSameCell()
     {
         var (mapData, gridData) = OpenFloorMap.Create(5, 5);
-        GenerateCollisionShapes(gridData);
 
         var checker = new RaycastVisibilityChecker(_spaceState);
         var cellId = gridData.PositionToCellId(new Vector2I(2, 2));
@@ -66,7 +61,6 @@ public class RaycastVisibilityCheckerTest
     public void TestCanSeeAdjacentCell()
     {
         var (mapData, gridData) = OpenFloorMap.Create(5, 5);
-        GenerateCollisionShapes(gridData);
 
         var checker = new RaycastVisibilityChecker(_spaceState);
         var from = gridData.PositionToCellId(new Vector2I(2, 2));
@@ -81,7 +75,6 @@ public class RaycastVisibilityCheckerTest
     public void TestCanSeeAcrossEmptyMap()
     {
         var (mapData, gridData) = OpenFloorMap.Create(10, 10);
-        GenerateCollisionShapes(gridData);
 
         var checker = new RaycastVisibilityChecker(_spaceState);
         var from = gridData.PositionToCellId(new Vector2I(0, 0));
@@ -93,7 +86,7 @@ public class RaycastVisibilityCheckerTest
     }
 
     [TestCase]
-    public void TestCollisionLayerDefaultValue()
+    public static void TestCollisionLayerDefaultValue()
     {
         // Verify the default collision layer is layer 16 (bit 15)
         const uint expectedLayer = 1u << 15;
@@ -111,7 +104,6 @@ public class RaycastVisibilityCheckerTest
     public void TestSameWorldPositionAlwaysVisible()
     {
         var (mapData, gridData) = OpenFloorMap.Create(3, 3);
-        GenerateCollisionShapes(gridData);
 
         var checker = new RaycastVisibilityChecker(_spaceState);
         var pos = new Vector2(TileSize * 1.5f, TileSize * 1.5f);
@@ -137,11 +129,5 @@ public class RaycastVisibilityCheckerTest
         var checker = new RaycastVisibilityChecker(_spaceState, customMask);
         // Just verify construction succeeds
         AssertThat(checker).IsNotNull();
-    }
-
-    private void GenerateCollisionShapes(RegularGridMapData gridData)
-    {
-        CollisionObjectShapes.ClearShapes(_terrainCollider);
-        RegularGridCollisionShapeGenerator.GenerateForRegularGrid(gridData, _terrainCollider, TileSize);
     }
 }
