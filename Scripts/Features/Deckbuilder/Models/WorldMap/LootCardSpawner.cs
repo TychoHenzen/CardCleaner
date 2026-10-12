@@ -7,27 +7,28 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 
 /// <summary>
-/// Spawns the loot cards of a finished session in a row above the card spawner.
+/// Spawns the loot cards of a finished session in a row that starts at the screen's loot point and runs along
+/// that point's X axis.
 /// </summary>
 internal static class LootCardSpawner
 {
-    internal static void Spawn(List<CardSignature> lootSignatures)
-    {
-        ServiceLocator.Get<ICardSpawningService>(spawningService =>
-        {
-            for (var i = 0; i < lootSignatures.Count; i++)
-            {
-                var spawnPos = new Vector3(i * 0.5f, 1.5f, 2f);
+    private const float CardSpacing = 0.5f;
 
-                ServiceLocator.Get<ICardSpawner>(spawner =>
+    internal static void Spawn(List<CardSignature> lootSignatures, Transform3D lootPoint)
+    {
+        var rowDirection = lootPoint.Basis.Orthonormalized().X;
+
+        ServiceLocator.Get<ICardSpawningService>(spawningService =>
+            ServiceLocator.Get<ICardSpawner>(spawner =>
+            {
+                for (var i = 0; i < lootSignatures.Count; i++)
                 {
                     var spawnTransform = Transform3D.Identity;
-                    spawnTransform.Origin = spawnPos;
+                    spawnTransform.Origin = lootPoint.Origin + rowDirection * (i * CardSpacing);
                     spawningService.SpawnCard(lootSignatures[i], spawnTransform, spawner.GetNode());
-                });
-            }
+                }
 
-            ILog.Print($"Spawned {lootSignatures.Count} loot cards!");
-        });
+                ILog.Print($"Spawned {lootSignatures.Count} loot cards!");
+            }));
     }
 }

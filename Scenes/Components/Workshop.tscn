@@ -75,9 +75,13 @@ shape = SubResource("CabinetShape")
 
 [node name="Assembly" parent="Cabinet" instance=ExtResource("CabinetAssembly")]
 
-[node name="SimpleTileMapScreen" parent="Cabinet" instance=ExtResource("SimpleScreen")]
+[node name="SimpleTileMapScreen" parent="Cabinet" node_paths=PackedStringArray("LootSpawnPoint") instance=ExtResource("SimpleScreen")]
 transform = Transform3D(0.26, 0, 0, 0, 0.26, 0, 0, 0, 0.26, 0, 1.5, 0.67)
 visible = false
+LootSpawnPoint = NodePath("../LootPoint")
+
+[node name="LootPoint" type="Marker3D" parent="Cabinet"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25, 1.5, 2)
 
 [node name="IrregularTileMapScreen" parent="Cabinet" instance=ExtResource("IrregularScreen")]
 transform = Transform3D(0.26, 0, 0, 0, 0.26, 0, 0, 0, 0.26, 0, 1.5, 0.67)

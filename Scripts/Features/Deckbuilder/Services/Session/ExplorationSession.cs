@@ -29,7 +29,6 @@ internal sealed class ExplorationSession
     internal event Action<IReadOnlySet<int>, IReadOnlySet<int>>? VisibilityCellsUpdated;
     internal event Action<IReadOnlyList<Vector2I>, Vector2I?>? PathUpdated;
     internal event Action<IReadOnlyList<int>, int?>? PathCellsUpdated;
-    internal event Action? EnemyEncountered;
 
     internal ExplorationSession(SessionWorld world, GridCellEventAdapter eventAdapter)
     {
@@ -139,6 +138,10 @@ internal sealed class ExplorationSession
         _eventAdapter.EmitPlayerMoved(worldPos, PlayerMovedWorld, PlayerMoved);
     }
 
+    /// <summary>
+    /// Records which enemy the player reached. The step that raised this returns
+    /// <see cref="ExplorationStepOutcome.EnemyFound"/>, and that outcome alone starts the combat.
+    /// </summary>
     private void OnEnemyEncounteredWorld(Vector2 worldPos)
     {
         var cellId = _world.MapData?.GetCellAtPosition(worldPos);
@@ -148,7 +151,6 @@ internal sealed class ExplorationSession
         if (!_eventAdapter.HasGridData)
         {
             ILog.Print($"Enemy encountered at world position {worldPos}! Preparing for combat...");
-            EnemyEncountered?.Invoke();
             return;
         }
 
@@ -158,7 +160,6 @@ internal sealed class ExplorationSession
 
         ILog.Print($"Enemy encountered at {gridPos.Value}! Preparing for combat...");
         _currentEnemyPosition = gridPos.Value;
-        EnemyEncountered?.Invoke();
     }
 
     private void OnVisitedCellsUpdated(IReadOnlySet<int> cellIds)

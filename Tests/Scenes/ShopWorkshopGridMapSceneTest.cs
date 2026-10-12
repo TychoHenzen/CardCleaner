@@ -1,0 +1,139 @@
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CardCleaner.Scripts.Composition;
+using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Card.Controllers;
+using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Components;
+using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
+using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Tests.Features.Shop;
+using Godot;
+using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
+
+namespace CardCleaner.Tests.Scenes;
+
+/// <summary>
+/// The grid map played end to end in the workshop: the shop scene's own registration, the grid kind picked on
+/// the cabinet's controller, a map card dropped and the button pressed, then the session must run through
+/// generation, exploration and combat to its end and lay out the loot cards.
+/// </summary>
+[TestSuite]
+[RequireGodotRuntime]
+public class ShopWorkshopGridMapSceneTest
+{
+    // Wall-clock budget for the whole session, generation included (about 16 s of it on the dev machine).
+    private const double SessionBudgetSeconds = 90;
+
+    // Exploration steps take 0.1 s and combat turns 1.0 s of game time, about 50 s for this map card. The test runs
+    // game time faster instead of changing those rules; a step still happens at most once per frame.
+    private const double SessionTimeScale = 10;
+
+    // The loot row runs about 4.5 m along the front of the cabinet, so every card lands within this distance of it.
+    private const float LootReachMeters = 4f;
+
+    private SceneTree _tree = null!;
+    private Node? _previousScene;
+    private Node3D _shop = null!;
+    private readonly List<Node> _coreServiceNodes = new();
+
+    [BeforeTest]
+    public async Task Setup()
+    {
+        _tree = (SceneTree)Engine.GetMainLoop();
+        _previousScene = _tree.CurrentScene;
+
+        // The core services the Services autoload composes in the game. Composing clears pending callbacks, so it
+        // runs before the shop enters the tree; the shop's own providers then register as the game's do.
+        CompositionRoot.ReinitializeServices();
+        _coreServiceNodes.Add((Node)ServiceLocator.Get<IInputService>());
+        _coreServiceNodes.Add((Node)ServiceLocator.Get<IPlayerResetService>());
+
+        _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
+        _tree.Root.AddChild(_shop);
+        _tree.CurrentScene = _shop;
+
+        foreach (var node in _tree.GetNodesInGroup("service_providers"))
+        {
+            if (node is IServiceProvider provider)
+                provider.RegisterServices(ServiceLocator.Container);
+        }
+
+        ServiceLocator.ExecutePendingCallbacks();
+        await WorkshopSceneRig.Settle();
+    }
+
+    [AfterTest]
+    public void Teardown()
+    {
+        ServiceLocator.ResetForTesting();
+        _tree.CurrentScene = _previousScene;
+        _tree.Root.RemoveChild(_shop);
+        _shop.Free();
+        foreach (var node in _coreServiceNodes.Where(GodotObject.IsInstanceValid))
+            node.QueueFree();
+        _coreServiceNodes.Clear();
+        CardEffectNormalMapCache.ResetForTesting();
+        Engine.TimeScale = 1;
+    }
+
+    [TestCase(Timeout = 120000)]
+    [TestCategory("Unit")]
+    public async Task GridSessionReachesSessionCompleteAndSpawnsTheLoot()
+    {
+        var workshop = _shop.GetNode<Node3D>("World/Workshop");
+        var controller = workshop.GetNode<DeckBuilderController>("DeckbuilderController");
+        var button = workshop.GetNode<InteractableButton>("Cabinet/Assembly/Button/StaticBody3D");
+        var cardHolder = workshop.GetNode<DeckSlot>("Cabinet/Assembly/CardSlot");
+        var session = workshop.GetNode<GameSessionService>("GameSessionService");
+        var lootParent = _shop.GetNode<CardSpawner>("World/Cards");
+        controller.MapType = MapGenerationType.RegularGrid;
+
+        var states = new List<SessionState>();
+        var lootCount = -1;
+        session.StateChanged += states.Add;
+        session.LootGenerated += loot => lootCount = loot.Count;
+        var cardsBefore = lootParent.GetChildren().OfType<CardController>().ToList();
+
+        var mapCard = ShopTestCards.Create(new CardSignature { Febris = 0.4f });
+        workshop.AddChild(mapCard);
+        mapCard.GlobalPosition = cardHolder.GlobalPosition + cardHolder.PositionOffset;
+        await WorkshopSceneRig.Settle();
+        AssertBool(button.Enabled).IsTrue();
+
+        button.Interact();
+        Engine.TimeScale = SessionTimeScale;
+        var clock = Stopwatch.StartNew();
+        while (!states.Contains(SessionState.SessionComplete) && clock.Elapsed.TotalSeconds < SessionBudgetSeconds)
+            await ISceneRunner.SyncProcessFrame;
+        Engine.TimeScale = 1;
+        await WorkshopSceneRig.Settle();
+
+        var history = states.Count == 0 ? "no state change" : string.Join(" > ", states);
+        GD.Print($"Grid session ran {clock.Elapsed.TotalSeconds:F1} s: {history}");
+        AssertBool(states.Contains(SessionState.SessionComplete))
+            .OverrideFailureMessage(
+                $"No SessionComplete within {SessionBudgetSeconds} s; last state reached " +
+                $"{(states.Count == 0 ? session.CurrentState : states[^1])}, history: {history}")
+            .IsTrue();
+        AssertThat(lootCount)
+            .OverrideFailureMessage($"The session completed without loot (combat lost?); history: {history}")
+            .IsGreater(0);
+
+        var loot = lootParent.GetChildren().OfType<CardController>().Except(cardsBefore).ToList();
+        AssertThat(loot.Count).IsEqual(lootCount);
+        var cabinet = workshop.GetNode<Node3D>("Cabinet").GlobalPosition;
+        foreach (var card in loot)
+        {
+            var offset = card.GlobalPosition - cabinet;
+            AssertFloat(new Vector2(offset.X, offset.Z).Length())
+                .OverrideFailureMessage($"Loot card at {card.GlobalPosition} is not laid out at the cabinet {cabinet}")
+                .IsLessEqual(LootReachMeters);
+        }
+    }
+}
