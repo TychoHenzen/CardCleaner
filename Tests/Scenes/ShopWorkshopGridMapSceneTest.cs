@@ -34,7 +34,9 @@ public class ShopWorkshopGridMapSceneTest
     // game time faster instead of changing those rules; a step still happens at most once per frame.
     private const double SessionTimeScale = 10;
 
-    // The loot row runs about 4.5 m along the front of the cabinet, so every card lands within this distance of it.
+    // The LootPoint sits 2.25 m left of and 2 m in front of the cabinet origin, and the row of at most 10 cards,
+    // 0.5 m apart, runs 4.5 m to its right, so every card lands within about 3 m (XZ) of the cabinet origin. The
+    // extra 1 m is margin for cards that drop from 1.5 m and settle.
     private const float LootReachMeters = 4f;
 
     private SceneTree _tree = null!;
@@ -131,7 +133,9 @@ public class ShopWorkshopGridMapSceneTest
             .OverrideFailureMessage($"The session completed without loot (combat lost?); history: {history}")
             .IsGreater(0);
 
-        AssertBool(toggleLitDuringSession).OverrideFailureMessage("The kind toggle lit while the session ran").IsFalse();
+        AssertBool(toggleLitDuringSession)
+            .OverrideFailureMessage("The kind toggle lit while the session ran")
+            .IsFalse();
         AssertBool(toggle.Enabled).OverrideFailureMessage("The kind toggle lit before the reset press").IsFalse();
 
         var loot = lootParent.GetChildren().OfType<CardController>().Except(cardsBefore).ToList();

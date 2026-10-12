@@ -114,6 +114,15 @@ public partial class SimpleWorldMapScreen : Node3D
     public void UpdateBiomePreview(CardSignature[] cards) => _runtime?.UpdateBiomePreview(cards);
 
     /// <summary>
+    /// Names the picked map kind in this screen's status label. A running session's status text replaces it; the
+    /// cabinet shows the kind again after the reset press.
+    /// </summary>
+    public void ShowMapKind(string kindText)
+    {
+        if (StatusLabel != null) StatusLabel.Text = kindText;
+    }
+
+    /// <summary>
     /// Resets the map screen to its initial state.
     /// </summary>
     public void ResetToInitialState()

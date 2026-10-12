@@ -175,6 +175,15 @@ public partial class IrregularWorldMapScreen : Node3D
     }
     public void RevealAll() => _session?.RevealAll();
 
+    /// <summary>
+    /// Names the picked map kind in this screen's status label. The explorer's position text replaces it while a
+    /// session runs; the cabinet shows the kind again after the reset press.
+    /// </summary>
+    public void ShowMapKind(string kindText)
+    {
+        if (StatusLabel != null) StatusLabel.Text = kindText;
+    }
+
     public void Reset()
     {
         _session?.Reset();

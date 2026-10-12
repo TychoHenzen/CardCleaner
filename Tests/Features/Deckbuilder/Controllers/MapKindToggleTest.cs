@@ -3,21 +3,12 @@ using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 namespace CardCleaner.Tests.Features.Deckbuilder.Controllers;
 
 /// <summary>
-/// The cabinet's map kind toggle: it works only while the cabinet is idle and flips between the two kinds.
+/// The cabinet's map kind toggle: it flips between the two kinds and names the picked one. When the toggle may be
+/// pressed is covered on the controller by DeckBuilderControllerGridSessionTest.
 /// </summary>
 [TestSuite]
 public class MapKindToggleTest
 {
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void ToggleWorksOnlyWhileNoSessionRunsAndNoMapAwaitsItsReset()
-    {
-        AssertBool(MapKindToggle.CanToggle(sessionRunning: false, awaitingReset: false)).IsTrue();
-        AssertBool(MapKindToggle.CanToggle(sessionRunning: true, awaitingReset: false)).IsFalse();
-        AssertBool(MapKindToggle.CanToggle(sessionRunning: false, awaitingReset: true)).IsFalse();
-        AssertBool(MapKindToggle.CanToggle(sessionRunning: true, awaitingReset: true)).IsFalse();
-    }
-
     [TestCase]
     [TestCategory("Unit")]
     public static void EachKindTogglesToTheOther()

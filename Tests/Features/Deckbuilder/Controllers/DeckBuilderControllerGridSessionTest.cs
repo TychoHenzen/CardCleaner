@@ -16,7 +16,8 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Controllers;
 
 /// <summary>
 /// DeckBuilderController and its map kind toggle on the grid map, driven by the session states a grid session
-/// reports: a completed session waits for the reset press, a session whose generation fails ends at once.
+/// reports: the toggle is lit while the cabinet is idle, a completed session keeps it dark until the reset press,
+/// and a session whose generation fails ends at once.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -26,6 +27,7 @@ public class DeckBuilderControllerGridSessionTest
     private DeckSlot _mapSlot = null!;
     private InteractableButton _button = null!;
     private InteractableButton _kindButton = null!;
+    private Label _statusLabel = null!;
     private FakeSession _session = null!;
 
     [BeforeTest]
@@ -39,6 +41,7 @@ public class DeckBuilderControllerGridSessionTest
         _mapSlot = CreateSlot("MapSlot");
         _button = CreateButton("ActivateButton");
         _kindButton = CreateButton("MapKindButton");
+        _statusLabel = AutoFree(new Label());
 
         var controller = new DeckBuilderController
         {
@@ -47,7 +50,7 @@ public class DeckBuilderControllerGridSessionTest
             ActivateButton = _button,
             MapKindButton = _kindButton,
             // Never added to the tree, so Initialize only stores the session and nothing generates.
-            WorldTileMapScreenScene = AutoFree(new SimpleWorldMapScreen())
+            WorldTileMapScreenScene = AutoFree(new SimpleWorldMapScreen { StatusLabel = _statusLabel })
         };
 
         AddNode(_abilitySlot);
@@ -59,7 +62,6 @@ public class DeckBuilderControllerGridSessionTest
 
         await Insert(_abilitySlot);
         await Insert(_mapSlot);
-        _button.Interact();
     }
 
     [AfterTest]
@@ -69,8 +71,13 @@ public class DeckBuilderControllerGridSessionTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void CompletedGridSessionKeepsTheToggleDarkUntilTheResetPress()
     {
+        AssertBool(_kindButton.Enabled).IsTrue();
+        AssertThat(_statusLabel.Text).IsEqual("Map: grid");
+
+        _button.Interact();
         AssertBool(_kindButton.Enabled).IsFalse();
 
         _session.Report(SessionState.SessionComplete);
@@ -79,14 +86,19 @@ public class DeckBuilderControllerGridSessionTest
         AssertBool(_button.Enabled).IsTrue();
         AssertBool(_kindButton.Enabled).IsFalse();
 
+        // The grid screen's own session status, which the reset press replaces with the picked kind.
+        _statusLabel.Text = "Status: SessionComplete";
         _button.Interact();
 
         AssertBool(_kindButton.Enabled).IsTrue();
+        AssertThat(_statusLabel.Text).IsEqual("Map: grid");
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void GridSessionThatFallsBackToWaitingWithoutCompletingLightsTheToggleAgain()
     {
+        _button.Interact();
         _session.Report(SessionState.GeneratingMap);
         AssertBool(_kindButton.Enabled).IsFalse();
 

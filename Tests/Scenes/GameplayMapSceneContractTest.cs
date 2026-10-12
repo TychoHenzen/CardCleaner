@@ -70,12 +70,20 @@ public class GameplayMapSceneContractTest
             }
 
             var root = packed.Instantiate();
-            var controller = FindController(root);
-            AssertThat(controller).OverrideFailureMessage($"{path} has no DeckBuilderController").IsNotNull();
-            AssertThat(controller!.MapType).IsEqual(MapGenerationType.RegularGrid);
-            AssertThat(controller.MapKindButton).OverrideFailureMessage($"{path} leaves MapKindButton empty").IsNotNull();
-            AssertBool(ReferenceEquals(controller.MapKindButton, controller.ActivateButton)).IsFalse();
-            root.Free();
+            try
+            {
+                var controller = FindController(root);
+                AssertThat(controller).OverrideFailureMessage($"{path} has no DeckBuilderController").IsNotNull();
+                AssertThat(controller!.MapType).IsEqual(MapGenerationType.RegularGrid);
+                AssertThat(controller.MapKindButton)
+                    .OverrideFailureMessage($"{path} leaves MapKindButton empty")
+                    .IsNotNull();
+                AssertBool(ReferenceEquals(controller.MapKindButton, controller.ActivateButton)).IsFalse();
+            }
+            finally
+            {
+                root.Free();
+            }
         }
     }
 
