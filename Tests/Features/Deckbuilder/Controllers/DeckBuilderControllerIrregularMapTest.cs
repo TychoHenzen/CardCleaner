@@ -20,6 +20,8 @@ public class DeckBuilderControllerIrregularMapTest
     private DeckSlot _abilitySlot = null!;
     private DeckSlot _mapSlot = null!;
     private InteractableButton _button = null!;
+    private InteractableButton _kindButton = null!;
+    private DeckBuilderController _controller = null!;
     private IrregularWorldMapScreen? _screen;
 
     private async Task BuildController(bool withIrregularScreen)
@@ -28,12 +30,15 @@ public class DeckBuilderControllerIrregularMapTest
         _mapSlot = CreateSlot("MapSlot");
         _button = new InteractableButton { Name = "ActivateButton" };
         _button.AddChild(new CollisionShape3D { Shape = new BoxShape3D() });
+        _kindButton = new InteractableButton { Name = "MapKindButton" };
+        _kindButton.AddChild(new CollisionShape3D { Shape = new BoxShape3D() });
 
         var controller = new DeckBuilderController
         {
             AbilityDeckSlot = _abilitySlot,
             MapCardSlot = _mapSlot,
             ActivateButton = _button,
+            MapKindButton = _kindButton,
             // Never added to the tree: only the irregular map type is under test.
             WorldTileMapScreenScene = AutoFree(new SimpleWorldMapScreen()),
             MapType = MapGenerationType.IrregularMesh
@@ -51,7 +56,9 @@ public class DeckBuilderControllerIrregularMapTest
         AddNode(_abilitySlot);
         AddNode(_mapSlot);
         AddNode(_button);
+        AddNode(_kindButton);
         AddNode(controller);
+        _controller = controller;
         await ISceneRunner.SyncProcessFrame;
     }
 
@@ -87,6 +94,7 @@ public class DeckBuilderControllerIrregularMapTest
 
         AssertBool(_abilitySlot.HasCards).IsTrue();
         AssertBool(_mapSlot.HasCard).IsTrue();
+        AssertBool(_kindButton.Enabled).IsTrue();
     }
 
     [TestCase]
@@ -101,5 +109,41 @@ public class DeckBuilderControllerIrregularMapTest
         _screen!.RaiseExplorationFinished();
 
         AssertBool(_button.Enabled).IsTrue();
+    }
+
+    [TestCase]
+    public async Task FinishedExplorationIsHandledForTheKindThatRanEvenIfMapTypeChangedSince()
+    {
+        await BuildController(withIrregularScreen: true);
+        await Insert(_abilitySlot);
+        await Insert(_mapSlot);
+        _button.Interact();
+
+        _controller.MapType = MapGenerationType.RegularGrid;
+        _screen!.RaiseExplorationFinished();
+
+        AssertBool(_button.Enabled).IsTrue();
+    }
+
+    [TestCase]
+    public async Task KindToggleStaysDarkFromTheActivatePressUntilTheResetPress()
+    {
+        await BuildController(withIrregularScreen: true);
+        AssertBool(_kindButton.Enabled).IsTrue();
+        await Insert(_abilitySlot);
+        await Insert(_mapSlot);
+
+        _button.Interact();
+        AssertBool(_kindButton.Enabled).IsFalse();
+
+        _kindButton.EmitSignal(InteractableButton.SignalName.ButtonPressed);
+        AssertThat(_controller.MapType).IsEqual(MapGenerationType.IrregularMesh);
+
+        _screen!.RaiseExplorationFinished();
+        AssertBool(_kindButton.Enabled).IsFalse();
+
+        _button.Interact();
+        AssertBool(_kindButton.Enabled).IsTrue();
+        AssertBool(_screen.IsInitialized).IsFalse();
     }
 }

@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
 [ext_resource type="Script" path="res://Scripts/Features/Workshop/Components/CreditCardSeeder.cs" id="CreditCardSeeder"]
 [ext_resource type="PackedScene" path="res://Scenes/Workshop/CabinetAssembly.tscn" id="CabinetAssembly"]
+[ext_resource type="PackedScene" uid="uid://cdbi77q8mi6sd" path="res://Scenes/UI/button.tscn" id="Button"]
 [ext_resource type="Script" path="res://Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs" id="DeckBuilderController"]
 [ext_resource type="Script" path="res://Scripts/Features/Deckbuilder/Services/GameSessionService.cs" id="GameSessionService"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/OrderTerminal.cs" id="OrderTerminal"]
@@ -75,6 +76,9 @@ shape = SubResource("CabinetShape")
 
 [node name="Assembly" parent="Cabinet" instance=ExtResource("CabinetAssembly")]
 
+[node name="MapKindButton" parent="Cabinet" instance=ExtResource("Button")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.127075, 3.15)
+
 [node name="SimpleTileMapScreen" parent="Cabinet" node_paths=PackedStringArray("LootSpawnPoint") instance=ExtResource("SimpleScreen")]
 transform = Transform3D(0.26, 0, 0, 0, 0.26, 0, 0, 0, 0.26, 0, 1.5, 0.67)
 visible = false
@@ -88,14 +92,14 @@ transform = Transform3D(0.26, 0, 0, 0, 0.26, 0, 0, 0, 0.26, 0, 1.5, 0.67)
 MeshRings = 20
 VisionRange = 5.0
 
-[node name="DeckbuilderController" type="Node" parent="." node_paths=PackedStringArray("AbilityDeckSlot", "MapCardSlot", "ActivateButton", "WorldTileMapScreenScene", "IrregularMapScreen")]
+[node name="DeckbuilderController" type="Node" parent="." node_paths=PackedStringArray("AbilityDeckSlot", "MapCardSlot", "ActivateButton", "MapKindButton", "WorldTileMapScreenScene", "IrregularMapScreen")]
 script = ExtResource("DeckBuilderController")
 AbilityDeckSlot = NodePath("../Cabinet/Assembly/DeckSlot")
 MapCardSlot = NodePath("../Cabinet/Assembly/CardSlot")
 ActivateButton = NodePath("../Cabinet/Assembly/Button/StaticBody3D")
+MapKindButton = NodePath("../Cabinet/MapKindButton/StaticBody3D")
 WorldTileMapScreenScene = NodePath("../Cabinet/SimpleTileMapScreen")
 IrregularMapScreen = NodePath("../Cabinet/IrregularTileMapScreen")
-MapType = 1
 
 [node name="GameSessionService" type="Node" parent="."]
 script = ExtResource("GameSessionService")

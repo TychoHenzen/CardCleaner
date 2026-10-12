@@ -19,9 +19,9 @@ using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// The grid map played end to end in the workshop: the shop scene's own registration, the grid kind picked on
-/// the cabinet's controller, a map card dropped and the button pressed, then the session must run through
-/// generation, exploration and combat to its end and lay out the loot cards.
+/// The grid map played end to end in the workshop: the shop scene's own registration, the grid kind the scene starts
+/// on, a map card dropped and the button pressed, then the session must run through generation, exploration and
+/// combat to its end and lay out the loot cards. The kind toggle stays dark until the reset press.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -89,10 +89,11 @@ public class ShopWorkshopGridMapSceneTest
         var workshop = _shop.GetNode<Node3D>("World/Workshop");
         var controller = workshop.GetNode<DeckBuilderController>("DeckbuilderController");
         var button = workshop.GetNode<InteractableButton>("Cabinet/Assembly/Button/StaticBody3D");
+        var toggle = workshop.GetNode<InteractableButton>("Cabinet/MapKindButton/StaticBody3D");
         var cardHolder = workshop.GetNode<DeckSlot>("Cabinet/Assembly/CardSlot");
         var session = workshop.GetNode<GameSessionService>("GameSessionService");
         var lootParent = _shop.GetNode<CardSpawner>("World/Cards");
-        controller.MapType = MapGenerationType.RegularGrid;
+        AssertThat(controller.MapType).IsEqual(MapGenerationType.RegularGrid);
 
         var states = new List<SessionState>();
         var lootCount = -1;
@@ -105,12 +106,17 @@ public class ShopWorkshopGridMapSceneTest
         mapCard.GlobalPosition = cardHolder.GlobalPosition + cardHolder.PositionOffset;
         await WorkshopSceneRig.Settle();
         AssertBool(button.Enabled).IsTrue();
+        AssertBool(toggle.Enabled).IsTrue();
 
         button.Interact();
         Engine.TimeScale = SessionTimeScale;
         var clock = Stopwatch.StartNew();
+        var toggleLitDuringSession = false;
         while (!states.Contains(SessionState.SessionComplete) && clock.Elapsed.TotalSeconds < SessionBudgetSeconds)
+        {
+            toggleLitDuringSession |= toggle.Enabled;
             await ISceneRunner.SyncProcessFrame;
+        }
         Engine.TimeScale = 1;
         await WorkshopSceneRig.Settle();
 
@@ -125,6 +131,9 @@ public class ShopWorkshopGridMapSceneTest
             .OverrideFailureMessage($"The session completed without loot (combat lost?); history: {history}")
             .IsGreater(0);
 
+        AssertBool(toggleLitDuringSession).OverrideFailureMessage("The kind toggle lit while the session ran").IsFalse();
+        AssertBool(toggle.Enabled).OverrideFailureMessage("The kind toggle lit before the reset press").IsFalse();
+
         var loot = lootParent.GetChildren().OfType<CardController>().Except(cardsBefore).ToList();
         AssertThat(loot.Count).IsEqual(lootCount);
         var cabinet = workshop.GetNode<Node3D>("Cabinet").GlobalPosition;
@@ -135,5 +144,9 @@ public class ShopWorkshopGridMapSceneTest
                 .OverrideFailureMessage($"Loot card at {card.GlobalPosition} is not laid out at the cabinet {cabinet}")
                 .IsLessEqual(LootReachMeters);
         }
+
+        AssertBool(button.Enabled).IsTrue();
+        button.Interact();
+        AssertBool(toggle.Enabled).IsTrue();
     }
 }
