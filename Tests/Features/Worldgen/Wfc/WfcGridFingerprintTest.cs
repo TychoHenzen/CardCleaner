@@ -20,13 +20,15 @@ namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 /// async wrapper and its progress profiler. A refactor of the grid WFC path must reproduce this fingerprint
 /// exactly. The golden value was recorded on master 17e3c3f, before any refactor, and recorded again in #256 when
 /// the start and the enemies moved to MapPopulation (drawn after the terrain from the same RNG, so only the start
-/// and enemies lines changed; GridMapGolden.txt shows the same for its map).
+/// and enemies lines changed; GridMapGolden.txt shows the same for its map). It was recorded a third time when
+/// nearer cells stopped supplying a third enemy: no cell of this 16 x 12 map is 12.5 cells from its start, so it now
+/// gets 2 enemies.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class WfcGridFingerprintTest
 {
-    private const string GridGolden = "26fa0cb46b4763d386d7f9da9af02c8deaa92c58e7e24e2e10af0ac853d9eec0";
+    private const string GridGolden = "0e3c45b8f467eab95e06d133d0cb5bbd654a6cb1df9d5614ba3f81dbacc3d14c";
     private const ulong GridSeed = 4242;
     private static readonly Vector2I GridSize = new(16, 12);
 
