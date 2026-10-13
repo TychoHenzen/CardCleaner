@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
@@ -22,7 +21,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 /// its start call until the session falls back to waiting or the screen is reset.
 /// Renders 2D content via SubViewport onto a 3D mesh for world-space display.
 /// </summary>
-public partial class IrregularWorldMapScreen : Node3D
+public partial class IrregularWorldMapScreen : Node3D, ISessionView
 {
     #region Exports
 
@@ -49,9 +48,8 @@ public partial class IrregularWorldMapScreen : Node3D
     // Tile registry the render layer reads tile art from
     private ITileRegistry? _tileRegistry;
 
-    private IGameSessionService? _gameSession;
-    private (CardSignature[] MapSeed, CardSignature[] Abilities, IMapGenerator Generator)? _pendingSession;
-    private bool _ownsSession;
+    // The screen acts only on a session it started: the link passes events on while the screen owns the session.
+    private readonly SessionViewLink _link;
 
     // The move that animates now. Every move the session reports is reported shown exactly once: when its animation
     // ends, or at once when a later move arrives first. Its visibility arrives while it animates and is shown when the
@@ -80,9 +78,14 @@ public partial class IrregularWorldMapScreen : Node3D
 
     #region Lifecycle
 
+    public IrregularWorldMapScreen()
+    {
+        _link = new SessionViewLink(this);
+    }
+
     public override void _EnterTree()
     {
-        if (_gameSession == null)
+        if (!_link.IsConnected)
             ServiceLocator.Get<IGameSessionService>(OnGameSessionReady);
     }
 
@@ -98,16 +101,7 @@ public partial class IrregularWorldMapScreen : Node3D
 
     public override void _ExitTree()
     {
-        ReleaseSession();
-        if (_gameSession == null) return;
-
-        _gameSession.StateChanged -= OnStateChanged;
-        _gameSession.GeneratedMapReady -= OnGeneratedMapReady;
-        _gameSession.PlayerMovedWorld -= OnPlayerMovedWorld;
-        _gameSession.VisibilityCellsUpdated -= OnVisibilityCellsUpdated;
-        _gameSession.EnemyDefeatedCell -= OnEnemyDefeatedCell;
-        _gameSession.LootGenerated -= OnLootGenerated;
-        _gameSession = null;
+        _link.Disconnect();
     }
 
     #endregion
@@ -127,14 +121,7 @@ public partial class IrregularWorldMapScreen : Node3D
             return;
         }
 
-        if (_gameSession == null)
-        {
-            ILog.Print("GameSessionService not ready, storing pending irregular session...");
-            _pendingSession = (mapSeed, abilities, generator);
-            return;
-        }
-
-        StartOwnSession(mapSeed, abilities, generator);
+        _link.Start(mapSeed, abilities, generator);
     }
 
     public void ToggleDebug()
@@ -156,8 +143,7 @@ public partial class IrregularWorldMapScreen : Node3D
     /// </summary>
     public void Reset()
     {
-        ReleaseSession();
-        _pendingSession = null;
+        _link.Reset();
         CloseView();
     }
 
@@ -167,40 +153,20 @@ public partial class IrregularWorldMapScreen : Node3D
 
     private void OnGameSessionReady(IGameSessionService gameSession)
     {
-        if (_gameSession != null || !IsInstanceValid(this) || !IsInsideTree())
+        if (_link.IsConnected || !IsInstanceValid(this) || !IsInsideTree())
             return;
 
-        _gameSession = gameSession;
-        gameSession.StateChanged += OnStateChanged;
-        gameSession.GeneratedMapReady += OnGeneratedMapReady;
-        gameSession.PlayerMovedWorld += OnPlayerMovedWorld;
-        gameSession.VisibilityCellsUpdated += OnVisibilityCellsUpdated;
-        gameSession.EnemyDefeatedCell += OnEnemyDefeatedCell;
-        gameSession.LootGenerated += OnLootGenerated;
-
-        if (_pendingSession is not { } pending)
-            return;
-
-        _pendingSession = null;
-        StartOwnSession(pending.MapSeed, pending.Abilities, pending.Generator);
+        _link.Connect(gameSession);
     }
 
-    private void StartOwnSession(CardSignature[] mapSeed, CardSignature[] abilities, IMapGenerator generator)
+    /// <summary>
+    /// Clears the last session's map before the link starts a new session, and hands over the raycast checker when
+    /// the screen sees with raycasts.
+    /// </summary>
+    IVisibilityChecker? ISessionView.PrepareForSession()
     {
-        var session = _gameSession!;
-        if (session.CurrentState != SessionState.WaitingForCards)
-        {
-            ILog.Error("Cannot start an irregular session while another session runs");
-            return;
-        }
-
         CloseView();
-        _ownsSession = true;
-        session.StartSession(mapSeed.ToList(), abilities.ToList(), generator, CreateVisibilityChecker());
-
-        // A start the service refused leaves it waiting; the screen then owns nothing.
-        if (session.CurrentState == SessionState.WaitingForCards)
-            _ownsSession = false;
+        return CreateVisibilityChecker();
     }
 
     // ASSUMPTION: the raycast checker reads the viewport's 2D space, whose opaque terrain shapes the render layer
@@ -210,10 +176,8 @@ public partial class IrregularWorldMapScreen : Node3D
             ? new RaycastVisibilityChecker(Viewport.World2D.DirectSpaceState)
             : null;
 
-    private void OnStateChanged(SessionState state)
+    void ISessionView.OnStateChanged(SessionState state)
     {
-        if (!_ownsSession) return;
-
         switch (state)
         {
             case SessionState.GeneratingMap:
@@ -232,29 +196,20 @@ public partial class IrregularWorldMapScreen : Node3D
             case SessionState.SessionComplete:
                 ShowStatus("Session complete!");
                 break;
-            case SessionState.WaitingForCards:
-                ReleaseSession();
-                break;
         }
     }
 
     /// <summary>
-    /// Stops acting on the session: no more reports, and visibility still waiting for an animation is dropped.
+    /// The screen no longer owns the session: visibility still waiting for an animation is dropped.
     /// </summary>
-    private void ReleaseSession()
-    {
-        _ownsSession = false;
-        _pendingVisibility = null;
-    }
+    void ISessionView.OnSessionReleased() => _pendingVisibility = null;
 
     /// <summary>
     /// Shows the map of a session this screen started. The session's generator must give an irregular mesh map: the
     /// screen checks that here, once, and any other map throws, which ends the session.
     /// </summary>
-    private void OnGeneratedMapReady(IGeneratedMap generated)
+    void ISessionView.OnMapReady(IGeneratedMap generated)
     {
-        if (!_ownsSession) return;
-
         if (generated is not IMeshGeneratedMap meshMap)
             throw new InvalidOperationException("The session's generator returned no irregular mesh map");
 
@@ -286,10 +241,8 @@ public partial class IrregularWorldMapScreen : Node3D
     /// move to a cell that is not next to the player is shown at once, and a move that arrives while the last one
     /// still animates first ends that animation, so every move is reported exactly once.
     /// </summary>
-    private void OnPlayerMovedWorld(Vector2 worldPos)
+    void ISessionView.OnPlayerMoved(Vector2 worldPos)
     {
-        if (!_ownsSession) return;
-
         if (_animatingStep is { } previous)
         {
             _view?.Movement?.TeleportToCell(previous.Cell);
@@ -299,7 +252,7 @@ public partial class IrregularWorldMapScreen : Node3D
         var cellId = _view?.MapData.GetCellAtPosition(worldPos);
         if (_view?.Movement is not { } movement || cellId is not { } cell)
         {
-            _gameSession?.ReportStepShown();
+            _link.ReportStepShown();
             return;
         }
 
@@ -327,13 +280,12 @@ public partial class IrregularWorldMapScreen : Node3D
         PlayerMoved?.Invoke(cellId, worldPos);
         ShowStatus($"Cell: {cellId} Pos: {worldPos:F1}");
 
-        if (_ownsSession)
-            _gameSession?.ReportStepShown();
+        _link.ReportStepShown();
     }
 
-    private void OnVisibilityCellsUpdated(IReadOnlySet<int> seenCells, IReadOnlySet<int> visibleCells)
+    void ISessionView.OnVisibilityUpdated(IReadOnlySet<int> seenCells, IReadOnlySet<int> visibleCells)
     {
-        if (!_ownsSession || _view?.FogOfWar == null) return;
+        if (_view?.FogOfWar == null) return;
 
         _pendingVisibility = (new HashSet<int>(seenCells), new HashSet<int>(visibleCells));
         if (_animatingStep == null)
@@ -342,7 +294,7 @@ public partial class IrregularWorldMapScreen : Node3D
 
     private void ApplyPendingVisibility()
     {
-        if (_pendingVisibility is not { } update || !_ownsSession) return;
+        if (_pendingVisibility is not { } update || !_link.OwnsSession) return;
 
         _pendingVisibility = null;
         _view?.FogOfWar?.UpdateVisibility(update.Seen, update.Visible);
@@ -351,10 +303,8 @@ public partial class IrregularWorldMapScreen : Node3D
     /// <summary>
     /// Removes the defeated enemy and puts the player on its cell, where the session placed it.
     /// </summary>
-    private void OnEnemyDefeatedCell(int cellId)
+    void ISessionView.OnEnemyDefeated(int cellId)
     {
-        if (!_ownsSession) return;
-
         _view?.RemoveEnemyAt(cellId);
         if (_animatingStep == null && _view?.Movement is { } movement)
         {
@@ -365,15 +315,18 @@ public partial class IrregularWorldMapScreen : Node3D
         EnemyDefeated?.Invoke(cellId);
     }
 
-    private void OnLootGenerated(List<CardSignature> lootSignatures)
+    void ISessionView.OnLootGenerated(List<CardSignature> lootSignatures)
     {
-        if (!_ownsSession) return;
-
         ILog.Print($"Loot generated: {lootSignatures.Count} cards");
         if (ILog.ExportCheck(LootSpawnPoint, nameof(LootSpawnPoint), this))
             return;
 
         LootCardSpawner.Spawn(lootSignatures, LootSpawnPoint!.GlobalTransform);
+    }
+
+    // The irregular view draws no path.
+    void ISessionView.OnPathUpdated(IReadOnlyList<int> pathCells, int? targetCell)
+    {
     }
 
     #endregion
