@@ -1,5 +1,4 @@
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Tests.TestUtilities.Fixtures;
 using Godot;
 

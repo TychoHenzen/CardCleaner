@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -110,7 +109,10 @@ public class IrregularMeshMapGenerator : IMapGenerator
         return rings;
     }
 
-    private static IrregularMesh BuildMesh(MapGenerationConfig config, RandomNumberGenerator rng, IProgress<float>? progress)
+    private static IrregularMesh BuildMesh(
+        MapGenerationConfig config,
+        RandomNumberGenerator rng,
+        IProgress<float>? progress)
     {
         var rings = CalculateRings(config);
         progress?.Report(0.2f);

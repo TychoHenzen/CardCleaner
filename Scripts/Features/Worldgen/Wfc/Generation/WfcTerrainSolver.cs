@@ -18,19 +18,10 @@ internal sealed class WfcTerrainSolver : IWfcTerrainSolver
 
     public WfcTerrainSolver(
         IReadOnlyList<(string tileA, string tileB)> transitionPairs,
-        IReadOnlyDictionary<string, HashSet<string>>? extraAdjacency,
         IWfcTileCatalog? tileCatalog)
     {
         _transitionPairs = transitionPairs;
         _rules = new WfcAdjacencyRules(transitionPairs);
-        if (extraAdjacency != null)
-        {
-            foreach (var (tile, neighbors) in extraAdjacency)
-            {
-                foreach (var neighbor in neighbors)
-                    _rules.AddAdjacency(tile, neighbor);
-            }
-        }
 
         // Snapshot before the map generator below adds gap tiles to the rules, so the ids are the pre-gap ones.
         RuleTileIds = _rules.AllTileIds.ToList();

@@ -36,10 +36,9 @@ public interface IWfcTerrainSolver
         Func<string, bool>? gapTileFilter);
 
     /// <summary>
-    /// Creates a solver whose rules are the given transition pairs plus the given extra adjacencies.
+    /// Creates a solver whose rules are the given transition pairs.
     /// </summary>
     static IWfcTerrainSolver Create(
         IReadOnlyList<(string tileA, string tileB)> transitionPairs,
-        IReadOnlyDictionary<string, HashSet<string>>? extraAdjacency,
-        IWfcTileCatalog? tileCatalog) => new WfcTerrainSolver(transitionPairs, extraAdjacency, tileCatalog);
+        IWfcTileCatalog? tileCatalog) => new WfcTerrainSolver(transitionPairs, tileCatalog);
 }
