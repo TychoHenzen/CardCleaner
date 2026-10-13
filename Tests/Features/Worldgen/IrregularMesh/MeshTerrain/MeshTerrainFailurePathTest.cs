@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -33,10 +32,11 @@ public class MeshTerrainFailurePathTest
             AutoTileId(registry));
         var generator = new IrregularMeshNs.MeshTerrainGenerator(
             new MeshTerrainWfcSetup(solver, registry),
-            new Dictionary<string, int>());
-        generator.SetBiomeRegistry(DefaultBiomes());
+            new Dictionary<string, int>(),
+            MeshMapGeneratorFixture.DefaultBiomes());
 
-        var mesh = generator.GenerateWithCards(3, TerrainCards(), 4242, relaxationIterations: 8);
+        var mesh = generator.GenerateWithCards(
+            3, MeshMapGeneratorFixture.TerrainCards(), 4242, relaxationIterations: 8);
 
         AssertThat(solver.CatalogSolveCalls).IsEqual(1);
         AssertBool(mesh.Vertices.All(vertex => vertex.ForegroundTileId == null)).IsTrue();
@@ -77,19 +77,6 @@ public class MeshTerrainFailurePathTest
 
     private static string AutoTileId(ITileRegistry registry) =>
         registry.GetAllTiles().First(tile => tile.HasAutoTileVariants).Id;
-
-    private static BiomeRegistry DefaultBiomes()
-    {
-        var biomes = new BiomeRegistry();
-        biomes.RegisterDefaultBiomes();
-        return biomes;
-    }
-
-    private static CardSignature[] TerrainCards() => new[]
-    {
-        new CardSignature(new[] { 1f, 1f, 0f, -1f, 0f, 0.5f, 0f, 0f }),
-        new CardSignature(new[] { -1f, -1f, 1f, 1f, 0f, -0.5f, 0f, 0f })
-    };
 
     /// <summary>
     /// Delegates background generation and rule ids to a real solver. The catalog solve fails and counts its calls.

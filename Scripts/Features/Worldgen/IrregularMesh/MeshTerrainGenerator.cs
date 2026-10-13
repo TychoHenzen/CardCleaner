@@ -14,27 +14,24 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 public class MeshTerrainGenerator
 {
     private readonly MeshTerrainWfcRunner _terrainWfc;
+    private readonly BiomeRegistry _biomeRegistry;
 
     /// <summary>
-    /// Creates a two-pass terrain generator over a solver and the registry its catalog wraps.
+    /// Creates a two-pass terrain generator over a solver, the registry its catalog wraps, and the biomes the cards
+    /// choose between.
     /// </summary>
-    internal MeshTerrainGenerator(MeshTerrainWfcSetup setup, Dictionary<string, int> tileToTerrainType)
+    internal MeshTerrainGenerator(
+        MeshTerrainWfcSetup setup,
+        Dictionary<string, int> tileToTerrainType,
+        BiomeRegistry biomeRegistry)
     {
         _terrainWfc = new MeshTerrainWfcRunner(setup, tileToTerrainType);
-    }
-
-    private BiomeRegistry? _biomeRegistry;
-
-    /// <summary>
-    /// Sets the biome registry for card-based terrain generation.
-    /// </summary>
-    public void SetBiomeRegistry(BiomeRegistry registry)
-    {
-        _biomeRegistry = registry;
+        _biomeRegistry = biomeRegistry ?? throw new ArgumentNullException(nameof(biomeRegistry));
     }
 
     /// <summary>
-    /// Generates terrain using card signatures to influence biome distribution.
+    /// Generates terrain using card signatures to influence biome distribution. Without cards or biomes the mesh
+    /// gets the fallback terrain.
     /// </summary>
     public IrregularMesh GenerateWithCards(
         int rings,
@@ -45,7 +42,7 @@ public class MeshTerrainGenerator
     {
         var mesh = CreateMesh(rings, seed, relaxationIterations);
         var biomeRegistry = _biomeRegistry;
-        if (biomeRegistry == null || biomeRegistry.Count == 0)
+        if (biomeRegistry.Count == 0)
         {
             GD.PrintErr("[MeshTerrainGen] No biomes registered, using fallback terrain");
             _terrainWfc.ApplyFallbackTerrain(mesh);
@@ -76,16 +73,6 @@ public class MeshTerrainGenerator
             effectiveSize,
             bounds,
             (ulong)seed);
-    }
-
-    /// <summary>
-    /// Generates a mesh with the fallback terrain, for a map started without cards.
-    /// </summary>
-    internal IrregularMesh GenerateFallback(int rings, int seed, int relaxationIterations)
-    {
-        var mesh = CreateMesh(rings, seed, relaxationIterations);
-        _terrainWfc.ApplyFallbackTerrain(mesh);
-        return mesh;
     }
 
     private static IrregularMesh CreateMesh(int rings, int seed, int relaxationIterations)

@@ -5,7 +5,7 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 /// <summary>
-/// Manages enemy placement and sprites on the irregular mesh map.
+/// Draws the enemy sprites on the irregular mesh map. The generator places the enemies (MapPopulation).
 /// </summary>
 public class IrregularMapEnemyManager
 {
@@ -18,78 +18,6 @@ public class IrregularMapEnemyManager
     {
         _mapData = mapData;
         _parent = parent;
-    }
-
-    /// <summary>
-    /// Places enemies on the map at a minimum distance from player start.
-    /// </summary>
-    /// <param name="seed">Random seed for placement.</param>
-    /// <param name="playerStartCell">Cell ID where the player starts.</param>
-    /// <param name="minDistanceFromPlayer">Minimum world-space distance from player.</param>
-    public void PlaceEnemies(int seed, int playerStartCell, float minDistanceFromPlayer = 200f)
-    {
-        var rng = new RandomNumberGenerator();
-        rng.Seed = (ulong)seed;
-
-        var eligibleCells = FindEligibleCells(playerStartCell, minDistanceFromPlayer);
-        if (eligibleCells.Count == 0)
-        {
-            GD.PrintErr("[IrregularMapEnemyManager] Not enough passable cells for enemies!");
-            return;
-        }
-
-        ShuffleCells(eligibleCells, rng);
-
-        // Place 1-3 enemies
-        int enemyCount = rng.RandiRange(1, Mathf.Min(3, eligibleCells.Count));
-        for (int i = 0; i < enemyCount; i++)
-        {
-            _mapData.AddEnemySpawn(eligibleCells[i]);
-        }
-
-        GD.Print(
-            $"[IrregularMapEnemyManager] Placed {enemyCount} enemies on map " +
-            $"(min distance: {minDistanceFromPlayer})");
-    }
-
-    /// <summary>
-    /// Passable cells far enough from the player start, or any passable cell other than the start as fallback.
-    /// </summary>
-    private List<int> FindEligibleCells(int playerStartCell, float minDistanceFromPlayer)
-    {
-        var playerStartPos = _mapData.GetCellCenter(playerStartCell);
-
-        var eligibleCells = new List<int>();
-        for (int i = 0; i < _mapData.CellCount; i++)
-        {
-            if (!_mapData.IsPassable(i))
-                continue;
-
-            var distance = _mapData.GetCellCenter(i).DistanceTo(playerStartPos);
-            if (distance >= minDistanceFromPlayer)
-                eligibleCells.Add(i);
-        }
-
-        if (eligibleCells.Count > 0)
-            return eligibleCells;
-
-        GD.PrintErr("[IrregularMapEnemyManager] No cells far enough from player for enemy placement!");
-        for (int i = 0; i < _mapData.CellCount; i++)
-        {
-            if (_mapData.IsPassable(i) && i != playerStartCell)
-                eligibleCells.Add(i);
-        }
-
-        return eligibleCells;
-    }
-
-    private static void ShuffleCells(List<int> cells, RandomNumberGenerator rng)
-    {
-        for (int i = cells.Count - 1; i > 0; i--)
-        {
-            int j = (int)(rng.Randi() % (uint)(i + 1));
-            (cells[i], cells[j]) = (cells[j], cells[i]);
-        }
     }
 
     /// <summary>

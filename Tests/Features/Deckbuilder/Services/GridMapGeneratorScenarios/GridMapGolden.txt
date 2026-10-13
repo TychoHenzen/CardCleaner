@@ -1,6 +1,6 @@
 size 51x51
-start 50,23
-enemies 19,43;15,50;31,24
+start 43,26
+enemies 7,34;48,14
 bush2,base_sand1,base_grass4,fdr_sand2,base_sand1,grass2,grass2,grass2,base_grass4,base_grass4,grass2,base_grass4,base_sand1,base_sand1,rocks1,base_sand1,base_sand1,base_sand1,base_grass4,fdr_dirt2,base_grass4,base_grass4,base_grass4,rocks1,rocks1,base_sand1,rocks1,rocks1,rocks1,base_grass4,base_dirt3,fdr_sand2,base_dirt3,base_dirt3,base_dirt3,base_dirt3,base_sand1,base_dirt3,grass2,grass2,grass2,grass2,grass2,grass2,grass2,grass2,grass2,grass2,base_sand1,base_grass4,grass2
 base_sand1,base_grass4,base_grass4,base_dirt3,base_sand1,base_sand1,base_sand1,base_sand1,base_sand1,base_sand1,grass2,base_sand1,fdr_grass2,base_sand1,base_sand1,base_grass4,base_grass4,base_sand1,base_sand1,fdr_dirt2,base_grass4,fdr_grass2,base_grass4,rocks1,rocks1,base_grass4,base_grass4,base_sand1,base_sand1,base_grass4,base_grass4,base_dirt3,base_dirt3,mound5,mound5,base_sand1,base_sand1,base_dirt3,base_sand1,base_dirt3,base_grass4,grass2,grass2,grass2,grass2,grass2,grass2,grass2,grass2,grass2,grass2
 mound5,base_sand1,base_grass4,base_grass4,base_dirt3,grass2,base_sand1,base_grass4,base_sand1,base_sand1,base_sand1,base_sand1,fdr_grass2,base_sand1,rocks1,rocks1,base_grass4,base_sand1,base_sand1,base_dirt3,base_sand1,base_sand1,base_sand1,base_grass4,base_sand1,base_grass4,base_grass4,fdr_sand2,fdr_sand2,fdr_sand2,fdr_sand2,base_dirt3,base_dirt3,base_dirt3,base_dirt3,base_dirt3,grass2,base_dirt3,grass2,grass2,grass2,grass2,grass2,grass2,grass2,grass2,grass2,grass2,grass2,grass2,base_grass4

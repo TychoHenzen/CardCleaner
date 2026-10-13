@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Features.Shop;
+using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
@@ -42,6 +43,7 @@ public class ShopWorkshopRealServicesSceneTest
         ServiceLocator.ResetForTesting();
         ServiceLocator.Container.RegisterSingleton(new RandomNumberGenerator());
         ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
+        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(MeshMapGeneratorFixture.Create());
 
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _tree.Root.AddChild(_shop);

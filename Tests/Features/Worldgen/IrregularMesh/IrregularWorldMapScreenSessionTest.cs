@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
@@ -16,6 +15,9 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 public class IrregularWorldMapScreenSessionTest
 {
     private const int Seed = 4242;
+    private const int FreeFrameBudget = 5;
+
+    private static readonly IrregularMeshNs.MeshMapGenerator Generator = MeshMapGeneratorFixture.Create();
 
     private readonly List<IrregularMeshNs.IrregularWorldMapScreen> _screens = new();
 
@@ -28,15 +30,6 @@ public class IrregularWorldMapScreenSessionTest
         return screen;
     }
 
-    private static CardSignature[] TerrainCards() => new[]
-    {
-        new CardSignature(new[] { 1f, 1f, 0f, -1f, 0f, 0.5f, 0f, 0f }),
-        new CardSignature(new[] { -1f, -1f, 1f, 1f, 0f, -0.5f, 0f, 0f })
-    };
-
-    private static string TerrainOf(IrregularMeshNs.IrregularMesh mesh) =>
-        string.Join(",", mesh.Vertices.Select(v => $"{v.TerrainType}:{v.TileId}:{v.ForegroundTileId}:{v.Position}"));
-
     private static List<IrregularMeshNs.IrregularMeshExplorationController> ExplorationControllers(Node screen) =>
         screen.GetNode("Viewport").GetChildren().OfType<IrregularMeshNs.IrregularMeshExplorationController>().ToList();
 
@@ -47,14 +40,34 @@ public class IrregularWorldMapScreenSessionTest
         AddNode(screen);
         await ISceneRunner.SyncProcessFrame;
 
-        screen.GenerateMap(Seed);
+        await screen.GenerateMap(Generator, Seed);
         var firstController = screen.ExplorationController!;
-        screen.GenerateMap(Seed + 1);
-        await ISceneRunner.SyncProcessFrame;
+        await screen.GenerateMap(Generator, Seed + 1);
+        // The map arrives in a continuation that can run before this frame's process step, so the queued free of the
+        // first controller can take one more frame.
+        for (var frame = 0; frame < FreeFrameBudget && IsInstanceValid(firstController); frame++)
+            await ISceneRunner.SyncProcessFrame;
 
         AssertBool(IsInstanceValid(firstController)).IsFalse();
         AssertThat(ExplorationControllers(screen).Count).IsEqual(1);
         AssertThat(screen.ExplorationController).IsEqual(ExplorationControllers(screen)[0]);
+    }
+
+    [TestCase]
+    public async Task StartingANewGenerationClosesTheRunningSession()
+    {
+        var screen = CreateScreen();
+        AddNode(screen);
+        await ISceneRunner.SyncProcessFrame;
+        await screen.GenerateMap(Generator, Seed);
+        var firstController = screen.ExplorationController!;
+
+        // This map never arrives, so only the start of the new generation can have closed the first session.
+        _ = screen.GenerateMap(MeshMapGeneratorFixture.Pending(), Seed + 1);
+
+        AssertThat(screen.ExplorationController).IsNull();
+        AssertBool(screen.IsInitialized).IsFalse();
+        AssertBool(firstController.IsQueuedForDeletion()).IsTrue();
     }
 
     [TestCase]
@@ -63,20 +76,21 @@ public class IrregularWorldMapScreenSessionTest
         var reference = CreateScreen();
         AddNode(reference);
         await ISceneRunner.SyncProcessFrame;
-        reference.GenerateMap(Seed, TerrainCards(), null);
+        await reference.GenerateMap(Generator, Seed, MeshMapGeneratorFixture.TerrainCards(), null);
 
         var seedOnly = CreateScreen();
         AddNode(seedOnly);
         await ISceneRunner.SyncProcessFrame;
-        seedOnly.GenerateMap(Seed);
+        await seedOnly.GenerateMap(Generator, Seed);
 
         var deferred = CreateScreen();
-        deferred.GenerateMap(Seed, TerrainCards(), null);
+        var deferredGeneration = deferred.GenerateMap(Generator, Seed, MeshMapGeneratorFixture.TerrainCards(), null);
         AddNode(deferred);
-        await ISceneRunner.SyncProcessFrame;
+        await deferredGeneration;
 
-        AssertThat(TerrainOf(reference.Mesh!)).IsNotEqual(TerrainOf(seedOnly.Mesh!));
-        AssertThat(TerrainOf(deferred.Mesh!)).IsEqual(TerrainOf(reference.Mesh!));
+        var referenceTerrain = MeshMapGeneratorFixture.TerrainOf(reference.Mesh!);
+        AssertThat(referenceTerrain).IsNotEqual(MeshMapGeneratorFixture.TerrainOf(seedOnly.Mesh!));
+        AssertThat(MeshMapGeneratorFixture.TerrainOf(deferred.Mesh!)).IsEqual(referenceTerrain);
     }
 
     private static bool IsInstanceValid(GodotObject obj) => GodotObject.IsInstanceValid(obj);

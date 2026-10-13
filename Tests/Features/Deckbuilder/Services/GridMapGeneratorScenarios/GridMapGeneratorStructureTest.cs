@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
@@ -54,7 +55,7 @@ public class GridMapGeneratorStructureTest : GridMapGeneratorTestBase
         var mapData = generator.GenerateMap(size);
 
         AssertThat(mapData.EnemyPositions).IsNotNull();
-        AssertThat(mapData.EnemyPositions.Count).IsBetween(1, 3);
+        AssertThat(mapData.EnemyPositions.Count).IsBetween(MapPopulation.MinEnemies, MapPopulation.MaxEnemies);
     }
 
     [TestCase]

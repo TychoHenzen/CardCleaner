@@ -73,6 +73,7 @@ public class ShopWorkshopReliabilitySceneTest
 
         _rig.Button.Interact();
         await WorkshopSceneRig.Settle();
+        await _rig.WaitForMap();
 
         AssertBool(_rig.DeckHolder.HasCards).IsFalse();
         AssertBool(_rig.CardHolder.HasCards).IsFalse();
@@ -84,6 +85,7 @@ public class ShopWorkshopReliabilitySceneTest
         await _rig.Place(_rig.CardHolder, SomeCard);
         _rig.Button.Interact();
         await WorkshopSceneRig.Settle();
+        await _rig.WaitForMap();
         AssertBool(_rig.Screen.IsInitialized).IsTrue();
     }
 }

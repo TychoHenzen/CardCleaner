@@ -10,8 +10,8 @@ namespace CardCleaner.Scripts.Core.Interfaces;
 public class MapGenerationConfig
 {
     /// <summary>
-    /// Size hint for the map. For grid maps, this is exact size.
-    /// For mesh maps, this influences the number of rings/vertices.
+    /// Size of the map. For grid maps, this is the exact size. The mesh generator does not read it: its ring count
+    /// comes from a MeshMapGenerationConfig, or its default for a plain config.
     /// </summary>
     public Vector2I Size { get; init; }
 

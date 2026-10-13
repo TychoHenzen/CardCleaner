@@ -13,6 +13,8 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 [RequireGodotRuntime]
 public class IrregularWorldMapScreenTest
 {
+    private static readonly IrregularMeshNs.MeshMapGenerator Generator = MeshMapGeneratorFixture.Create();
+
     private IrregularMeshNs.IrregularWorldMapScreen _screen = null!;
 
     private static IrregularMeshNs.IrregularWorldMapScreen CreateScreen(bool fogOfWarEnabled = true)
@@ -21,7 +23,6 @@ public class IrregularWorldMapScreenTest
         var screen = new IrregularMeshNs.IrregularWorldMapScreen
         {
             MeshRings = 2,
-            WorldScale = 16f,
             VisionRange = 3f,
             FogOfWarEnabled = fogOfWarEnabled,
             ShowDebug = false,
@@ -61,7 +62,6 @@ public class IrregularWorldMapScreenTest
         AddNode(screen); // Let gdUnit4 handle cleanup
 
         AssertThat(screen.MeshRings).IsEqual(5);
-        AssertThat(screen.WorldScale).IsEqual(16f);
         AssertThat(screen.VisionRange).IsEqual(3f);
         AssertBool(screen.FogOfWarEnabled).IsTrue();
         AssertBool(screen.ShowDebug).IsFalse();
@@ -72,9 +72,9 @@ public class IrregularWorldMapScreenTest
     #region Map Generation Tests
 
     [TestCase]
-    public void TestGenerateMapCreatesMesh()
+    public async Task TestGenerateMapCreatesMesh()
     {
-        _screen.GenerateMap(12345);
+        await _screen.GenerateMap(Generator, 12345);
 
         AssertBool(_screen.IsInitialized).IsTrue();
         AssertThat(_screen.Mesh).IsNotNull();
@@ -82,17 +82,17 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    public void TestGenerateMapCreatesFogOfWar()
+    public async Task TestGenerateMapCreatesFogOfWar()
     {
-        _screen.GenerateMap(12345);
+        await _screen.GenerateMap(Generator, 12345);
 
         AssertThat(_screen.FogOfWar).IsNotNull();
     }
 
     [TestCase]
-    public void TestGenerateMapCreatesExplorationController()
+    public async Task TestGenerateMapCreatesExplorationController()
     {
-        _screen.GenerateMap(12345);
+        await _screen.GenerateMap(Generator, 12345);
 
         AssertThat(_screen.ExplorationController).IsNotNull();
     }
@@ -107,20 +107,20 @@ public class IrregularWorldMapScreenTest
         AddNode(screen2);
         await ISceneRunner.SyncProcessFrame;
 
-        screen1.GenerateMap(42);
-        screen2.GenerateMap(42);
+        await screen1.GenerateMap(Generator, 42);
+        await screen2.GenerateMap(Generator, 42);
 
         AssertThat(screen1.Mesh!.Vertices.Count).IsEqual(screen2.Mesh!.Vertices.Count);
         AssertThat(screen1.Mesh!.Quads.Count).IsEqual(screen2.Mesh!.Quads.Count);
     }
 
     [TestCase]
-    public void TestGenerateMapRaisesMapGeneratedEvent()
+    public async Task TestGenerateMapRaisesMapGeneratedEvent()
     {
         var eventRaised = false;
         _screen.MapGenerated += () => eventRaised = true;
 
-        _screen.GenerateMap(12345);
+        await _screen.GenerateMap(Generator, 12345);
 
         AssertBool(eventRaised).IsTrue();
     }
@@ -137,15 +137,15 @@ public class IrregularWorldMapScreenTest
         AddNode(screen);
         await ISceneRunner.SyncProcessFrame;
 
-        screen.GenerateMap(12345);
+        await screen.GenerateMap(Generator, 12345);
 
         AssertThat(screen.FogOfWar).IsNull();
     }
 
     [TestCase]
-    public void TestRevealAllUpdatesAllCells()
+    public async Task TestRevealAllUpdatesAllCells()
     {
-        _screen.GenerateMap(12345);
+        await _screen.GenerateMap(Generator, 12345);
         _screen.RevealAll();
 
         // All cells should be seen
@@ -167,9 +167,9 @@ public class IrregularWorldMapScreenTest
     #region Exploration Tests
 
     [TestCase]
-    public void TestStartExplorationDoesNotThrow()
+    public async Task TestStartExplorationDoesNotThrow()
     {
-        _screen.GenerateMap(12345);
+        await _screen.GenerateMap(Generator, 12345);
 
         // Should not throw
         _screen.StartExploration();
@@ -199,9 +199,9 @@ public class IrregularWorldMapScreenTest
     #region Reset Tests
 
     [TestCase]
-    public void TestResetClearsMap()
+    public async Task TestResetClearsMap()
     {
-        _screen.GenerateMap(12345);
+        await _screen.GenerateMap(Generator, 12345);
         _screen.Reset();
 
         AssertBool(_screen.IsInitialized).IsFalse();
@@ -210,11 +210,11 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    public void TestCanRegenerateAfterReset()
+    public async Task TestCanRegenerateAfterReset()
     {
-        _screen.GenerateMap(12345);
+        await _screen.GenerateMap(Generator, 12345);
         _screen.Reset();
-        _screen.GenerateMap(54321);
+        await _screen.GenerateMap(Generator, 54321);
 
         AssertBool(_screen.IsInitialized).IsTrue();
         AssertThat(_screen.Mesh).IsNotNull();

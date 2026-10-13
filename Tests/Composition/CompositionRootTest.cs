@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Composition;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Core.DependencyInjection;
 using CardCleaner.Tests.Mocking;
 using Godot;
@@ -138,6 +139,24 @@ public class CompositionRootTest
             var live = Autoload().GetChildren().Where(node => !node.IsQueuedForDeletion()).ToList();
             Assertions.AssertInt(live.OfType<IInputService>().Count()).IsEqual(1);
             Assertions.AssertInt(live.OfType<IPlayerResetService>().Count()).IsEqual(1);
+        }
+        finally
+        {
+            QueueFreeAll(created);
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TestReinitializeRegistersTheMeshMapGenerator()
+    {
+        // Arrange and act - the autoload composes the core services, the irregular map's generator among them
+        CompositionRoot.ReinitializeServices();
+        var created = ReinitializedNodes();
+        try
+        {
+            // Assert - the cabinet resolves the real generator for the irregular kind, not a test double
+            Assertions.AssertThat(ServiceLocator.Get<IMeshMapGenerator>()).IsInstanceOf<MeshMapGenerator>();
         }
         finally
         {

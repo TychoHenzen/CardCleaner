@@ -90,6 +90,7 @@ public class ShopWorkshopCabinetSceneTest
 
         _rig.Button.Interact();
         await WorkshopSceneRig.Settle();
+        await _rig.WaitForMap();
 
         AssertBool(_rig.DeckHolder.HasCards).IsFalse();
         AssertBool(_rig.CardHolder.HasCards).IsFalse();

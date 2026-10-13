@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
@@ -66,31 +67,33 @@ internal sealed class GridMapGenerationPipeline
             size);
         var finalTileIds = CopyGrid(twoPhaseResult.MergedGrid);
         var contextualVariants = new Dictionary<Vector2I, int>();
-        var shuffledTiles = passableTiles.OrderBy(_ => _context.Rng.Randf()).ToList();
-        var playerStart = shuffledTiles[0];
-        var enemyCount = _context.Rng.RandiRange(2, Mathf.Min(3, shuffledTiles.Count - 1));
-        var enemyPositions = shuffledTiles.Skip(1).Take(enemyCount).ToList();
-
-        ILog.Print(
-            $"Map generated: {passableTiles.Count} passable tiles, player at {playerStart}, " +
-            $"{enemyCount} enemies");
-        GridMapDiagnostics.ValidateSpatialCoherence(finalTileIds, size);
-
-        return new SimpleMapData
+        var map = new SimpleMapData
         {
             TileIds = finalTileIds,
             BackgroundLayer = twoPhaseResult.BackgroundLayer,
             ForegroundLayer = twoPhaseResult.ForegroundLayer,
             BiomeMap = biomeMap,
             Size = size,
-            PlayerStart = playerStart,
-            EnemyPositions = enemyPositions,
             PassableTiles = passableTiles,
             PerGenerationVariants = variants.PerGenerationVariants,
             PerGenerationGroupVariants = variants.PerGenerationGroupVariants,
             ContextualVariants = contextualVariants,
             DecorationOverlays = decorationOverlays
         };
+
+        // The start and the enemies come from the rule both map kinds share, drawn after the terrain from the same
+        // RNG, so the terrain of a seed does not change.
+        var grid = new RegularGridMapData(map);
+        var placement = MapPopulation.Place(grid, _context.Rng);
+        map.PlayerStart = grid.CellIdToPosition(placement.PlayerStartCell);
+        map.EnemyPositions = placement.EnemyCells.Select(grid.CellIdToPosition).ToList();
+
+        ILog.Print(
+            $"Map generated: {passableTiles.Count} passable tiles, player at {map.PlayerStart}, " +
+            $"{map.EnemyPositions.Count} enemies");
+        GridMapDiagnostics.ValidateSpatialCoherence(finalTileIds, size);
+
+        return map;
     }
 
     private VariantSelection SelectVariants()

@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Components;
@@ -6,6 +8,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
+using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Controllers;
@@ -23,6 +26,17 @@ public class DeckBuilderControllerIrregularMapTest
     private InteractableButton _kindButton = null!;
     private DeckBuilderController _controller = null!;
     private IrregularWorldMapScreen? _screen;
+
+    // The cabinet needs a registered irregular generator to start; this one never finishes, so no map is generated.
+    [BeforeTest]
+    public static void RegisterServices()
+    {
+        ServiceLocator.ResetForTesting();
+        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(MeshMapGeneratorFixture.Pending());
+    }
+
+    [AfterTest]
+    public static void ClearServices() => ServiceLocator.ResetForTesting();
 
     private async Task BuildController(bool withIrregularScreen)
     {
