@@ -261,7 +261,7 @@ This document captures discoveries and integration notes during implementation o
 
 ### Discoveries
 - GenerateMultiBiome already has access to BiomeRegistry - adding gradient parameter was straightforward
-- SimpleMapGenerator constructor already accepts many optional dependencies - adding gradient follows same pattern
+- GridMapGenerator constructor already accepts many optional dependencies - adding gradient follows same pattern
 - The gradient parameter is optional (null default) - when null, BiomeAffinityConstraint is not registered (backwards compatible)
 - ConfigureConstraints() is called before the gradient-based constraint, so base constraints (diminishing returns, novelty, compactness) are registered first
 
@@ -270,7 +270,7 @@ This document captures discoveries and integration notes during implementation o
   - Added optional `BaselineGradient? gradient = null` parameter
   - When gradient is provided: creates BiomeStrengthGrid and registers BiomeAffinityConstraint
   - Constraint is added after ConfigureConstraints() so it applies after base shape constraints
-- **SimpleMapGenerator:**
+- **GridMapGenerator:**
   - Added `BaselineGradient? gradient = null` constructor parameter
   - Stored as `_gradient` field
   - Passed to GenerateMultiBiome() in GenerateTerrainViaWfc()
@@ -286,7 +286,7 @@ This document captures discoveries and integration notes during implementation o
     - `BiomeAffinityEnum_HasThreeValues` (verifies constraint modifier behavior)
 
 ### Integration Notes for Later Phases
-- To use biome-based tile selection, callers of SimpleMapGenerator must provide a BaselineGradient
+- To use biome-based tile selection, callers of GridMapGenerator must provide a BaselineGradient
 - RadialGradient can be created with center and edge CardSignatures for geographic variation
 - NoiseGradient adds randomness to an otherwise uniform signature
 - The BiomeAffinityConstraint is applied after shape constraints (diminishing returns, novelty, compactness), so it influences selection within the shape context
@@ -409,7 +409,7 @@ SmallMap_WithoutCorridor_StillConnected PASSED
 The "floor" tile is used as a fallback throughout the codebase but **did not exist** in tiles.json:
 
 ```csharp
-// SimpleMapGenerator.cs line 24
+// GridMapGenerator.cs line 24
 public const string FloorTileId = "floor";
 
 // Used in multiple fallback scenarios:
@@ -609,10 +609,10 @@ This balances early connectivity enforcement with later freedom, reducing WFC co
 Re-run ConnectivityVerificationTest to verify ≥99% success rate with refined fix.
 
 ### Implementation Summary
-Added EnableCorridorFallback feature flag to SimpleMapGenerator and created comprehensive test suite. Tests revealed fundamental architecture issue with connectivity constraint integration.
+Added EnableCorridorFallback feature flag to GridMapGenerator and created comprehensive test suite. Tests revealed fundamental architecture issue with connectivity constraint integration.
 
 ### API Changes Made
-- Added `EnableCorridorFallback` property to SimpleMapGenerator (default true)
+- Added `EnableCorridorFallback` property to GridMapGenerator (default true)
 - Wrapped EnsureConnectivity call with conditional check on this flag
 
 ### Test Coverage Added
@@ -806,7 +806,7 @@ The 96-98% success rate suggests occasional edge cases where:
 - Conditional call site in GenerateMap() (5 lines)
 
 ### API Changes Made
-- Removed `EnableCorridorFallback` property from SimpleMapGenerator
+- Removed `EnableCorridorFallback` property from GridMapGenerator
 - Removed `EnsureConnectivity(string[,], Vector2I, List<Vector2I>)` method
 - Removed `FloodFill(string[,], bool[,], Vector2I, Vector2I, List<Vector2I>)` method
 - Removed `CreateCorridor(string[,], Vector2I, Vector2I, Vector2I)` method
@@ -841,7 +841,7 @@ The 96-98% success rate suggests occasional edge cases where:
 - Structure rejection is rare in practice (most structures don't create critical choke points)
 
 ### API Changes Made
-- Added `WouldBlockPaths(StructurePlacement, HashSet<Vector2I>)` method to SimpleMapGenerator
+- Added `WouldBlockPaths(StructurePlacement, HashSet<Vector2I>)` method to GridMapGenerator
   - Temporarily removes structure tiles from passable set
   - Checks if remaining tiles are connected
   - Returns true if structure would disconnect regions

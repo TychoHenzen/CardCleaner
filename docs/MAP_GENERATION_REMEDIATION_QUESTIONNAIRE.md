@@ -39,7 +39,7 @@
 ## BUG-001: Missing BiomeMap Update After Corridor Creation
 
 **Severity:** High | **Type:** Bug
-**Location:** `SimpleMapGenerator.cs:364-387`
+**Location:** `GridMapGenerator.cs:364-387`
 
 ### Problem Description
 
@@ -256,7 +256,7 @@ This should lead to natural biome transitions
 ## GOT-004: Terrain Transitions Generated Before Structures/Corridors
 
 **Severity:** Medium | **Type:** Gotcha / Visual Bug
-**Location:** `SimpleMapGenerator.cs:287-337`
+**Location:** `GridMapGenerator.cs:287-337`
 
 ### Problem Description
 
@@ -436,7 +436,7 @@ swapping back and forth between two tiles and getting softlocked.
 ## GOT-005: Player/Enemy Placement is Fully Random
 
 **Severity:** Medium | **Type:** Gotcha / Game Design
-**Location:** `SimpleMapGenerator.cs:147-152`
+**Location:** `GridMapGenerator.cs:147-152`
 
 ### Problem Description
 
@@ -541,7 +541,7 @@ i first want to get terrain generation itself to a usable system
 ## BUG-002: DecorationOverlays Generated Before Structure Placement
 
 **Severity:** Medium | **Type:** Bug
-**Location:** `SimpleMapGenerator.cs:124-127`
+**Location:** `GridMapGenerator.cs:124-127`
 
 ### Problem Description
 
@@ -753,7 +753,7 @@ this then causes a gameplay loop where i can target certain signatures in an evo
 ## INC-003: RNG Seed Inconsistency Between GameSessionService and WFC
 
 **Severity:** Low | **Type:** Reproducibility
-**Location:** `GameSessionService.cs:125` vs `SimpleMapGenerator.cs:187`
+**Location:** `GameSessionService.cs:125` vs `GridMapGenerator.cs:187`
 
 ### Problem Description
 

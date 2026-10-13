@@ -1403,10 +1403,10 @@ Append to `docs/MAP_GENERATION_LESSONS.md`:
 Before removing the corridor code (Phase 6), verify that WFC-native connectivity is working reliably. Temporarily disable corridors and measure success rate.
 
 **Files to Read:**
-1. `Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs` - EnsureConnectivity location
+1. `Scripts/Features/Deckbuilder/Services/GridMapGenerator.cs` - EnsureConnectivity location
 
 **Files to Modify:**
-1. `Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs` - Add feature flag
+1. `Scripts/Features/Deckbuilder/Services/GridMapGenerator.cs` - Add feature flag
 
 **Required Tests:**
 Create: `Tests/Features/Deckbuilder/Services/ConnectivityVerificationTest.cs`
@@ -1430,7 +1430,7 @@ Create: `Tests/Features/Deckbuilder/Services/ConnectivityVerificationTest.cs`
 6. If < 99%, document issues in lessons and DO NOT proceed to T6.1
 
 **Implementation Steps:**
-1. Add feature flag to SimpleMapGenerator:
+1. Add feature flag to GridMapGenerator:
 ```csharp
 /// <summary>
 /// Enable/disable corridor fallback for connectivity.
@@ -1492,7 +1492,7 @@ Append to `docs/MAP_GENERATION_LESSONS.md`:
 - {Types of maps that failed, if any}
 
 ### API Changes Made
-- Added EnableCorridorFallback property to SimpleMapGenerator
+- Added EnableCorridorFallback property to GridMapGenerator
 
 ### Test Coverage Added
 - Tests/Features/Deckbuilder/Services/ConnectivityVerificationTest.cs
@@ -1521,7 +1521,7 @@ With WFC-native connectivity working, remove the corridor carving system entirel
 **IMPORTANT:** Do NOT start this task if Phase 5.3 reported < 99% success rate. Check lessons file first!
 
 **Files to Modify:**
-1. `Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs`
+1. `Scripts/Features/Deckbuilder/Services/GridMapGenerator.cs`
 
 **Code to Remove:**
 1. `EnsureConnectivity()` method
@@ -1531,7 +1531,7 @@ With WFC-native connectivity working, remove the corridor carving system entirel
 5. The call site in `GenerateMap()`
 
 **Required Tests:**
-Update: `Tests/Features/Deckbuilder/Services/SimpleMapGeneratorTest.cs` (or create if doesn't exist)
+Update: `Tests/Features/Deckbuilder/Services/GridMapGeneratorTest.cs` (or create if doesn't exist)
 
 | Test Case | Description |
 |-----------|-------------|
@@ -1560,9 +1560,9 @@ Update: `Tests/Features/Deckbuilder/Services/SimpleMapGeneratorTest.cs` (or crea
 **Verification:**
 ```bash
 dotnet build
-dotnet test --filter "FullyQualifiedName~SimpleMapGeneratorTest"
+dotnet test --filter "FullyQualifiedName~GridMapGeneratorTest"
 dotnet test  # Run all tests
-grep -n "EnsureConnectivity\|CreateCorridor\|FloodFill" Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs  # Should return nothing
+grep -n "EnsureConnectivity\|CreateCorridor\|FloodFill" Scripts/Features/Deckbuilder/Services/GridMapGenerator.cs  # Should return nothing
 ```
 All tests MUST pass AND grep must return no matches.
 
@@ -1584,7 +1584,7 @@ Append to `docs/MAP_GENERATION_LESSONS.md`:
 - Removed EnableCorridorFallback property
 
 ### Test Coverage Added
-- Updated SimpleMapGeneratorTest.cs with 3 tests
+- Updated GridMapGeneratorTest.cs with 3 tests
 - Reflection test confirms methods are gone
 
 ### Integration Notes for Later Phases
@@ -1608,11 +1608,11 @@ Append to `docs/MAP_GENERATION_LESSONS.md`:
 Move structure placement to after terrain is fully complete, and add reachability validation before placing structures.
 
 **Files to Read:**
-1. `Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs` - Current PlaceStructures location
+1. `Scripts/Features/Deckbuilder/Services/GridMapGenerator.cs` - Current PlaceStructures location
 2. `Scripts/Features/Worldgen/Wfc/Connectivity/PassabilityGraph.cs` - Reuse for reachability
 
 **Files to Modify:**
-1. `Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs`
+1. `Scripts/Features/Deckbuilder/Services/GridMapGenerator.cs`
 
 **Required Tests:**
 Update: `Tests/Features/Deckbuilder/Services/StructurePlacementTest.cs` (or create if doesn't exist)
@@ -1724,7 +1724,7 @@ Append to `docs/MAP_GENERATION_LESSONS.md`:
 - {Any StructurePlacer API changes needed}
 
 ### API Changes Made
-- Added WouldBlockPaths() method to SimpleMapGenerator
+- Added WouldBlockPaths() method to GridMapGenerator
 - Added IsConnected() helper method
 - Moved PlaceStructures() call to after transitions
 

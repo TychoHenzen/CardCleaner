@@ -53,6 +53,18 @@ public class GameSessionStartTest : GameSessionServiceTestBase
     }
 
     [TestCase]
+    public void TestStartSessionWithoutAMapGenerator()
+    {
+        var mapSeeds = new List<CardSignature> { new(new[] { 0.5f, 0f, 0f, 0f, 0f, 0f, 0f, 0f }) };
+        var abilityCards = new List<CardSignature> { new(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }) };
+
+        _service.StartSession(mapSeeds, abilityCards, null);
+
+        Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.WaitingForCards);
+        Assertions.AssertThat(_stateChangeCount).IsEqual(0);
+    }
+
+    [TestCase]
     public void TestStartSessionWithEmptyMapSeeds()
     {
         var emptyMapSeeds = new List<CardSignature>();
