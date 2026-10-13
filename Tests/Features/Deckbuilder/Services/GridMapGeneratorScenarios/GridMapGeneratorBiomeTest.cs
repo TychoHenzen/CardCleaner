@@ -5,14 +5,14 @@ using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 
-namespace CardCleaner.Tests.Features.Deckbuilder.Services.SimpleMapGeneratorScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenarios;
 
 /// <summary>
-///     SimpleMapGenerator biome tile selection and coherence scenarios split out of SimpleMapGeneratorTest.
+///     Grid map generator biome tile selection and coherence scenarios.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
-public class SimpleMapGeneratorBiomeTest : SimpleMapGeneratorTestBase
+public class GridMapGeneratorBiomeTest : GridMapGeneratorTestBase
 {
     [TestCase]
     public void TestGenerateMapUsesBiomeTiles()

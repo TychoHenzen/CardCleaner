@@ -18,22 +18,22 @@ public partial class DeterminismProperties : MapGenerationPropertyBase
 {
     private const float SignatureTolerance = 0.0001f;
 
-    #region SimpleMapGenerator Determinism
+    #region Grid Map Generator Determinism
 
     [TestCase]
-    public void SimpleMapGeneratorIsDeterministic_TileLayout()
+    public void GridMapGeneratorIsDeterministic_TileLayout()
     {
         TwiceGeneratedMapsMatch(5, 15, (map1, map2, request) => TileLayoutsMatch(map1, map2, request.Size));
     }
 
     [TestCase]
-    public void SimpleMapGeneratorIsDeterministic_PlayerStart()
+    public void GridMapGeneratorIsDeterministic_PlayerStart()
     {
         TwiceGeneratedMapsMatch(5, 15, (map1, map2, _) => map1.PlayerStart == map2.PlayerStart);
     }
 
     [TestCase]
-    public void SimpleMapGeneratorIsDeterministic_EnemyPositions()
+    public void GridMapGeneratorIsDeterministic_EnemyPositions()
     {
         TwiceGeneratedMapsMatch(8, 15, (map1, map2, _) =>
             map1.EnemyPositions.Count == map2.EnemyPositions.Count &&
@@ -41,7 +41,7 @@ public partial class DeterminismProperties : MapGenerationPropertyBase
     }
 
     [TestCase]
-    public void SimpleMapGeneratorIsDeterministic_PassableTileCount()
+    public void GridMapGeneratorIsDeterministic_PassableTileCount()
     {
         TwiceGeneratedMapsMatch(5, 20, (map1, map2, _) => map1.PassableTiles.Count == map2.PassableTiles.Count);
     }

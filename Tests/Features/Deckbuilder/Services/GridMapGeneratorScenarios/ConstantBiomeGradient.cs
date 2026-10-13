@@ -2,7 +2,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
 using Godot;
 
-namespace CardCleaner.Tests.Features.Deckbuilder.Services.SimpleMapGeneratorScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenarios;
 
 internal sealed partial class ConstantBiomeGradient : BaselineGradient
 {

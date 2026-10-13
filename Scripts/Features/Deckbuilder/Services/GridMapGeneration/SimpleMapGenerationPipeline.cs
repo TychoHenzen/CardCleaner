@@ -6,7 +6,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
-namespace CardCleaner.Scripts.Features.Deckbuilder.Services.SimpleMapGeneratorSupport;
+namespace CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 
 internal sealed class SimpleMapGenerationPipeline
 {
@@ -192,7 +192,7 @@ internal sealed class SimpleMapGenerationPipeline
             {
                 selected[group.BaseName] = selectedTileId;
                 ILog.Print(
-                    $"[SimpleMapGenerator] Selected '{selectedTileId}' for variation group " +
+                    $"[GridMapGenerator] Selected '{selectedTileId}' for variation group " +
                     $"'{group.BaseName}'");
             }
         }

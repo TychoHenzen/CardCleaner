@@ -5,12 +5,12 @@ using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Tests.Mocks;
 using Godot;
 
-namespace CardCleaner.Tests.Features.Deckbuilder.Services.SimpleMapGeneratorScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenarios;
 
 /// <summary>
-///     Shared fixture for the SimpleMapGenerator scenario suites.
+///     Shared fixture for the grid map generator scenario suites.
 /// </summary>
-public abstract class SimpleMapGeneratorTestBase
+public abstract class GridMapGeneratorTestBase
 {
     protected SimpleMapGenerator _generator = null!;
     protected BiomeRegistry _registry = null!;

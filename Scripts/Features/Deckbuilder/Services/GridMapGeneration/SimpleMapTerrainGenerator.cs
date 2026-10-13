@@ -8,7 +8,7 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 
-namespace CardCleaner.Scripts.Features.Deckbuilder.Services.SimpleMapGeneratorSupport;
+namespace CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 
 internal sealed class SimpleMapTerrainGenerator
 {
