@@ -11,6 +11,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Features.Shop;
+using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -59,8 +60,7 @@ public sealed class WorkshopSceneRig
         ServiceLocator.ResetForTesting();
         ServiceLocator.Container.RegisterSingleton<ICardSpawningService>(new TestCardSpawner());
         ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
-        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(
-            CardCleaner.Tests.Features.Worldgen.IrregularMesh.MeshMapGeneratorFixture.Create());
+        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(MeshMapGeneratorFixture.Create());
         ServiceLocator.Container.RegisterSingleton<IGameSessionService>(
             rig.Workshop.GetNode<GameSessionService>("GameSessionService"));
 
@@ -97,13 +97,17 @@ public sealed class WorkshopSceneRig
     }
 
     /// <summary>
-    /// Waits, at most <see cref="MapFrameBudget"/> frames, for the irregular map to show; it generates off the main
-    /// thread, so it can arrive after <see cref="Settle"/>.
+    /// Waits, at most <see cref="MapFrameBudget"/> frames, for the irregular map to show, and fails when it does not;
+    /// it generates off the main thread, so it can arrive after <see cref="Settle"/>.
     /// </summary>
     public async Task WaitForMap()
     {
         for (var frame = 0; frame < MapFrameBudget && !Screen.IsInitialized; frame++)
             await ISceneRunner.SyncProcessFrame;
+
+        AssertBool(Screen.IsInitialized)
+            .OverrideFailureMessage($"The irregular map did not show within {MapFrameBudget} frames")
+            .IsTrue();
     }
 
     private sealed class TestCardSpawner : ICardSpawningService

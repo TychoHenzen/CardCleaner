@@ -1,5 +1,3 @@
-using System;
-using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -10,6 +8,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
+using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Controllers;
@@ -33,7 +32,7 @@ public class DeckBuilderControllerIrregularMapTest
     public static void RegisterServices()
     {
         ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(new PendingMeshGenerator());
+        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(MeshMapGeneratorFixture.Pending());
     }
 
     [AfterTest]
@@ -160,14 +159,5 @@ public class DeckBuilderControllerIrregularMapTest
         _button.Interact();
         AssertBool(_kindButton.Enabled).IsTrue();
         AssertBool(_screen.IsInitialized).IsFalse();
-    }
-
-    private sealed class PendingMeshGenerator : IMeshMapGenerator
-    {
-        public Task<IGeneratedMap> GenerateAsync(
-            MapGenerationConfig config,
-            IProgress<float>? progress = null,
-            CancellationToken cancellationToken = default) =>
-            new TaskCompletionSource<IGeneratedMap>().Task;
     }
 }

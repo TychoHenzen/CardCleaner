@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
@@ -31,15 +30,6 @@ public class IrregularWorldMapScreenSessionTest
         return screen;
     }
 
-    private static CardSignature[] TerrainCards() => new[]
-    {
-        new CardSignature(new[] { 1f, 1f, 0f, -1f, 0f, 0.5f, 0f, 0f }),
-        new CardSignature(new[] { -1f, -1f, 1f, 1f, 0f, -0.5f, 0f, 0f })
-    };
-
-    private static string TerrainOf(IrregularMeshNs.IrregularMesh mesh) =>
-        string.Join(",", mesh.Vertices.Select(v => $"{v.TerrainType}:{v.TileId}:{v.ForegroundTileId}:{v.Position}"));
-
     private static List<IrregularMeshNs.IrregularMeshExplorationController> ExplorationControllers(Node screen) =>
         screen.GetNode("Viewport").GetChildren().OfType<IrregularMeshNs.IrregularMeshExplorationController>().ToList();
 
@@ -64,12 +54,29 @@ public class IrregularWorldMapScreenSessionTest
     }
 
     [TestCase]
+    public async Task StartingANewGenerationClosesTheRunningSession()
+    {
+        var screen = CreateScreen();
+        AddNode(screen);
+        await ISceneRunner.SyncProcessFrame;
+        await screen.GenerateMap(Generator, Seed);
+        var firstController = screen.ExplorationController!;
+
+        // This map never arrives, so only the start of the new generation can have closed the first session.
+        _ = screen.GenerateMap(MeshMapGeneratorFixture.Pending(), Seed + 1);
+
+        AssertThat(screen.ExplorationController).IsNull();
+        AssertBool(screen.IsInitialized).IsFalse();
+        AssertBool(firstController.IsQueuedForDeletion()).IsTrue();
+    }
+
+    [TestCase]
     public async Task DeferredGenerateMapKeepsTerrainCards()
     {
         var reference = CreateScreen();
         AddNode(reference);
         await ISceneRunner.SyncProcessFrame;
-        await reference.GenerateMap(Generator, Seed, TerrainCards(), null);
+        await reference.GenerateMap(Generator, Seed, MeshMapGeneratorFixture.TerrainCards(), null);
 
         var seedOnly = CreateScreen();
         AddNode(seedOnly);
@@ -77,12 +84,13 @@ public class IrregularWorldMapScreenSessionTest
         await seedOnly.GenerateMap(Generator, Seed);
 
         var deferred = CreateScreen();
-        var deferredGeneration = deferred.GenerateMap(Generator, Seed, TerrainCards(), null);
+        var deferredGeneration = deferred.GenerateMap(Generator, Seed, MeshMapGeneratorFixture.TerrainCards(), null);
         AddNode(deferred);
         await deferredGeneration;
 
-        AssertThat(TerrainOf(reference.Mesh!)).IsNotEqual(TerrainOf(seedOnly.Mesh!));
-        AssertThat(TerrainOf(deferred.Mesh!)).IsEqual(TerrainOf(reference.Mesh!));
+        var referenceTerrain = MeshMapGeneratorFixture.TerrainOf(reference.Mesh!);
+        AssertThat(referenceTerrain).IsNotEqual(MeshMapGeneratorFixture.TerrainOf(seedOnly.Mesh!));
+        AssertThat(MeshMapGeneratorFixture.TerrainOf(deferred.Mesh!)).IsEqual(referenceTerrain);
     }
 
     private static bool IsInstanceValid(GodotObject obj) => GodotObject.IsInstanceValid(obj);

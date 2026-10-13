@@ -13,11 +13,13 @@ namespace CardCleaner.Scripts.Core.Services;
 /// </summary>
 public static class MapPopulation
 {
+    /// <summary>World units per cell on both map kinds: a grid tile and an irregular mesh unit.</summary>
+    public const float CellWorldSize = 16f;
+
     /// <summary>
-    /// Minimum world distance from the start to an enemy: the irregular map's rule (12.5 cells of 16 world units),
-    /// which the grid map shares because its tiles are 16 world units too.
+    /// Minimum world distance from the start to an enemy: 12.5 cells, the irregular map's rule, on both map kinds.
     /// </summary>
-    public const float MinEnemyDistance = 200f;
+    public const float MinEnemyDistance = 12.5f * CellWorldSize;
 
     public const int MinEnemies = 2;
 
@@ -39,11 +41,14 @@ public static class MapPopulation
         }
 
         var start = passable[rng.RandiRange(0, passable.Count - 1)];
-        var candidates = EnemyCandidates(map, passable, start, rng);
+        var (candidates, farCount) = EnemyCandidates(map, passable, start, rng);
+        if (candidates.Count == 0)
+            return new MapPlacement(start, Array.Empty<int>());
 
-        var count = candidates.Count == 0
-            ? 0
-            : rng.RandiRange(Math.Min(MinEnemies, candidates.Count), Math.Min(MaxEnemies, candidates.Count));
+        // Nearer cells only top the enemies up to MinEnemies; an enemy beyond that needs a far cell.
+        var fewest = Math.Min(MinEnemies, candidates.Count);
+        var most = Math.Min(Math.Min(MaxEnemies, candidates.Count), Math.Max(MinEnemies, farCount));
+        var count = rng.RandiRange(fewest, most);
         return new MapPlacement(start, candidates.GetRange(0, count));
     }
 
@@ -63,7 +68,11 @@ public static class MapPopulation
     // while there are enough of them.
     // ASSUMPTION: a map with fewer far cells than MinEnemies (a small map) tops up from the nearer passable cells, as
     // the irregular map's rule fell back to them; otherwise the session would have fewer than 2 enemies to fight.
-    private static List<int> EnemyCandidates(IMapData map, List<int> passable, int start, RandomNumberGenerator rng)
+    private static (List<int> Cells, int FarCount) EnemyCandidates(
+        IMapData map,
+        List<int> passable,
+        int start,
+        RandomNumberGenerator rng)
     {
         var startCenter = map.GetCellCenter(start);
         var far = new List<int>();
@@ -81,8 +90,9 @@ public static class MapPopulation
 
         Shuffle(far, rng);
         Shuffle(near, rng);
+        var farCount = far.Count;
         far.AddRange(near);
-        return far;
+        return (far, farCount);
     }
 
     private static void Shuffle(List<int> cells, RandomNumberGenerator rng)

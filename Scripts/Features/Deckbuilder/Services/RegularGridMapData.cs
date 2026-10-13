@@ -3,6 +3,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 using Godot;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 
 /// <summary>
 /// IMapData adapter that wraps SimpleMapData for regular grid maps.
@@ -17,8 +18,10 @@ public class RegularGridMapData : IMapData
     /// Create a map data adapter for a regular grid.
     /// </summary>
     /// <param name="simpleMapData">The underlying SimpleMapData.</param>
-    /// <param name="tileSize">Size of each tile in world units (default: 16).</param>
-    public RegularGridMapData(SimpleMapData simpleMapData, float tileSize = 16f)
+    /// <param name="tileSize">
+    /// Size of each tile in world units (default: <see cref="MapPopulation.CellWorldSize"/>).
+    /// </param>
+    public RegularGridMapData(SimpleMapData simpleMapData, float tileSize = MapPopulation.CellWorldSize)
     {
         _simpleMapData = simpleMapData;
         _tileSize = tileSize;

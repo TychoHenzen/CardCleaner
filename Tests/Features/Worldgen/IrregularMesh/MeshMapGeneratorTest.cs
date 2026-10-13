@@ -1,9 +1,7 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -49,12 +47,13 @@ public class MeshMapGeneratorTest
         var registry = new TileRegistry();
         var biomes = MeshMapGeneratorFixture.DefaultBiomes();
         var expected = TerrainGeneratorFactory.Create(registry, biomes)
-            .GenerateWithCards(SmallRings, TerrainCards(), Seed, relaxationIterations: 8);
+            .GenerateWithCards(SmallRings, MeshMapGeneratorFixture.TerrainCards(), Seed, relaxationIterations: 8);
 
         var generated = (IrregularMeshNs.IMeshGeneratedMap)await new IrregularMeshNs.MeshMapGenerator(registry, biomes)
             .GenerateAsync(Config(SmallRings));
 
-        AssertThat(TerrainOf(generated.RawMesh)).IsEqual(TerrainOf(expected));
+        var expectedTerrain = MeshMapGeneratorFixture.TerrainOf(expected);
+        AssertThat(MeshMapGeneratorFixture.TerrainOf(generated.RawMesh)).IsEqual(expectedTerrain);
     }
 
     [TestCase(Timeout = 120000)]
@@ -106,20 +105,11 @@ public class MeshMapGeneratorTest
     {
         Rings = rings,
         Seed = Seed,
-        MapSeeds = TerrainCards()
+        MapSeeds = MeshMapGeneratorFixture.TerrainCards()
     };
-
-    private static CardSignature[] TerrainCards() => new[]
-    {
-        new CardSignature(new[] { 1f, 1f, 0f, -1f, 0f, 0.5f, 0f, 0f }),
-        new CardSignature(new[] { -1f, -1f, 1f, 1f, 0f, -0.5f, 0f, 0f })
-    };
-
-    private static string TerrainOf(IrregularMeshNs.IrregularMesh mesh) =>
-        string.Join(",", mesh.Vertices.Select(v => $"{v.TerrainType}:{v.TileId}:{v.ForegroundTileId}:{v.Position}"));
 
     private static string Describe(IrregularMeshNs.IMeshGeneratedMap map) =>
-        $"{TerrainOf(map.RawMesh)}|start {map.MeshMapData.PlayerStartCell}|enemies " +
+        $"{MeshMapGeneratorFixture.TerrainOf(map.RawMesh)}|start {map.MeshMapData.PlayerStartCell}|enemies " +
         string.Join(";", map.MeshMapData.EnemySpawnCells);
 
     // Records the thread of each report; IProgress<T> implementations other than Progress<T> report inline.

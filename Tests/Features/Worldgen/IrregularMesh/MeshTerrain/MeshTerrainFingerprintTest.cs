@@ -3,8 +3,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -26,10 +24,9 @@ public class MeshTerrainFingerprintTest
     [TestCategory("Unit")]
     public static void FactoryPathWithCardsMatchesMasterFingerprint()
     {
-        var biomes = new BiomeRegistry();
-        biomes.RegisterDefaultBiomes();
-        var generator = TerrainGeneratorFactory.Create(new TileRegistry(), biomes);
-        var mesh = generator.GenerateWithCards(3, TerrainCards(), 4242, relaxationIterations: 8);
+        var generator = TerrainGeneratorFactory.Create(new TileRegistry(), MeshMapGeneratorFixture.DefaultBiomes());
+        var mesh = generator.GenerateWithCards(
+            3, MeshMapGeneratorFixture.TerrainCards(), 4242, relaxationIterations: 8);
 
         var backgroundTiles = mesh.Quads
             .Select(quad => quad.BackgroundTileId)
@@ -45,12 +42,6 @@ public class MeshTerrainFingerprintTest
         GD.Print($"[MeshTerrainFingerprint] factory seed 4242 hash {hash}");
         AssertString(hash).IsEqual(FactoryGolden);
     }
-
-    private static CardSignature[] TerrainCards() => new[]
-    {
-        new CardSignature(new[] { 1f, 1f, 0f, -1f, 0f, 0.5f, 0f, 0f }),
-        new CardSignature(new[] { -1f, -1f, 1f, 1f, 0f, -0.5f, 0f, 0f })
-    };
 
     private static string Fingerprint(IrregularMeshNs.IrregularMesh mesh)
     {

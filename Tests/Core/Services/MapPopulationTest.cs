@@ -21,8 +21,7 @@ public class MapPopulationTest
     // The ring count both scenes use; the mesh is wide enough that some cell is far from any start.
     private const int MeshRings = 20;
 
-    // The irregular map's world scale (MeshMapGenerator.WorldScale).
-    private const float MeshWorldScale = 16f;
+    private const float MeshWorldScale = IrregularMeshNs.MeshMapGenerator.WorldScale;
 
     private const int SeedCount = 20;
 
@@ -105,6 +104,22 @@ public class MapPopulationTest
             AssertBool(placement.EnemyCells.Any(
                 enemy => map.GetCellCenter(enemy).DistanceTo(start) >= MapPopulation.MinEnemyDistance)).IsTrue();
         }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void AStartWithTwoFarCellsNeverPlacesANearThirdEnemy()
+    {
+        // A 20 x 1 strip with passable cells 0, 1, 2, 18 and 19: from a start among 0-2 exactly two cells are far
+        // (256 world units or more) and two are near, so both enemies take the far cells and no third one is near;
+        // from 18 or 19 the cells 0-2 are all far.
+        var cells = new[]
+        {
+            new Vector2I(0, 0), new Vector2I(1, 0), new Vector2I(2, 0), new Vector2I(18, 0), new Vector2I(19, 0)
+        };
+        var map = StripMap(20, cells);
+        for (ulong seed = 1; seed <= SeedCount; seed++)
+            AssertPlacementFollowsTheRule(map, seed);
     }
 
     [TestCase]

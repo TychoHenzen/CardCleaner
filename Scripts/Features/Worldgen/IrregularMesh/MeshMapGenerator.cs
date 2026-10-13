@@ -19,8 +19,10 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 /// </summary>
 public sealed class MeshMapGenerator : IMeshMapGenerator
 {
-    /// <summary>World units per mesh unit in the generated map data; enemy distances are measured in this scale.</summary>
-    public const float WorldScale = 16f;
+    /// <summary>
+    /// World units per mesh unit in the generated map data: the cell size <see cref="MapPopulation"/> measures in.
+    /// </summary>
+    public const float WorldScale = MapPopulation.CellWorldSize;
 
     /// <summary>The ring count of a plain <see cref="MapGenerationConfig"/>: the value both game scenes use.</summary>
     public const int DefaultRings = 20;

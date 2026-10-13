@@ -104,7 +104,8 @@ public partial class IrregularWorldMapScreen : Node3D
     /// <summary>
     /// Generates a new map with the given seed through the irregular map generator, off the main thread, then shows
     /// it and starts exploring from the start the generator placed. A screen not yet in the tree generates once it
-    /// is ready. The task completes when the map is shown, or when a newer request or a reset dropped it.
+    /// is ready. The task completes when the map is shown, or when a newer request or a reset dropped it. A generator
+    /// that returns no mesh map throws, so the caller ends the session.
     /// </summary>
     public async Task GenerateMap(
         IMeshMapGenerator generator,
@@ -119,6 +120,11 @@ public partial class IrregularWorldMapScreen : Node3D
 
         var request = ++_generationRequest;
         _rng.Seed = (ulong)seed;
+        // Close the running session now, not when the new map arrives: left running during the off-thread generation,
+        // its finish would end the new session early.
+        _session?.Close();
+        _session = null;
+        _isInitialized = false;
 
         var sw = System.Diagnostics.Stopwatch.StartNew();
         GD.Print($"[IrregularWorldMapScreen] Generating map with seed {seed}, rings={MeshRings}");
@@ -134,10 +140,7 @@ public partial class IrregularWorldMapScreen : Node3D
             return;
 
         if (generated is not IMeshGeneratedMap meshMap)
-        {
-            GD.PrintErr("[IrregularWorldMapScreen] The generator returned no irregular mesh map");
-            return;
-        }
+            throw new InvalidOperationException("The generator returned no irregular mesh map");
 
         GD.Print($"[IrregularWorldMapScreen] Map generation complete ({sw.ElapsedMilliseconds}ms)");
 
