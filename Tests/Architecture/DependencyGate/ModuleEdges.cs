@@ -3,7 +3,9 @@ using System.Collections.Generic;
 
 namespace CardCleaner.Tests.Architecture.DependencyGate;
 
-/// <summary>Lifts class edges to module edges; references inside one module and classes without a module are skipped.</summary>
+/// <summary>
+/// Lifts class edges to module edges; references inside one module and classes without a module are skipped.
+/// </summary>
 internal static class ModuleEdges
 {
     public static SortedDictionary<EdgeKey, ModuleEdge> Build(ClassGraph graph, Func<string, string?> moduleOf)

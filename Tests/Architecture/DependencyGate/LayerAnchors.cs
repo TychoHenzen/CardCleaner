@@ -27,7 +27,10 @@ internal static class LayerAnchors
         return layers;
     }
 
-    /// <summary>UI seeds, then interfaces and abstract types that name a UI class and are used by UI only.</summary>
+    /// <summary>
+    /// UI seeds, then interfaces, delegates and abstract types that name a UI class and have at least one user, all of
+    /// them UI.
+    /// </summary>
     public static SortedSet<string> UiClasses(ClassGraph graph)
     {
         var refs = References(graph);
@@ -58,7 +61,9 @@ internal static class LayerAnchors
         return FixedPoint(References(graph), start, _ => false);
     }
 
-    /// <summary>The fixed point of: role interface, not UI, and every referenced class is pure data or in the set.</summary>
+    /// <summary>
+    /// The fixed point of: role interface, not UI, and every referenced class is pure data or in the set.
+    /// </summary>
     public static SortedSet<string> PureContracts(ClassGraph graph, ISet<string> ui, ISet<string> data)
     {
         var start = graph.Nodes.Values.Where(n => n.Role == NodeRole.Interface && !ui.Contains(n.Id))

@@ -21,7 +21,9 @@ internal static class NodeRoleRules
         return false;
     }
 
-    /// <summary>Role rules of #240 requirement 3, ported from the prototype extractor.</summary>
+    /// <summary>
+    /// The first role that matches, in precedence order: interface or delegate, abstract, data, static, concrete.
+    /// </summary>
     internal static NodeRole Role(INamedTypeSymbol type, bool isGodot)
     {
         if (type.TypeKind is TypeKind.Interface or TypeKind.Delegate) return NodeRole.Interface;

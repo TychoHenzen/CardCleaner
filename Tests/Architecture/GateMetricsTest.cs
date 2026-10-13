@@ -3,7 +3,9 @@ using CardCleaner.Tests.Architecture.DependencyGate;
 
 namespace CardCleaner.Tests.Architecture;
 
-/// <summary>Fixture graph for the anchor modules and the references into UI of the dependency gate (#240 AC-6).</summary>
+/// <summary>
+/// Fixture graph for the anchor modules and the references into UI of the dependency gate (#240 AC-6).
+/// </summary>
 [TestSuite]
 public class GateMetricsTest
 {
@@ -16,7 +18,7 @@ public class GateMetricsTest
         AssertThat(ModulesOf(measurement, "Button", "Panel")).IsEqual("UI");
         AssertThat(ModulesOf(measurement, "Element", "Signature")).IsEqual("Data");
         AssertThat(ModulesOf(measurement, "IReader", "IWriter")).IsEqual("Contracts");
-        AssertThat(string.Join(",", measurement.Order.Order)).IsEqual("Data,Contracts,Middle,UI");
+        AssertThat(string.Join(",", measurement.Order.Order)).IsEqual("Data,Contracts,loose Rules,UI");
     }
 
     [TestCase]
@@ -27,8 +29,9 @@ public class GateMetricsTest
 
         AssertThat(measurement.Gated.RefsFromNonUiToUi).IsEqual(1);
         AssertThat(measurement.Gated.UpEdges).IsEqual(1);
-        AssertThat(GateReport.Lines(measurement).Any(l => l.StartsWith("up edge: Middle -> UI", System.StringComparison.Ordinal)))
-            .IsTrue();
+        var upIntoUi = GateReport.Lines(measurement)
+            .Any(l => l.StartsWith("up edge: loose Rules -> UI", System.StringComparison.Ordinal));
+        AssertThat(upIntoUi).IsTrue();
     }
 
     private static string ModulesOf(GateMeasurement measurement, params string[] ids) =>

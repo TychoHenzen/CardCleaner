@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace CardCleaner.Tests.Architecture.DependencyGate;
 
 /// <summary>
-/// Reads the NodePath links of scene and resource text (#240 requirement 2): a NodePath property of a scripted node
+/// Reads the NodePath links of scene text (#240 requirement 2): a NodePath property of a scripted node
 /// that resolves to another scripted node is a reference the code relies on but Roslyn cannot see. A node's class is
 /// its own script, or for an instanced scene the script on that scene's root.
 /// </summary>
@@ -15,7 +15,9 @@ internal static partial class SceneLinkReader
 {
     private const string ResPrefix = "res://";
 
-    /// <summary>One scene link: the scripted node's class, the class of the node its NodePath names, and how often.</summary>
+    /// <summary>
+    /// One scene link: the scripted node's class, the class of the node its NodePath names, and how often.
+    /// </summary>
     internal sealed record Link(string From, string To, int Count);
 
     private sealed class SceneNode
@@ -29,7 +31,7 @@ internal static partial class SceneLinkReader
 
     private sealed record ParsedFile(Dictionary<string, (string Type, string Path)> External, List<SceneNode> Nodes);
 
-    /// <param name="files">Scene and resource files, paths relative to the project root (Scenes/X.tscn).</param>
+    /// <param name="files">Scene files, paths relative to the project root (Scenes/X.tscn).</param>
     /// <param name="classesByFile">The class ids declared in each script file (Scripts/X.cs).</param>
     public static IReadOnlyList<Link> Read(IReadOnlyList<SourceFile> files,
         IReadOnlyDictionary<string, IReadOnlyList<string>> classesByFile)
@@ -167,7 +169,8 @@ internal static partial class SceneLinkReader
     private static Dictionary<string, string> Attributes(string header)
     {
         var attributes = new Dictionary<string, string>(StringComparer.Ordinal);
-        foreach (Match match in AttributePattern().Matches(header)) attributes[match.Groups[1].Value] = match.Groups[2].Value;
+        foreach (Match match in AttributePattern().Matches(header))
+            attributes[match.Groups[1].Value] = match.Groups[2].Value;
         return attributes;
     }
 

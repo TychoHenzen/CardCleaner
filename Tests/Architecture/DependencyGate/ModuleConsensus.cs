@@ -50,7 +50,9 @@ internal static class ModuleConsensus
             StringComparer.Ordinal);
     }
 
-    /// <summary>Undirected weights w(a,b) = cw(a->b) + cw(b->a) with a before b ordinally; omni classes left out.</summary>
+    /// <summary>
+    /// Undirected weights w(a,b) = cw(a->b) + cw(b->a) with a before b ordinally; omni classes left out.
+    /// </summary>
     private static SortedDictionary<EdgeKey, double> Undirected(
         IReadOnlyList<(string From, string To, double Cw)> edges, ISet<string> omni)
     {
@@ -108,8 +110,9 @@ internal static class ModuleConsensus
     /// An omnipresent class joins the module it references most (summed cw to non-omni members, ties to the lower id).
     /// ASSUMPTION: one with no such reference goes loose; the Python reference put it in a "shared" module.
     /// </summary>
-    private static void AttachOmnipresent(SortedSet<string> omni, IReadOnlyList<(string From, string To, double Cw)> edges,
-        SortedDictionary<string, int> module, SortedSet<string> loose)
+    private static void AttachOmnipresent(SortedSet<string> omni,
+        IReadOnlyList<(string From, string To, double Cw)> edges, SortedDictionary<string, int> module,
+        SortedSet<string> loose)
     {
         var members = new SortedDictionary<string, int>(module, StringComparer.Ordinal);
         foreach (var node in omni)

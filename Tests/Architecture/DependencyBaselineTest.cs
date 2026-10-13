@@ -13,7 +13,8 @@ public class DependencyBaselineTest
     private string _path = null!;
 
     [BeforeTest]
-    public void CreatePath() => _path = Path.Combine(Path.GetTempPath(), $"dependency-baseline-{Guid.NewGuid():N}.json");
+    public void CreatePath() =>
+        _path = Path.Combine(Path.GetTempPath(), $"dependency-baseline-{Guid.NewGuid():N}.json");
 
     [AfterTest]
     public void DeleteFile()
@@ -59,6 +60,9 @@ public class DependencyBaselineTest
 
         var accepted = DependencyBaseline.Apply(_path, lower, update: true);
         AssertThat(accepted.Count).IsEqual(0);
+        AssertThat(File.ReadAllText(_path)).IsEqual("{\n  \"up_edges\": 10,\n  \"biggest_loop\": 3,\n" +
+                                                    "  \"seams_leaky\": 3,\n  \"seams_missing\": 2,\n" +
+                                                    "  \"refs_from_non_ui_to_ui\": 49\n}\n");
         AssertThat(DependencyBaseline.Read(_path).Numbers!.ToString()).IsEqual(lower.ToString());
         AssertThat(DependencyBaseline.Apply(_path, lower, update: false).Count).IsEqual(0);
     }
@@ -71,6 +75,11 @@ public class DependencyBaselineTest
         AssertThat(missing.Count).IsEqual(1);
         AssertThat(missing[0]).IsEqual($"dependency baseline {_path} is missing");
 
+        var missingWithSwitch = DependencyBaseline.Apply(_path, Baseline, update: true);
+        AssertThat(missingWithSwitch.Count).IsEqual(1);
+        AssertThat(missingWithSwitch[0]).IsEqual($"dependency baseline {_path} is missing");
+        AssertThat(File.Exists(_path)).IsFalse();
+
         File.WriteAllText(_path, "{\"up_edges\": 1}");
         var malformed = DependencyBaseline.Apply(_path, Baseline, update: false);
         AssertThat(malformed.Count).IsEqual(1);
@@ -82,5 +91,6 @@ public class DependencyBaselineTest
         AssertThat(File.ReadAllText(_path)).IsEqual("{\"up_edges\": 1}");
     }
 
-    private void Record() => AssertThat(DependencyBaseline.Apply(_path, Baseline, update: true).Count).IsEqual(0);
+    private void Record() => File.WriteAllText(_path, "{\"up_edges\": 10, \"biggest_loop\": 4, \"seams_leaky\": 3, " +
+                                                     "\"seams_missing\": 2, \"refs_from_non_ui_to_ui\": 50}");
 }

@@ -145,7 +145,9 @@ internal static class LouvainClustering
         if (a != b) adjacency[b][a] = adjacency[b].GetValueOrDefault(a) + w;
     }
 
-    /// <summary>Sum over communities of Lc/m - resolution * (degc / 2m)^2; each edge and self loop counted once.</summary>
+    /// <summary>
+    /// Sum over communities of Lc/m - resolution * (degc / 2m)^2; each edge and self loop counted once.
+    /// </summary>
     private static double Modularity(SortedDictionary<int, double>[] adjacency, List<List<int>> communities, double m,
         double resolution)
     {

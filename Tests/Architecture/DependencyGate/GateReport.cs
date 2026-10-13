@@ -4,7 +4,9 @@ using System.Linq;
 
 namespace CardCleaner.Tests.Architecture.DependencyGate;
 
-/// <summary>The printed report of a measurement (#240 AC-1, AC-2). Two measurements are equal when their lines are.</summary>
+/// <summary>
+/// The printed report of a measurement (#240 AC-1, AC-2). Two measurements are equal when their lines are.
+/// </summary>
 internal static class GateReport
 {
     public static List<string> Lines(GateMeasurement m)
@@ -17,9 +19,9 @@ internal static class GateReport
             $"classes: data {m.LayerCount(Layer.Data)}, contracts {m.LayerCount(Layer.Contracts)}, " +
             $"middle {m.LayerCount(Layer.Middle)}, ui {m.LayerCount(Layer.UI)}",
             $"modules {m.RealModuleCount}, loose {m.Modules.Loose.Count}",
-            $"gated: up_edges {gated.UpEdges}, biggest_loop {gated.BiggestLoop}, seams_leaky {gated.SeamsLeaky}, " +
-            $"seams_missing {gated.SeamsMissing}, refs_from_non_ui_to_ui {gated.RefsFromNonUiToUi}",
-            $"seams: defined {m.SeamCount(SeamRating.Defined)}, leaky {gated.SeamsLeaky}, missing {gated.SeamsMissing}",
+            "gated: " + string.Join(", ", GatedNumbers.Fields.Select(f => $"{f.Name} {f.Value(gated)}")),
+            $"seams: defined {m.SeamCount(SeamKind.Defined)}, leaky {gated.SeamsLeaky}, " +
+            $"missing {gated.SeamsMissing}",
         };
 
         var sizes = m.Modules.Module.GroupBy(p => p.Value).ToDictionary(g => g.Key, g => g.Count());
@@ -36,15 +38,26 @@ internal static class GateReport
 
         foreach (var loop in m.Order.Loops)
             lines.Add($"loop of {loop.Count}: " + string.Join(", ", loop.Select(x => names[x])));
-        foreach (var seam in m.Seams.Where(s => s.Rating != SeamRating.Defined))
+        foreach (var seam in m.Seams.Where(s => s.Rating != SeamKind.Defined))
         {
-            lines.Add($"seam {seam.Rating}: {names[seam.Modules.From]} -> {names[seam.Modules.To]}, top three " +
+            lines.Add($"seam {Label(seam.Rating)}: {names[seam.Modules.From]} -> {names[seam.Modules.To]}, top three " +
                       seam.TopThreeShare.ToString("0.00", CultureInfo.InvariantCulture) + ", concrete: " +
                       string.Join(", ", seam.Concrete) + (seam.ConcreteBack ? " (concrete back)" : ""));
         }
 
         foreach (var component in m.Order.GreedyComponents)
-            lines.Add($"greedy order for {component.Count} modules: " + string.Join(", ", component.Select(x => names[x])));
+        {
+            lines.Add($"greedy order for {component.Count} modules: " +
+                      string.Join(", ", component.Select(x => names[x])));
+        }
+
         return lines;
     }
+
+    private static string Label(SeamKind kind) => kind switch
+    {
+        SeamKind.Defined => "defined",
+        SeamKind.Leaky => "leaky",
+        _ => "missing",
+    };
 }

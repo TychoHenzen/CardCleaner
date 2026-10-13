@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CardCleaner.Tests.Architecture.DependencyGate;
 
@@ -42,5 +43,22 @@ public class SceneLinkReaderTest
         AssertThat(links.Count).IsEqual(2);
         AssertThat(links[0].ToString()).IsEqual(new SceneLinkReader.Link("Hud", "Meter", 1).ToString());
         AssertThat(links[1].ToString()).IsEqual(new SceneLinkReader.Link("Meter", "Hud", 1).ToString());
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void SceneLinkAndCodeReferenceOnOnePairMergeIntoOneMemberTypeCount()
+    {
+        var graph = new ClassGraph();
+        graph.AddNode("Hud", NodeRole.Concrete);
+        graph.AddNode("Meter", NodeRole.Concrete);
+
+        graph.AddEdge("Hud", "Meter", EdgeKind.MemberType, 3);
+        graph.AddEdge("Hud", "Meter", EdgeKind.MemberType, 2);
+        graph.AddEdge("Hud", "Meter", EdgeKind.Calls);
+
+        var weight = graph.Edges[new EdgeKey("Hud", "Meter")];
+        AssertThat(weight.Weight).IsEqual(11L);
+        AssertThat(Math.Abs(weight.ClusterWeight - (2 * (1 + Math.Log2(5)) + 1)) < 1e-9).IsTrue();
     }
 }

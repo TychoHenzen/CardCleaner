@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CardCleaner.Tests.Architecture.DependencyGate;
@@ -15,6 +15,8 @@ namespace CardCleaner.Tests.Architecture.DependencyGate;
 /// </summary>
 internal static class ClassGraphExtractor
 {
+    // ASSUMPTION: these symbols and LanguageVersion.CSharp12 in Compile mirror CardCleaner.csproj (Godot.NET.Sdk
+    // 4.7.1, net8.0, LangVersion 12.0) and must change with it on an SDK, framework or language bump.
     private static readonly string[] PreprocessorSymbols =
     [
         "GODOT", "GODOT4", "GODOT4_7", "GODOT4_7_1", "GODOT4_OR_GREATER", "GODOT4_7_OR_GREATER", "TOOLS", "DEBUG",
@@ -52,7 +54,8 @@ internal static class ClassGraphExtractor
     }
 
     private static (CSharpCompilation Compilation, List<SyntaxTree> ScriptTrees) Compile(
-        IReadOnlyList<SourceFile> scripts, IReadOnlyList<SourceFile> addons, IReadOnlyList<MetadataReference> references)
+        IReadOnlyList<SourceFile> scripts, IReadOnlyList<SourceFile> addons,
+        IReadOnlyList<MetadataReference> references)
     {
         var parse = new CSharpParseOptions(LanguageVersion.CSharp12, preprocessorSymbols: PreprocessorSymbols);
         var scriptTrees = scripts.OrderBy(s => s.RelativePath, StringComparer.Ordinal)
@@ -66,8 +69,8 @@ internal static class ClassGraphExtractor
         return (compilation, scriptTrees);
     }
 
-    private static (SortedDictionary<string, NodeFacts> Facts, List<(SyntaxTree Tree, SyntaxNode Declaration, string Key)>
-        Declarations) CollectDeclarations(CSharpCompilation compilation, List<SyntaxTree> scriptTrees)
+    private static (SortedDictionary<string, NodeFacts> Facts,
+        List<(SyntaxTree Tree, SyntaxNode Declaration, string Key)> Declarations) CollectDeclarations(CSharpCompilation compilation, List<SyntaxTree> scriptTrees)
     {
         var facts = new SortedDictionary<string, NodeFacts>(StringComparer.Ordinal);
         var topDeclarations = new List<(SyntaxTree Tree, SyntaxNode Declaration, string Key)>();
@@ -92,8 +95,8 @@ internal static class ClassGraphExtractor
         return (facts, topDeclarations);
     }
 
-    private static References CollectReferences(CSharpCompilation compilation, SortedDictionary<string, NodeFacts> facts,
-        List<(SyntaxTree Tree, SyntaxNode Declaration, string Key)> topDeclarations)
+    private static References CollectReferences(CSharpCompilation compilation,
+        SortedDictionary<string, NodeFacts> facts, List<(SyntaxTree Tree, SyntaxNode Declaration, string Key)> topDeclarations)
     {
         // Binding is the slow part, so each tree is walked on its own thread with its own semantic model. The
         // per-tree results are merged in path order, so the outcome does not depend on thread timing.
@@ -160,7 +163,8 @@ internal static class ClassGraphExtractor
     private static (INamedTypeSymbol? Target, EdgeKind Kind) TargetOf(ISymbol? symbol, SyntaxNode name) => symbol switch
     {
         INamedTypeSymbol type => (type, ClassifyTypePosition(name)),
-        IMethodSymbol { MethodKind: MethodKind.Constructor } constructor => (constructor.ContainingType, EdgeKind.Creates),
+        IMethodSymbol { MethodKind: MethodKind.Constructor } constructor =>
+            (constructor.ContainingType, EdgeKind.Creates),
         IMethodSymbol method => ((method.ReducedFrom ?? method).ContainingType, EdgeKind.Calls),
         IPropertySymbol or IFieldSymbol or IEventSymbol => (symbol.ContainingType, EdgeKind.Uses),
         _ => (null, EdgeKind.Uses),

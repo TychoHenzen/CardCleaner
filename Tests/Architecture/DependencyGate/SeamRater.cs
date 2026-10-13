@@ -28,9 +28,9 @@ internal static class SeamRater
             var concrete = ranked.Where(p => !nodes[p.Key].IsContractRole).Select(p => p.Key).ToList();
             var concreteBack = edges.TryGetValue(new EdgeKey(key.To, key.From), out var back) &&
                                back.Pairs.Any(p => !nodes[p.To].IsContractRole);
-            var rating = concrete.Count == 0 && !concreteBack ? SeamRating.Defined
-                : topThree < MissingShare && concrete.Count >= MissingConcrete ? SeamRating.Missing
-                : SeamRating.Leaky;
+            var rating = concrete.Count == 0 && !concreteBack ? SeamKind.Defined
+                : topThree < MissingShare && concrete.Count >= MissingConcrete ? SeamKind.Missing
+                : SeamKind.Leaky;
             ratings.Add(new SeamRating(key, rating, topThree, concrete, concreteBack));
         }
 

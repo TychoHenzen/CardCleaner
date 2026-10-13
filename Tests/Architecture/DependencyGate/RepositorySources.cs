@@ -13,17 +13,20 @@ internal static class RepositorySources
 
     /// <summary>Every Scripts/**/*.cs file.</summary>
     public static IReadOnlyList<SourceFile> Scripts(string projectRoot) =>
-        Read(projectRoot, "Scripts", "*.cs", path => !SkippedScriptFolders.Any(f => path.StartsWith(f, StringComparison.Ordinal)));
+        Read(projectRoot, "Scripts", "*.cs",
+            path => !SkippedScriptFolders.Any(f => path.StartsWith(f, StringComparison.Ordinal)));
 
     /// <summary>Every addons/**/*.cs file except gdUnit4's: compiled alongside, never counted as nodes.</summary>
     public static IReadOnlyList<SourceFile> Addons(string projectRoot) =>
         Read(projectRoot, "addons", "*.cs", path => !path.StartsWith("addons/gdUnit4/", StringComparison.Ordinal));
 
-    /// <summary>Every .tscn and .tres file under Scenes/ and Data/.</summary>
+    /// <summary>
+    /// Every .tscn file under Scenes/ and Data/. A .tres resource has no [node] stanzas, so its NodePath values name
+    /// no node of a scene and it adds no link.
+    /// </summary>
     public static IReadOnlyList<SourceFile> Scenes(string projectRoot) =>
         new[] { "Scenes", "Data" }
-            .SelectMany(folder => Read(projectRoot, folder, "*.tscn", _ => true)
-                .Concat(Read(projectRoot, folder, "*.tres", _ => true)))
+            .SelectMany(folder => Read(projectRoot, folder, "*.tscn", _ => true))
             .OrderBy(f => f.RelativePath, StringComparer.Ordinal).ToList();
 
     private static List<SourceFile> Read(string projectRoot, string folder, string pattern, Func<string, bool> keep)

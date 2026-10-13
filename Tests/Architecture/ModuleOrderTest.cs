@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Tests.Architecture.DependencyGate;
 
 namespace CardCleaner.Tests.Architecture;
 
-/// <summary>Fixture module graphs for the layered order, up edges and loops of the dependency gate (#240 AC-6, AC-7).</summary>
+/// <summary>
+/// Fixture module graphs for the layered order, up edges and loops of the dependency gate (#240 AC-6, AC-7).
+/// </summary>
 [TestSuite]
 public class ModuleOrderTest
 {
@@ -67,6 +70,23 @@ public class ModuleOrderTest
         AssertThat(measurement.Modules.Loose.Contains("Shape")).IsTrue();
         AssertThat(measurement.Gated.BiggestLoop).IsEqual(2);
         AssertThat(measurement.Gated.UpEdges).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void CycleAboveTheExactLimitIsOrderedGreedily()
+    {
+        var names = Enumerable.Range(0, ModuleOrder.ExactLimit + 1).Select(i => $"M{i:00}").ToArray();
+        var cycle = names.Select((n, i) => (n, names[(i + 1) % names.Length], 1L)).ToArray();
+
+        var result = ModuleOrder.Order(Middle(names), Edges(cycle));
+
+        AssertThat(result.GreedyComponents.Count).IsEqual(1);
+        AssertThat(result.GreedyComponents[0].Count).IsEqual(21);
+        AssertThat(result.BiggestLoop).IsEqual(21);
+        AssertThat(string.Join(",", result.Order.Take(3))).IsEqual("M00,M20,M19");
+        AssertThat(result.UpEdges.Count).IsEqual(1);
+        AssertThat(result.UpEdges[0].ToString()).IsEqual(new EdgeKey("M00", "M01").ToString());
     }
 
     private static Dictionary<string, Layer> Middle(params string[] modules)

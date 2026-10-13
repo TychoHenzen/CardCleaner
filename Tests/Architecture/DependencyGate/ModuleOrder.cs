@@ -137,7 +137,9 @@ internal static class ModuleOrder
         return total;
     }
 
-    /// <summary>Repeatedly place the module with the fewest edges to unplaced modules (they become up), ties ordinal.</summary>
+    /// <summary>
+    /// Repeatedly place the module with the fewest edges to unplaced modules (they become up), ties ordinal.
+    /// </summary>
     private static List<string> Greedy(List<string> members, Dictionary<EdgeKey, long> edges)
     {
         var remaining = new SortedSet<string>(members, StringComparer.Ordinal);

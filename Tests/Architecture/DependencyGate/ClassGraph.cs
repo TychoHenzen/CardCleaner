@@ -20,10 +20,13 @@ internal sealed class ClassGraph
 
     public void AddNode(GateNode node) => Nodes.Add(node.Id, node);
 
-    public void AddNode(string id, NodeRole role, string home = "Scripts", bool uiSeed = false) =>
-        AddNode(new GateNode(id, role, home, uiSeed));
+    public void AddNode(string id, NodeRole role, bool uiSeed = false) =>
+        AddNode(new GateNode(id, role, "Scripts", uiSeed));
 
-    /// <summary>Adds count reference sites of one kind. Self references and unknown classes are ignored.</summary>
+    /// <summary>
+    /// Adds count reference sites of one kind; sites of one pair and kind merge across calls. Self references,
+    /// unknown classes and non-positive counts are ignored.
+    /// </summary>
     public void AddEdge(string from, string to, EdgeKind kind, int count = 1)
     {
         if (count <= 0 || from == to || !Nodes.ContainsKey(from) || !Nodes.ContainsKey(to)) return;
@@ -34,8 +37,6 @@ internal sealed class ClassGraph
             Edges.Add(key, weight);
         }
 
-        var kindWeight = KindWeight(kind);
-        weight.Weight += (long)kindWeight * count;
-        weight.ClusterWeight += kindWeight * (1 + Math.Log2(count));
+        weight.Add(kind, count);
     }
 }

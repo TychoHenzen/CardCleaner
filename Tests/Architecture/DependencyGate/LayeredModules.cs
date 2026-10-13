@@ -5,13 +5,11 @@ using System.Linq;
 namespace CardCleaner.Tests.Architecture.DependencyGate;
 
 /// <summary>
-/// Modules per layer (#240 requirement 6): Data, Contracts and UI are one module each; a middle layer of fewer than
-/// four classes is one module "Middle"; otherwise the middle is clustered by ModuleConsensus into "M&lt;id&gt;".
+/// Modules per layer (#240 requirement 6): Data, Contracts and UI are one module each; the middle is clustered by
+/// ModuleConsensus into "M&lt;id&gt;" modules and loose classes.
 /// </summary>
 internal static class LayeredModules
 {
-    private const int MinModule = 4;
-
     public static ModuleAssignment Assign(ClassGraph graph)
     {
         var layers = LayerAnchors.Classify(graph);
@@ -25,26 +23,20 @@ internal static class LayeredModules
         }
 
         var middle = layers.Where(p => p.Value == Layer.Middle).Select(p => p.Key).ToList();
-        if (middle.Count < MinModule)
+        var consensus = ModuleConsensus.Cluster(middle, graph.Nodes.ToDictionary(p => p.Key, p => p.Value.Home),
+            MiddleEdges(graph, middle));
+        var clustered = new SortedSet<string>(StringComparer.Ordinal);
+        foreach (var (id, number) in consensus.Module)
         {
-            foreach (var id in middle) module[id] = nameof(Layer.Middle);
-            if (middle.Count > 0) moduleLayer[nameof(Layer.Middle)] = Layer.Middle;
-        }
-        else
-        {
-            var consensus = ModuleConsensus.Cluster(middle, graph.Nodes.ToDictionary(p => p.Key, p => p.Value.Home),
-                MiddleEdges(graph, middle));
-            foreach (var (id, number) in consensus.Module)
-            {
-                module[id] = "M" + number;
-                moduleLayer["M" + number] = Layer.Middle;
-            }
-
-            loose.UnionWith(consensus.Loose);
+            var key = "M" + number;
+            module[id] = key;
+            moduleLayer[key] = Layer.Middle;
+            clustered.Add(key);
         }
 
+        loose.UnionWith(consensus.Loose);
         foreach (var id in loose) moduleLayer[ModuleAssignment.LooseKey(id)] = Layer.Middle;
-        return new ModuleAssignment(layers, module, loose, moduleLayer, Names(graph, module, moduleLayer));
+        return new ModuleAssignment(layers, module, loose, moduleLayer, Names(graph, module, moduleLayer, clustered));
     }
 
     private static List<(string From, string To, double Cw)> MiddleEdges(ClassGraph graph, List<string> middle)
@@ -54,9 +46,11 @@ internal static class LayeredModules
             .Select(e => (e.Key.From, e.Key.To, e.Value.ClusterWeight)).ToList();
     }
 
-    /// <summary>Anchors by layer name; a middle module by its id and its class with the highest intra-module degree.</summary>
+    /// <summary>
+    /// Anchors by layer name; a middle module by its id and its class with the highest intra-module degree.
+    /// </summary>
     private static SortedDictionary<string, string> Names(ClassGraph graph, SortedDictionary<string, string> module,
-        SortedDictionary<string, Layer> moduleLayer)
+        SortedDictionary<string, Layer> moduleLayer, SortedSet<string> clustered)
     {
         var degree = new SortedDictionary<string, double>(StringComparer.Ordinal);
         foreach (var (key, weight) in graph.Edges)
@@ -68,7 +62,7 @@ internal static class LayeredModules
 
         var names = new SortedDictionary<string, string>(StringComparer.Ordinal);
         foreach (var key in moduleLayer.Keys) names[key] = key;
-        foreach (var group in module.GroupBy(p => p.Value).Where(g => g.Key.StartsWith('M') && g.Key != "Middle"))
+        foreach (var group in module.GroupBy(p => p.Value).Where(g => clustered.Contains(g.Key)))
         {
             var top = group.Select(p => p.Key).OrderByDescending(id => degree.GetValueOrDefault(id))
                 .ThenBy(id => id, StringComparer.Ordinal).First();

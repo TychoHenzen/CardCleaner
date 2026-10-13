@@ -1,4 +1,3 @@
-using System.Linq;
 using CardCleaner.Tests.Architecture.DependencyGate;
 
 namespace CardCleaner.Tests.Architecture;
@@ -57,7 +56,7 @@ public class ClassGraphExtractorTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void MethodFreeClassHoldingAnInterfaceServiceIsNotData()
+    public static void MethodFreeClassHoldingAnInterfaceServiceStaysInTheMiddleLayer()
     {
         var graph = Extract();
         var layers = LayerAnchors.Classify(graph);

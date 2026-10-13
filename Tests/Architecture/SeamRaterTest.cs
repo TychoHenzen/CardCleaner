@@ -14,7 +14,7 @@ public class SeamRaterTest
     {
         var edges = Edges(("X", "Y", [("a", "IPort", 1), ("b", "Record", 9)]));
 
-        AssertThat(RatingOf(edges, "X", "Y")).IsEqual(SeamRating.Defined);
+        AssertThat(RatingOf(edges, "X", "Y")).IsEqual(nameof(SeamKind.Defined));
     }
 
     [TestCase]
@@ -25,7 +25,7 @@ public class SeamRaterTest
 
         var seam = SeamRater.Rate(edges, Nodes()).Single();
 
-        AssertThat(seam.Rating).IsEqual(SeamRating.Leaky);
+        AssertThat(seam.Rating.ToString()).IsEqual(nameof(SeamKind.Leaky));
         AssertThat(string.Join(",", seam.Concrete)).IsEqual("Engine");
     }
 
@@ -35,8 +35,8 @@ public class SeamRaterTest
     {
         var edges = Edges(("X", "Y", [("a", "IPort", 1)]), ("Y", "X", [("IPort", "a", 1)]));
 
-        AssertThat(RatingOf(edges, "X", "Y")).IsEqual(SeamRating.Leaky);
-        AssertThat(RatingOf(edges, "Y", "X")).IsEqual(SeamRating.Leaky);
+        AssertThat(RatingOf(edges, "X", "Y")).IsEqual(nameof(SeamKind.Leaky));
+        AssertThat(RatingOf(edges, "Y", "X")).IsEqual(nameof(SeamKind.Leaky));
     }
 
     [TestCase]
@@ -46,12 +46,12 @@ public class SeamRaterTest
         var spread = Enumerable.Range(0, 6).Select(i => ("a", $"C{i}", 1L)).ToArray();
         var fiveSpread = Enumerable.Range(0, 5).Select(i => ("a", $"C{i}", 1L)).ToArray();
 
-        AssertThat(RatingOf(Edges(("X", "Y", spread)), "X", "Y")).IsEqual(SeamRating.Missing);
-        AssertThat(RatingOf(Edges(("X", "Y", fiveSpread)), "X", "Y")).IsEqual(SeamRating.Leaky);
+        AssertThat(RatingOf(Edges(("X", "Y", spread)), "X", "Y")).IsEqual(nameof(SeamKind.Missing));
+        AssertThat(RatingOf(Edges(("X", "Y", fiveSpread)), "X", "Y")).IsEqual(nameof(SeamKind.Leaky));
     }
 
     private static string RatingOf(SortedDictionary<EdgeKey, ModuleEdge> edges, string from, string to) =>
-        SeamRater.Rate(edges, Nodes()).Single(s => s.Modules.From == from && s.Modules.To == to).Rating;
+        SeamRater.Rate(edges, Nodes()).Single(s => s.Modules.From == from && s.Modules.To == to).Rating.ToString();
 
     private static Dictionary<string, GateNode> Nodes()
     {

@@ -4,7 +4,9 @@ using System.Linq;
 
 namespace CardCleaner.Tests.Architecture.DependencyGate;
 
-/// <summary>Tarjan's strongly connected components over nodes in ordinal order; each component sorted ordinally.</summary>
+/// <summary>
+/// Tarjan's strongly connected components over nodes in ordinal order; each component sorted ordinally.
+/// </summary>
 internal static class StronglyConnected
 {
     public static List<List<string>> Components(IEnumerable<string> nodes, IEnumerable<EdgeKey> edges)
