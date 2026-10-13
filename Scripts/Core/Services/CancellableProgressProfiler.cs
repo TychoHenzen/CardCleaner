@@ -20,7 +20,7 @@ public class CancellableProgressProfiler : IProfiler
 {
     private readonly IProgress<float>? _progress;
     private readonly CancellationToken _cancellationToken;
-    private readonly Dictionary<string, float> _phaseWeights;
+    private readonly IReadOnlyDictionary<string, float> _phaseWeights;
     private readonly object _lock = new();
     private float _accumulatedProgress;
 
@@ -28,28 +28,20 @@ public class CancellableProgressProfiler : IProfiler
     /// Creates a profiler that reports progress and checks cancellation.
     /// </summary>
     /// <param name="progress">Optional progress reporter (0.0-1.0)</param>
+    /// <param name="phaseWeights">
+    /// Progress share of each scope name the caller's pipeline opens; scopes not listed add no progress.
+    /// </param>
     /// <param name="cancellationToken">Token to check for cancellation requests</param>
-    /// <param name="phaseWeights">Optional custom phase weights (defaults provided)</param>
     public CancellableProgressProfiler(
         IProgress<float>? progress,
-        CancellationToken cancellationToken,
-        Dictionary<string, float>? phaseWeights = null)
+        IReadOnlyDictionary<string, float> phaseWeights,
+        CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(phaseWeights);
         _progress = progress;
         _cancellationToken = cancellationToken;
-        _phaseWeights = phaseWeights ?? GetDefaultPhaseWeights();
+        _phaseWeights = phaseWeights;
         _accumulatedProgress = 0.0f;
-    }
-
-    private static Dictionary<string, float> GetDefaultPhaseWeights()
-    {
-        return new Dictionary<string, float>
-        {
-            ["BiomeMapBuild"] = 0.10f,
-            ["WfcTerrainGeneration"] = 0.75f,
-            ["VariantSelection"] = 0.05f,
-            ["PassableCalculation"] = 0.10f
-        };
     }
 
     public IDisposable BeginScope(string name)
@@ -92,7 +84,7 @@ public class CancellableProgressProfiler : IProfiler
         }
     }
 
-    private class ScopedTimer : IDisposable
+    private sealed class ScopedTimer : IDisposable
     {
         private readonly string _name;
         private readonly Action<string, long> _onComplete;

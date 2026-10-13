@@ -15,8 +15,8 @@ using Godot;
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 
 /// <summary>
-/// Pins the Deckbuilder grid map that DefaultSessionMapBuilder produces for one fixed seed and two fixed cards.
-/// The map is built in the same order DefaultSessionMapBuilder.BuildAsync uses, with one shared RNG, minus the
+/// Pins the Deckbuilder grid map that GridMapGenerator produces for one fixed seed and two fixed cards.
+/// The map is built in the same order GridMapGenerator.GenerateAsync uses, with one shared RNG, minus the
 /// async wrapper and its progress profiler. A refactor of the grid WFC path must reproduce this fingerprint
 /// exactly. The golden value was recorded on master 17e3c3f, before any refactor.
 /// </summary>
@@ -42,10 +42,10 @@ public class WfcGridFingerprintTest
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),
             new TileRegistryWfcCatalog(tileRegistry));
-        var generator = new SimpleMapGenerator(
+        var generator = GridMapGenerator.CreatePipeline(
             rng, biomeProvider, tileRegistry, tileRegistry, wfcGenerator, biomeRegistry, gradient);
 
-        // ASSUMPTION: the progress and cancellation profiler that AsyncMapGeneratorAdapter installs
+        // ASSUMPTION: the progress and cancellation profiler that GridMapGenerator.GenerateAsync installs
         // does not change the map, so the pin runs GenerateMap with the default profiler.
         var map = generator.GenerateMap(GridSize);
 

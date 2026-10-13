@@ -85,7 +85,7 @@ Pre-computed hard constraints for tile compatibility.
 **Storage:** `Dictionary<string, HashSet<string>>` - Tile ID to valid neighbors
 
 **Construction:** From transition pairs passed in as data, `new WfcAdjacencyRules(pairs)`.
-The producers (`DefaultSessionMapBuilder`, `TerrainGeneratorFactory`, `MeshTerrainGenerator`)
+The producers (`GridMapGenerator`, `TerrainGeneratorFactory`, `MeshTerrainGenerator`)
 get the pairs from `CompiledTransitionResolver.GetAllTransitionPairs()`; Wfc never names the resolver.
 
 **Properties:**

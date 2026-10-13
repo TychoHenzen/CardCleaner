@@ -3,14 +3,14 @@ using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
-namespace CardCleaner.Tests.Features.Deckbuilder.Services.SimpleMapGeneratorScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenarios;
 
 /// <summary>
-///     SimpleMapGenerator map structure, connectivity and determinism scenarios split out of SimpleMapGeneratorTest.
+///     Grid map generator structure, connectivity and determinism scenarios.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
-public class SimpleMapGeneratorStructureTest : SimpleMapGeneratorTestBase
+public class GridMapGeneratorStructureTest : GridMapGeneratorTestBase
 {
     [TestCase]
     public void TestGenerateMapReturnsValidMapData()

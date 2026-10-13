@@ -410,7 +410,7 @@ The "clearest winner" concept may need prototyping to validate behavior. Create 
 ## WFC-Native Connectivity
 
 **Current State (Problems):**
-- `SimpleMapGenerator.EnsureConnectivity()` carves corridors **after** WFC completes
+- The old grid generator's `EnsureConnectivity()` carves corridors **after** WFC completes
 - Corridors violate 2x2 window constraints established by WFC
 - Corridors don't update `biomeMap` (BUG-001)
 - Corridors don't get decoration overlays (GOT-004)
@@ -456,10 +456,10 @@ public class ConnectivityHardConstraint : IHardConstraint
 | Respects all WFC constraints | May over-constrain early cells |
 
 **Code to Remove:**
-- `SimpleMapGenerator.EnsureConnectivity()`
-- `SimpleMapGenerator.CreateCorridor()`
-- `SimpleMapGenerator.FindConnectedComponents()`
-- `SimpleMapGenerator.FindClosestPair()`
+- `EnsureConnectivity()` (old grid generator)
+- `CreateCorridor()` (old grid generator)
+- `FindConnectedComponents()` (old grid generator)
+- `FindClosestPair()` (old grid generator)
 - Remove `biomeMap` parameter threading for corridors
 
 - [X] **Select Option A**
@@ -837,16 +837,16 @@ but it does not make sense to save it anywhere
 |------|----------------|---------|
 | Implement connectivity constraint | New `ConnectivityConstraint.cs` | — |
 | Integrate with WfcSolver | `WfcSolver.cs` | — |
-| Remove corridor system | `SimpleMapGenerator.cs` | `EnsureConnectivity()`, `CreateCorridor()`, `FindConnectedComponents()`, `FindClosestPair()` |
+| Remove corridor system | old grid generator file | `EnsureConnectivity()`, `CreateCorridor()`, `FindConnectedComponents()`, `FindClosestPair()` |
 
 ### Phase 4: Structure System Redesign
 **Goal:** Structures that respect terrain
 
 | Task | Files Affected | Removes |
 |------|----------------|---------|
-| Reorder generation phases | `SimpleMapGenerator.cs` | — |
-| Add reachability validation | `SimpleMapGenerator.cs` | — |
-| Update transitions after structures | `SimpleMapGenerator.cs` | Early transition generation |
+| Reorder generation phases | old grid generator file | — |
+| Add reachability validation | old grid generator file | — |
+| Update transitions after structures | old grid generator file | Early transition generation |
 
 ---
 

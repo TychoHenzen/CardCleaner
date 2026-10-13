@@ -6,19 +6,38 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
-namespace CardCleaner.Scripts.Features.Deckbuilder.Services.SimpleMapGeneratorSupport;
+namespace CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 
-internal sealed class SimpleMapGenerationPipeline
+internal sealed class GridMapGenerationPipeline
 {
-    private readonly SimpleMapGenerationContext _context;
-    private readonly SimpleMapWfcGenerator _wfcGenerator;
-    private readonly SimpleMapTerrainGenerator _terrainGenerator;
+    internal const string VariantSelectionScope = "VariantSelection";
+    internal const string BiomeMapBuildScope = "BiomeMapBuild";
+    internal const string TwoPhaseWfcScope = "TwoPhaseWfcGeneration";
+    internal const string PassableTilesScope = "PassableTileCollection";
+    internal const string TerrainTransitionsScope = "TerrainTransitions";
 
-    public SimpleMapGenerationPipeline(SimpleMapGenerationContext context)
+    /// <summary>
+    /// Each profiler scope GenerateMap opens, with its share of a whole generation's progress. The shares add up to
+    /// 1.0, so a generation that finishes has reported 1.0.
+    /// </summary>
+    internal static readonly IReadOnlyDictionary<string, float> ProgressWeights = new Dictionary<string, float>
+    {
+        [VariantSelectionScope] = 0.05f,
+        [BiomeMapBuildScope] = 0.10f,
+        [TwoPhaseWfcScope] = 0.75f,
+        [PassableTilesScope] = 0.05f,
+        [TerrainTransitionsScope] = 0.05f
+    };
+
+    private readonly GridMapGenerationContext _context;
+    private readonly GridMapWfcGenerator _wfcGenerator;
+    private readonly GridMapTerrainGenerator _terrainGenerator;
+
+    public GridMapGenerationPipeline(GridMapGenerationContext context)
     {
         _context = context;
-        _wfcGenerator = new SimpleMapWfcGenerator(context);
-        _terrainGenerator = new SimpleMapTerrainGenerator(context);
+        _wfcGenerator = new GridMapWfcGenerator(context);
+        _terrainGenerator = new GridMapTerrainGenerator(context);
     }
 
     public int MaxWfcRetries
@@ -55,7 +74,7 @@ internal sealed class SimpleMapGenerationPipeline
         ILog.Print(
             $"Map generated: {passableTiles.Count} passable tiles, player at {playerStart}, " +
             $"{enemyCount} enemies");
-        SimpleMapDiagnostics.ValidateSpatialCoherence(finalTileIds, size);
+        GridMapDiagnostics.ValidateSpatialCoherence(finalTileIds, size);
 
         return new SimpleMapData
         {
@@ -76,7 +95,7 @@ internal sealed class SimpleMapGenerationPipeline
 
     private VariantSelection SelectVariants()
     {
-        using (_context.Profiler.BeginScope("VariantSelection"))
+        using (_context.Profiler.BeginScope(VariantSelectionScope))
         {
             var perGenerationVariants = SelectPerGenerationVariants();
             var perGenerationGroupVariants = SelectPerGenerationGroupVariants();
@@ -87,7 +106,7 @@ internal sealed class SimpleMapGenerationPipeline
 
     private string[,] BuildBiomeMap(Vector2I size)
     {
-        using (_context.Profiler.BeginScope("BiomeMapBuild"))
+        using (_context.Profiler.BeginScope(BiomeMapBuildScope))
         {
             var biomeMap = new string[size.Y, size.X];
             for (var y = 0; y < size.Y; y++)
@@ -99,13 +118,13 @@ internal sealed class SimpleMapGenerationPipeline
 
     private TwoPhaseWfcResult GenerateTwoPhaseWfc(Vector2I size, string[,] biomeMap)
     {
-        using (_context.Profiler.BeginScope("TwoPhaseWfcGeneration"))
+        using (_context.Profiler.BeginScope(TwoPhaseWfcScope))
             return _wfcGenerator.Generate(size);
     }
 
     private List<Vector2I> CollectPassableTiles(Vector2I size, string[,] terrainGrid)
     {
-        using (_context.Profiler.BeginScope("PassableTileCollection"))
+        using (_context.Profiler.BeginScope(PassableTilesScope))
         {
             var passableTiles = new List<Vector2I>();
             var placedTiles = new Dictionary<Vector2I, string>();
@@ -136,7 +155,7 @@ internal sealed class SimpleMapGenerationPipeline
             string[,] foregroundLayer,
             Vector2I size)
     {
-        using (_context.Profiler.BeginScope("TerrainTransitions"))
+        using (_context.Profiler.BeginScope(TerrainTransitionsScope))
         {
             var overlays = _terrainGenerator.GenerateTerrainTransitions(
                 backgroundLayer,
@@ -146,7 +165,7 @@ internal sealed class SimpleMapGenerationPipeline
             ILog.Print(
                 $"Dual-grid terrain: {overlays.Count} visual tiles, " +
                 $"{transitionCount} transitions");
-            SimpleMapDiagnostics.ValidateBitmaskConsistency(overlays, size.X + 1, size.Y + 1);
+            GridMapDiagnostics.ValidateBitmaskConsistency(overlays, size.X + 1, size.Y + 1);
             return overlays;
         }
     }
@@ -192,7 +211,7 @@ internal sealed class SimpleMapGenerationPipeline
             {
                 selected[group.BaseName] = selectedTileId;
                 ILog.Print(
-                    $"[SimpleMapGenerator] Selected '{selectedTileId}' for variation group " +
+                    $"[GridMapGenerator] Selected '{selectedTileId}' for variation group " +
                     $"'{group.BaseName}'");
             }
         }

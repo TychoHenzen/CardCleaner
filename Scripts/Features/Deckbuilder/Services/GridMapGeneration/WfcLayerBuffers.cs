@@ -1,6 +1,6 @@
 using Godot;
 
-namespace CardCleaner.Scripts.Features.Deckbuilder.Services.SimpleMapGeneratorSupport;
+namespace CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 
 internal sealed class WfcLayerBuffers
 {

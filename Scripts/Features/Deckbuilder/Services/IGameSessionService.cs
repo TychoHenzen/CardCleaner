@@ -22,7 +22,7 @@ public interface IGameSessionService
     event Action<float>? ProgressUpdated;
 
     /// <summary>
-    /// Raised for every generated map, including maps from a custom generator that skip <see cref="MapGenerated"/>.
+    /// Raised for every generated map; <see cref="MapGenerated"/> is raised before it for a grid map only.
     /// </summary>
     event Action<IGeneratedMap> GeneratedMapReady;
 
@@ -31,12 +31,10 @@ public interface IGameSessionService
     /// </summary>
     IGeneratedMap? CurrentGeneratedMap { get; }
 
-    void StartSession(List<CardSignature> mapSeeds, List<CardSignature> abilityCards);
+    /// <summary>
+    /// Starts a session that generates its map with <paramref name="mapGenerator"/>.
+    /// </summary>
+    void StartSession(List<CardSignature> mapSeeds, List<CardSignature> abilityCards, IMapGenerator mapGenerator);
     void AdvanceSession();
     void ResetSession();
-
-    /// <summary>
-    /// Sets a custom map generator. Pass null to use the default generator.
-    /// </summary>
-    void SetMapGenerator(IMapGenerator? generator);
 }

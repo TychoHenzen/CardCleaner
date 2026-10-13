@@ -86,7 +86,7 @@ public class GameSessionSeedTest : GameSessionServiceTestBase
         SimpleMapData? firstMap = null;
         _service.MapGenerated += map => firstMap = map;
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         // Wait for deferred AdvanceSession call to execute and set the task
         await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
@@ -104,7 +104,7 @@ public class GameSessionSeedTest : GameSessionServiceTestBase
         SimpleMapData? secondMap = null;
         _service.MapGenerated += map => secondMap = map;
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         // Wait for deferred AdvanceSession call to execute and set the task
         await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);

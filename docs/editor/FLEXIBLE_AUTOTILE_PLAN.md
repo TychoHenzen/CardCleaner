@@ -219,7 +219,7 @@ Each stage is designed to fit within ~100k tokens for `/solve` execution.
    - Reserved cells excluded from entropy calculation
    - Constraints treat reserved cells appropriately
 
-4. **Update SimpleMapGenerator rendering** (`Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs`)
+4. **Update the old grid generator's rendering** (the old grid generator file, deleted in #284)
    - Use VariantDefinition.Size and Offset for tile placement
    - Apply offset when setting cell position
    - Handle AtlasRegionSize for non-standard source sizes
@@ -242,7 +242,7 @@ Each stage is designed to fit within ~100k tokens for `/solve` execution.
 **Files Modified**:
 - MODIFY: `Scripts/Features/Worldgen/Wfc/WfcCell.cs` (or equivalent)
 - MODIFY: `Scripts/Features/Worldgen/Wfc/WfcMapGenerator.cs`
-- MODIFY: `Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs`
+- MODIFY: the old grid generator file (deleted in #284)
 - MODIFY: Rendering-related files as needed
 
 **Run Command**: `/solve Stage 3: Implement multi-cell variant support. Add cell reservation to WFC (ReservedBy property, mark cells covered by tall variants). Update rendering to use VariantDefinition.Size/Offset and TilesetConfig.BaseTileSize. See docs/FLEXIBLE_AUTOTILE_PLAN.md Stage 3 for details.`

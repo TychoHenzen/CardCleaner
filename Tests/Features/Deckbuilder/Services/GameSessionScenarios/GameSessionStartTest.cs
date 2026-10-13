@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -31,7 +32,7 @@ public class GameSessionStartTest : GameSessionServiceTestBase
             new(new[] { 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
         };
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.GeneratingMap);
         Assertions.AssertThat(_stateChangeCount).IsEqual(1);
@@ -46,8 +47,29 @@ public class GameSessionStartTest : GameSessionServiceTestBase
             new(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
         };
 
-        _service.StartSession(null, abilityCards);
+        _service.StartSession(null, abilityCards, _generator);
 
+        Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.WaitingForCards);
+        Assertions.AssertThat(_stateChangeCount).IsEqual(0);
+    }
+
+    [TestCase]
+    public void TestStartSessionWithoutAMapGeneratorThrows()
+    {
+        var mapSeeds = new List<CardSignature> { new(new[] { 0.5f, 0f, 0f, 0f, 0f, 0f, 0f, 0f }) };
+        var abilityCards = new List<CardSignature> { new(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }) };
+        Exception? caught = null;
+
+        try
+        {
+            _service.StartSession(mapSeeds, abilityCards, null!);
+        }
+        catch (ArgumentNullException ex)
+        {
+            caught = ex;
+        }
+
+        Assertions.AssertThat(caught).IsNotNull();
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.WaitingForCards);
         Assertions.AssertThat(_stateChangeCount).IsEqual(0);
     }
@@ -61,7 +83,7 @@ public class GameSessionStartTest : GameSessionServiceTestBase
             new(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
         };
 
-        _service.StartSession(emptyMapSeeds, abilityCards);
+        _service.StartSession(emptyMapSeeds, abilityCards, _generator);
 
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.WaitingForCards);
         Assertions.AssertThat(_stateChangeCount).IsEqual(0);
@@ -76,7 +98,7 @@ public class GameSessionStartTest : GameSessionServiceTestBase
         };
         var emptyAbilityCards = new List<CardSignature>();
 
-        _service.StartSession(mapSeeds, emptyAbilityCards);
+        _service.StartSession(mapSeeds, emptyAbilityCards, _generator);
 
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.WaitingForCards);
         Assertions.AssertThat(_stateChangeCount).IsEqual(0);
@@ -87,11 +109,11 @@ public class GameSessionStartTest : GameSessionServiceTestBase
     {
         var mapSeeds = new List<CardSignature> { new() };
         var abilityCards = new List<CardSignature> { new() };
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         _stateChangeCount = 0;
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         Assertions.AssertThat(_stateChangeCount).IsEqual(0);
     }
@@ -101,7 +123,7 @@ public class GameSessionStartTest : GameSessionServiceTestBase
     {
         var mapSeeds = new List<CardSignature> { new() };
         var abilityCards = new List<CardSignature> { new() };
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         _service.ResetSession();
 

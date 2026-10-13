@@ -206,7 +206,7 @@ The drift test can fail in that run because it may compare against the old file;
 
 > **Architecture Document**: See `docs/WORLDGEN_ARCHITECTURE.md` for the complete worldgen architecture, including the Soft WFC approach, weight modifier system, and data definition guides.
 
-**Active System**: Two-Phase WFC via **SimpleMapGenerator** (`Scripts/Features/Deckbuilder/Services/SimpleMapGenerator.cs`)
+**Active System**: Two-Phase WFC via **GridMapGenerator** (`Scripts/Features/Deckbuilder/Services/GridMapGenerator.cs`)
 
 The map generator uses a **two-phase Wave Function Collapse** approach with dual-layer terrain:
 
@@ -253,7 +253,7 @@ The map generator uses a **two-phase Wave Function Collapse** approach with dual
 The `GameSessionService` manages the game loop through states: `WaitingForCards` -> `GeneratingMap` -> `Exploring` ->
 `InCombat` -> `GeneratingLoot` -> `SessionComplete`. Key supporting systems:
 
-- **SimpleMapGenerator**: Creates tile-based maps influenced by card signatures
+- **GridMapGenerator**: Creates tile-based maps influenced by card signatures
 - **ExplorationAI**: A* pathfinding for autonomous exploration
   - Operates in two modes: `FrontierExploration` and `PathToEnemy`
   - Emits events for path updates, visited tiles, player movement, and enemy encounters

@@ -16,7 +16,6 @@ internal sealed class MapGenerationCoordinator
     private readonly SessionWorld _world;
     private readonly GridCellEventAdapter _eventAdapter;
     private readonly GenerationTracker _tracker;
-    private readonly DefaultSessionMapBuilder _defaultBuilder;
 
     internal event Action<SimpleMapData>? MapGenerated;
     internal event Action<IGeneratedMap>? GeneratedMapReady;
@@ -30,7 +29,6 @@ internal sealed class MapGenerationCoordinator
 
     internal MapGenerationCoordinator(
         Node owner,
-        SessionServices services,
         SessionWorld world,
         GridCellEventAdapter eventAdapter,
         GenerationTracker tracker)
@@ -39,7 +37,6 @@ internal sealed class MapGenerationCoordinator
         _world = world;
         _eventAdapter = eventAdapter;
         _tracker = tracker;
-        _defaultBuilder = new DefaultSessionMapBuilder(services);
     }
 
     internal bool IsCurrent(long generationId)
@@ -47,7 +44,7 @@ internal sealed class MapGenerationCoordinator
         return GodotObject.IsInstanceValid(_owner) && _tracker.IsCurrent(generationId);
     }
 
-    internal async Task GenerateAsync(CardSignature[] mapSeeds, IMapGenerator? customGenerator)
+    internal async Task GenerateAsync(CardSignature[] mapSeeds, IMapGenerator generator)
     {
         var run = _tracker.BeginRun();
         ILog.Print($"Starting async map generation from {mapSeeds.Length} seed signature(s)...");
@@ -60,9 +57,7 @@ internal sealed class MapGenerationCoordinator
         {
             var request = CreateRequest(run, mapSeeds, progress.Progress);
 
-            await (customGenerator != null
-                ? GenerateWithCustomGenerator(request, customGenerator)
-                : GenerateWithDefaultGenerator(request));
+            await GenerateWith(request, generator);
 
             if (!IsCurrentRun(run))
                 return;
@@ -99,7 +94,6 @@ internal sealed class MapGenerationCoordinator
         return new MapGenerationRequest
         {
             Run = run,
-            Rng = new RandomNumberGenerator { Seed = seed },
             Seed = seed,
             // Use first signature to influence map size (could blend in future)
             MapSize = MapSeeding.CalculateMapSize(mapSeeds[0]),
@@ -131,9 +125,8 @@ internal sealed class MapGenerationCoordinator
         ILog.Print($"Map generation: {value * 100:F0}%");
     }
 
-    private async Task GenerateWithCustomGenerator(MapGenerationRequest request, IMapGenerator mapGenerator)
+    private async Task GenerateWith(MapGenerationRequest request, IMapGenerator generator)
     {
-        // Create generation config from current session state
         var config = new MapGenerationConfig
         {
             Size = request.MapSize,
@@ -141,57 +134,30 @@ internal sealed class MapGenerationCoordinator
             MapSeeds = request.MapSeeds
         };
 
-        // Generate using the custom generator
-        var generatedMap = await mapGenerator.GenerateAsync(config, request.Progress, request.Run.Cts.Token);
+        var generatedMap = await generator.GenerateAsync(config, request.Progress, request.Run.Cts.Token);
         if (!IsCurrentRun(request.Run))
             return;
 
-        _world.Rng = request.Rng;
+        // ASSUMPTION: combat and loot draw from a fresh RNG seeded like the map. The grid generator builds its own
+        // RNG from the same seed, so a grid session's combat and loot draws differ from the ones before #284, where
+        // they continued the RNG the map generation had used; the map itself is unchanged.
+        _world.Rng = new RandomNumberGenerator { Seed = request.Seed };
         _world.GeneratedMap = generatedMap;
         _world.MapData = generatedMap.GetMapData();
 
-        // Clear regular grid fields (not used with custom generator)
-        _world.LegacyMap = null;
-        _world.GridMapData = null;
-        _eventAdapter.SetGridMapData(null);
-
-        ILog.Print($"Custom map generated: {generatedMap.EnemyCount} enemies");
-
-        if (generatedMap is SimpleGeneratedMap simpleMap)
-            MapGenerated?.Invoke(simpleMap.RawMapData);
-
-        // Notify listeners with the new event
-        GeneratedMapReady?.Invoke(generatedMap);
-    }
-
-    private async Task GenerateWithDefaultGenerator(MapGenerationRequest request)
-    {
-        var built = await _defaultBuilder.BuildAsync(request);
-        if (!IsCurrentRun(request.Run))
-            return;
-
-        var map = built.Map;
-        _world.Rng = request.Rng;
-        _world.LegacyMap = map;
-
-        // Create the IMapData adapter for exploration
-        _world.GridMapData = new RegularGridMapData(map);
-        _world.MapData = _world.GridMapData;
+        // A grid map also publishes its grid coordinates, so exploration raises grid events next to cell events.
+        var gridMap = generatedMap as SimpleGeneratedMap;
+        _world.GridMapData = gridMap?.GridMapData;
         _eventAdapter.SetGridMapData(_world.GridMapData);
 
-        // Wrap in IGeneratedMap for unified interface
-        var generatedMap = new SimpleGeneratedMap(map);
-        _world.GeneratedMap = generatedMap;
+        ILog.Print($"Map generated by {generator.GetType().Name}: {generatedMap.EnemyCount} enemies");
 
-        // Log biome distribution for debugging
-        built.BiomeProvider.LogBiomeStats();
-
-        ILog.Print($"Map generated: {request.MapSize.X}x{request.MapSize.Y}, {map.EnemyPositions.Count} enemies");
-
-        // Notify listeners about the generated map (backward compatible event)
-        MapGenerated?.Invoke(map);
-        if (!IsCurrentRun(request.Run))
-            return;
+        if (gridMap != null)
+        {
+            MapGenerated?.Invoke(gridMap.RawMapData);
+            if (!IsCurrentRun(request.Run))
+                return;
+        }
 
         GeneratedMapReady?.Invoke(generatedMap);
     }

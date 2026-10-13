@@ -1,18 +1,19 @@
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Tests.Mocks;
 using Godot;
 
-namespace CardCleaner.Tests.Features.Deckbuilder.Services.SimpleMapGeneratorScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenarios;
 
 /// <summary>
-///     Shared fixture for the SimpleMapGenerator scenario suites.
+///     Shared fixture for the grid map generator scenario suites.
 /// </summary>
-public abstract class SimpleMapGeneratorTestBase
+public abstract class GridMapGeneratorTestBase
 {
-    protected SimpleMapGenerator _generator = null!;
+    private protected GridMapGenerationPipeline _generator = null!;
     protected BiomeRegistry _registry = null!;
     protected MockTileRegistry _tileRegistry = null!;
     protected RandomNumberGenerator _rng = null!;
@@ -30,7 +31,7 @@ public abstract class SimpleMapGeneratorTestBase
 
         var gradient = new CardBasedGradient(new[] { new CardSignature() }, _rng);
         var biomeProvider = new BiomeMapGenerator(_registry, gradient, new Vector2I(10, 10));
-        _generator = new SimpleMapGenerator(_rng, biomeProvider, _tileRegistry, _tileRegistry);
+        _generator = GridMapGenerator.CreatePipeline(_rng, biomeProvider, _tileRegistry, _tileRegistry);
     }
 
     protected void RegisterMockBiomes()
@@ -48,11 +49,11 @@ public abstract class SimpleMapGeneratorTestBase
         _registry.Register(new BiomeDefinition("test_biome", signature, passablePool, blockedPool));
     }
 
-    protected SimpleMapGenerator CreateGenerator(Vector2I mapSize, CardSignature? signature = null)
+    private protected GridMapGenerationPipeline CreateGenerator(Vector2I mapSize, CardSignature? signature = null)
     {
         var seed = signature ?? new CardSignature();
         var gradient = new CardBasedGradient(new[] { seed }, _rng);
         var biomeProvider = new BiomeMapGenerator(_registry, gradient, mapSize);
-        return new SimpleMapGenerator(_rng, biomeProvider, _tileRegistry, _tileRegistry);
+        return GridMapGenerator.CreatePipeline(_rng, biomeProvider, _tileRegistry, _tileRegistry);
     }
 }

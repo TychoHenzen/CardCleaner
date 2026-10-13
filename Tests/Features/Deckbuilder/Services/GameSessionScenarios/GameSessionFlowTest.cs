@@ -29,7 +29,7 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
         var mapSeeds = new List<CardSignature> { new() };
         var abilityCards = new List<CardSignature> { new() };
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.GeneratingMap);
 
         // Wait for deferred AdvanceSession call to execute and set the task
@@ -55,7 +55,7 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
         };
         var abilityCards = new List<CardSignature> { new() };
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         // Wait for deferred AdvanceSession call to execute and set the task
         await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
@@ -90,7 +90,7 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
 
         _service.MapGenerated += map => generatedMap = map;
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         // Wait for deferred AdvanceSession call to execute and set the task
         await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
@@ -113,7 +113,7 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
 
         _service.StateChanged += state => stateHistory.Add(state);
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         // Wait for deferred AdvanceSession call to execute and set the task
         await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
@@ -147,7 +147,7 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
 
         _service.MapGenerated += map => generatedMap = map;
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         // Wait for deferred AdvanceSession call to execute and set the task
         await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
@@ -176,7 +176,7 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
 
         _service.MapGenerated += map => generatedMap = map;
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         // Wait for deferred AdvanceSession call to execute and set the task
         await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);

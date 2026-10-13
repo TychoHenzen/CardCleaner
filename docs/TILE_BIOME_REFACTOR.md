@@ -383,7 +383,7 @@ BiomeType type    →  string biomeId
 
 **Files to Update** (from grep):
 - 44+ files reference BiomeType
-- Key files: WfcMapGenerator, WfcTileSelector, BiomeMapGenerator, SimpleMapGenerator
+- Key files: WfcMapGenerator, WfcTileSelector, BiomeMapGenerator, the old grid generator (absorbed into GridMapGenerator in #284)
 
 **Acceptance Criteria**:
 - [ ] BiomeType.cs deleted

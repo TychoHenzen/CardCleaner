@@ -17,7 +17,6 @@ internal sealed class ExplorationSession
     private Vector2? _playerWorldPosition;
     private Vector2I? _playerPosition;
     private int? _currentEnemyCellId;
-    private Vector2I? _currentEnemyPosition;
 
     internal event Action<Vector2I>? PlayerMoved;
     internal event Action<Vector2>? PlayerMovedWorld;
@@ -94,13 +93,6 @@ internal sealed class ExplorationSession
         // Emit events in both coordinate systems
         _eventAdapter.EmitEnemyDefeated(defeatedCellId, EnemyDefeatedCell, EnemyDefeated);
 
-        // Update legacy map data if present
-        if (_currentEnemyPosition.HasValue)
-        {
-            _world.LegacyMap?.EnemyPositions.Remove(_currentEnemyPosition.Value);
-            _currentEnemyPosition = null;
-        }
-
         _currentEnemyCellId = null;
     }
 
@@ -109,7 +101,6 @@ internal sealed class ExplorationSession
         _explorationAI = null;
         _playerPosition = null;
         _playerWorldPosition = null;
-        _currentEnemyPosition = null;
         _currentEnemyCellId = null;
     }
 
@@ -159,7 +150,6 @@ internal sealed class ExplorationSession
             return;
 
         ILog.Print($"Enemy encountered at {gridPos.Value}! Preparing for combat...");
-        _currentEnemyPosition = gridPos.Value;
     }
 
     private void OnVisitedCellsUpdated(IReadOnlySet<int> cellIds)

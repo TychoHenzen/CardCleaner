@@ -5,9 +5,9 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 
-namespace CardCleaner.Scripts.Features.Deckbuilder.Services.SimpleMapGeneratorSupport;
+namespace CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 
-internal static class SimpleMapDiagnostics
+internal static class GridMapDiagnostics
 {
     public static void ValidateSpatialCoherence(string[,] tileMap, Vector2I size)
     {

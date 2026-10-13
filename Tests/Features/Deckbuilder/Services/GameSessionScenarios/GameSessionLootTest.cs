@@ -24,7 +24,7 @@ public class GameSessionLootTest : GameSessionServiceTestBase
         };
         var abilityCards = new List<CardSignature> { new() };
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         // Wait for loot to be generated (limited wait - full session is slow)
         var frameCount = 0;
@@ -71,7 +71,7 @@ public class GameSessionLootTest : GameSessionServiceTestBase
         const int maxFrames = 300;
 
         // First session - limited wait time
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
         await WaitForFrames(() => _lastLootGenerated.Count > 0, maxFrames);
 
         // If first session completed with loot, try second session
@@ -86,7 +86,7 @@ public class GameSessionLootTest : GameSessionServiceTestBase
             {
                 // Second session
                 _lastLootGenerated.Clear();
-                _service.StartSession(mapSeeds, abilityCards);
+                _service.StartSession(mapSeeds, abilityCards, _generator);
                 await WaitForFrames(() => _lastLootGenerated.Count > 0, maxFrames);
 
                 if (_lastLootGenerated.Count > 0)

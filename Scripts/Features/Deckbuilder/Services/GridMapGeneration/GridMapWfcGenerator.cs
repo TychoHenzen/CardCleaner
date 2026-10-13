@@ -3,13 +3,13 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 
-namespace CardCleaner.Scripts.Features.Deckbuilder.Services.SimpleMapGeneratorSupport;
+namespace CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 
-internal sealed class SimpleMapWfcGenerator
+internal sealed class GridMapWfcGenerator
 {
-    private readonly SimpleMapGenerationContext _context;
+    private readonly GridMapGenerationContext _context;
 
-    public SimpleMapWfcGenerator(SimpleMapGenerationContext context)
+    public GridMapWfcGenerator(GridMapGenerationContext context)
     {
         _context = context;
     }

@@ -6,8 +6,6 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.Session.Generation;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 using Timer = Godot.Timer;
 
@@ -16,7 +14,6 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 [Service(typeof(IGameSessionService))]
 public partial class GameSessionService : Node, IGameSessionService
 {
-    private readonly SessionServices _services = new();
     private readonly SessionWorld _world = new();
     private readonly GridCellEventAdapter _eventAdapter = new();
     private readonly GenerationTracker _generationTracker = new();
@@ -30,7 +27,7 @@ public partial class GameSessionService : Node, IGameSessionService
 
     public GameSessionService()
     {
-        _generation = new MapGenerationCoordinator(this, _services, _world, _eventAdapter, _generationTracker);
+        _generation = new MapGenerationCoordinator(this, _world, _eventAdapter, _generationTracker);
         _exploration = new ExplorationSession(_world, _eventAdapter);
         _flow = new SessionFlow(this, _world, _eventAdapter, _exploration);
         ForwardGenerationEvents();
@@ -72,22 +69,13 @@ public partial class GameSessionService : Node, IGameSessionService
     /// </summary>
     public IMapData? CurrentMapData => _world.MapData;
 
-    /// <summary>
-    /// Sets a custom map generator for the next session.
-    /// When set, this generator will be used instead of the default SimpleMapGenerator.
-    /// Set to null to use the default generator.
-    /// </summary>
-    /// <param name="generator">The map generator to use, or null for default.</param>
-    public void SetMapGenerator(IMapGenerator? generator)
+    public void StartSession(
+        List<CardSignature>? mapSeeds,
+        List<CardSignature>? abilityCards,
+        IMapGenerator mapGenerator)
     {
-        _mapGenerator = generator;
-        ILog.Print(generator != null
-            ? $"Map generator set to: {generator.GetType().Name}"
-            : "Map generator reset to default");
-    }
+        ArgumentNullException.ThrowIfNull(mapGenerator);
 
-    public void StartSession(List<CardSignature>? mapSeeds, List<CardSignature>? abilityCards)
-    {
         if (CurrentState != SessionState.WaitingForCards)
         {
             ILog.Error("Cannot start session - session already in progress");
@@ -102,6 +90,7 @@ public partial class GameSessionService : Node, IGameSessionService
 
         _mapSeeds = new List<CardSignature>(mapSeeds);
         _abilityCards = new List<CardSignature>(abilityCards);
+        _mapGenerator = mapGenerator;
         var generationId = _generationTracker.BeginPending();
         _flow.State = SessionState.GeneratingMap;
 
@@ -141,6 +130,7 @@ public partial class GameSessionService : Node, IGameSessionService
         _generationTracker.Reset();
         _mapSeeds.Clear();
         _abilityCards.Clear();
+        _mapGenerator = null;
         _flow.Reset();
         _flow.State = SessionState.WaitingForCards;
         ILog.Print("Session reset");
@@ -150,14 +140,6 @@ public partial class GameSessionService : Node, IGameSessionService
     {
         // Note: the world's RNG is seeded deterministically from the map seed cards during generation.
         // Do not call Randomize() here as it would make map generation non-reproducible
-
-        // Initialize biome registry immediately
-        _services.BiomeRegistry = new BiomeRegistry();
-        _services.BiomeRegistry.RegisterDefaultBiomes();
-
-        // Get services via async callback (may not be registered yet during startup)
-        ServiceLocator.Get<ITileRegistry>(registry => _services.TileRegistry = registry);
-        ServiceLocator.Get<ITileMetadataProvider>(provider => _services.MetadataProvider = provider);
 
         // Create timer for game progression
         var gameTimer = new Timer();
@@ -169,7 +151,15 @@ public partial class GameSessionService : Node, IGameSessionService
 
     private async void GenerateMap(TaskCompletionSource<bool>? generationTaskSource = null)
     {
-        var generationTask = _generation.GenerateAsync(_mapSeeds.ToArray(), _mapGenerator);
+        if (_mapGenerator is not { } generator)
+        {
+            const string message = "Cannot generate a map before a session has started";
+            ILog.Error(message);
+            generationTaskSource?.TrySetException(new InvalidOperationException(message));
+            return;
+        }
+
+        var generationTask = _generation.GenerateAsync(_mapSeeds.ToArray(), generator);
         _generationTracker.CurrentTask = generationTask;
         try
         {

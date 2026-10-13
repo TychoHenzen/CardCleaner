@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -36,6 +37,7 @@ public class DeckBuilderControllerGridSessionTest
         ServiceLocator.ResetForTesting();
         _session = new FakeSession();
         ServiceLocator.Container.RegisterSingleton<IGameSessionService>(_session);
+        ServiceLocator.Container.RegisterSingleton<IGridMapGenerator>(new PendingGridGenerator());
 
         _abilitySlot = CreateSlot("AbilitySlot");
         _mapSlot = CreateSlot("MapSlot");
@@ -156,9 +158,22 @@ public class DeckBuilderControllerGridSessionTest
             StateChanged?.Invoke(state);
         }
 
-        public void StartSession(List<CardSignature> mapSeeds, List<CardSignature> abilityCards) { }
+        public void StartSession(
+            List<CardSignature> mapSeeds,
+            List<CardSignature> abilityCards,
+            IMapGenerator mapGenerator)
+        {
+        }
         public void AdvanceSession() { }
         public void ResetSession() { }
-        public void SetMapGenerator(IMapGenerator? generator) { }
+    }
+
+    /// <summary>A grid generator whose map never arrives; the controller only needs one registered.</summary>
+    private sealed class PendingGridGenerator : IGridMapGenerator
+    {
+        public Task<IGeneratedMap> GenerateAsync(
+            MapGenerationConfig config,
+            IProgress<float>? progress = null,
+            CancellationToken cancellationToken = default) => new TaskCompletionSource<IGeneratedMap>().Task;
     }
 }

@@ -5,9 +5,9 @@ using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 
-namespace CardCleaner.Scripts.Features.Deckbuilder.Services.SimpleMapGeneratorSupport;
+namespace CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 
-internal sealed class SimpleMapGenerationContext
+internal sealed class GridMapGenerationContext
 {
     public required RandomNumberGenerator Rng { get; init; }
     public required IBiomeProvider BiomeProvider { get; init; }
