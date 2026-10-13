@@ -6,7 +6,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 /// <summary>
 /// Wrapper that adapts IrregularMesh to the IGeneratedMap interface.
 /// </summary>
-public class IrregularGeneratedMap : IGeneratedMap
+public class IrregularGeneratedMap : IMeshGeneratedMap
 {
     private readonly IrregularMesh _mesh;
     private readonly IrregularMeshMapData _mapData;

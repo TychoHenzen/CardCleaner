@@ -56,6 +56,8 @@ public sealed class WorkshopSceneRig
         ServiceLocator.ResetForTesting();
         ServiceLocator.Container.RegisterSingleton<ICardSpawningService>(new TestCardSpawner());
         ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
+        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(
+            CardCleaner.Tests.Features.Worldgen.IrregularMesh.MeshMapGeneratorFixture.Create());
         ServiceLocator.Container.RegisterSingleton<IGameSessionService>(
             rig.Workshop.GetNode<GameSessionService>("GameSessionService"));
 

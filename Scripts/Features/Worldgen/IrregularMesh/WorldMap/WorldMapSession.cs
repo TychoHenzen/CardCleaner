@@ -19,11 +19,11 @@ internal sealed class WorldMapSession
     private IrregularMapEnemyManager? _enemyManager;
     private IVisibilityChecker? _visibilityChecker;
 
-    internal WorldMapSession(WorldMapSettings settings, IrregularMesh mesh)
+    internal WorldMapSession(WorldMapSettings settings, IMeshGeneratedMap map)
     {
         _settings = settings;
-        MapData = new IrregularMeshMapData(mesh) { WorldScale = settings.WorldScale };
-        _renderLayer = new WorldMapRenderLayer(settings, mesh, MapData);
+        MapData = map.MeshMapData;
+        _renderLayer = new WorldMapRenderLayer(settings, map.RawMesh, MapData);
     }
 
     internal IrregularMeshMapData MapData { get; }
@@ -50,14 +50,14 @@ internal sealed class WorldMapSession
     internal event Action<int>? EnemyDefeated;
 
     /// <summary>
-    /// Creates enemies, fog of war and renderers. Returns the player start cell.
+    /// Creates the enemy sprites, fog of war and renderers for the start and enemies the generator placed. Returns
+    /// the player start cell.
     /// </summary>
-    internal int Prepare(int seed, List<CardSignature>? abilityCards)
+    internal int Prepare(List<CardSignature>? abilityCards)
     {
         InitializeComponents(abilityCards);
 
-        var playerStartCell = FindPlayerStartCell();
-        _enemyManager?.PlaceEnemies(seed, playerStartCell);
+        var playerStartCell = MapData.PlayerStartCell ?? 0;
         _enemyManager?.CreateEnemySprites();
 
         _visibilityChecker = new SimpleVisibilityChecker();
@@ -132,16 +132,6 @@ internal sealed class WorldMapSession
         _enemyManager = new IrregularMapEnemyManager(MapData, _settings.Viewport);
         _combatHandler = new IrregularMapCombatHandler(MapData, _settings.Rng, abilityCards);
         _combatHandler.CombatEnded += OnCombatEnded;
-    }
-
-    private int FindPlayerStartCell()
-    {
-        for (int i = 0; i < MapData.CellCount; i++)
-        {
-            if (MapData.IsPassable(i))
-                return i;
-        }
-        return 0;
     }
 
     private void InitializeFogOfWar()

@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Player.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
@@ -74,9 +75,10 @@ public partial class CompositionRoot : Node
 
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes();
-        // ASSUMPTION: the issue asks for [Service], but AutoServiceProvider only discovers Nodes in the current scene;
-        // the generator is a plain class, so the composition root registers it.
+        // ASSUMPTION: the issues ask for [Service], but AutoServiceProvider only discovers Nodes in the current scene;
+        // the generators are plain classes, so the composition root registers them.
         container.RegisterSingleton<IGridMapGenerator>(new GridMapGenerator(tileRegistry, tileRegistry, biomeRegistry));
+        container.RegisterSingleton<IMeshMapGenerator>(new MeshMapGenerator(tileRegistry, biomeRegistry));
 
         container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
         container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();

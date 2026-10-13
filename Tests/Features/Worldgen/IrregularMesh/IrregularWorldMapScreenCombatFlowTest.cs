@@ -18,6 +18,8 @@ public class IrregularWorldMapScreenCombatFlowTest
     private const int Seed = 12345;
     private const double EncounterTimeoutSeconds = 30;
 
+    private static readonly IrregularMeshNs.MeshMapGenerator Generator = MeshMapGeneratorFixture.Create();
+
     private IrregularMeshNs.IrregularWorldMapScreen _screen = null!;
 
     [BeforeTest]
@@ -64,7 +66,7 @@ public class IrregularWorldMapScreenCombatFlowTest
         };
         _screen.ExplorationFinished += () => finishedCount++;
 
-        _screen.GenerateMap(Seed, null, new[] { StrongAbility() });
+        await _screen.GenerateMap(Generator, Seed, null, new[] { StrongAbility() });
 
         AssertBool(await WaitUntil(() => encountered, EncounterTimeoutSeconds)).IsTrue();
         AssertBool(await WaitUntil(() => defeated, EncounterTimeoutSeconds)).IsTrue();
@@ -82,7 +84,7 @@ public class IrregularWorldMapScreenCombatFlowTest
         _screen.EnemyDefeated += _ => defeated = true;
         _screen.ExplorationFinished += () => finishedCount++;
 
-        _screen.GenerateMap(Seed, null, new[] { WeakAbility() });
+        await _screen.GenerateMap(Generator, Seed, null, new[] { WeakAbility() });
 
         AssertBool(await WaitUntil(() => encountered, EncounterTimeoutSeconds)).IsTrue();
         AssertBool(await WaitUntil(() => finishedCount > 0, EncounterTimeoutSeconds)).IsTrue();
@@ -100,7 +102,7 @@ public class IrregularWorldMapScreenCombatFlowTest
         _screen.EnemyDefeated += _ => defeated = true;
         _screen.ExplorationFinished += () => finishedCount++;
 
-        _screen.GenerateMap(Seed, null, Array.Empty<CardSignature>());
+        await _screen.GenerateMap(Generator, Seed, null, Array.Empty<CardSignature>());
 
         AssertBool(await WaitUntil(() => encountered, EncounterTimeoutSeconds)).IsTrue();
         AssertBool(await WaitUntil(() => finishedCount > 0, EncounterTimeoutSeconds)).IsTrue();

@@ -16,6 +16,8 @@ public class IrregularWorldMapScreenEnemyFogTest
     private const int EnemyZIndex = 80;
     private const int Seed = 4242;
 
+    private static readonly IrregularMeshNs.MeshMapGenerator Generator = MeshMapGeneratorFixture.Create();
+
     private readonly List<IrregularMeshNs.IrregularWorldMapScreen> _screens = new();
 
     private IrregularMeshNs.IrregularWorldMapScreen CreateScreen()
@@ -24,7 +26,6 @@ public class IrregularWorldMapScreenEnemyFogTest
         var screen = new IrregularMeshNs.IrregularWorldMapScreen
         {
             MeshRings = 4,
-            WorldScale = 16f,
             VisionRange = 3f,
             FogOfWarEnabled = true,
             ShowDebug = false,
@@ -47,7 +48,7 @@ public class IrregularWorldMapScreenEnemyFogTest
         var screen = CreateScreen();
         AddNode(screen);
         await ISceneRunner.SyncProcessFrame;
-        screen.GenerateMap(Seed);
+        await screen.GenerateMap(Generator, Seed);
 
         var hiddenEnemies = EnemySprites(screen).Where(s => !screen.FogOfWar!.IsVisible(CellOf(screen, s))).ToArray();
 
@@ -62,7 +63,7 @@ public class IrregularWorldMapScreenEnemyFogTest
         var screen = CreateScreen();
         AddNode(screen);
         await ISceneRunner.SyncProcessFrame;
-        screen.GenerateMap(Seed);
+        await screen.GenerateMap(Generator, Seed);
 
         screen.RevealAll();
 
@@ -75,7 +76,7 @@ public class IrregularWorldMapScreenEnemyFogTest
         var screen = CreateScreen();
         AddNode(screen);
         await ISceneRunner.SyncProcessFrame;
-        screen.GenerateMap(Seed);
+        await screen.GenerateMap(Generator, Seed);
         screen.RevealAll();
 
         screen.FogOfWar!.VisionRange = 0.1f;

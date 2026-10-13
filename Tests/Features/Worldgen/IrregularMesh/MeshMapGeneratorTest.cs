@@ -1,0 +1,138 @@
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
+using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
+
+namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
+
+/// <summary>
+/// The irregular map's IMapGenerator: the factory path's terrain, the shared placement rule, the same map for the
+/// same seed and cards, cancellation, and generation off the main thread.
+/// </summary>
+[TestSuite]
+[RequireGodotRuntime]
+public class MeshMapGeneratorTest
+{
+    private const int Seed = 4242;
+    private const int SmallRings = 3;
+    private const int PlacementRings = 6;
+
+    [TestCase(Timeout = 120000)]
+    [TestCategory("Unit")]
+    public static async Task GeneratesAMeshMapWithAStartAndEnemiesFromTheSharedRule()
+    {
+        var generated = await MeshMapGeneratorFixture.Create().GenerateAsync(Config(PlacementRings));
+
+        var meshMap = generated as IrregularMeshNs.IMeshGeneratedMap;
+        AssertThat(meshMap).IsNotNull();
+        var map = meshMap!.MeshMapData;
+        AssertThat(map.WorldScale).IsEqual(IrregularMeshNs.MeshMapGenerator.WorldScale);
+        AssertThat(map.PlayerStartCell).IsNotNull();
+        AssertBool(map.IsPassable(map.PlayerStartCell!.Value)).IsTrue();
+        AssertThat(generated.EnemyCount).IsBetween(MapPopulation.MinEnemies, MapPopulation.MaxEnemies);
+        foreach (var enemy in map.EnemySpawnCells)
+        {
+            AssertBool(map.IsPassable(enemy)).IsTrue();
+            AssertThat(enemy).IsNotEqual(map.PlayerStartCell.Value);
+        }
+    }
+
+    [TestCase(Timeout = 120000)]
+    [TestCategory("Unit")]
+    public static async Task TerrainIsTheTerrainOfTheFactoryPath()
+    {
+        var registry = new TileRegistry();
+        var biomes = MeshMapGeneratorFixture.DefaultBiomes();
+        var expected = TerrainGeneratorFactory.Create(registry, biomes)
+            .GenerateWithCards(SmallRings, TerrainCards(), Seed, relaxationIterations: 8);
+
+        var generated = (IrregularMeshNs.IMeshGeneratedMap)await new IrregularMeshNs.MeshMapGenerator(registry, biomes)
+            .GenerateAsync(Config(SmallRings));
+
+        AssertThat(TerrainOf(generated.RawMesh)).IsEqual(TerrainOf(expected));
+    }
+
+    [TestCase(Timeout = 120000)]
+    [TestCategory("Unit")]
+    public static async Task TheSameSeedAndCardsGiveTheSameMap()
+    {
+        var generator = MeshMapGeneratorFixture.Create();
+
+        var first = (IrregularMeshNs.IMeshGeneratedMap)await generator.GenerateAsync(Config(SmallRings));
+        var second = (IrregularMeshNs.IMeshGeneratedMap)await generator.GenerateAsync(Config(SmallRings));
+
+        AssertThat(Describe(second)).IsEqual(Describe(first));
+    }
+
+    [TestCase(Timeout = 120000)]
+    [TestCategory("Unit")]
+    public static async Task ACancelledTokenThrowsMapGenerationCancelled()
+    {
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+        var thrown = false;
+
+        try
+        {
+            await MeshMapGeneratorFixture.Create().GenerateAsync(Config(SmallRings), null, cancellation.Token);
+        }
+        catch (MapGenerationCancelledException)
+        {
+            thrown = true;
+        }
+
+        AssertBool(thrown).IsTrue();
+    }
+
+    [TestCase(Timeout = 120000)]
+    [TestCategory("Unit")]
+    public static async Task GenerationRunsOffTheMainThreadAndReportsCompletion()
+    {
+        var mainThread = Environment.CurrentManagedThreadId;
+        var progress = new ThreadRecordingProgress();
+
+        await MeshMapGeneratorFixture.Create().GenerateAsync(Config(SmallRings), progress);
+
+        AssertThat(progress.LastValue).IsEqual(1f);
+        AssertThat(progress.LastThread).IsNotEqual(mainThread);
+    }
+
+    private static IrregularMeshNs.MeshMapGenerationConfig Config(int rings) => new()
+    {
+        Rings = rings,
+        Seed = Seed,
+        MapSeeds = TerrainCards()
+    };
+
+    private static CardSignature[] TerrainCards() => new[]
+    {
+        new CardSignature(new[] { 1f, 1f, 0f, -1f, 0f, 0.5f, 0f, 0f }),
+        new CardSignature(new[] { -1f, -1f, 1f, 1f, 0f, -0.5f, 0f, 0f })
+    };
+
+    private static string TerrainOf(IrregularMeshNs.IrregularMesh mesh) =>
+        string.Join(",", mesh.Vertices.Select(v => $"{v.TerrainType}:{v.TileId}:{v.ForegroundTileId}:{v.Position}"));
+
+    private static string Describe(IrregularMeshNs.IMeshGeneratedMap map) =>
+        $"{TerrainOf(map.RawMesh)}|start {map.MeshMapData.PlayerStartCell}|enemies " +
+        string.Join(";", map.MeshMapData.EnemySpawnCells);
+
+    // Records the thread of each report; IProgress<T> implementations other than Progress<T> report inline.
+    private sealed class ThreadRecordingProgress : IProgress<float>
+    {
+        public float LastValue { get; private set; } = -1f;
+
+        public int LastThread { get; private set; } = -1;
+
+        public void Report(float value)
+        {
+            LastValue = value;
+            LastThread = Environment.CurrentManagedThreadId;
+        }
+    }
+}

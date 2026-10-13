@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -9,26 +8,18 @@ using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 
 /// <summary>
-/// Builds the WFC-based mesh terrain generator from the compiled transition data.
+/// Builds the WFC-based mesh terrain generator from the compiled transition data and the registries it is given.
 /// </summary>
 internal static class TerrainGeneratorFactory
 {
-    internal static MeshTerrainGenerator Create(ITileRegistry? tileRegistry)
+    internal static MeshTerrainGenerator Create(ITileRegistry tileRegistry, BiomeRegistry biomeRegistry)
     {
-        // The solver and the mesh code share solverRegistry, which drives the background and foreground solves.
-        // The caller's registry only decides passability in the terrain-type map.
+        // The solver and the mesh code share the registry: it drives the background and foreground solves and
+        // decides passability in the terrain-type map.
         var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
-        var solverRegistry = new TileRegistry();
-        var setup = MeshTerrainWfcSetup.ForRegistry(transitionPairs, solverRegistry);
+        var setup = MeshTerrainWfcSetup.ForRegistry(transitionPairs, tileRegistry);
         var tileToTerrainType = AssignTerrainTypes(setup.Solver.RuleTileIds, tileRegistry);
-        var generator = new MeshTerrainGenerator(setup, tileToTerrainType);
-
-        // Create and register biome registry for card-based generation
-        var biomeRegistry = new BiomeRegistry();
-        biomeRegistry.RegisterDefaultBiomes();
-        generator.SetBiomeRegistry(biomeRegistry);
-
-        return generator;
+        return new MeshTerrainGenerator(setup, tileToTerrainType, biomeRegistry);
     }
 
     /// <summary>
@@ -36,14 +27,14 @@ internal static class TerrainGeneratorFactory
     /// </summary>
     private static Dictionary<string, int> AssignTerrainTypes(
         IReadOnlyList<string> allTerrainIds,
-        ITileRegistry? tileRegistry)
+        ITileRegistry tileRegistry)
     {
         var tileToTerrainType = new Dictionary<string, int>();
         var nextTerrainType = 1;
 
         foreach (var terrainId in allTerrainIds)
         {
-            var tileDef = tileRegistry?.GetTile(terrainId);
+            var tileDef = tileRegistry.GetTile(terrainId);
             bool isPassable = tileDef?.IsPassable ?? InferPassability(terrainId);
 
             tileToTerrainType[terrainId] = isPassable ? nextTerrainType++ : 0;

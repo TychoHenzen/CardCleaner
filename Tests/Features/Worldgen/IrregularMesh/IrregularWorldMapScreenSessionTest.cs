@@ -17,6 +17,8 @@ public class IrregularWorldMapScreenSessionTest
 {
     private const int Seed = 4242;
 
+    private static readonly IrregularMeshNs.MeshMapGenerator Generator = MeshMapGeneratorFixture.Create();
+
     private readonly List<IrregularMeshNs.IrregularWorldMapScreen> _screens = new();
 
     private IrregularMeshNs.IrregularWorldMapScreen CreateScreen()
@@ -47,9 +49,9 @@ public class IrregularWorldMapScreenSessionTest
         AddNode(screen);
         await ISceneRunner.SyncProcessFrame;
 
-        screen.GenerateMap(Seed);
+        await screen.GenerateMap(Generator, Seed);
         var firstController = screen.ExplorationController!;
-        screen.GenerateMap(Seed + 1);
+        await screen.GenerateMap(Generator, Seed + 1);
         await ISceneRunner.SyncProcessFrame;
 
         AssertBool(IsInstanceValid(firstController)).IsFalse();
@@ -63,17 +65,17 @@ public class IrregularWorldMapScreenSessionTest
         var reference = CreateScreen();
         AddNode(reference);
         await ISceneRunner.SyncProcessFrame;
-        reference.GenerateMap(Seed, TerrainCards(), null);
+        await reference.GenerateMap(Generator, Seed, TerrainCards(), null);
 
         var seedOnly = CreateScreen();
         AddNode(seedOnly);
         await ISceneRunner.SyncProcessFrame;
-        seedOnly.GenerateMap(Seed);
+        await seedOnly.GenerateMap(Generator, Seed);
 
         var deferred = CreateScreen();
-        deferred.GenerateMap(Seed, TerrainCards(), null);
+        var deferredGeneration = deferred.GenerateMap(Generator, Seed, TerrainCards(), null);
         AddNode(deferred);
-        await ISceneRunner.SyncProcessFrame;
+        await deferredGeneration;
 
         AssertThat(TerrainOf(reference.Mesh!)).IsNotEqual(TerrainOf(seedOnly.Mesh!));
         AssertThat(TerrainOf(deferred.Mesh!)).IsEqual(TerrainOf(reference.Mesh!));

@@ -33,8 +33,8 @@ public class MeshTerrainFailurePathTest
             AutoTileId(registry));
         var generator = new IrregularMeshNs.MeshTerrainGenerator(
             new MeshTerrainWfcSetup(solver, registry),
-            new Dictionary<string, int>());
-        generator.SetBiomeRegistry(DefaultBiomes());
+            new Dictionary<string, int>(),
+            DefaultBiomes());
 
         var mesh = generator.GenerateWithCards(3, TerrainCards(), 4242, relaxationIterations: 8);
 

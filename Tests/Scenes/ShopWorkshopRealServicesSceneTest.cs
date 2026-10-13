@@ -42,6 +42,8 @@ public class ShopWorkshopRealServicesSceneTest
         ServiceLocator.ResetForTesting();
         ServiceLocator.Container.RegisterSingleton(new RandomNumberGenerator());
         ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
+        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(
+            CardCleaner.Tests.Features.Worldgen.IrregularMesh.MeshMapGeneratorFixture.Create());
 
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _tree.Root.AddChild(_shop);

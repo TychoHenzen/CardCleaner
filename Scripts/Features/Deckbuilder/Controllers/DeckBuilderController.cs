@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -29,6 +31,7 @@ public partial class DeckBuilderController : Node
 
     private IGameSessionService? _gameSession;
     private IGridMapGenerator? _gridGenerator;
+    private IMeshMapGenerator? _meshGenerator;
     private CabinetPhase _phase = CabinetPhase.Idle;
 
     // The kind of the session started by the last activate press, read only while the cabinet is not idle, so a
@@ -91,6 +94,9 @@ public partial class DeckBuilderController : Node
 
         // The grid kind's generator, handed to the session when a grid session starts
         ServiceLocator.Get<IGridMapGenerator>(generator => _gridGenerator = generator);
+
+        // The irregular kind's generator, handed to the irregular screen when an irregular session starts
+        ServiceLocator.Get<IMeshMapGenerator>(generator => _meshGenerator = generator);
 
         if (IrregularMapScreen != null)
             IrregularMapScreen.ExplorationFinished += OnIrregularExplorationFinished;
@@ -262,6 +268,12 @@ public partial class DeckBuilderController : Node
             return;
         }
 
+        if (MapType == MapGenerationType.IrregularMesh && _meshGenerator == null)
+        {
+            ILog.Error("No IMeshMapGenerator registered! Cannot generate an irregular mesh map.");
+            return;
+        }
+
         ILog.Print($"Cards present - starting {MapType} map session...");
 
         // Record the kind before the slots change, so every refresh from here on sees a running session.
@@ -282,7 +294,7 @@ public partial class DeckBuilderController : Node
                 break;
 
             case MapGenerationType.IrregularMesh:
-                StartIrregularMeshGeneration(mapSeeds.ToArray(), abilities.ToArray());
+                StartIrregularMeshGeneration(mapSeeds.ToArray(), abilities.ToArray(), _meshGenerator!);
                 break;
         }
 
@@ -323,15 +335,39 @@ public partial class DeckBuilderController : Node
     }
 
     /// <summary>
-    /// Starts map generation using the irregular mesh system.
+    /// Starts the irregular session on the irregular screen with the mesh generator the container registered.
     /// </summary>
-    private void StartIrregularMeshGeneration(CardSignature[] mapSeeds, CardSignature[] abilities)
+    private void StartIrregularMeshGeneration(
+        CardSignature[] mapSeeds,
+        CardSignature[] abilities,
+        IMeshMapGenerator generator)
     {
         // Generate a seed from the card signatures
         var seed = GenerateSeedFromSignatures(mapSeeds);
 
-        // Pass seed, card signatures for terrain, and abilities for combat
-        IrregularMapScreen.GenerateMap(seed, mapSeeds, abilities);
+        _ = GenerateIrregularMapAsync(generator, seed, mapSeeds, abilities);
+    }
+
+    /// <summary>
+    /// Runs the irregular screen's generation. A failure is logged and ends the session, so the next press resets
+    /// the cabinet instead of leaving it running without a map.
+    /// </summary>
+    private async Task GenerateIrregularMapAsync(
+        IMeshMapGenerator generator,
+        int seed,
+        CardSignature[] mapSeeds,
+        CardSignature[] abilities)
+    {
+        try
+        {
+            // Pass seed, card signatures for terrain, and abilities for combat
+            await IrregularMapScreen.GenerateMap(generator, seed, mapSeeds, abilities);
+        }
+        catch (Exception ex)
+        {
+            ILog.Error($"Irregular map generation failed: {ex.Message}");
+            OnIrregularExplorationFinished();
+        }
     }
 
     /// <summary>

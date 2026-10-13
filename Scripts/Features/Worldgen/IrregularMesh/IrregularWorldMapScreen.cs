@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
@@ -22,7 +23,6 @@ public partial class IrregularWorldMapScreen : Node3D
     #region Exports
 
     [Export] public int MeshRings { get; set; } = 5;
-    [Export] public float WorldScale { get; set; } = 16f;
     [Export] public float VisionRange { get; set; } = 3f;
     [Export] public float MovementSpeed { get; set; } = 0.15f;
     [Export] public bool ShowDebug { get; set; }
@@ -45,10 +45,12 @@ public partial class IrregularWorldMapScreen : Node3D
     private Camera2D? _camera2D;
 
     private bool _isInitialized;
-    private Action? _pendingGeneration;
+    // Counts generation requests; a generation whose number is no longer current (a newer request or a reset came
+    // in while it ran) is dropped.
+    private int _generationRequest;
     private RandomNumberGenerator _rng = new();
 
-    // Tile registry for terrain generation
+    // Tile registry the render layer reads tile art from
     private ITileRegistry? _tileRegistry;
 
     #endregion
@@ -85,10 +87,6 @@ public partial class IrregularWorldMapScreen : Node3D
         CallDeferred(nameof(SetupScreenMaterial));
 
         CreateChildNodes();
-
-        var pendingGeneration = _pendingGeneration;
-        _pendingGeneration = null;
-        pendingGeneration?.Invoke();
     }
 
     protected override void Dispose(bool disposing)
@@ -104,37 +102,55 @@ public partial class IrregularWorldMapScreen : Node3D
     #region Public API
 
     /// <summary>
-    /// Generate a new map with the given seed.
+    /// Generates a new map with the given seed through the irregular map generator, off the main thread, then shows
+    /// it and starts exploring from the start the generator placed. A screen not yet in the tree generates once it
+    /// is ready. The task completes when the map is shown, or when a newer request or a reset dropped it.
     /// </summary>
-    public void GenerateMap(int seed, CardSignature[]? inputCards = null, CardSignature[]? abilityCards = null)
+    public async Task GenerateMap(
+        IMeshMapGenerator generator,
+        int seed,
+        CardSignature[]? inputCards = null,
+        CardSignature[]? abilityCards = null)
     {
-        if (!IsInsideTree())
-        {
-            _pendingGeneration = () => GenerateMap(seed, inputCards, abilityCards);
-            return;
-        }
+        ArgumentNullException.ThrowIfNull(generator);
 
+        if (!IsInsideTree())
+            await ToSignal(this, Node.SignalName.Ready);
+
+        var request = ++_generationRequest;
         _rng.Seed = (ulong)seed;
 
         var sw = System.Diagnostics.Stopwatch.StartNew();
         GD.Print($"[IrregularWorldMapScreen] Generating map with seed {seed}, rings={MeshRings}");
 
-        // Generate mesh with WFC terrain
-        var terrainGen = TerrainGeneratorFactory.Create(_tileRegistry);
-        var mesh = inputCards != null && inputCards.Length > 0
-            ? terrainGen.GenerateWithCards(MeshRings, inputCards, seed, relaxationIterations: 8)
-            : terrainGen.GenerateFallback(MeshRings, seed, relaxationIterations: 8);
+        var generated = await generator.GenerateAsync(new MeshMapGenerationConfig
+        {
+            Rings = MeshRings,
+            Seed = unchecked((ulong)seed),
+            MapSeeds = inputCards ?? Array.Empty<CardSignature>()
+        });
 
-        GD.Print($"[IrregularWorldMapScreen] WFC terrain generation complete ({sw.ElapsedMilliseconds}ms)");
+        if (!IsInstanceValid(this) || request != _generationRequest || !IsInsideTree())
+            return;
 
-        var session = BeginSession(mesh);
-        var playerStartCell = session.Prepare(seed, abilityCards?.ToList());
+        if (generated is not IMeshGeneratedMap meshMap)
+        {
+            GD.PrintErr("[IrregularWorldMapScreen] The generator returned no irregular mesh map");
+            return;
+        }
+
+        GD.Print($"[IrregularWorldMapScreen] Map generation complete ({sw.ElapsedMilliseconds}ms)");
+
+        var session = BeginSession(meshMap);
+        var playerStartCell = session.Prepare(abilityCards?.ToList());
         GD.Print($"[IrregularWorldMapScreen] Rendering setup complete ({sw.ElapsedMilliseconds}ms total)");
 
         CompleteSession(session, playerStartCell);
 
         sw.Stop();
-        GD.Print($"[IrregularWorldMapScreen] Map generated in {sw.ElapsedMilliseconds}ms: {mesh.GetStatistics()}");
+        GD.Print(
+            $"[IrregularWorldMapScreen] Map generated in {sw.ElapsedMilliseconds}ms: " +
+            $"{meshMap.RawMesh.GetStatistics()}");
 
         StartExploration();
     }
@@ -159,6 +175,7 @@ public partial class IrregularWorldMapScreen : Node3D
 
     public void Reset()
     {
+        _generationRequest++;
         _session?.Reset();
         _isInitialized = false;
         _mesh = null;
@@ -168,13 +185,13 @@ public partial class IrregularWorldMapScreen : Node3D
     #endregion
 
     /// <summary>
-    /// Creates the runtime for a freshly generated mesh and subscribes to its events.
+    /// Creates the runtime for a freshly generated map and subscribes to its events.
     /// </summary>
-    private WorldMapSession BeginSession(IrregularMesh mesh)
+    private WorldMapSession BeginSession(IMeshGeneratedMap map)
     {
         _session?.Close();
-        _mesh = mesh;
-        var session = new WorldMapSession(CreateSettings(), mesh);
+        _mesh = map.RawMesh;
+        var session = new WorldMapSession(CreateSettings(map.MeshMapData.WorldScale), map);
         _session = session;
         _mapData = session.MapData;
 
@@ -203,11 +220,11 @@ public partial class IrregularWorldMapScreen : Node3D
         MapGenerated?.Invoke();
     }
 
-    private WorldMapSettings CreateSettings()
+    private WorldMapSettings CreateSettings(float worldScale)
     {
         return new WorldMapSettings
         {
-            WorldScale = WorldScale,
+            WorldScale = worldScale,
             VisionRange = VisionRange,
             MovementSpeed = MovementSpeed,
             FogOfWarEnabled = FogOfWarEnabled,
