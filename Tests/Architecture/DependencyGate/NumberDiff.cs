@@ -11,4 +11,10 @@ internal sealed record NumberDiff(string Name, int Baseline, int Measured)
         ? $"{Name} is {Measured}, above the baseline {Baseline}"
         : $"{Name} is {Measured}, below the baseline {Baseline}: lower the baseline with " +
           DependencyBaseline.UpdateCommand;
+
+    /// <summary>
+    /// The message for a rise the decision accepts because a higher-priority number went down (#299).
+    /// </summary>
+    public string AcceptedRiseMessage(string decidingName) =>
+        $"{Name} is {Measured}, above the baseline {Baseline}: accepted because {decidingName} went down";
 }
