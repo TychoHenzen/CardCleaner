@@ -33,17 +33,9 @@ public class DependencyGateTest
                  $"ui seeds {graph.Nodes.Values.Count(n => n.UiSeed)}, roles " +
                  string.Join(" ", graph.Nodes.Values.GroupBy(n => n.Role).OrderBy(g => g.Key)
                      .Select(g => $"{g.Key}={g.Count()}")) + $" in {clock.ElapsedMilliseconds} ms");
-        var layers = LayerAnchors.Classify(graph);
-        var middle = layers.Where(p => p.Value == Layer.Middle).Select(p => p.Key).ToList();
-        var middleSet = middle.ToHashSet();
-        var middleEdges = graph.Edges.Where(e => middleSet.Contains(e.Key.From) && middleSet.Contains(e.Key.To))
-            .Select(e => (e.Key.From, e.Key.To, e.Value.ClusterWeight)).ToList();
-        var consensus = ModuleConsensus.Cluster(middle, graph.Nodes.ToDictionary(p => p.Key, p => p.Value.Home),
-            middleEdges);
-        GD.Print("dependency gate: layers " + string.Join(" ", layers.GroupBy(p => p.Value).OrderBy(g => g.Key)
-                     .Select(g => $"{g.Key}={g.Count()}")) +
-                 $", middle modules {consensus.Module.Values.Distinct().Count()}, loose {consensus.Loose.Count} " +
-                 $"in {clock.ElapsedMilliseconds} ms");
+        var lines = GateReport.Lines(GateMetrics.Measure(graph));
+        foreach (var line in lines) GD.Print("dependency gate: " + line);
+        GD.Print($"dependency gate: measured in {clock.ElapsedMilliseconds} ms");
         AssertInt(graph.Nodes.Count).IsGreater(0);
     }
 }
