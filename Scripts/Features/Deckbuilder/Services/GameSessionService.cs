@@ -15,7 +15,6 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 public partial class GameSessionService : Node, IGameSessionService
 {
     private readonly SessionWorld _world = new();
-    private readonly GridCellEventAdapter _eventAdapter = new();
     private readonly GenerationTracker _generationTracker = new();
     private readonly MapGenerationCoordinator _generation;
     private readonly ExplorationSession _exploration;
@@ -27,9 +26,9 @@ public partial class GameSessionService : Node, IGameSessionService
 
     public GameSessionService()
     {
-        _generation = new MapGenerationCoordinator(this, _world, _eventAdapter, _generationTracker);
-        _exploration = new ExplorationSession(_world, _eventAdapter);
-        _flow = new SessionFlow(this, _world, _eventAdapter, _exploration);
+        _generation = new MapGenerationCoordinator(this, _world, _generationTracker);
+        _exploration = new ExplorationSession(_world);
+        _flow = new SessionFlow(this, _world, _exploration);
         ForwardGenerationEvents();
         ForwardExplorationEvents();
     }
@@ -37,18 +36,12 @@ public partial class GameSessionService : Node, IGameSessionService
     public SessionState CurrentState => _flow.State;
 
     public event Action<SessionState>? StateChanged;
-    public event Action<SimpleMapData>? MapGenerated;
     public event Action<IGeneratedMap>? GeneratedMapReady;
     public event Action<List<CardSignature>>? LootGenerated;
-    public event Action<Vector2I>? PlayerMoved;
     public event Action<Vector2>? PlayerMovedWorld;
-    public event Action<Vector2I>? EnemyDefeated;
     public event Action<int>? EnemyDefeatedCell;
-    public event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
     public event Action<IReadOnlySet<int>>? VisitedCellsUpdated;
-    public event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>>? VisibilityUpdated;
     public event Action<IReadOnlySet<int>, IReadOnlySet<int>>? VisibilityCellsUpdated;
-    public event Action<IReadOnlyList<Vector2I>, Vector2I?>? PathUpdated;
     public event Action<IReadOnlyList<int>, int?>? PathCellsUpdated;
     public event Action<float>? ProgressUpdated;
 
@@ -203,7 +196,6 @@ public partial class GameSessionService : Node, IGameSessionService
     {
         _flow.StateChanged += state => StateChanged?.Invoke(state);
         _flow.LootGenerated += loot => LootGenerated?.Invoke(loot);
-        _generation.MapGenerated += map => MapGenerated?.Invoke(map);
         _generation.GeneratedMapReady += map => GeneratedMapReady?.Invoke(map);
         _generation.ProgressUpdated += value => ProgressUpdated?.Invoke(value);
         _generation.Succeeded += generationId =>
@@ -216,15 +208,10 @@ public partial class GameSessionService : Node, IGameSessionService
 
     private void ForwardExplorationEvents()
     {
-        _exploration.PlayerMoved += position => PlayerMoved?.Invoke(position);
         _exploration.PlayerMovedWorld += position => PlayerMovedWorld?.Invoke(position);
-        _exploration.EnemyDefeated += position => EnemyDefeated?.Invoke(position);
         _exploration.EnemyDefeatedCell += cellId => EnemyDefeatedCell?.Invoke(cellId);
-        _exploration.VisitedTilesUpdated += tiles => VisitedTilesUpdated?.Invoke(tiles);
         _exploration.VisitedCellsUpdated += cells => VisitedCellsUpdated?.Invoke(cells);
-        _exploration.VisibilityUpdated += (seen, visible) => VisibilityUpdated?.Invoke(seen, visible);
         _exploration.VisibilityCellsUpdated += (seen, visible) => VisibilityCellsUpdated?.Invoke(seen, visible);
-        _exploration.PathUpdated += (path, target) => PathUpdated?.Invoke(path, target);
         _exploration.PathCellsUpdated += (path, target) => PathCellsUpdated?.Invoke(path, target);
     }
 }

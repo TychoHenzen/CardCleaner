@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
@@ -14,7 +15,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 /// Runtime of the simple world map screen: connects the game session and tile registry to the screen's
 /// rendering, fog, combat and preview components. The screen node keeps the Godot-facing surface.
 /// </summary>
-internal sealed class WorldMapRuntime
+internal sealed class WorldMapRuntime : ISessionView
 {
     private readonly SimpleWorldMapScreen _screen;
     private readonly WorldMapComponents _components;
@@ -24,15 +25,11 @@ internal sealed class WorldMapRuntime
     private readonly EnemySpriteLayer _enemySprites;
     private readonly WorldMapCombatUI _combatUI;
 
-    private IGameSessionService? _gameSession;
-    private CardSignature[]? _pendingAbilities;
-    private CardSignature[]? _pendingMapSeed;
-    private IMapGenerator? _pendingGenerator;
-    private bool _serviceReady;
+    // The grid of the shown map: converts the session's cell ids and world positions to tiles.
+    private RegularGridMapData? _grid;
 
-    // Set from this screen's own start call until the session falls back to waiting or the screen is reset or
-    // stopped: the screen acts only on a session it started.
-    private bool _ownsSession;
+    // The screen acts only on a session it started: the link passes events on while the screen owns the session.
+    private readonly SessionViewLink _link;
 
     internal WorldMapRuntime(SimpleWorldMapScreen screen)
     {
@@ -41,6 +38,7 @@ internal sealed class WorldMapRuntime
         _cameraRig = new WorldMapCameraRig(screen.Viewport);
         _enemySprites = new EnemySpriteLayer(screen.Viewport);
         _combatUI = new WorldMapCombatUI(screen.CombatUI);
+        _link = new SessionViewLink(this);
     }
 
     internal void Start()
@@ -51,42 +49,29 @@ internal sealed class WorldMapRuntime
         ShowStatus("Waiting for map data...");
 
         ServiceLocator.Get<ITileRegistry>(_components.Initialize);
-        ServiceLocator.Get<IGameSessionService>(OnGameSessionReady);
+        ServiceLocator.Get<IGameSessionService>(_link.Connect);
     }
 
     internal void Stop()
     {
-        _ownsSession = false;
-        if (_gameSession == null) return;
-
-        _gameSession.StateChanged -= OnSessionStateChanged;
-        _gameSession.MapGenerated -= OnMapGenerated;
-        _gameSession.LootGenerated -= OnLootGenerated;
-        _gameSession.PlayerMoved -= OnServicePlayerMoved;
-        _gameSession.EnemyDefeated -= OnServiceEnemyDefeated;
-        _gameSession.VisibilityUpdated -= OnVisibilityUpdated;
-        _gameSession.PathUpdated -= OnPathUpdated;
+        _link.Disconnect();
     }
+
+    // A session service that resolves after the screen left the tree or was freed must not subscribe it.
+    bool ISessionView.CanConnect => GodotObject.IsInstanceValid(_screen) && _screen.IsInsideTree();
 
     internal void StartSession(CardSignature[] mapSeed, CardSignature[] abilities, IMapGenerator generator)
     {
-        if (_serviceReady && _gameSession != null)
-        {
-            StartOwnSession(mapSeed, abilities, generator);
-            return;
-        }
-
-        ILog.Print("GameSessionService not ready, storing pending initialization...");
-        _pendingMapSeed = mapSeed;
-        _pendingAbilities = abilities;
-        _pendingGenerator = generator;
+        _link.Start(mapSeed, abilities, generator);
     }
 
     internal void UpdateBiomePreview(CardSignature[] cards) => _biomePreview.Update(cards);
 
     internal void Reset()
     {
-        _ownsSession = false;
+        _link.Reset();
+
+        _grid = null;
 
         // Clear all layers
         _components.Terrain?.ClearAllLayers();
@@ -118,58 +103,8 @@ internal sealed class WorldMapRuntime
         ShowStatus(playerWon ? "Victory! Generating loot..." : "Defeat!");
     }
 
-    // Use dependency injection to get the game session service
-    private void OnGameSessionReady(IGameSessionService gameSession)
+    void ISessionView.OnStateChanged(SessionState newState)
     {
-        ILog.Print("Got GameSessionService from ServiceLocator");
-
-        _gameSession = gameSession;
-        _serviceReady = true;
-
-        // Connect to all the events we need
-        gameSession.StateChanged += OnSessionStateChanged;
-        gameSession.MapGenerated += OnMapGenerated;
-        gameSession.LootGenerated += OnLootGenerated;
-        gameSession.PlayerMoved += OnServicePlayerMoved;
-        gameSession.EnemyDefeated += OnServiceEnemyDefeated;
-        gameSession.VisibilityUpdated += OnVisibilityUpdated;
-        gameSession.PathUpdated += OnPathUpdated;
-
-        // If Initialize() was called before service was ready, start now
-        if (_pendingMapSeed is { Length: > 0 } && _pendingAbilities != null && _pendingGenerator != null)
-        {
-            ILog.Print("Processing pending initialization...");
-            var mapSeed = _pendingMapSeed;
-            var abilities = _pendingAbilities;
-            var generator = _pendingGenerator;
-            _pendingMapSeed = null;
-            _pendingAbilities = null;
-            _pendingGenerator = null;
-            StartOwnSession(mapSeed, abilities, generator);
-        }
-    }
-
-    private void StartOwnSession(CardSignature[] mapSeed, CardSignature[] abilities, IMapGenerator generator)
-    {
-        var session = _gameSession!;
-        if (session.CurrentState != SessionState.WaitingForCards)
-        {
-            ILog.Error("Cannot start a grid session while another session runs");
-            return;
-        }
-
-        _ownsSession = true;
-        session.StartSession(mapSeed.ToList(), abilities.ToList(), generator);
-
-        // A start the service refused leaves it waiting; the screen then owns nothing.
-        if (session.CurrentState == SessionState.WaitingForCards)
-            _ownsSession = false;
-    }
-
-    private void OnSessionStateChanged(SessionState newState)
-    {
-        if (!_ownsSession) return;
-
         ShowStatus($"Status: {newState}");
 
         switch (newState)
@@ -193,9 +128,6 @@ internal sealed class WorldMapRuntime
                 ShowStatus("Session complete!");
                 ILog.Print("Session complete - ready for next round!");
                 break;
-            case SessionState.WaitingForCards:
-                _ownsSession = false;
-                break;
         }
     }
 
@@ -215,8 +147,6 @@ internal sealed class WorldMapRuntime
         ShowStatus("Combat started!");
         _combatUI.Show();
 
-        if (_gameSession == null) return;
-
         var combat = new CombatVisualization(
             _screen,
             _combatUI,
@@ -224,10 +154,17 @@ internal sealed class WorldMapRuntime
         combat.Start();
     }
 
-    private void OnMapGenerated(SimpleMapData mapData)
+    /// <summary>
+    /// Shows the map of a session this screen started. The session's generator must give a grid map: the screen
+    /// checks that here, once, and any other map throws, which ends the session.
+    /// </summary>
+    void ISessionView.OnMapReady(IGeneratedMap generated)
     {
-        if (!_ownsSession) return;
+        if (generated is not IGridGeneratedMap gridMap)
+            throw new InvalidOperationException("The session's generator returned no grid map");
 
+        var mapData = gridMap.RawMapData;
+        _grid = gridMap.GridMapData;
         ILog.Print($"Received map from GameSessionService: {mapData.Size.X}x{mapData.Size.Y}");
         _pathOverlay.ForgetRenderedTiles();
         RenderMap(mapData);
@@ -271,53 +208,62 @@ internal sealed class WorldMapRuntime
         ILog.Print($"Rendered map: {mapData.Size.X}x{mapData.Size.Y} with {mapData.EnemyPositions.Count} enemies");
     }
 
-    private void OnServicePlayerMoved(Vector2I gridPosition)
+    void ISessionView.OnPlayerMoved(Vector2 worldPosition)
     {
-        if (!_ownsSession) return;
-
-        if (_screen.PlayerSprite != null)
+        if (_screen.PlayerSprite != null && _grid != null)
+        {
+            var tile = _grid.WorldToGrid(worldPosition);
             _screen.PlayerSprite.Position = new Vector2(
-                gridPosition.X * _components.TileSize + _components.TileSize / 2,
-                gridPosition.Y * _components.TileSize + _components.TileSize / 2
+                tile.X * _components.TileSize + _components.TileSize / 2,
+                tile.Y * _components.TileSize + _components.TileSize / 2
             );
+        }
 
         // The grid view shows a move at once, so it reports it shown straight away.
-        _gameSession?.ReportStepShown();
+        _link.ReportStepShown();
     }
 
-    private void OnPathUpdated(IReadOnlyList<Vector2I> path, Vector2I? target)
+    void ISessionView.OnPathUpdated(IReadOnlyList<int> pathCells, int? targetCell)
     {
-        if (!_ownsSession) return;
+        if (_grid is not { } grid) return;
 
         if (_screen.OverlayLayer == null || _components.Terrain == null) return;
 
+        var path = pathCells.Select(grid.CellIdToPosition).ToList();
+        Vector2I? target = targetCell.HasValue ? grid.CellIdToPosition(targetCell.Value) : null;
         _pathOverlay.Show(_screen.OverlayLayer, _components.Terrain, path, target);
     }
 
-    private void OnVisibilityUpdated(IReadOnlySet<Vector2I> seenTiles, IReadOnlySet<Vector2I> currentlyVisibleTiles)
+    // The fog numbers its tiles row by row like the grid's cell ids, so it takes the session's cells as they are.
+    void ISessionView.OnVisibilityUpdated(IReadOnlySet<int> seenCells, IReadOnlySet<int> visibleCells)
     {
-        if (!_ownsSession) return;
-
-        _components.Fog?.UpdateVisibility(seenTiles, currentlyVisibleTiles);
+        _components.Fog?.UpdateVisibility(seenCells, visibleCells);
     }
 
-    private void OnServiceEnemyDefeated(Vector2I position)
+    void ISessionView.OnEnemyDefeated(int cellId)
     {
-        if (!_ownsSession) return;
+        if (_grid == null) return;
 
-        ILog.Print($"Enemy defeated at {position} - removing sprite");
-        _enemySprites.RemoveAt(position, _components.TileSize);
+        var tile = _grid.CellIdToPosition(cellId);
+        ILog.Print($"Enemy defeated at {tile} - removing sprite");
+        _enemySprites.RemoveAt(tile, _components.TileSize);
     }
 
-    private void OnLootGenerated(List<CardSignature> lootSignatures)
+    void ISessionView.OnLootGenerated(List<CardSignature> lootSignatures)
     {
-        if (!_ownsSession) return;
-
         ILog.Print($"Loot generated: {lootSignatures.Count} cards");
         if (ILog.ExportCheck(_screen.LootSpawnPoint, nameof(SimpleWorldMapScreen.LootSpawnPoint), _screen))
             return;
 
         LootCardSpawner.Spawn(lootSignatures, _screen.LootSpawnPoint!.GlobalTransform);
+    }
+
+    // The grid view sees with the session's own checker and clears its map when the new one arrives.
+    IVisibilityChecker? ISessionView.PrepareForSession() => null;
+
+    // The grid view keeps nothing per session that Reset does not clear.
+    void ISessionView.OnSessionReleased()
+    {
     }
 
     private void ShowStatus(string text)

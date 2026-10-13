@@ -18,7 +18,7 @@ public class GameSessionSeedTest : GameSessionServiceTestBase
     // ======== Deterministic RNG Seeding Tests (Phase 1.1) ========
 
     [TestCase]
-    public void ComputeSeedFromCards_SameCards_ReturnsSameSeed()
+    public static void ComputeSeedFromCards_SameCards_ReturnsSameSeed()
     {
         // Same cards should always produce the same seed
         var cards1 = new List<CardSignature>
@@ -39,7 +39,7 @@ public class GameSessionSeedTest : GameSessionServiceTestBase
     }
 
     [TestCase]
-    public void ComputeSeedFromCards_DifferentCards_ReturnsDifferentSeeds()
+    public static void ComputeSeedFromCards_DifferentCards_ReturnsDifferentSeeds()
     {
         // Different cards should produce different seeds
         var cards1 = new List<CardSignature>
@@ -84,7 +84,7 @@ public class GameSessionSeedTest : GameSessionServiceTestBase
         var abilityCards = new List<CardSignature> { new() };
 
         SimpleMapData? firstMap = null;
-        _service.MapGenerated += map => firstMap = map;
+        _service.GeneratedMapReady += map => firstMap = ((IGridGeneratedMap)map).RawMapData;
 
         _service.StartSession(mapSeeds, abilityCards, _generator);
 
@@ -102,7 +102,7 @@ public class GameSessionSeedTest : GameSessionServiceTestBase
         _service.ResetSession();
 
         SimpleMapData? secondMap = null;
-        _service.MapGenerated += map => secondMap = map;
+        _service.GeneratedMapReady += map => secondMap = ((IGridGeneratedMap)map).RawMapData;
 
         _service.StartSession(mapSeeds, abilityCards, _generator);
 

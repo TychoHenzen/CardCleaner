@@ -7,7 +7,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 /// <summary>
 /// Wrapper that adapts SimpleMapData to the IGeneratedMap interface.
 /// </summary>
-public class SimpleGeneratedMap : IGeneratedMap
+public class SimpleGeneratedMap : IGridGeneratedMap
 {
     private readonly SimpleMapData _mapData;
     private readonly RegularGridMapData _mapDataAdapter;

@@ -18,7 +18,6 @@ internal sealed class SessionFlow
 
     private readonly Node _owner;
     private readonly SessionWorld _world;
-    private readonly GridCellEventAdapter _eventAdapter;
     private readonly ExplorationSession _exploration;
     private Timer _gameTimer = null!;
     private SessionState _state = SessionState.WaitingForCards;
@@ -33,12 +32,10 @@ internal sealed class SessionFlow
     internal SessionFlow(
         Node owner,
         SessionWorld world,
-        GridCellEventAdapter eventAdapter,
         ExplorationSession exploration)
     {
         _owner = owner;
         _world = world;
-        _eventAdapter = eventAdapter;
         _exploration = exploration;
     }
 
@@ -232,7 +229,6 @@ internal sealed class SessionFlow
         _gameTimer?.Stop();
 
         _world.ClearMap();
-        _eventAdapter.SetGridMapData(null);
 
         _combatSystem = null;
         _exploration.Clear();

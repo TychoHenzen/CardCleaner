@@ -171,27 +171,6 @@ public class WorldMapFogManager : IPassiveFogOfWar
 
     #endregion
 
-    #region Legacy Vector2I API
-
-    /// <summary>
-    /// Update fog of war visibility based on seen and currently visible tiles (Vector2I version).
-    /// </summary>
-    public void UpdateVisibility(IReadOnlySet<Vector2I> seenTiles, IReadOnlySet<Vector2I> currentlyVisibleTiles)
-    {
-        var seenCellIds = new HashSet<int>();
-        var visibleCellIds = new HashSet<int>();
-
-        foreach (var pos in seenTiles)
-            seenCellIds.Add(GridPosToCellId(pos));
-
-        foreach (var pos in currentlyVisibleTiles)
-            visibleCellIds.Add(GridPosToCellId(pos));
-
-        UpdateVisibility(seenCellIds, visibleCellIds);
-    }
-
-    #endregion
-
     /// <summary>
     /// Clear all fog sprites and state.
     /// </summary>

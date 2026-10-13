@@ -12,13 +12,7 @@ public interface IGameSessionService
 {
     SessionState CurrentState { get; }
     event Action<SessionState> StateChanged;
-    event Action<SimpleMapData> MapGenerated;
     event Action<List<CardSignature>> LootGenerated;
-    event Action<Vector2I> PlayerMoved;
-    event Action<Vector2I> EnemyDefeated;
-    event Action<IReadOnlySet<Vector2I>> VisitedTilesUpdated;
-    event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>> VisibilityUpdated;
-    event Action<IReadOnlyList<Vector2I>, Vector2I?> PathUpdated;
     event Action<float>? ProgressUpdated;
 
     /// <summary>Raised after every move with the player's new world position, on both map kinds.</summary>
@@ -27,13 +21,20 @@ public interface IGameSessionService
     /// <summary>Raised with the cell of every defeated enemy, on both map kinds.</summary>
     event Action<int> EnemyDefeatedCell;
 
+    /// <summary>Raised with every cell the player has visited, after every move, on both map kinds.</summary>
+    event Action<IReadOnlySet<int>> VisitedCellsUpdated;
+
+    /// <summary>Raised with the cells of the current path and its target cell, on both map kinds.</summary>
+    event Action<IReadOnlyList<int>, int?> PathCellsUpdated;
+
     /// <summary>
     /// Raised with the seen and the currently visible cells after every vision update, on both map kinds.
     /// </summary>
     event Action<IReadOnlySet<int>, IReadOnlySet<int>> VisibilityCellsUpdated;
 
     /// <summary>
-    /// Raised for every generated map; <see cref="MapGenerated"/> is raised before it for a grid map only.
+    /// Raised for every generated map. A view reads its own kind of map from it (a grid map is an
+    /// <see cref="IGridGeneratedMap"/>) and converts the session's cell ids and world positions to its coordinates.
     /// </summary>
     event Action<IGeneratedMap> GeneratedMapReady;
 

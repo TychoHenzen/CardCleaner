@@ -265,7 +265,7 @@ The `GameSessionService` manages the game loop through states: `WaitingForCards`
 
 **Debug Visualization**: Overlay layer system allows non-destructive visualization of exploration data (current path, target tile, visited tiles).
 
-**Key Exploration Events**: `PathUpdated`, `VisitedTilesUpdated`, `PlayerMoved`, `EnemyEncountered`, `EnemySpotted`
+**Key Exploration Events**: `PathUpdated`, `VisitedCellsUpdated`, `PlayerMoved`, `EnemyEncountered`, `EnemySpotted`
 
 ### Persistence
 

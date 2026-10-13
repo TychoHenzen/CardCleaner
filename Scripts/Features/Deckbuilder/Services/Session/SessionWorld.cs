@@ -10,9 +10,6 @@ internal sealed class SessionWorld
 {
     internal RandomNumberGenerator Rng { get; set; } = new();
 
-    /// <summary>Grid coordinate adapter.</summary>
-    internal RegularGridMapData? GridMapData { get; set; }
-
     /// <summary>Unified map interface.</summary>
     internal IGeneratedMap? GeneratedMap { get; set; }
 
@@ -23,7 +20,6 @@ internal sealed class SessionWorld
 
     internal void ClearMap()
     {
-        GridMapData = null;
         GeneratedMap = null;
         MapData = null;
     }
