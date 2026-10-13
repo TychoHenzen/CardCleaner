@@ -2,38 +2,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 /// <summary>
-/// Manages per-quad fog of war state for irregular mesh terrain.
-/// Tracks which quads have been seen, are currently visible, or are hidden.
-/// Implements IActiveFogOfWar for active visibility calculation from observer position.
+/// Per-quad fog of war for irregular mesh terrain. It computes no visibility: the session's exploration hands it the
+/// seen and the visible cells (<see cref="UpdateVisibility"/>), like the grid map's fog. A cell it has shown once stays
+/// at least revealed.
 /// </summary>
-public class IrregularMeshFogOfWar : IActiveFogOfWar
+public class IrregularMeshFogOfWar : IPassiveFogOfWar
 {
-    private readonly IrregularMeshMapData _mapData;
     private readonly Dictionary<int, FogState> _fogStates = new();
     private readonly HashSet<int> _currentlyVisible = new();
-    private readonly HashSet<int> _previouslyVisible = new();
 
-    private IVisibilityChecker? _visibilityChecker;
-    private float _visionRange = 5f;
-
-    /// <summary>
-    /// The vision range in world units.
-    /// </summary>
-    public float VisionRange
+    public IrregularMeshFogOfWar(IrregularMeshMapData mapData)
     {
-        get => _visionRange;
-        set => _visionRange = Mathf.Max(0f, value);
+        for (var i = 0; i < mapData.CellCount; i++)
+            _fogStates[i] = FogState.Hidden;
     }
-
-    /// <summary>
-    /// Number of cells per vision range unit for range calculation.
-    /// </summary>
-    public float CellsPerUnit { get; set; } = 1f;
 
     /// <summary>
     /// Currently visible cell IDs.
@@ -54,143 +40,44 @@ public class IrregularMeshFogOfWar : IActiveFogOfWar
     /// </summary>
     public event Action<IReadOnlySet<int>>? VisibilityChanged;
 
-    /// <summary>
-    /// Raised when a cell is revealed for the first time.
-    /// Parameters: (cellId)
-    /// </summary>
-    public event Action<int>? CellRevealed;
+    public FogState GetFogState(int cellId) =>
+        _fogStates.TryGetValue(cellId, out var state) ? state : FogState.Hidden;
 
-    public IrregularMeshFogOfWar(IrregularMeshMapData mapData, IVisibilityChecker? visibilityChecker = null)
-    {
-        _mapData = mapData;
-        _visibilityChecker = visibilityChecker;
-
-        // Initialize all cells as hidden
-        for (int i = 0; i < mapData.CellCount; i++)
-        {
-            _fogStates[i] = FogState.Hidden;
-        }
-    }
-
-    /// <summary>
-    /// Set the visibility checker for line-of-sight calculations.
-    /// </summary>
-    public void SetVisibilityChecker(IVisibilityChecker checker)
-    {
-        _visibilityChecker = checker;
-    }
-
-    /// <summary>
-    /// Get the fog state for a cell.
-    /// </summary>
-    public FogState GetFogState(int cellId)
-    {
-        return _fogStates.TryGetValue(cellId, out var state) ? state : FogState.Hidden;
-    }
-
-    /// <summary>
-    /// Check if a cell is currently visible.
-    /// </summary>
     public bool IsVisible(int cellId) => GetFogState(cellId) == FogState.Visible;
 
-    /// <summary>
-    /// Check if a cell has been seen (revealed or visible).
-    /// </summary>
     public bool HasBeenSeen(int cellId) => GetFogState(cellId) != FogState.Hidden;
 
     /// <summary>
-    /// Update visibility from an observer position.
+    /// Shows the visible cells and reveals the seen ones. A cell missing from a later seen set stays revealed: each
+    /// resume after a combat starts a new explorer, whose seen set starts empty. Cells outside the map are ignored.
     /// </summary>
-    /// <param name="observerCellId">The cell ID of the observer.</param>
-    public void UpdateVisibility(int observerCellId)
+    public void UpdateVisibility(IReadOnlySet<int> seenCellIds, IReadOnlySet<int> visibleCellIds)
     {
         var changedCells = new HashSet<int>();
 
-        // Store previous visibility state
-        _previouslyVisible.Clear();
         foreach (var cellId in _currentlyVisible)
         {
-            _previouslyVisible.Add(cellId);
+            if (!visibleCellIds.Contains(cellId))
+                SetState(cellId, FogState.Revealed, changedCells);
         }
+
+        foreach (var cellId in seenCellIds)
+        {
+            if (!visibleCellIds.Contains(cellId) && GetFogState(cellId) == FogState.Hidden)
+                SetState(cellId, FogState.Revealed, changedCells);
+        }
+
         _currentlyVisible.Clear();
-
-        // Get observer world position
-        var observerPos = _mapData.GetCellCenter(observerCellId);
-
-        // Find all cells within vision range
-        var cellsInRange = _mapData.GetCellsInRadius(observerPos, _visionRange * CellsPerUnit);
-
-        foreach (var cellId in cellsInRange)
+        foreach (var cellId in visibleCellIds)
         {
-            // Check line of sight
-            bool canSee = CanSeeCell(observerCellId, cellId, observerPos);
+            if (!_fogStates.ContainsKey(cellId))
+                continue;
 
-            if (canSee)
-            {
-                _currentlyVisible.Add(cellId);
-
-                var previousState = _fogStates[cellId];
-                _fogStates[cellId] = FogState.Visible;
-
-                if (previousState != FogState.Visible)
-                {
-                    changedCells.Add(cellId);
-
-                    if (previousState == FogState.Hidden)
-                    {
-                        CellRevealed?.Invoke(cellId);
-                    }
-                }
-            }
+            _currentlyVisible.Add(cellId);
+            SetState(cellId, FogState.Visible, changedCells);
         }
 
-        // Mark previously visible cells as revealed (if not currently visible)
-        foreach (var cellId in _previouslyVisible)
-        {
-            if (!_currentlyVisible.Contains(cellId))
-            {
-                if (_fogStates[cellId] == FogState.Visible)
-                {
-                    _fogStates[cellId] = FogState.Revealed;
-                    changedCells.Add(cellId);
-                }
-            }
-        }
-
-        if (changedCells.Count > 0)
-        {
-            VisibilityChanged?.Invoke(changedCells);
-        }
-    }
-
-    /// <summary>
-    /// Update visibility from a world position.
-    /// </summary>
-    /// <param name="worldPos">The world position of the observer.</param>
-    public void UpdateVisibilityFromPosition(Vector2 worldPos)
-    {
-        var cellId = _mapData.GetCellAtPosition(worldPos);
-        if (cellId.HasValue)
-        {
-            UpdateVisibility(cellId.Value);
-        }
-    }
-
-    /// <summary>
-    /// Reveal a specific cell (mark as seen without requiring line of sight).
-    /// </summary>
-    public void RevealCell(int cellId)
-    {
-        if (!_mapData.IsValidCell(cellId))
-            return;
-
-        var previousState = _fogStates[cellId];
-        if (previousState == FogState.Hidden)
-        {
-            _fogStates[cellId] = FogState.Revealed;
-            CellRevealed?.Invoke(cellId);
-            VisibilityChanged?.Invoke(new HashSet<int> { cellId });
-        }
+        RaiseChanged(changedCells);
     }
 
     /// <summary>
@@ -199,25 +86,13 @@ public class IrregularMeshFogOfWar : IActiveFogOfWar
     public void RevealAll()
     {
         var changedCells = new HashSet<int>();
-
-        for (int i = 0; i < _mapData.CellCount; i++)
+        foreach (var cellId in _fogStates.Keys.ToList())
         {
-            var previousState = _fogStates[i];
-            if (previousState == FogState.Visible)
-                continue;
-
-            _fogStates[i] = FogState.Visible;
-            _currentlyVisible.Add(i);
-            changedCells.Add(i);
-
-            if (previousState == FogState.Hidden)
-                CellRevealed?.Invoke(i);
+            _currentlyVisible.Add(cellId);
+            SetState(cellId, FogState.Visible, changedCells);
         }
 
-        if (changedCells.Count > 0)
-        {
-            VisibilityChanged?.Invoke(changedCells);
-        }
+        RaiseChanged(changedCells);
     }
 
     /// <summary>
@@ -226,23 +101,11 @@ public class IrregularMeshFogOfWar : IActiveFogOfWar
     public void Reset()
     {
         var changedCells = new HashSet<int>();
-
-        for (int i = 0; i < _mapData.CellCount; i++)
-        {
-            if (_fogStates[i] != FogState.Hidden)
-            {
-                _fogStates[i] = FogState.Hidden;
-                changedCells.Add(i);
-            }
-        }
+        foreach (var cellId in _fogStates.Keys.ToList())
+            SetState(cellId, FogState.Hidden, changedCells);
 
         _currentlyVisible.Clear();
-        _previouslyVisible.Clear();
-
-        if (changedCells.Count > 0)
-        {
-            VisibilityChanged?.Invoke(changedCells);
-        }
+        RaiseChanged(changedCells);
     }
 
     /// <summary>
@@ -273,26 +136,18 @@ public class IrregularMeshFogOfWar : IActiveFogOfWar
         return new FogStatistics(hidden, revealed, visible);
     }
 
-    private bool CanSeeCell(int fromCellId, int toCellId, Vector2 fromPos)
+    private void SetState(int cellId, FogState state, HashSet<int> changedCells)
     {
-        // Same cell is always visible
-        if (fromCellId == toCellId)
-            return true;
+        if (!_fogStates.TryGetValue(cellId, out var previous) || previous == state)
+            return;
 
-        // Check distance
-        var toPos = _mapData.GetCellCenter(toCellId);
-        var distance = fromPos.DistanceTo(toPos);
+        _fogStates[cellId] = state;
+        changedCells.Add(cellId);
+    }
 
-        if (distance > _visionRange * CellsPerUnit)
-            return false;
-
-        // Check line of sight if we have a visibility checker
-        if (_visibilityChecker != null)
-        {
-            return _visibilityChecker.CanSee(fromCellId, toCellId, _mapData);
-        }
-
-        // No visibility checker - assume visible if in range
-        return true;
+    private void RaiseChanged(HashSet<int> changedCells)
+    {
+        if (changedCells.Count > 0)
+            VisibilityChanged?.Invoke(changedCells);
     }
 }

@@ -98,8 +98,7 @@ public class ExplorationAI
         IMapData mapData,
         int? startCell = null,
         IVisibilityChecker? visibilityChecker = null,
-        int visionRange = 5,
-        IFogOfWar? fogOfWar = null)
+        int visionRange = 5)
     {
         ArgumentNullException.ThrowIfNull(mapData);
 
@@ -110,8 +109,7 @@ public class ExplorationAI
         _frontierBehavior = new FrontierExplorationBehavior(
             mapData,
             resolvedVisibilityChecker,
-            visionRange,
-            fogOfWar);
+            visionRange);
         _frontierStrategy = new FrontierExplorationStrategy();
         _enemyPursuitStrategy = new PathToEnemyStrategy();
         _currentStrategy = _frontierStrategy;

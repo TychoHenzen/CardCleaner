@@ -72,7 +72,8 @@ public partial class GameSessionService : Node, IGameSessionService
     public void StartSession(
         List<CardSignature>? mapSeeds,
         List<CardSignature>? abilityCards,
-        IMapGenerator mapGenerator)
+        IMapGenerator mapGenerator,
+        IVisibilityChecker? visibilityChecker = null)
     {
         ArgumentNullException.ThrowIfNull(mapGenerator);
 
@@ -91,6 +92,7 @@ public partial class GameSessionService : Node, IGameSessionService
         _mapSeeds = new List<CardSignature>(mapSeeds);
         _abilityCards = new List<CardSignature>(abilityCards);
         _mapGenerator = mapGenerator;
+        _exploration.VisibilityChecker = visibilityChecker;
         var generationId = _generationTracker.BeginPending();
         _flow.State = SessionState.GeneratingMap;
 
@@ -131,6 +133,7 @@ public partial class GameSessionService : Node, IGameSessionService
         _mapSeeds.Clear();
         _abilityCards.Clear();
         _mapGenerator = null;
+        _exploration.VisibilityChecker = null;
         _flow.Reset();
         _flow.State = SessionState.WaitingForCards;
         ILog.Print("Session reset");

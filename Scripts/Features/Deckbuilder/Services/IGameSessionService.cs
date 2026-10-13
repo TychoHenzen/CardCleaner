@@ -21,6 +21,15 @@ public interface IGameSessionService
     event Action<IReadOnlyList<Vector2I>, Vector2I?> PathUpdated;
     event Action<float>? ProgressUpdated;
 
+    /// <summary>Raised after every move with the player's new world position, on both map kinds.</summary>
+    event Action<Vector2> PlayerMovedWorld;
+
+    /// <summary>Raised with the cell of every defeated enemy, on both map kinds.</summary>
+    event Action<int> EnemyDefeatedCell;
+
+    /// <summary>Raised with the seen and the currently visible cells after every vision update, on both map kinds.</summary>
+    event Action<IReadOnlySet<int>, IReadOnlySet<int>> VisibilityCellsUpdated;
+
     /// <summary>
     /// Raised for every generated map; <see cref="MapGenerated"/> is raised before it for a grid map only.
     /// </summary>
@@ -32,9 +41,14 @@ public interface IGameSessionService
     IGeneratedMap? CurrentGeneratedMap { get; }
 
     /// <summary>
-    /// Starts a session that generates its map with <paramref name="mapGenerator"/>.
+    /// Starts a session that generates its map with <paramref name="mapGenerator"/>. Exploration sees with
+    /// <paramref name="visibilityChecker"/>, or with the registered or the simple checker when it is null.
     /// </summary>
-    void StartSession(List<CardSignature> mapSeeds, List<CardSignature> abilityCards, IMapGenerator mapGenerator);
+    void StartSession(
+        List<CardSignature> mapSeeds,
+        List<CardSignature> abilityCards,
+        IMapGenerator mapGenerator,
+        IVisibilityChecker? visibilityChecker = null);
     void AdvanceSession();
     void ResetSession();
 

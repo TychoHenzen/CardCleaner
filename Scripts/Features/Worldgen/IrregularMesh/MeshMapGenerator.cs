@@ -24,18 +24,22 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
     /// </summary>
     public const float WorldScale = MapPopulation.CellWorldSize;
 
-    /// <summary>The ring count of a plain <see cref="MapGenerationConfig"/>: the value both game scenes use.</summary>
+    /// <summary>The ring count of the generator the composition root registers: the map both game scenes play.</summary>
     public const int DefaultRings = 20;
 
     private const int RelaxationIterations = 8;
 
     private readonly ITileRegistry _tileRegistry;
     private readonly BiomeRegistry _biomeRegistry;
+    private readonly int _rings;
 
-    public MeshMapGenerator(ITileRegistry tileRegistry, BiomeRegistry biomeRegistry)
+    /// <param name="rings">Rings of hexes around the mesh centre; more rings make a larger map.</param>
+    public MeshMapGenerator(ITileRegistry tileRegistry, BiomeRegistry biomeRegistry, int rings = DefaultRings)
     {
         _tileRegistry = tileRegistry ?? throw new ArgumentNullException(nameof(tileRegistry));
         _biomeRegistry = biomeRegistry ?? throw new ArgumentNullException(nameof(biomeRegistry));
+        ArgumentOutOfRangeException.ThrowIfLessThan(rings, 1);
+        _rings = rings;
     }
 
     /// <inheritdoc />
@@ -64,10 +68,8 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        // ASSUMPTION: until the session hands this generator its own config (#285), the ring count comes from a
-        // MeshMapGenerationConfig (the screen's MeshRings); a plain config gets DefaultRings, the scenes' value.
-        var rings = config is MeshMapGenerationConfig meshConfig ? meshConfig.Rings : DefaultRings;
-        // The screen's int seed travels as a ulong; the unchecked casts give the same int back.
+        var rings = _rings;
+        // The terrain generator takes an int seed; the session's ulong seed is cut to its low 32 bits.
         var seed = unchecked((int)config.Seed);
 
         var terrain = TerrainGeneratorFactory.Create(_tileRegistry, _biomeRegistry);

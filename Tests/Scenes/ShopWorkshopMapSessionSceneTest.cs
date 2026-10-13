@@ -12,26 +12,30 @@ using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Features.Shop;
+using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// The grid map played end to end in the workshop: the shop scene's own registration, the grid kind the scene starts
-/// on, a map card dropped and the button pressed, then the session must run through generation, exploration and
-/// combat to its end and lay out the loot cards. The kind toggle stays dark until the reset press.
+/// Both map kinds played end to end in the workshop on the one game loop: the shop scene's own registration, the kind
+/// picked with the cabinet toggle, a map card dropped and the button pressed, then the session must run through
+/// generation, exploration and combat to its end and lay out the loot cards. The kind toggle stays dark until the
+/// reset press.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
-public class ShopWorkshopGridMapSceneTest
+public class ShopWorkshopMapSessionSceneTest
 {
-    // Wall-clock budget for the whole session, generation included (about 16 s of it on the dev machine).
+    // Wall-clock budget for the whole session, generation included (about 16 s of it for the grid on the dev machine).
     private const double SessionBudgetSeconds = 90;
 
-    // Exploration steps take 0.1 s and combat turns 1.0 s of game time, about 50 s for this map card. The test runs
-    // game time faster instead of changing those rules; a step still happens at most once per frame.
+    // Exploration steps take 0.1 s, irregular move animations 0.15 s and combat turns 1.0 s of game time, about 50 s
+    // for the grid with this map card. The test runs game time faster instead of changing those rules; a step still
+    // happens at most once per frame.
     private const double SessionTimeScale = 10;
 
     // The LootPoint sits 2.25 m left of and 2 m in front of the cabinet origin, and the row of at most 10 cards,
@@ -55,6 +59,11 @@ public class ShopWorkshopGridMapSceneTest
         CompositionRoot.ReinitializeServices();
         _coreServiceNodes.Add((Node)ServiceLocator.Get<IInputService>());
         _coreServiceNodes.Add((Node)ServiceLocator.Get<IPlayerResetService>());
+
+        // The irregular kind plays on the small map the workshop suites use: the game's full-size map takes far longer
+        // to explore than the budget allows. Registered before the shop enters the tree, so the cabinet resolves it.
+        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(
+            MeshMapGeneratorFixture.Create(WorkshopSceneRig.SmallMeshRings));
 
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _tree.Root.AddChild(_shop);
@@ -86,7 +95,15 @@ public class ShopWorkshopGridMapSceneTest
 
     [TestCase(Timeout = 120000)]
     [TestCategory("Unit")]
-    public async Task GridSessionReachesSessionCompleteAndSpawnsTheLoot()
+    public async Task GridSessionReachesSessionCompleteAndSpawnsTheLoot() =>
+        await PlaySessionToTheEnd(MapGenerationType.RegularGrid);
+
+    [TestCase(Timeout = 120000)]
+    [TestCategory("Unit")]
+    public async Task IrregularSessionReachesSessionCompleteAndSpawnsTheLoot() =>
+        await PlaySessionToTheEnd(MapGenerationType.IrregularMesh);
+
+    private async Task PlaySessionToTheEnd(MapGenerationType kind)
     {
         var workshop = _shop.GetNode<Node3D>("World/Workshop");
         var controller = workshop.GetNode<DeckBuilderController>("DeckbuilderController");
@@ -94,8 +111,12 @@ public class ShopWorkshopGridMapSceneTest
         var toggle = workshop.GetNode<InteractableButton>("Cabinet/MapKindButton/StaticBody3D");
         var cardHolder = workshop.GetNode<DeckSlot>("Cabinet/Assembly/CardSlot");
         var session = workshop.GetNode<GameSessionService>("GameSessionService");
+        var irregularScreen = workshop.GetNode<IrregularWorldMapScreen>("Cabinet/IrregularTileMapScreen");
         var lootParent = _shop.GetNode<CardSpawner>("World/Cards");
         AssertThat(controller.MapType).IsEqual(MapGenerationType.RegularGrid);
+        if (controller.MapType != kind)
+            toggle.Interact();
+        AssertThat(controller.MapType).IsEqual(kind);
 
         var states = new List<SessionState>();
         var lootCount = -1;
@@ -123,7 +144,7 @@ public class ShopWorkshopGridMapSceneTest
         await WorkshopSceneRig.Settle();
 
         var history = states.Count == 0 ? "no state change" : string.Join(" > ", states);
-        GD.Print($"Grid session ran {clock.Elapsed.TotalSeconds:F1} s: {history}");
+        GD.Print($"{kind} session ran {clock.Elapsed.TotalSeconds:F1} s: {history}");
         AssertBool(states.Contains(SessionState.SessionComplete))
             .OverrideFailureMessage(
                 $"No SessionComplete within {SessionBudgetSeconds} s; last state reached " +
@@ -132,6 +153,9 @@ public class ShopWorkshopGridMapSceneTest
         AssertThat(lootCount)
             .OverrideFailureMessage($"The session completed without loot (combat lost?); history: {history}")
             .IsGreater(0);
+        AssertBool(irregularScreen.IsInitialized)
+            .OverrideFailureMessage("The irregular screen shows a map only for an irregular session")
+            .IsEqual(kind == MapGenerationType.IrregularMesh);
 
         AssertBool(toggleLitDuringSession)
             .OverrideFailureMessage("The kind toggle lit while the session ran")

@@ -15,7 +15,6 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 public class FrontierExplorationBehavior
 {
     private readonly IMapData _mapData;
-    private readonly IFogOfWar? _fogOfWar;
     private readonly LocalVisionTracker _localVision;
     private readonly HashSet<int> _visitedCells = new();
 
@@ -26,29 +25,24 @@ public class FrontierExplorationBehavior
     public int SignificantBlobThreshold { get; set; } = 5;
 
     /// <summary>
-    /// All cells that have been seen. Uses fog of war system if provided,
-    /// otherwise uses local tracking.
+    /// All cells that have been seen.
     /// </summary>
-    public IReadOnlySet<int> SeenCells => _fogOfWar?.SeenCells ?? _localVision.SeenCells;
+    public IReadOnlySet<int> SeenCells => _localVision.SeenCells;
 
     public IReadOnlySet<int> VisitedCells => _visitedCells;
 
     /// <summary>
     /// Cells currently visible from the player's current position.
-    /// Uses fog of war system if provided, otherwise uses local tracking.
     /// </summary>
-    public IReadOnlySet<int> CurrentlyVisibleCells =>
-        _fogOfWar?.CurrentlyVisibleCells ?? _localVision.CurrentlyVisibleCells;
+    public IReadOnlySet<int> CurrentlyVisibleCells => _localVision.CurrentlyVisibleCells;
 
     public FrontierExplorationBehavior(
         IMapData mapData,
         IVisibilityChecker visibilityChecker,
-        int visionRange = 5,
-        IFogOfWar? fogOfWar = null)
+        int visionRange = 5)
     {
         _mapData = mapData;
         _localVision = new LocalVisionTracker(mapData, visibilityChecker, visionRange);
-        _fogOfWar = fogOfWar;
     }
 
     /// <summary>
@@ -64,13 +58,9 @@ public class FrontierExplorationBehavior
             if (_mapData.IsPassable(currentCellId))
                 _visitedCells.Add(currentCellId);
 
-            // If using external fog of war, skip local visibility tracking
-            // The fog system handles seen/visible cells
-            if (_fogOfWar == null)
-                _localVision.Update(currentCellId);
+            _localVision.Update(currentCellId);
 
-            // Mark trivially visible cells as visited (uses SeenCells property which
-            // delegates to fog system if available)
+            // Mark trivially visible cells as visited
             MarkTriviallyVisibleCells();
         }
         catch (Exception ex)
@@ -104,7 +94,6 @@ public class FrontierExplorationBehavior
                 }
 
                 // Create a snapshot to avoid iteration issues
-                // Use SeenCells property which delegates to fog system if available
                 var cellsToCheck = SeenCells.ToList();
 
                 foreach (var cellId in cellsToCheck)

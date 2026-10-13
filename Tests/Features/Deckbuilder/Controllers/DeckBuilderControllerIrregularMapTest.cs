@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 using Godot;
@@ -14,7 +15,8 @@ using Godot;
 namespace CardCleaner.Tests.Features.Deckbuilder.Controllers;
 
 /// <summary>
-/// DeckBuilderController behaviour when MapType selects the irregular mesh map.
+/// DeckBuilderController behaviour when MapType selects the irregular mesh map: the irregular screen starts the
+/// session on the session service, and the cabinet follows the states that session reports, as it does for the grid.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -26,13 +28,18 @@ public class DeckBuilderControllerIrregularMapTest
     private InteractableButton _kindButton = null!;
     private DeckBuilderController _controller = null!;
     private IrregularWorldMapScreen? _screen;
+    private FakeGameSession _session = null!;
+    private IMeshMapGenerator _generator = null!;
 
-    // The cabinet needs a registered irregular generator to start; this one never finishes, so no map is generated.
+    // The cabinet needs a registered irregular generator to start; the fake session never runs it.
     [BeforeTest]
-    public static void RegisterServices()
+    public void RegisterServices()
     {
         ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(MeshMapGeneratorFixture.Pending());
+        _session = new FakeGameSession();
+        _generator = MeshMapGeneratorFixture.Pending();
+        ServiceLocator.Container.RegisterSingleton<IGameSessionService>(_session);
+        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(_generator);
     }
 
     [AfterTest]
@@ -61,7 +68,7 @@ public class DeckBuilderControllerIrregularMapTest
         if (withIrregularScreen)
         {
             var viewport = new SubViewport { Name = "Viewport" };
-            _screen = new IrregularWorldMapScreen { MeshRings = 2, Viewport = viewport };
+            _screen = new IrregularWorldMapScreen { Viewport = viewport };
             _screen.AddChild(viewport);
             AddNode(_screen);
             controller.IrregularMapScreen = _screen;
@@ -97,7 +104,16 @@ public class DeckBuilderControllerIrregularMapTest
         await ISceneRunner.SyncProcessFrame;
     }
 
+    private async Task StartSession()
+    {
+        await BuildController(withIrregularScreen: true);
+        await Insert(_abilitySlot);
+        await Insert(_mapSlot);
+        _button.Interact();
+    }
+
     [TestCase]
+    [TestCategory("Unit")]
     public async Task MissingIrregularScreenDoesNotConsumeTheSelectedCards()
     {
         await BuildController(withIrregularScreen: false);
@@ -109,37 +125,57 @@ public class DeckBuilderControllerIrregularMapTest
         AssertBool(_abilitySlot.HasCards).IsTrue();
         AssertBool(_mapSlot.HasCard).IsTrue();
         AssertBool(_kindButton.Enabled).IsTrue();
+        AssertInt(_session.StartCount).IsEqual(0);
     }
 
     [TestCase]
-    public async Task FinishedIrregularExplorationReenablesTheButtonForReset()
+    [TestCategory("Unit")]
+    public async Task ActivatingStartsTheSessionWithTheRegisteredIrregularGenerator()
     {
-        await BuildController(withIrregularScreen: true);
-        await Insert(_abilitySlot);
-        await Insert(_mapSlot);
-        _button.Interact();
-        AssertBool(_button.Enabled).IsFalse();
+        await StartSession();
 
-        _screen!.RaiseExplorationFinished();
+        AssertInt(_session.StartCount).IsEqual(1);
+        AssertBool(ReferenceEquals(_session.LastGenerator, _generator)).IsTrue();
+        AssertBool(_button.Enabled).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task CompletedIrregularSessionReenablesTheButtonForReset()
+    {
+        await StartSession();
+
+        _session.Report(SessionState.SessionComplete);
 
         AssertBool(_button.Enabled).IsTrue();
     }
 
     [TestCase]
-    public async Task FinishedExplorationIsHandledForTheKindThatRanEvenIfMapTypeChangedSince()
+    [TestCategory("Unit")]
+    public async Task CompletedSessionIsHandledEvenIfMapTypeChangedSince()
     {
-        await BuildController(withIrregularScreen: true);
-        await Insert(_abilitySlot);
-        await Insert(_mapSlot);
-        _button.Interact();
+        await StartSession();
 
         _controller.MapType = MapGenerationType.RegularGrid;
-        _screen!.RaiseExplorationFinished();
+        _session.Report(SessionState.SessionComplete);
 
         AssertBool(_button.Enabled).IsTrue();
     }
 
     [TestCase]
+    [TestCategory("Unit")]
+    public async Task SessionThatFallsBackToWaitingWithoutCompletingLeavesTheCabinetIdle()
+    {
+        await StartSession();
+
+        _session.Report(SessionState.WaitingForCards);
+
+        AssertBool(_kindButton.Enabled).IsTrue();
+        AssertBool(_button.Enabled).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public async Task KindToggleStaysDarkFromTheActivatePressUntilTheResetPress()
     {
         await BuildController(withIrregularScreen: true);
@@ -153,11 +189,11 @@ public class DeckBuilderControllerIrregularMapTest
         _kindButton.EmitSignal(InteractableButton.SignalName.ButtonPressed);
         AssertThat(_controller.MapType).IsEqual(MapGenerationType.IrregularMesh);
 
-        _screen!.RaiseExplorationFinished();
+        _session.Report(SessionState.SessionComplete);
         AssertBool(_kindButton.Enabled).IsFalse();
 
         _button.Interact();
         AssertBool(_kindButton.Enabled).IsTrue();
-        AssertBool(_screen.IsInitialized).IsFalse();
+        AssertBool(_screen!.IsInitialized).IsFalse();
     }
 }

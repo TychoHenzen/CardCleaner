@@ -22,6 +22,11 @@ internal sealed class ExplorationSession
     /// </summary>
     internal int MoveCount { get; private set; }
 
+    /// <summary>
+    /// The line-of-sight checker the session's view handed over, or null for the registered or the simple checker.
+    /// </summary>
+    internal IVisibilityChecker? VisibilityChecker { get; set; }
+
     internal event Action<Vector2I>? PlayerMoved;
     internal event Action<Vector2>? PlayerMovedWorld;
     internal event Action<Vector2I>? EnemyDefeated;
@@ -53,7 +58,7 @@ internal sealed class ExplorationSession
             return false;
         }
 
-        _explorationAI = new ExplorationAI(_world.MapData, ResolveStartCellId());
+        _explorationAI = new ExplorationAI(_world.MapData, ResolveStartCellId(), VisibilityChecker);
 
         // Subscribe with adapters to emit both Vector2I and cell-based events
         _explorationAI.EnemyEncountered += OnEnemyEncounteredWorld;

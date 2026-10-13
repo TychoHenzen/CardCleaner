@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
+using CardCleaner.Scripts.Features.Deckbuilder.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
@@ -13,24 +16,23 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 /// <summary>
-/// Integrated world map screen for irregular mesh terrain.
-/// Combines mesh generation, terrain rendering, pathfinding, fog of war,
-/// and exploration into a complete game-ready system.
+/// The irregular map's screen: a view of <see cref="IGameSessionService"/>, like the grid screen. It starts a session
+/// with <see cref="Initialize"/> and then draws what that session reports: the map once generated, every move as a
+/// smooth step from cell to cell, the fog, defeated enemies and the loot. It acts only on a session it started, from
+/// its start call until the session falls back to waiting or the screen is reset.
 /// Renders 2D content via SubViewport onto a 3D mesh for world-space display.
 /// </summary>
 public partial class IrregularWorldMapScreen : Node3D
 {
     #region Exports
 
-    [Export] public int MeshRings { get; set; } = 5;
-    [Export] public float VisionRange { get; set; } = 3f;
-    [Export] public float MovementSpeed { get; set; } = 0.15f;
     [Export] public bool ShowDebug { get; set; }
     [Export] public bool FogOfWarEnabled { get; set; } = true;
-    [Export] public bool UseRaycastVisibility { get; set; } = false;
+    [Export] public bool UseRaycastVisibility { get; set; }
     [Export] public SubViewport? Viewport { get; set; }
     [Export] public MeshInstance3D? ScreenMesh { get; set; }
     [Export] public Label? StatusLabel { get; set; }
+    [Export] public Node3D? LootSpawnPoint { get; set; }
 
     #endregion
 
@@ -38,20 +40,24 @@ public partial class IrregularWorldMapScreen : Node3D
 
     private IrregularMesh? _mesh;
     private IrregularMeshMapData? _mapData;
-    private WorldMapSession? _session;
+    private WorldMapSession? _view;
 
     private Sprite2D? _playerSprite;
     private IrregularMeshDebugRenderer? _debugRenderer;
     private Camera2D? _camera2D;
 
-    private bool _isInitialized;
-    // Counts generation requests; a generation whose number is no longer current (a newer request or a reset came
-    // in while it ran) is dropped.
-    private int _generationRequest;
-    private RandomNumberGenerator _rng = new();
-
     // Tile registry the render layer reads tile art from
     private ITileRegistry? _tileRegistry;
+
+    private IGameSessionService? _gameSession;
+    private (CardSignature[] MapSeed, CardSignature[] Abilities, IMapGenerator Generator)? _pendingSession;
+    private bool _ownsSession;
+
+    // The move that animates now. Every move the session reports is reported shown exactly once: when its animation
+    // ends, or at once when a later move arrives first. Its visibility arrives while it animates and is shown when the
+    // player arrives.
+    private (int Cell, Vector2 WorldPos)? _animatingStep;
+    private (HashSet<int> Seen, HashSet<int> Visible)? _pendingVisibility;
 
     #endregion
 
@@ -59,9 +65,8 @@ public partial class IrregularWorldMapScreen : Node3D
 
     public IrregularMesh? Mesh => _mesh;
     public IrregularMeshMapData? MapData => _mapData;
-    public IrregularMeshFogOfWar? FogOfWar => _session?.FogOfWar;
-    public IrregularMeshExplorationController? ExplorationController => _session?.ExplorationController;
-    public bool IsInitialized => _isInitialized;
+    public IrregularMeshFogOfWar? FogOfWar => _view?.FogOfWar;
+    public bool IsInitialized => _view != null;
 
     #endregion
 
@@ -69,15 +74,17 @@ public partial class IrregularWorldMapScreen : Node3D
 
     public event Action? MapGenerated;
     public event Action<int, Vector2>? PlayerMoved;
-    public new event Action<IReadOnlySet<int>>? VisibilityChanged;
-    public event Action? ExplorationFinished;
-    public event Action<int>? EnemySpotted;
-    public event Action<int>? EnemyEncountered;
     public event Action<int>? EnemyDefeated;
 
     #endregion
 
     #region Lifecycle
+
+    public override void _EnterTree()
+    {
+        if (_gameSession == null)
+            ServiceLocator.Get<IGameSessionService>(OnGameSessionReady);
+    }
 
     public override void _Ready()
     {
@@ -89,12 +96,18 @@ public partial class IrregularWorldMapScreen : Node3D
         CreateChildNodes();
     }
 
-    protected override void Dispose(bool disposing)
+    public override void _ExitTree()
     {
-        if (disposing)
-            _session?.Detach();
+        ReleaseSession();
+        if (_gameSession == null) return;
 
-        base.Dispose(disposing);
+        _gameSession.StateChanged -= OnStateChanged;
+        _gameSession.GeneratedMapReady -= OnGeneratedMapReady;
+        _gameSession.PlayerMovedWorld -= OnPlayerMovedWorld;
+        _gameSession.VisibilityCellsUpdated -= OnVisibilityCellsUpdated;
+        _gameSession.EnemyDefeatedCell -= OnEnemyDefeatedCell;
+        _gameSession.LootGenerated -= OnLootGenerated;
+        _gameSession = null;
     }
 
     #endregion
@@ -102,125 +115,285 @@ public partial class IrregularWorldMapScreen : Node3D
     #region Public API
 
     /// <summary>
-    /// Generates a new map with the given seed through the irregular map generator, off the main thread, then shows
-    /// it and starts exploring from the start the generator placed. A screen not yet in the tree generates once it
-    /// is ready. The task completes when the map is shown, or when a newer request or a reset dropped it. A generator
-    /// that returns no mesh map throws, so the caller ends the session.
+    /// Starts a session for the seed cards on the session service, generated by <paramref name="generator"/>; the
+    /// screen then shows that session. Before the service resolves, the start waits for it.
     /// </summary>
-    public async Task GenerateMap(
-        IMeshMapGenerator generator,
-        int seed,
-        CardSignature[]? inputCards = null,
-        CardSignature[]? abilityCards = null)
+    public void Initialize(CardSignature[] mapSeed, CardSignature[] abilities, IMapGenerator generator)
     {
         ArgumentNullException.ThrowIfNull(generator);
-
-        if (!IsInsideTree())
-            await ToSignal(this, Node.SignalName.Ready);
-
-        var request = ++_generationRequest;
-        _rng.Seed = (ulong)seed;
-        // Close the running session now, not when the new map arrives: left running during the off-thread generation,
-        // its finish would end the new session early.
-        _session?.Close();
-        _session = null;
-        _isInitialized = false;
-
-        var sw = System.Diagnostics.Stopwatch.StartNew();
-        GD.Print($"[IrregularWorldMapScreen] Generating map with seed {seed}, rings={MeshRings}");
-
-        var generated = await generator.GenerateAsync(new MeshMapGenerationConfig
+        if (mapSeed.Length == 0)
         {
-            Rings = MeshRings,
-            Seed = unchecked((ulong)seed),
-            MapSeeds = inputCards ?? Array.Empty<CardSignature>()
-        });
-
-        if (!IsInstanceValid(this) || request != _generationRequest || !IsInsideTree())
+            ILog.Error("Initialize called with empty mapSeed array");
             return;
+        }
 
-        if (generated is not IMeshGeneratedMap meshMap)
-            throw new InvalidOperationException("The generator returned no irregular mesh map");
+        if (_gameSession == null)
+        {
+            ILog.Print("GameSessionService not ready, storing pending irregular session...");
+            _pendingSession = (mapSeed, abilities, generator);
+            return;
+        }
 
-        GD.Print($"[IrregularWorldMapScreen] Map generation complete ({sw.ElapsedMilliseconds}ms)");
-
-        var session = BeginSession(meshMap);
-        var playerStartCell = session.Prepare(abilityCards?.ToList());
-        GD.Print($"[IrregularWorldMapScreen] Rendering setup complete ({sw.ElapsedMilliseconds}ms total)");
-
-        CompleteSession(session, playerStartCell);
-
-        sw.Stop();
-        GD.Print(
-            $"[IrregularWorldMapScreen] Map generated in {sw.ElapsedMilliseconds}ms: " +
-            $"{meshMap.RawMesh.GetStatistics()}");
-
-        StartExploration();
+        StartOwnSession(mapSeed, abilities, generator);
     }
 
-    public void StartExploration() => _session?.StartExploration();
-    public void StopExploration() => _session?.StopExploration();
     public void ToggleDebug()
     {
         ShowDebug = !ShowDebug;
         if (_debugRenderer != null) _debugRenderer.Visible = ShowDebug;
     }
-    public void RevealAll() => _session?.RevealAll();
+
+    public void RevealAll() => _view?.RevealAll();
 
     /// <summary>
-    /// Names the picked map kind in this screen's status label. The explorer's position text replaces it while a
+    /// Names the picked map kind in this screen's status label. The session's status text replaces it while a
     /// session runs; the cabinet shows the kind again after the reset press.
     /// </summary>
-    public void ShowMapKind(string kindText)
-    {
-        if (StatusLabel != null) StatusLabel.Text = kindText;
-    }
+    public void ShowMapKind(string kindText) => ShowStatus(kindText);
 
+    /// <summary>
+    /// Clears the map and lets go of the session; the cabinet calls it with the reset press after a session ends.
+    /// </summary>
     public void Reset()
     {
-        _generationRequest++;
-        _session?.Reset();
-        _isInitialized = false;
-        _mesh = null;
-        _mapData = null;
+        ReleaseSession();
+        _pendingSession = null;
+        CloseView();
     }
 
     #endregion
 
+    #region Session
+
+    private void OnGameSessionReady(IGameSessionService gameSession)
+    {
+        if (_gameSession != null || !IsInstanceValid(this) || !IsInsideTree())
+            return;
+
+        _gameSession = gameSession;
+        gameSession.StateChanged += OnStateChanged;
+        gameSession.GeneratedMapReady += OnGeneratedMapReady;
+        gameSession.PlayerMovedWorld += OnPlayerMovedWorld;
+        gameSession.VisibilityCellsUpdated += OnVisibilityCellsUpdated;
+        gameSession.EnemyDefeatedCell += OnEnemyDefeatedCell;
+        gameSession.LootGenerated += OnLootGenerated;
+
+        if (_pendingSession is not { } pending)
+            return;
+
+        _pendingSession = null;
+        StartOwnSession(pending.MapSeed, pending.Abilities, pending.Generator);
+    }
+
+    private void StartOwnSession(CardSignature[] mapSeed, CardSignature[] abilities, IMapGenerator generator)
+    {
+        var session = _gameSession!;
+        if (session.CurrentState != SessionState.WaitingForCards)
+        {
+            ILog.Error("Cannot start an irregular session while another session runs");
+            return;
+        }
+
+        CloseView();
+        _ownsSession = true;
+        session.StartSession(mapSeed.ToList(), abilities.ToList(), generator, CreateVisibilityChecker());
+
+        // A start the service refused leaves it waiting; the screen then owns nothing.
+        if (session.CurrentState == SessionState.WaitingForCards)
+            _ownsSession = false;
+    }
+
+    // ASSUMPTION: the raycast checker reads the viewport's 2D space, whose opaque terrain shapes the render layer builds
+    // when the map arrives; exploration first asks it after that, once the session starts exploring.
+    private IVisibilityChecker? CreateVisibilityChecker() =>
+        UseRaycastVisibility && Viewport != null
+            ? new RaycastVisibilityChecker(Viewport.World2D.DirectSpaceState)
+            : null;
+
+    private void OnStateChanged(SessionState state)
+    {
+        if (!_ownsSession) return;
+
+        switch (state)
+        {
+            case SessionState.GeneratingMap:
+                ShowStatus("Generating map...");
+                break;
+            case SessionState.Exploring:
+                ShowStatus("Exploring map...");
+                break;
+            case SessionState.InCombat:
+                ShowStatus("Combat started!");
+                break;
+            case SessionState.GeneratingLoot:
+                ShowStatus("Generating loot...");
+                RevealAll();
+                break;
+            case SessionState.SessionComplete:
+                ShowStatus("Session complete!");
+                break;
+            case SessionState.WaitingForCards:
+                ReleaseSession();
+                break;
+        }
+    }
+
     /// <summary>
-    /// Creates the runtime for a freshly generated map and subscribes to its events.
+    /// Stops acting on the session: no more reports, and visibility still waiting for an animation is dropped.
     /// </summary>
-    private WorldMapSession BeginSession(IMeshGeneratedMap map)
+    private void ReleaseSession()
     {
-        _session?.Close();
+        _ownsSession = false;
+        _pendingVisibility = null;
+    }
+
+    /// <summary>
+    /// Shows the map of a session this screen started. The session's generator must give an irregular mesh map: the
+    /// screen checks that here, once, and any other map throws, which ends the session.
+    /// </summary>
+    private void OnGeneratedMapReady(IGeneratedMap generated)
+    {
+        if (!_ownsSession) return;
+
+        if (generated is not IMeshGeneratedMap meshMap)
+            throw new InvalidOperationException("The session's generator returned no irregular mesh map");
+
+        ShowMap(meshMap);
+    }
+
+    private void ShowMap(IMeshGeneratedMap map)
+    {
+        CloseView();
         _mesh = map.RawMesh;
-        var session = new WorldMapSession(CreateSettings(map.MeshMapData.WorldScale), map);
-        _session = session;
-        _mapData = session.MapData;
+        var view = new WorldMapSession(CreateSettings(map.MeshMapData.WorldScale), map);
+        _view = view;
+        _mapData = view.MapData;
 
-        session.PlayerMoved += OnPlayerMoved;
-        session.PositionUpdated += OnPositionUpdated;
-        session.VisibilityChanged += changedCells => VisibilityChanged?.Invoke(changedCells);
-        session.ExplorationFinished += RaiseExplorationFinished;
-        session.EnemySpotted += cellId => EnemySpotted?.Invoke(cellId);
-        session.EnemyEncountered += cellId => EnemyEncountered?.Invoke(cellId);
-        session.EnemyDefeated += cellId => EnemyDefeated?.Invoke(cellId);
-        return session;
-    }
+        var startCell = view.Build();
+        if (view.Movement != null)
+        {
+            view.Movement.PositionUpdated += OnPositionUpdated;
+            view.Movement.MovementCompleted += OnMovementCompleted;
+        }
 
-    /// <summary>Raises <see cref="ExplorationFinished"/>. Internal so tests can finish a session without exploring it.</summary>
-    internal void RaiseExplorationFinished()
-    {
-        ExplorationFinished?.Invoke();
-    }
-
-    private void CompleteSession(WorldMapSession session, int playerStartCell)
-    {
-        session.Complete(playerStartCell);
-        UpdatePlayerPosition(playerStartCell);
-
-        _isInitialized = true;
+        UpdatePlayerPosition(startCell);
+        GD.Print($"[IrregularWorldMapScreen] Showing map: {map.RawMesh.GetStatistics()}");
         MapGenerated?.Invoke();
+    }
+
+    /// <summary>
+    /// Animates the player to the cell the session moved it to, and reports the move shown when the player arrives. A
+    /// move to a cell that is not next to the player is shown at once, and a move that arrives while the last one
+    /// still animates first ends that animation, so every move is reported exactly once.
+    /// </summary>
+    private void OnPlayerMovedWorld(Vector2 worldPos)
+    {
+        if (!_ownsSession) return;
+
+        if (_animatingStep is { } previous)
+        {
+            _view?.Movement?.TeleportToCell(previous.Cell);
+            FinishStep(previous.Cell, previous.WorldPos);
+        }
+
+        var cellId = _view?.MapData.GetCellAtPosition(worldPos);
+        if (_view?.Movement is not { } movement || cellId is not { } cell)
+        {
+            _gameSession?.ReportStepShown();
+            return;
+        }
+
+        if (movement.MoveToCell(cell))
+        {
+            _animatingStep = (cell, worldPos);
+            return;
+        }
+
+        movement.TeleportToCell(cell);
+        FinishStep(cell, worldPos);
+    }
+
+    private void OnMovementCompleted(int cellId, Vector2 worldPos)
+    {
+        if (_animatingStep is { } step && step.Cell == cellId)
+            FinishStep(step.Cell, step.WorldPos);
+    }
+
+    private void FinishStep(int cellId, Vector2 worldPos)
+    {
+        _animatingStep = null;
+        UpdatePlayerPosition(cellId);
+        ApplyPendingVisibility();
+        PlayerMoved?.Invoke(cellId, worldPos);
+        ShowStatus($"Cell: {cellId} Pos: {worldPos:F1}");
+
+        if (_ownsSession)
+            _gameSession?.ReportStepShown();
+    }
+
+    private void OnVisibilityCellsUpdated(IReadOnlySet<int> seenCells, IReadOnlySet<int> visibleCells)
+    {
+        if (!_ownsSession || _view?.FogOfWar == null) return;
+
+        _pendingVisibility = (new HashSet<int>(seenCells), new HashSet<int>(visibleCells));
+        if (_animatingStep == null)
+            ApplyPendingVisibility();
+    }
+
+    private void ApplyPendingVisibility()
+    {
+        if (_pendingVisibility is not { } update || !_ownsSession) return;
+
+        _pendingVisibility = null;
+        _view?.FogOfWar?.UpdateVisibility(update.Seen, update.Visible);
+    }
+
+    /// <summary>
+    /// Removes the defeated enemy and puts the player on its cell, where the session placed it.
+    /// </summary>
+    private void OnEnemyDefeatedCell(int cellId)
+    {
+        if (!_ownsSession) return;
+
+        _view?.RemoveEnemyAt(cellId);
+        if (_animatingStep == null && _view?.Movement is { } movement)
+        {
+            movement.TeleportToCell(cellId);
+            UpdatePlayerPosition(cellId);
+        }
+
+        EnemyDefeated?.Invoke(cellId);
+    }
+
+    private void OnLootGenerated(List<CardSignature> lootSignatures)
+    {
+        if (!_ownsSession) return;
+
+        ILog.Print($"Loot generated: {lootSignatures.Count} cards");
+        if (ILog.ExportCheck(LootSpawnPoint, nameof(LootSpawnPoint), this))
+            return;
+
+        LootCardSpawner.Spawn(lootSignatures, LootSpawnPoint!.GlobalTransform);
+    }
+
+    #endregion
+
+    #region View
+
+    private void CloseView()
+    {
+        if (_view?.Movement is { } movement)
+        {
+            movement.PositionUpdated -= OnPositionUpdated;
+            movement.MovementCompleted -= OnMovementCompleted;
+        }
+
+        _view?.Close();
+        _view = null;
+        _mesh = null;
+        _mapData = null;
+        _animatingStep = null;
+        _pendingVisibility = null;
     }
 
     private WorldMapSettings CreateSettings(float worldScale)
@@ -228,16 +401,12 @@ public partial class IrregularWorldMapScreen : Node3D
         return new WorldMapSettings
         {
             WorldScale = worldScale,
-            VisionRange = VisionRange,
-            MovementSpeed = MovementSpeed,
             FogOfWarEnabled = FogOfWarEnabled,
             UseRaycastVisibility = UseRaycastVisibility,
             Viewport = Viewport,
             Camera = _camera2D,
             DebugRenderer = _debugRenderer,
-            TileRegistry = _tileRegistry,
-            Rng = _rng,
-            CombatHost = this
+            TileRegistry = _tileRegistry
         };
     }
 
@@ -287,18 +456,16 @@ public partial class IrregularWorldMapScreen : Node3D
         _playerSprite.Position = _mapData.GetCellCenter(cellId);
     }
 
-    private void OnPlayerMoved(int cellId, Vector2 worldPos)
-    {
-        UpdatePlayerPosition(cellId);
-        PlayerMoved?.Invoke(cellId, worldPos);
-
-        if (StatusLabel != null)
-            StatusLabel.Text = $"Cell: {cellId} Pos: {worldPos:F1}";
-    }
-
     private void OnPositionUpdated(Vector2 worldPos)
     {
         if (_playerSprite != null)
             _playerSprite.Position = worldPos;
     }
+
+    private void ShowStatus(string text)
+    {
+        if (StatusLabel != null) StatusLabel.Text = text;
+    }
+
+    #endregion
 }

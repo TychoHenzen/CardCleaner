@@ -1,4 +1,4 @@
-using System.Linq;
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -6,248 +6,151 @@ using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 
 /// <summary>
-/// Tests for IrregularMeshFogOfWar.
-/// Verifies fog state tracking, visibility updates, and events.
+/// Tests for IrregularMeshFogOfWar, the passive fog the session's exploration feeds: fog states from the seen and
+/// visible sets, cells that never fall back to hidden, reveal and reset, and the change events.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class IrregularMeshFogOfWarTest
 {
-    private IrregularMeshNs.IrregularMesh _testMesh = null!;
     private IrregularMeshNs.IrregularMeshMapData _mapData = null!;
     private IrregularMeshNs.IrregularMeshFogOfWar _fogOfWar = null!;
 
     [BeforeTest]
     public void Setup()
     {
-        _testMesh = CreateSimpleTestMesh();
-        _mapData = new IrregularMeshNs.IrregularMeshMapData(_testMesh);
+        _mapData = new IrregularMeshNs.IrregularMeshMapData(CreateSimpleTestMesh());
         _fogOfWar = new IrregularMeshNs.IrregularMeshFogOfWar(_mapData);
     }
 
+    private static HashSet<int> Cells(params int[] cellIds) => new(cellIds);
+
     [TestCase]
-    public void TestAllCellsStartHidden()
+    [TestCategory("Unit")]
+    public void AllCellsStartHidden()
     {
-        for (int i = 0; i < _mapData.CellCount; i++)
-        {
+        for (var i = 0; i < _mapData.CellCount; i++)
             AssertThat(_fogOfWar.GetFogState(i)).IsEqual(FogState.Hidden);
-        }
+
+        AssertThat(_fogOfWar.SeenCells.Count).IsEqual(0);
     }
 
     [TestCase]
-    public void TestIsVisibleReturnsFalseInitially()
+    [TestCategory("Unit")]
+    public void VisibleCellsShowAndSeenCellsAreRevealed()
     {
-        AssertBool(_fogOfWar.IsVisible(0)).IsFalse();
-    }
-
-    [TestCase]
-    public void TestHasBeenSeenReturnsFalseInitially()
-    {
-        AssertBool(_fogOfWar.HasBeenSeen(0)).IsFalse();
-    }
-
-    [TestCase]
-    public void TestUpdateVisibilityMarksCurrentCellVisible()
-    {
-        _fogOfWar.VisionRange = 10f;
-        _fogOfWar.UpdateVisibility(0);
+        _fogOfWar.UpdateVisibility(Cells(0, 1, 2), Cells(0, 1));
 
         AssertThat(_fogOfWar.GetFogState(0)).IsEqual(FogState.Visible);
-        AssertBool(_fogOfWar.IsVisible(0)).IsTrue();
-    }
-
-    [TestCase]
-    public void TestUpdateVisibilityMarksCellsInRangeVisible()
-    {
-        _fogOfWar.VisionRange = 100f; // Large enough to see all cells
-        _fogOfWar.UpdateVisibility(0);
-
-        // All 4 cells should be visible
-        var visibleCount = 0;
-        for (int i = 0; i < _mapData.CellCount; i++)
-        {
-            if (_fogOfWar.IsVisible(i))
-                visibleCount++;
-        }
-
-        AssertThat(visibleCount).IsEqual(4);
-    }
-
-    [TestCase]
-    public void TestCurrentlyVisibleCellsUpdates()
-    {
-        _fogOfWar.VisionRange = 100f;
-        _fogOfWar.UpdateVisibility(0);
-
-        var visible = _fogOfWar.CurrentlyVisibleCells;
-        AssertThat(visible.Count).IsEqual(4);
-    }
-
-    [TestCase]
-    public void TestPreviouslyVisibleCellsBecomeRevealed()
-    {
-        _fogOfWar.VisionRange = 20f; // See only nearby cells
-
-        // First update - cell 0 sees some cells
-        _fogOfWar.UpdateVisibility(0);
-        var initiallyVisible = _fogOfWar.CurrentlyVisibleCells.ToHashSet();
-
-        // Second update from different position
-        _fogOfWar.VisionRange = 1f; // Very short range
-        _fogOfWar.UpdateVisibility(3);
-
-        // Previously visible cells should now be Revealed (not Hidden)
-        foreach (var cellId in initiallyVisible)
-        {
-            var state = _fogOfWar.GetFogState(cellId);
-            AssertThat(state).IsNotEqual(FogState.Hidden);
-        }
-    }
-
-    [TestCase]
-    public void TestSeenCellsIncludesRevealedAndVisible()
-    {
-        _fogOfWar.VisionRange = 100f;
-        _fogOfWar.UpdateVisibility(0);
-
-        var seen = _fogOfWar.SeenCells;
-        AssertThat(seen.Count).IsEqual(4);
-    }
-
-    [TestCase]
-    public void TestRevealCellMarksAsRevealed()
-    {
-        _fogOfWar.RevealCell(2);
-
+        AssertThat(_fogOfWar.GetFogState(1)).IsEqual(FogState.Visible);
         AssertThat(_fogOfWar.GetFogState(2)).IsEqual(FogState.Revealed);
+        AssertThat(_fogOfWar.GetFogState(3)).IsEqual(FogState.Hidden);
         AssertBool(_fogOfWar.HasBeenSeen(2)).IsTrue();
+        AssertBool(_fogOfWar.IsVisible(2)).IsFalse();
+        AssertThat(_fogOfWar.CurrentlyVisibleCells).ContainsExactlyInAnyOrder(0, 1);
     }
 
     [TestCase]
-    public void TestRevealAllMarksAllCellsRevealed()
+    [TestCategory("Unit")]
+    public void ACellThatLeavesViewIsRevealed()
     {
-        _fogOfWar.RevealAll();
+        _fogOfWar.UpdateVisibility(Cells(0), Cells(0));
 
-        for (int i = 0; i < _mapData.CellCount; i++)
-        {
-            AssertBool(_fogOfWar.HasBeenSeen(i)).IsTrue();
-        }
+        _fogOfWar.UpdateVisibility(Cells(0, 1), Cells(1));
+
+        AssertThat(_fogOfWar.GetFogState(0)).IsEqual(FogState.Revealed);
+        AssertThat(_fogOfWar.GetFogState(1)).IsEqual(FogState.Visible);
     }
 
     [TestCase]
-    public void TestRevealAllMakesEveryCellVisible()
+    [TestCategory("Unit")]
+    public void ASmallerSeenSetNeverHidesACellAgain()
+    {
+        _fogOfWar.UpdateVisibility(Cells(0, 1, 2), Cells(0));
+
+        // A resume after a combat starts a new explorer, whose seen set starts over.
+        _fogOfWar.UpdateVisibility(Cells(3), Cells(3));
+
+        AssertThat(_fogOfWar.GetFogState(0)).IsEqual(FogState.Revealed);
+        AssertThat(_fogOfWar.GetFogState(1)).IsEqual(FogState.Revealed);
+        AssertThat(_fogOfWar.GetFogState(2)).IsEqual(FogState.Revealed);
+        AssertThat(_fogOfWar.GetFogState(3)).IsEqual(FogState.Visible);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CellsOutsideTheMapAreIgnored()
+    {
+        _fogOfWar.UpdateVisibility(Cells(0, 99), Cells(0, 99));
+
+        AssertThat(_fogOfWar.CurrentlyVisibleCells).ContainsExactlyInAnyOrder(0);
+        AssertThat(_fogOfWar.GetFogState(99)).IsEqual(FogState.Hidden);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void VisibilityChangedNamesOnlyTheChangedCells()
+    {
+        _fogOfWar.UpdateVisibility(Cells(0, 1), Cells(0));
+        IReadOnlySet<int>? changed = null;
+        _fogOfWar.VisibilityChanged += cells => changed = cells;
+
+        _fogOfWar.UpdateVisibility(Cells(0, 1, 2), Cells(0, 2));
+
+        AssertThat(changed).IsNotNull();
+        AssertThat(changed!).ContainsExactlyInAnyOrder(2);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AnUnchangedUpdateRaisesNoEvent()
+    {
+        _fogOfWar.UpdateVisibility(Cells(0, 1), Cells(0));
+        var raised = 0;
+        _fogOfWar.VisibilityChanged += _ => raised++;
+
+        _fogOfWar.UpdateVisibility(Cells(0, 1), Cells(0));
+
+        AssertInt(raised).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RevealAllShowsEveryCell()
     {
         _fogOfWar.RevealAll();
 
-        for (int i = 0; i < _mapData.CellCount; i++)
-        {
-            AssertThat(_fogOfWar.GetFogState(i)).IsEqual(FogState.Visible);
-        }
+        for (var i = 0; i < _mapData.CellCount; i++)
+            AssertBool(_fogOfWar.IsVisible(i)).IsTrue();
 
         AssertThat(_fogOfWar.CurrentlyVisibleCells.Count).IsEqual(_mapData.CellCount);
     }
 
     [TestCase]
-    public void TestResetClearsAllVisibility()
+    [TestCategory("Unit")]
+    public void ResetHidesEveryCell()
     {
-        _fogOfWar.VisionRange = 100f;
-        _fogOfWar.UpdateVisibility(0);
+        _fogOfWar.UpdateVisibility(Cells(0, 1, 2), Cells(0));
+
         _fogOfWar.Reset();
 
-        for (int i = 0; i < _mapData.CellCount; i++)
-        {
+        for (var i = 0; i < _mapData.CellCount; i++)
             AssertThat(_fogOfWar.GetFogState(i)).IsEqual(FogState.Hidden);
-        }
+
+        AssertThat(_fogOfWar.CurrentlyVisibleCells.Count).IsEqual(0);
     }
 
     [TestCase]
-    public void TestVisionRangeCanBeSet()
+    [TestCategory("Unit")]
+    public void GetCellsWithStateListsTheCellsInThatState()
     {
-        _fogOfWar.VisionRange = 5f;
-        AssertThat(_fogOfWar.VisionRange).IsEqual(5f);
+        _fogOfWar.UpdateVisibility(Cells(0, 1), Cells(0));
+
+        AssertThat(_fogOfWar.GetCellsWithState(FogState.Visible)).ContainsExactlyInAnyOrder(0);
+        AssertThat(_fogOfWar.GetCellsWithState(FogState.Revealed)).ContainsExactlyInAnyOrder(1);
+        AssertThat(_fogOfWar.GetCellsWithState(FogState.Hidden)).ContainsExactlyInAnyOrder(2, 3);
     }
 
-    [TestCase]
-    public void TestVisionRangeCannotBeNegative()
-    {
-        _fogOfWar.VisionRange = -10f;
-        AssertThat(_fogOfWar.VisionRange).IsEqual(0f);
-    }
-
-    [TestCase]
-    public void TestVisibilityChangedEventRaised()
-    {
-        int eventCallCount = 0;
-        _fogOfWar.VisibilityChanged += (_) => eventCallCount++;
-
-        _fogOfWar.VisionRange = 100f;
-        _fogOfWar.UpdateVisibility(0);
-
-        AssertThat(eventCallCount).IsGreater(0);
-    }
-
-    [TestCase]
-    public void TestCellRevealedEventRaised()
-    {
-        int revealedCellId = -1;
-        _fogOfWar.CellRevealed += (cellId) => revealedCellId = cellId;
-
-        _fogOfWar.RevealCell(2);
-
-        AssertThat(revealedCellId).IsEqual(2);
-    }
-
-    [TestCase]
-    public void TestCellRevealedEventNotRaisedForAlreadySeenCell()
-    {
-        _fogOfWar.RevealCell(2);
-
-        int callCount = 0;
-        _fogOfWar.CellRevealed += (_) => callCount++;
-
-        _fogOfWar.RevealCell(2);
-
-        AssertThat(callCount).IsEqual(0);
-    }
-
-    [TestCase]
-    public void TestGetStatisticsReturnsCorrectCounts()
-    {
-        _fogOfWar.VisionRange = 100f;
-        _fogOfWar.UpdateVisibility(0);
-
-        var (hidden, revealed, visible) = _fogOfWar.GetStatistics();
-
-        AssertThat(hidden).IsEqual(0);
-        AssertThat(revealed).IsEqual(0);
-        AssertThat(visible).IsEqual(4);
-    }
-
-    [TestCase]
-    public void TestGetCellsWithStateReturnsCorrectCells()
-    {
-        _fogOfWar.VisionRange = 100f;
-        _fogOfWar.UpdateVisibility(0);
-
-        var visibleCells = _fogOfWar.GetCellsWithState(FogState.Visible).ToList();
-
-        AssertThat(visibleCells.Count).IsEqual(4);
-    }
-
-    [TestCase]
-    public void TestCellsPerUnitAffectsVisionRange()
-    {
-        _fogOfWar.VisionRange = 1f;
-        _fogOfWar.CellsPerUnit = 100f; // Effectively 100 units of vision
-        _fogOfWar.UpdateVisibility(0);
-
-        // Should see all cells
-        AssertThat(_fogOfWar.CurrentlyVisibleCells.Count).IsEqual(4);
-    }
-
-    /// <summary>
-    /// Create a simple 2x2 quad test mesh with 9 vertices.
-    /// </summary>
     private static IrregularMeshNs.IrregularMesh CreateSimpleTestMesh()
     {
         var mesh = new IrregularMeshNs.IrregularMesh();

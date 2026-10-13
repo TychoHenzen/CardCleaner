@@ -11,7 +11,7 @@ public class MapGenerationConfig
 {
     /// <summary>
     /// Size of the map. For grid maps, this is the exact size. The mesh generator does not read it: its ring count
-    /// comes from a MeshMapGenerationConfig, or its default for a plain config.
+    /// is fixed when the generator is built.
     /// </summary>
     public Vector2I Size { get; init; }
 
