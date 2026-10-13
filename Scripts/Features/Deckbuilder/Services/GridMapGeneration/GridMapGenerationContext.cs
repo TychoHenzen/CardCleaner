@@ -7,7 +7,7 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 
-internal sealed class SimpleMapGenerationContext
+internal sealed class GridMapGenerationContext
 {
     public required RandomNumberGenerator Rng { get; init; }
     public required IBiomeProvider BiomeProvider { get; init; }

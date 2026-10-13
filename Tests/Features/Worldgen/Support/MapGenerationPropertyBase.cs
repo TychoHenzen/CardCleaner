@@ -11,7 +11,7 @@ using Godot;
 namespace CardCleaner.Tests.Features.Worldgen.Support;
 
 /// <summary>
-///     Shared fixture for property suites that generate maps through SimpleMapGenerationPipeline.
+///     Shared fixture for property suites that generate maps through GridMapGenerationPipeline.
 /// </summary>
 public abstract class MapGenerationPropertyBase : PropertyTestBase
 {

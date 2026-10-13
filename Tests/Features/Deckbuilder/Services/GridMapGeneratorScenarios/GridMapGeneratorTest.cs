@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
@@ -12,8 +13,8 @@ using Godot;
 namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenarios;
 
 /// <summary>
-/// GridMapGenerator through IMapGenerator: it reports progress while it generates, and a cancelled token stops it
-/// with MapGenerationCancelledException, which the session treats as an abandoned generation.
+/// GridMapGenerator through IMapGenerator: it reports rising progress up to 1.0 while it generates, and a cancelled
+/// token stops it with MapGenerationCancelledException, which the session treats as an abandoned generation.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -21,16 +22,17 @@ public class GridMapGeneratorTest
 {
     [TestCase]
     [TestCategory("Unit")]
-    public static async Task GenerationReportsRisingProgressAndReturnsAGridMap()
+    public static async Task GenerationReportsProgressRisingToCompleteAndReturnsAGridMap()
     {
         var progress = new RecordingProgress();
 
         var map = await CreateGenerator().GenerateAsync(Config(), progress);
 
         var reports = progress.Snapshot();
-        AssertInt(reports.Count).IsGreater(0);
+        AssertInt(reports.Count).IsEqual(GridMapGenerationPipeline.ProgressWeights.Count);
         for (var i = 1; i < reports.Count; i++)
-            AssertFloat(reports[i]).IsGreaterEqual(reports[i - 1]);
+            AssertFloat(reports[i]).IsGreater(reports[i - 1]);
+        AssertFloat(reports[^1]).IsBetween(0.999f, 1.0f);
         AssertBool(map is SimpleGeneratedMap).IsTrue();
     }
 

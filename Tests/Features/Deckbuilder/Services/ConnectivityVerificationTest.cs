@@ -43,7 +43,7 @@ public class ConnectivityVerificationTest
     /// <summary>
     /// Creates a grid generation pipeline with WFC connectivity constraint enabled.
     /// </summary>
-    private SimpleMapGenerationPipeline CreateGeneratorWithWfcConnectivity(Vector2I mapSize, RandomNumberGenerator rng)
+    private GridMapGenerationPipeline CreateGeneratorWithWfcConnectivity(Vector2I mapSize, RandomNumberGenerator rng)
     {
         var gradient = new CardBasedGradient([new CardSignature()], rng);
         var biomeProvider = new BiomeMapGenerator(_registry, gradient, mapSize);
@@ -188,40 +188,40 @@ public class ConnectivityVerificationTest
     // ========== Test Case 2: GenerateMap_WithFlagDisabled_SkipsEnsureConnectivity ==========
 
     [TestCase]
-    public void EnsureConnectivity_MethodDoesNotExist()
+    public static void EnsureConnectivity_MethodDoesNotExist()
     {
         // Reflection test: Verify EnsureConnectivity method has been removed
-        var type = typeof(SimpleMapGenerationPipeline);
+        var type = typeof(GridMapGenerationPipeline);
         var method = type.GetMethod("EnsureConnectivity", BindingFlags.NonPublic | BindingFlags.Instance);
 
         AssertThat(method).IsNull();
     }
 
     [TestCase]
-    public void FloodFill_MethodDoesNotExist()
+    public static void FloodFill_MethodDoesNotExist()
     {
         // Reflection test: Verify FloodFill method has been removed
-        var type = typeof(SimpleMapGenerationPipeline);
+        var type = typeof(GridMapGenerationPipeline);
         var method = type.GetMethod("FloodFill", BindingFlags.NonPublic | BindingFlags.Instance);
 
         AssertThat(method).IsNull();
     }
 
     [TestCase]
-    public void CreateCorridor_MethodDoesNotExist()
+    public static void CreateCorridor_MethodDoesNotExist()
     {
         // Reflection test: Verify CreateCorridor method has been removed
-        var type = typeof(SimpleMapGenerationPipeline);
+        var type = typeof(GridMapGenerationPipeline);
         var method = type.GetMethod("CreateCorridor", BindingFlags.NonPublic | BindingFlags.Instance);
 
         AssertThat(method).IsNull();
     }
 
     [TestCase]
-    public void EnableCorridorFallback_PropertyDoesNotExist()
+    public static void EnableCorridorFallback_PropertyDoesNotExist()
     {
         // Reflection test: Verify EnableCorridorFallback property has been removed
-        var type = typeof(SimpleMapGenerationPipeline);
+        var type = typeof(GridMapGenerationPipeline);
         var property = type.GetProperty("EnableCorridorFallback");
 
         AssertThat(property).IsNull();

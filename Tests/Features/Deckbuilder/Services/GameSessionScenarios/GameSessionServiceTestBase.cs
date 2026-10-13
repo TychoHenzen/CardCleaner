@@ -71,7 +71,7 @@ public abstract class GameSessionServiceTestBase
         return count;
     }
 
-    protected IMapGenerator CreateFastMapGenerator() => new FastMapGenerator();
+    protected static IMapGenerator CreateFastMapGenerator() => new FastMapGenerator();
 
     /// <summary>
     ///     Advances process frames until the condition holds or the frame budget is spent.

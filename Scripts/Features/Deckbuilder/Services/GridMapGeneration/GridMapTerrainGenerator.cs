@@ -10,11 +10,11 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 
-internal sealed class SimpleMapTerrainGenerator
+internal sealed class GridMapTerrainGenerator
 {
-    private readonly SimpleMapGenerationContext _context;
+    private readonly GridMapGenerationContext _context;
 
-    public SimpleMapTerrainGenerator(SimpleMapGenerationContext context)
+    public GridMapTerrainGenerator(GridMapGenerationContext context)
     {
         _context = context;
     }

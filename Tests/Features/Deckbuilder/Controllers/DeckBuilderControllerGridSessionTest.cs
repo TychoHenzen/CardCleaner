@@ -158,7 +158,12 @@ public class DeckBuilderControllerGridSessionTest
             StateChanged?.Invoke(state);
         }
 
-        public void StartSession(List<CardSignature> mapSeeds, List<CardSignature> abilityCards, IMapGenerator mapGenerator) { }
+        public void StartSession(
+            List<CardSignature> mapSeeds,
+            List<CardSignature> abilityCards,
+            IMapGenerator mapGenerator)
+        {
+        }
         public void AdvanceSession() { }
         public void ResetSession() { }
     }

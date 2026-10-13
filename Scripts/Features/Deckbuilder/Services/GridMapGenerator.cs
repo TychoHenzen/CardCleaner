@@ -15,9 +15,10 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
 /// <summary>
-/// Generates the grid map: biomes from a gradient over the seed cards, WFC terrain with hard constraints (2x2 window,
-/// adjacency rules), then variants, the player start and the enemies. Runs off the main thread, reports progress at
-/// the profiled phase boundaries and stops at the next boundary once the token is cancelled.
+/// Generates the grid map: variants, biomes from a gradient over the seed cards, WFC terrain with hard constraints
+/// (2x2 window, adjacency rules), then the player start and the enemies. Runs off the main thread, reports progress
+/// at the pipeline's phase boundaries (reaching 1.0 when done) and stops at the next boundary once the token is
+/// cancelled.
 /// </summary>
 public sealed class GridMapGenerator : IGridMapGenerator
 {
@@ -44,8 +45,9 @@ public sealed class GridMapGenerator : IGridMapGenerator
     {
         ArgumentNullException.ThrowIfNull(config);
 
-        // Everything is built per call from the seed: one RNG drawn in a fixed order (gradient, then terrain,
-        // variants, start and enemies), so the same seed and cards always give the same map.
+        // Everything is built per call from the seed. One RNG is drawn in the order GridMapGenerationPipeline's
+        // GenerateMap fixes (variants, the gradient while the biome map is built, terrain, the start, the enemies),
+        // so the same seed and cards always give the same map.
         var rng = new RandomNumberGenerator { Seed = config.Seed };
         var gradient = new CardBasedGradient(config.MapSeeds, rng);
         var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, config.Size);
@@ -55,7 +57,8 @@ public sealed class GridMapGenerator : IGridMapGenerator
             new TileRegistryWfcCatalog(_tileRegistry));
         var pipeline = CreatePipeline(
             rng, biomeProvider, _tileRegistry, _metadataProvider, wfcGenerator, _biomeRegistry, gradient);
-        pipeline.SetProfiler(new CancellableProgressProfiler(progress, cancellationToken));
+        pipeline.SetProfiler(new CancellableProgressProfiler(
+            progress, GridMapGenerationPipeline.ProgressWeights, cancellationToken));
 
         SimpleMapData map;
         try
@@ -76,7 +79,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
     /// Builds the generation pipeline over one RNG. Tests use it to run the pipeline with their own biome provider,
     /// WFC generator or gradient.
     /// </summary>
-    internal static SimpleMapGenerationPipeline CreatePipeline(
+    internal static GridMapGenerationPipeline CreatePipeline(
         RandomNumberGenerator rng,
         IBiomeProvider biomeProvider,
         ITileRegistry tileRegistry,
@@ -90,7 +93,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
         ArgumentNullException.ThrowIfNull(tileRegistry);
         ArgumentNullException.ThrowIfNull(metadataProvider);
 
-        return new SimpleMapGenerationPipeline(new SimpleMapGenerationContext
+        return new GridMapGenerationPipeline(new GridMapGenerationContext
         {
             Rng = rng,
             BiomeProvider = biomeProvider,

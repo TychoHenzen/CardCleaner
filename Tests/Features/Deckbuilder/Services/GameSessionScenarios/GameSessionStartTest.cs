@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -53,13 +54,22 @@ public class GameSessionStartTest : GameSessionServiceTestBase
     }
 
     [TestCase]
-    public void TestStartSessionWithoutAMapGenerator()
+    public void TestStartSessionWithoutAMapGeneratorThrows()
     {
         var mapSeeds = new List<CardSignature> { new(new[] { 0.5f, 0f, 0f, 0f, 0f, 0f, 0f, 0f }) };
         var abilityCards = new List<CardSignature> { new(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }) };
+        Exception? caught = null;
 
-        _service.StartSession(mapSeeds, abilityCards, null);
+        try
+        {
+            _service.StartSession(mapSeeds, abilityCards, null!);
+        }
+        catch (ArgumentNullException ex)
+        {
+            caught = ex;
+        }
 
+        Assertions.AssertThat(caught).IsNotNull();
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.WaitingForCards);
         Assertions.AssertThat(_stateChangeCount).IsEqual(0);
     }

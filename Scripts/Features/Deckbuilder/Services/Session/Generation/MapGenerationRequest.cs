@@ -10,7 +10,6 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session.Generation;
 internal sealed class MapGenerationRequest
 {
     internal required GenerationRun Run { get; init; }
-    internal required RandomNumberGenerator Rng { get; init; }
     internal required ulong Seed { get; init; }
     internal required Vector2I MapSize { get; init; }
     internal required CardSignature[] MapSeeds { get; init; }

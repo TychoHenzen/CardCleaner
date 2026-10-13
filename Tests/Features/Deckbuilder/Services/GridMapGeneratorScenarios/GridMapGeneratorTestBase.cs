@@ -13,7 +13,7 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenar
 /// </summary>
 public abstract class GridMapGeneratorTestBase
 {
-    private protected SimpleMapGenerationPipeline _generator = null!;
+    private protected GridMapGenerationPipeline _generator = null!;
     protected BiomeRegistry _registry = null!;
     protected MockTileRegistry _tileRegistry = null!;
     protected RandomNumberGenerator _rng = null!;
@@ -49,7 +49,7 @@ public abstract class GridMapGeneratorTestBase
         _registry.Register(new BiomeDefinition("test_biome", signature, passablePool, blockedPool));
     }
 
-    private protected SimpleMapGenerationPipeline CreateGenerator(Vector2I mapSize, CardSignature? signature = null)
+    private protected GridMapGenerationPipeline CreateGenerator(Vector2I mapSize, CardSignature? signature = null)
     {
         var seed = signature ?? new CardSignature();
         var gradient = new CardBasedGradient(new[] { seed }, _rng);

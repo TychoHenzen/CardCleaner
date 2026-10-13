@@ -314,7 +314,10 @@ public partial class DeckBuilderController : Node
     /// <summary>
     /// Starts the grid session on the grid screen with the grid generator the container registered.
     /// </summary>
-    private void StartRegularGridGeneration(CardSignature[] mapSeeds, CardSignature[] abilities, IMapGenerator generator)
+    private void StartRegularGridGeneration(
+        CardSignature[] mapSeeds,
+        CardSignature[] abilities,
+        IMapGenerator generator)
     {
         WorldTileMapScreenScene.Initialize(mapSeeds, abilities, generator);
     }

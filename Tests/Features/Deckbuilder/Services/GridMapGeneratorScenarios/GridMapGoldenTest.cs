@@ -24,12 +24,13 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenar
 [RequireGodotRuntime]
 public class GridMapGoldenTest
 {
-    private const string FixturePath = "res://Tests/Features/Deckbuilder/Services/GridMapGeneratorScenarios/GridMapGolden.txt";
+    private const string FixturePath =
+        "res://Tests/Features/Deckbuilder/Services/GridMapGeneratorScenarios/GridMapGolden.txt";
     private const string RecordSwitch = "CARDCLEANER_RECORD_GRID_GOLDEN";
 
     [TestCase(Timeout = 120000)]
     [TestCategory("Unit")]
-    public async Task GridMapForFixedCardsMatchesTheRecordedMap()
+    public static async Task GridMapForFixedCardsMatchesTheRecordedMap()
     {
         var actual = await GenerateAsync(MapCards());
         var path = ProjectSettings.GlobalizePath(FixturePath);

@@ -69,8 +69,13 @@ public partial class GameSessionService : Node, IGameSessionService
     /// </summary>
     public IMapData? CurrentMapData => _world.MapData;
 
-    public void StartSession(List<CardSignature>? mapSeeds, List<CardSignature>? abilityCards, IMapGenerator? mapGenerator)
+    public void StartSession(
+        List<CardSignature>? mapSeeds,
+        List<CardSignature>? abilityCards,
+        IMapGenerator mapGenerator)
     {
+        ArgumentNullException.ThrowIfNull(mapGenerator);
+
         if (CurrentState != SessionState.WaitingForCards)
         {
             ILog.Error("Cannot start session - session already in progress");
@@ -80,12 +85,6 @@ public partial class GameSessionService : Node, IGameSessionService
         if (mapSeeds == null || mapSeeds.Count == 0 || abilityCards == null || abilityCards.Count == 0)
         {
             ILog.Error("Cannot start session with null or empty inputs");
-            return;
-        }
-
-        if (mapGenerator == null)
-        {
-            ILog.Error("Cannot start session without a map generator");
             return;
         }
 
@@ -131,6 +130,7 @@ public partial class GameSessionService : Node, IGameSessionService
         _generationTracker.Reset();
         _mapSeeds.Clear();
         _abilityCards.Clear();
+        _mapGenerator = null;
         _flow.Reset();
         _flow.State = SessionState.WaitingForCards;
         ILog.Print("Session reset");
@@ -151,7 +151,15 @@ public partial class GameSessionService : Node, IGameSessionService
 
     private async void GenerateMap(TaskCompletionSource<bool>? generationTaskSource = null)
     {
-        var generationTask = _generation.GenerateAsync(_mapSeeds.ToArray(), _mapGenerator!);
+        if (_mapGenerator is not { } generator)
+        {
+            const string message = "Cannot generate a map before a session has started";
+            ILog.Error(message);
+            generationTaskSource?.TrySetException(new InvalidOperationException(message));
+            return;
+        }
+
+        var generationTask = _generation.GenerateAsync(_mapSeeds.ToArray(), generator);
         _generationTracker.CurrentTask = generationTask;
         try
         {

@@ -94,7 +94,6 @@ internal sealed class MapGenerationCoordinator
         return new MapGenerationRequest
         {
             Run = run,
-            Rng = new RandomNumberGenerator { Seed = seed },
             Seed = seed,
             // Use first signature to influence map size (could blend in future)
             MapSize = MapSeeding.CalculateMapSize(mapSeeds[0]),
@@ -142,7 +141,7 @@ internal sealed class MapGenerationCoordinator
         // ASSUMPTION: combat and loot draw from a fresh RNG seeded like the map. The grid generator builds its own
         // RNG from the same seed, so a grid session's combat and loot draws differ from the ones before #284, where
         // they continued the RNG the map generation had used; the map itself is unchanged.
-        _world.Rng = request.Rng;
+        _world.Rng = new RandomNumberGenerator { Seed = request.Seed };
         _world.GeneratedMap = generatedMap;
         _world.MapData = generatedMap.GetMapData();
 
