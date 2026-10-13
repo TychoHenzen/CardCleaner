@@ -17,7 +17,8 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenar
 /// The grid map a session generates for two fixed seed cards: tile ids, player start and enemy cells must equal the
 /// map recorded in GridMapGolden.txt. The file was recorded from master ab82cbc, through the session's default
 /// generator, before the grid generator moved behind IMapGenerator (#284); the test now generates through
-/// GridMapGenerator with the seed and size the session derives from the cards.
+/// GridMapGenerator with the seed and size the session derives from the cards. Its start and enemies lines were
+/// recorded again in #256, when MapPopulation began placing them; the tile rows are unchanged since ab82cbc.
 /// To record it again, run this suite with CARDCLEANER_RECORD_GRID_GOLDEN=1; never edit the file by hand.
 /// </summary>
 [TestSuite]
