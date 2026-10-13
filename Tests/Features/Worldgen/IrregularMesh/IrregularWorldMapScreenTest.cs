@@ -119,11 +119,11 @@ public class IrregularWorldMapScreenTest
         ((ISessionView)_screen).OnLootGenerated(loot);
 
         AssertThat(spawning.Spawned.Count).IsEqual(loot.Count);
-        for (var i = 0; i < loot.Count; i++)
+        for (var cardIndex = 0; cardIndex < loot.Count; cardIndex++)
         {
-            AssertThat(spawning.Spawned[i].Signature.Elements).IsEqual(loot[i].Elements);
-            AssertThat(spawning.Spawned[i].Transform.Origin)
-                .IsEqual(new Vector3(2f + i * 0.5f, 3f, 4f));
+            AssertThat(spawning.Spawned[cardIndex].Signature.Elements).IsEqual(loot[cardIndex].Elements);
+            AssertThat(spawning.Spawned[cardIndex].Transform.Origin)
+                .IsEqual(new Vector3(2f + cardIndex * 0.5f, 3f, 4f));
         }
     }
 
