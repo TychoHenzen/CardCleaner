@@ -31,7 +31,7 @@ public class GameSessionStartTest : GameSessionServiceTestBase
             new(new[] { 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
         };
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.GeneratingMap);
         Assertions.AssertThat(_stateChangeCount).IsEqual(1);
@@ -46,7 +46,7 @@ public class GameSessionStartTest : GameSessionServiceTestBase
             new(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
         };
 
-        _service.StartSession(null, abilityCards);
+        _service.StartSession(null, abilityCards, _generator);
 
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.WaitingForCards);
         Assertions.AssertThat(_stateChangeCount).IsEqual(0);
@@ -61,7 +61,7 @@ public class GameSessionStartTest : GameSessionServiceTestBase
             new(new[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f })
         };
 
-        _service.StartSession(emptyMapSeeds, abilityCards);
+        _service.StartSession(emptyMapSeeds, abilityCards, _generator);
 
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.WaitingForCards);
         Assertions.AssertThat(_stateChangeCount).IsEqual(0);
@@ -76,7 +76,7 @@ public class GameSessionStartTest : GameSessionServiceTestBase
         };
         var emptyAbilityCards = new List<CardSignature>();
 
-        _service.StartSession(mapSeeds, emptyAbilityCards);
+        _service.StartSession(mapSeeds, emptyAbilityCards, _generator);
 
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.WaitingForCards);
         Assertions.AssertThat(_stateChangeCount).IsEqual(0);
@@ -87,11 +87,11 @@ public class GameSessionStartTest : GameSessionServiceTestBase
     {
         var mapSeeds = new List<CardSignature> { new() };
         var abilityCards = new List<CardSignature> { new() };
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         _stateChangeCount = 0;
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         Assertions.AssertThat(_stateChangeCount).IsEqual(0);
     }
@@ -101,7 +101,7 @@ public class GameSessionStartTest : GameSessionServiceTestBase
     {
         var mapSeeds = new List<CardSignature> { new() };
         var abilityCards = new List<CardSignature> { new() };
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, _generator);
 
         _service.ResetSession();
 

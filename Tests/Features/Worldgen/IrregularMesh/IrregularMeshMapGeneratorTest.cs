@@ -50,29 +50,6 @@ public class IrregularMeshMapGeneratorTest
     }
 
     [TestCase]
-    public void TestSetMapGeneratorOnService()
-    {
-        var generator = new IrregularMeshMapGenerator();
-
-        _service.SetMapGenerator(generator);
-
-        // No exception means success
-        AssertThat(generator).IsNotNull();
-    }
-
-    [TestCase]
-    public void TestClearMapGenerator()
-    {
-        var generator = new IrregularMeshMapGenerator();
-        _service.SetMapGenerator(generator);
-
-        _service.SetMapGenerator(null);
-
-        // No exception means success - service is back to default generator
-        AssertThat(generator).IsNotNull();
-    }
-
-    [TestCase]
     public async Task TestGenerateMapWithIrregularMesh()
     {
         var generator = new IrregularMeshMapGenerator
@@ -80,7 +57,6 @@ public class IrregularMeshMapGeneratorTest
             EnemyCount = 2,
             MinEnemyDistance = 2
         };
-        _service.SetMapGenerator(generator);
 
         var mapSeeds = new List<CardSignature>
         {
@@ -88,7 +64,7 @@ public class IrregularMeshMapGeneratorTest
         };
         var abilityCards = new List<CardSignature> { new() };
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, generator);
         AssertThat(_service.CurrentState).IsEqual(SessionState.GeneratingMap);
 
         // Wait for generation task to be set and complete
@@ -111,13 +87,13 @@ public class IrregularMeshMapGeneratorTest
         IGameSessionService session = _service;
         IGeneratedMap? received = null;
         session.GeneratedMapReady += map => received = map;
-        session.SetMapGenerator(new IrregularMeshMapGenerator { EnemyCount = 2, MinEnemyDistance = 2 });
+        var generator = new IrregularMeshMapGenerator { EnemyCount = 2, MinEnemyDistance = 2 };
         var mapSeeds = new List<CardSignature>
         {
             new(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f })
         };
 
-        session.StartSession(mapSeeds, new List<CardSignature> { new() });
+        session.StartSession(mapSeeds, new List<CardSignature> { new() }, generator);
         await ISceneRunner.SyncProcessFrame;
         await _service.CurrentGenerationTask!;
         await ISceneRunner.SyncProcessFrame;
@@ -134,7 +110,6 @@ public class IrregularMeshMapGeneratorTest
             EnemyCount = 3,
             MinEnemyDistance = 2
         };
-        _service.SetMapGenerator(generator);
 
         var mapSeeds = new List<CardSignature>
         {
@@ -142,7 +117,7 @@ public class IrregularMeshMapGeneratorTest
         };
         var abilityCards = new List<CardSignature> { new() };
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, generator);
 
         await ISceneRunner.SyncProcessFrame;
         var generationTask = _service.CurrentGenerationTask;
@@ -167,12 +142,11 @@ public class IrregularMeshMapGeneratorTest
     public async Task TestGeneratedMapIsIrregularMesh()
     {
         var generator = new IrregularMeshMapGenerator();
-        _service.SetMapGenerator(generator);
 
         var mapSeeds = new List<CardSignature> { new() };
         var abilityCards = new List<CardSignature> { new() };
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, generator);
 
         await ISceneRunner.SyncProcessFrame;
         var generationTask = _service.CurrentGenerationTask;
@@ -195,12 +169,11 @@ public class IrregularMeshMapGeneratorTest
     public async Task TestSessionAdvancesToExploringWithIrregularMesh()
     {
         var generator = new IrregularMeshMapGenerator();
-        _service.SetMapGenerator(generator);
 
         var mapSeeds = new List<CardSignature> { new() };
         var abilityCards = new List<CardSignature> { new() };
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, generator);
 
         await ISceneRunner.SyncProcessFrame;
         var generationTask = _service.CurrentGenerationTask;
@@ -215,12 +188,11 @@ public class IrregularMeshMapGeneratorTest
     public async Task TestCurrentMapDataPropertyIsSet()
     {
         var generator = new IrregularMeshMapGenerator();
-        _service.SetMapGenerator(generator);
 
         var mapSeeds = new List<CardSignature> { new() };
         var abilityCards = new List<CardSignature> { new() };
 
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, generator);
 
         await ISceneRunner.SyncProcessFrame;
         var generationTask = _service.CurrentGenerationTask;
@@ -239,7 +211,6 @@ public class IrregularMeshMapGeneratorTest
         {
             EnemyCount = 2
         };
-        _service.SetMapGenerator(generator);
 
         var mapSeeds = new List<CardSignature>
         {
@@ -248,7 +219,7 @@ public class IrregularMeshMapGeneratorTest
         var abilityCards = new List<CardSignature> { new() };
 
         // First generation
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, generator);
 
         await ISceneRunner.SyncProcessFrame;
         var generationTask = _service.CurrentGenerationTask;
@@ -265,7 +236,7 @@ public class IrregularMeshMapGeneratorTest
         _lastGeneratedMap = null;
 
         // Second generation with same seeds
-        _service.StartSession(mapSeeds, abilityCards);
+        _service.StartSession(mapSeeds, abilityCards, generator);
 
         await ISceneRunner.SyncProcessFrame;
         generationTask = _service.CurrentGenerationTask;

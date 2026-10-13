@@ -1,6 +1,7 @@
 using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
@@ -58,14 +59,14 @@ public class GridMapGeneratorBiomeTest : GridMapGeneratorTestBase
         _rng.Seed = 42;
         var hotGradient = new ConstantBiomeGradient(new CardSignature(new[] { 0.3f, 0.8f, 0.3f, 0f, 0f, 0f, 0f, 0f }));
         var hotProvider = new BiomeMapGenerator(_registry, hotGradient, size);
-        var hotGenerator = new SimpleMapGenerator(_rng, hotProvider, _tileRegistry, _tileRegistry);
+        var hotGenerator = GridMapGenerator.CreatePipeline(_rng, hotProvider, _tileRegistry, _tileRegistry);
         var hotMap = hotGenerator.GenerateMap(size);
 
         // Cold signature should produce tundra tiles
         _rng.Seed = 42;
         var coldGradient = new ConstantBiomeGradient(new CardSignature(new[] { 0f, -0.8f, 0.4f, 0f, 0f, 0f, 0f, 0f }));
         var coldProvider = new BiomeMapGenerator(_registry, coldGradient, size);
-        var coldGenerator = new SimpleMapGenerator(_rng, coldProvider, _tileRegistry, _tileRegistry);
+        var coldGenerator = GridMapGenerator.CreatePipeline(_rng, coldProvider, _tileRegistry, _tileRegistry);
         var coldMap = coldGenerator.GenerateMap(size);
 
         // Desert should have desert tiles, tundra should have tundra tiles
@@ -114,7 +115,7 @@ public class GridMapGeneratorBiomeTest : GridMapGeneratorTestBase
         var desertSignature = new CardSignature(new[] { 0.3f, 0.7f, 0.3f, 0.4f, 0f, -0.2f, -0.2f, 0.3f });
         var gradient = new CardBasedGradient(new[] { desertSignature }, _rng);
         var biomeProvider = new BiomeMapGenerator(_registry, gradient, size);
-        var generator = new SimpleMapGenerator(_rng, biomeProvider, _tileRegistry, _tileRegistry);
+        var generator = GridMapGenerator.CreatePipeline(_rng, biomeProvider, _tileRegistry, _tileRegistry);
 
         var mapData = generator.GenerateMap(size);
 

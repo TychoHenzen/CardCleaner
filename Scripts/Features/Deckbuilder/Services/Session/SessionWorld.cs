@@ -10,9 +10,6 @@ internal sealed class SessionWorld
 {
     internal RandomNumberGenerator Rng { get; set; } = new();
 
-    /// <summary>Legacy grid-based map.</summary>
-    internal SimpleMapData? LegacyMap { get; set; }
-
     /// <summary>Grid coordinate adapter.</summary>
     internal RegularGridMapData? GridMapData { get; set; }
 
@@ -22,11 +19,10 @@ internal sealed class SessionWorld
     /// <summary>Pathfinding adapter.</summary>
     internal IMapData? MapData { get; set; }
 
-    internal int EnemyCount => GeneratedMap?.EnemyCount ?? LegacyMap?.EnemyPositions.Count ?? 0;
+    internal int EnemyCount => GeneratedMap?.EnemyCount ?? 0;
 
     internal void ClearMap()
     {
-        LegacyMap = null;
         GridMapData = null;
         GeneratedMap = null;
         MapData = null;

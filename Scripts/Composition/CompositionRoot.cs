@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Player.Services;
+using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
@@ -69,6 +71,12 @@ public partial class CompositionRoot : Node
         var tileRegistry = new TileRegistry();
         container.RegisterSingleton<ITileRegistry>(tileRegistry);
         container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
+
+        var biomeRegistry = new BiomeRegistry();
+        biomeRegistry.RegisterDefaultBiomes();
+        // ASSUMPTION: the issue asks for [Service], but AutoServiceProvider only discovers Nodes in the current scene;
+        // the generator is a plain class, so the composition root registers it.
+        container.RegisterSingleton<IGridMapGenerator>(new GridMapGenerator(tileRegistry, tileRegistry, biomeRegistry));
 
         container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
         container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();

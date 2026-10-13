@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
+using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenarios;
@@ -14,7 +16,8 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenar
 /// <summary>
 /// The grid map a session generates for two fixed seed cards: tile ids, player start and enemy cells must equal the
 /// map recorded in GridMapGolden.txt. The file was recorded from master ab82cbc, through the session's default
-/// generator, before the grid generator moved behind IMapGenerator (#284).
+/// generator, before the grid generator moved behind IMapGenerator (#284); the test now generates through
+/// GridMapGenerator with the seed and size the session derives from the cards.
 /// To record it again, run this suite with CARDCLEANER_RECORD_GRID_GOLDEN=1; never edit the file by hand.
 /// </summary>
 [TestSuite]
@@ -23,12 +26,6 @@ public class GridMapGoldenTest
 {
     private const string FixturePath = "res://Tests/Features/Deckbuilder/Services/GridMapGeneratorScenarios/GridMapGolden.txt";
     private const string RecordSwitch = "CARDCLEANER_RECORD_GRID_GOLDEN";
-
-    [AfterTest]
-    public static void Teardown()
-    {
-        ServiceLocator.ResetForTesting();
-    }
 
     [TestCase(Timeout = 120000)]
     [TestCategory("Unit")]
@@ -53,28 +50,23 @@ public class GridMapGoldenTest
         new CardSignature(new[] { -0.5f, 0.4f, 0.3f, 0f, -0.2f, 0f, 0.6f, 0f })
     };
 
-    // Generates through the session's default generator, the only grid path master has.
+    // Generates through the grid generator the cabinet hands the session, with the seed and size the session derives.
     private static async Task<string> GenerateAsync(List<CardSignature> cards)
     {
-        ServiceLocator.ResetForTesting();
         var tileRegistry = new TileRegistry();
-        ServiceLocator.Container.RegisterSingleton<ITileRegistry>(tileRegistry);
-        ServiceLocator.Container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
+        var biomeRegistry = new BiomeRegistry();
+        biomeRegistry.RegisterDefaultBiomes();
+        var generator = new GridMapGenerator(tileRegistry, tileRegistry, biomeRegistry);
+        var seeds = cards.ToArray();
 
-        var session = new GameSessionService();
-        // Described when raised, before exploration moves anything on the map.
-        string? described = null;
-        session.MapGenerated += generated => described = Describe(generated);
-        AddNode(session);
-        await ISceneRunner.SyncProcessFrame;
+        var generated = await generator.GenerateAsync(new MapGenerationConfig
+        {
+            Size = MapSeeding.CalculateMapSize(seeds[0]),
+            Seed = MapSeeding.ComputeSeedFromCards(seeds),
+            MapSeeds = seeds
+        });
 
-        session.StartSession(cards, new List<CardSignature> { new() });
-        await ISceneRunner.SyncProcessFrame;
-        await session.CurrentGenerationTask!;
-        session.ResetSession();
-
-        AssertThat(described).IsNotNull();
-        return described!;
+        return Describe(((SimpleGeneratedMap)generated).RawMapData);
     }
 
     private static string Describe(SimpleMapData map)

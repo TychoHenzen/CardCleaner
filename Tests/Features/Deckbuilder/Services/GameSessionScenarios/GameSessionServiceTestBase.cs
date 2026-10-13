@@ -23,6 +23,7 @@ public abstract class GameSessionServiceTestBase
     protected List<CardSignature> _lastLootGenerated = new();
     protected int _stateChangeCount;
     protected TileRegistry _tileRegistry = null!;
+    protected IMapGenerator _generator = null!;
 
     [BeforeTest]
     public async Task Setup()
@@ -35,7 +36,7 @@ public abstract class GameSessionServiceTestBase
         ServiceLocator.Container.RegisterSingleton<ITileMetadataProvider>(_tileRegistry);
 
         _service = new GameSessionService();
-        _service.SetMapGenerator(new FastMapGenerator());
+        _generator = new FastMapGenerator();
         Assertions.AddNode(_service);
         await ISceneRunner.SyncProcessFrame;
 

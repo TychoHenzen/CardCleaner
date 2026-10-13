@@ -28,6 +28,7 @@ public partial class DeckBuilderController : Node
     }
 
     private IGameSessionService? _gameSession;
+    private IGridMapGenerator? _gridGenerator;
     private CabinetPhase _phase = CabinetPhase.Idle;
 
     // The kind of the session started by the last activate press, read only while the cabinet is not idle, so a
@@ -87,6 +88,9 @@ public partial class DeckBuilderController : Node
             _gameSession = gameSession;
             gameSession.StateChanged += OnSessionStateChanged;
         });
+
+        // The grid kind's generator, handed to the session when a grid session starts
+        ServiceLocator.Get<IGridMapGenerator>(generator => _gridGenerator = generator);
 
         if (IrregularMapScreen != null)
             IrregularMapScreen.ExplorationFinished += OnIrregularExplorationFinished;
@@ -252,6 +256,12 @@ public partial class DeckBuilderController : Node
             return;
         }
 
+        if (MapType == MapGenerationType.RegularGrid && _gridGenerator == null)
+        {
+            ILog.Error("No IGridMapGenerator registered! Cannot generate a grid map.");
+            return;
+        }
+
         ILog.Print($"Cards present - starting {MapType} map session...");
 
         // Record the kind before the slots change, so every refresh from here on sees a running session.
@@ -268,7 +278,7 @@ public partial class DeckBuilderController : Node
         switch (kind)
         {
             case MapGenerationType.RegularGrid:
-                StartRegularGridGeneration(mapSeeds.ToArray(), abilities.ToArray());
+                StartRegularGridGeneration(mapSeeds.ToArray(), abilities.ToArray(), _gridGenerator!);
                 break;
 
             case MapGenerationType.IrregularMesh:
@@ -302,11 +312,11 @@ public partial class DeckBuilderController : Node
     }
 
     /// <summary>
-    /// Starts map generation using the regular grid system (via GameSessionService).
+    /// Starts the grid session on the grid screen with the grid generator the container registered.
     /// </summary>
-    private void StartRegularGridGeneration(CardSignature[] mapSeeds, CardSignature[] abilities)
+    private void StartRegularGridGeneration(CardSignature[] mapSeeds, CardSignature[] abilities, IMapGenerator generator)
     {
-        WorldTileMapScreenScene.Initialize(mapSeeds, abilities);
+        WorldTileMapScreenScene.Initialize(mapSeeds, abilities, generator);
     }
 
     /// <summary>

@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -40,9 +41,9 @@ public class ConnectivityVerificationTest
     }
 
     /// <summary>
-    /// Creates a SimpleMapGenerator with WFC connectivity constraint enabled.
+    /// Creates a grid generation pipeline with WFC connectivity constraint enabled.
     /// </summary>
-    private SimpleMapGenerator CreateGeneratorWithWfcConnectivity(Vector2I mapSize, RandomNumberGenerator rng)
+    private SimpleMapGenerationPipeline CreateGeneratorWithWfcConnectivity(Vector2I mapSize, RandomNumberGenerator rng)
     {
         var gradient = new CardBasedGradient([new CardSignature()], rng);
         var biomeProvider = new BiomeMapGenerator(_registry, gradient, mapSize);
@@ -51,7 +52,7 @@ public class ConnectivityVerificationTest
         var wfcGenerator = CreateWfcGenerator();
         wfcGenerator.EnableConnectivity = true;
 
-        return new SimpleMapGenerator(
+        return GridMapGenerator.CreatePipeline(
             rng,
             biomeProvider,
             _tileRegistry,
@@ -155,9 +156,7 @@ public class ConnectivityVerificationTest
             var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
             generator.SetProfiler(profiler);
 
-            // Wrap in async adapter and await generation
-            var asyncGenerator = new AsyncMapGeneratorAdapter(generator);
-            var mapData = await asyncGenerator.GenerateMapAsync(mapSize);
+            var mapData = await Task.Run(() => generator.GenerateMap(mapSize));
 
             if (!IsFullyConnected(mapData))
             {
@@ -192,7 +191,7 @@ public class ConnectivityVerificationTest
     public void EnsureConnectivity_MethodDoesNotExist()
     {
         // Reflection test: Verify EnsureConnectivity method has been removed
-        var type = typeof(SimpleMapGenerator);
+        var type = typeof(SimpleMapGenerationPipeline);
         var method = type.GetMethod("EnsureConnectivity", BindingFlags.NonPublic | BindingFlags.Instance);
 
         AssertThat(method).IsNull();
@@ -202,7 +201,7 @@ public class ConnectivityVerificationTest
     public void FloodFill_MethodDoesNotExist()
     {
         // Reflection test: Verify FloodFill method has been removed
-        var type = typeof(SimpleMapGenerator);
+        var type = typeof(SimpleMapGenerationPipeline);
         var method = type.GetMethod("FloodFill", BindingFlags.NonPublic | BindingFlags.Instance);
 
         AssertThat(method).IsNull();
@@ -212,7 +211,7 @@ public class ConnectivityVerificationTest
     public void CreateCorridor_MethodDoesNotExist()
     {
         // Reflection test: Verify CreateCorridor method has been removed
-        var type = typeof(SimpleMapGenerator);
+        var type = typeof(SimpleMapGenerationPipeline);
         var method = type.GetMethod("CreateCorridor", BindingFlags.NonPublic | BindingFlags.Instance);
 
         AssertThat(method).IsNull();
@@ -222,7 +221,7 @@ public class ConnectivityVerificationTest
     public void EnableCorridorFallback_PropertyDoesNotExist()
     {
         // Reflection test: Verify EnableCorridorFallback property has been removed
-        var type = typeof(SimpleMapGenerator);
+        var type = typeof(SimpleMapGenerationPipeline);
         var property = type.GetProperty("EnableCorridorFallback");
 
         AssertThat(property).IsNull();
@@ -245,9 +244,7 @@ public class ConnectivityVerificationTest
 
             var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
 
-            // Wrap in async adapter and await generation
-            var asyncGenerator = new AsyncMapGeneratorAdapter(generator);
-            var mapData = await asyncGenerator.GenerateMapAsync(mapSize);
+            var mapData = await Task.Run(() => generator.GenerateMap(mapSize));
 
             if (IsFullyConnected(mapData))
             {
@@ -279,10 +276,9 @@ public class ConnectivityVerificationTest
         rng.Seed = 42; // Fixed seed for reproducibility
 
         var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
-        var asyncGenerator = new AsyncMapGeneratorAdapter(generator);
 
         var stopwatch = Stopwatch.StartNew();
-        var mapData = await asyncGenerator.GenerateMapAsync(mapSize);
+        var mapData = await Task.Run(() => generator.GenerateMap(mapSize));
         stopwatch.Stop();
 
         var elapsedSeconds = stopwatch.ElapsedMilliseconds / 1000.0;

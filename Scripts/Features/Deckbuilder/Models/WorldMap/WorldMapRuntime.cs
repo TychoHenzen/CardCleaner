@@ -27,6 +27,7 @@ internal sealed class WorldMapRuntime
     private IGameSessionService? _gameSession;
     private CardSignature[]? _pendingAbilities;
     private CardSignature[]? _pendingMapSeed;
+    private IMapGenerator? _pendingGenerator;
     private bool _serviceReady;
 
 
@@ -63,17 +64,18 @@ internal sealed class WorldMapRuntime
         _gameSession.PathUpdated -= OnPathUpdated;
     }
 
-    internal void StartSession(CardSignature[] mapSeed, CardSignature[] abilities)
+    internal void StartSession(CardSignature[] mapSeed, CardSignature[] abilities, IMapGenerator generator)
     {
         if (_serviceReady && _gameSession != null)
         {
-            _gameSession.StartSession(mapSeed.ToList(), abilities.ToList());
+            _gameSession.StartSession(mapSeed.ToList(), abilities.ToList(), generator);
             return;
         }
 
         ILog.Print("GameSessionService not ready, storing pending initialization...");
         _pendingMapSeed = mapSeed;
         _pendingAbilities = abilities;
+        _pendingGenerator = generator;
     }
 
     internal void UpdateBiomePreview(CardSignature[] cards) => _biomePreview.Update(cards);
@@ -128,12 +130,13 @@ internal sealed class WorldMapRuntime
         gameSession.PathUpdated += OnPathUpdated;
 
         // If Initialize() was called before service was ready, start now
-        if (_pendingMapSeed is { Length: > 0 } && _pendingAbilities != null)
+        if (_pendingMapSeed is { Length: > 0 } && _pendingAbilities != null && _pendingGenerator != null)
         {
             ILog.Print("Processing pending initialization...");
-            gameSession.StartSession(_pendingMapSeed.ToList(), _pendingAbilities.ToList());
+            gameSession.StartSession(_pendingMapSeed.ToList(), _pendingAbilities.ToList(), _pendingGenerator);
             _pendingMapSeed = null;
             _pendingAbilities = null;
+            _pendingGenerator = null;
         }
     }
 

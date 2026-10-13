@@ -23,6 +23,11 @@ public class SimpleGeneratedMap : IGeneratedMap
     /// </summary>
     public SimpleMapData RawMapData => _mapData;
 
+    /// <summary>
+    /// The grid coordinate adapter behind <see cref="GetMapData"/>, so grid and cell positions share one instance.
+    /// </summary>
+    public RegularGridMapData GridMapData => _mapDataAdapter;
+
     /// <inheritdoc />
     public IMapData GetMapData() => _mapDataAdapter;
 

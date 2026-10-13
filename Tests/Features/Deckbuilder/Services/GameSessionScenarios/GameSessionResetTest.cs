@@ -21,10 +21,10 @@ public class GameSessionResetTest : GameSessionServiceTestBase
     public async Task ResetSession_CancelsDeferredGenerationBeforeItStarts()
     {
         var generator = new CancellationBlockingMapGenerator();
-        _service.SetMapGenerator(generator);
         _service.StartSession(
             new List<CardSignature> { new() },
-            new List<CardSignature> { new() });
+            new List<CardSignature> { new() },
+            generator);
 
         var pendingGenerationTask = _service.CurrentGenerationTask;
         Assertions.AssertThat(pendingGenerationTask).IsNotNull();
@@ -44,10 +44,10 @@ public class GameSessionResetTest : GameSessionServiceTestBase
         var generator = new CancellationBlockingMapGenerator();
         var generatedMapEventCount = 0;
         _service.GeneratedMapReady += _ => generatedMapEventCount++;
-        _service.SetMapGenerator(generator);
         _service.StartSession(
             new List<CardSignature> { new() },
-            new List<CardSignature> { new() });
+            new List<CardSignature> { new() },
+            generator);
 
         await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
         await generator.Started.Task;
@@ -62,10 +62,10 @@ public class GameSessionResetTest : GameSessionServiceTestBase
         Assertions.AssertThat(_service.CurrentState).IsEqual(SessionState.WaitingForCards);
         Assertions.AssertThat(CountProgressNodes()).IsEqual(0);
 
-        _service.SetMapGenerator(CreateFastMapGenerator());
         _service.StartSession(
             new List<CardSignature> { new() },
-            new List<CardSignature> { new() });
+            new List<CardSignature> { new() },
+            CreateFastMapGenerator());
         await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
         var currentGenerationTask = _service.CurrentGenerationTask;
         Assertions.AssertThat(currentGenerationTask).IsNotNull();

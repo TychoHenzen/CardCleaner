@@ -11,7 +11,7 @@ using Godot;
 namespace CardCleaner.Tests.Features.Worldgen.Support;
 
 /// <summary>
-///     Shared fixture for property suites that generate maps through SimpleMapGenerator.
+///     Shared fixture for property suites that generate maps through SimpleMapGenerationPipeline.
 /// </summary>
 public abstract class MapGenerationPropertyBase : PropertyTestBase
 {
@@ -68,7 +68,7 @@ public abstract class MapGenerationPropertyBase : PropertyTestBase
         var rng = new RandomNumberGenerator { Seed = request.RngSeed };
         var gradient = new ConstantSignatureGradient(signature);
         var biomeProvider = new BiomeMapGenerator(_registry, gradient, request.Size);
-        var generator = new SimpleMapGenerator(rng, biomeProvider, _tileRegistry, _tileRegistry);
+        var generator = GridMapGenerator.CreatePipeline(rng, biomeProvider, _tileRegistry, _tileRegistry);
         return generator.GenerateMap(request.Size);
     }
 }
