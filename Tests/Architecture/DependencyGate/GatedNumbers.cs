@@ -8,8 +8,10 @@ internal sealed record GatedNumbers(int UpEdges, int BiggestLoop, int SeamsLeaky
     int RefsFromNonUiToUi)
 {
     /// <summary>
-    /// The one table of the numbers: the name each has in the baseline file and the report, in file order. FromValues
-    /// takes the values in this order.
+    /// The one table of the numbers: the name each has in the baseline file and the report. Its order is both the file
+    /// order and the ratchet's priority order (#299): the first number in this order that differs from the baseline
+    /// decides the gate, so reordering the table changes what the gate accepts. FromValues takes the values in this
+    /// order.
     /// </summary>
     public static readonly IReadOnlyList<(string Name, Func<GatedNumbers, int> Value)> Fields =
     [
