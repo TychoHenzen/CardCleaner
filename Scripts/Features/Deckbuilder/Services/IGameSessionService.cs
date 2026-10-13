@@ -12,13 +12,7 @@ public interface IGameSessionService
 {
     SessionState CurrentState { get; }
     event Action<SessionState> StateChanged;
-    event Action<SimpleMapData> MapGenerated;
     event Action<List<CardSignature>> LootGenerated;
-    event Action<Vector2I> PlayerMoved;
-    event Action<Vector2I> EnemyDefeated;
-    event Action<IReadOnlySet<Vector2I>> VisitedTilesUpdated;
-    event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>> VisibilityUpdated;
-    event Action<IReadOnlyList<Vector2I>, Vector2I?> PathUpdated;
     event Action<float>? ProgressUpdated;
 
     /// <summary>Raised after every move with the player's new world position, on both map kinds.</summary>
@@ -39,7 +33,8 @@ public interface IGameSessionService
     event Action<IReadOnlySet<int>, IReadOnlySet<int>> VisibilityCellsUpdated;
 
     /// <summary>
-    /// Raised for every generated map; <see cref="MapGenerated"/> is raised before it for a grid map only.
+    /// Raised for every generated map. A view reads its own kind of map from it (a grid map is an
+    /// <see cref="IGridGeneratedMap"/>) and converts the session's cell ids and world positions to its coordinates.
     /// </summary>
     event Action<IGeneratedMap> GeneratedMapReady;
 

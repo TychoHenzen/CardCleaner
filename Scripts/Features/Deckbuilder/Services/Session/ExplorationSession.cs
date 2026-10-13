@@ -6,16 +6,14 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
 
 /// <summary>
-/// Runs autonomous exploration for a session and translates exploration events
-/// into both cell-based and grid-based events.
+/// Runs autonomous exploration for a session and raises its events with cell ids and world positions, the same on
+/// both map kinds; each view converts them to its own coordinates.
 /// </summary>
 internal sealed class ExplorationSession
 {
     private readonly SessionWorld _world;
-    private readonly GridCellEventAdapter _eventAdapter;
     private ExplorationAI? _explorationAI;
     private Vector2? _playerWorldPosition;
-    private Vector2I? _playerPosition;
     private int? _currentEnemyCellId;
     /// <summary>
     /// Moves the player has made since the session's map was cleared; the session paces exploration against it.
@@ -27,21 +25,15 @@ internal sealed class ExplorationSession
     /// </summary>
     internal IVisibilityChecker? VisibilityChecker { get; set; }
 
-    internal event Action<Vector2I>? PlayerMoved;
     internal event Action<Vector2>? PlayerMovedWorld;
-    internal event Action<Vector2I>? EnemyDefeated;
     internal event Action<int>? EnemyDefeatedCell;
-    internal event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
     internal event Action<IReadOnlySet<int>>? VisitedCellsUpdated;
-    internal event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>>? VisibilityUpdated;
     internal event Action<IReadOnlySet<int>, IReadOnlySet<int>>? VisibilityCellsUpdated;
-    internal event Action<IReadOnlyList<Vector2I>, Vector2I?>? PathUpdated;
     internal event Action<IReadOnlyList<int>, int?>? PathCellsUpdated;
 
-    internal ExplorationSession(SessionWorld world, GridCellEventAdapter eventAdapter)
+    internal ExplorationSession(SessionWorld world)
     {
         _world = world;
-        _eventAdapter = eventAdapter;
     }
 
     /// <summary>
@@ -60,11 +52,10 @@ internal sealed class ExplorationSession
 
         _explorationAI = new ExplorationAI(_world.MapData, ResolveStartCellId(), VisibilityChecker);
 
-        // Subscribe with adapters to emit both Vector2I and cell-based events
         _explorationAI.EnemyEncountered += OnEnemyEncounteredWorld;
         _explorationAI.PlayerMoved += OnPlayerMovedWorld;
-        _explorationAI.VisitedCellsUpdated += OnVisitedCellsUpdated;
-        _explorationAI.VisibilityUpdated += OnVisibilityUpdated;
+        _explorationAI.VisitedCellsUpdated += cellIds => VisitedCellsUpdated?.Invoke(cellIds);
+        _explorationAI.VisibilityUpdated += (seen, visible) => VisibilityCellsUpdated?.Invoke(seen, visible);
         _explorationAI.PathUpdated += OnPathUpdated;
         return true;
     }
@@ -92,15 +83,13 @@ internal sealed class ExplorationSession
 
         // Update player position to enemy's position
         _playerWorldPosition = _world.MapData?.GetCellCenter(defeatedCellId);
-        _playerPosition = _eventAdapter.GetGridPosition(defeatedCellId);
 
         // Remove enemy using IGeneratedMap interface
         _world.GeneratedMap?.RemoveEnemyAt(defeatedCellId);
         var remainingEnemies = _world.GeneratedMap?.EnemyCount ?? 0;
         ILog.Print($"Enemy at cell {defeatedCellId} destroyed! ({remainingEnemies} enemies remaining)");
 
-        // Emit events in both coordinate systems
-        _eventAdapter.EmitEnemyDefeated(defeatedCellId, EnemyDefeatedCell, EnemyDefeated);
+        EnemyDefeatedCell?.Invoke(defeatedCellId);
 
         _currentEnemyCellId = null;
     }
@@ -108,36 +97,22 @@ internal sealed class ExplorationSession
     internal void Clear()
     {
         _explorationAI = null;
-        _playerPosition = null;
         _playerWorldPosition = null;
         _currentEnemyCellId = null;
         MoveCount = 0;
     }
 
-    private int? ResolveStartCellId()
-    {
-        if (_playerWorldPosition.HasValue)
-        {
-            // Resume from world position (custom generator case)
-            return _world.MapData!.GetCellAtPosition(_playerWorldPosition.Value);
-        }
-
-        if (_playerPosition.HasValue && _world.GridMapData != null)
-        {
-            // Resume from grid position (regular generator case)
-            return _world.GridMapData.PositionToCellId(_playerPosition.Value);
-        }
-
-        return null;
-    }
+    /// <summary>
+    /// The cell to resume from after a fight, or null to start from the map's player start.
+    /// </summary>
+    private int? ResolveStartCellId() =>
+        _playerWorldPosition.HasValue ? _world.MapData!.GetCellAtPosition(_playerWorldPosition.Value) : null;
 
     private void OnPlayerMovedWorld(Vector2 worldPos)
     {
         MoveCount++;
         _playerWorldPosition = worldPos;
-        _playerPosition = _eventAdapter.WorldToGrid(worldPos);
-
-        _eventAdapter.EmitPlayerMoved(worldPos, PlayerMovedWorld, PlayerMoved);
+        PlayerMovedWorld?.Invoke(worldPos);
     }
 
     /// <summary>
@@ -150,37 +125,13 @@ internal sealed class ExplorationSession
         if (cellId.HasValue)
             _currentEnemyCellId = cellId.Value;
 
-        if (!_eventAdapter.HasGridData)
-        {
-            ILog.Print($"Enemy encountered at world position {worldPos}! Preparing for combat...");
-            return;
-        }
-
-        var gridPos = _eventAdapter.WorldToGrid(worldPos);
-        if (!gridPos.HasValue)
-            return;
-
-        ILog.Print($"Enemy encountered at {gridPos.Value}! Preparing for combat...");
-    }
-
-    private void OnVisitedCellsUpdated(IReadOnlySet<int> cellIds)
-    {
-        _eventAdapter.EmitVisitedCells(cellIds, VisitedCellsUpdated, VisitedTilesUpdated);
-    }
-
-    private void OnVisibilityUpdated(IReadOnlySet<int> seenCells, IReadOnlySet<int> visibleCells)
-    {
-        _eventAdapter.EmitVisibility(seenCells, visibleCells, VisibilityCellsUpdated, VisibilityUpdated);
+        ILog.Print($"Enemy encountered at cell {cellId} (world position {worldPos})! Preparing for combat...");
     }
 
     private void OnPathUpdated()
     {
         if (_explorationAI == null) return;
 
-        _eventAdapter.EmitPath(
-            _explorationAI.CurrentPath,
-            _explorationAI.CurrentTargetCell,
-            PathCellsUpdated,
-            PathUpdated);
+        PathCellsUpdated?.Invoke(_explorationAI.CurrentPath, _explorationAI.CurrentTargetCell);
     }
 }

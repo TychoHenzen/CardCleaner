@@ -23,18 +23,12 @@ public sealed class FakeGameSession : IGameSessionService
 
     public event Action<SessionState>? StateChanged;
 #pragma warning disable CS0067 // The controllers under test never need these raised.
-    public event Action<SimpleMapData>? MapGenerated;
     public event Action<List<CardSignature>>? LootGenerated;
-    public event Action<Vector2I>? PlayerMoved;
     public event Action<Vector2>? PlayerMovedWorld;
-    public event Action<Vector2I>? EnemyDefeated;
     public event Action<int>? EnemyDefeatedCell;
-    public event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
-    public event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>>? VisibilityUpdated;
     public event Action<IReadOnlySet<int>, IReadOnlySet<int>>? VisibilityCellsUpdated;
     public event Action<IReadOnlySet<int>>? VisitedCellsUpdated;
     public event Action<IReadOnlyList<int>, int?>? PathCellsUpdated;
-    public event Action<IReadOnlyList<Vector2I>, Vector2I?>? PathUpdated;
     public event Action<float>? ProgressUpdated;
     public event Action<IGeneratedMap>? GeneratedMapReady;
 #pragma warning restore CS0067
