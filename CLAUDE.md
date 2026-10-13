@@ -171,6 +171,41 @@ The project uses a custom service locator pattern, split into a static lookup an
 Access services via `ServiceLocator.Get<T>()` or `ServiceLocator.Container.Resolve<T>()`. Tests rebuild the container
 with `CompositionRoot.ReinitializeServices()` and clear it with `ServiceLocator.ResetForTesting()`.
 
+### Dependency Gate
+
+`Tests/Architecture/DependencyGateTest.cs` (a Unit suite, so `-Fast` and PR CI run it) measures `Scripts/` as a
+layered architecture on every run. Its code is test code under `Tests/Architecture/DependencyGate/`: Roslyn extracts
+the class graph of every top-level type in `Scripts/` (nested types fold into their outer type; `addons/` except
+gdUnit4 is compiled alongside but not counted), plus one member-type reference per NodePath between two scripted
+nodes in the `.tscn` files of `Scenes/` and `Data/` (merged with the code's own member-type references on that pair).
+Three anchors are each one module: UI on top (Godot types and engine-API users, plus interfaces only UI uses), pure
+data at the bottom, and pure contracts (interfaces naming only data and contracts) above it. The middle is clustered
+with a deterministic Louvain consensus (seeds 0 to 49). A class referenced from 6 or more homes (`Features/<X>`,
+`Core/<X>`) is omnipresent: it is left out of clustering and joins the module it references most, or stays loose
+when it references none. A class whose summed clustering weight to other middle classes is below 4 stays loose, and
+so does every class of a community under 4 classes. Modules are ordered Data, Contracts, middle, UI; inside each
+layer every loop of up to 20 modules takes the order with the fewest up edges, and a bigger loop is ordered greedily
+(the report names it).
+
+The test prints a report (`dependency gate:` lines): counts, the module order, the loose classes, every up edge with
+its class pairs (heaviest first), every loop, and every leaky or missing seam with the concrete classes it crosses.
+It measures twice and fails if the two reports differ. It then ratchets five gated numbers (`up_edges`,
+`biggest_loop`, `seams_leaky`, `seams_missing`, `refs_from_non_ui_to_ui`) against
+`Tests/Architecture/dependency-baseline.json`: a number above its baseline fails; a number below it also fails,
+until the baseline is lowered with the switch set:
+
+```bash
+CARDCLEANER_UPDATE_DEPENDENCY_BASELINE=1 <godot console exe> --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -c --ignoreHeadlessMode -rc 100000 -rd reports/ci -a res://Tests/Architecture/DependencyGateTest.cs
+```
+
+The switch rewrites the file only when no number is higher, and a missing or malformed baseline fails with its path
+whether the switch is set or not, so it can never raise a baseline. A first baseline is created by committing the
+file. CI prints the report lines (`Show the dependency gate report` step and the job summary) on every run, pull
+requests included. Every step of plan v4
+(#239) ends with this test green and the baseline lowered to what the step achieved. The fixture suites beside it
+(`LayerAnchorsTest`, `LouvainClusteringTest`, `ModuleOrderTest`, `SeamRaterTest`, `GateMetricsTest`,
+`ClassGraphExtractorTest`, `SceneLinkReaderTest`, `DependencyBaselineTest`) pin each rule on small graphs.
+
 ### Card Signature System
 
 The core mechanic uses `CardSignature` - an 8-dimensional vector with values clamped to [-1, 1] representing elemental properties:

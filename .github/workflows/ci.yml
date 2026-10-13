@@ -94,6 +94,23 @@ jobs:
             ./Scripts/ci/Run-GdUnit.ps1 -GodotBinary $env:GODOT_BIN -Fast
           }
 
+      - name: Show the dependency gate report
+        # DependencyGateTest prints its report to Godot's stdout, which Run-GdUnit.ps1 keeps in reports/ci. Echo it so
+        # every run, pull requests included, shows the gated numbers in its log and summary (#240 AC-3).
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $logs = @(Get-ChildItem -Path reports/ci -Filter 'godot*.stdout.log' -File -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTime)
+          $lines = @($logs | Select-String -SimpleMatch 'dependency gate: ' | ForEach-Object { $_.Line.Trim() })
+          if ($lines.Count -eq 0) {
+            Write-Host 'No dependency gate report in reports/ci.'
+            exit 0
+          }
+          $lines | ForEach-Object { Write-Host $_ }
+          $summary = @('## Dependency gate', '', '```') + $lines + @('```')
+          $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append
+
       - name: Upload GdUnit reports
         # Run-GdUnit.ps1 writes interruptions.txt when Godot crashed or stalled, so a run that resumed to green keeps
         # the logs of the interrupted attempt.
