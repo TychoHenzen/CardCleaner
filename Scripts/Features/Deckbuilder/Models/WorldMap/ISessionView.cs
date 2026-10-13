@@ -14,6 +14,12 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 internal interface ISessionView
 {
     /// <summary>
+    /// Whether the view is still live, so a session service that resolves late may still connect it; a view that left
+    /// the tree or was freed must refuse.
+    /// </summary>
+    bool CanConnect { get; }
+
+    /// <summary>
     /// Called right before the link starts a session for the view: clear what the last session left, and return the
     /// line-of-sight checker for the new session, or null for the session's own.
     /// </summary>

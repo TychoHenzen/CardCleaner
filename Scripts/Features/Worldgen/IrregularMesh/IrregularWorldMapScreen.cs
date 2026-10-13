@@ -86,7 +86,7 @@ public partial class IrregularWorldMapScreen : Node3D, ISessionView
     public override void _EnterTree()
     {
         if (!_link.IsConnected)
-            ServiceLocator.Get<IGameSessionService>(OnGameSessionReady);
+            ServiceLocator.Get<IGameSessionService>(_link.Connect);
     }
 
     public override void _Ready()
@@ -151,13 +151,8 @@ public partial class IrregularWorldMapScreen : Node3D, ISessionView
 
     #region Session
 
-    private void OnGameSessionReady(IGameSessionService gameSession)
-    {
-        if (_link.IsConnected || !IsInstanceValid(this) || !IsInsideTree())
-            return;
-
-        _link.Connect(gameSession);
-    }
+    // A session service that resolves after the screen left the tree or was freed must not subscribe it.
+    bool ISessionView.CanConnect => IsInstanceValid(this) && IsInsideTree();
 
     /// <summary>
     /// Clears the last session's map before the link starts a new session, and hands over the raycast checker when

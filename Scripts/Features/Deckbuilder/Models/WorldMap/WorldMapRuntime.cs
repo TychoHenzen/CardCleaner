@@ -57,6 +57,9 @@ internal sealed class WorldMapRuntime : ISessionView
         _link.Disconnect();
     }
 
+    // A session service that resolves after the screen left the tree or was freed must not subscribe it.
+    bool ISessionView.CanConnect => GodotObject.IsInstanceValid(_screen) && _screen.IsInsideTree();
+
     internal void StartSession(CardSignature[] mapSeed, CardSignature[] abilities, IMapGenerator generator)
     {
         _link.Start(mapSeed, abilities, generator);

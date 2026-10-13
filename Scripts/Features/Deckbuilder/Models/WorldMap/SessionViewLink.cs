@@ -30,11 +30,12 @@ internal sealed class SessionViewLink
     internal bool IsConnected => _session != null;
 
     /// <summary>
-    /// Subscribes to the session service and runs a start that waited for it. A second connection is ignored.
+    /// Subscribes to the session service and runs a start that waited for it. A second connection, or one that
+    /// arrives after the view stopped being live, is ignored.
     /// </summary>
     internal void Connect(IGameSessionService session)
     {
-        if (_session != null) return;
+        if (_session != null || !_view.CanConnect) return;
 
         _session = session;
         session.StateChanged += OnStateChanged;
@@ -52,10 +53,10 @@ internal sealed class SessionViewLink
         StartOwnSession(pending.MapSeed, pending.Abilities, pending.Generator);
     }
 
-    /// <summary>Lets go of the session and unsubscribes from the session service.</summary>
+    /// <summary>Lets go of the session, drops a start still waiting for the service and unsubscribes from it.</summary>
     internal void Disconnect()
     {
-        Release();
+        Reset();
         if (_session == null) return;
 
         _session.StateChanged -= OnStateChanged;
