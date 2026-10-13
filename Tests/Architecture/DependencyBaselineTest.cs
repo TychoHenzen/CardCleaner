@@ -75,6 +75,11 @@ public class DependencyBaselineTest
         var malformed = DependencyBaseline.Apply(_path, Baseline, update: false);
         AssertThat(malformed.Count).IsEqual(1);
         AssertThat(malformed[0]).StartsWith($"dependency baseline {_path} is malformed");
+
+        var malformedWithSwitch = DependencyBaseline.Apply(_path, Baseline, update: true);
+        AssertThat(malformedWithSwitch.Count).IsEqual(1);
+        AssertThat(malformedWithSwitch[0]).StartsWith($"dependency baseline {_path} is malformed");
+        AssertThat(File.ReadAllText(_path)).IsEqual("{\"up_edges\": 1}");
     }
 
     private void Record() => AssertThat(DependencyBaseline.Apply(_path, Baseline, update: true).Count).IsEqual(0);

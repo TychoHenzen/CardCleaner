@@ -65,14 +65,15 @@ internal static class DependencyBaseline
 
     /// <summary>
     /// The ratchet. Without the switch: the comparison messages. With it: rewrite the file unless a number is higher.
-    /// ASSUMPTION: with the switch, a missing or malformed file is written fresh, so the first baseline can be recorded.
+    /// ASSUMPTION: with the switch, a missing file is written fresh, so the first baseline can be recorded. A malformed
+    /// file always fails, so corrupting it cannot bypass the ratchet.
     /// </summary>
     public static List<string> Apply(string path, GatedNumbers measured, bool update)
     {
         var read = Read(path);
         if (read.Numbers is null)
         {
-            if (!update) return [read.Failure!];
+            if (!update || File.Exists(path)) return [read.Failure!];
             Write(path, measured);
             return [];
         }
