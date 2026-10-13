@@ -5,7 +5,8 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services.FrontierExploration;
 
 /// <summary>
-/// Tracks seen and currently visible cells when no external fog of war system is provided.
+/// Computes the seen and the currently visible cells for session exploration on both map kinds; the session
+/// publishes them to the map's passive fog of war.
 /// </summary>
 internal sealed class LocalVisionTracker
 {

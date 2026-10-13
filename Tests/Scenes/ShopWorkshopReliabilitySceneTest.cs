@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
-using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -14,8 +13,6 @@ namespace CardCleaner.Tests.Scenes;
 [RequireGodotRuntime]
 public class ShopWorkshopReliabilitySceneTest
 {
-    private const int SmallMeshRings = 3;
-
     private static readonly CardSignature SomeCard = new() { Febris = 0.4f };
 
     private WorkshopSceneRig _rig = null!;
@@ -24,23 +21,23 @@ public class ShopWorkshopReliabilitySceneTest
     public async Task Setup()
     {
         _rig = await WorkshopSceneRig.Create();
-        _rig.Screen.MeshRings = SmallMeshRings;
         _rig.PickKind(MapGenerationType.IrregularMesh);
     }
 
     [AfterTest]
     public static void Teardown()
     {
+        Engine.TimeScale = 1;
         ServiceLocator.ResetForTesting();
     }
 
-    [TestCase]
+    [TestCase(Timeout = 120000)]
     [TestCategory("Unit")]
     public async Task FinishedSessionLightsTheButtonForResetAndTheResetPressDarkensIt()
     {
         await RunSession();
 
-        _rig.Screen.RaiseExplorationFinished();
+        await _rig.RunToCompletion();
 
         AssertBool(_rig.Button.Enabled).IsTrue();
         AssertBool(_rig.Button.ButtonMesh!.Visible).IsTrue();
@@ -56,12 +53,12 @@ public class ShopWorkshopReliabilitySceneTest
         AssertThat(_rig.Controller.MapType).IsEqual(MapGenerationType.IrregularMesh);
     }
 
-    [TestCase]
+    [TestCase(Timeout = 120000)]
     [TestCategory("Unit")]
     public async Task SecondSessionRunsAfterTheResetOnceBothHoldersAreFilledAgain()
     {
         await RunSession();
-        _rig.Screen.RaiseExplorationFinished();
+        await _rig.RunToCompletion();
         _rig.Button.Interact();
         await WorkshopSceneRig.Settle();
 

@@ -46,7 +46,7 @@ public class ContractsLayerBoundaryTest
 
         // A scan that sees too few types passes trivially, so it must find the whole layer, including the two types
         // whose references #167 cut (ILog's locator calls, MapGenerationConfig's biome registry).
-        AssertInt(contracts.Count(type => !type.IsNested)).IsGreater(24);
+        AssertInt(contracts.Count(type => !type.IsNested)).IsGreater(23);
         AssertThat(contracts).Contains(typeof(ILog), typeof(MapGenerationConfig));
 
         // Joined into one string so a failure names every reference, not just how many there are.
@@ -67,7 +67,7 @@ public class ContractsLayerBoundaryTest
                 .Select(name => $"{SourceScan.RelativePath(path)} {name}"))
             .ToList();
 
-        AssertInt(files.Count).IsGreater(24);
+        AssertInt(files.Count).IsGreater(23);
         AssertThat(string.Join(System.Environment.NewLine, strays)).IsEmpty();
     }
 

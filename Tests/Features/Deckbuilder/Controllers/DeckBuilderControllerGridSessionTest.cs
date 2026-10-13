@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
@@ -29,13 +28,13 @@ public class DeckBuilderControllerGridSessionTest
     private InteractableButton _button = null!;
     private InteractableButton _kindButton = null!;
     private Label _statusLabel = null!;
-    private FakeSession _session = null!;
+    private FakeGameSession _session = null!;
 
     [BeforeTest]
     public async Task Setup()
     {
         ServiceLocator.ResetForTesting();
-        _session = new FakeSession();
+        _session = new FakeGameSession();
         ServiceLocator.Container.RegisterSingleton<IGameSessionService>(_session);
         ServiceLocator.Container.RegisterSingleton<IGridMapGenerator>(new PendingGridGenerator());
 
@@ -132,40 +131,6 @@ public class DeckBuilderControllerGridSessionTest
         slot.Area.EmitSignal(Area3D.SignalName.BodyEntered, card);
         await ISceneRunner.SyncProcessFrame;
         await ISceneRunner.SyncProcessFrame;
-    }
-
-    /// <summary>A session service that only reports the states a test hands it.</summary>
-    private sealed class FakeSession : IGameSessionService
-    {
-        public SessionState CurrentState { get; private set; } = SessionState.WaitingForCards;
-        public event Action<SessionState>? StateChanged;
-#pragma warning disable CS0067 // The controller under test never needs these raised.
-        public event Action<SimpleMapData>? MapGenerated;
-        public event Action<List<CardSignature>>? LootGenerated;
-        public event Action<Vector2I>? PlayerMoved;
-        public event Action<Vector2I>? EnemyDefeated;
-        public event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
-        public event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>>? VisibilityUpdated;
-        public event Action<IReadOnlyList<Vector2I>, Vector2I?>? PathUpdated;
-        public event Action<float>? ProgressUpdated;
-        public event Action<IGeneratedMap>? GeneratedMapReady;
-#pragma warning restore CS0067
-        public IGeneratedMap? CurrentGeneratedMap => null;
-
-        public void Report(SessionState state)
-        {
-            CurrentState = state;
-            StateChanged?.Invoke(state);
-        }
-
-        public void StartSession(
-            List<CardSignature> mapSeeds,
-            List<CardSignature> abilityCards,
-            IMapGenerator mapGenerator)
-        {
-        }
-        public void AdvanceSession() { }
-        public void ResetSession() { }
     }
 
     /// <summary>A grid generator whose map never arrives; the controller only needs one registered.</summary>

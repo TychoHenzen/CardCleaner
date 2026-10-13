@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -26,6 +27,16 @@ public sealed class WorkshopSceneRig
 
     // Frames to wait for the irregular map, which generates off the main thread, to show.
     public const int MapFrameBudget = 300;
+
+    // Rings of the irregular map the workshop suites play: small, so a session runs to its end within seconds.
+    public const int SmallMeshRings = 3;
+
+    // Wall-clock budget for one irregular session on the small map, run at SessionTimeScale.
+    public const double SessionBudgetSeconds = 60;
+
+    // Exploration steps take 0.1 s, move animations 0.15 s and combat turns 1.0 s of game time; the suites run game
+    // time faster instead of changing those rules. Their teardown sets the time scale back to 1.
+    public const double SessionTimeScale = 10;
 
     private WorkshopSceneRig(Node3D shop)
     {
@@ -60,7 +71,7 @@ public sealed class WorkshopSceneRig
         ServiceLocator.ResetForTesting();
         ServiceLocator.Container.RegisterSingleton<ICardSpawningService>(new TestCardSpawner());
         ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
-        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(MeshMapGeneratorFixture.Create());
+        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(MeshMapGeneratorFixture.Create(SmallMeshRings));
         ServiceLocator.Container.RegisterSingleton<IGameSessionService>(
             rig.Workshop.GetNode<GameSessionService>("GameSessionService"));
 
@@ -107,6 +118,30 @@ public sealed class WorkshopSceneRig
 
         AssertBool(Screen.IsInitialized)
             .OverrideFailureMessage($"The irregular map did not show within {MapFrameBudget} frames")
+            .IsTrue();
+    }
+
+    /// <summary>
+    /// Runs the session the cabinet started to its end at <see cref="SessionTimeScale"/>, and fails when it does not
+    /// complete within <see cref="SessionBudgetSeconds"/>.
+    /// </summary>
+    public async Task RunToCompletion()
+    {
+        var session = Workshop.GetNode<GameSessionService>("GameSessionService");
+        var completed = false;
+        void OnStateChanged(SessionState state) => completed |= state == SessionState.SessionComplete;
+
+        session.StateChanged += OnStateChanged;
+        Engine.TimeScale = SessionTimeScale;
+        var clock = Stopwatch.StartNew();
+        while (!completed && clock.Elapsed.TotalSeconds < SessionBudgetSeconds)
+            await ISceneRunner.SyncProcessFrame;
+
+        Engine.TimeScale = 1;
+        session.StateChanged -= OnStateChanged;
+        AssertBool(completed)
+            .OverrideFailureMessage(
+                $"The session did not complete within {SessionBudgetSeconds} s; last state {session.CurrentState}")
             .IsTrue();
     }
 

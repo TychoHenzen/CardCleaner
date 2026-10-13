@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
@@ -24,7 +25,7 @@ public class MeshMapGeneratorTest
     [TestCategory("Unit")]
     public static async Task GeneratesAMeshMapWithAStartAndEnemiesFromTheSharedRule()
     {
-        var generated = await MeshMapGeneratorFixture.Create().GenerateAsync(Config(PlacementRings));
+        var generated = await MeshMapGeneratorFixture.Create(PlacementRings).GenerateAsync(Config());
 
         var meshMap = generated as IrregularMeshNs.IMeshGeneratedMap;
         AssertThat(meshMap).IsNotNull();
@@ -49,8 +50,8 @@ public class MeshMapGeneratorTest
         var expected = TerrainGeneratorFactory.Create(registry, biomes)
             .GenerateWithCards(SmallRings, MeshMapGeneratorFixture.TerrainCards(), Seed, relaxationIterations: 8);
 
-        var generated = (IrregularMeshNs.IMeshGeneratedMap)await new IrregularMeshNs.MeshMapGenerator(registry, biomes)
-            .GenerateAsync(Config(SmallRings));
+        var generator = new IrregularMeshNs.MeshMapGenerator(registry, biomes, SmallRings);
+        var generated = (IrregularMeshNs.IMeshGeneratedMap)await generator.GenerateAsync(Config());
 
         var expectedTerrain = MeshMapGeneratorFixture.TerrainOf(expected);
         AssertThat(MeshMapGeneratorFixture.TerrainOf(generated.RawMesh)).IsEqual(expectedTerrain);
@@ -60,10 +61,10 @@ public class MeshMapGeneratorTest
     [TestCategory("Unit")]
     public static async Task TheSameSeedAndCardsGiveTheSameMap()
     {
-        var generator = MeshMapGeneratorFixture.Create();
+        var generator = MeshMapGeneratorFixture.Create(SmallRings);
 
-        var first = (IrregularMeshNs.IMeshGeneratedMap)await generator.GenerateAsync(Config(SmallRings));
-        var second = (IrregularMeshNs.IMeshGeneratedMap)await generator.GenerateAsync(Config(SmallRings));
+        var first = (IrregularMeshNs.IMeshGeneratedMap)await generator.GenerateAsync(Config());
+        var second = (IrregularMeshNs.IMeshGeneratedMap)await generator.GenerateAsync(Config());
 
         AssertThat(Describe(second)).IsEqual(Describe(first));
     }
@@ -78,7 +79,7 @@ public class MeshMapGeneratorTest
 
         try
         {
-            await MeshMapGeneratorFixture.Create().GenerateAsync(Config(SmallRings), null, cancellation.Token);
+            await MeshMapGeneratorFixture.Create(SmallRings).GenerateAsync(Config(), null, cancellation.Token);
         }
         catch (MapGenerationCancelledException)
         {
@@ -95,15 +96,14 @@ public class MeshMapGeneratorTest
         var mainThread = Environment.CurrentManagedThreadId;
         var progress = new ThreadRecordingProgress();
 
-        await MeshMapGeneratorFixture.Create().GenerateAsync(Config(SmallRings), progress);
+        await MeshMapGeneratorFixture.Create(SmallRings).GenerateAsync(Config(), progress);
 
         AssertThat(progress.LastValue).IsEqual(1f);
         AssertThat(progress.LastThread).IsNotEqual(mainThread);
     }
 
-    private static IrregularMeshNs.MeshMapGenerationConfig Config(int rings) => new()
+    private static MapGenerationConfig Config() => new()
     {
-        Rings = rings,
         Seed = Seed,
         MapSeeds = MeshMapGeneratorFixture.TerrainCards()
     };

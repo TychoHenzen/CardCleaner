@@ -87,10 +87,9 @@ LootSpawnPoint = NodePath("../LootPoint")
 [node name="LootPoint" type="Marker3D" parent="Cabinet"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25, 1.5, 2)
 
-[node name="IrregularTileMapScreen" parent="Cabinet" instance=ExtResource("IrregularScreen")]
+[node name="IrregularTileMapScreen" parent="Cabinet" node_paths=PackedStringArray("LootSpawnPoint") instance=ExtResource("IrregularScreen")]
 transform = Transform3D(0.26, 0, 0, 0, 0.26, 0, 0, 0, 0.26, 0, 1.5, 0.67)
-MeshRings = 20
-VisionRange = 5.0
+LootSpawnPoint = NodePath("../LootPoint")
 
 [node name="DeckbuilderController" type="Node" parent="." node_paths=PackedStringArray("AbilityDeckSlot", "MapCardSlot", "ActivateButton", "MapKindButton", "WorldTileMapScreenScene", "IrregularMapScreen")]
 script = ExtResource("DeckBuilderController")

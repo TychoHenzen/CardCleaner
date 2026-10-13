@@ -17,7 +17,8 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 /// </summary>
 public static class MeshMapGeneratorFixture
 {
-    public static IrregularMeshNs.MeshMapGenerator Create() => new(new TileRegistry(), DefaultBiomes());
+    public static IrregularMeshNs.MeshMapGenerator Create(int rings = IrregularMeshNs.MeshMapGenerator.DefaultRings) =>
+        new(new TileRegistry(), DefaultBiomes(), rings);
 
     /// <summary>A generator whose maps never arrive, for tests that need a generation still running.</summary>
     public static IrregularMeshNs.IMeshMapGenerator Pending() => new PendingMeshGenerator();

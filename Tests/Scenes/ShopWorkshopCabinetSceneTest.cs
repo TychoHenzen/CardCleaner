@@ -18,7 +18,6 @@ namespace CardCleaner.Tests.Scenes;
 [RequireGodotRuntime]
 public class ShopWorkshopCabinetSceneTest
 {
-    private const int SmallMeshRings = 3;
     private const float EyeHeight = 1.6f;
     private const float StandingDistanceToButton = 2.5f;
 
@@ -28,7 +27,6 @@ public class ShopWorkshopCabinetSceneTest
     public async Task Setup()
     {
         _rig = await WorkshopSceneRig.Create();
-        _rig.Screen.MeshRings = SmallMeshRings;
         _rig.PickKind(MapGenerationType.IrregularMesh);
     }
 

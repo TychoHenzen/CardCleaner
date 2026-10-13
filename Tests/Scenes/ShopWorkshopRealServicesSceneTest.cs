@@ -25,8 +25,6 @@ namespace CardCleaner.Tests.Scenes;
 [RequireGodotRuntime]
 public class ShopWorkshopRealServicesSceneTest
 {
-    private const int SmallMeshRings = 3;
-
     // Frames to wait for the explorer's first step once the map is up; a step takes a fraction of a second.
     private const int FirstStepFrameBudget = 300;
 
@@ -43,7 +41,8 @@ public class ShopWorkshopRealServicesSceneTest
         ServiceLocator.ResetForTesting();
         ServiceLocator.Container.RegisterSingleton(new RandomNumberGenerator());
         ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
-        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(MeshMapGeneratorFixture.Create());
+        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(
+            MeshMapGeneratorFixture.Create(WorkshopSceneRig.SmallMeshRings));
 
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _tree.Root.AddChild(_shop);
@@ -56,7 +55,6 @@ public class ShopWorkshopRealServicesSceneTest
         }
 
         ServiceLocator.ExecutePendingCallbacks();
-        _shop.GetNode<IrregularWorldMapScreen>("World/Workshop/Cabinet/IrregularTileMapScreen").MeshRings = SmallMeshRings;
         await WorkshopSceneRig.Settle();
     }
 

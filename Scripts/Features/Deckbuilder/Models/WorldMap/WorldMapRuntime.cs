@@ -30,6 +30,9 @@ internal sealed class WorldMapRuntime
     private IMapGenerator? _pendingGenerator;
     private bool _serviceReady;
 
+    // Set from this screen's own start call until the session falls back to waiting or the screen is reset or
+    // stopped: the screen acts only on a session it started.
+    private bool _ownsSession;
 
     internal WorldMapRuntime(SimpleWorldMapScreen screen)
     {
@@ -53,6 +56,7 @@ internal sealed class WorldMapRuntime
 
     internal void Stop()
     {
+        _ownsSession = false;
         if (_gameSession == null) return;
 
         _gameSession.StateChanged -= OnSessionStateChanged;
@@ -68,7 +72,7 @@ internal sealed class WorldMapRuntime
     {
         if (_serviceReady && _gameSession != null)
         {
-            _gameSession.StartSession(mapSeed.ToList(), abilities.ToList(), generator);
+            StartOwnSession(mapSeed, abilities, generator);
             return;
         }
 
@@ -82,6 +86,8 @@ internal sealed class WorldMapRuntime
 
     internal void Reset()
     {
+        _ownsSession = false;
+
         // Clear all layers
         _components.Terrain?.ClearAllLayers();
         _screen.OverlayLayer?.Clear();
@@ -133,15 +139,37 @@ internal sealed class WorldMapRuntime
         if (_pendingMapSeed is { Length: > 0 } && _pendingAbilities != null && _pendingGenerator != null)
         {
             ILog.Print("Processing pending initialization...");
-            gameSession.StartSession(_pendingMapSeed.ToList(), _pendingAbilities.ToList(), _pendingGenerator);
+            var mapSeed = _pendingMapSeed;
+            var abilities = _pendingAbilities;
+            var generator = _pendingGenerator;
             _pendingMapSeed = null;
             _pendingAbilities = null;
             _pendingGenerator = null;
+            StartOwnSession(mapSeed, abilities, generator);
         }
+    }
+
+    private void StartOwnSession(CardSignature[] mapSeed, CardSignature[] abilities, IMapGenerator generator)
+    {
+        var session = _gameSession!;
+        if (session.CurrentState != SessionState.WaitingForCards)
+        {
+            ILog.Error("Cannot start a grid session while another session runs");
+            return;
+        }
+
+        _ownsSession = true;
+        session.StartSession(mapSeed.ToList(), abilities.ToList(), generator);
+
+        // A start the service refused leaves it waiting; the screen then owns nothing.
+        if (session.CurrentState == SessionState.WaitingForCards)
+            _ownsSession = false;
     }
 
     private void OnSessionStateChanged(SessionState newState)
     {
+        if (!_ownsSession) return;
+
         ShowStatus($"Status: {newState}");
 
         switch (newState)
@@ -164,6 +192,9 @@ internal sealed class WorldMapRuntime
             case SessionState.SessionComplete:
                 ShowStatus("Session complete!");
                 ILog.Print("Session complete - ready for next round!");
+                break;
+            case SessionState.WaitingForCards:
+                _ownsSession = false;
                 break;
         }
     }
@@ -195,6 +226,8 @@ internal sealed class WorldMapRuntime
 
     private void OnMapGenerated(SimpleMapData mapData)
     {
+        if (!_ownsSession) return;
+
         ILog.Print($"Received map from GameSessionService: {mapData.Size.X}x{mapData.Size.Y}");
         _pathOverlay.ForgetRenderedTiles();
         RenderMap(mapData);
@@ -240,15 +273,22 @@ internal sealed class WorldMapRuntime
 
     private void OnServicePlayerMoved(Vector2I gridPosition)
     {
+        if (!_ownsSession) return;
+
         if (_screen.PlayerSprite != null)
             _screen.PlayerSprite.Position = new Vector2(
                 gridPosition.X * _components.TileSize + _components.TileSize / 2,
                 gridPosition.Y * _components.TileSize + _components.TileSize / 2
             );
+
+        // The grid view shows a move at once, so it reports it shown straight away.
+        _gameSession?.ReportStepShown();
     }
 
     private void OnPathUpdated(IReadOnlyList<Vector2I> path, Vector2I? target)
     {
+        if (!_ownsSession) return;
+
         if (_screen.OverlayLayer == null || _components.Terrain == null) return;
 
         _pathOverlay.Show(_screen.OverlayLayer, _components.Terrain, path, target);
@@ -256,17 +296,23 @@ internal sealed class WorldMapRuntime
 
     private void OnVisibilityUpdated(IReadOnlySet<Vector2I> seenTiles, IReadOnlySet<Vector2I> currentlyVisibleTiles)
     {
+        if (!_ownsSession) return;
+
         _components.Fog?.UpdateVisibility(seenTiles, currentlyVisibleTiles);
     }
 
     private void OnServiceEnemyDefeated(Vector2I position)
     {
+        if (!_ownsSession) return;
+
         ILog.Print($"Enemy defeated at {position} - removing sprite");
         _enemySprites.RemoveAt(position, _components.TileSize);
     }
 
     private void OnLootGenerated(List<CardSignature> lootSignatures)
     {
+        if (!_ownsSession) return;
+
         ILog.Print($"Loot generated: {lootSignatures.Count} cards");
         if (ILog.ExportCheck(_screen.LootSpawnPoint, nameof(SimpleWorldMapScreen.LootSpawnPoint), _screen))
             return;

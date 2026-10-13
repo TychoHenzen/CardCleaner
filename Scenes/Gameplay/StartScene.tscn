@@ -77,10 +77,9 @@ LootSpawnPoint = NodePath("../LootPoint")
 [node name="LootPoint" type="Marker3D" parent="World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 2)
 
-[node name="IrregularTileMapScreen" parent="World" instance=ExtResource("32_ihrxd")]
+[node name="IrregularTileMapScreen" parent="World" node_paths=PackedStringArray("LootSpawnPoint") instance=ExtResource("32_ihrxd")]
 transform = Transform3D(1.3113416e-07, 0, 1, 0, 1, 0, -1, 0, 1.3113416e-07, -5.2953367, 1.6270752, 3.9634523)
-MeshRings = 20
-VisionRange = 5.0
+LootSpawnPoint = NodePath("../LootPoint")
 
 [node name="StaticBody3D4" parent="World" instance=ExtResource("9_dr1m3")]
 transform = Transform3D(1, 0, -1.06581e-14, 0, 1, 0, 1.06581e-14, 0, 1, 4, 0.458978, 4)

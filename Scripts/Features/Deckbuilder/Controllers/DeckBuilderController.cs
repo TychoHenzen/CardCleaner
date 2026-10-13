@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -34,8 +32,8 @@ public partial class DeckBuilderController : Node
     private IMeshMapGenerator? _meshGenerator;
     private CabinetPhase _phase = CabinetPhase.Idle;
 
-    // The kind of the session started by the last activate press, read only while the cabinet is not idle, so a
-    // change of MapType in between cannot send the finish or the reset to the other screen.
+    // The kind of the session started by the last activate press, set by that press and read by the reset press that
+    // ends that session, so a change of MapType in between cannot send the reset to the other screen.
     private MapGenerationType _runningKind;
 
     // The map kind toggle works only while the cabinet is idle, so the kind never changes under a live map.
@@ -95,11 +93,8 @@ public partial class DeckBuilderController : Node
         // The grid kind's generator, handed to the session when a grid session starts
         ServiceLocator.Get<IGridMapGenerator>(generator => _gridGenerator = generator);
 
-        // The irregular kind's generator, handed to the irregular screen when an irregular session starts
+        // The irregular kind's generator, handed to the session when an irregular session starts
         ServiceLocator.Get<IMeshMapGenerator>(generator => _meshGenerator = generator);
-
-        if (IrregularMapScreen != null)
-            IrregularMapScreen.ExplorationFinished += OnIrregularExplorationFinished;
 
         // Show the picked kind, and initially disable the button
         ShowPickedKind();
@@ -113,9 +108,6 @@ public partial class DeckBuilderController : Node
         {
             _gameSession.StateChanged -= OnSessionStateChanged;
         }
-
-        if (IrregularMapScreen != null)
-            IrregularMapScreen.ExplorationFinished -= OnIrregularExplorationFinished;
 
         if (MapKindButton != null)
             MapKindButton.ButtonPressed -= OnMapKindButtonPressed;
@@ -152,14 +144,14 @@ public partial class DeckBuilderController : Node
     }
 
     /// <summary>
-    /// Called when the game session state changes; only a running grid session acts on it.
+    /// Called when the game session state changes; it acts only while a session the cabinet started runs.
     /// A completed session waits for the reset press (map stays visible). A session that falls back to waiting
     /// without completing (its map generation failed or was cancelled) has nothing to reset, so the cabinet is
     /// idle again at once.
     /// </summary>
     private void OnSessionStateChanged(SessionState newState)
     {
-        if (_phase != CabinetPhase.Running || _runningKind != MapGenerationType.RegularGrid) return;
+        if (_phase != CabinetPhase.Running) return;
 
         if (newState == SessionState.SessionComplete)
         {
@@ -169,18 +161,9 @@ public partial class DeckBuilderController : Node
 
         if (newState != SessionState.WaitingForCards) return;
 
-        ILog.Print("Grid session ended without completing - cabinet idle again");
+        ILog.Print("Session ended without completing - cabinet idle again");
         _phase = CabinetPhase.Idle;
         UpdateButtonState();
-    }
-
-    /// <summary>
-    /// Called when the irregular mesh map finishes exploring (map stays visible).
-    /// </summary>
-    private void OnIrregularExplorationFinished()
-    {
-        if (_phase == CabinetPhase.Running && _runningKind == MapGenerationType.IrregularMesh)
-            AwaitMapReset();
     }
 
     /// <summary>
@@ -286,15 +269,15 @@ public partial class DeckBuilderController : Node
         var mapSeeds = MapCardSlot.ConsumeAllCardSignatures();
         var abilities = AbilityDeckSlot.ConsumeAllCardSignatures();
 
-        // Start the session on the screen of the recorded kind
+        // Both kinds start the same way: the kind's screen starts the session with the kind's generator
         switch (kind)
         {
             case MapGenerationType.RegularGrid:
-                StartRegularGridGeneration(mapSeeds.ToArray(), abilities.ToArray(), _gridGenerator!);
+                WorldTileMapScreenScene.Initialize(mapSeeds.ToArray(), abilities.ToArray(), _gridGenerator!);
                 break;
 
             case MapGenerationType.IrregularMesh:
-                StartIrregularMeshGeneration(mapSeeds.ToArray(), abilities.ToArray(), _meshGenerator!);
+                IrregularMapScreen.Initialize(mapSeeds.ToArray(), abilities.ToArray(), _meshGenerator!);
                 break;
         }
 
@@ -321,73 +304,6 @@ public partial class DeckBuilderController : Node
         // Update biome preview and button state based on current slot contents
         UpdateBiomePreview();
         UpdateButtonState();
-    }
-
-    /// <summary>
-    /// Starts the grid session on the grid screen with the grid generator the container registered.
-    /// </summary>
-    private void StartRegularGridGeneration(
-        CardSignature[] mapSeeds,
-        CardSignature[] abilities,
-        IMapGenerator generator)
-    {
-        WorldTileMapScreenScene.Initialize(mapSeeds, abilities, generator);
-    }
-
-    /// <summary>
-    /// Starts the irregular session on the irregular screen with the mesh generator the container registered.
-    /// </summary>
-    private void StartIrregularMeshGeneration(
-        CardSignature[] mapSeeds,
-        CardSignature[] abilities,
-        IMeshMapGenerator generator)
-    {
-        // Generate a seed from the card signatures
-        var seed = GenerateSeedFromSignatures(mapSeeds);
-
-        _ = GenerateIrregularMapAsync(generator, seed, mapSeeds, abilities);
-    }
-
-    /// <summary>
-    /// Runs the irregular screen's generation. A failure is logged and ends the session, so the next press resets
-    /// the cabinet instead of leaving it running without a map.
-    /// </summary>
-    private async Task GenerateIrregularMapAsync(
-        IMeshMapGenerator generator,
-        int seed,
-        CardSignature[] mapSeeds,
-        CardSignature[] abilities)
-    {
-        try
-        {
-            // Pass seed, card signatures for terrain, and abilities for combat
-            await IrregularMapScreen.GenerateMap(generator, seed, mapSeeds, abilities);
-        }
-        catch (Exception ex)
-        {
-            ILog.Error($"Irregular map generation failed: {ex.Message}");
-            OnIrregularExplorationFinished();
-        }
-    }
-
-    /// <summary>
-    /// Generates an integer seed from card signatures for reproducible generation.
-    /// </summary>
-    private static int GenerateSeedFromSignatures(CardSignature[] signatures)
-    {
-        if (signatures.Length == 0) return 0;
-
-        // Combine signature elements into a seed
-        var hash = 17;
-        foreach (var sig in signatures)
-        {
-            foreach (var element in sig.Elements)
-            {
-                // Convert float to int bits and combine
-                hash = hash * 31 + System.BitConverter.SingleToInt32Bits(element);
-            }
-        }
-        return hash;
     }
 
     /// <summary>
