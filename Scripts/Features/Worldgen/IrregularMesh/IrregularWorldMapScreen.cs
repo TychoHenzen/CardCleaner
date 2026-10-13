@@ -37,6 +37,8 @@ public partial class IrregularWorldMapScreen : Node3D, ISessionView
 
     #region Private Fields
 
+    private const float LootCardSpacing = 0.5f;
+
     private IrregularMesh? _mesh;
     private IrregularMeshMapData? _mapData;
     private WorldMapSession? _view;
@@ -316,7 +318,26 @@ public partial class IrregularWorldMapScreen : Node3D, ISessionView
         if (ILog.ExportCheck(LootSpawnPoint, nameof(LootSpawnPoint), this))
             return;
 
-        LootCardSpawner.Spawn(lootSignatures, LootSpawnPoint!.GlobalTransform);
+        SpawnLootRow(lootSignatures, LootSpawnPoint!.GlobalTransform);
+    }
+
+    // Lays the loot cards out in a row that starts at the loot point and runs along that point's X axis.
+    private static void SpawnLootRow(List<CardSignature> lootSignatures, Transform3D lootPoint)
+    {
+        var rowDirection = lootPoint.Basis.Orthonormalized().X;
+
+        ServiceLocator.Get<ICardSpawningService>(spawningService =>
+            ServiceLocator.Get<ICardSpawner>(spawner =>
+            {
+                for (var i = 0; i < lootSignatures.Count; i++)
+                {
+                    var spawnTransform = Transform3D.Identity;
+                    spawnTransform.Origin = lootPoint.Origin + rowDirection * (i * LootCardSpacing);
+                    spawningService.SpawnCard(lootSignatures[i], spawnTransform, spawner.GetNode());
+                }
+
+                ILog.Print($"Spawned {lootSignatures.Count} loot cards!");
+            }));
     }
 
     // The irregular view draws no path.

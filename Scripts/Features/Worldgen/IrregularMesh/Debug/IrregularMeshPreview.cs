@@ -13,6 +13,15 @@ using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug.Painting;
 [Tool]
 public partial class IrregularMeshPreview : Node2D
 {
+    // Defaults of the inspector properties, also used by the reset-to-default button.
+    private const int DefaultRings = 6;
+    private const float DefaultHexRadius = 1.0f;
+    private const float DefaultMergeProbability = 0.7f;
+    private const int DefaultRelaxationIterations = 15;
+    private const int DefaultSeed = 12345;
+    private const int DefaultNumIslands = 5;
+    private const float DefaultVisualScale = 50f;
+
     private IrregularMesh? _mesh;
     private IrregularTerrainRenderer? _renderer;
     private ITileRegistry? _tileRegistry;
@@ -27,7 +36,7 @@ public partial class IrregularMeshPreview : Node2D
         get => _rings;
         set { _rings = value; _needsRebuild = true; }
     }
-    private int _rings = PreviewDefaults.Rings;
+    private int _rings = DefaultRings;
 
     /// <summary>
     /// Radius of each hexagon in world units.
@@ -38,7 +47,7 @@ public partial class IrregularMeshPreview : Node2D
         get => _hexRadius;
         set { _hexRadius = value; _needsRebuild = true; }
     }
-    private float _hexRadius = PreviewDefaults.HexRadius;
+    private float _hexRadius = DefaultHexRadius;
 
     /// <summary>
     /// Probability of merging triangles into quads.
@@ -49,7 +58,7 @@ public partial class IrregularMeshPreview : Node2D
         get => _mergeProbability;
         set { _mergeProbability = value; _needsRebuild = true; }
     }
-    private float _mergeProbability = PreviewDefaults.MergeProbability;
+    private float _mergeProbability = DefaultMergeProbability;
 
     /// <summary>
     /// Number of Lloyd relaxation iterations.
@@ -60,7 +69,7 @@ public partial class IrregularMeshPreview : Node2D
         get => _relaxationIterations;
         set { _relaxationIterations = value; _needsRebuild = true; }
     }
-    private int _relaxationIterations = PreviewDefaults.RelaxationIterations;
+    private int _relaxationIterations = DefaultRelaxationIterations;
 
     /// <summary>
     /// Random seed for reproducible generation.
@@ -71,7 +80,7 @@ public partial class IrregularMeshPreview : Node2D
         get => _seed;
         set { _seed = value; _needsRebuild = true; }
     }
-    private int _seed = PreviewDefaults.Seed;
+    private int _seed = DefaultSeed;
 
     /// <summary>
     /// Transition key for atlas lookup (e.g., "grass3|base_grass1").
@@ -94,7 +103,7 @@ public partial class IrregularMeshPreview : Node2D
         get => _numIslands;
         set { _numIslands = value; _needsRebuild = true; }
     }
-    private int _numIslands = PreviewDefaults.NumIslands;
+    private int _numIslands = DefaultNumIslands;
 
     /// <summary>
     /// Show wireframe overlay.
@@ -139,7 +148,7 @@ public partial class IrregularMeshPreview : Node2D
             UpdateTransform();
         }
     }
-    private float _visualScale = PreviewDefaults.VisualScale;
+    private float _visualScale = DefaultVisualScale;
 
     /// <summary>
     /// Button to regenerate mesh.
@@ -274,11 +283,27 @@ public partial class IrregularMeshPreview : Node2D
     /// </summary>
     public override bool _PropertyCanRevert(StringName property)
     {
-        return PreviewDefaults.Find(property.ToString()).HasValue || base._PropertyCanRevert(property);
+        return FindDefault(property.ToString()).HasValue || base._PropertyCanRevert(property);
     }
 
     public override Variant _PropertyGetRevert(StringName property)
     {
-        return PreviewDefaults.Find(property.ToString()) ?? base._PropertyGetRevert(property);
+        return FindDefault(property.ToString()) ?? base._PropertyGetRevert(property);
+    }
+
+    // The default of the named property, or null when the property has no revert default.
+    private static Variant? FindDefault(string property)
+    {
+        return property switch
+        {
+            nameof(Rings) => DefaultRings,
+            nameof(HexRadius) => DefaultHexRadius,
+            nameof(MergeProbability) => DefaultMergeProbability,
+            nameof(RelaxationIterations) => DefaultRelaxationIterations,
+            nameof(Seed) => DefaultSeed,
+            nameof(NumIslands) => DefaultNumIslands,
+            nameof(VisualScale) => DefaultVisualScale,
+            _ => null
+        };
     }
 }

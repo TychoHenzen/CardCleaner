@@ -17,6 +17,8 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 /// </summary>
 internal sealed class WorldMapRuntime : ISessionView
 {
+    private const float LootCardSpacing = 0.5f;
+
     private readonly SimpleWorldMapScreen _screen;
     private readonly WorldMapComponents _components;
     private readonly BiomePreviewHost _biomePreview = new();
@@ -255,7 +257,26 @@ internal sealed class WorldMapRuntime : ISessionView
         if (ILog.ExportCheck(_screen.LootSpawnPoint, nameof(SimpleWorldMapScreen.LootSpawnPoint), _screen))
             return;
 
-        LootCardSpawner.Spawn(lootSignatures, _screen.LootSpawnPoint!.GlobalTransform);
+        SpawnLootRow(lootSignatures, _screen.LootSpawnPoint!.GlobalTransform);
+    }
+
+    // Lays the loot cards out in a row that starts at the loot point and runs along that point's X axis.
+    private static void SpawnLootRow(List<CardSignature> lootSignatures, Transform3D lootPoint)
+    {
+        var rowDirection = lootPoint.Basis.Orthonormalized().X;
+
+        ServiceLocator.Get<ICardSpawningService>(spawningService =>
+            ServiceLocator.Get<ICardSpawner>(spawner =>
+            {
+                for (var i = 0; i < lootSignatures.Count; i++)
+                {
+                    var spawnTransform = Transform3D.Identity;
+                    spawnTransform.Origin = lootPoint.Origin + rowDirection * (i * LootCardSpacing);
+                    spawningService.SpawnCard(lootSignatures[i], spawnTransform, spawner.GetNode());
+                }
+
+                ILog.Print($"Spawned {lootSignatures.Count} loot cards!");
+            }));
     }
 
     // The grid view sees with the session's own checker and clears its map when the new one arrives.
