@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
@@ -129,39 +127,6 @@ public partial class IrregularMeshMovementController : Node2D
 
         StartMovement(targetCellId);
         return true;
-    }
-
-    /// <summary>
-    /// Move to an adjacent cell with smooth animation (async).
-    /// </summary>
-    /// <param name="targetCellId">The target cell ID.</param>
-    /// <returns>Task that completes when movement finishes.</returns>
-    public async Task MoveToCellAsync(int targetCellId)
-    {
-        if (!MoveToCell(targetCellId))
-            return;
-
-        // Wait for movement to complete
-        while (_isMoving)
-            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-    }
-
-    /// <summary>
-    /// Move along a path of cell IDs with smooth animation.
-    /// </summary>
-    /// <param name="path">The path of cell IDs to follow.</param>
-    /// <param name="onCellReached">Optional callback for each cell reached.</param>
-    /// <returns>Task that completes when entire path is traversed.</returns>
-    public async Task MoveAlongPathAsync(IEnumerable<int> path, Action<int>? onCellReached = null)
-    {
-        foreach (var cellId in path)
-        {
-            if (cellId == _currentCellId)
-                continue;
-
-            await MoveToCellAsync(cellId);
-            onCellReached?.Invoke(cellId);
-        }
     }
 
     /// <summary>

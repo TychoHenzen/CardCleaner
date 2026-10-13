@@ -116,26 +116,6 @@ public class IrregularMeshFogOfWar : IPassiveFogOfWar
         return _fogStates.Where(kv => kv.Value == state).Select(kv => kv.Key);
     }
 
-    /// <summary>
-    /// Get visibility statistics.
-    /// </summary>
-    internal FogStatistics GetStatistics()
-    {
-        int hidden = 0, revealed = 0, visible = 0;
-
-        foreach (var state in _fogStates.Values)
-        {
-            switch (state)
-            {
-                case FogState.Hidden: hidden++; break;
-                case FogState.Revealed: revealed++; break;
-                case FogState.Visible: visible++; break;
-            }
-        }
-
-        return new FogStatistics(hidden, revealed, visible);
-    }
-
     private void SetState(int cellId, FogState state, HashSet<int> changedCells)
     {
         if (!_fogStates.TryGetValue(cellId, out var previous) || previous == state)

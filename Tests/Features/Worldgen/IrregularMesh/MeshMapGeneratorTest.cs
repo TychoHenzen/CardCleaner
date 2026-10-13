@@ -50,8 +50,8 @@ public class MeshMapGeneratorTest
         var expected = TerrainGeneratorFactory.Create(registry, biomes)
             .GenerateWithCards(SmallRings, MeshMapGeneratorFixture.TerrainCards(), Seed, relaxationIterations: 8);
 
-        var generated = (IrregularMeshNs.IMeshGeneratedMap)await new IrregularMeshNs.MeshMapGenerator(registry, biomes, SmallRings)
-            .GenerateAsync(Config());
+        var generator = new IrregularMeshNs.MeshMapGenerator(registry, biomes, SmallRings);
+        var generated = (IrregularMeshNs.IMeshGeneratedMap)await generator.GenerateAsync(Config());
 
         var expectedTerrain = MeshMapGeneratorFixture.TerrainOf(expected);
         AssertThat(MeshMapGeneratorFixture.TerrainOf(generated.RawMesh)).IsEqual(expectedTerrain);

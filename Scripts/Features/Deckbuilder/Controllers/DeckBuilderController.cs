@@ -32,8 +32,8 @@ public partial class DeckBuilderController : Node
     private IMeshMapGenerator? _meshGenerator;
     private CabinetPhase _phase = CabinetPhase.Idle;
 
-    // The kind of the session started by the last activate press, read only while the cabinet is not idle, so a
-    // change of MapType in between cannot send the reset to the other screen.
+    // The kind of the session started by the last activate press, set by that press and read by the reset press that
+    // ends that session, so a change of MapType in between cannot send the reset to the other screen.
     private MapGenerationType _runningKind;
 
     // The map kind toggle works only while the cabinet is idle, so the kind never changes under a live map.

@@ -203,8 +203,8 @@ public partial class IrregularWorldMapScreen : Node3D
             _ownsSession = false;
     }
 
-    // ASSUMPTION: the raycast checker reads the viewport's 2D space, whose opaque terrain shapes the render layer builds
-    // when the map arrives; exploration first asks it after that, once the session starts exploring.
+    // ASSUMPTION: the raycast checker reads the viewport's 2D space, whose opaque terrain shapes the render layer
+    // builds when the map arrives; exploration first asks it after that, once the session starts exploring.
     private IVisibilityChecker? CreateVisibilityChecker() =>
         UseRaycastVisibility && Viewport != null
             ? new RaycastVisibilityChecker(Viewport.World2D.DirectSpaceState)

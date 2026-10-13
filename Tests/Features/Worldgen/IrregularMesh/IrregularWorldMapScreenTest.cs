@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,9 +24,12 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 [RequireGodotRuntime]
 public class IrregularWorldMapScreenTest
 {
-    // Frames to wait for the map, which generates off the main thread, or for the explorer's moves.
+    // Frames to wait for the map, which generates off the main thread, or for a session state.
     private const int FrameBudget = 300;
     private const int MovesToWatch = 3;
+
+    // Seconds to wait for the explorer's moves, combat included.
+    private const double MoveBudgetSeconds = 30;
 
     private static readonly IrregularMeshNs.MeshMapGenerator SmallGenerator = MeshMapGeneratorFixture.Create(2);
 
@@ -109,13 +113,33 @@ public class IrregularWorldMapScreenTest
     public async Task TheScreenAnimatesEachMoveToANeighbouringCell()
     {
         var cells = new List<int>();
+        var movesReported = 0;
+        var animatedArrivals = 0;
+        var movesNotAnimated = 0;
+        _screen.MapGenerated += () => FindMovement(_screen).MovementCompleted += (_, _) => animatedArrivals++;
         _screen.PlayerMoved += (cellId, _) => cells.Add(cellId);
+        // The screen subscribed to the session first, so this runs after the screen took the move. An animated move
+        // is not shown yet, and every earlier move arrived through its own animation before the session sent this one;
+        // a teleport shows the move at once and raises no animated arrival.
+        _session.PlayerMovedWorld += _ =>
+        {
+            movesReported++;
+            if (cells.Count >= movesReported || animatedArrivals < movesReported - 1)
+                movesNotAnimated++;
+        };
         await ShowMap();
         var previous = _screen.MapData!.PlayerStartCell!.Value;
 
-        await WaitFor(() => cells.Count >= MovesToWatch || _session.CurrentState != SessionState.Exploring);
+        var clock = Stopwatch.StartNew();
+        while (cells.Count < MovesToWatch && !SessionEnded() && clock.Elapsed.TotalSeconds < MoveBudgetSeconds)
+            await ISceneRunner.SyncProcessFrame;
 
-        AssertThat(cells.Count).OverrideFailureMessage("The explorer never moved on the irregular map").IsGreater(0);
+        AssertInt(cells.Count)
+            .OverrideFailureMessage($"The explorer made {cells.Count} of {MovesToWatch} moves on the irregular map")
+            .IsGreaterEqual(MovesToWatch);
+        AssertInt(movesNotAnimated)
+            .OverrideFailureMessage("A move was shown without its animation, or before the last one arrived")
+            .IsEqual(0);
         foreach (var cell in cells)
         {
             AssertBool(cell == previous || _screen.MapData.GetAdjacentCells(previous).Contains(cell))
@@ -124,6 +148,13 @@ public class IrregularWorldMapScreenTest
             previous = cell;
         }
     }
+
+    private bool SessionEnded() =>
+        _session.CurrentState is SessionState.GeneratingLoot or SessionState.SessionComplete
+            or SessionState.WaitingForCards;
+
+    private static IrregularMeshNs.IrregularMeshMovementController FindMovement(Node root) =>
+        root.FindChildren("*", "", true, false).OfType<IrregularMeshNs.IrregularMeshMovementController>().Single();
 
     [TestCase]
     [TestCategory("Unit")]
@@ -232,7 +263,9 @@ public class IrregularWorldMapScreenTest
         AssertBool(_screen.IsInitialized).IsTrue();
     }
 
-    /// <summary>A generator whose map is a real irregular map seen only as a plain <see cref="IGeneratedMap"/>.</summary>
+    /// <summary>
+    /// A generator whose map is a real irregular map seen only as a plain <see cref="IGeneratedMap"/>.
+    /// </summary>
     private sealed class PlainMapGenerator : IMapGenerator
     {
         public async Task<IGeneratedMap> GenerateAsync(

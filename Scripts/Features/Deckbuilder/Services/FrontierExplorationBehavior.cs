@@ -60,7 +60,6 @@ public class FrontierExplorationBehavior
 
             _localVision.Update(currentCellId);
 
-            // Mark trivially visible cells as visited
             MarkTriviallyVisibleCells();
         }
         catch (Exception ex)

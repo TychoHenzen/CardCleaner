@@ -122,6 +122,10 @@ public class ShopWorkshopMapSessionSceneTest
         var lootCount = -1;
         session.StateChanged += states.Add;
         session.LootGenerated += loot => lootCount = loot.Count;
+        var startingEnemies = -1;
+        var enemiesDefeated = 0;
+        irregularScreen.MapGenerated += () => startingEnemies = irregularScreen.MapData!.EnemySpawnCells.Count;
+        irregularScreen.EnemyDefeated += _ => enemiesDefeated++;
         var cardsBefore = lootParent.GetChildren().OfType<CardController>().ToList();
 
         var mapCard = ShopTestCards.Create(new CardSignature { Febris = 0.4f });
@@ -156,6 +160,8 @@ public class ShopWorkshopMapSessionSceneTest
         AssertBool(irregularScreen.IsInitialized)
             .OverrideFailureMessage("The irregular screen shows a map only for an irregular session")
             .IsEqual(kind == MapGenerationType.IrregularMesh);
+        if (kind == MapGenerationType.IrregularMesh)
+            AssertEveryEnemyFell(irregularScreen, states, startingEnemies, enemiesDefeated, history);
 
         AssertBool(toggleLitDuringSession)
             .OverrideFailureMessage("The kind toggle lit while the session ran")
@@ -176,5 +182,26 @@ public class ShopWorkshopMapSessionSceneTest
         AssertBool(button.Enabled).IsTrue();
         button.Interact();
         AssertBool(toggle.Enabled).IsTrue();
+    }
+
+    /// <summary>
+    /// The irregular session fought before its loot: it entered combat, every enemy the map showed fell, the screen
+    /// heard each defeat, and no enemy is left on the map.
+    /// </summary>
+    private static void AssertEveryEnemyFell(
+        IrregularWorldMapScreen screen, List<SessionState> states, int startingEnemies, int enemiesDefeated,
+        string history)
+    {
+        var combat = states.IndexOf(SessionState.InCombat);
+        AssertBool(combat >= 0 && combat < states.IndexOf(SessionState.GeneratingLoot))
+            .OverrideFailureMessage($"The irregular session reached its loot without a fight; history: {history}")
+            .IsTrue();
+        AssertInt(startingEnemies).OverrideFailureMessage("The irregular map showed no enemy").IsGreater(0);
+        AssertInt(enemiesDefeated)
+            .OverrideFailureMessage($"{enemiesDefeated} of {startingEnemies} enemies fell on the irregular screen")
+            .IsEqual(startingEnemies);
+        AssertInt(screen.MapData!.EnemySpawnCells.Count)
+            .OverrideFailureMessage("A defeated enemy is still on the irregular map")
+            .IsEqual(0);
     }
 }
