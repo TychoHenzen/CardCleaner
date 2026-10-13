@@ -8,8 +8,11 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Tests.Features.Packs;
+using CardCleaner.Tests.Mocking;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
@@ -91,6 +94,37 @@ public class IrregularWorldMapScreenTest
         AssertBool(freshScreen.FogOfWarEnabled).IsTrue();
         AssertBool(freshScreen.ShowDebug).IsFalse();
         AssertBool(freshScreen.UseRaycastVisibility).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void LootGeneratedSpawnsCardsInARowAtTheLootPoint()
+    {
+        var lootPoint = new Marker3D { Name = "LootSpawnPoint", Position = new Vector3(2f, 3f, 4f) };
+        var cardSpawner = new MockCardSpawner { Name = "CardSpawner" };
+        _screen.AddChild(lootPoint);
+        _screen.AddChild(cardSpawner);
+        _screen.LootSpawnPoint = lootPoint;
+
+        var spawning = new RecordingCardSpawner();
+        ServiceLocator.Container.RegisterSingleton<ICardSpawningService>(spawning);
+        ServiceLocator.Container.RegisterSingleton<ICardSpawner>(cardSpawner);
+        var loot = new List<CardSignature>
+        {
+            new(new[] { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f }),
+            new(new[] { -0.1f, -0.2f, -0.3f, -0.4f, -0.5f, -0.6f, -0.7f, -0.8f }),
+            new(new[] { 0.9f, 0.8f, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f, 0.2f })
+        };
+
+        ((ISessionView)_screen).OnLootGenerated(loot);
+
+        AssertThat(spawning.Spawned.Count).IsEqual(loot.Count);
+        for (var cardIndex = 0; cardIndex < loot.Count; cardIndex++)
+        {
+            AssertThat(spawning.Spawned[cardIndex].Signature.Elements).IsEqual(loot[cardIndex].Elements);
+            AssertThat(spawning.Spawned[cardIndex].Transform.Origin)
+                .IsEqual(new Vector3(2f + cardIndex * 0.5f, 3f, 4f));
+        }
     }
 
     [TestCase]
