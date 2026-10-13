@@ -171,6 +171,34 @@ The project uses a custom service locator pattern, split into a static lookup an
 Access services via `ServiceLocator.Get<T>()` or `ServiceLocator.Container.Resolve<T>()`. Tests rebuild the container
 with `CompositionRoot.ReinitializeServices()` and clear it with `ServiceLocator.ResetForTesting()`.
 
+### Dependency Gate
+
+`Tests/Architecture/DependencyGateTest.cs` (a Unit suite, so `-Fast` and PR CI run it) measures `Scripts/` as a
+layered architecture on every run. Its code is test code under `Tests/Architecture/DependencyGate/`: Roslyn extracts
+the class graph of every top-level type in `Scripts/` (nested types fold into their outer type; `addons/` except
+gdUnit4 is compiled alongside but not counted), plus one edge per NodePath between two scripted nodes in `Scenes/`
+and `Data/`. Three anchors are each one module: UI on top (Godot types and engine-API users, plus interfaces only UI
+uses), pure data at the bottom, and pure contracts (interfaces naming only data and contracts) above it. The middle
+is clustered with a deterministic Louvain consensus (seeds 0 to 49); omnipresent classes join the module they
+reference most, and classes with almost no middle references stay loose. Modules are ordered Data, Contracts,
+middle, UI, with the fewest up edges inside each layer.
+
+The test prints a report (`dependency gate:` lines): counts, the module order, the loose classes, every up edge with
+its class pairs (heaviest first), every loop, and every leaky or missing seam with the concrete classes it crosses.
+It measures twice and fails if the two reports differ. It then ratchets five gated numbers (`up_edges`,
+`biggest_loop`, `seams_leaky`, `seams_missing`, `refs_from_non_ui_to_ui`) against
+`Tests/Architecture/dependency-baseline.json`: a number above its baseline fails; a number below it also fails,
+until the baseline is lowered with the switch set:
+
+```bash
+CARDCLEANER_UPDATE_DEPENDENCY_BASELINE=1 <godot console exe> --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -c --ignoreHeadlessMode -rc 100000 -rd reports/ci -a res://Tests/Architecture/DependencyGateTest.cs
+```
+
+The switch rewrites the file only when no number is higher, so it can never raise a baseline. Every step of plan v4
+(#239) ends with this test green and the baseline lowered to what the step achieved. The fixture suites beside it
+(`LayerAnchorsTest`, `LouvainClusteringTest`, `ModuleOrderTest`, `SeamRaterTest`, `GateMetricsTest`,
+`ClassGraphExtractorTest`, `SceneLinkReaderTest`, `DependencyBaselineTest`) pin each rule on small graphs.
+
 ### Card Signature System
 
 The core mechanic uses `CardSignature` - an 8-dimensional vector with values clamped to [-1, 1] representing elemental properties:
