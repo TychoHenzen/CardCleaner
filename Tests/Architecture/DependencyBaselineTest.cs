@@ -135,6 +135,20 @@ public class DependencyBaselineTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void SwitchLeavesTheFileUntouchedWhenNoNumberDiffers()
+    {
+        Record(BaselineJson);
+        var before = File.ReadAllBytes(_path);
+
+        var result = DependencyBaseline.Apply(_path, Baseline, update: true);
+
+        AssertThat(result.Failures.Count).IsEqual(0);
+        AssertThat(result.AcceptedRises.Count).IsEqual(0);
+        AssertThat(File.ReadAllBytes(_path).SequenceEqual(before)).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void IssueTwoFiftyFiveMeasurementsDecideByPriority()
     {
         Record("{\"up_edges\": 33, \"biggest_loop\": 35, \"seams_leaky\": 21, \"seams_missing\": 0, " +

@@ -10,8 +10,9 @@ namespace CardCleaner.Tests.Architecture.DependencyGate;
 /// The ratchet over Tests/Architecture/dependency-baseline.json (#240, #299). The measured numbers are compared with
 /// the baseline in priority order (GatedNumbers.Fields) and the first number that differs decides: if it went up the
 /// gate fails naming it; if it went down the step is accepted, a rise in a lower-priority number with it, and the gate
-/// fails until the baseline is re-recorded with the update switch. The switch never writes a baseline whose deciding
-/// number went up, and a missing or malformed baseline fails with its path, switch or not.
+/// fails until the baseline is re-recorded with the update switch; if no number differs the gate passes. The switch
+/// writes the baseline only when the deciding number went down, and a missing or malformed baseline fails with its
+/// path, switch or not.
 /// </summary>
 internal static class DependencyBaseline
 {
@@ -54,9 +55,9 @@ internal static class DependencyBaseline
             .ToList();
 
     /// <summary>
-    /// The ratchet. Without the switch: the decision's failures. With it: rewrite the file unless the deciding number
-    /// went up, and report the accepted rises. A missing or malformed file always fails and is never written, so
-    /// neither can bypass the ratchet.
+    /// The ratchet. Without the switch: the decision's failures. With it: rewrite the file only when the deciding
+    /// number went down, and report the accepted rises; when it went up, or no number differs, the file is left
+    /// untouched. A missing or malformed file always fails and is never written, so neither can bypass the ratchet.
     /// </summary>
     public static BaselineResult Apply(string path, GatedNumbers measured, bool update)
     {
@@ -65,12 +66,14 @@ internal static class DependencyBaseline
 
         var diffs = Compare(read.Numbers, measured);
         var decision = Decide(diffs);
-        if (!update || IsRefused(diffs)) return decision;
+        if (!update || !DecidingNumberWentDown(diffs)) return decision;
         Write(path, measured);
         return decision with { Failures = [] };
     }
 
     private static bool IsRefused(List<NumberDiff> diffs) => diffs.Count > 0 && diffs[0].IsHigher;
+
+    private static bool DecidingNumberWentDown(List<NumberDiff> diffs) => diffs.Count > 0 && !diffs[0].IsHigher;
 
     /// <summary>
     /// The first diff in priority order decides (#299). Up: refused, with the deciding number's message first and

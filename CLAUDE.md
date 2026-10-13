@@ -192,21 +192,21 @@ its class pairs (heaviest first), every loop, and every leaky or missing seam wi
 It measures twice and fails if the two reports differ. It then ratchets five gated numbers (`up_edges`,
 `biggest_loop`, `seams_leaky`, `seams_missing`, `refs_from_non_ui_to_ui`) against
 `Tests/Architecture/dependency-baseline.json` in that priority order (#299). The first number that differs from its
-baseline decides. If it went up, the test fails naming it (every other rise is listed after it). If it went down, the
-step is accepted, and a rise in a lower-priority number is accepted with it: each such rise is named in the failure
-and printed as a `dependency gate:` line (`<name> is <m>, above the baseline <b>: accepted because <deciding> went
-down`). An accepted step still fails until the baseline is re-recorded with the switch set:
+baseline decides; if no number differs, the test passes. If it went up, the test fails naming it (every other rise is
+listed after it). If it went down, the step is accepted, and a rise in a lower-priority number is accepted with it:
+each such rise is named in the failure and printed as a `dependency gate:` line (`<name> is <m>, above the baseline
+<b>: accepted because <deciding> went down`). An accepted step still fails until the baseline is re-recorded with the
+switch set:
 
 ```bash
 CARDCLEANER_UPDATE_DEPENDENCY_BASELINE=1 <godot console exe> --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -c --ignoreHeadlessMode -rc 100000 -rd reports/ci -a res://Tests/Architecture/DependencyGateTest.cs
 ```
 
 The switch rewrites the file only when the deciding number went down (it still prints the accepted rises), refuses
-and leaves the file unchanged when the deciding number went up, and a missing or malformed baseline fails with its
-path whether the switch is set or not and is never written. A first baseline is created by committing the
-file. CI prints the report lines (`Show the dependency gate report` step and the job summary) on every run, pull
-requests included. Every step of plan v4
-(#239) ends with this test green and the baseline re-recorded to what the step achieved. The fixture suites beside it
+and leaves the file unchanged when the deciding number went up, leaves it untouched when no number differs, and a
+missing or malformed baseline fails with its path whether the switch is set or not and is never written. A first
+baseline is created by committing the file. CI prints the report lines (`Show the dependency gate report` step and
+the job summary) on every run, pull requests included. Every step of plan v4 (#239) ends with this test green and the baseline re-recorded to what the step achieved. The fixture suites beside it
 (`LayerAnchorsTest`, `LouvainClusteringTest`, `ModuleOrderTest`, `SeamRaterTest`, `GateMetricsTest`,
 `ClassGraphExtractorTest`, `SceneLinkReaderTest`, `DependencyBaselineTest`) pin each rule on small graphs.
 
