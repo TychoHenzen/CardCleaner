@@ -16,6 +16,7 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 public class IrregularWorldMapScreenSessionTest
 {
     private const int Seed = 4242;
+    private const int FreeFrameBudget = 5;
 
     private static readonly IrregularMeshNs.MeshMapGenerator Generator = MeshMapGeneratorFixture.Create();
 
@@ -52,7 +53,10 @@ public class IrregularWorldMapScreenSessionTest
         await screen.GenerateMap(Generator, Seed);
         var firstController = screen.ExplorationController!;
         await screen.GenerateMap(Generator, Seed + 1);
-        await ISceneRunner.SyncProcessFrame;
+        // The map arrives in a continuation that can run before this frame's process step, so the queued free of the
+        // first controller can take one more frame.
+        for (var frame = 0; frame < FreeFrameBudget && IsInstanceValid(firstController); frame++)
+            await ISceneRunner.SyncProcessFrame;
 
         AssertBool(IsInstanceValid(firstController)).IsFalse();
         AssertThat(ExplorationControllers(screen).Count).IsEqual(1);
