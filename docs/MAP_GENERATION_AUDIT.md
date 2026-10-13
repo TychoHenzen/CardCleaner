@@ -47,12 +47,12 @@ This audit traces the complete map generation pipeline from UI trigger through e
 │  2. CardBasedGradient(_mapSeeds, _rng) → spatial signature distribution │
 │  3. BiomeMapGenerator(registry, gradient, size) → position→biome mapper │
 │  4. WfcMapGenerator(transitionResolver) → terrain generator             │
-│  5. GridMapGenerator(...) → orchestrates all components               │
+│  5. old grid generator(...) → orchestrates all components               │
 │  6. mapGenerator.GenerateMap(size) → produces SimpleMapData             │
 └──────────────────────────────────┬──────────────────────────────────────┘
                                    ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                   GridMapGenerator.GenerateMap()                       │
+│                   old grid generator GenerateMap()                       │
 │  1. SelectPerGenerationVariants() → per-tile-type random variant        │
 │  2. Build biomeMap[y,x] from biomeProvider                              │
 │  3. GenerateTerrainViaWfc() → WFC with hard constraints                 │
@@ -138,7 +138,7 @@ The gradient methods (sphere, capsule, bezier) sample random points to populate 
 ---
 
 ### INC-003: RNG Seed Inconsistency Between GameSessionService and WFC
-**Location:** `GameSessionService.cs:125` vs `GridMapGenerator.cs:187`
+**Location:** `GameSessionService.cs:125` vs the old grid generator file, line 187 (deleted in #284)
 **Severity:** Low
 
 ```csharp
@@ -212,7 +212,7 @@ The 2x2 window constraint prevents 3+ distinct terrain types in any window, but 
 ---
 
 ### GOT-004: EnsureConnectivity Modifies Terrain After WFC
-**Location:** `GridMapGenerator.cs:287-337`
+**Location:** old grid generator file, lines 287-337 (deleted in #284)
 
 After WFC completes, `EnsureConnectivity()` may carve corridors through the terrain to connect disconnected components. These corridor tiles:
 
@@ -225,7 +225,7 @@ After WFC completes, `EnsureConnectivity()` may carve corridors through the terr
 ---
 
 ### GOT-005: Player/Enemy Placement is Fully Random
-**Location:** `GridMapGenerator.cs:147-152`
+**Location:** old grid generator file, lines 147-152 (deleted in #284)
 
 ```csharp
 var shuffledTiles = passableTiles.OrderBy(_ => _rng.Randf()).ToList();
@@ -244,7 +244,7 @@ var enemyPositions = shuffledTiles.Skip(1).Take(enemyCount).ToList();
 ## 4. Potential Bugs
 
 ### BUG-001: Missing BiomeMap Update After Corridor Creation
-**Location:** `GridMapGenerator.cs:364-387`
+**Location:** old grid generator file, lines 364-387 (deleted in #284)
 **Severity:** Medium
 
 When corridors are created in `CreateCorridor()`, the `biomeMap` array is not updated. The corridor tiles use biome-based tile selection, but the biome assignment in the map data may not reflect this.
@@ -268,7 +268,7 @@ private void CreateCorridor(...)
 ---
 
 ### BUG-002: DecorationOverlays Generated Before Structure Placement
-**Location:** `GridMapGenerator.cs:124-127`
+**Location:** old grid generator file, lines 124-127 (deleted in #284)
 
 ```csharp
 // Generate terrain transitions BEFORE placing structures
@@ -492,7 +492,7 @@ GameSessionService.GenerateMap()
 ├─ CalculateMapSize(_mapSeeds[0])  // No RNG
 ├─ new CardBasedGradient(_mapSeeds, _rng)  // Shares RNG instance
 ├─ new BiomeMapGenerator(...)  // Uses gradient's RNG indirectly
-└─ GridMapGenerator.GenerateMap()
+└─ old grid generator GenerateMap()
    ├─ SelectPerGenerationVariants()  // Uses _rng
    ├─ GenerateTerrainViaWfc()
    │  └─ _wfcGenerator.GenerateMultiBiome(..., _rng.Randi())
@@ -553,7 +553,7 @@ GameSessionService.GenerateMap()
 | `DeckBuilderController.cs` | Button handler, card consumption |
 | `SimpleWorldMapScreen.cs` | UI controller, event bridging |
 | `GameSessionService.cs` | State machine, session orchestration |
-| `GridMapGenerator.cs` | Generation orchestration, connectivity |
+| old grid generator file (deleted in #284) | Generation orchestration, connectivity |
 | `WfcMapGenerator.cs` | WFC configuration, modifier setup |
 | `WfcSolver.cs` | WFC algorithm loop |
 | `WfcPropagator.cs` | Constraint propagation |
@@ -571,7 +571,7 @@ GameSessionService.GenerateMap()
 
 | Parameter | Location | Default | Effect |
 |-----------|----------|---------|--------|
-| MaxWfcRetries | GridMapGenerator | 5 | Retry attempts on contradiction |
+| MaxWfcRetries | old grid generator | 5 | Retry attempts on contradiction |
 | MaxIterations | WfcSolver | 10,000 | Prevent infinite loops |
 | NonBiomeTilePenalty | WfcTileSelector | 0.1 | Weight for non-biome tiles |
 | ContinuityBiasMultiplier | WfcTileSelector | 5.0 | Boost for matching neighbors |

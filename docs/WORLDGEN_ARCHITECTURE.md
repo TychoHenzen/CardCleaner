@@ -568,7 +568,7 @@ Metrics logged after generation:
 - IProceduralStructure interface for algorithm-generated structures
 - StructureProximityModifier for tile weight adjustment near structures
 - StructurePlacer service orchestrates placement with spacing rules
-- Integration with GridMapGenerator (Phase 3.5 placement)
+- Integration with the grid generator of that time (Phase 3.5 placement); GridMapGenerator places no structures
 - Biome-aware placement with AllowedBiomes constraint
 - Configurable influence radius and tile affinities per structure
 
@@ -616,7 +616,7 @@ mapGenerator.AddStructureStamp(wellStamp);
 - ProximityVariantModifier (boost variants near/far from specific tiles)
 - VariantWeightPipeline for chaining variant modifiers
 - WeightedVariantSelector for selecting variants with weighted randomness
-- Integration with GridMapGenerator (Phase 5 post-processing)
+- Integration with the grid generator of that time (Phase 5 post-processing); GridMapGenerator does not use it
 
 **Key Files:**
 
@@ -658,9 +658,9 @@ var variantPipeline = new VariantWeightPipeline()
 
 var variantSelector = new WeightedVariantSelector(variantPipeline);
 
-// Use in map generator
-var generator = new GridMapGenerator(rng, biomeProvider, tileRegistry,
-    variantSelector: variantSelector);
+// GridMapGenerator takes no variant selector: its pipeline picks variants itself. Generating a grid map:
+var generator = new GridMapGenerator(tileRegistry, metadataProvider, biomeRegistry);
+var map = await generator.GenerateAsync(new MapGenerationConfig { Size = size, Seed = seed, MapSeeds = cards });
 ```
 
 **Tile Definition:**
