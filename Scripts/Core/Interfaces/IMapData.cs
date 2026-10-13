@@ -56,11 +56,6 @@ public interface IMapData
     /// </summary>
     bool IsTransparent(int cellId);
 
-    /// <summary>
-    /// Check if a cell has a structure that blocks movement.
-    /// </summary>
-    bool HasStructure(int cellId);
-
     #endregion
 
     #region Adjacency
@@ -91,7 +86,7 @@ public interface IMapData
     IEnumerable<int> GetCellsInRadius(Vector2 center, float radius);
 
     /// <summary>
-    /// Get all cells that intersect a rectangle (for structure placement).
+    /// Get all cells that intersect a rectangle.
     /// </summary>
     IEnumerable<int> GetCellsInRect(Rect2 rect);
 

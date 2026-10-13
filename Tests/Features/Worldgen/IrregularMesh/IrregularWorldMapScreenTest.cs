@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -45,7 +44,7 @@ public class IrregularWorldMapScreenTest
     #region Initialization Tests
 
     [TestCase]
-    public void TestScreenStartsUninitialized()
+    public static void TestScreenStartsUninitialized()
     {
         // Create a fresh screen not in tree to test initial state
         var freshScreen = new IrregularMeshNs.IrregularWorldMapScreen();
@@ -56,7 +55,7 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    public void TestDefaultPropertyValues()
+    public static void TestDefaultPropertyValues()
     {
         var screen = new IrregularMeshNs.IrregularWorldMapScreen();
         AddNode(screen); // Let gdUnit4 handle cleanup
@@ -99,7 +98,7 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    public async Task TestGenerateMapWithSameSeedProducesSameMesh()
+    public static async Task TestGenerateMapWithSameSeedProducesSameMesh()
     {
         var screen1 = CreateScreen();
         var screen2 = CreateScreen();
@@ -126,35 +125,12 @@ public class IrregularWorldMapScreenTest
         AssertBool(eventRaised).IsTrue();
     }
 
-    [TestCase]
-    public void TestGenerateMapWithWfcCreatesMesh()
-    {
-        var adjacencyRules = new Dictionary<string, HashSet<string>>
-        {
-            { "grass", new HashSet<string> { "grass", "sand" } },
-            { "sand", new HashSet<string> { "grass", "sand", "water" } },
-            { "water", new HashSet<string> { "sand", "water" } }
-        };
-
-        var tileToTerrain = new Dictionary<string, int>
-        {
-            { "grass", 1 },
-            { "sand", 2 },
-            { "water", 0 }
-        };
-
-        _screen.GenerateMapWithWfc(12345, adjacencyRules, tileToTerrain);
-
-        AssertBool(_screen.IsInitialized).IsTrue();
-        AssertThat(_screen.Mesh).IsNotNull();
-    }
-
     #endregion
 
     #region Fog of War Tests
 
     [TestCase]
-    public async Task TestFogOfWarCanBeDisabled()
+    public static async Task TestFogOfWarCanBeDisabled()
     {
         var screen = CreateScreen(fogOfWarEnabled: false);
 

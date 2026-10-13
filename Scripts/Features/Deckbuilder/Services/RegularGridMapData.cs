@@ -116,13 +116,6 @@ public class RegularGridMapData : IMapData
         return _simpleMapData.IsTransparent(pos);
     }
 
-    public bool HasStructure(int cellId)
-    {
-        // SimpleMapData doesn't explicitly track structures separately
-        // A cell with impassable terrain is effectively a structure
-        return !IsPassable(cellId) && IsValidCell(cellId);
-    }
-
     public IEnumerable<int> GetAdjacentCells(int cellId)
     {
         var pos = CellIdToPosition(cellId);

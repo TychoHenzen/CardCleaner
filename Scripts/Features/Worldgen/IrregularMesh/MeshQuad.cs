@@ -141,18 +141,6 @@ public class MeshQuad
     }
 
     /// <summary>
-    /// Check if this quad is passable (all corners allow walking).
-    /// </summary>
-    public bool IsPassable()
-    {
-        return VertexIds.All(id =>
-        {
-            var vertex = _mesh.Vertices[id];
-            return !vertex.HasStructure && IsTerrainPassable(vertex.TerrainType);
-        });
-    }
-
-    /// <summary>
     /// Check if this quad is transparent (doesn't block line of sight).
     /// </summary>
     public bool IsTransparent()
@@ -227,9 +215,6 @@ public class MeshQuad
 
         return true;
     }
-
-    /// <summary>Checks terrain passability by type.</summary>
-    private static bool IsTerrainPassable(int terrainType) => terrainType > 0;
 
     /// <summary>Checks terrain transparency for line-of-sight.</summary>
     private static bool IsTerrainTransparent(int terrainType) => true;

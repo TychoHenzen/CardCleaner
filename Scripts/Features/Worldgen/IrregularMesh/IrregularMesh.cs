@@ -108,7 +108,7 @@ public class IrregularMesh
     }
 
     /// <summary>
-    /// Get all quads that intersect a rectangle (for structure placement checks).
+    /// Get all quads that intersect a rectangle.
     /// </summary>
     public IEnumerable<MeshQuad> GetQuadsIntersectingRect(Rect2 rect)
     {

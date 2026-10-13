@@ -123,7 +123,7 @@ public partial class IrregularWorldMapScreen : Node3D
         var terrainGen = TerrainGeneratorFactory.Create(_tileRegistry);
         var mesh = inputCards != null && inputCards.Length > 0
             ? terrainGen.GenerateWithCards(MeshRings, inputCards, seed, relaxationIterations: 8)
-            : terrainGen.Generate(MeshRings, null, seed, relaxationIterations: 8);
+            : terrainGen.GenerateFallback(MeshRings, seed, relaxationIterations: 8);
 
         GD.Print($"[IrregularWorldMapScreen] WFC terrain generation complete ({sw.ElapsedMilliseconds}ms)");
 
@@ -135,33 +135,6 @@ public partial class IrregularWorldMapScreen : Node3D
 
         sw.Stop();
         GD.Print($"[IrregularWorldMapScreen] Map generated in {sw.ElapsedMilliseconds}ms: {mesh.GetStatistics()}");
-
-        StartExploration();
-    }
-
-    /// <summary>
-    /// Generate map with WFC terrain assignment.
-    /// </summary>
-    public void GenerateMapWithWfc(
-        int seed,
-        Dictionary<string, HashSet<string>> adjacencyRules,
-        Dictionary<string, int> tileToTerrainType,
-        CardSignature[]? abilityCards = null)
-    {
-        if (!IsInsideTree())
-        {
-            _pendingGeneration = () => GenerateMapWithWfc(seed, adjacencyRules, tileToTerrainType, abilityCards);
-            return;
-        }
-
-        GD.Print($"[IrregularWorldMapScreen] Generating WFC map with seed {seed}");
-
-        var generator = new MeshTerrainGenerator(adjacencyRules, tileToTerrainType);
-        var mesh = generator.GenerateFromRules(MeshRings, seed);
-
-        var session = BeginSession(mesh);
-        var playerStartCell = session.Prepare(seed, abilityCards?.ToList());
-        CompleteSession(session, playerStartCell);
 
         StartExploration();
     }
