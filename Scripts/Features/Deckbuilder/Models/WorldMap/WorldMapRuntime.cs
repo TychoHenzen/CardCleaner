@@ -245,6 +245,9 @@ internal sealed class WorldMapRuntime
                 gridPosition.X * _components.TileSize + _components.TileSize / 2,
                 gridPosition.Y * _components.TileSize + _components.TileSize / 2
             );
+
+        // The grid view shows a move at once, so it reports it shown straight away.
+        _gameSession?.ReportStepShown();
     }
 
     private void OnPathUpdated(IReadOnlyList<Vector2I> path, Vector2I? target)

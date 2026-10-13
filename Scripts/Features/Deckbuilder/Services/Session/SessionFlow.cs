@@ -9,7 +9,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
 
 /// <summary>
 /// Drives the session after its map exists: the state machine, the game timer,
-/// exploration steps, combat turns, loot, and cleanup.
+/// exploration steps paced by the view, combat turns, loot, and cleanup.
 /// </summary>
 internal sealed class SessionFlow
 {
@@ -23,6 +23,9 @@ internal sealed class SessionFlow
     private Timer _gameTimer = null!;
     private SessionState _state = SessionState.WaitingForCards;
     private SimpleCombatSystem? _combatSystem;
+    // Moves the view has reported shown. Exploration waits while the session is ahead of the view.
+    private int _shownMoves;
+    private bool _waitingForView;
 
     internal event Action<SessionState>? StateChanged;
     internal event Action<List<CardSignature>>? LootGenerated;
@@ -67,8 +70,33 @@ internal sealed class SessionFlow
             return;
 
         _gameTimer.WaitTime = ExplorationStepDelay;
+        if (IsAheadOfView())
+        {
+            _waitingForView = true;
+            return;
+        }
+
         _gameTimer.Start();
     }
+
+    /// <summary>
+    /// Records that the view has shown one more move. Once the view has shown every move, exploration takes its
+    /// next step after the usual delay; the step is never taken inside this call.
+    /// </summary>
+    internal void ReportStepShown()
+    {
+        if (IsAheadOfView())
+            _shownMoves++;
+
+        if (!_waitingForView || IsAheadOfView())
+            return;
+
+        _waitingForView = false;
+        if (State == SessionState.Exploring)
+            _gameTimer.Start();
+    }
+
+    private bool IsAheadOfView() => _shownMoves < _exploration.MoveCount;
 
     internal void StartCombat(List<CardSignature> abilityCards, CardSignature enemySeed)
     {
@@ -106,6 +134,8 @@ internal sealed class SessionFlow
         _world.ClearMap();
         _exploration.Clear();
         _combatSystem = null;
+        _shownMoves = 0;
+        _waitingForView = false;
     }
 
     private void OnTimerTimeout()
@@ -131,7 +161,22 @@ internal sealed class SessionFlow
             case ExplorationStepOutcome.Completed:
                 EnterState(SessionState.GeneratingLoot);
                 break;
+            default:
+                WaitForViewIfAhead();
+                break;
         }
+    }
+
+    /// <summary>
+    /// Holds exploration after a step that moved the player until the view reports the move shown.
+    /// </summary>
+    private void WaitForViewIfAhead()
+    {
+        if (!IsAheadOfView())
+            return;
+
+        _waitingForView = true;
+        _gameTimer.Stop();
     }
 
     /// <summary>
@@ -191,5 +236,7 @@ internal sealed class SessionFlow
 
         _combatSystem = null;
         _exploration.Clear();
+        _shownMoves = 0;
+        _waitingForView = false;
     }
 }

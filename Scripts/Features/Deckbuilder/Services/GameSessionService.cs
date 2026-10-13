@@ -136,6 +136,8 @@ public partial class GameSessionService : Node, IGameSessionService
         ILog.Print("Session reset");
     }
 
+    public void ReportStepShown() => _flow.ReportStepShown();
+
     public override void _Ready()
     {
         // Note: the world's RNG is seeded deterministically from the map seed cards during generation.

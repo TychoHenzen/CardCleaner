@@ -37,4 +37,10 @@ public interface IGameSessionService
     void StartSession(List<CardSignature> mapSeeds, List<CardSignature> abilityCards, IMapGenerator mapGenerator);
     void AdvanceSession();
     void ResetSession();
+
+    /// <summary>
+    /// Reports that the view has shown the player's latest move. After a move, exploration waits for this report
+    /// before its next step, so the view sets the pace: report at once to keep the session's own step delay.
+    /// </summary>
+    void ReportStepShown();
 }

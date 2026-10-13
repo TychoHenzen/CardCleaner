@@ -25,6 +25,12 @@ public abstract class GameSessionServiceTestBase
     protected TileRegistry _tileRegistry = null!;
     protected IMapGenerator _generator = null!;
 
+    /// <summary>
+    /// Whether the fixture stands in for a view that reports every move shown at once. Without a report the
+    /// session holds exploration after its first move.
+    /// </summary>
+    protected virtual bool ReportsStepsShown => true;
+
     [BeforeTest]
     public async Task Setup()
     {
@@ -46,6 +52,8 @@ public abstract class GameSessionServiceTestBase
 
         _service.StateChanged += OnStateChanged;
         _service.LootGenerated += OnLootGenerated;
+        if (ReportsStepsShown)
+            _service.PlayerMovedWorld += _ => _service.ReportStepShown();
     }
 
     protected void OnStateChanged(SessionState newState)

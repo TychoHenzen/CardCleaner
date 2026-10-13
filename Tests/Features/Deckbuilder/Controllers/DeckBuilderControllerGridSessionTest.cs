@@ -166,6 +166,7 @@ public class DeckBuilderControllerGridSessionTest
         }
         public void AdvanceSession() { }
         public void ResetSession() { }
+        public void ReportStepShown() { }
     }
 
     /// <summary>A grid generator whose map never arrives; the controller only needs one registered.</summary>

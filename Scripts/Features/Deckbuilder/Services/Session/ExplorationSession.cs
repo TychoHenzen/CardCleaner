@@ -17,6 +17,10 @@ internal sealed class ExplorationSession
     private Vector2? _playerWorldPosition;
     private Vector2I? _playerPosition;
     private int? _currentEnemyCellId;
+    /// <summary>
+    /// Moves the player has made since the session's map was cleared; the session paces exploration against it.
+    /// </summary>
+    internal int MoveCount { get; private set; }
 
     internal event Action<Vector2I>? PlayerMoved;
     internal event Action<Vector2>? PlayerMovedWorld;
@@ -102,6 +106,7 @@ internal sealed class ExplorationSession
         _playerPosition = null;
         _playerWorldPosition = null;
         _currentEnemyCellId = null;
+        MoveCount = 0;
     }
 
     private int? ResolveStartCellId()
@@ -123,6 +128,7 @@ internal sealed class ExplorationSession
 
     private void OnPlayerMovedWorld(Vector2 worldPos)
     {
+        MoveCount++;
         _playerWorldPosition = worldPos;
         _playerPosition = _eventAdapter.WorldToGrid(worldPos);
 
