@@ -206,7 +206,8 @@ The switch rewrites the file only when the deciding number went down (it still p
 and leaves the file unchanged when the deciding number went up, leaves it untouched when no number differs, and a
 missing or malformed baseline fails with its path whether the switch is set or not and is never written. A first
 baseline is created by committing the file. CI prints the report lines (`Show the dependency gate report` step and
-the job summary) on every run, pull requests included. Every step of plan v4 (#239) ends with this test green and the baseline re-recorded to what the step achieved. The fixture suites beside it
+the job summary) on every run, pull requests included. Every step of plan v4 (#239) ends with this test green and
+the baseline re-recorded to what the step achieved. The fixture suites beside it
 (`LayerAnchorsTest`, `LouvainClusteringTest`, `ModuleOrderTest`, `SeamRaterTest`, `GateMetricsTest`,
 `ClassGraphExtractorTest`, `SceneLinkReaderTest`, `DependencyBaselineTest`) pin each rule on small graphs.
 
