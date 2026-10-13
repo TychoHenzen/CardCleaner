@@ -32,6 +32,8 @@ public sealed class FakeGameSession : IGameSessionService
     public event Action<IReadOnlySet<Vector2I>>? VisitedTilesUpdated;
     public event Action<IReadOnlySet<Vector2I>, IReadOnlySet<Vector2I>>? VisibilityUpdated;
     public event Action<IReadOnlySet<int>, IReadOnlySet<int>>? VisibilityCellsUpdated;
+    public event Action<IReadOnlySet<int>>? VisitedCellsUpdated;
+    public event Action<IReadOnlyList<int>, int?>? PathCellsUpdated;
     public event Action<IReadOnlyList<Vector2I>, Vector2I?>? PathUpdated;
     public event Action<float>? ProgressUpdated;
     public event Action<IGeneratedMap>? GeneratedMapReady;

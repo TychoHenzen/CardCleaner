@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using Godot;
@@ -88,7 +90,7 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
         var abilityCards = new List<CardSignature> { new() };
         SimpleMapData? generatedMap = null;
 
-        _service.MapGenerated += map => generatedMap = map;
+        _service.GeneratedMapReady += map => generatedMap = ((IGridGeneratedMap)map).RawMapData;
 
         _service.StartSession(mapSeeds, abilityCards, _generator);
 
@@ -145,7 +147,7 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
         var abilityCards = new List<CardSignature> { new() };
         SimpleMapData? generatedMap = null;
 
-        _service.MapGenerated += map => generatedMap = map;
+        _service.GeneratedMapReady += map => generatedMap = ((IGridGeneratedMap)map).RawMapData;
 
         _service.StartSession(mapSeeds, abilityCards, _generator);
 
@@ -174,7 +176,7 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
         var abilityCards = new List<CardSignature> { new() };
         SimpleMapData? generatedMap = null;
 
-        _service.MapGenerated += map => generatedMap = map;
+        _service.GeneratedMapReady += map => generatedMap = ((IGridGeneratedMap)map).RawMapData;
 
         _service.StartSession(mapSeeds, abilityCards, _generator);
 
@@ -188,5 +190,76 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
 
         Assertions.AssertThat(generatedMap).IsNotNull();
         Assertions.AssertThat(generatedMap!.PassableTiles.Count).IsGreater(0);
+    }
+
+    [TestCase(Timeout = 30000)]
+    [TestCategory("Unit")]
+    public async Task ExplorationReportsCellIdsAndWorldPositions()
+    {
+        // Combat turns take a second each; a faster clock lets the session reach its end within the budget.
+        Engine.TimeScale = 20;
+        try
+        {
+            var mapSeeds = new List<CardSignature>
+            {
+                new(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f })
+            };
+            IMapData? map = null;
+            var enemyCell = -1;
+            var moves = new List<Vector2>();
+            var visitedCells = new HashSet<int>();
+            var visibilityUpdates = 0;
+            var pathUpdates = 0;
+            var defeatedCells = new List<int>();
+            var invalidCells = new List<int>();
+            var completed = false;
+
+            _service.GeneratedMapReady += generated =>
+            {
+                var grid = (IGridGeneratedMap)generated;
+                map = generated.GetMapData();
+                enemyCell = grid.GridMapData.PositionToCellId(grid.RawMapData.EnemyPositions.First());
+            };
+            _service.PlayerMovedWorld += moves.Add;
+            _service.VisitedCellsUpdated += cells => visitedCells.UnionWith(cells);
+            _service.VisibilityCellsUpdated += (seen, visible) =>
+            {
+                visibilityUpdates++;
+                invalidCells.AddRange(seen.Concat(visible).Where(cell => !map!.IsValidCell(cell)));
+            };
+            _service.PathCellsUpdated += (path, target) =>
+            {
+                pathUpdates++;
+                invalidCells.AddRange(path.Where(cell => !map!.IsValidCell(cell)));
+                if (target is { } targetCell && !map!.IsValidCell(targetCell))
+                    invalidCells.Add(targetCell);
+            };
+            _service.EnemyDefeatedCell += defeatedCells.Add;
+            _service.StateChanged += state => completed |= state == SessionState.SessionComplete;
+
+            _service.StartSession(mapSeeds, new List<CardSignature> { new() }, _generator);
+            await WaitForFrames(() => completed, 3000);
+
+            AssertBool(completed).OverrideFailureMessage("The session never completed").IsTrue();
+            AssertBool(moves.Count > 0).OverrideFailureMessage("The session never moved the player").IsTrue();
+            AssertBool(moves.All(position => map!.GetCellAtPosition(position).HasValue))
+                .OverrideFailureMessage("A move reported a world position outside the map")
+                .IsTrue();
+            AssertBool(visitedCells.Count > 0 && visitedCells.All(map!.IsValidCell)).IsTrue();
+            AssertInt(visibilityUpdates).IsGreater(0);
+            AssertInt(pathUpdates).IsGreater(0);
+            AssertInt(invalidCells.Count).IsEqual(0);
+
+            // The fixture's map holds one enemy: a won fight reports its cell, a lost fight reports none.
+            var expectedDefeated = _lastLootGenerated.Count > 0 ? new List<int> { enemyCell } : new List<int>();
+            AssertBool(defeatedCells.SequenceEqual(expectedDefeated))
+                .OverrideFailureMessage(
+                    $"Defeated cells [{string.Join(", ", defeatedCells)}], expected [{string.Join(", ", expectedDefeated)}]")
+                .IsTrue();
+        }
+        finally
+        {
+            Engine.TimeScale = 1;
+        }
     }
 }

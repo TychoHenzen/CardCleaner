@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
@@ -23,6 +24,9 @@ internal sealed class WorldMapRuntime
     private readonly WorldMapCameraRig _cameraRig;
     private readonly EnemySpriteLayer _enemySprites;
     private readonly WorldMapCombatUI _combatUI;
+
+    // The grid of the shown map: converts the session's cell ids and world positions to tiles.
+    private RegularGridMapData? _grid;
 
     private IGameSessionService? _gameSession;
     private CardSignature[]? _pendingAbilities;
@@ -60,12 +64,12 @@ internal sealed class WorldMapRuntime
         if (_gameSession == null) return;
 
         _gameSession.StateChanged -= OnSessionStateChanged;
-        _gameSession.MapGenerated -= OnMapGenerated;
+        _gameSession.GeneratedMapReady -= OnGeneratedMapReady;
         _gameSession.LootGenerated -= OnLootGenerated;
-        _gameSession.PlayerMoved -= OnServicePlayerMoved;
-        _gameSession.EnemyDefeated -= OnServiceEnemyDefeated;
-        _gameSession.VisibilityUpdated -= OnVisibilityUpdated;
-        _gameSession.PathUpdated -= OnPathUpdated;
+        _gameSession.PlayerMovedWorld -= OnServicePlayerMoved;
+        _gameSession.EnemyDefeatedCell -= OnServiceEnemyDefeated;
+        _gameSession.VisibilityCellsUpdated -= OnVisibilityUpdated;
+        _gameSession.PathCellsUpdated -= OnPathUpdated;
     }
 
     internal void StartSession(CardSignature[] mapSeed, CardSignature[] abilities, IMapGenerator generator)
@@ -87,6 +91,8 @@ internal sealed class WorldMapRuntime
     internal void Reset()
     {
         _ownsSession = false;
+
+        _grid = null;
 
         // Clear all layers
         _components.Terrain?.ClearAllLayers();
@@ -128,12 +134,12 @@ internal sealed class WorldMapRuntime
 
         // Connect to all the events we need
         gameSession.StateChanged += OnSessionStateChanged;
-        gameSession.MapGenerated += OnMapGenerated;
+        gameSession.GeneratedMapReady += OnGeneratedMapReady;
         gameSession.LootGenerated += OnLootGenerated;
-        gameSession.PlayerMoved += OnServicePlayerMoved;
-        gameSession.EnemyDefeated += OnServiceEnemyDefeated;
-        gameSession.VisibilityUpdated += OnVisibilityUpdated;
-        gameSession.PathUpdated += OnPathUpdated;
+        gameSession.PlayerMovedWorld += OnServicePlayerMoved;
+        gameSession.EnemyDefeatedCell += OnServiceEnemyDefeated;
+        gameSession.VisibilityCellsUpdated += OnVisibilityUpdated;
+        gameSession.PathCellsUpdated += OnPathUpdated;
 
         // If Initialize() was called before service was ready, start now
         if (_pendingMapSeed is { Length: > 0 } && _pendingAbilities != null && _pendingGenerator != null)
@@ -224,10 +230,19 @@ internal sealed class WorldMapRuntime
         combat.Start();
     }
 
-    private void OnMapGenerated(SimpleMapData mapData)
+    /// <summary>
+    /// Shows the map of a session this screen started. The session's generator must give a grid map: the screen
+    /// checks that here, once, and any other map throws, which ends the session.
+    /// </summary>
+    private void OnGeneratedMapReady(IGeneratedMap generated)
     {
         if (!_ownsSession) return;
 
+        if (generated is not IGridGeneratedMap gridMap)
+            throw new InvalidOperationException("The session's generator returned no grid map");
+
+        var mapData = gridMap.RawMapData;
+        _grid = gridMap.GridMapData;
         ILog.Print($"Received map from GameSessionService: {mapData.Size.X}x{mapData.Size.Y}");
         _pathOverlay.ForgetRenderedTiles();
         RenderMap(mapData);
@@ -271,42 +286,49 @@ internal sealed class WorldMapRuntime
         ILog.Print($"Rendered map: {mapData.Size.X}x{mapData.Size.Y} with {mapData.EnemyPositions.Count} enemies");
     }
 
-    private void OnServicePlayerMoved(Vector2I gridPosition)
+    private void OnServicePlayerMoved(Vector2 worldPosition)
     {
         if (!_ownsSession) return;
 
-        if (_screen.PlayerSprite != null)
+        if (_screen.PlayerSprite != null && _grid != null)
+        {
+            var tile = _grid.WorldToGrid(worldPosition);
             _screen.PlayerSprite.Position = new Vector2(
-                gridPosition.X * _components.TileSize + _components.TileSize / 2,
-                gridPosition.Y * _components.TileSize + _components.TileSize / 2
+                tile.X * _components.TileSize + _components.TileSize / 2,
+                tile.Y * _components.TileSize + _components.TileSize / 2
             );
+        }
 
         // The grid view shows a move at once, so it reports it shown straight away.
         _gameSession?.ReportStepShown();
     }
 
-    private void OnPathUpdated(IReadOnlyList<Vector2I> path, Vector2I? target)
+    private void OnPathUpdated(IReadOnlyList<int> pathCells, int? targetCell)
     {
-        if (!_ownsSession) return;
+        if (!_ownsSession || _grid is not { } grid) return;
 
         if (_screen.OverlayLayer == null || _components.Terrain == null) return;
 
+        var path = pathCells.Select(grid.CellIdToPosition).ToList();
+        Vector2I? target = targetCell.HasValue ? grid.CellIdToPosition(targetCell.Value) : null;
         _pathOverlay.Show(_screen.OverlayLayer, _components.Terrain, path, target);
     }
 
-    private void OnVisibilityUpdated(IReadOnlySet<Vector2I> seenTiles, IReadOnlySet<Vector2I> currentlyVisibleTiles)
+    // The fog numbers its tiles row by row like the grid's cell ids, so it takes the session's cells as they are.
+    private void OnVisibilityUpdated(IReadOnlySet<int> seenCells, IReadOnlySet<int> visibleCells)
     {
         if (!_ownsSession) return;
 
-        _components.Fog?.UpdateVisibility(seenTiles, currentlyVisibleTiles);
+        _components.Fog?.UpdateVisibility(seenCells, visibleCells);
     }
 
-    private void OnServiceEnemyDefeated(Vector2I position)
+    private void OnServiceEnemyDefeated(int cellId)
     {
-        if (!_ownsSession) return;
+        if (!_ownsSession || _grid == null) return;
 
-        ILog.Print($"Enemy defeated at {position} - removing sprite");
-        _enemySprites.RemoveAt(position, _components.TileSize);
+        var tile = _grid.CellIdToPosition(cellId);
+        ILog.Print($"Enemy defeated at {tile} - removing sprite");
+        _enemySprites.RemoveAt(tile, _components.TileSize);
     }
 
     private void OnLootGenerated(List<CardSignature> lootSignatures)

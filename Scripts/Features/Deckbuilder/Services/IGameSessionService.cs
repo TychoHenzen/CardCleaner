@@ -27,6 +27,12 @@ public interface IGameSessionService
     /// <summary>Raised with the cell of every defeated enemy, on both map kinds.</summary>
     event Action<int> EnemyDefeatedCell;
 
+    /// <summary>Raised with every cell the player has visited, after every move, on both map kinds.</summary>
+    event Action<IReadOnlySet<int>> VisitedCellsUpdated;
+
+    /// <summary>Raised with the cells of the current path and its target cell, on both map kinds.</summary>
+    event Action<IReadOnlyList<int>, int?> PathCellsUpdated;
+
     /// <summary>
     /// Raised with the seen and the currently visible cells after every vision update, on both map kinds.
     /// </summary>
