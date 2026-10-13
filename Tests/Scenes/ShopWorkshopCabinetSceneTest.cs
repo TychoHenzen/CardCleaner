@@ -19,8 +19,6 @@ namespace CardCleaner.Tests.Scenes;
 public class ShopWorkshopCabinetSceneTest
 {
     private const int SmallMeshRings = 3;
-    // Frames to wait for the irregular map, which generates off the main thread, to show.
-    private const int MapFrameBudget = 300;
     private const float EyeHeight = 1.6f;
     private const float StandingDistanceToButton = 2.5f;
 
@@ -92,8 +90,7 @@ public class ShopWorkshopCabinetSceneTest
 
         _rig.Button.Interact();
         await WorkshopSceneRig.Settle();
-        for (var frame = 0; frame < MapFrameBudget && !_rig.Screen.IsInitialized; frame++)
-            await ISceneRunner.SyncProcessFrame;
+        await _rig.WaitForMap();
 
         AssertBool(_rig.DeckHolder.HasCards).IsFalse();
         AssertBool(_rig.CardHolder.HasCards).IsFalse();

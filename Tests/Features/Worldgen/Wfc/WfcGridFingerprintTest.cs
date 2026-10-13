@@ -18,13 +18,15 @@ namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 /// Pins the Deckbuilder grid map that GridMapGenerator produces for one fixed seed and two fixed cards.
 /// The map is built in the same order GridMapGenerator.GenerateAsync uses, with one shared RNG, minus the
 /// async wrapper and its progress profiler. A refactor of the grid WFC path must reproduce this fingerprint
-/// exactly. The golden value was recorded on master 17e3c3f, before any refactor.
+/// exactly. The golden value was recorded on master 17e3c3f, before any refactor, and recorded again in #256 when
+/// the start and the enemies moved to MapPopulation (drawn after the terrain from the same RNG, so only the start
+/// and enemies lines changed; GridMapGolden.txt shows the same for its map).
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class WfcGridFingerprintTest
 {
-    private const string GridGolden = "3ecf05638c987723ce48c9574f1b36b078af4d31077f473e4111f47053470676";
+    private const string GridGolden = "26fa0cb46b4763d386d7f9da9af02c8deaa92c58e7e24e2e10af0ac853d9eec0";
     private const ulong GridSeed = 4242;
     private static readonly Vector2I GridSize = new(16, 12);
 

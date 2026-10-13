@@ -23,6 +23,9 @@ public sealed class WorkshopSceneRig
 {
     public const int SettleFrames = 6;
 
+    // Frames to wait for the irregular map, which generates off the main thread, to show.
+    public const int MapFrameBudget = 300;
+
     private WorkshopSceneRig(Node3D shop)
     {
         Shop = shop;
@@ -91,6 +94,16 @@ public sealed class WorkshopSceneRig
     {
         for (var i = 0; i < SettleFrames; i++)
             await ISceneRunner.SyncPhysicsFrame;
+    }
+
+    /// <summary>
+    /// Waits, at most <see cref="MapFrameBudget"/> frames, for the irregular map to show; it generates off the main
+    /// thread, so it can arrive after <see cref="Settle"/>.
+    /// </summary>
+    public async Task WaitForMap()
+    {
+        for (var frame = 0; frame < MapFrameBudget && !Screen.IsInitialized; frame++)
+            await ISceneRunner.SyncProcessFrame;
     }
 
     private sealed class TestCardSpawner : ICardSpawningService
