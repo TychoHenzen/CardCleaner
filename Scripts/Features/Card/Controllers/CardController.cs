@@ -29,6 +29,12 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
         }
     }
 
+    internal void ClearSignature()
+    {
+        _signature = default;
+        HasSignature = false;
+    }
+
     private bool IsHeld => GetParent() is Camera3D; // Check if reparented to camera
 
     // IInteractable implementation
@@ -69,10 +75,7 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
         if (save.TryGetProperty("signature", out CardSignature? signature) && signature.HasValue)
             Signature = signature.Value;
         else
-        {
-            _signature = default;
-            HasSignature = false;
-        }
+            ClearSignature();
 
         if (save.TryGetProperty<Vector3>("position", out var pos))
             GlobalPosition = pos;

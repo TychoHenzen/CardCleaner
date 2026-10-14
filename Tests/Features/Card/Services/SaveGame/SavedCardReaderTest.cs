@@ -27,7 +27,7 @@ public class SavedCardReaderTest
         var record = SavedCardReader.Read(entry);
 
         AssertBool(record is not null).IsTrue();
-        AssertThat(record!.Signature.Elements).IsEqual(SavedElements);
+        AssertThat(record!.Signature!.Value.Elements).IsEqual(SavedElements);
         AssertThat(record.Position).IsEqual(new Vector3(1f, 2f, 3f));
         AssertThat(record.Rotation).IsEqual(new Vector3(-4f, 5f, -6f));
         AssertThat(record.IsHeld).IsTrue();

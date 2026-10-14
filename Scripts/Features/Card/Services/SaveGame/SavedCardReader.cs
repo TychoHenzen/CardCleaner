@@ -23,8 +23,12 @@ internal static class SavedCardReader
         if (cardData == null)
             return null;
 
+        var signature = cardData.TryGetValue("signature_elements", out var signatureData) && signatureData is not null
+            ? new CardSignature(GetFloatArrayFromData(signatureData))
+            : (CardSignature?)null;
+
         return new SavedCardRecord(
-            new CardSignature(GetFloatArrayFromData(cardData["signature_elements"])),
+            signature,
             GetVector3FromData(cardData["position"]),
             GetVector3FromData(cardData["rotation"]),
             Convert.ToBoolean(cardData["isHeld"]),

@@ -79,6 +79,52 @@ public class GameSaveServiceLoadTest
         }
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public static async Task SavingAndLoadingAnAbsentSignaturePreservesAbsence()
+    {
+        var tree = (SceneTree)Engine.GetMainLoop();
+        var previousScene = tree.CurrentScene;
+        var spawner = new RecordingSpawner();
+        ServiceLocator.ResetForTesting();
+        ServiceLocator.Container.RegisterSingleton<ICardSpawningService>(spawner);
+
+        var savePath = $"user://game-save-absent-{Guid.NewGuid():N}.json";
+        var world = new Node3D { Name = "GameSaveAbsentWorld" };
+        var card = new CardController { Name = "AbsentCard" };
+        var service = new GameSaveService { AutoLoadOnStart = false, SavePath = savePath };
+        world.AddChild(card);
+        world.AddChild(service);
+        AddNode(world, autoFree: false);
+
+        try
+        {
+            tree.CurrentScene = world;
+            await world.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+
+            var save = new NodeSave();
+            service.Save(save);
+            AssertBool(save.TryGetProperty<List<object>>("cards", out var entries)).IsTrue();
+            AssertThat(entries).HasSize(1);
+
+            service.Load(save);
+            await world.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+            await world.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+
+            AssertThat(spawner.Spawned).HasSize(1);
+            AssertBool(spawner.Spawned[0].Card.HasSignature).IsFalse();
+        }
+        finally
+        {
+            world.RemoveChild(service);
+            service.Free();
+            world.Free();
+            tree.CurrentScene = previousScene;
+            DeleteSaveFile(savePath);
+            ServiceLocator.ResetForTesting();
+        }
+    }
+
     private static void WriteSaveFile(string path)
     {
         var file = FileAccess.Open(path, FileAccess.ModeFlags.Write)
