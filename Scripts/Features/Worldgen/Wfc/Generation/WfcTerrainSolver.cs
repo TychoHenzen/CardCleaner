@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -73,7 +74,7 @@ internal sealed class WfcTerrainSolver : IWfcTerrainSolver
         {
             MaxIterations = neighbors.Length * 2
         };
-        var result = solver.Solve(topology, null, new RandomNumberGenerator { Seed = seed });
+        var result = solver.Solve(topology, null, RandomSources.Create(seed));
         return ToGraphSolution(result, topology, neighbors.Length);
     }
 

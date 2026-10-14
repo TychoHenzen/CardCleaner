@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
@@ -10,13 +12,13 @@ namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 [RequireGodotRuntime]
 public class WfcTileSelectorTest
 {
-    private RandomNumberGenerator _rng = null!;
+    private IRandom _rng = null!;
     private WfcTileSelector _selector = null!;
 
     [BeforeTest]
     public void Setup()
     {
-        _rng = new RandomNumberGenerator();
+        _rng = RandomSources.Create();
         _rng.Seed = 12345;
         _selector = new WfcTileSelector();
     }

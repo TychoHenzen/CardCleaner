@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Controllers;
@@ -125,7 +126,7 @@ public class DeckBuilderControllerGridSessionTest
 
     private static async Task Insert(DeckSlot slot)
     {
-        var card = new CardController { Name = "Card", Signature = new CardSignature { Febris = 0.4f } };
+        var card = new CardController { Name = "Card", Signature = new CardSignature().With(Element.Febris, 0.4f) };
         card.AddChild(new CollisionShape3D { Shape = new BoxShape3D() });
         AddNode(card);
         slot.Area.EmitSignal(Area3D.SignalName.BodyEntered, card);

@@ -11,6 +11,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
+using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
@@ -106,7 +107,7 @@ public class ShopWorkshopRealServicesSceneTest
         var steps = 0;
         screen.PlayerMoved += (_, _) => steps++;
 
-        var card = ShopTestCards.Create(new CardSignature { Febris = 0.4f });
+        var card = ShopTestCards.Create(new CardSignature().With(Element.Febris, 0.4f));
         workshop.AddChild(card);
         card.GlobalPosition = cards.GlobalPosition + cards.PositionOffset;
         await WorkshopSceneRig.Settle();

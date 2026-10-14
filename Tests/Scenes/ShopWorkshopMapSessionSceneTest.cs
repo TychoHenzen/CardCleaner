@@ -15,6 +15,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
+using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
@@ -128,7 +129,7 @@ public class ShopWorkshopMapSessionSceneTest
         irregularScreen.EnemyDefeated += _ => enemiesDefeated++;
         var cardsBefore = lootParent.GetChildren().OfType<CardController>().ToList();
 
-        var mapCard = ShopTestCards.Create(new CardSignature { Febris = 0.4f });
+        var mapCard = ShopTestCards.Create(new CardSignature().With(Element.Febris, 0.4f));
         workshop.AddChild(mapCard);
         mapCard.GlobalPosition = cardHolder.GlobalPosition + cardHolder.PositionOffset;
         await WorkshopSceneRig.Settle();

@@ -2,6 +2,8 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Tests.Features.Worldgen.Support;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Biomes;
@@ -11,14 +13,14 @@ namespace CardCleaner.Tests.Features.Worldgen.Biomes;
 public class BiomeMapGeneratorTest
 {
     private BiomeRegistry _registry = null!;
-    private RandomNumberGenerator _rng = null!;
+    private IRandom _rng = null!;
 
     [BeforeTest]
     public void Setup()
     {
         _registry = new BiomeRegistry();
         _registry.RegisterDefaultBiomes();
-        _rng = new RandomNumberGenerator();
+        _rng = RandomSources.Create();
         _rng.Seed = 12345;
     }
 

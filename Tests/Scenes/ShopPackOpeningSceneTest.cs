@@ -12,6 +12,7 @@ using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using NSubstitute;
 
@@ -54,7 +55,7 @@ public class ShopPackOpeningSceneTest
         ServiceLocator.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
         ServiceLocator.Container.RegisterSingleton<IMoneyService>(_money);
         ServiceLocator.Container.RegisterSingleton<IOrderingService>(_ordering);
-        ServiceLocator.Container.RegisterSingleton(new RandomNumberGenerator { Seed = Seed });
+        ServiceLocator.Container.RegisterSingleton(RandomSources.Create(Seed));
         ServiceLocator.Container.RegisterSingleton(Substitute.For<ICardGenerator>());
         ServiceLocator.Container.RegisterSingleton<ICardSpawningService>(
             _shop.GetNode<CardSpawningService>("Services/SpawningService"));
@@ -112,7 +113,7 @@ public class ShopPackOpeningSceneTest
         await Frames(OpenFrames);
         var cards = _world.GetChildren().OfType<CardController>().ToArray();
 
-        var expected = new CardPackGenerator(new RandomNumberGenerator { Seed = Seed }).OpenBooster();
+        var expected = new CardPackGenerator(RandomSources.Create(Seed)).OpenBooster();
         AssertThat(cards.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
         for (var i = 0; i < cards.Length; i++)
             AssertThat(cards[i].Signature.Elements).IsEqual(expected[i].Elements);

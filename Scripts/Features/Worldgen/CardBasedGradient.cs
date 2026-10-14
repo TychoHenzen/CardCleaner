@@ -1,4 +1,6 @@
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen;
@@ -12,14 +14,14 @@ namespace CardCleaner.Scripts.Features.Worldgen;
 public partial class CardBasedGradient : BaselineGradient
 {
     private CardSignature[] _inputCards = [];
-    private RandomNumberGenerator _rng = new();
+    private IRandom _rng = RandomSources.Create();
     private CardGradientCore? _core;
 
     public CardBasedGradient()
     {
     }
 
-    public CardBasedGradient(CardSignature[] inputCards, RandomNumberGenerator rng)
+    public CardBasedGradient(CardSignature[] inputCards, IRandom rng)
     {
         _inputCards = inputCards;
         _rng = rng;

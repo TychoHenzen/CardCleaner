@@ -159,10 +159,10 @@ public class NoiseAndBlendGradientProperties : GradientPropertyBase
 
     private static CardSignature LerpSignature(CardSignature a, CardSignature b, float t)
     {
-        var result = new CardSignature();
-        for (var i = 0; i < 8; i++) result[i] = Mathf.Lerp(a[i], b[i], t);
+        var elements = new float[8];
+        for (var i = 0; i < 8; i++) elements[i] = Mathf.Lerp(a[i], b[i], t);
 
-        return result;
+        return new CardSignature(elements);
     }
 
     #endregion

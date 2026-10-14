@@ -2,6 +2,7 @@
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Services;
@@ -52,7 +53,7 @@ public static class SignatureCardHelper
         };
     }
 
-    public static void Apply(RandomNumberGenerator rng, LayerData layer, Texture2D[] options)
+    public static void Apply(IRandom rng, LayerData layer, Texture2D[] options)
     {
         if (options == null || options.Length == 0) return;
         var idx = options.Length == 1
@@ -62,7 +63,7 @@ public static class SignatureCardHelper
     }
 
     public static T SelectWeighted<T>(
-        RandomNumberGenerator rng,
+        IRandom rng,
         T[] items,
         Func<T, float> weightFn)
     {

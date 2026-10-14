@@ -1,6 +1,7 @@
 using System;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
+using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
@@ -31,9 +32,18 @@ internal sealed class SavedCardRespawner
     {
         var spawnTransform = new Transform3D(Basis.FromEuler(saved.Rotation), saved.Position);
         var spawnParent = ResolveSpawnParent(saved.ParentPath);
-        var cardInstance = _spawningService.SpawnCard(saved.Signature, spawnTransform, spawnParent);
+        var cardInstance = _spawningService.SpawnCard(
+            saved.Signature ?? new CardSignature(),
+            spawnTransform,
+            spawnParent);
 
-        if (saved.IsHeld && cardInstance is CardController controller)
+        if (cardInstance is not CardController controller)
+            return;
+
+        if (!saved.Signature.HasValue)
+            controller.ClearSignature();
+
+        if (saved.IsHeld)
             ReparentWhenHeld(controller);
     }
 

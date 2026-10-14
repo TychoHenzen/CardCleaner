@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -67,7 +68,7 @@ public static class BiomeDistributionCalculator
         }
 
         // Create gradient with fresh random seed
-        var rng = new RandomNumberGenerator();
+        var rng = RandomSources.Create();
         rng.Randomize();
         var gradient = new CardBasedGradient(cards, rng);
         var mapSize = new Vector2I(SampleGridSize, SampleGridSize);

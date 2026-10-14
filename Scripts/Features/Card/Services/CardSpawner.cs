@@ -17,7 +17,7 @@ public partial class CardSpawner : Node3D, ICardSpawner
 
     private ICardSpawningService? _spawningService;
     private IInputService? _inputService;
-    private RandomNumberGenerator? _rng;
+    private IRandom? _rng;
 
     private int _spawnQueue;
     [Export] public Vector3 OffsetRange { get; set; } = DefaultOffsetRange;
@@ -46,7 +46,7 @@ public partial class CardSpawner : Node3D, ICardSpawner
     public override void _Ready()
     {
         ServiceLocator.Get<ICardSpawningService>(service => _spawningService = service);
-        ServiceLocator.Get<RandomNumberGenerator>(rng => _rng = rng);
+        ServiceLocator.Get<IRandom>(rng => _rng = rng);
         if (!SpawnKeys) return;
 
         ServiceLocator.Get<IInputService>(input =>

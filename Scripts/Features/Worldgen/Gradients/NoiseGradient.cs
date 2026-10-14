@@ -11,9 +11,8 @@ public partial class NoiseGradient : BaselineGradient
     private const float DefaultNoiseScale = 0.1f;
     private const float DefaultNoiseStrength = 0.3f;
     private const int DefaultNoiseSeed = 42;
-    private static readonly CardSignature DefaultBaseSignature = new();
 
-    [Export] public CardSignature BaseSignature { get; set; } = new();
+    public CardSignature BaseSignature { get; set; } = new();
     [Export] public float NoiseScale { get; set; } = DefaultNoiseScale;
     [Export] public float NoiseStrength { get; set; } = DefaultNoiseStrength;
     [Export] public int NoiseSeed { get; set; } = DefaultNoiseSeed;
@@ -24,7 +23,6 @@ public partial class NoiseGradient : BaselineGradient
     {
         return property.ToString() switch
         {
-            nameof(BaseSignature) => true,
             nameof(NoiseScale) => true,
             nameof(NoiseStrength) => true,
             nameof(NoiseSeed) => true,
@@ -36,7 +34,6 @@ public partial class NoiseGradient : BaselineGradient
     {
         return property.ToString() switch
         {
-            nameof(BaseSignature) => Variant.From(DefaultBaseSignature),
             nameof(NoiseScale) => DefaultNoiseScale,
             nameof(NoiseStrength) => DefaultNoiseStrength,
             nameof(NoiseSeed) => DefaultNoiseSeed,
@@ -48,13 +45,13 @@ public partial class NoiseGradient : BaselineGradient
     {
         _noise ??= new FastNoiseLite { Seed = NoiseSeed, Frequency = NoiseScale };
 
-        var result = new CardSignature();
+        var elements = new float[8];
         for (var i = 0; i < 8; i++)
         {
             var noiseValue = _noise.GetNoise2D(position.X + i * 100, position.Y + i * 100);
-            result[i] = Mathf.Clamp(BaseSignature[i] + noiseValue * NoiseStrength, -1f, 1f);
+            elements[i] = Mathf.Clamp(BaseSignature[i] + noiseValue * NoiseStrength, -1f, 1f);
         }
 
-        return result;
+        return new CardSignature(elements);
     }
 }

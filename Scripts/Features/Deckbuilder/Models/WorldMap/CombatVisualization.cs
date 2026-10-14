@@ -1,5 +1,6 @@
 using System;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
@@ -36,7 +37,7 @@ internal sealed class CombatVisualization
 
     private void PlayRound(Timer timer)
     {
-        var rng = new RandomNumberGenerator();
+        var rng = RandomSources.Create();
         rng.Randomize();
 
         if (rng.Randf() > 0.5f)

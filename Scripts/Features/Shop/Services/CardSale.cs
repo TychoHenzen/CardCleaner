@@ -27,7 +27,8 @@ public static class CardSale
         if (card.IsQueuedForDeletion() || card.HasMeta(SoldMeta))
             return new SaleResult(SaleStatus.AlreadySold);
 
-        var price = CardPricing.GetPrice((card as CardController)?.Signature);
+        var cardController = card as CardController;
+        var price = CardPricing.GetPrice(cardController?.HasSignature == true ? cardController.Signature : null);
         if (price <= 0)
             return new SaleResult(SaleStatus.NotSellable);
 

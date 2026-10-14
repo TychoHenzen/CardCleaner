@@ -7,7 +7,7 @@ namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 /// One persisted card read back from save data, ready to be spawned again.
 /// </summary>
 internal sealed record SavedCardRecord(
-    CardSignature Signature,
+    CardSignature? Signature,
     Vector3 Position,
     Vector3 Rotation,
     bool IsHeld,

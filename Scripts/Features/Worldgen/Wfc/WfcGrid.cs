@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -151,7 +152,7 @@ public class WfcGrid : IWfcTopology
     /// <returns>Position of cell with lowest weighted entropy, or null if all collapsed</returns>
     public Vector2I? GetLowestEntropyCellWeighted(
         Func<Vector2I, IReadOnlyDictionary<string, float>> getWeightsAt,
-        RandomNumberGenerator rng) =>
+        IRandom rng) =>
         WfcFrontierEntropySelector.Select(this, getWeightsAt, rng);
 
     /// <summary>
@@ -200,14 +201,7 @@ public class WfcGrid : IWfcTopology
     /// Enumerates the 4-directional neighbors of a cell ID.
     /// Use this for connectivity/movement (walking is 4-way).
     /// </summary>
-    public IEnumerable<int> GetNeighbors4(int cellId)
-    {
-        var pos = CellIdToPosition(cellId);
-        foreach (var neighborPos in GetNeighbors(pos))
-        {
-            yield return PositionToCellId(neighborPos);
-        }
-    }
+    public IEnumerable<int> GetNeighbors4(int cellId) => _geometry.EnumerateNeighborIds4(cellId);
 
     /// <summary>
     /// Enumerates the edge-sharing neighbors of a cell ID (IWfcTopology implementation).
@@ -262,14 +256,7 @@ public class WfcGrid : IWfcTopology
     /// <summary>
     /// Enumerates the 8-directional neighbors of a cell ID.
     /// </summary>
-    public IEnumerable<int> GetNeighbors8(int cellId)
-    {
-        var pos = CellIdToPosition(cellId);
-        foreach (var neighborPos in GetNeighbors8(pos))
-        {
-            yield return PositionToCellId(neighborPos);
-        }
-    }
+    public IEnumerable<int> GetNeighbors8(int cellId) => _geometry.EnumerateNeighborIds8(cellId);
 
     /// <summary>
     /// Converts a cell ID to a grid position.

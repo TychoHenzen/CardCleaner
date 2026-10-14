@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 using Godot.Collections;
 
@@ -23,7 +24,7 @@ public partial class TilePool : Resource
         _weightsDirty = true;
     }
 
-    public string? SelectRandom(RandomNumberGenerator rng)
+    public string? SelectRandom(IRandom rng)
     {
         if (Entries.Count == 0)
             return null;

@@ -4,6 +4,8 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Tests.Mocks;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenarios;
@@ -16,12 +18,12 @@ public abstract class GridMapGeneratorTestBase
     private protected GridMapGenerationPipeline _generator = null!;
     protected BiomeRegistry _registry = null!;
     protected MockTileRegistry _tileRegistry = null!;
-    protected RandomNumberGenerator _rng = null!;
+    protected IRandom _rng = null!;
 
     [BeforeTest]
     public void Setup()
     {
-        _rng = new RandomNumberGenerator();
+        _rng = RandomSources.Create();
         _rng.Seed = 12345;
         _tileRegistry = MockTileRegistry.CreateWithTestTiles();
 

@@ -2,6 +2,7 @@ using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Packs.Services;
@@ -16,7 +17,7 @@ public class CardPackGeneratorTest
     /// <summary>Roughly 4 standard deviations of the special count over <see cref="BoxesForRateCheck" /> boxes.</summary>
     private const double RateTolerance = 0.20;
 
-    private static CardPackGenerator Seeded(ulong seed) => new(new RandomNumberGenerator { Seed = seed });
+    private static CardPackGenerator Seeded(ulong seed) => new(RandomSources.Create(seed));
 
     [TestCase]
     [TestCategory("Unit")]
@@ -127,6 +128,6 @@ public class CardPackGeneratorTest
     public static void SignatureWithAnyNonZeroElementHasMagicalPotential()
     {
         for (var i = 0; i < 8; i++)
-            AssertThat(new CardSignature { [i] = 0.4f }.HasMagicalPotential()).IsTrue();
+            AssertThat(new CardSignature().With(i, 0.4f).HasMagicalPotential()).IsTrue();
     }
 }

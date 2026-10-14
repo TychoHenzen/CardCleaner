@@ -28,7 +28,7 @@ public static class MapPopulation
     /// <summary>
     /// Picks the start and the enemy cells. A map without a passable cell starts on cell 0 with no enemies.
     /// </summary>
-    public static MapPlacement Place(IMapData map, RandomNumberGenerator rng)
+    public static MapPlacement Place(IMapData map, IRandom rng)
     {
         ArgumentNullException.ThrowIfNull(map);
         ArgumentNullException.ThrowIfNull(rng);
@@ -41,15 +41,15 @@ public static class MapPopulation
         }
 
         var start = passable[rng.RandiRange(0, passable.Count - 1)];
-        var (candidates, farCount) = EnemyCandidates(map, passable, start, rng);
-        if (candidates.Count == 0)
+        var candidates = EnemyCandidates(map, passable, start, rng);
+        if (candidates.Cells.Count == 0)
             return new MapPlacement(start, Array.Empty<int>());
 
         // Nearer cells only top the enemies up to MinEnemies; an enemy beyond that needs a far cell.
-        var fewest = Math.Min(MinEnemies, candidates.Count);
-        var most = Math.Min(Math.Min(MaxEnemies, candidates.Count), Math.Max(MinEnemies, farCount));
+        var fewest = Math.Min(MinEnemies, candidates.Cells.Count);
+        var most = Math.Min(Math.Min(MaxEnemies, candidates.Cells.Count), Math.Max(MinEnemies, candidates.FarCount));
         var count = rng.RandiRange(fewest, most);
-        return new MapPlacement(start, candidates.GetRange(0, count));
+        return new MapPlacement(start, candidates.Cells.GetRange(0, count));
     }
 
     private static List<int> PassableCells(IMapData map)
@@ -68,11 +68,11 @@ public static class MapPopulation
     // while there are enough of them.
     // ASSUMPTION: a map with fewer far cells than MinEnemies (a small map) tops up from the nearer passable cells, as
     // the irregular map's rule fell back to them; otherwise the session would have fewer than 2 enemies to fight.
-    private static (List<int> Cells, int FarCount) EnemyCandidates(
+    private static EnemyCandidateSet EnemyCandidates(
         IMapData map,
         List<int> passable,
         int start,
-        RandomNumberGenerator rng)
+        IRandom rng)
     {
         var startCenter = map.GetCellCenter(start);
         var far = new List<int>();
@@ -92,10 +92,12 @@ public static class MapPopulation
         Shuffle(near, rng);
         var farCount = far.Count;
         far.AddRange(near);
-        return (far, farCount);
+        return new EnemyCandidateSet(far, farCount);
     }
 
-    private static void Shuffle(List<int> cells, RandomNumberGenerator rng)
+    private readonly record struct EnemyCandidateSet(List<int> Cells, int FarCount);
+
+    private static void Shuffle(List<int> cells, IRandom rng)
     {
         for (var i = cells.Count - 1; i > 0; i--)
         {

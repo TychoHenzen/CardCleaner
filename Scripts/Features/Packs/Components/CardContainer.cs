@@ -68,7 +68,7 @@ public partial class CardContainer : RigidBody3D, IInteractable
         ClearHighlight();
         SetProcess(false);
 
-        ServiceLocator.Get<RandomNumberGenerator>(rng => Generator ??= new CardPackGenerator(rng));
+        ServiceLocator.Get<IRandom>(rng => Generator ??= new CardPackGenerator(rng));
         ServiceLocator.Get<ICardSpawningService>(service => Spawning ??= service);
     }
 

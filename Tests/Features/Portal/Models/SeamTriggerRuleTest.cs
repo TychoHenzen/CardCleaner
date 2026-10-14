@@ -10,7 +10,7 @@ public class SeamTriggerRuleTest
     private static CardSignature Special()
     {
         var signature = new CardSignature();
-        signature[3] = 0.4f;
+        signature = signature.With(3, 0.4f);
         return signature;
     }
 
@@ -43,10 +43,4 @@ public class SeamTriggerRuleTest
         AssertThat(SeamTriggerRule.ShouldShow(true, [new CardSignature(), Special(), new CardSignature()])).IsTrue();
     }
 
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void CardWithoutASignatureCountsAsCommon()
-    {
-        AssertThat(SeamTriggerRule.ShouldShow(true, [null])).IsFalse();
-    }
 }

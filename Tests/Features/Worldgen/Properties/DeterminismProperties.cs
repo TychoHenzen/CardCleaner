@@ -4,6 +4,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Tests.Features.Worldgen.Support;
 using FsCheck;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Properties;
@@ -58,8 +59,8 @@ public partial class DeterminismProperties : MapGenerationPropertyBase
                 Arb.From(Gen.Choose(1, 1000000)),
                 seed =>
                 {
-                    var rng1 = new RandomNumberGenerator { Seed = (ulong)seed };
-                    var rng2 = new RandomNumberGenerator { Seed = (ulong)seed };
+                    var rng1 = RandomSources.Create((ulong)seed );
+                    var rng2 = RandomSources.Create((ulong)seed );
 
                     var sig1 = CardSignature.Random(rng1);
                     var sig2 = CardSignature.Random(rng2);
@@ -82,8 +83,8 @@ public partial class DeterminismProperties : MapGenerationPropertyBase
                 Arb.From(seedAndCount),
                 args =>
                 {
-                    var rng1 = new RandomNumberGenerator { Seed = (ulong)args.Seed };
-                    var rng2 = new RandomNumberGenerator { Seed = (ulong)args.Seed };
+                    var rng1 = RandomSources.Create((ulong)args.Seed );
+                    var rng2 = RandomSources.Create((ulong)args.Seed );
 
                     return Enumerable.Range(0, args.Count)
                         .All(_ => CardSignature.Random(rng1)

@@ -94,7 +94,7 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     /// Selects a per-map variant for the given base name using weighted random selection.
     /// Returns the tile ID of the selected variant.
     /// </summary>
-    public string? SelectPerMapVariant(string baseName, RandomNumberGenerator rng)
+    public string? SelectPerMapVariant(string baseName, IRandom rng)
     {
         return WeightedVariantSelector.Select(_variationGroups.GetGroupByBaseName(baseName), rng);
     }

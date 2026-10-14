@@ -41,8 +41,8 @@ public class CardSignatureMetricsTest
     public void TestDominantAspect()
     {
         var signature = new CardSignature();
-        signature.Solidum = 0.7f; // Positive -> Tellus
-        signature.Febris = -0.5f; // Negative -> Hydris
+        signature = signature.With(Element.Solidum, 0.7f); // Positive -> Tellus
+        signature = signature.With(Element.Febris, -0.5f); // Negative -> Hydris
 
         AssertThat(signature.GetDominantAspect(Element.Solidum)).IsEqual(Aspect.Tellus);
         AssertThat(signature.GetDominantAspect(Element.Febris)).IsEqual(Aspect.Hydris);
@@ -52,8 +52,8 @@ public class CardSignatureMetricsTest
     public void TestIntensity()
     {
         var signature = new CardSignature();
-        signature.Solidum = 0.7f;
-        signature.Febris = -0.8f;
+        signature = signature.With(Element.Solidum, 0.7f);
+        signature = signature.With(Element.Febris, -0.8f);
 
         AssertFloat(signature.GetIntensity(Element.Solidum)).IsEqual(0.7f);
         AssertFloat(signature.GetIntensity(Element.Febris)).IsEqual(0.8f);
@@ -63,8 +63,8 @@ public class CardSignatureMetricsTest
     public void TestIsSignificant()
     {
         var signature = new CardSignature();
-        signature.Solidum = 0.15f;
-        signature.Febris = 0.05f;
+        signature = signature.With(Element.Solidum, 0.15f);
+        signature = signature.With(Element.Febris, 0.05f);
 
         AssertBool(signature.IsSignificant(Element.Solidum)).IsTrue();
         AssertBool(signature.IsSignificant(Element.Febris)).IsFalse();
@@ -108,7 +108,7 @@ public class CardSignatureMetricsTest
     public void TestIsSignificantWithCustomThreshold()
     {
         var signature = new CardSignature();
-        signature.Solidum = 0.3f;
+        signature = signature.With(Element.Solidum, 0.3f);
 
         AssertBool(signature.IsSignificant(Element.Solidum, 0.2f)).IsTrue();
         AssertBool(signature.IsSignificant(Element.Solidum, 0.4f)).IsFalse();
@@ -118,7 +118,7 @@ public class CardSignatureMetricsTest
     public void TestDominantAspectAtZero()
     {
         var signature = new CardSignature();
-        signature.Solidum = 0.0f;
+        signature = signature.With(Element.Solidum, 0.0f);
 
         AssertThat(signature.GetDominantAspect(Element.Solidum)).IsEqual(Aspect.Tellus);
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -87,7 +88,7 @@ public class EntropyCache
     public int? GetLowestEntropyCellId(
         IWfcTopology topology,
         Func<int, float> computeEntropy,
-        RandomNumberGenerator rng)
+        IRandom rng)
     {
         RefreshEntropies(topology, computeEntropy);
 

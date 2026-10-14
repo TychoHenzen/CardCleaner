@@ -43,7 +43,7 @@ public class SimpleCombatSystem
     private readonly Combatant _enemy;
     private readonly List<CombatCommand> _playerCommands;
     private readonly CombatCommandInvoker _commandInvoker;
-    private readonly RandomNumberGenerator _rng;
+    private readonly IRandom _rng;
     private bool _playerTurn = true;
 
     public bool CombatComplete => !_player.IsAlive || !_enemy.IsAlive;
@@ -52,7 +52,7 @@ public class SimpleCombatSystem
     public event Action<string>? CombatLogUpdated;
     public event Action? CombatEnded;
 
-    public SimpleCombatSystem(List<CardSignature> playerAbilities, CardSignature enemySeed, RandomNumberGenerator rng)
+    public SimpleCombatSystem(List<CardSignature> playerAbilities, CardSignature enemySeed, IRandom rng)
     {
         ArgumentNullException.ThrowIfNull(rng);
         ArgumentNullException.ThrowIfNull(enemySeed);

@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Player.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
@@ -59,7 +60,7 @@ public partial class CompositionRoot : Node
 
     private void RegisterCoreServices(IServiceContainer container)
     {
-        container.RegisterSingleton(new RandomNumberGenerator());
+        container.RegisterSingleton(RandomSources.Create());
 
         container.RegisterSingleton<ILog, LoggingService>();
         // Set before the services below are built: their constructors and _Ready already log through ILog.

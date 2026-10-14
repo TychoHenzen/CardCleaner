@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
+using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -49,7 +50,7 @@ public class ShopWorkshopCabinetSceneTest
     [TestCategory("Unit")]
     public async Task CardInTheSecondHolderLightsTheButton()
     {
-        await _rig.Place(_rig.CardHolder, new CardSignature { Febris = 0.4f });
+        await _rig.Place(_rig.CardHolder, new CardSignature().With(Element.Febris, 0.4f));
 
         AssertBool(_rig.CardHolder.HasCards).IsTrue();
         AssertBool(_rig.Button.Enabled).IsTrue();
@@ -60,7 +61,7 @@ public class ShopWorkshopCabinetSceneTest
     [TestCategory("Unit")]
     public async Task TakingTheSecondCardBackOutPutsTheButtonOutAgain()
     {
-        var card = await _rig.Place(_rig.CardHolder, new CardSignature { Febris = 0.4f });
+        var card = await _rig.Place(_rig.CardHolder, new CardSignature().With(Element.Febris, 0.4f));
 
         card.EmitPickupSignal();
 
@@ -84,7 +85,7 @@ public class ShopWorkshopCabinetSceneTest
     [TestCategory("Unit")]
     public async Task PressingTheLitButtonRunsTheSessionAndSpendsBothCards()
     {
-        await _rig.Place(_rig.CardHolder, new CardSignature { Febris = 0.4f });
+        await _rig.Place(_rig.CardHolder, new CardSignature().With(Element.Febris, 0.4f));
 
         _rig.Button.Interact();
         await WorkshopSceneRig.Settle();

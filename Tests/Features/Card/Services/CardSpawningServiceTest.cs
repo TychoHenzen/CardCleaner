@@ -1,5 +1,7 @@
 ﻿using System;
 using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
@@ -17,7 +19,7 @@ public class CardSpawningServiceTest
 {
     private CardSpawningService _service = null!;
     private ICardGenerator _mockGenerator = null!;
-    private RandomNumberGenerator _rng = null!;
+    private IRandom _rng = null!;
 
     private Node3D _cardParent = null!;
     private PackedScene _mockCardScene = null!;
@@ -32,7 +34,7 @@ public class CardSpawningServiceTest
 
         // Create dependencies using NSubstitute instead of custom mock
         _mockGenerator = Substitute.For<ICardGenerator>();
-        _rng = new RandomNumberGenerator();
+        _rng = RandomSources.Create();
         _rng.Seed = 42; // Deterministic for testing
 
         // Register dependencies in ServiceLocator BEFORE creating the service

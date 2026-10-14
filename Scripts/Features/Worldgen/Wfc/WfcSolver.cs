@@ -73,7 +73,7 @@ public class WfcSolver
     /// <param name="biome">Biome for soft rule weighting</param>
     /// <param name="rng">Random number generator for tile selection</param>
     /// <returns>Result indicating success or failure with details</returns>
-    public WfcSolveResult Solve(IWfcTopology topology, BiomeDefinition? biome, RandomNumberGenerator rng)
+    public WfcSolveResult Solve(IWfcTopology topology, BiomeDefinition? biome, IRandom rng)
     {
         var run = new WfcSolveRun(topology, biome, rng, topology.CellCount);
         PrepareForSolve(topology);

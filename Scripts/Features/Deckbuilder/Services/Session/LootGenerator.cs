@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
@@ -16,7 +17,7 @@ internal static class LootGenerator
     /// <summary>
     /// Generates 5-10 cards that vary around the base map seed.
     /// </summary>
-    internal static List<CardSignature> Generate(CardSignature baseSeed, RandomNumberGenerator rng)
+    internal static List<CardSignature> Generate(CardSignature baseSeed, IRandom rng)
     {
         var lootCount = rng.RandiRange(MinLootCount, MaxLootCount);
         var loot = new List<CardSignature>();
@@ -27,16 +28,16 @@ internal static class LootGenerator
         return loot;
     }
 
-    private static CardSignature GenerateSignature(CardSignature baseSeed, RandomNumberGenerator rng)
+    private static CardSignature GenerateSignature(CardSignature baseSeed, IRandom rng)
     {
-        var lootSignature = new CardSignature();
+        var elements = new float[8];
 
         for (var i = 0; i < 8; i++)
         {
             var variation = rng.Randfn(baseSeed[i], SignatureSpread);
-            lootSignature[i] = Mathf.Clamp(variation, -1f, 1f);
+            elements[i] = Mathf.Clamp(variation, -1f, 1f);
         }
 
-        return lootSignature;
+        return new CardSignature(elements);
     }
 }

@@ -85,14 +85,14 @@ public partial class GameSaveService : Node, ISaveable
     public void Save(NodeSave save)
     {
         // Find all cards in the scene and save their spawn data
-        var cardData = new List<Dictionary<string, object>>();
+        var cardData = new List<Dictionary<string, object?>>();
         var cards = GetTree().GetNodesInGroup("Cards").OfType<CardController>();
         
         foreach (var card in cards)
         {
-            var data = new Dictionary<string, object>
+            var data = new Dictionary<string, object?>
             {
-                ["signature_elements"] = card.Signature.Elements, // Store the float array directly
+                ["signature_elements"] = card.HasSignature ? card.Signature.Elements : null,
                 ["position"] = card.GlobalPosition,
                 ["rotation"] = card.GlobalRotation,
                 ["isHeld"] = card.GetParent() is Camera3D,

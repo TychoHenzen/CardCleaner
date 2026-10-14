@@ -20,7 +20,7 @@ public class ResidualEnergyModifierTest
         modifier.BaseValue = 1.0f;
 
         var signature = new CardSignature();
-        signature.Solidum = 0.5f; // Positive value
+        signature = signature.With(Element.Solidum, 0.5f); // Positive value
 
         var effect = modifier.CalculateEffect(signature);
         Assertions.AssertFloat(effect).IsEqual(2.0f); // 1.0 + (0.5 * 2.0)
@@ -36,7 +36,7 @@ public class ResidualEnergyModifierTest
         modifier.BaseValue = 1.0f;
 
         var signature = new CardSignature();
-        signature.Solidum = -0.5f; // Negative value
+        signature = signature.With(Element.Solidum, -0.5f); // Negative value
 
         var effect = modifier.CalculateEffect(signature);
         Assertions.AssertFloat(effect).IsEqual(2.0f); // 1.0 + (0.5 * 2.0) after flipping
@@ -52,7 +52,7 @@ public class ResidualEnergyModifierTest
         modifier.BaseValue = 1.0f;
 
         var signature = new CardSignature();
-        signature.Solidum = -0.5f; // But signature is negative
+        signature = signature.With(Element.Solidum, -0.5f); // But signature is negative
 
         var effect = modifier.CalculateEffect(signature);
         Assertions.AssertFloat(effect).IsEqual(1.0f); // Should return base value only

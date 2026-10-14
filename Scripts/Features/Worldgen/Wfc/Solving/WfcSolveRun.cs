@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -9,5 +10,5 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 internal readonly record struct WfcSolveRun(
     IWfcTopology Topology,
     BiomeDefinition? Biome,
-    RandomNumberGenerator Rng,
+    IRandom Rng,
     int TotalCells);

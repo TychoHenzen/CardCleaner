@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -147,7 +148,7 @@ public class ShopSaleSceneTest
     public void CardHeldByThePlayerIsSoldAtTheRegister()
     {
         var holder = _register.PlayerHolder!;
-        var card = Tests.Features.Shop.ShopTestCards.Create(new CardSignature { Febris = 0.3f });
+        var card = Tests.Features.Shop.ShopTestCards.Create(new CardSignature().With(Element.Febris, 0.3f));
         _shop.GetNode("World/Cards").AddChild(card);
         holder.AddCard(card);
         var balance = _money.Balance;

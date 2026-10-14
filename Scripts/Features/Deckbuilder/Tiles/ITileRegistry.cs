@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Tiles;
@@ -52,7 +53,7 @@ public interface ITileRegistry
     /// Selects a per-map variant for the given base name using weighted random selection.
     /// Returns the tile ID of the selected variant.
     /// </summary>
-    string? SelectPerMapVariant(string baseName, RandomNumberGenerator rng);
+    string? SelectPerMapVariant(string baseName, IRandom rng);
 
     /// <summary>
     /// Gets all variants for a base name with their weights (for per-instance selection).

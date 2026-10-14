@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
@@ -69,7 +70,7 @@ public class MockTileRegistry : ITileRegistry, ITileMetadataProvider
         return false;
     }
 
-    public string? SelectPerMapVariant(string baseName, RandomNumberGenerator rng) => null;
+    public string? SelectPerMapVariant(string baseName, IRandom rng) => null;
     public IReadOnlyList<VariantWeight> GetInstanceVariants(string baseName) => Array.Empty<VariantWeight>();
     public IEnumerable<VariationGroup> GetAllVariationGroups() => _variationGroups.GetAllGroups();
 

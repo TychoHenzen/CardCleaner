@@ -1,5 +1,6 @@
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc.SolverScenarios;
@@ -29,7 +30,7 @@ public class WfcSolverPassabilityGraphTest
             new WfcPropagator(_rules), new WfcTileSelector(), null, graph, IsPassable);
         var grid = new WfcGrid(5, 5, Tiles);
 
-        var result = solver.Solve(grid, null, new RandomNumberGenerator { Seed = seed });
+        var result = solver.Solve(grid, null, RandomSources.Create(seed));
 
         AssertBool(result.Success).IsTrue();
         return new SolvedMap(grid, graph);
@@ -86,7 +87,7 @@ public class WfcSolverPassabilityGraphTest
         for (ulong seed = 1; seed <= 3; seed++)
         {
             var grid = new WfcGrid(5, 5, Tiles);
-            AssertBool(solver.Solve(grid, null, new RandomNumberGenerator { Seed = seed }).Success).IsTrue();
+            AssertBool(solver.Solve(grid, null, RandomSources.Create(seed)).Success).IsTrue();
 
             var passableCount = 0;
             foreach (var position in grid.GetAllPositions())
@@ -108,9 +109,9 @@ public class WfcSolverPassabilityGraphTest
         var solver = new WfcSolver(
             new WfcPropagator(_rules), new WfcTileSelector(), null, graph, IsPassable);
         var grid = new WfcGrid(5, 5, Tiles);
-        AssertBool(solver.Solve(grid, null, new RandomNumberGenerator { Seed = 2 }).Success).IsTrue();
+        AssertBool(solver.Solve(grid, null, RandomSources.Create(2)).Success).IsTrue();
 
-        AssertBool(solver.Solve(grid, null, new RandomNumberGenerator { Seed = 3 }).Success).IsTrue();
+        AssertBool(solver.Solve(grid, null, RandomSources.Create(3)).Success).IsTrue();
 
         var passableCount = 0;
         foreach (var position in grid.GetAllPositions())

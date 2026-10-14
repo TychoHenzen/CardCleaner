@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
@@ -8,7 +9,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
 /// </summary>
 internal sealed class SessionWorld
 {
-    internal RandomNumberGenerator Rng { get; set; } = new();
+    internal IRandom Rng { get; set; } = RandomSources.Create();
 
     /// <summary>Unified map interface.</summary>
     internal IGeneratedMap? GeneratedMap { get; set; }

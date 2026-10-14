@@ -3,6 +3,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Tests.Core.PropertyTesting.Generators;
 using FsCheck;
 using GdUnit4;
+using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 
 namespace CardCleaner.Tests.Core.PropertyTesting.Properties;
@@ -99,7 +100,7 @@ public class CardSignatureProperties : PropertyTestBase
                 value =>
                 {
                     var sig = new CardSignature();
-                    sig.Solidum = value;
+                    sig = sig.With(Element.Solidum, value);
                     return sig.Solidum >= -1f && sig.Solidum <= 1f;
                 })
             .Iterations(500));
@@ -114,7 +115,7 @@ public class CardSignatureProperties : PropertyTestBase
                 args =>
                 {
                     var sig = new CardSignature();
-                    sig[args.Index] = args.Value;
+                    sig = sig.With(args.Index, args.Value);
                     return sig[args.Index] >= -1f && sig[args.Index] <= 1f;
                 })
             .Iterations(500));
