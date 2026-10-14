@@ -19,14 +19,14 @@ public partial class BaseCardType : Resource
     private const float DefaultBaseValue = 10.0f;
     private const int DefaultBaseCost = 1;
     private const string DefaultBaseEffectTemplate = "";
-    private static readonly CardSignature DefaultBaseSignature = new();
+    private static readonly CardSignatureResource DefaultBaseSignature = new();
 
     [Export] public string TypeName { get; set; } = DefaultTypeName;
     [Export] public string Description { get; set; } = DefaultDescription;
     [Export] public CardCategory Category { get; set; } = DefaultCategory;
     [Export] public CardRarity BaseRarity { get; set; } = DefaultBaseRarity;
 
-    [Export] public CardSignature BaseSignature { get; set; } = new();
+    [Export] public CardSignatureResource BaseSignature { get; set; } = new();
     // How far signatures can be to match this base.
     [Export] public float MatchRadius { get; set; } = DefaultMatchRadius;
 
@@ -87,14 +87,14 @@ public partial class BaseCardType : Resource
 
     public bool CanMatch(CardSignature signature, float maxDistance = -1f)
     {
-        var distance = signature.DistanceTo(BaseSignature);
+        var distance = signature.DistanceTo(BaseSignature.ToSignature());
         var threshold = maxDistance > 0 ? maxDistance : MatchRadius;
         return distance <= threshold;
     }
 
     public float CalculateMatchWeight(CardSignature signature)
     {
-        var distance = signature.DistanceTo(BaseSignature);
+        var distance = signature.DistanceTo(BaseSignature.ToSignature());
         if (distance > MatchRadius) return 0f;
 
         // Closer signatures get higher weight (inverse distance)
@@ -104,7 +104,7 @@ public partial class BaseCardType : Resource
     public CardRarity CalculateActualRarity(CardSignature signature)
     {
         // Base rarity can be modified by how unusual the signature is
-        var residual = signature.Subtract(BaseSignature);
+        var residual = signature.Subtract(BaseSignature.ToSignature());
         var unusualness = CalculateUnusualness(residual);
 
         var rarityBoost = Mathf.FloorToInt(unusualness * 2f); // 0-2 rarity levels boost
@@ -118,7 +118,7 @@ public partial class BaseCardType : Resource
         var actualRarity = CalculateActualRarity(signature);
         var rarityMultiplier = (int)actualRarity + 1f; // Common=1x, Legendary=5x
 
-        var residual = signature.Subtract(BaseSignature);
+        var residual = signature.Subtract(BaseSignature.ToSignature());
         var powerModifier = CalculatePowerModifier(residual);
 
         return BaseValue * rarityMultiplier * (1f + powerModifier * 0.5f);

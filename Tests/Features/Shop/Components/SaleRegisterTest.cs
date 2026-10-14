@@ -9,6 +9,7 @@ using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.Mocking;
+using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
@@ -122,7 +123,7 @@ public class SaleRegisterTest
     [TestCategory("Unit")]
     public async Task ASpecialShelfCardSellsForTheSameFixedPrice()
     {
-        await Stock(new CardSignature { Lumines = 0.4f });
+        await Stock(new CardSignature().With(Element.Lumines, 0.4f));
 
         var result = _register.Sell();
 

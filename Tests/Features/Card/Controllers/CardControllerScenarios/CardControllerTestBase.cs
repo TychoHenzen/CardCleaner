@@ -10,7 +10,7 @@ namespace CardCleaner.Tests.Features.Card.Controllers.CardControllerScenarios;
 public abstract class CardControllerTestBase
 {
     protected CardController _cardController = null!;
-    protected CardSignature _testSignature = null!;
+    protected CardSignature _testSignature;
     protected int _cardPickedUpEventCount;
     protected int _cardInteractionRequestedEventCount;
     protected CardController? _lastPickedUpCard;

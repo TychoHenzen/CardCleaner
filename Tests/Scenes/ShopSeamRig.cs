@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Portal.Components;
 using CardCleaner.Tests.Features.Shop;
@@ -55,7 +56,7 @@ public sealed class ShopSeamRig
         return rig;
     }
 
-    public static CardSignature Special() => new() { Febris = 0.3f };
+    public static CardSignature Special() => new CardSignature().With(Element.Febris, 0.3f);
 
     public async Task<CardController> Hold(CardSignature signature)
     {

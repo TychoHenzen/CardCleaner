@@ -28,7 +28,7 @@ public static class MapPopulation
     /// <summary>
     /// Picks the start and the enemy cells. A map without a passable cell starts on cell 0 with no enemies.
     /// </summary>
-    public static MapPlacement Place(IMapData map, RandomNumberGenerator rng)
+    public static MapPlacement Place(IMapData map, IRandom rng)
     {
         ArgumentNullException.ThrowIfNull(map);
         ArgumentNullException.ThrowIfNull(rng);
@@ -72,7 +72,7 @@ public static class MapPopulation
         IMapData map,
         List<int> passable,
         int start,
-        RandomNumberGenerator rng)
+        IRandom rng)
     {
         var startCenter = map.GetCellCenter(start);
         var far = new List<int>();
@@ -95,7 +95,7 @@ public static class MapPopulation
         return (far, farCount);
     }
 
-    private static void Shuffle(List<int> cells, RandomNumberGenerator rng)
+    private static void Shuffle(List<int> cells, IRandom rng)
     {
         for (var i = cells.Count - 1; i > 0; i--)
         {

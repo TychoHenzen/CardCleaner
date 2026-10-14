@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -151,7 +152,7 @@ public class WfcGrid : IWfcTopology
     /// <returns>Position of cell with lowest weighted entropy, or null if all collapsed</returns>
     public Vector2I? GetLowestEntropyCellWeighted(
         Func<Vector2I, IReadOnlyDictionary<string, float>> getWeightsAt,
-        RandomNumberGenerator rng) =>
+        IRandom rng) =>
         WfcFrontierEntropySelector.Select(this, getWeightsAt, rng);
 
     /// <summary>

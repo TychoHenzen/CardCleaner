@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -80,7 +81,7 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
         cancellationToken.ThrowIfCancellationRequested();
 
         var mapData = new IrregularMeshMapData(mesh) { WorldScale = WorldScale };
-        var placement = MapPopulation.Place(mapData, new RandomNumberGenerator { Seed = config.Seed });
+        var placement = MapPopulation.Place(mapData, RandomSources.Create(config.Seed));
         mapData.SetPlayerStart(placement.PlayerStartCell);
         foreach (var enemyCell in placement.EnemyCells)
             mapData.AddEnemySpawn(enemyCell);

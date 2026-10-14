@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
@@ -100,7 +101,7 @@ public class WfcEntropyTest
         grid.GetCell(0, 1).CollapseTo("grass");
         grid.GetCell(1, 0).CollapseTo("dirt");
 
-        var rng = new RandomNumberGenerator { Seed = 42 };
+        var rng = RandomSources.Create(42);
 
         IReadOnlyDictionary<string, float> GetWeightsAt(Vector2I pos)
         {
@@ -194,7 +195,7 @@ public class WfcEntropyTest
         grid.GetCell(1, 0).CollapseTo("grass");
         grid.GetCell(1, 1).CollapseTo("dirt");
 
-        var rng = new RandomNumberGenerator { Seed = 42 };
+        var rng = RandomSources.Create(42);
         IReadOnlyDictionary<string, float> GetWeightsAt(Vector2I pos) =>
             new Dictionary<string, float> { ["grass"] = 1.0f, ["dirt"] = 1.0f };
 

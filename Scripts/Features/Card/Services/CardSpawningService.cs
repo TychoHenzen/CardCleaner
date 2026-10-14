@@ -22,12 +22,12 @@ public partial class CardSpawningService : Node, ICardSpawningService, IServiceP
 
     [Export] public PackedScene? CardScene;
     private ICardGenerator _generator = null!;
-    private RandomNumberGenerator _rng = null!;
+    private IRandom _rng = null!;
 
     public override void _Ready()
     {
         AddToGroup("service_providers");
-        ServiceLocator.Get<RandomNumberGenerator>(rng => _rng = rng);
+        ServiceLocator.Get<IRandom>(rng => _rng = rng);
         ServiceLocator.Get<ICardGenerator>(gen => _generator = gen);
     }
 
@@ -59,7 +59,7 @@ public partial class CardSpawningService : Node, ICardSpawningService, IServiceP
         var renderer = cardInstance.GetNodeOrNull<CardShaderRenderer>("CardRenderer");
         if (renderer != null)
             // Use CallDeferred to ensure all components are ready
-            CallDeferred(MethodName.BakeCardRenderer, renderer, signature);
+            Callable.From(() => BakeCardRenderer(renderer, signature)).CallDeferred();
 
         return cardInstance;
     }

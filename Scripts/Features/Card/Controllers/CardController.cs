@@ -16,7 +16,7 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
 
     private readonly List<ICardComponent> _components = new();
     private readonly List<IPhysicsComponent> _physicsComponents = new();
-    public CardSignature Signature = null!;
+    public CardSignature Signature;
 
     private bool IsHeld => GetParent() is Camera3D; // Check if reparented to camera
 
@@ -55,8 +55,8 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
 
     public void Load(NodeSave save)
     {
-        if (save.TryGetProperty("signature", out CardSignature? signature) && signature != null)
-            Signature = signature;
+        if (save.TryGetProperty("signature", out CardSignature? signature) && signature.HasValue)
+            Signature = signature.Value;
 
         if (save.TryGetProperty<Vector3>("position", out var pos))
             GlobalPosition = pos;

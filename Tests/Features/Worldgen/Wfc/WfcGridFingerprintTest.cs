@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
@@ -39,7 +40,7 @@ public class WfcGridFingerprintTest
         var tileRegistry = new TileRegistry();
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes();
-        var rng = new RandomNumberGenerator { Seed = GridSeed };
+        var rng = RandomSources.Create(GridSeed);
         var gradient = new CardBasedGradient(MapCards(), rng);
         var biomeProvider = new BiomeMapGenerator(biomeRegistry, gradient, GridSize);
         var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();

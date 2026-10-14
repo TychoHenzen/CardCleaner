@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -17,7 +18,7 @@ internal static class WfcFrontierEntropySelector
     internal static Vector2I? Select(
         WfcGrid grid,
         Func<Vector2I, IReadOnlyDictionary<string, float>> getWeightsAt,
-        RandomNumberGenerator rng)
+        IRandom rng)
     {
         // First pass: find frontier cells (adjacent to collapsed)
         var scan = ScanFrontier(grid);

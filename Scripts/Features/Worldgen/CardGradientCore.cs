@@ -1,5 +1,6 @@
 using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen;
@@ -16,14 +17,14 @@ public class CardGradientCore
     public const float MultiCardVariationBonus = 0.2f;
 
     private readonly CardSignature[] _inputCards;
-    private readonly RandomNumberGenerator _rng;
+    private readonly IRandom _rng;
 
     private CardSignature[,]? _sampleGrid;
     private bool _needsRegeneration = true;
 
     private float SamplingRadius => 0.1f * _inputCards.Length;
 
-    public CardGradientCore(CardSignature[] inputCards, RandomNumberGenerator rng)
+    public CardGradientCore(CardSignature[] inputCards, IRandom rng)
     {
         _inputCards = inputCards;
         _rng = rng;
@@ -127,7 +128,7 @@ public class CardGradientCore
 
     private CardSignature SampleFromHypersphere(CardSignature center, float radius)
     {
-        var result = new CardSignature();
+        var elements = new float[8];
         var attempts = 0;
 
         while (attempts < 20)
@@ -147,7 +148,7 @@ public class CardGradientCore
                 var scale = actualRadius / Mathf.Sqrt(lengthSquared);
 
                 for (var i = 0; i < 8; i++)
-                    result[i] = Mathf.Clamp(center[i] + components[i] * scale, -1f, 1f);
+                    elements[i] = Mathf.Clamp(center[i] + components[i] * scale, -1f, 1f);
 
                 break;
             }
@@ -155,7 +156,7 @@ public class CardGradientCore
             attempts++;
         }
 
-        return result;
+        return new CardSignature(elements);
     }
 
     private static CardSignature SampleBezierCurve(CardSignature[] controlPoints, float t)
@@ -188,7 +189,7 @@ public class CardGradientCore
             var signature = _sampleGrid![y, x];
 
             for (var i = 0; i < 8; i++)
-                signature[i] = Mathf.Clamp(signature[i] * bonusMultiplier, -1f, 1f);
+                signature = signature.With(i, signature[i] * bonusMultiplier);
 
             if (x > 0 && y > 0)
             {
@@ -196,7 +197,7 @@ public class CardGradientCore
                 for (var i = 0; i < 8; i++)
                 {
                     var diff = signature[i] - neighbor[i];
-                    signature[i] = Mathf.Clamp(signature[i] + diff * variationFactor * 0.1f, -1f, 1f);
+                    signature = signature.With(i, signature[i] + diff * variationFactor * 0.1f);
                 }
             }
 
@@ -226,9 +227,9 @@ public class CardGradientCore
 
     private static CardSignature LerpSignatures(CardSignature a, CardSignature b, float t)
     {
-        var result = new CardSignature();
+        var elements = new float[8];
         for (var i = 0; i < 8; i++)
-            result[i] = Mathf.Lerp(a[i], b[i], t);
-        return result;
+            elements[i] = Mathf.Lerp(a[i], b[i], t);
+        return new CardSignature(elements);
     }
 }

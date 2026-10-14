@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Selectors;
@@ -7,7 +8,7 @@ internal static class WfcWeightedTileChooser
 {
     internal static string? SelectWeightedTile(
         List<(string tileId, float weight)> weights,
-        RandomNumberGenerator rng)
+        IRandom rng)
     {
         var totalWeight = 0f;
         foreach (var candidate in weights)

@@ -12,8 +12,8 @@ public partial class RadialGradient : BaselineGradient
     private static readonly CardSignature DefaultCenterSignature = new();
     private static readonly CardSignature DefaultEdgeSignature = new();
 
-    [Export] public CardSignature CenterSignature { get; set; } = new();
-    [Export] public CardSignature EdgeSignature { get; set; } = new();
+    public CardSignature CenterSignature { get; set; } = new();
+    public CardSignature EdgeSignature { get; set; } = new();
     [Export] public float Falloff { get; set; } = DefaultFalloff;
 
     public override bool _PropertyCanRevert(StringName property)
@@ -50,8 +50,8 @@ public partial class RadialGradient : BaselineGradient
         var t = Mathf.Pow(normalizedDistance, Falloff);
 
         // Blend signatures
-        var result = new CardSignature();
-        for (var i = 0; i < 8; i++) result[i] = Mathf.Lerp(CenterSignature[i], EdgeSignature[i], t);
-        return result;
+        var elements = new float[8];
+        for (var i = 0; i < 8; i++) elements[i] = Mathf.Lerp(CenterSignature[i], EdgeSignature[i], t);
+        return new CardSignature(elements);
     }
 }

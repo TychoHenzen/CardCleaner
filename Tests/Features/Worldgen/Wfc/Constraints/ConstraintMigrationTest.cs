@@ -3,6 +3,7 @@ using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc.Constraints;
@@ -111,7 +112,7 @@ public class ConstraintMigrationTest
     public void WfcTileSelector_ConstraintList_AppliesMultiplicatively()
     {
         var selector = new WfcTileSelector();
-        var rng = new RandomNumberGenerator { Seed = 12345 };
+        var rng = RandomSources.Create(12345);
 
         // Create a custom constraint that always returns 0.5
         var halfConstraint = new TestHalfConstraint();

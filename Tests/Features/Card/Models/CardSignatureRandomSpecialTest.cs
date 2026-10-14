@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Models;
@@ -14,7 +15,7 @@ public class CardSignatureRandomSpecialTest
     [TestCategory("Unit")]
     public static void EveryRandomSpecialSignatureHasMagicalPotential()
     {
-        var rng = new RandomNumberGenerator { Seed = Seed };
+        var rng = RandomSources.Create(Seed);
 
         for (var i = 0; i < Samples; i++)
             AssertBool(CardSignature.RandomSpecial(rng).HasMagicalPotential()).IsTrue();
@@ -24,7 +25,7 @@ public class CardSignatureRandomSpecialTest
     [TestCategory("Unit")]
     public static void RandomSpecialSignatureElementsStayInTheCardRange()
     {
-        var rng = new RandomNumberGenerator { Seed = Seed };
+        var rng = RandomSources.Create(Seed);
 
         for (var i = 0; i < Samples; i++)
         {
@@ -38,8 +39,8 @@ public class CardSignatureRandomSpecialTest
     [TestCategory("Unit")]
     public static void SameSeedGivesTheSameSpecialSignature()
     {
-        var first = CardSignature.RandomSpecial(new RandomNumberGenerator { Seed = Seed });
-        var second = CardSignature.RandomSpecial(new RandomNumberGenerator { Seed = Seed });
+        var first = CardSignature.RandomSpecial(RandomSources.Create(Seed));
+        var second = CardSignature.RandomSpecial(RandomSources.Create(Seed));
 
         AssertThat(second.Elements).IsEqual(first.Elements);
     }

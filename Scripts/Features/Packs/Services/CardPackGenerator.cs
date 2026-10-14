@@ -1,5 +1,6 @@
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Models;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Packs.Services;
@@ -10,7 +11,7 @@ namespace CardCleaner.Scripts.Features.Packs.Services;
 ///     not a guarantee. Every other card is common and carries the all-zero signature.
 ///     The random source is injected so tests can seed it.
 /// </summary>
-public class CardPackGenerator(RandomNumberGenerator rng)
+public class CardPackGenerator(IRandom rng)
 {
     /// <summary>A card is special with probability 1 / SpecialCardOdds (one per 8 x 8 x 8 card box).</summary>
     public const int SpecialCardOdds = CardContainerLayout.CardsPerBox;

@@ -1,4 +1,5 @@
-using Godot;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Randomness;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Services.SimpleCombatScenarios;
 
@@ -7,12 +8,11 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Services.SimpleCombatScenarios;
 /// </summary>
 public abstract class SimpleCombatTestBase
 {
-    protected RandomNumberGenerator _rng = null!;
+    protected IRandom _rng = null!;
 
     [BeforeTest]
     public void Setup()
     {
-        _rng = new RandomNumberGenerator();
-        _rng.Seed = 12345;
+        _rng = RandomSources.Create(12345);
     }
 }

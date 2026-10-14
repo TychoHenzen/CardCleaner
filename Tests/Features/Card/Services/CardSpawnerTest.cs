@@ -63,17 +63,6 @@ public class CardSpawnerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void SpawnSpecificCard_NullSignature_ReturnsNull()
-    {
-        // Act
-        var result = _spawner.SpawnSpecificCard(null!);
-
-        // Assert - Should handle null signature gracefully
-        Assertions.AssertThat(result).IsNull();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
     public void SpawnSpecificCard_ValidSignature_WithoutServices_ReturnsNull()
     {
         // Arrange

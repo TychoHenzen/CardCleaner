@@ -6,6 +6,7 @@ using CardCleaner.Tests.Core.PropertyTesting;
 using CardCleaner.Tests.Core.PropertyTesting.Generators;
 using CardCleaner.Tests.Mocks;
 using FsCheck;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Support;
@@ -65,7 +66,7 @@ public abstract class MapGenerationPropertyBase : PropertyTestBase
 
     protected SimpleMapData GenerateMap(MapRequest request, CardSignature signature)
     {
-        var rng = new RandomNumberGenerator { Seed = request.RngSeed };
+        var rng = RandomSources.Create(request.RngSeed);
         var gradient = new ConstantSignatureGradient(signature);
         var biomeProvider = new BiomeMapGenerator(_registry, gradient, request.Size);
         var generator = GridMapGenerator.CreatePipeline(rng, biomeProvider, _tileRegistry, _tileRegistry);

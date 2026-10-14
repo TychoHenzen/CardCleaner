@@ -4,6 +4,7 @@ using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -58,7 +59,7 @@ public class MeshTerrainGenerator
 
         var bounds = mesh.Bounds;
         var effectiveSize = GetEffectiveSize(bounds);
-        var rng = new RandomNumberGenerator { Seed = (ulong)seed };
+        var rng = RandomSources.Create((ulong)seed );
         var gradient = new CardBasedGradient(inputCards, rng);
         var getBiomeAt = CreateBiomeSelector(gradient, effectiveSize, biomeRegistry);
 

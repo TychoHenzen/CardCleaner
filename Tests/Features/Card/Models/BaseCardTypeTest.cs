@@ -1,7 +1,9 @@
 ﻿using CardCleaner.Scripts.Core.Enumeration;
 using GdUnit4;
+using Godot;
 using BaseCardType = CardCleaner.Scripts.Features.Card.Models.BaseCardType;
 using CardSignature = CardCleaner.Scripts.Features.Card.Models.CardSignature;
+using CardSignatureResource = CardCleaner.Scripts.Features.Card.Models.CardSignatureResource;
 
 namespace CardCleaner.Tests.Features.Card.Models;
 
@@ -13,7 +15,7 @@ public class BaseCardTypeTest
     {
         var cardType = new BaseCardType();
         cardType.TypeName = "Test Card";
-        cardType.BaseSignature = new CardSignature(new[] { 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
+        cardType.BaseSignature = new CardSignatureResource { Solidum = 0.5f };
         cardType.MatchRadius = 0.5f;
         cardType.BaseRarity = CardRarity.Common;
         cardType.BaseValue = 10.0f;
@@ -44,7 +46,7 @@ public class BaseCardTypeTest
     public void TestMatchWeightCalculation()
     {
         var cardType = CreateTestCardType();
-        var exactMatch = cardType.BaseSignature;
+        var exactMatch = cardType.BaseSignature.ToSignature();
         var closeMatch = new CardSignature(new[] { 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
         var farMatch = new CardSignature(new[] { 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
 
@@ -84,5 +86,15 @@ public class BaseCardTypeTest
 
         // Should be at least base value
         Assertions.AssertThat(actualValue).IsGreaterEqual(cardType.BaseValue);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void WeaponAssetPreservesSignatureValues()
+    {
+        var cardType = ResourceLoader.Load<BaseCardType>("res://Assets/CardBases/Weapon.tres");
+
+        Assertions.AssertThat(cardType).IsNotNull();
+        Assertions.AssertThat(cardType.BaseSignature.ToSignature().Elements).IsEqual(new float[8]);
     }
 }

@@ -4,6 +4,7 @@ using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
 using GdUnit4;
+using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 using NSubstitute;
 
@@ -59,7 +60,7 @@ public class SignatureCardGeneratorTest
     public void TestGenerateCardRenderer_PositiveGemEmission()
     {
         var signature = new CardSignature();
-        signature.Solidum = 0.8f; // Positive value for element 0
+        signature = signature.With(Element.Solidum, 0.8f); // Positive value for element 0
 
 
         _generator.GenerateCardRenderer(_renderer, signature, _template);
@@ -74,7 +75,7 @@ public class SignatureCardGeneratorTest
     public void TestGenerateCardRenderer_NegativeGemEmission()
     {
         var signature = new CardSignature();
-        signature.Solidum = -0.8f; // Negative value for element 0
+        signature = signature.With(Element.Solidum, -0.8f); // Negative value for element 0
 
 
         _generator.GenerateCardRenderer(_renderer, signature, _template);
@@ -147,7 +148,7 @@ public class SignatureCardGeneratorTest
     [TestCategory("Unit")]
     public void SpecialCardRendersSignatureEdges()
     {
-        var signature = new CardSignature { Febris = 0.6f };
+        var signature = new CardSignature().With(Element.Febris, 0.6f);
 
         _generator.GenerateCardRenderer(_renderer, signature, _template);
 

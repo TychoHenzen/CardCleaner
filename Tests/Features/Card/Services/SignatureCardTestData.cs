@@ -36,7 +36,7 @@ public static class SignatureCardTestData
     {
         var baseType = new BaseCardType();
         baseType.TypeName = "Test Card";
-        baseType.BaseSignature = new CardSignature(new[] { 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
+        baseType.BaseSignature = new CardSignatureResource { Solidum = 0.5f };
         baseType.MatchRadius = 1.0f; // Match anything for testing
         baseType.ArtOptions = new[] { CreateMockTexture() };
         baseType.SymbolOptions = new[] { CreateMockTexture() };

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Packs.Components;
@@ -101,7 +102,7 @@ public class CardContainerFullBoxTest
     private CardContainer Make(string scenePath)
     {
         var container = GD.Load<PackedScene>(scenePath).Instantiate<CardContainer>();
-        container.Generator = new CardPackGenerator(new RandomNumberGenerator { Seed = Seed });
+        container.Generator = new CardPackGenerator(RandomSources.Create(Seed));
         container.Spawning = _spawner;
         _world.AddChild(container);
         return container;

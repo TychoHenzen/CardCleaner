@@ -1,6 +1,7 @@
 using System;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Contracts;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -35,7 +36,7 @@ internal static class WfcRetrySolver
             var topology = createTopology();
             lastTopology = topology;
 
-            var rng = new RandomNumberGenerator();
+            var rng = RandomSources.Create();
             rng.Seed = baseSeed + (ulong)attempt;
 
             lastResult = solver.Solve(topology, biome, rng);

@@ -1,4 +1,6 @@
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Biomes;
@@ -7,12 +9,12 @@ namespace CardCleaner.Tests.Features.Worldgen.Biomes;
 [RequireGodotRuntime]
 public class TilePoolTest
 {
-    private RandomNumberGenerator _rng = null!;
+    private IRandom _rng = null!;
 
     [BeforeTest]
     public void Setup()
     {
-        _rng = new RandomNumberGenerator();
+        _rng = RandomSources.Create();
         _rng.Seed = 12345;
     }
 

@@ -2,6 +2,7 @@ using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Services;
@@ -107,7 +108,7 @@ public class CardSaleTest
     [TestCategory("Unit")]
     public void AnySignatureSellsForTheSameFixedPrice()
     {
-        var card = MakeCard(new CardSignature { Febris = 0.7f });
+        var card = MakeCard(new CardSignature().With(Element.Febris, 0.7f));
 
         var result = CardSale.TrySell(card, _money);
 

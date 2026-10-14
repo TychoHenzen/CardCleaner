@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session.Generation;
@@ -137,7 +138,7 @@ internal sealed class MapGenerationCoordinator
         // ASSUMPTION: combat and loot draw from a fresh RNG seeded like the map. The grid generator builds its own
         // RNG from the same seed, so a grid session's combat and loot draws differ from the ones before #284, where
         // they continued the RNG the map generation had used; the map itself is unchanged.
-        _world.Rng = new RandomNumberGenerator { Seed = request.Seed };
+        _world.Rng = RandomSources.Create(request.Seed);
         _world.GeneratedMap = generatedMap;
         _world.MapData = generatedMap.GetMapData();
 

@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -48,7 +49,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
         // Everything is built per call from the seed. One RNG is drawn in the order GridMapGenerationPipeline's
         // GenerateMap fixes (variants, the gradient while the biome map is built, terrain, the start, the enemies),
         // so the same seed and cards always give the same map.
-        var rng = new RandomNumberGenerator { Seed = config.Seed };
+        var rng = RandomSources.Create(config.Seed);
         var gradient = new CardBasedGradient(config.MapSeeds, rng);
         var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, config.Size);
         var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
@@ -80,7 +81,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
     /// WFC generator or gradient.
     /// </summary>
     internal static GridMapGenerationPipeline CreatePipeline(
-        RandomNumberGenerator rng,
+        IRandom rng,
         IBiomeProvider biomeProvider,
         ITileRegistry tileRegistry,
         ITileMetadataProvider metadataProvider,

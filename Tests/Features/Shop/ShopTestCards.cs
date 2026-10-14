@@ -15,7 +15,7 @@ public static class ShopTestCards
     /// <summary>Card names must stay unique under one parent, or Godot renames them and slots ignore them.</summary>
     public static CardController Create(CardSignature? signature)
     {
-        var card = new CardController { Name = $"Card{++_created}", Signature = signature! };
+        var card = new CardController { Name = $"Card{++_created}", Signature = signature ?? default };
         card.AddChild(new CollisionShape3D { Name = "CardCollision", Shape = new BoxShape3D { Size = CardSize } });
         card.AddChild(new CardDesigner { Name = "Designer" });
         return card;

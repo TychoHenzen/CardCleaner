@@ -9,7 +9,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 
 internal sealed class GridMapGenerationContext
 {
-    public required RandomNumberGenerator Rng { get; init; }
+    public required IRandom Rng { get; init; }
     public required IBiomeProvider BiomeProvider { get; init; }
     public required ITileRegistry TileRegistry { get; init; }
     public required ITileMetadataProvider MetadataProvider { get; init; }

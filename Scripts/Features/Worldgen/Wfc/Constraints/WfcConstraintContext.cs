@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
@@ -29,7 +30,7 @@ public readonly struct WfcConstraintContext
     /// Random number generator for stochastic constraints.
     /// May be null for deterministic constraints.
     /// </summary>
-    public RandomNumberGenerator? Rng { get; init; }
+    public IRandom? Rng { get; init; }
 
     /// <summary>
     /// Precomputed collapsed neighbor information.
@@ -59,7 +60,7 @@ public readonly struct WfcConstraintContext
         int cellId,
         string tileId,
         IWfcTopology topology,
-        RandomNumberGenerator? rng,
+        IRandom? rng,
         IReadOnlyDictionary<int, string> collapsedNeighbors,
         IReadOnlyDictionary<int, string> collapsedWindowNeighbors)
     {

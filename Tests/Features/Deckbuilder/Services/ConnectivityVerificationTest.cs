@@ -14,6 +14,7 @@ using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Tests.Mocks;
 using GdUnit4;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using static GdUnit4.Assertions;
 
@@ -43,7 +44,7 @@ public class ConnectivityVerificationTest
     /// <summary>
     /// Creates a grid generation pipeline with WFC connectivity constraint enabled.
     /// </summary>
-    private GridMapGenerationPipeline CreateGeneratorWithWfcConnectivity(Vector2I mapSize, RandomNumberGenerator rng)
+    private GridMapGenerationPipeline CreateGeneratorWithWfcConnectivity(Vector2I mapSize, IRandom rng)
     {
         var gradient = new CardBasedGradient([new CardSignature()], rng);
         var biomeProvider = new BiomeMapGenerator(_registry, gradient, mapSize);
@@ -150,7 +151,7 @@ public class ConnectivityVerificationTest
 
         for (var i = 0; i < ConnectivitySampleCount; i++)
         {
-            var rng = new RandomNumberGenerator();
+            var rng = RandomSources.Create();
             rng.Seed = (ulong)(i * 12345 + 7);
 
             var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
@@ -239,7 +240,7 @@ public class ConnectivityVerificationTest
 
         for (var i = 0; i < totalTests; i++)
         {
-            var rng = new RandomNumberGenerator();
+            var rng = RandomSources.Create();
             rng.Seed = (ulong)(i * 54321 + 13); // Different seed series than main test
 
             var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
@@ -272,7 +273,7 @@ public class ConnectivityVerificationTest
     {
         // REGRESSION TEST: Ensure map generation performance doesn't degrade
         var mapSize = new Vector2I(25, 25);
-        var rng = new RandomNumberGenerator();
+        var rng = RandomSources.Create();
         rng.Seed = 42; // Fixed seed for reproducibility
 
         var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);

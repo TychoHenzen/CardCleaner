@@ -3,6 +3,7 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using CardCleaner.Scripts.Features.Card.Models.Effects;
 
@@ -31,10 +32,7 @@ public class SignatureCardGenerator : ICardGenerator
     {
         if (_rarityVisuals == null || _baseTypes == null || _gemVisuals == null)
             return;
-        var rng = new RandomNumberGenerator
-        {
-            Seed = (uint)SignatureCardHelper.ComputeSeed(signature)
-        };
+        var rng = RandomSources.Create((uint)SignatureCardHelper.ComputeSeed(signature));
         // 1. Determine rarity
         var rarity = SignatureCardHelper.DetermineRarity(new[] { signature });
 

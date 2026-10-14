@@ -1,146 +1,118 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Utilities;
 using Godot;
 using Newtonsoft.Json;
 
 namespace CardCleaner.Scripts.Features.Card.Models;
 
-[Tool]
-[GlobalClass]
-public partial class CardSignature : Resource
+public readonly struct CardSignature
 {
-    private float[] _elements = new float[8];
-
-    public CardSignature()
-    {
-        // Initialize with all zeros
-    }
-
     public CardSignature(float[] elements)
     {
         if (elements.Length != 8)
             throw new ArgumentException("Elements array must have exactly 8 values");
 
-        for (var i = 0; i < 8; i++)
-            _elements[i] = Mathf.Clamp(elements[i], -1f, 1f);
+        Solidum = Clamp(elements[0]);
+        Febris = Clamp(elements[1]);
+        Ordinem = Clamp(elements[2]);
+        Lumines = Clamp(elements[3]);
+        Varias = Clamp(elements[4]);
+        Inertiae = Clamp(elements[5]);
+        Subsidium = Clamp(elements[6]);
+        Spatium = Clamp(elements[7]);
     }
 
-    [Export(PropertyHint.Range, "-1,1,0.01")]
-    public float Solidum
+    public CardSignature(
+        float solidum,
+        float febris,
+        float ordinem,
+        float lumines,
+        float varias,
+        float inertiae,
+        float subsidium,
+        float spatium)
     {
-        get => _elements[0];
-        set => _elements[0] = Mathf.Clamp(value, -1f, 1f);
+        Solidum = Clamp(solidum);
+        Febris = Clamp(febris);
+        Ordinem = Clamp(ordinem);
+        Lumines = Clamp(lumines);
+        Varias = Clamp(varias);
+        Inertiae = Clamp(inertiae);
+        Subsidium = Clamp(subsidium);
+        Spatium = Clamp(spatium);
     }
 
-    [Export(PropertyHint.Range, "-1,1,0.01")]
-    public float Febris
-    {
-        get => _elements[1];
-        set => _elements[1] = Mathf.Clamp(value, -1f, 1f);
-    }
+    public float Solidum { get; }
+    public float Febris { get; }
+    public float Ordinem { get; }
+    public float Lumines { get; }
+    public float Varias { get; }
+    public float Inertiae { get; }
+    public float Subsidium { get; }
+    public float Spatium { get; }
 
-    [Export(PropertyHint.Range, "-1,1,0.01")]
-    public float Ordinem
-    {
-        get => _elements[2];
-        set => _elements[2] = Mathf.Clamp(value, -1f, 1f);
-    }
+    public float this[Element element] => this[(int)element];
 
-    [Export(PropertyHint.Range, "-1,1,0.01")]
-    public float Lumines
+    public float this[int index] => index switch
     {
-        get => _elements[3];
-        set => _elements[3] = Mathf.Clamp(value, -1f, 1f);
-    }
-
-    [Export(PropertyHint.Range, "-1,1,0.01")]
-    public float Varias
-    {
-        get => _elements[4];
-        set => _elements[4] = Mathf.Clamp(value, -1f, 1f);
-    }
-
-    [Export(PropertyHint.Range, "-1,1,0.01")]
-    public float Inertiae
-    {
-        get => _elements[5];
-        set => _elements[5] = Mathf.Clamp(value, -1f, 1f);
-    }
-
-    [Export(PropertyHint.Range, "-1,1,0.01")]
-    public float Subsidium
-    {
-        get => _elements[6];
-        set => _elements[6] = Mathf.Clamp(value, -1f, 1f);
-    }
-
-    [Export(PropertyHint.Range, "-1,1,0.01")]
-    public float Spatium
-    {
-        get => _elements[7];
-        set => _elements[7] = Mathf.Clamp(value, -1f, 1f);
-    }
-
-    public float this[Element element]
-    {
-        get => _elements[(int)element];
-        set => _elements[(int)element] = Mathf.Clamp(value, -1f, 1f);
-    }
-
-    public float this[int index]
-    {
-        get => _elements[index];
-        set => _elements[index] = Mathf.Clamp(value, -1f, 1f);
-    }
+        0 => Solidum,
+        1 => Febris,
+        2 => Ordinem,
+        3 => Lumines,
+        4 => Varias,
+        5 => Inertiae,
+        6 => Subsidium,
+        7 => Spatium,
+        _ => throw new ArgumentOutOfRangeException(nameof(index))
+    };
 
     [JsonProperty("elements")]
-    public float[] Elements 
-    { 
-        get => (float[])_elements.Clone();
-        set 
-        {
-            if (value?.Length == 8)
-            {
-                for (var i = 0; i < 8; i++)
-                    _elements[i] = Mathf.Clamp(value[i], -1f, 1f);
-            }
-        }
+    public float[] Elements => [Solidum, Febris, Ordinem, Lumines, Varias, Inertiae, Subsidium, Spatium];
+
+    public CardSignature With(Element element, float value) => With((int)element, value);
+
+    public CardSignature With(int index, float value) => index switch
+    {
+        0 => new(value, Febris, Ordinem, Lumines, Varias, Inertiae, Subsidium, Spatium),
+        1 => new(Solidum, value, Ordinem, Lumines, Varias, Inertiae, Subsidium, Spatium),
+        2 => new(Solidum, Febris, value, Lumines, Varias, Inertiae, Subsidium, Spatium),
+        3 => new(Solidum, Febris, Ordinem, value, Varias, Inertiae, Subsidium, Spatium),
+        4 => new(Solidum, Febris, Ordinem, Lumines, value, Inertiae, Subsidium, Spatium),
+        5 => new(Solidum, Febris, Ordinem, Lumines, Varias, value, Subsidium, Spatium),
+        6 => new(Solidum, Febris, Ordinem, Lumines, Varias, Inertiae, value, Spatium),
+        7 => new(Solidum, Febris, Ordinem, Lumines, Varias, Inertiae, Subsidium, value),
+        _ => throw new ArgumentOutOfRangeException(nameof(index))
+    };
+
+    public static CardSignature Random(IRandom random)
+    {
+        var elements = new float[8];
+        for (var index = 0; index < elements.Length; index++)
+            elements[index] = random.RandfRange(-1f, 1f);
+        return new CardSignature(elements);
     }
 
-    public static CardSignature Random(RandomNumberGenerator rng)
+    public static CardSignature RandomSpecial(IRandom random)
     {
-        var signature = new CardSignature();
-        for (var i = 0; i < 8; i++)
-            signature[i] = rng.RandfRange(-1f, 1f);
-        return signature;
-    }
-
-    /// <summary>A random signature that is never all-zero, so a card made from it always has magical potential.</summary>
-    public static CardSignature RandomSpecial(RandomNumberGenerator rng)
-    {
-        // A random signature is all-zero only with probability zero, but a special card must never be common.
-        var signature = Random(rng);
+        var signature = Random(random);
         while (!signature.HasMagicalPotential())
-            signature = Random(rng);
+            signature = Random(random);
         return signature;
     }
 
-    /// <summary>True when any element is non-zero beyond <see cref="Mathf.IsZeroApprox" /> tolerance. Common cards are all-zero and have no magical potential.</summary>
-    public bool HasMagicalPotential()
-    {
-        return _elements.Any(e => !Mathf.IsZeroApprox(e));
-    }
+    public bool HasMagicalPotential() => Elements.Any(element => !Mathf.IsZeroApprox(element));
 
     public float DistanceTo(CardSignature other)
     {
         var sum = 0f;
-        for (var i = 0; i < 8; i++)
+        for (var index = 0; index < 8; index++)
         {
-            var diff = _elements[i] - other._elements[i];
-            sum += diff * diff;
+            var difference = this[index] - other[index];
+            sum += difference * difference;
         }
 
         return Mathf.Sqrt(sum);
@@ -148,30 +120,20 @@ public partial class CardSignature : Resource
 
     public CardSignature Subtract(CardSignature other)
     {
-        var result = new CardSignature();
-        for (var i = 0; i < 8; i++)
-            result[i] = _elements[i] - other._elements[i];
-        return result;
+        var elements = new float[8];
+        for (var index = 0; index < elements.Length; index++)
+            elements[index] = this[index] - other[index];
+        return new CardSignature(elements);
     }
 
-    public Aspect GetDominantAspect(Element element)
-    {
-        var value = this[element];
-        return value >= 0 ? element.Positive() : element.Negative();
-    }
+    public Aspect GetDominantAspect(Element element) => this[element] >= 0 ? element.Positive() : element.Negative();
 
-    public float GetIntensity(Element element)
-    {
-        return Mathf.Abs(this[element]);
-    }
+    public float GetIntensity(Element element) => Mathf.Abs(this[element]);
 
-    public bool IsSignificant(Element element, float threshold = 0.1f)
-    {
-        return GetIntensity(element) >= threshold;
-    }
+    public bool IsSignificant(Element element, float threshold = 0.1f) => GetIntensity(element) >= threshold;
 
-    public string ToDebugString()
-    {
-        return $"Signature[{string.Join(", ", _elements.Select(e => e.ToString("F2", CultureInfo.InvariantCulture)))}]";
-    }
+    public string ToDebugString() =>
+        $"Signature[{string.Join(", ", Elements.Select(element => element.ToString("F2", CultureInfo.InvariantCulture)))}]";
+
+    private static float Clamp(float value) => Mathf.Clamp(value, -1f, 1f);
 }

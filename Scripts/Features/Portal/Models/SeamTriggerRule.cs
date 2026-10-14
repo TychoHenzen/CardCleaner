@@ -11,8 +11,8 @@ namespace CardCleaner.Scripts.Features.Portal.Models;
 /// </summary>
 public static class SeamTriggerRule
 {
-    public static bool ShouldShow(bool isInBackoffice, IEnumerable<CardSignature?> carriedCards)
+    public static bool ShouldShow(bool isInBackoffice, IEnumerable<CardSignature> carriedCards)
     {
-        return isInBackoffice && carriedCards.Any(signature => signature is { } s && s.HasMagicalPotential());
+        return isInBackoffice && carriedCards.Any(signature => signature.HasMagicalPotential());
     }
 }

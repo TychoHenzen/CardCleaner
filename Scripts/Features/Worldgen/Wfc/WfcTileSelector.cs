@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Selectors;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -74,7 +75,7 @@ public class WfcTileSelector
     public string? SelectTile(
         IReadOnlyCollection<string> validTiles,
         BiomeDefinition? biome,
-        RandomNumberGenerator rng,
+        IRandom rng,
         IReadOnlySet<string>? continuityTiles = null,
         int? cellId = null,
         IWfcTopology? topology = null)
@@ -109,7 +110,7 @@ public class WfcTileSelector
     /// Selects a tile with uniform probability (no biome weighting).
     /// Useful for testing or biome-agnostic selection.
     /// </summary>
-    public string? SelectUniform(IReadOnlyCollection<string> validTiles, RandomNumberGenerator rng)
+    public string? SelectUniform(IReadOnlyCollection<string> validTiles, IRandom rng)
     {
         if (validTiles.Count == 0)
             return null;
@@ -146,7 +147,7 @@ public class WfcTileSelector
     public IReadOnlyDictionary<string, float> ComputeWeights(
         IReadOnlyCollection<string> validTiles,
         BiomeDefinition? biome,
-        RandomNumberGenerator rng,
+        IRandom rng,
         IReadOnlySet<string>? continuityTiles = null,
         int? cellId = null,
         IWfcTopology? topology = null)
@@ -169,7 +170,7 @@ public class WfcTileSelector
 
     private WfcTileWeightContext CreateWeightContext(
         BiomeDefinition? biome,
-        RandomNumberGenerator rng,
+        IRandom rng,
         IReadOnlySet<string>? continuityTiles,
         int? cellId,
         IWfcTopology? topology,

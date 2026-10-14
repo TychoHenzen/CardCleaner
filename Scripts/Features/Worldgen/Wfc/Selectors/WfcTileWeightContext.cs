@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Selectors;
@@ -9,7 +10,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Selectors;
 /// </summary>
 internal readonly record struct WfcTileWeightContext(
     Dictionary<string, float> BiomeWeights,
-    RandomNumberGenerator Rng,
+    IRandom Rng,
     IReadOnlySet<string>? ContinuityTiles,
     int? CellId,
     IWfcTopology? Topology,

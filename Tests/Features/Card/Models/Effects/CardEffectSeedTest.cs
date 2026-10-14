@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Models.Effects;
 using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Models.Effects;
@@ -26,9 +27,9 @@ public class CardEffectSeedTest
     [TestCategory("Unit")]
     public static void TheEffectSeedDependsOnlyOnTheSignature()
     {
-        var first = CardEffectSeed.For(new CardSignature { Solidum = 0.7f, Febris = -0.5f });
-        var again = CardEffectSeed.For(new CardSignature { Solidum = 0.7f, Febris = -0.5f });
-        var other = CardEffectSeed.For(new CardSignature { Solidum = 0.5f, Febris = -0.3f, Ordinem = 0.8f });
+        var first = CardEffectSeed.For(new CardSignature().With(Element.Solidum, 0.7f).With(Element.Febris, -0.5f));
+        var again = CardEffectSeed.For(new CardSignature().With(Element.Solidum, 0.7f).With(Element.Febris, -0.5f));
+        var other = CardEffectSeed.For(new CardSignature().With(Element.Solidum, 0.5f).With(Element.Febris, -0.3f).With(Element.Ordinem, 0.8f));
 
         AssertThat(again).IsEqual(first);
         AssertThat(first).IsEqual(8634f);

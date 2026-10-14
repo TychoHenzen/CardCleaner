@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -53,7 +54,7 @@ public partial class BiomeDefinition : Resource
 
     [Export] public string Id { get; set; } = DefaultId;
 
-    [Export] public CardSignature AffinitySignature { get; set; } = new();
+    public CardSignature AffinitySignature { get; set; } = new();
 
     [Export] public TilePool PassableTiles { get; set; } = new();
 
@@ -84,7 +85,7 @@ public partial class BiomeDefinition : Resource
         };
     }
 
-    public string? SelectPassableTile(RandomNumberGenerator rng) => PassableTiles.SelectRandom(rng);
+    public string? SelectPassableTile(IRandom rng) => PassableTiles.SelectRandom(rng);
 
-    public string? SelectBlockedTile(RandomNumberGenerator rng) => BlockedTiles.SelectRandom(rng);
+    public string? SelectBlockedTile(IRandom rng) => BlockedTiles.SelectRandom(rng);
 }

@@ -1,5 +1,6 @@
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using Godot;
@@ -150,7 +151,7 @@ public class MapPopulationTest
         }
     }
 
-    private static RandomNumberGenerator Rng(ulong seed) => new() { Seed = seed };
+    private static IRandom Rng(ulong seed) => RandomSources.Create(seed);
 
     private static RegularGridMapData GridMap(int side, Vector2I[]? passable = null)
     {

@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Core.Services;
@@ -7,7 +8,7 @@ namespace CardCleaner.Scripts.Core.Services;
 /// </summary>
 internal static class WeightedVariantSelector
 {
-    internal static string? Select(VariationGroup? group, RandomNumberGenerator rng)
+    internal static string? Select(VariationGroup? group, IRandom rng)
     {
         if (group == null || group.Variants.Count == 0)
             return null;

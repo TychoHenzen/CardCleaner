@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CardCleaner.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Tiles;
@@ -202,7 +203,7 @@ public class TileDefinition
     /// </summary>
     /// <param name="rng">Random number generator</param>
     /// <returns>True if decoration should appear, false to skip</returns>
-    public bool ShouldPlaceDecoration(RandomNumberGenerator rng)
+    public bool ShouldPlaceDecoration(IRandom rng)
     {
         if (Layer != TileLayer.Decoration) return true;
         return rng.Randf() <= DecorationDensity;

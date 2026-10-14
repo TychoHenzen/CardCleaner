@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using Godot;
 
@@ -13,7 +14,7 @@ namespace CardCleaner.Tests.Scenes;
 [RequireGodotRuntime]
 public class ShopWorkshopReliabilitySceneTest
 {
-    private static readonly CardSignature SomeCard = new() { Febris = 0.4f };
+    private static readonly CardSignature SomeCard = new CardSignature().With(Element.Febris, 0.4f);
 
     private WorkshopSceneRig _rig = null!;
 

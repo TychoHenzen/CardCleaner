@@ -1,5 +1,6 @@
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
+using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc.Constraints;
@@ -13,7 +14,7 @@ public class WfcConstraintContextTest
     {
         // Context struct should hold all required properties
         var grid = new WfcGrid(5, 5, new[] { "grass", "dirt" });
-        var rng = new RandomNumberGenerator { Seed = 42 };
+        var rng = RandomSources.Create(42);
 
         var context = new WfcConstraintContext
         {
