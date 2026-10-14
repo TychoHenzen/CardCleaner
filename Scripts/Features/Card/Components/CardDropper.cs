@@ -1,10 +1,9 @@
-﻿using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Interfaces;
+﻿using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
-public partial class CardDropper : Node3D
+public partial class CardDropper : Node3D, IDependent
 {
     [Signal]
     public delegate void DropCancelledEventHandler();
@@ -19,15 +18,24 @@ public partial class CardDropper : Node3D
     private ICardHolder _cardHolder = null!;
     private IDropPreview _dropPreview = null!;
     private IInputService? _inputService;
+    private IServiceResolver? _services;
 
     public bool IsPreparingDrop { get; private set; }
+
+    public void Inject(IServiceResolver services) => _services = services;
 
     public void Initialize(ICardHolder cardHolder, IDropPreview dropPreview, Camera3D camera)
     {
         _cardHolder = cardHolder;
         _dropPreview = dropPreview;
         _camera = camera;
-        ServiceLocator.Get<IInputService>(input =>
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<IInputService>(input =>
         {
             _inputService = input;
             _inputService.RegisterAction(this, "card_drop_single", Key.X, DropSingleCard);

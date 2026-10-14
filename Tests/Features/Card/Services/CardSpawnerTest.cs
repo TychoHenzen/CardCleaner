@@ -1,5 +1,5 @@
 ﻿using CardCleaner.Scripts.Features.Card.Services;
-using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Tests.TestUtilities;
 using GdUnit4;
 using Godot;
 
@@ -14,7 +14,7 @@ public class CardSpawnerTest
     [BeforeTest]
     public void Setup()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
         _spawner = new CardSpawner
         {
             OffsetRange = new Vector3(1.0f, 0.5f, 1.0f)
@@ -23,9 +23,9 @@ public class CardSpawnerTest
     }
 
     [AfterTest]
-    public void TearDown()
+    public static void TearDown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]

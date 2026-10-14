@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
-public partial class CardHolder : Node3D, ICardHolder
+public partial class CardHolder : Node3D, ICardHolder, IDependent
 {
     [Signal]
     public delegate void CardAddedEventHandler(RigidBody3D card);
@@ -17,6 +16,7 @@ public partial class CardHolder : Node3D, ICardHolder
     public RigidBody3D[] HeldCards => _heldCards.ToArray();
     private readonly List<RigidBody3D> _heldCards = new();
     private Node3D _handParent = null!;
+    private IServiceResolver? _services;
 
     // Define defaults as constants to use in both field initializers and reversion
     private const uint DefaultCardCollisionLayer = 2;
@@ -48,6 +48,8 @@ public partial class CardHolder : Node3D, ICardHolder
     public int HeldCount => _heldCards.Count;
     public bool HasCards => _heldCards.Count > 0;
 
+    public void Inject(IServiceResolver services) => _services = services;
+
     public void SetReferences(Node3D handAnchor)
     {
         _handParent = handAnchor;
@@ -77,10 +79,16 @@ public partial class CardHolder : Node3D, ICardHolder
     {
         if (!_heldCards.Contains(card)) return;
 
+        // Removed before the injection check, so RemoveAllCards still ends when the holder was not injected.
         _heldCards.Remove(card);
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
 
         // Reparent first, then enable physics with a delay to avoid conflicts
-        card.Reparent(ServiceLocator.Get<ICardSpawner>().GetNode());
+        card.Reparent(_services.Get<ICardSpawner>().GetNode());
         CallDeferred(MethodName.EnablePhysicsDeferred, card);
 
         PositionCardsForDrop();

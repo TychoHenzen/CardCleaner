@@ -15,21 +15,22 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 /// </summary>
 /// 
 [Service(typeof(ICardGenerator))]
-public class SignatureCardGenerator : ICardGenerator
+internal sealed class SignatureCardGenerator : ICardGenerator
 {
-    private BaseCardType[]? _baseTypes;
-    private GemVisual[]? _gemVisuals;
-    private RarityVisual[]? _rarityVisuals;
+    private readonly BaseCardType[] _baseTypes;
+    private readonly GemVisual[] _gemVisuals;
+    private readonly RarityVisual[] _rarityVisuals;
 
-    public SignatureCardGenerator()
+    public SignatureCardGenerator(RarityVisual[] rarityVisuals, BaseCardType[] baseTypes, GemVisual[] gemVisuals)
     {
-        ServiceLocator.Get<RarityVisual[]>(visual => _rarityVisuals = visual);
-        ServiceLocator.Get<BaseCardType[]>(bases => _baseTypes = bases);
-        ServiceLocator.Get<GemVisual[]>(gems => _gemVisuals = gems);
+        _rarityVisuals = rarityVisuals;
+        _baseTypes = baseTypes;
+        _gemVisuals = gemVisuals;
     }
 
     public void GenerateCardRenderer(CardShaderRenderer renderer, CardSignature signature, CardTemplate cardTemplate)
     {
+        // A provider whose exports are unset registers null arrays; the generator then leaves the card as it was.
         if (_rarityVisuals == null || _baseTypes == null || _gemVisuals == null)
             return;
         var rng = RandomSources.Create((uint)SignatureCardHelper.ComputeSeed(signature));

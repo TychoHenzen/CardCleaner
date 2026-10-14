@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Services;
@@ -7,16 +6,25 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
-public partial class CardHighlighter : Node3D
+public partial class CardHighlighter : Node3D, IDependent
 {
     private IInputService _inputService = null!;
+    private IServiceResolver? _services;
     [Export] public InteractionSystem InteractionSystem = null!;
     [Export] public CardDropper CardDropper = null!;
     [Export] public CardHolder CardHolder = null!;
     [Export] public DropPreview Preview = null!;
 
+    public void Inject(IServiceResolver services) => _services = services;
+
     public override void _Ready()
     {
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
         // Get reference to the generic interaction system
         if (ILog.ExportCheck(CardDropper, nameof(CardDropper), this) ||
             ILog.ExportCheck(CardHolder, nameof(CardHolder), this) ||
@@ -36,17 +44,17 @@ public partial class CardHighlighter : Node3D
         CardDropper.Initialize(CardHolder, Preview, camera);
 
         // Register card-specific input (right-click for drop preparation)
-        ServiceLocator.Get<IInputService>(input =>
+        _services.Get<IInputService>(input =>
         {
             _inputService = input;
             _inputService.RegisterAction(this, "card_drop_prepare", MouseButton.Right, OnRightPress);
         });
 
         // Listen for card interaction requests from the generic system
-        ConnectToCardInteractions();
+        ConnectToCardInteractions(_services);
     }
 
-    private void ConnectToCardInteractions()
+    private void ConnectToCardInteractions(IServiceResolver services)
     {
         // Connect to all existing cards
         var cards = GetTree().GetNodesInGroup("Cards");
@@ -55,7 +63,7 @@ public partial class CardHighlighter : Node3D
                 ConnectToCard(card);
 
         // Listen for new cards being spawned by connecting to the spawning service
-        ServiceLocator.Get<ICardSpawningService>(spawningService =>
+        services.Get<ICardSpawningService>(spawningService =>
         {
             if (spawningService is not CardSpawningService concreteService)
                 return;

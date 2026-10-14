@@ -164,15 +164,34 @@ The project uses a custom service locator pattern, split into a static lookup an
 
 - **ServiceLocator** (`Scripts/Core/DependencyInjection/ServiceLocator.cs`): static lookup over the DI container.
   It names no feature or composition type; `DependencyInjectionBoundaryTest` enforces that.
-- **CompositionRoot** (`Scripts/Composition/CompositionRoot.cs`): the "Services" autoload. It registers the core
-  services, then every node in the `service_providers` group, then runs the pending callbacks. Only that autoload
-  composes; any other instance logs an error and changes nothing.
-- **ServiceContainer**: Supports singleton registrations
+- **CompositionRoot** (`Scripts/Composition/CompositionRoot.cs`): the "Services" autoload. It registers the plain
+  `[Service]` classes of `CardCleaner.Scripts` lazily, then the core services, then every node in the
+  `service_providers` group, then runs the pending callbacks. Only that autoload composes and injects; any other
+  instance logs an error and changes nothing.
+- **ServiceContainer**: singleton registrations, plus constructor injection. `Construct<T>()` and
+  `RegisterSingleton<TInterface, TImplementation>()` build a plain class through its public constructor with the most
+  parameters, resolving each parameter from the container; a missing one throws `InvalidOperationException` naming
+  the class and the service (`Cannot construct Foo: service IBar not registered`).
+- **Lazy [Service] scan** (`ServiceClassScan.PlainServiceClassesIn` finds them, `RegisterServiceClasses` registers
+  them): a non-abstract `[Service]` class that is not a Godot object is registered under its `[Service]` types (its interfaces when it names none). It counts as registered only once every
+  parameter of its constructor is registered, so callbacks waiting for it stay pending until then; it is built once,
+  on its first resolve, and shared by all its types. An explicit registration of the same type replaces it. `[Service]`
+  nodes are never built by the container; `AutoServiceProvider` registers the live node.
 - **IServiceProvider**: Nodes implementing this interface and added to the `service_providers` group will have their services registered at startup
+- **Tree injection**: a node implementing `IDependent` (`Scripts/Core/Interfaces`) gets `Inject(IServiceResolver)`
+  from the autoload on `SceneTree.NodeAdded`: after the node's `_EnterTree`, before its `_Ready`, and again whenever it
+  re-enters the tree (reparent). `Inject` only stores the resolver; the node does its wiring in `_Ready` through it.
+  Nodes already in the tree when the autoload starts are injected once by a startup pass
+  (`CompositionRoot.InjectExistingNodes`), which runs after their `_Ready`, so an `IDependent` must never be an
+  autoload ordered before Services.
+  The resolver (`LocatorServiceResolver`) holds no container and reads `ServiceLocator` at call time, so its
+  `Get<T>(callback)` shares the one pending-callback queue.
 - Services can use async resolution via `ServiceLocator.Get<T>(callback)` for services not yet registered
 
-Access services via `ServiceLocator.Get<T>()` or `ServiceLocator.Container.Resolve<T>()`. Tests rebuild the container
-with `CompositionRoot.ReinitializeServices()` and clear it with `ServiceLocator.ResetForTesting()`.
+Access services via `ServiceLocator.Get<T>()` or `ServiceLocator.Container.Resolve<T>()`; features not yet moved to
+tree injection keep using `ServiceLocator` until #244. Tests go through `Tests/TestUtilities/TestServices`:
+`Container`, `Resolver` (the resolver the root injects), `Reinitialize()` (`CompositionRoot.ReinitializeServices()`),
+`Reset()` (`ServiceLocator.ResetForTesting()`) and `Inject(node)` for a node built outside the tree.
 
 ### Dependency Gate
 

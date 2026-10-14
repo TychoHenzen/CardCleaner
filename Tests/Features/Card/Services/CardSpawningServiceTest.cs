@@ -1,10 +1,10 @@
 ﻿using System;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Tests.TestUtilities;
 using GdUnit4;
 using Godot;
 using NSubstitute;
@@ -37,9 +37,9 @@ public class CardSpawningServiceTest
         _rng = RandomSources.Create();
         _rng.Seed = 42; // Deterministic for testing
 
-        // Register dependencies in ServiceLocator BEFORE creating the service
-        ServiceLocator.Container.RegisterSingleton(_mockGenerator);
-        ServiceLocator.Container.RegisterSingleton(_rng);
+        // Register dependencies in the container BEFORE creating the service
+        TestServices.Container.RegisterSingleton(_mockGenerator);
+        TestServices.Container.RegisterSingleton(_rng);
 
         // Create the service and add to scene tree
         _service = new CardSpawningService();
@@ -55,9 +55,9 @@ public class CardSpawningServiceTest
 
 
     [AfterTest]
-    public void TearDown()
+    public static void TearDown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]

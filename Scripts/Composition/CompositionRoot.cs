@@ -15,13 +15,21 @@ namespace CardCleaner.Scripts.Composition;
 
 /// <summary>
 ///     Composes the service container. Registered as the "Services" autoload, it registers the core services, then
-///     every node in the "service_providers" group, then runs the pending callbacks. Only that autoload composes; any
-///     other instance logs an error and leaves ServiceLocator untouched.
+///     every node in the "service_providers" group, then runs the pending callbacks. Before that it registers the
+///     plain [Service] classes of the game lazily. From its _Ready on, it injects every IDependent node that enters
+///     the tree. Only that autoload composes and injects; any other instance logs an error and leaves ServiceLocator
+///     untouched.
 /// </summary>
 public partial class CompositionRoot : Node
 {
+    // Tests compile into the same assembly; only game classes are scanned for [Service].
+    private const string GameNamespace = "CardCleaner.Scripts";
+
     // Node services the last Compose added as children; the next Compose frees them before it builds new ones.
     private readonly List<Node> _ownedNodes = new();
+
+    // Only the autoload subscribes to NodeAdded; _ExitTree must not disconnect a handler it never connected.
+    private bool _injecting;
 
     public override void _Ready()
     {
@@ -31,7 +39,38 @@ public partial class CompositionRoot : Node
             return;
         }
 
+        GetTree().NodeAdded += OnNodeAdded;
+        _injecting = true;
+        InjectExistingNodes();
         ScheduleCompose();
+    }
+
+    public override void _ExitTree()
+    {
+        if (!_injecting)
+            return;
+        GetTree().NodeAdded -= OnNodeAdded;
+        _injecting = false;
+    }
+
+    // SceneTree emits node_added after the node's _EnterTree and before its children enter and before its _Ready,
+    // which is the timing the IDependent contract promises.
+    private void OnNodeAdded(Node node)
+    {
+        if (node is IDependent dependent)
+            dependent.Inject(LocatorServiceResolver.Instance);
+    }
+
+    // Injects once every IDependent node that entered the tree before the autoload subscribed to NodeAdded. That
+    // runs after such a node's _Ready. Services is the first autoload, so today the pass meets only the root and
+    // Services itself; it guards a node that a later change orders before Services.
+    internal void InjectExistingNodes() => InjectSubtree(GetTree().Root);
+
+    private void InjectSubtree(Node node)
+    {
+        OnNodeAdded(node);
+        foreach (var child in node.GetChildren())
+            InjectSubtree(child);
     }
 
     // ASSUMPTION: the deferred call runs after the main scene's service providers enter the tree, as the
@@ -53,10 +92,17 @@ public partial class CompositionRoot : Node
     private void Compose()
     {
         FreeOwnedNodes();
+        // First, so the explicit registrations below replace any scanned entry for the same service type.
+        RegisterGameServiceClasses(ServiceLocator.Container);
         RegisterCoreServices(ServiceLocator.Container);
         RegisterFromProviders(ServiceLocator.Container);
         ServiceLocator.ExecutePendingCallbacks();
     }
+
+    /// <summary>Registers the plain [Service] classes of the game lazily, the scan Compose runs.</summary>
+    internal static void RegisterGameServiceClasses(IServiceContainer container) =>
+        container.RegisterServiceClasses(
+            ServiceClassScan.PlainServiceClassesIn(typeof(CompositionRoot).Assembly, GameNamespace));
 
     private void RegisterCoreServices(IServiceContainer container)
     {

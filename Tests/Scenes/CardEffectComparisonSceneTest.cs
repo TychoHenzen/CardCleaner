@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Debug;
@@ -10,6 +9,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Models.Effects;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Tests.Features.Card.Services;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -38,10 +38,12 @@ public class CardEffectComparisonSceneTest
         _scene = GD.Load<PackedScene>(ScenePath).Instantiate<CardEffectComparison>();
 
         // The test scene is not the current scene, so hand the scene-owned services over directly.
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton(new RandomNumberGenerator { Seed = 1 });
-        _scene.GetNode<CardServiceProvider>("Services/CardServiceProvider").RegisterServices(ServiceLocator.Container);
-        _scene.GetNode<CardSpawningService>("Services/SpawningService").RegisterServices(ServiceLocator.Container);
+        // The composition root's own scan registers the generator, first, as Compose does (#273).
+        TestServices.Reset();
+        TestServices.RegisterGameServiceClasses(TestServices.Container);
+        TestServices.Container.RegisterSingleton(new RandomNumberGenerator { Seed = 1 });
+        _scene.GetNode<CardServiceProvider>("Services/CardServiceProvider").RegisterServices(TestServices.Container);
+        _scene.GetNode<CardSpawningService>("Services/SpawningService").RegisterServices(TestServices.Container);
 
         _window = new SubViewport { Size = new Vector2I(1280, 720) };
         _window.AddChild(_scene);
@@ -52,7 +54,7 @@ public class CardEffectComparisonSceneTest
     [AfterTest]
     public static void Teardown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
         CardEffectNormalMapCache.ResetForTesting();
     }
 
