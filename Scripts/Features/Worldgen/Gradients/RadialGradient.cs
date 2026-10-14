@@ -9,8 +9,6 @@ public partial class RadialGradient : BaselineGradient
 {
     // Default values as constants
     private const float DefaultFalloff = 1.0f;
-    private static readonly CardSignature DefaultCenterSignature = new();
-    private static readonly CardSignature DefaultEdgeSignature = new();
 
     public CardSignature CenterSignature { get; set; } = new();
     public CardSignature EdgeSignature { get; set; } = new();
@@ -20,8 +18,6 @@ public partial class RadialGradient : BaselineGradient
     {
         return property.ToString() switch
         {
-            nameof(CenterSignature) => true,
-            nameof(EdgeSignature) => true,
             nameof(Falloff) => true,
             _ => base._PropertyCanRevert(property)
         };
@@ -31,8 +27,6 @@ public partial class RadialGradient : BaselineGradient
     {
         return property.ToString() switch
         {
-            nameof(CenterSignature) => Variant.From(DefaultCenterSignature),
-            nameof(EdgeSignature) => Variant.From(DefaultEdgeSignature),
             nameof(Falloff) => DefaultFalloff,
             _ => base._PropertyGetRevert(property)
         };

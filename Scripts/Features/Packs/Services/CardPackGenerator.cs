@@ -19,7 +19,9 @@ public class CardPackGenerator(IRandom rng)
     /// <summary>The signature of every common card: no magical potential.</summary>
     public static CardSignature CommonSignature() => new();
 
-    /// <summary>Rolls one card: special with probability 1 / <see cref="SpecialCardOdds" />, otherwise common.</summary>
+    /// <summary>
+    /// Rolls one card: special with probability 1 / <see cref="SpecialCardOdds" />, otherwise common.
+    /// </summary>
     public CardSignature NextCardSignature()
     {
         // Randi covers 2^32 values, a multiple of SpecialCardOdds, so the modulo has no bias.

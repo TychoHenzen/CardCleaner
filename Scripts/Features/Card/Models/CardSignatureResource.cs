@@ -15,13 +15,6 @@ public partial class CardSignatureResource : Resource
     [Export(PropertyHint.Range, "-1,1,0.01")] public float Subsidium { get; set; }
     [Export(PropertyHint.Range, "-1,1,0.01")] public float Spatium { get; set; }
 
-    public CardSignature ToSignature() => new(
-        Solidum,
-        Febris,
-        Ordinem,
-        Lumines,
-        Varias,
-        Inertiae,
-        Subsidium,
-        Spatium);
+    public CardSignature ToSignature() =>
+        new([Solidum, Febris, Ordinem, Lumines, Varias, Inertiae, Subsidium, Spatium]);
 }

@@ -201,5 +201,18 @@ jobs:
           ref: 52fb07d4f44e7cae1e42768d46b5c5f7e2a38880
           path: .dod-guard
 
+      - name: Apply Godot quality-guard compatibility patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch_file="$GITHUB_WORKSPACE/.github/quality-guard-godot.patch"
+          target="packages/quality-guard/skills/quality-refactor/scripts/lib/rules-reachability.mjs"
+          git -C .dod-guard apply --check --whitespace=error "$patch_file"
+          git -C .dod-guard apply --whitespace=error "$patch_file"
+          test "$(git -C .dod-guard diff --name-only)" = "$target"
+
+      - name: Test Godot quality-guard reachability compatibility
+        run: node .github/quality-guard-godot.test.mjs --scanner-root=.dod-guard/packages/quality-guard/skills/quality-refactor/scripts
+
       - name: Block high-severity findings in changed Scripts files
         run: node .dod-guard/packages/quality-guard/skills/quality-refactor/scripts/quality-pr-gate.mjs --base=${{ github.event.pull_request.base.sha }} --root=Scripts

@@ -26,26 +26,6 @@ public readonly struct CardSignature
         Spatium = Clamp(elements[7]);
     }
 
-    public CardSignature(
-        float solidum,
-        float febris,
-        float ordinem,
-        float lumines,
-        float varias,
-        float inertiae,
-        float subsidium,
-        float spatium)
-    {
-        Solidum = Clamp(solidum);
-        Febris = Clamp(febris);
-        Ordinem = Clamp(ordinem);
-        Lumines = Clamp(lumines);
-        Varias = Clamp(varias);
-        Inertiae = Clamp(inertiae);
-        Subsidium = Clamp(subsidium);
-        Spatium = Clamp(spatium);
-    }
-
     public float Solidum { get; }
     public float Febris { get; }
     public float Ordinem { get; }
@@ -75,18 +55,15 @@ public readonly struct CardSignature
 
     public CardSignature With(Element element, float value) => With((int)element, value);
 
-    public CardSignature With(int index, float value) => index switch
+    public CardSignature With(int index, float value)
     {
-        0 => new(value, Febris, Ordinem, Lumines, Varias, Inertiae, Subsidium, Spatium),
-        1 => new(Solidum, value, Ordinem, Lumines, Varias, Inertiae, Subsidium, Spatium),
-        2 => new(Solidum, Febris, value, Lumines, Varias, Inertiae, Subsidium, Spatium),
-        3 => new(Solidum, Febris, Ordinem, value, Varias, Inertiae, Subsidium, Spatium),
-        4 => new(Solidum, Febris, Ordinem, Lumines, value, Inertiae, Subsidium, Spatium),
-        5 => new(Solidum, Febris, Ordinem, Lumines, Varias, value, Subsidium, Spatium),
-        6 => new(Solidum, Febris, Ordinem, Lumines, Varias, Inertiae, value, Spatium),
-        7 => new(Solidum, Febris, Ordinem, Lumines, Varias, Inertiae, Subsidium, value),
-        _ => throw new ArgumentOutOfRangeException(nameof(index))
-    };
+        if ((uint)index >= 8)
+            throw new ArgumentOutOfRangeException(nameof(index));
+
+        var elements = Elements;
+        elements[index] = value;
+        return new CardSignature(elements);
+    }
 
     public static CardSignature Random(IRandom random)
     {
@@ -133,7 +110,8 @@ public readonly struct CardSignature
     public bool IsSignificant(Element element, float threshold = 0.1f) => GetIntensity(element) >= threshold;
 
     public string ToDebugString() =>
-        $"Signature[{string.Join(", ", Elements.Select(element => element.ToString("F2", CultureInfo.InvariantCulture)))}]";
+        $"Signature[{string.Join(", ", Elements.Select(element => element.ToString(
+            "F2", CultureInfo.InvariantCulture)))}]";
 
     private static float Clamp(float value) => Mathf.Clamp(value, -1f, 1f);
 }

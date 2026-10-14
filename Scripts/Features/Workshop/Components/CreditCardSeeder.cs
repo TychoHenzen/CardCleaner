@@ -13,7 +13,7 @@ namespace CardCleaner.Scripts.Features.Workshop.Components;
 /// </summary>
 public partial class CreditCardSeeder : Node
 {
-    private static readonly CardSignature CreditSignature = new(0f, 0f, 0.5f, 0f, 0f, 0f, 0.5f, 0f);
+    private static readonly CardSignature CreditSignature = new([0f, 0f, 0.5f, 0f, 0f, 0f, 0.5f, 0f]);
 
     /// <summary>The holder that receives the credit card.</summary>
     [Export]
