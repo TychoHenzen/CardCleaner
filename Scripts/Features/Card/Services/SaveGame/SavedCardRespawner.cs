@@ -32,7 +32,10 @@ internal sealed class SavedCardRespawner
     {
         var spawnTransform = new Transform3D(Basis.FromEuler(saved.Rotation), saved.Position);
         var spawnParent = ResolveSpawnParent(saved.ParentPath);
-        var cardInstance = _spawningService.SpawnCard(saved.Signature ?? new CardSignature(), spawnTransform, spawnParent);
+        var cardInstance = _spawningService.SpawnCard(
+            saved.Signature ?? new CardSignature(),
+            spawnTransform,
+            spawnParent);
 
         if (cardInstance is not CardController controller)
             return;
