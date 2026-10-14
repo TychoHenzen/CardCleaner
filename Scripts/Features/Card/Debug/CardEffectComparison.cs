@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
@@ -22,7 +21,7 @@ namespace CardCleaner.Scripts.Features.Card.Debug;
 ///         <c>CardShaderRenderer.ArtEffectsEnabled</c>. The readout shows the frame time and the GPU time of the view.
 ///     </para>
 /// </summary>
-public partial class CardEffectComparison : Node3D
+public partial class CardEffectComparison : Node3D, IDependent
 {
     private const float LabelPixelSize = 0.001f;
     private const int LabelFontSize = 44;
@@ -32,6 +31,7 @@ public partial class CardEffectComparison : Node3D
     private static readonly Basis StandingCard = Basis.FromEuler(new Vector3(Mathf.Pi / 2f, 0f, 0f));
 
     private ICardSpawningService? _spawner;
+    private IServiceResolver? _services;
     private int _batchCount;
     private double _readoutElapsed;
     private int _readoutFrames;
@@ -44,12 +44,20 @@ public partial class CardEffectComparison : Node3D
 
     public bool EffectsEnabled { get; private set; } = true;
 
+    public void Inject(IServiceResolver services) => _services = services;
+
     public override void _Ready()
     {
         GetViewport().SizeChanged += FitCamera;
         RenderingServer.ViewportSetMeasureRenderTime(GetViewport().GetViewportRid(), true);
         FitCamera();
-        ServiceLocator.Get<ICardSpawningService>(SpawnGrid);
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<ICardSpawningService>(SpawnGrid);
     }
 
     public override void _ExitTree()

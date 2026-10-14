@@ -1,7 +1,7 @@
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Components.CardHolderScenarios;
@@ -25,7 +25,7 @@ public abstract class CardHolderTestBase
     public void SetupTestSuite()
     {
         // Setup service container once for all tests
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [BeforeTest]
@@ -33,7 +33,7 @@ public abstract class CardHolderTestBase
     {
         // Arrange - Create and configure system dependencies
         _mockSpawner = CreateMockSpawner();
-        ServiceLocator.Container.RegisterSingleton<ICardSpawner>(_mockSpawner);
+        TestServices.Container.RegisterSingleton<ICardSpawner>(_mockSpawner);
 
         _handAnchor = CreateHandAnchor();
         _systemUnderTest = CreateCardHolder();
@@ -46,7 +46,7 @@ public abstract class CardHolderTestBase
     [AfterTest]
     public void CleanupEachTest()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     protected CardHolder CreateCardHolder()

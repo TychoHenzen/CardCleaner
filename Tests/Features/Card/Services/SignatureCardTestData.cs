@@ -1,6 +1,6 @@
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Card.Services;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Services;
@@ -8,12 +8,10 @@ namespace CardCleaner.Tests.Features.Card.Services;
 /// <summary>The rarity, base type and gem data the generator suites build cards from; not a suite.</summary>
 public static class SignatureCardTestData
 {
-    /// <summary>Registers the test data where the generator looks for it.</summary>
-    public static void Register()
+    /// <summary>A generator built from the test data, as the container builds it from the provider's arrays.</summary>
+    public static SignatureCardGenerator CreateGenerator()
     {
-        ServiceLocator.Container.RegisterSingleton(CreateRarityVisuals());
-        ServiceLocator.Container.RegisterSingleton(CreateBaseTypes());
-        ServiceLocator.Container.RegisterSingleton(CreateGemVisuals());
+        return new SignatureCardGenerator(CreateRarityVisuals(), CreateBaseTypes(), CreateGemVisuals());
     }
 
     private static RarityVisual[] CreateRarityVisuals()

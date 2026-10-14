@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Models;
@@ -17,7 +16,7 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 ///     lets them settle. A column takes no more floor than the container itself, so opening never throws
 ///     items through the walls of the room the container stands in, and no item spawns inside another.
 /// </summary>
-public partial class CardContainer : RigidBody3D, IInteractable
+public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 {
     /// <summary>Height above the container's origin of the first item it opens into.</summary>
     public const float LiftHeight = 0.4f;
@@ -26,6 +25,7 @@ public partial class CardContainer : RigidBody3D, IInteractable
     private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
 
     private readonly Queue<Action> _pendingSpawns = new();
+    private IServiceResolver? _services;
 
     /// <summary>What this container is. Decides what opening it produces.</summary>
     [Export]
@@ -62,14 +62,22 @@ public partial class CardContainer : RigidBody3D, IInteractable
     private bool HasContents =>
         Kind == CardContainerKind.Booster ? Spawning != null && Generator != null : ChildScene != null;
 
+    public void Inject(IServiceResolver services) => _services = services;
+
     public override void _Ready()
     {
         CollisionLayer |= InteractableLayerBit;
         ClearHighlight();
         SetProcess(false);
 
-        ServiceLocator.Get<IRandom>(rng => Generator ??= new CardPackGenerator(rng));
-        ServiceLocator.Get<ICardSpawningService>(service => Spawning ??= service);
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<IRandom>(rng => Generator ??= new CardPackGenerator(rng));
+        _services.Get<ICardSpawningService>(service => Spawning ??= service);
     }
 
     public override void _Process(double delta)

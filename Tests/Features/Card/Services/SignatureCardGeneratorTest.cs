@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Tests.TestUtilities;
 using GdUnit4;
 using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
@@ -25,14 +25,12 @@ public class SignatureCardGeneratorTest
     [BeforeTest]
     public void Setup()
     {
-        SignatureCardTestData.Register();
-
         var material = new CardMaterialManager();
         material.Name = "MaterialManager";
         _cardRoot = Assertions.AddNode(new Node3D());
         _cardRoot.AddChild(material);
-        // Create generator (it will pull from ServiceLocator)
-        _generator = new SignatureCardGenerator();
+        // The generator receives the test data through its constructor
+        _generator = SignatureCardTestData.CreateGenerator();
 
         _renderer = CreateMockRenderer();
         _template = new CardTemplate();
@@ -41,7 +39,7 @@ public class SignatureCardGeneratorTest
     [AfterTest]
     public static void TearDown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]

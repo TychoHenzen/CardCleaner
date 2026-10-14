@@ -1,7 +1,7 @@
 ﻿using System;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Tests.TestUtilities;
 using GdUnit4;
 using Godot;
 using NSubstitute;
@@ -33,7 +33,7 @@ public class CardDropperTest
         _mockInputService = Substitute.For<IInputService>();
 
         // Register mock input service
-        ServiceLocator.Container.RegisterSingleton(_mockInputService);
+        TestServices.Container.RegisterSingleton(_mockInputService);
 
         Assertions.AddNode(_dropper);
 
@@ -43,9 +43,9 @@ public class CardDropperTest
     }
 
     [AfterTest]
-    public void TearDown()
+    public static void TearDown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     #region helpers
@@ -68,7 +68,7 @@ public class CardDropperTest
     }
 
 
-    private Camera3D CreateMockCamera()
+    private static Camera3D CreateMockCamera()
     {
         var camera = new Camera3D();
         Assertions.AddNode(camera);

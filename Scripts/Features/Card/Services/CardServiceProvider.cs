@@ -22,7 +22,7 @@ public partial class CardServiceProvider : Node, IServiceProvider
         container.RegisterSingleton(RarityVisuals);
         container.RegisterSingleton(BaseCardTypes);
         container.RegisterSingleton(GemVisuals);
-        container.RegisterSingleton<ICardGenerator,SignatureCardGenerator>();
+        // ICardGenerator is SignatureCardGenerator's [Service] entry, built from the three arrays above.
         container.RegisterSingleton<ICardSpawner>(CardRoot);
     }
 

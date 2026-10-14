@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 using NSubstitute;
 
@@ -26,7 +26,7 @@ public class CardSpawnerSpecialCardTest
     [BeforeTest]
     public void Setup()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
         _spawning = Substitute.For<ICardSpawningService>();
         _input = Substitute.For<IInputService>();
         _callbacks = new Dictionary<(string, Key), Action>();
@@ -34,9 +34,9 @@ public class CardSpawnerSpecialCardTest
         _input.When(input => input.RegisterAction(
                 Arg.Any<object>(), Arg.Any<string>(), Arg.Any<Key>(), Arg.Any<Action>()))
             .Do(call => _callbacks[(call.ArgAt<string>(1), call.ArgAt<Key>(2))] = call.ArgAt<Action>(3));
-        ServiceLocator.Container.RegisterSingleton(_spawning);
-        ServiceLocator.Container.RegisterSingleton(_input);
-        ServiceLocator.Container.RegisterSingleton(RandomSources.Create(99));
+        TestServices.Container.RegisterSingleton(_spawning);
+        TestServices.Container.RegisterSingleton(_input);
+        TestServices.Container.RegisterSingleton(RandomSources.Create(99));
         _spawner = new CardSpawner();
         AddNode(_spawner);
     }
@@ -44,7 +44,7 @@ public class CardSpawnerSpecialCardTest
     [AfterTest]
     public static void TearDown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]

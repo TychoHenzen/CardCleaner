@@ -4,6 +4,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -40,6 +41,8 @@ public class ShopWorkshopRealServicesSceneTest
         _previousScene = _tree.CurrentScene;
 
         ServiceLocator.ResetForTesting();
+        // The scan registers the card generator, as the composition root's Compose does (#273).
+        ServiceLocator.Container.RegisterServiceClasses(new[] { typeof(SignatureCardGenerator) });
         ServiceLocator.Container.RegisterSingleton(new RandomNumberGenerator());
         ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
         ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(

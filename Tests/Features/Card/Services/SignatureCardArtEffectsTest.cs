@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Tests.TestUtilities;
 using GdUnit4;
 using Godot;
 using CardCleaner.Scripts.Features.Card.Models.Effects;
@@ -27,14 +27,13 @@ public class SignatureCardArtEffectsTest
     [BeforeTest]
     public void Setup()
     {
-        SignatureCardTestData.Register();
-        _generator = new SignatureCardGenerator();
+        _generator = SignatureCardTestData.CreateGenerator();
     }
 
     [AfterTest]
     public static void TearDown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
         CardEffectNormalMapCache.ResetForTesting();
     }
 

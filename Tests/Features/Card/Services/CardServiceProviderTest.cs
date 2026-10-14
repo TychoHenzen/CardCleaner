@@ -45,9 +45,28 @@ public class CardServiceProviderTest
         Assertions.AssertBool(_container.IsRegistered<RarityVisual[]>()).IsTrue();
         Assertions.AssertBool(_container.IsRegistered<BaseCardType[]>()).IsTrue();
         Assertions.AssertBool(_container.IsRegistered<GemVisual[]>()).IsTrue();
-        Assertions.AssertBool(_container.IsRegistered<ICardGenerator>()).IsTrue();
         Assertions.AssertBool(_container.IsRegistered<ICardSpawner>()).IsTrue();
         // Note: ICardSpawningService is registered by CardSpawningService itself, not CardServiceProvider
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ScannedGeneratorIsBuiltFromTheProvidersArrays()
+    {
+        // The ICardGenerator registration moved from the provider to the [Service] scan (#273).
+        _container.RegisterServiceClasses(new[] { typeof(SignatureCardGenerator) });
+        _provider.RegisterServices(_container);
+
+        Assertions.AssertObject(_container.Resolve<ICardGenerator>()).IsInstanceOf<SignatureCardGenerator>();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ScannedGeneratorIsNotRegisteredWithoutTheProvidersArrays()
+    {
+        _container.RegisterServiceClasses(new[] { typeof(SignatureCardGenerator) });
+
+        Assertions.AssertBool(_container.IsRegistered<ICardGenerator>()).IsFalse();
     }
 
     [TestCase]

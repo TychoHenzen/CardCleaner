@@ -10,8 +10,9 @@ using System.Linq;
 
 namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 
-[Service]
-public partial class GameSaveService : Node, ISaveable
+// Names ISaveable, the one service type the bare attribute exposed before IDependent was added.
+[Service(typeof(ISaveable))]
+public partial class GameSaveService : Node, ISaveable, IDependent
 {
     // Default values for exported properties
     private const float DefaultAutoSaveInterval = 10.0f;
@@ -47,14 +48,23 @@ public partial class GameSaveService : Node, ISaveable
     private Timer? _autoSaveTimer;
     private ICardSpawningService? _cardSpawningService;
     private List<object>? _pendingCardData;
-    
+    private IServiceResolver? _services;
+
     // ISaveable implementation for managing dynamic cards
     public StringName UniqueID => "game_save_service";
-    
+
+    public void Inject(IServiceResolver services) => _services = services;
+
     public override void _Ready()
     {
-        ServiceLocator.Get<ICardSpawningService>(service => _cardSpawningService = service);
-        
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<ICardSpawningService>(service => _cardSpawningService = service);
+
         SetupAutoSave();
         
         if (AutoLoadOnStart)

@@ -13,7 +13,7 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 /// Handles spawning of card instances with proper generation and setup.
 /// </summary>
 [Service(typeof(ICardSpawningService))]
-public partial class CardSpawningService : Node, ICardSpawningService, IServiceProvider
+public partial class CardSpawningService : Node, ICardSpawningService, IServiceProvider, IDependent
 {
     /// <summary>
     /// Emitted when a new card is spawned, allowing other systems to connect to it
@@ -23,12 +23,21 @@ public partial class CardSpawningService : Node, ICardSpawningService, IServiceP
     [Export] public PackedScene? CardScene;
     private ICardGenerator _generator = null!;
     private IRandom _rng = null!;
+    private IServiceResolver? _services;
+
+    public void Inject(IServiceResolver services) => _services = services;
 
     public override void _Ready()
     {
         AddToGroup("service_providers");
-        ServiceLocator.Get<IRandom>(rng => _rng = rng);
-        ServiceLocator.Get<ICardGenerator>(gen => _generator = gen);
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<IRandom>(rng => _rng = rng);
+        _services.Get<ICardGenerator>(gen => _generator = gen);
     }
 
     public void RegisterServices(IServiceContainer container)

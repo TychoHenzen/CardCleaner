@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services.SaveGame;
+using CardCleaner.Tests.TestUtilities;
 using GdUnit4;
 using Godot;
 using Saveable;
@@ -27,8 +27,8 @@ public class GameSaveServiceLoadTest
         var tree = (SceneTree)Engine.GetMainLoop();
         var previousScene = tree.CurrentScene;
         var spawner = new RecordingSpawner();
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<ICardSpawningService>(spawner);
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<ICardSpawningService>(spawner);
 
         var savePath = $"user://game-save-load-{Guid.NewGuid():N}.json";
         var world = new Node3D { Name = "GameSaveLoadWorld" };
@@ -75,7 +75,7 @@ public class GameSaveServiceLoadTest
             world.Free();
             tree.CurrentScene = previousScene;
             DeleteSaveFile(savePath);
-            ServiceLocator.ResetForTesting();
+            TestServices.Reset();
         }
     }
 
@@ -86,8 +86,8 @@ public class GameSaveServiceLoadTest
         var tree = (SceneTree)Engine.GetMainLoop();
         var previousScene = tree.CurrentScene;
         var spawner = new RecordingSpawner();
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<ICardSpawningService>(spawner);
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<ICardSpawningService>(spawner);
 
         var savePath = $"user://game-save-absent-{Guid.NewGuid():N}.json";
         var world = new Node3D { Name = "GameSaveAbsentWorld" };
@@ -121,7 +121,7 @@ public class GameSaveServiceLoadTest
             world.Free();
             tree.CurrentScene = previousScene;
             DeleteSaveFile(savePath);
-            ServiceLocator.ResetForTesting();
+            TestServices.Reset();
         }
     }
 

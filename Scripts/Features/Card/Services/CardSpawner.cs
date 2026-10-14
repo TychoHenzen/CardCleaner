@@ -10,7 +10,7 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 ///     potential, which opens the backoffice seam) when pressing 4, unless <see cref="SpawnKeys" /> is off.
 /// </summary>
 [Service(typeof(ICardSpawner))]
-public partial class CardSpawner : Node3D, ICardSpawner
+public partial class CardSpawner : Node3D, ICardSpawner, IDependent
 {
     // Default values as constants
     private static readonly Vector3 DefaultOffsetRange = Vector3.Zero;
@@ -18,6 +18,7 @@ public partial class CardSpawner : Node3D, ICardSpawner
     private ICardSpawningService? _spawningService;
     private IInputService? _inputService;
     private IRandom? _rng;
+    private IServiceResolver? _services;
 
     private int _spawnQueue;
     [Export] public Vector3 OffsetRange { get; set; } = DefaultOffsetRange;
@@ -43,13 +44,21 @@ public partial class CardSpawner : Node3D, ICardSpawner
         };
     }
 
+    public void Inject(IServiceResolver services) => _services = services;
+
     public override void _Ready()
     {
-        ServiceLocator.Get<ICardSpawningService>(service => _spawningService = service);
-        ServiceLocator.Get<IRandom>(rng => _rng = rng);
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<ICardSpawningService>(service => _spawningService = service);
+        _services.Get<IRandom>(rng => _rng = rng);
         if (!SpawnKeys) return;
 
-        ServiceLocator.Get<IInputService>(input =>
+        _services.Get<IInputService>(input =>
         {
             input.RegisterAction(this, "spawn_one", Key.Key1, () => QueueCards(1));
             input.RegisterAction(this, "spawn_ten", Key.Key2, () => QueueCards(10));

@@ -89,9 +89,6 @@ public partial class CompositionRoot : Node
     {
         FreeOwnedNodes();
         // First, so the explicit registrations below replace any scanned entry for the same service type.
-        // ASSUMPTION: SignatureCardGenerator has a parameterless constructor until #273 task-2, so its scanned
-        // ICardGenerator counts as registered in every composition; every scene with a CardSpawningService also has
-        // the CardServiceProvider that registers it explicitly, so no shipped scene sees a difference.
         ServiceLocator.Container.RegisterServiceClasses(
             ServiceClassScan.PlainServiceClassesIn(typeof(CompositionRoot).Assembly, GameNamespace));
         RegisterCoreServices(ServiceLocator.Container);
