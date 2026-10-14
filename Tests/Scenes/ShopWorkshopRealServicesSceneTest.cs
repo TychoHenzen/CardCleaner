@@ -12,6 +12,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
+using CardCleaner.Tests.TestUtilities;
 using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
@@ -41,8 +42,8 @@ public class ShopWorkshopRealServicesSceneTest
         _previousScene = _tree.CurrentScene;
 
         ServiceLocator.ResetForTesting();
-        // The scan registers the card generator, as the composition root's Compose does (#273).
-        ServiceLocator.Container.RegisterServiceClasses(new[] { typeof(SignatureCardGenerator) });
+        // The composition root's own scan registers the card generator, first, as Compose does (#273).
+        TestServices.RegisterGameServiceClasses(TestServices.Container);
         ServiceLocator.Container.RegisterSingleton(new RandomNumberGenerator());
         ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
         ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(

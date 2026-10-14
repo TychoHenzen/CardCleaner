@@ -38,9 +38,9 @@ public class CardEffectComparisonSceneTest
         _scene = GD.Load<PackedScene>(ScenePath).Instantiate<CardEffectComparison>();
 
         // The test scene is not the current scene, so hand the scene-owned services over directly.
-        // The scan registers the generator, as the composition root's Compose does (#273).
+        // The composition root's own scan registers the generator, first, as Compose does (#273).
         TestServices.Reset();
-        TestServices.Container.RegisterServiceClasses(new[] { typeof(SignatureCardGenerator) });
+        TestServices.RegisterGameServiceClasses(TestServices.Container);
         TestServices.Container.RegisterSingleton(new RandomNumberGenerator { Seed = 1 });
         _scene.GetNode<CardServiceProvider>("Services/CardServiceProvider").RegisterServices(TestServices.Container);
         _scene.GetNode<CardSpawningService>("Services/SpawningService").RegisterServices(TestServices.Container);

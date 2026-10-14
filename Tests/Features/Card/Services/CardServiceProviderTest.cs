@@ -3,6 +3,7 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Tests.TestUtilities;
 using GdUnit4;
 
 namespace CardCleaner.Tests.Features.Card.Services;
@@ -55,6 +56,19 @@ public class CardServiceProviderTest
     {
         // The ICardGenerator registration moved from the provider to the [Service] scan (#273).
         _container.RegisterServiceClasses(new[] { typeof(SignatureCardGenerator) });
+        _provider.RegisterServices(_container);
+
+        Assertions.AssertObject(_container.Resolve<ICardGenerator>()).IsInstanceOf<SignatureCardGenerator>();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void GameScanRegistersTheGeneratorOnceTheProviderRuns()
+    {
+        // The composition root's own scan, not a hand-picked type list, must find the generator (#273).
+        TestServices.RegisterGameServiceClasses(_container);
+        Assertions.AssertBool(_container.IsRegistered<ICardGenerator>()).IsFalse();
+
         _provider.RegisterServices(_container);
 
         Assertions.AssertObject(_container.Resolve<ICardGenerator>()).IsInstanceOf<SignatureCardGenerator>();

@@ -19,6 +19,10 @@ public static class TestServices
 
     public static void Reset() => ServiceLocator.ResetForTesting();
 
+    /// <summary>Runs the composition root's [Service] scan of the game into the container.</summary>
+    public static void RegisterGameServiceClasses(IServiceContainer container) =>
+        CompositionRoot.RegisterGameServiceClasses(container);
+
     /// <summary>Injects a node the way the root does when it enters the tree, and returns it.</summary>
     public static T Inject<T>(T node) where T : Node, IDependent
     {

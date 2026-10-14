@@ -181,6 +181,9 @@ The project uses a custom service locator pattern, split into a static lookup an
 - **Tree injection**: a node implementing `IDependent` (`Scripts/Core/Interfaces`) gets `Inject(IServiceResolver)`
   from the autoload on `SceneTree.NodeAdded`: after the node's `_EnterTree`, before its `_Ready`, and again whenever it
   re-enters the tree (reparent). `Inject` only stores the resolver; the node does its wiring in `_Ready` through it.
+  Nodes already in the tree when the autoload starts are injected once by a startup pass
+  (`CompositionRoot.InjectExistingNodes`), which runs after their `_Ready`, so an `IDependent` must never be an
+  autoload ordered before Services.
   The resolver (`LocatorServiceResolver`) holds no container and reads `ServiceLocator` at call time, so its
   `Get<T>(callback)` shares the one pending-callback queue.
 - Services can use async resolution via `ServiceLocator.Get<T>(callback)` for services not yet registered

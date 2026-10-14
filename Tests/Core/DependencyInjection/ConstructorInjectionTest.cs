@@ -56,7 +56,8 @@ public class ConstructorInjectionTest
 
         Assertions.AssertThrown(() => _container.Construct<TwoServiceConsumer>())
             .IsInstanceOf<InvalidOperationException>()
-            .HasMessage($"Cannot construct {nameof(TwoServiceConsumer)}: service {nameof(IAsyncTestService)} not registered");
+            .HasMessage(
+                $"Cannot construct {nameof(TwoServiceConsumer)}: service {nameof(IAsyncTestService)} not registered");
     }
 
     [TestCase]

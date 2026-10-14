@@ -41,7 +41,7 @@ public partial class CompositionRoot : Node
 
         GetTree().NodeAdded += OnNodeAdded;
         _injecting = true;
-        InjectSubtree(GetTree().Root);
+        InjectExistingNodes();
         ScheduleCompose();
     }
 
@@ -61,7 +61,11 @@ public partial class CompositionRoot : Node
             dependent.Inject(LocatorServiceResolver.Instance);
     }
 
-    // Nodes that entered the tree before the autoload subscribed (other autoloads) are injected once here.
+    // Injects once every IDependent node that entered the tree before the autoload subscribed to NodeAdded. That
+    // runs after such a node's _Ready. Services is the first autoload, so today the pass meets only the root and
+    // Services itself; it guards a node that a later change orders before Services.
+    internal void InjectExistingNodes() => InjectSubtree(GetTree().Root);
+
     private void InjectSubtree(Node node)
     {
         OnNodeAdded(node);
@@ -89,12 +93,16 @@ public partial class CompositionRoot : Node
     {
         FreeOwnedNodes();
         // First, so the explicit registrations below replace any scanned entry for the same service type.
-        ServiceLocator.Container.RegisterServiceClasses(
-            ServiceClassScan.PlainServiceClassesIn(typeof(CompositionRoot).Assembly, GameNamespace));
+        RegisterGameServiceClasses(ServiceLocator.Container);
         RegisterCoreServices(ServiceLocator.Container);
         RegisterFromProviders(ServiceLocator.Container);
         ServiceLocator.ExecutePendingCallbacks();
     }
+
+    /// <summary>Registers the plain [Service] classes of the game lazily, the scan Compose runs.</summary>
+    internal static void RegisterGameServiceClasses(IServiceContainer container) =>
+        container.RegisterServiceClasses(
+            ServiceClassScan.PlainServiceClassesIn(typeof(CompositionRoot).Assembly, GameNamespace));
 
     private void RegisterCoreServices(IServiceContainer container)
     {
