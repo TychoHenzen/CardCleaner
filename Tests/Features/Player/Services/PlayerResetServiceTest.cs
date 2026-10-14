@@ -1,7 +1,6 @@
-using CardCleaner.Scripts.Composition;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Player.Controllers;
+using CardCleaner.Tests.TestUtilities;
 using GdUnit4;
 using Godot;
 
@@ -21,10 +20,10 @@ public class PlayerResetServiceTest
     [BeforeTest]
     public void Setup()
     {
-        CompositionRoot.ReinitializeServices();
-        _service = ServiceLocator.Container.Resolve<IPlayerResetService>();
+        TestServices.Reinitialize();
+        _service = TestServices.Container.Resolve<IPlayerResetService>();
         _serviceNode = (Node)_service;
-        _inputNode = (Node)ServiceLocator.Container.Resolve<IInputService>();
+        _inputNode = (Node)TestServices.Container.Resolve<IInputService>();
     }
 
     [AfterTest]
@@ -33,7 +32,7 @@ public class PlayerResetServiceTest
         // The player registers its input actions on this InputService, so drop it before the player is freed.
         _inputNode?.QueueFree();
         _serviceNode?.QueueFree();
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]

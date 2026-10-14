@@ -191,7 +191,8 @@ The project uses a custom service locator pattern, split into a static lookup an
 Access services via `ServiceLocator.Get<T>()` or `ServiceLocator.Container.Resolve<T>()`; features not yet moved to
 tree injection keep using `ServiceLocator` until #244. Tests go through `Tests/TestUtilities/TestServices`:
 `Container`, `Resolver` (the resolver the root injects), `Reinitialize()` (`CompositionRoot.ReinitializeServices()`),
-`Reset()` (`ServiceLocator.ResetForTesting()`) and `Inject(node)` for a node built outside the tree.
+`Reset()` (`ServiceLocator.ResetForTesting()`), `RegisterGameServiceClasses(container)` (the root's `[Service]` scan
+into a container) and `Inject(node)` for a node built outside the tree.
 
 ### Dependency Gate
 
