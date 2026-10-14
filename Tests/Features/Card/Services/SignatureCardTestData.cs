@@ -9,7 +9,7 @@ namespace CardCleaner.Tests.Features.Card.Services;
 public static class SignatureCardTestData
 {
     /// <summary>A generator built from the test data, as the container builds it from the provider's arrays.</summary>
-    public static SignatureCardGenerator CreateGenerator()
+    internal static SignatureCardGenerator CreateGenerator()
     {
         return new SignatureCardGenerator(CreateRarityVisuals(), CreateBaseTypes(), CreateGemVisuals());
     }

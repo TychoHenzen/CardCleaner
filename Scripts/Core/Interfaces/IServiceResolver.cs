@@ -8,7 +8,8 @@ namespace CardCleaner.Scripts.Core.Interfaces;
 ///     current container at call time, so a resolver stays valid when the container is rebuilt.
 /// </summary>
 [SuppressMessage("Naming", "CA1716:Identifiers should not match keywords",
-    Justification = "Get mirrors ServiceLocator.Get, which every unmoved feature still calls; C# is the only consumer.")]
+    Justification = "Get mirrors ServiceLocator.Get, which every unmoved feature still calls; " +
+                    "C# is the only consumer.")]
 public interface IServiceResolver
 {
     /// <summary>Returns the registered service; throws InvalidOperationException when it is not registered.</summary>

@@ -15,7 +15,7 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 /// </summary>
 /// 
 [Service(typeof(ICardGenerator))]
-public class SignatureCardGenerator : ICardGenerator
+internal sealed class SignatureCardGenerator : ICardGenerator
 {
     private readonly BaseCardType[] _baseTypes;
     private readonly GemVisual[] _gemVisuals;

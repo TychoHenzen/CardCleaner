@@ -17,20 +17,15 @@ public interface IServiceContainer
     bool IsRegistered<T>() where T : class;
     bool IsRegistered(Type serviceType);
 
-    /// <summary>
-    ///     Builds a plain class through its public constructor with the most parameters, resolving each parameter from
-    ///     this container. Throws InvalidOperationException naming the class and the missing service when a parameter
-    ///     is not registered.
-    /// </summary>
+    /// <summary>Builds a plain class through its widest public constructor, resolving each parameter from this
+    ///     container; throws InvalidOperationException naming the class and the unregistered service.</summary>
     T Construct<T>() where T : class;
 
     /// <inheritdoc cref="Construct{T}" />
     object Construct(Type type);
 
-    /// <summary>
-    ///     Registers each candidate that is a concrete [Service] class, lazily, under its [Service] types (or its
-    ///     interfaces when it names none). The caller passes plain classes only, never Godot objects. An entry counts as registered once every parameter
-    ///     of its constructor is registered; it is built on its first Resolve and then reused under all its types.
-    /// </summary>
+    /// <summary>Lazily registers each concrete [Service] candidate under its [Service] types, or its interfaces when
+    ///     it names none; never pass Godot objects. One counts as registered once all its constructor parameters
+    ///     are, is built on its first Resolve and is then shared by all its types.</summary>
     void RegisterServiceClasses(IEnumerable<Type> candidates);
 }
