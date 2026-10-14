@@ -51,9 +51,12 @@ enforces this). `Run-GdUnit.ps1` fails when a `[TestSuite]` file never runs. Whe
 example `0xC000001D`), and the unfinished suites are resumed. Stalls and crashes share the `-MaxResumes` budget; a
 second interruption in the same suite, or a resume that finishes no suite, fails the run. Exits 100, 101, 103 and 104
 keep their own handling and never resume, and an abnormal exit after a green report still fails. Reports and logs go to
-`reports/ci`, one log pair per attempt (`godot.stdout.log`, then `godot.resume<n>.stdout.log`). Every stall or crash
-also appends a line such as `crash 0xC000001D in <suite> (logs: ...)` to `reports/ci/interruptions.txt` (a marker left
-by an earlier run is removed at start). CI uploads `reports/ci` as the `gdunit-reports` artifact on failure, on the
+`reports/ci`; before the first Godot attempt, stale generated attempt logs directly in that directory matching
+`godot.stdout.log`, `godot.stderr.log`, `godot.resume*.stdout.log`, or `godot.resume*.stderr.log` are removed, while
+report folders and other files survive. Each attempt then has one log pair (`godot.stdout.log`, then
+`godot.resume<n>.stdout.log`). Every stall or crash also appends a line such as `crash 0xC000001D in <suite> (logs: ...)`
+to `reports/ci/interruptions.txt` (a marker left by an earlier run is removed at start). CI uploads `reports/ci`
+as the `gdunit-reports` artifact on failure, on the
 weekly and `full=true` runs, and whenever that marker exists, so a crash inside a run that resumed to green keeps its
 logs. `Test-RunGdUnit.ps1` runs the real runner against a fake Godot and covers its build wait (a build that leaves a
 worker running), build failure, watchdog, resume, repeated-stall, crash, repeated-crash, exit-code, interruption-marker
