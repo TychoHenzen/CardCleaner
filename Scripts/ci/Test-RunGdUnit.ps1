@@ -134,6 +134,7 @@ internal static class FakeGodot
         Log(state, Path.GetFileName(self), args);
         if (Array.IndexOf(args, "--import") >= 0)
         {
+            RecordAttemptLogsBeforeRun(state);
             return 0;
         }
         string counterPath = Path.Combine(state, "next.txt");
@@ -178,6 +179,32 @@ internal static class FakeGodot
         }
         Console.Out.Flush();
         return 0;
+    }
+
+    private static void RecordAttemptLogsBeforeRun(string state)
+    {
+        string reportRoot = Path.Combine(Directory.GetCurrentDirectory(), "reports", "ci");
+        var leftovers = new StringBuilder();
+        if (Directory.Exists(reportRoot))
+        {
+            foreach (string path in Directory.GetFiles(reportRoot))
+            {
+                string name = Path.GetFileName(path);
+                if (IsAttemptLogName(name))
+                {
+                    leftovers.AppendLine(name);
+                }
+            }
+        }
+        File.WriteAllText(Path.Combine(state, "attempt-logs-before-run.txt"), leftovers.ToString());
+    }
+
+    private static bool IsAttemptLogName(string name)
+    {
+        return name == "godot.stdout.log" || name == "godot.stderr.log" ||
+            (name.StartsWith("godot.resume", StringComparison.Ordinal) &&
+                (name.EndsWith(".stdout.log", StringComparison.Ordinal) ||
+                 name.EndsWith(".stderr.log", StringComparison.Ordinal)));
     }
 
     private static void Stall(string state, string self)
@@ -675,6 +702,16 @@ function Get-RunnerTestCalls {
 function Test-CleanRun {
     param($Context)
 
+    $reportRoot = Join-Path $Context.Repo 'reports\ci'
+    foreach ($name in @(
+            'godot.stdout.log', 'godot.stderr.log',
+            'godot.resume1.stdout.log', 'godot.resume1.stderr.log')) {
+        Write-FileText -Path (Join-Path $reportRoot $name) -Text 'stale attempt log'
+    }
+    $unrelatedLog = Join-Path $reportRoot 'godot.resume.log'
+    $nestedLog = Join-Path $reportRoot 'report_N\godot.resume99.stdout.log'
+    Write-FileText -Path $unrelatedLog -Text 'keep this direct file'
+    Write-FileText -Path $nestedLog -Text 'keep this nested file'
     Set-FakePlan -Context $Context -Index 0 -Lines @(
         (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats),
         (Get-SuiteStart $SuiteAlphaTwo), (Get-SuiteStats),
@@ -685,6 +722,20 @@ function Test-CleanRun {
     Write-FileText -Path (Get-InterruptionMarkerPath -Context $Context) -Text ('stall in ' + $SuiteBeta)
     $result = Invoke-Runner -Context $Context
     Assert-ExitCode -Result $result -Expected 0 -Message 'a clean run exits 0'
+    $snapshotPath = Join-Path $Context.State 'attempt-logs-before-run.txt'
+    Assert-That (Test-Path -LiteralPath $snapshotPath -PathType Leaf) 'the fake import inspected attempt logs before the run'
+    $leftovers = @([IO.File]::ReadAllLines($snapshotPath))
+    Assert-Equal 0 $leftovers.Count 'stale attempt logs are gone before the current run'
+    foreach ($name in @('godot.stdout.log', 'godot.stderr.log')) {
+        Assert-That (Test-Path -LiteralPath (Join-Path $reportRoot $name) -PathType Leaf) `
+            "the clean run writes its current $name"
+    }
+    Assert-That (-not (Test-Path -LiteralPath (Join-Path $reportRoot 'godot.resume1.stdout.log'))) `
+        'a clean run leaves no stale resume stdout log'
+    Assert-That (-not (Test-Path -LiteralPath (Join-Path $reportRoot 'godot.resume1.stderr.log'))) `
+        'a clean run leaves no stale resume stderr log'
+    Assert-That (Test-Path -LiteralPath $unrelatedLog -PathType Leaf) 'an unrelated direct log survives cleanup'
+    Assert-That (Test-Path -LiteralPath $nestedLog -PathType Leaf) 'a matching log in report_N survives cleanup'
     $markerGone = -not (Test-Path -LiteralPath (Get-InterruptionMarkerPath -Context $Context))
     Assert-That $markerGone 'a clean run removes the stale interruption marker and writes none'
     $consoleLine = 'Using Godot executable: ' + $Context.Console

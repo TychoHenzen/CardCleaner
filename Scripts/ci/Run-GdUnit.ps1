@@ -409,6 +409,28 @@ function Invoke-Import {
     }
 }
 
+function Remove-StaleAttemptLogs {
+    param([string]$ReportRoot)
+
+    $directorySeparator = [IO.Path]::DirectorySeparatorChar
+    $alternateSeparator = [IO.Path]::AltDirectorySeparatorChar
+    $reportRootPath = [IO.Path]::GetFullPath($ReportRoot).TrimEnd([char[]]@($directorySeparator, $alternateSeparator)) +
+        $directorySeparator
+    $attemptLogs = @(Get-ChildItem -LiteralPath $ReportRoot -File -Force | Where-Object {
+            $_.Name -eq 'godot.stdout.log' -or
+            $_.Name -eq 'godot.stderr.log' -or
+            $_.Name -like 'godot.resume*.stdout.log' -or
+            $_.Name -like 'godot.resume*.stderr.log'
+        })
+    foreach ($attemptLog in $attemptLogs) {
+        $target = [IO.Path]::GetFullPath($attemptLog.FullName)
+        if (-not $target.StartsWith($reportRootPath, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Refusing to delete attempt log outside $ReportRoot`: $target"
+        }
+        Remove-Item -LiteralPath $target -Force
+    }
+}
+
 if ([string]::IsNullOrWhiteSpace($GodotBinary)) {
     throw 'Godot executable is required. Pass -GodotBinary or set GODOT_BIN.'
 }
@@ -428,6 +450,7 @@ $interruptionMarker = Join-Path $reportRoot 'interruptions.txt'
 if (Test-Path -LiteralPath $interruptionMarker -PathType Leaf) {
     Remove-Item -LiteralPath $interruptionMarker -Force
 }
+Remove-StaleAttemptLogs -ReportRoot $reportRoot
 Write-Host "Using Godot executable: $godotPath"
 
 $allSuites = Get-ExpectedSuites -RepositoryRoot $repositoryRoot
