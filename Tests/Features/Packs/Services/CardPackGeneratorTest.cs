@@ -128,6 +128,6 @@ public class CardPackGeneratorTest
     public static void SignatureWithAnyNonZeroElementHasMagicalPotential()
     {
         for (var i = 0; i < 8; i++)
-            AssertThat(new CardSignature().HasMagicalPotential()).IsTrue();
+            AssertThat(new CardSignature().With(i, 0.4f).HasMagicalPotential()).IsTrue();
     }
 }

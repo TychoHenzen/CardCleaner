@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Features.Card.Models;
+using Saveable;
 
 namespace CardCleaner.Tests.Features.Card.Controllers.CardControllerScenarios;
 
@@ -116,6 +117,24 @@ public class CardControllerStateTest : CardControllerTestBase
         Assertions.AssertThat(_cardController.Signature).IsEqual(newSignature);
         Assertions.AssertFloat(_cardController.Signature[0]).IsEqual(1.0f);
         Assertions.AssertFloat(_cardController.Signature[1]).IsEqual(-1.0f);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void SaveAndLoad_PreservesUninitializedSignature()
+    {
+        var source = new CardCleaner.Scripts.Features.Card.Controllers.CardController();
+        Assertions.AddNode(source);
+        var save = new NodeSave();
+        source.Save(save);
+
+        Assertions.AssertThat(save.Properties["signature"]).IsNull();
+
+        var restored = new CardCleaner.Scripts.Features.Card.Controllers.CardController();
+        Assertions.AddNode(restored);
+        restored.Load(save);
+
+        Assertions.AssertBool(restored.HasSignature).IsFalse();
     }
 
     #endregion

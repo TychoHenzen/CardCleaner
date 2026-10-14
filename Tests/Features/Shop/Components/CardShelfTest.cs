@@ -94,6 +94,13 @@ public class CardShelfTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void EmptySlotConsumesNoSignature()
+    {
+        AssertThat(_shelf.Slots.First().ConsumeCardSignature()).IsNull();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public async Task ARigidBodyThatOnlyHasCardInItsNameIsNotLockedIntoASlot()
     {
         var box = new RigidBody3D { Name = "CardboardBox" };

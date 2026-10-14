@@ -180,7 +180,7 @@ public partial class DeckSlot : Node3D
     public CardSignature? ConsumeCardSignature()
     {
         var allSignatures = ConsumeAllCardSignatures();
-        return allSignatures.FirstOrDefault();
+        return allSignatures.Count == 0 ? null : allSignatures[0];
     }
 
     /// <summary>

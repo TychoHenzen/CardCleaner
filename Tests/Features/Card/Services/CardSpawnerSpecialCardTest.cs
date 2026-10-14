@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
 using Godot;
@@ -35,7 +36,7 @@ public class CardSpawnerSpecialCardTest
             .Do(call => _callbacks[(call.ArgAt<string>(1), call.ArgAt<Key>(2))] = call.ArgAt<Action>(3));
         ServiceLocator.Container.RegisterSingleton(_spawning);
         ServiceLocator.Container.RegisterSingleton(_input);
-        ServiceLocator.Container.RegisterSingleton(new RandomNumberGenerator { Seed = 99 });
+        ServiceLocator.Container.RegisterSingleton(RandomSources.Create(99));
         _spawner = new CardSpawner();
         AddNode(_spawner);
     }
