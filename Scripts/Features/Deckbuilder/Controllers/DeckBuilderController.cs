@@ -14,30 +14,14 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 /// </summary>
 public partial class DeckBuilderController : Node, IDependent
 {
-    // Default values as constants
     private static readonly Vector3 DefaultScreenSpawnPosition = Vector3.Zero;
     private const MapGenerationType DefaultMapType = MapGenerationType.RegularGrid;
-
-    /// <summary>Where the cabinet is in its activate-reset cycle.</summary>
-    private enum CabinetPhase
-    {
-        Idle,
-        Running,
-        AwaitingReset
-    }
 
     private IGameSessionService? _gameSession;
     private IGridMapGenerator? _gridGenerator;
     private IMeshMapGenerator? _meshGenerator;
     private IServiceResolver? _services;
-    private CabinetPhase _phase = CabinetPhase.Idle;
-
-    // The kind of the session started by the last activate press, set by that press and read by the reset press that
-    // ends that session, so a change of MapType in between cannot send the reset to the other screen.
-    private MapGenerationType _runningKind;
-
-    // The map kind toggle works only while the cabinet is idle, so the kind never changes under a live map.
-    private bool CanToggleMapKind => _phase == CabinetPhase.Idle;
+    private readonly CabinetCycle _cycle = new();
 
     [Export] public DeckSlot AbilityDeckSlot { get; set; } = null!;
     [Export] public DeckSlot MapCardSlot { get; set; } = null!;
@@ -78,9 +62,8 @@ public partial class DeckBuilderController : Node, IDependent
 
         // Listen for when cards are dropped into slots (for UI feedback only)
         AbilityDeckSlot.CardsChanged += OnSlotsUpdated;
-        MapCardSlot.CardsChanged += OnSlotsUpdated; // Changed from CardChanged to CardsChanged
+        MapCardSlot.CardsChanged += OnSlotsUpdated;
 
-        // Listen for button activation
         ActivateButton.ButtonPressed += OnButtonPressed;
         if (MapKindButton != null)
             MapKindButton.ButtonPressed += OnMapKindButtonPressed;
@@ -101,28 +84,21 @@ public partial class DeckBuilderController : Node, IDependent
             return;
         }
 
-        // Subscribe to game session state changes
         _services.Get<IGameSessionService>(gameSession =>
         {
             _gameSession = gameSession;
             gameSession.StateChanged += OnSessionStateChanged;
         });
 
-        // The grid kind's generator, handed to the session when a grid session starts
+        // Each kind's generator, handed to the session when a session of that kind starts
         _services.Get<IGridMapGenerator>(generator => _gridGenerator = generator);
-
-        // The irregular kind's generator, handed to the session when an irregular session starts
         _services.Get<IMeshMapGenerator>(generator => _meshGenerator = generator);
     }
 
     public override void _ExitTree()
     {
-        // Clean up event subscriptions
         if (_gameSession != null)
-        {
             _gameSession.StateChanged -= OnSessionStateChanged;
-        }
-
         if (MapKindButton != null)
             MapKindButton.ButtonPressed -= OnMapKindButtonPressed;
     }
@@ -133,7 +109,7 @@ public partial class DeckBuilderController : Node, IDependent
     /// </summary>
     private void OnMapKindButtonPressed()
     {
-        if (!CanToggleMapKind) return;
+        if (!_cycle.CanToggleMapKind) return;
 
         MapType = MapKindToggle.Next(MapType);
         ILog.Print($"Map kind switched to {MapType}");
@@ -165,7 +141,7 @@ public partial class DeckBuilderController : Node, IDependent
     /// </summary>
     private void OnSessionStateChanged(SessionState newState)
     {
-        if (_phase != CabinetPhase.Running) return;
+        if (!_cycle.IsRunning) return;
 
         if (newState == SessionState.SessionComplete)
         {
@@ -176,25 +152,21 @@ public partial class DeckBuilderController : Node, IDependent
         if (newState != SessionState.WaitingForCards) return;
 
         ILog.Print("Session ended without completing - cabinet idle again");
-        _phase = CabinetPhase.Idle;
+        _cycle.ReturnToIdle();
         UpdateButtonState();
     }
 
-    /// <summary>
-    /// Enables the button and flags that the next press should just reset the view.
-    /// </summary>
+    /// <summary>Enables the button and flags that the next press should just reset the view.</summary>
     private void AwaitMapReset()
     {
         ILog.Print("Session complete - map revealed, awaiting reset");
 
-        _phase = CabinetPhase.AwaitingReset;
+        _cycle.Complete();
         ActivateButton.SetEnabled(true);
         UpdateMapKindButtonState();
     }
 
-    /// <summary>
-    /// Called when slots are updated - updates button state and biome preview
-    /// </summary>
+    /// <summary>Called when slots are updated - updates button state and biome preview</summary>
     private void OnSlotsUpdated()
     {
         UpdateButtonState();
@@ -213,23 +185,16 @@ public partial class DeckBuilderController : Node, IDependent
         WorldTileMapScreenScene.UpdateBiomePreview(signatures.ToArray());
     }
 
-    /// <summary>
-    /// Updates the button's enabled state based on whether both slots are populated
-    /// </summary>
+    /// <summary>Updates the button's enabled state based on whether both slots are populated</summary>
     private void UpdateButtonState()
     {
-        var canActivate = AbilityDeckSlot.HasCards && MapCardSlot.HasCard; // Using HasCard for semantic clarity
+        var canActivate = AbilityDeckSlot.HasCards && MapCardSlot.HasCard;
         ActivateButton.SetEnabled(canActivate);
         UpdateMapKindButtonState();
     }
 
-    /// <summary>
-    /// The toggle is lit only while the cabinet is idle: from the activate press until the reset press it stays dark.
-    /// </summary>
-    private void UpdateMapKindButtonState()
-    {
-        MapKindButton?.SetEnabled(CanToggleMapKind);
-    }
+    // The toggle is lit only while the cabinet is idle: from the activate press until the reset press it stays dark.
+    private void UpdateMapKindButtonState() => MapKindButton?.SetEnabled(_cycle.CanToggleMapKind);
 
     /// <summary>
     /// Called when the activation button is pressed.
@@ -240,50 +205,35 @@ public partial class DeckBuilderController : Node, IDependent
     {
         ILog.Print("Activation button pressed!");
 
-        if (_phase == CabinetPhase.AwaitingReset)
+        if (_cycle.IsAwaitingReset)
         {
             ResetFinishedSession();
             return;
         }
 
-        // Normal flow: start a session if cards are present
-        if (!AbilityDeckSlot.HasCards || !MapCardSlot.HasCard)
+        var refusal = CabinetCycle.StartRefusal(MapType, AbilityDeckSlot.HasCards && MapCardSlot.HasCard,
+            IrregularMapScreen != null, _gridGenerator != null, _meshGenerator != null);
+        if (refusal != null)
         {
-            ILog.Error("Button pressed but slots not properly filled!");
+            ILog.Error(refusal);
             return;
         }
 
-        if (MapType == MapGenerationType.IrregularMesh && IrregularMapScreen == null)
-        {
-            ILog.Error("IrregularMapScreen not assigned! Cannot generate irregular mesh map.");
-            return;
-        }
+        StartSession(MapType);
+    }
 
-        if (MapType == MapGenerationType.RegularGrid && _gridGenerator == null)
-        {
-            ILog.Error("No IGridMapGenerator registered! Cannot generate a grid map.");
-            return;
-        }
-
-        if (MapType == MapGenerationType.IrregularMesh && _meshGenerator == null)
-        {
-            ILog.Error("No IMeshMapGenerator registered! Cannot generate an irregular mesh map.");
-            return;
-        }
-
-        ILog.Print($"Cards present - starting {MapType} map session...");
+    // Consumes the slotted cards and has the kind's screen start the session with the kind's generator.
+    private void StartSession(MapGenerationType kind)
+    {
+        ILog.Print($"Cards present - starting {kind} map session...");
 
         // Record the kind before the slots change, so every refresh from here on sees a running session.
-        var kind = MapType;
-        _runningKind = kind;
-        _phase = CabinetPhase.Running;
+        _cycle.Start(kind);
         ShowPickedKind();
 
-        // Consume the seed cards and ability deck
         var mapSeeds = MapCardSlot.ConsumeAllCardSignatures();
         var abilities = AbilityDeckSlot.ConsumeAllCardSignatures();
 
-        // Both kinds start the same way: the kind's screen starts the session with the kind's generator
         switch (kind)
         {
             case MapGenerationType.RegularGrid:
@@ -295,7 +245,6 @@ public partial class DeckBuilderController : Node, IDependent
                 break;
         }
 
-        // Clear slots and disable button
         AbilityDeckSlot.Clear();
         MapCardSlot.Clear();
         UpdateButtonState();
@@ -311,8 +260,7 @@ public partial class DeckBuilderController : Node, IDependent
     {
         ILog.Print("Resetting map view after session complete");
 
-        _phase = CabinetPhase.Idle;
-        ResetScreen(_runningKind);
+        ResetScreen(_cycle.Reset());
         ShowPickedKind();
 
         // Update biome preview and button state based on current slot contents
@@ -320,9 +268,7 @@ public partial class DeckBuilderController : Node, IDependent
         UpdateButtonState();
     }
 
-    /// <summary>
-    /// Resets the screen of the session that just finished to its initial state.
-    /// </summary>
+    /// <summary>Resets the screen of the session that just finished to its initial state.</summary>
     private void ResetScreen(MapGenerationType finishedKind)
     {
         switch (finishedKind)
