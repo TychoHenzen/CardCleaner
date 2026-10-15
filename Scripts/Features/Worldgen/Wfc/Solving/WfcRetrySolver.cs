@@ -34,6 +34,7 @@ internal static class WfcRetrySolver
     {
         IWfcTopology? lastTopology = null;
         WfcSolveResult lastResult = default;
+        var timings = WfcStepTimings.Zero;
 
         for (var attempt = 0; attempt <= maxRetries; attempt++)
         {
@@ -44,16 +45,20 @@ internal static class WfcRetrySolver
             rng.Seed = baseSeed + (ulong)attempt;
 
             lastResult = solver.Solve(topology, biome, rng, cancellationToken);
+            // ASSUMPTION: failed attempts' time counts toward the solve's totals, so the totals cover all the work
+            // of one solve call.
+            timings += lastResult.Timings;
 
             if (lastResult.Success)
-                return new WfcSolveAttempt(lastResult, topology);
+                return new WfcSolveAttempt(lastResult.WithTimings(timings), topology);
         }
 
         return new WfcSolveAttempt(
             WfcSolveResult.Failed(
                 $"All {maxRetries + 1} attempts failed. Last error: {lastResult.ErrorMessage}",
                 lastResult.Iterations,
-                lastResult.ContradictionCellId),
+                lastResult.ContradictionCellId,
+                timings),
             lastTopology!);
     }
 }

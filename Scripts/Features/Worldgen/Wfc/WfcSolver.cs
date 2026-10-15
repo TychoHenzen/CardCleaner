@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -20,7 +21,9 @@ public class WfcSolver
     private readonly WfcTileSelector _selector;
     private readonly WfcCollapseEffects _collapseEffects;
     private readonly EntropyCache _entropyCache = new();
-    private IProfiler _profiler = new NoOpProfiler();
+    private long _propagationTicks;
+    private long _tileSelectionTicks;
+    private long _cellCollapseTicks;
 
     /// <summary>
     /// Maximum iterations before giving up (prevents infinite loops).
@@ -62,11 +65,6 @@ public class WfcSolver
             new Connectivity.PassabilityGraphUpdater(passabilityGraph, isPassable));
     }
 
-    public void SetProfiler(IProfiler profiler)
-    {
-        _profiler = profiler;
-    }
-
     /// <summary>
     /// Runs the WFC algorithm until the topology is fully collapsed or a contradiction occurs.
     /// </summary>
@@ -92,7 +90,8 @@ public class WfcSolver
             return WfcSolveResult.Failed(
                 "Initial propagation found contradiction",
                 0,
-                initialResult.ContradictionCellId);
+                initialResult.ContradictionCellId,
+                StepTimings());
         }
 
         var iterations = 0;
@@ -111,12 +110,20 @@ public class WfcSolver
                 break;
 
             if (outcome.Status == WfcStepStatus.Failed)
-                return outcome.Failure;
+                return outcome.Failure.WithTimings(StepTimings());
         }
 
         GD.Print($"[WFC] Success! Completed {iterations} iterations for {run.TotalCells} cells");
-        return WfcSolveResult.Succeeded(iterations);
+        return WfcSolveResult.Succeeded(iterations, StepTimings());
     }
+
+    /// <summary>The per-cell step totals since the solve began; WfcMapGenerator adds solve and conversion.</summary>
+    private WfcStepTimings StepTimings() => new(
+        Stopwatch.GetElapsedTime(0, _propagationTicks),
+        Stopwatch.GetElapsedTime(0, _tileSelectionTicks),
+        Stopwatch.GetElapsedTime(0, _cellCollapseTicks),
+        TimeSpan.Zero,
+        TimeSpan.Zero);
 
     /// <summary>
     /// Clears per-solve state and registers the constraints that invalidate cells beyond neighbors.
@@ -125,6 +132,9 @@ public class WfcSolver
     {
         _collapseEffects.Reset(topology);
         _entropyCache.Reset();
+        _propagationTicks = 0;
+        _tileSelectionTicks = 0;
+        _cellCollapseTicks = 0;
 
         _entropyCache.ClearInvalidators();
         foreach (var constraint in _selector.GetConstraints())
@@ -139,7 +149,8 @@ public class WfcSolver
         GD.Print($"[WFC] Exceeded MaxIterations at {iterations}, collapsed ~{iterations}/{totalCells}");
         return WfcSolveResult.Failed(
             $"Exceeded maximum iterations ({MaxIterations})",
-            iterations);
+            iterations,
+            timings: StepTimings());
     }
 
     private static void LogProgress(int iterations, int totalCells)
@@ -188,11 +199,9 @@ public class WfcSolver
         CollapseCell(topology, targetCellId.Value, selectedTile);
 
         // Propagate constraints to neighbors
-        PropagationResult propResult;
-        using (_profiler.BeginScope("Propagation"))
-        {
-            propResult = _propagator.Propagate(topology, targetCellId.Value);
-        }
+        var propagationStart = Stopwatch.GetTimestamp();
+        var propResult = _propagator.Propagate(topology, targetCellId.Value);
+        _propagationTicks += Stopwatch.GetTimestamp() - propagationStart;
 
         if (propResult.Success)
             return WfcStepOutcome.Collapsed;
@@ -236,28 +245,27 @@ public class WfcSolver
     {
         var continuityTiles = GetContinuityMatchingTiles(run.Topology, cellId);
 
-        using (_profiler.BeginScope("TileSelection"))
-        {
-            return _selector.SelectTile(
-                run.Topology.GetCell(cellId).GetPossibleTiles(),
-                run.Biome,
-                run.Rng,
-                continuityTiles,
-                cellId,
-                run.Topology);
-        }
+        var selectionStart = Stopwatch.GetTimestamp();
+        var tile = _selector.SelectTile(
+            run.Topology.GetCell(cellId).GetPossibleTiles(),
+            run.Biome,
+            run.Rng,
+            continuityTiles,
+            cellId,
+            run.Topology);
+        _tileSelectionTicks += Stopwatch.GetTimestamp() - selectionStart;
+        return tile;
     }
 
     private void CollapseCell(IWfcTopology topology, int cellId, string tileId)
     {
-        using (_profiler.BeginScope("CellCollapse"))
-        {
-            topology.GetCell(cellId).CollapseTo(tileId);
-            _collapseEffects.Apply(topology, cellId, tileId);
+        var collapseStart = Stopwatch.GetTimestamp();
+        topology.GetCell(cellId).CollapseTo(tileId);
+        _collapseEffects.Apply(topology, cellId, tileId);
 
-            // Mark affected cells dirty for entropy recalculation
-            _entropyCache.OnCellCollapsed(cellId, tileId, topology);
-        }
+        // Mark affected cells dirty for entropy recalculation
+        _entropyCache.OnCellCollapsed(cellId, tileId, topology);
+        _cellCollapseTicks += Stopwatch.GetTimestamp() - collapseStart;
     }
 
     /// <summary>

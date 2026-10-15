@@ -51,7 +51,6 @@ internal sealed class GridMapGenerationPipeline
     public void SetProfiler(IProfiler profiler)
     {
         _context.Profiler = profiler;
-        _context.WfcGenerator?.SetProfiler(profiler);
     }
 
     /// <exception cref="OperationCanceledException">Thrown when the token is cancelled during a WFC solve.</exception>

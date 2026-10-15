@@ -9,6 +9,12 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 
 internal sealed class GridMapWfcGenerator
 {
+    private const string PropagationStep = "Propagation";
+    private const string TileSelectionStep = "TileSelection";
+    private const string CellCollapseStep = "CellCollapse";
+    private const string SolveStep = "MultiBiomeWfcSolve";
+    private const string MapDataConversionStep = "MultiBiomeMapDataConversion";
+
     private readonly GridMapGenerationContext _context;
 
     public GridMapWfcGenerator(GridMapGenerationContext context)
@@ -57,6 +63,7 @@ internal sealed class GridMapWfcGenerator
             _context.Gradient,
             tileId => _context.TileRegistry.GetTile(tileId)?.HasAutoTileVariants == false,
             cancellationToken: cancellationToken);
+        RecordTimings(result.Timings);
 
         if (result.Success && result.TileIds != null)
         {
@@ -80,6 +87,7 @@ internal sealed class GridMapWfcGenerator
             _context.Rng.Randi(),
             _context.Gradient,
             cancellationToken: cancellationToken);
+        RecordTimings(result.Timings);
 
         if (result.Success && result.TileIds != null)
         {
@@ -92,6 +100,19 @@ internal sealed class GridMapWfcGenerator
             $"[WFC] Foreground phase failed: {result.ErrorMessage}, " +
             "using empty foreground");
         FillLayer(layers.ForegroundLayer, size, "");
+    }
+
+    /// <summary>
+    /// Records one WFC phase's step totals in the pipeline's profiler, a failed phase's zero totals included.
+    /// </summary>
+    private void RecordTimings(WfcStepTimings timings)
+    {
+        var profiler = _context.Profiler;
+        profiler.RecordDuration(PropagationStep, (long)timings.Propagation.TotalMilliseconds);
+        profiler.RecordDuration(TileSelectionStep, (long)timings.TileSelection.TotalMilliseconds);
+        profiler.RecordDuration(CellCollapseStep, (long)timings.CellCollapse.TotalMilliseconds);
+        profiler.RecordDuration(SolveStep, (long)timings.Solve.TotalMilliseconds);
+        profiler.RecordDuration(MapDataConversionStep, (long)timings.MapDataConversion.TotalMilliseconds);
     }
 
     private void CopyAutoTileLayer(string[,] source, string[,] destination, Vector2I size)
