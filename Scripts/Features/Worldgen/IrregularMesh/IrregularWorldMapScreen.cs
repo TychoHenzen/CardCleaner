@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -21,7 +20,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 /// its start call until the session falls back to waiting or the screen is reset.
 /// Renders 2D content via SubViewport onto a 3D mesh for world-space display.
 /// </summary>
-public partial class IrregularWorldMapScreen : Node3D, ISessionView
+public partial class IrregularWorldMapScreen : Node3D, ISessionView, IDependent
 {
     #region Exports
 
@@ -49,6 +48,8 @@ public partial class IrregularWorldMapScreen : Node3D, ISessionView
 
     // Tile registry the render layer reads tile art from
     private ITileRegistry? _tileRegistry;
+
+    private IServiceResolver? _services;
 
     // The screen acts only on a session it started: the link passes events on while the screen owns the session.
     private readonly SessionViewLink _link;
@@ -85,20 +86,38 @@ public partial class IrregularWorldMapScreen : Node3D, ISessionView
         _link = new SessionViewLink(this);
     }
 
+    public void Inject(IServiceResolver services) => _services = services;
+
+    // The first entry connects in _Ready, because the root injects after _EnterTree. A re-entry still holds the
+    // resolver from the first injection and reconnects here: _ExitTree disconnected, and _Ready does not run again.
     public override void _EnterTree()
     {
-        if (!_link.IsConnected)
-            ServiceLocator.Get<IGameSessionService>(_link.Connect);
+        if (_services != null && !_link.IsConnected)
+            _services.Get<IGameSessionService>(_link.Connect);
     }
 
     public override void _Ready()
     {
-        ServiceLocator.Get<ITileRegistry>(registry => { _tileRegistry = registry; });
+        ResolveServices();
 
         CallDeferred(nameof(SetupScreenMesh));
         CallDeferred(nameof(SetupScreenMaterial));
 
         CreateChildNodes();
+    }
+
+    // A separate method so the mesh setup and child nodes in _Ready still come when not injected.
+    private void ResolveServices()
+    {
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<ITileRegistry>(registry => { _tileRegistry = registry; });
+        if (!_link.IsConnected)
+            _services.Get<IGameSessionService>(_link.Connect);
     }
 
     public override void _ExitTree()
@@ -322,12 +341,19 @@ public partial class IrregularWorldMapScreen : Node3D, ISessionView
     }
 
     // Lays the loot cards out in a row that starts at the loot point and runs along that point's X axis.
-    private static void SpawnLootRow(List<CardSignature> lootSignatures, Transform3D lootPoint)
+    private void SpawnLootRow(List<CardSignature> lootSignatures, Transform3D lootPoint)
     {
-        var rowDirection = lootPoint.Basis.Orthonormalized().X;
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected, so it cannot spawn loot");
+            return;
+        }
 
-        ServiceLocator.Get<ICardSpawningService>(spawningService =>
-            ServiceLocator.Get<ICardSpawner>(spawner =>
+        var rowDirection = lootPoint.Basis.Orthonormalized().X;
+        var services = _services;
+
+        services.Get<ICardSpawningService>(spawningService =>
+            services.Get<ICardSpawner>(spawner =>
             {
                 for (var i = 0; i < lootSignatures.Count; i++)
                 {

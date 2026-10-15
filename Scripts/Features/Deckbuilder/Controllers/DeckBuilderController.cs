@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Components;
@@ -13,7 +12,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 /// <summary>
 /// Updated DeckBuilder Controller that spawns 3D world screens.
 /// </summary>
-public partial class DeckBuilderController : Node
+public partial class DeckBuilderController : Node, IDependent
 {
     // Default values as constants
     private static readonly Vector3 DefaultScreenSpawnPosition = Vector3.Zero;
@@ -30,6 +29,7 @@ public partial class DeckBuilderController : Node
     private IGameSessionService? _gameSession;
     private IGridMapGenerator? _gridGenerator;
     private IMeshMapGenerator? _meshGenerator;
+    private IServiceResolver? _services;
     private CabinetPhase _phase = CabinetPhase.Idle;
 
     // The kind of the session started by the last activate press, set by that press and read by the reset press that
@@ -48,6 +48,8 @@ public partial class DeckBuilderController : Node
     [Export] public IrregularWorldMapScreen IrregularMapScreen { get; set; } = null!;
     [Export] public MapGenerationType MapType { get; set; } = DefaultMapType;
     [Export] public Vector3 ScreenSpawnPosition { get; set; } = DefaultScreenSpawnPosition;
+
+    public void Inject(IServiceResolver services) => _services = services;
 
     public override bool _PropertyCanRevert(StringName property)
     {
@@ -83,22 +85,34 @@ public partial class DeckBuilderController : Node
         if (MapKindButton != null)
             MapKindButton.ButtonPressed += OnMapKindButtonPressed;
 
+        ResolveServices();
+
+        // Show the picked kind, and initially disable the button
+        ShowPickedKind();
+        UpdateButtonState();
+    }
+
+    // A separate method so the slot, button and screen setup in _Ready still runs when not injected.
+    private void ResolveServices()
+    {
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
         // Subscribe to game session state changes
-        ServiceLocator.Get<IGameSessionService>(gameSession =>
+        _services.Get<IGameSessionService>(gameSession =>
         {
             _gameSession = gameSession;
             gameSession.StateChanged += OnSessionStateChanged;
         });
 
         // The grid kind's generator, handed to the session when a grid session starts
-        ServiceLocator.Get<IGridMapGenerator>(generator => _gridGenerator = generator);
+        _services.Get<IGridMapGenerator>(generator => _gridGenerator = generator);
 
         // The irregular kind's generator, handed to the session when an irregular session starts
-        ServiceLocator.Get<IMeshMapGenerator>(generator => _meshGenerator = generator);
-
-        // Show the picked kind, and initially disable the button
-        ShowPickedKind();
-        UpdateButtonState();
+        _services.Get<IMeshMapGenerator>(generator => _meshGenerator = generator);
     }
 
     public override void _ExitTree()

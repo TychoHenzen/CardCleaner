@@ -240,6 +240,23 @@ public class IrregularWorldMapScreenTest
         AssertBool(screen.IsInitialized).IsTrue();
     }
 
+    // Leaving the tree disconnects the screen from the session; entering it again must connect it again, or a start
+    // made after that waits for a service that never comes.
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task AScreenAddedBackToTheTreeConnectsToTheSessionAgain()
+    {
+        var parent = _screen.GetParent();
+        parent.RemoveChild(_screen);
+        await ISceneRunner.SyncProcessFrame;
+        parent.AddChild(_screen);
+        await ISceneRunner.SyncProcessFrame;
+
+        await ShowMap();
+
+        AssertBool(_screen.IsInitialized).IsTrue();
+    }
+
     [TestCase]
     [TestCategory("Unit")]
     public async Task RevealAllShowsEveryCell()
