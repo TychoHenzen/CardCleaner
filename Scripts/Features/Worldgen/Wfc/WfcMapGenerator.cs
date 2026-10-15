@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using CardCleaner.Scripts.Core.Interfaces;
+using System.Threading;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
@@ -31,7 +32,6 @@ public class WfcMapGenerator
     private readonly SpatialCoherenceConstraint _spatialCoherence;
     private readonly WfcConstraintSet _constraintSet;
     private readonly IWfcTileCatalog? _tileCatalog;
-    private IProfiler _profiler = new NoOpProfiler();
 
     public int MaxRetries { get; set; } = 3;
 
@@ -86,11 +86,6 @@ public class WfcMapGenerator
 
     public bool EnableConnectivity { get; set; } = true;
 
-    public void SetProfiler(IProfiler profiler)
-    {
-        _profiler = profiler;
-    }
-
     /// <summary>
     /// Sets the selected variants for PerGeneration variation groups.
     /// Must be called before Generate/GenerateMultiBiome to ensure
@@ -130,11 +125,13 @@ public class WfcMapGenerator
     /// result is retried with derived seeds, up to MaxConnectivityAttempts, and the call fails if every attempt is
     /// disconnected. A solver failure on any attempt ends the call; the solver has already retried that seed.
     /// </summary>
+    /// <exception cref="OperationCanceledException">Thrown when the token is cancelled during a solve.</exception>
     public WfcGenerationResult Generate(
         BiomeDefinition biome,
         Vector2I size,
         ulong seed,
-        CardSignature? signature = null)
+        CardSignature? signature = null,
+        CancellationToken cancellationToken = default)
     {
         var initialTileSets = _tileSetBuilder.ForBiome(biome);
         var initialTiles = initialTileSets.AllTiles;
@@ -150,7 +147,7 @@ public class WfcMapGenerator
             var attemptSeed = attempt == 0 ? seed : unchecked(seed + (ulong)attempt * 0x9E3779B97F4A7C15UL);
             // ASSUMPTION: GenerateOnce builds a new solver, grid and passability graph, so a rejected attempt
             // leaves no state behind for the next one.
-            var result = GenerateOnce(biome, size, attemptSeed, initialTiles);
+            var result = GenerateOnce(biome, size, attemptSeed, initialTiles, cancellationToken);
             if (!result.Success && attempt > 0)
             {
                 return WfcGenerationResult.Failed(
@@ -176,7 +173,8 @@ public class WfcMapGenerator
         BiomeDefinition biome,
         Vector2I size,
         ulong seed,
-        IReadOnlyCollection<string> initialTiles)
+        IReadOnlyCollection<string> initialTiles,
+        CancellationToken cancellationToken)
     {
         // Initialize spatial coherence for this map size
         _spatialCoherence.Reset(size.X, size.Y);
@@ -185,24 +183,8 @@ public class WfcMapGenerator
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, initialTiles);
 
-        var attempt = SolveWithProfiling("WfcSolve", solver, CreateGrid, biome, seed);
-        var solveResult = attempt.Result;
-        if (!solveResult.Success)
-        {
-            return WfcGenerationResult.Failed(solveResult.ErrorMessage ?? "Unknown error");
-        }
-
-        var grid = (WfcGrid)attempt.Topology;
-
-        string[,] biomeMap;
-        string[,] tileIds;
-        using (_profiler.BeginScope("MapDataConversion"))
-        {
-            biomeMap = BuildBiomeMap(size, _ => biome);
-            tileIds = WfcGridTileIds.ToTileIds(grid);
-        }
-        return WfcGenerationResult.Succeeded(
-            new Vector2I(grid.Width, grid.Height), tileIds, biomeMap, solveResult.Iterations);
+        var attempt = SolveTimed(solver, CreateGrid, biome, seed, cancellationToken);
+        return ToGenerationResult(attempt, size, _ => biome);
     }
 
     /// <summary>
@@ -210,13 +192,15 @@ public class WfcMapGenerator
     /// the local biome. Unlike Generate, there is no post-solve connectivity check or retry: with a catalog and
     /// EnableConnectivity only the reactive ConnectivityConstraint runs, so a disconnected map can be returned.
     /// </summary>
+    /// <exception cref="OperationCanceledException">Thrown when the token is cancelled during the solve.</exception>
     public WfcGenerationResult GenerateMultiBiome(
         BiomeRegistry biomeRegistry,
         Func<Vector2I, BiomeDefinition> getBiomeAt,
         Vector2I size,
         ulong seed,
         BaselineGradient? gradient = null,
-        Func<string, bool>? tileFilter = null)
+        Func<string, bool>? tileFilter = null,
+        CancellationToken cancellationToken = default)
     {
         var tileSets = _tileSetBuilder.ForAllBiomes(biomeRegistry, tileFilter);
         var allTiles = tileSets.AllTiles;
@@ -240,7 +224,36 @@ public class WfcMapGenerator
 
         var defaultBiome = biomeRegistry.GetAllBiomes().FirstOrDefault();
 
-        var attempt = SolveWithProfiling("MultiBiomeWfcSolve", solver, CreateGrid, defaultBiome, seed);
+        var attempt = SolveTimed(solver, CreateGrid, defaultBiome, seed, cancellationToken);
+        return ToGenerationResult(attempt, size, getBiomeAt);
+    }
+
+    /// <summary>
+    /// Runs the retrying solve and adds the time of the whole call, every attempt included, to the result's Solve
+    /// timing.
+    /// </summary>
+    private WfcSolveAttempt SolveTimed(
+        WfcSolver solver,
+        Func<IWfcTopology> createGrid,
+        BiomeDefinition? biome,
+        ulong seed,
+        CancellationToken cancellationToken)
+    {
+        var start = Stopwatch.GetTimestamp();
+        var attempt = WfcRetrySolver.SolveWithRetry(solver, createGrid, biome, seed, MaxRetries, cancellationToken);
+        var timings = attempt.Result.Timings with { Solve = Stopwatch.GetElapsedTime(start) };
+        return attempt with { Result = attempt.Result.WithTimings(timings) };
+    }
+
+    /// <summary>
+    /// Turns a solve attempt into a generation result: a failed solve fails with zero timings, a solved grid is
+    /// converted to tile ids and a biome map, with the conversion time added to the solve's timings.
+    /// </summary>
+    private static WfcGenerationResult ToGenerationResult(
+        WfcSolveAttempt attempt,
+        Vector2I size,
+        Func<Vector2I, BiomeDefinition> getBiomeAt)
+    {
         var solveResult = attempt.Result;
         if (!solveResult.Success)
         {
@@ -248,29 +261,12 @@ public class WfcMapGenerator
         }
 
         var grid = (WfcGrid)attempt.Topology;
-
-        string[,] biomeMap;
-        string[,] tileIds;
-        using (_profiler.BeginScope("MultiBiomeMapDataConversion"))
-        {
-            biomeMap = BuildBiomeMap(size, getBiomeAt);
-            tileIds = WfcGridTileIds.ToTileIds(grid);
-        }
+        var conversionStart = Stopwatch.GetTimestamp();
+        var biomeMap = BuildBiomeMap(size, getBiomeAt);
+        var tileIds = WfcGridTileIds.ToTileIds(grid);
+        var timings = solveResult.Timings with { MapDataConversion = Stopwatch.GetElapsedTime(conversionStart) };
         return WfcGenerationResult.Succeeded(
-            new Vector2I(grid.Width, grid.Height), tileIds, biomeMap, solveResult.Iterations);
-    }
-
-    private WfcSolveAttempt SolveWithProfiling(
-        string scopeName,
-        WfcSolver solver,
-        Func<IWfcTopology> createGrid,
-        BiomeDefinition? biome,
-        ulong seed)
-    {
-        using (_profiler.BeginScope(scopeName))
-        {
-            return WfcRetrySolver.SolveWithRetry(solver, createGrid, biome, seed, MaxRetries);
-        }
+            new Vector2I(grid.Width, grid.Height), tileIds, biomeMap, solveResult.Iterations, timings);
     }
 
     private WfcSolver CreateSolver(bool skipBaseConstraints = false, Vector2I? size = null)
@@ -303,7 +299,6 @@ public class WfcMapGenerator
                 _tileCatalog);
         }
 
-        solver.SetProfiler(_profiler);
         return solver;
     }
 

@@ -18,8 +18,8 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 /// <summary>
 /// Generates the grid map: variants, biomes from a gradient over the seed cards, WFC terrain with hard constraints
 /// (2x2 window, adjacency rules), then the player start and the enemies. Runs off the main thread, reports progress
-/// at the pipeline's phase boundaries (reaching 1.0 when done) and stops at the next boundary once the token is
-/// cancelled.
+/// at the pipeline's phase boundaries (reaching 1.0 when done). Once the token is cancelled it stops at the next
+/// boundary, and a running WFC solve stops within one collapsed cell.
 /// </summary>
 public sealed class GridMapGenerator : IGridMapGenerator
 {
@@ -64,7 +64,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
         SimpleMapData map;
         try
         {
-            map = await Task.Run(() => pipeline.GenerateMap(config.Size), cancellationToken);
+            map = await Task.Run(() => pipeline.GenerateMap(config.Size, cancellationToken), cancellationToken);
         }
         catch (OperationCanceledException ex)
         {

@@ -10,6 +10,7 @@ public readonly struct WfcGenerationResult
     public string[,]? BiomeMap { get; }
     public int Iterations { get; }
     public string? ErrorMessage { get; }
+    public WfcStepTimings Timings { get; }
 
     private WfcGenerationResult(
         bool success,
@@ -17,7 +18,8 @@ public readonly struct WfcGenerationResult
         string[,]? tileIds,
         string[,]? biomeMap,
         int iterations,
-        string? error)
+        string? error,
+        WfcStepTimings timings)
     {
         Success = success;
         Size = size;
@@ -25,15 +27,18 @@ public readonly struct WfcGenerationResult
         BiomeMap = biomeMap;
         Iterations = iterations;
         ErrorMessage = error;
+        Timings = timings;
     }
 
     public static WfcGenerationResult Succeeded(
         Vector2I size,
         string[,] tileIds,
         string[,] biomeMap,
-        int iterations) =>
-        new(true, size, tileIds, biomeMap, iterations, null);
+        int iterations,
+        WfcStepTimings timings = default) =>
+        new(true, size, tileIds, biomeMap, iterations, null, timings);
 
+    /// <summary>A failed generation carries zero timings.</summary>
     public static WfcGenerationResult Failed(string error) =>
-        new(false, Vector2I.Zero, null, null, 0, error);
+        new(false, Vector2I.Zero, null, null, 0, error, WfcStepTimings.Zero);
 }

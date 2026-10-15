@@ -9,16 +9,29 @@ public readonly struct WfcSolveResult
     public int Iterations { get; }
     public string? ErrorMessage { get; }
     public int? ContradictionCellId { get; }
+    public WfcStepTimings Timings { get; }
 
-    private WfcSolveResult(bool success, int iterations, string? error = null, int? contradictionCellId = null)
+    private WfcSolveResult(
+        bool success,
+        int iterations,
+        string? error,
+        int? contradictionCellId,
+        WfcStepTimings timings)
     {
         Success = success;
         Iterations = iterations;
         ErrorMessage = error;
         ContradictionCellId = contradictionCellId;
+        Timings = timings;
     }
 
-    public static WfcSolveResult Succeeded(int iterations) => new(true, iterations);
-    public static WfcSolveResult Failed(string error, int iterations, int? cellId = null) =>
-        new(false, iterations, error, cellId);
+    public static WfcSolveResult Succeeded(int iterations, WfcStepTimings timings = default) =>
+        new(true, iterations, null, null, timings);
+
+    public static WfcSolveResult Failed(
+        string error, int iterations, int? cellId = null, WfcStepTimings timings = default) =>
+        new(false, iterations, error, cellId, timings);
+
+    public WfcSolveResult WithTimings(WfcStepTimings timings) =>
+        new(Success, Iterations, ErrorMessage, ContradictionCellId, timings);
 }
