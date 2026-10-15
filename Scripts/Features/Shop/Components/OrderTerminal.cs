@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Models;
@@ -13,7 +12,7 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 ///     While the screen is open the player cannot move or look, and the mouse cursor is released;
 ///     closing it restores both.
 /// </summary>
-public partial class OrderTerminal : StaticBody3D, IInteractable
+public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
 {
     private const float DefaultInteractionRange = 4.5f;
     private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
@@ -22,6 +21,7 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
     private PlayerController? _player;
     private IMoneyService? _money;
     private IOrderingService? _ordering;
+    private IServiceResolver? _services;
 
     /// <summary>Items this terminal sells. Assign a different catalog for a different terminal.</summary>
     [Export]
@@ -48,6 +48,8 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
     public bool CanInteract => !IsOpen && Catalog != null && Ui != null;
 
     public Node3D InteractionBody => this;
+
+    public void Inject(IServiceResolver services) => _services = services;
 
     public void Interact()
     {
@@ -81,8 +83,14 @@ public partial class OrderTerminal : StaticBody3D, IInteractable
         Ui.Populate(Catalog);
         Subscribe();
 
-        ServiceLocator.Get<IOrderingService>(ordering => _ordering = ordering);
-        ServiceLocator.Get<IMoneyService>(money =>
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<IOrderingService>(ordering => _ordering = ordering);
+        _services.Get<IMoneyService>(money =>
         {
             _money = money;
             Subscribe();

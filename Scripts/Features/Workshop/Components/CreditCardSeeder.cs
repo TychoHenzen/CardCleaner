@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Components;
@@ -11,9 +10,11 @@ namespace CardCleaner.Scripts.Features.Workshop.Components;
 ///     The cabinet reads its holders, so the seated card makes that holder count as filled; the
 ///     slot itself locks the card when the spawned body enters its area.
 /// </summary>
-public partial class CreditCardSeeder : Node
+public partial class CreditCardSeeder : Node, IDependent
 {
     private static readonly CardSignature CreditSignature = new([0f, 0f, 0.5f, 0f, 0f, 0f, 0.5f, 0f]);
+
+    private IServiceResolver? _services;
 
     /// <summary>The holder that receives the credit card.</summary>
     [Export]
@@ -26,9 +27,17 @@ public partial class CreditCardSeeder : Node
     /// <summary>The credit card once it has been spawned, otherwise null.</summary>
     public Node3D? Card { get; private set; }
 
+    public void Inject(IServiceResolver services) => _services = services;
+
     public override void _Ready()
     {
-        ServiceLocator.Get<ICardSpawningService>(spawner => Callable.From(() => Seed(spawner)).CallDeferred());
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<ICardSpawningService>(spawner => Callable.From(() => Seed(spawner)).CallDeferred());
     }
 
     private void Seed(ICardSpawningService spawner)
