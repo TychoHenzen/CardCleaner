@@ -36,7 +36,7 @@ public static class MeshMapGeneratorFixture
         new CardSignature(new[] { -1f, -1f, 1f, 1f, 0f, -0.5f, 0f, 0f })
     };
 
-    public static string TerrainOf(IrregularMeshNs.IrregularMesh mesh) =>
+    public static string TerrainOf(IrregularMeshNs.IIrregularMesh mesh) =>
         string.Join(",", mesh.Vertices.Select(v => $"{v.TerrainType}:{v.TileId}:{v.ForegroundTileId}:{v.Position}"));
 
     private sealed class PendingMeshGenerator : IrregularMeshNs.IMeshMapGenerator

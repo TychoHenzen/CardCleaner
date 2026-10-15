@@ -7,7 +7,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Rendering;
 /// </summary>
 internal static class SolidColorMeshBuilder
 {
-    internal static ArrayMesh? Build(IrregularMesh mesh)
+    internal static ArrayMesh? Build(IIrregularMesh mesh)
     {
         var surfaceTool = new SurfaceTool();
         surfaceTool.Begin(Mesh.PrimitiveType.Triangles);

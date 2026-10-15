@@ -15,7 +15,7 @@ public class IrregularMeshFogOfWar : IPassiveFogOfWar
     private readonly Dictionary<int, FogState> _fogStates = new();
     private readonly HashSet<int> _currentlyVisible = new();
 
-    public IrregularMeshFogOfWar(IrregularMeshMapData mapData)
+    public IrregularMeshFogOfWar(IMapData mapData)
     {
         for (var i = 0; i < mapData.CellCount; i++)
             _fogStates[i] = FogState.Hidden;

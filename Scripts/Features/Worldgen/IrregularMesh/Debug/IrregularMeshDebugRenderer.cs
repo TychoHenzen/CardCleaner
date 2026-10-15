@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug.Painting;
 using Godot;
 
@@ -10,7 +11,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug;
 /// </summary>
 public partial class IrregularMeshDebugRenderer : Node2D
 {
-    private IrregularMesh? _mesh;
+    private IIrregularMesh? _mesh;
     private float _worldScale = 1f;
 
     private bool _showWireframe = true;
@@ -136,7 +137,7 @@ public partial class IrregularMeshDebugRenderer : Node2D
     /// <summary>
     /// Initialize the debug renderer.
     /// </summary>
-    public void Initialize(IrregularMesh mesh, IrregularMeshMapData? mapData = null, float worldScale = 1f)
+    public void Initialize(IIrregularMesh mesh, IMapData? mapData = null, float worldScale = 1f)
     {
         _mesh = mesh;
         _worldScale = worldScale;

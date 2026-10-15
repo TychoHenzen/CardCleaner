@@ -20,7 +20,7 @@ internal sealed class TerrainQuadResolver
     /// <summary>
     /// Returns the atlas tile for the quad, or null when the quad cannot be rendered.
     /// </summary>
-    internal TerrainTileChoice? Resolve(MeshQuad quad)
+    internal TerrainTileChoice? Resolve(IMeshQuad quad)
     {
         var backgroundTileId = quad.BackgroundTileId;
         if (string.IsNullOrEmpty(backgroundTileId))
@@ -62,14 +62,15 @@ internal sealed class TerrainQuadResolver
             return 0;
 
         int bitmask = 0;
-        if (sortedCorners[0].ForegroundTileId == foregroundTileId) bitmask |= MeshQuad.SW;
-        if (sortedCorners[1].ForegroundTileId == foregroundTileId) bitmask |= MeshQuad.SE;
-        if (sortedCorners[2].ForegroundTileId == foregroundTileId) bitmask |= MeshQuad.NE;
-        if (sortedCorners[3].ForegroundTileId == foregroundTileId) bitmask |= MeshQuad.NW;
+        if (sortedCorners[0].ForegroundTileId == foregroundTileId) bitmask |= IMeshQuad.SW;
+        if (sortedCorners[1].ForegroundTileId == foregroundTileId) bitmask |= IMeshQuad.SE;
+        if (sortedCorners[2].ForegroundTileId == foregroundTileId) bitmask |= IMeshQuad.NE;
+        if (sortedCorners[3].ForegroundTileId == foregroundTileId) bitmask |= IMeshQuad.NW;
         return bitmask;
     }
 
-    private Vector2I? ResolveAtlasCoords(MeshQuad quad, string? foregroundTileId, string backgroundTileId, int bitmask)
+    private Vector2I? ResolveAtlasCoords(
+        IMeshQuad quad, string? foregroundTileId, string backgroundTileId, int bitmask)
     {
         if (string.IsNullOrEmpty(foregroundTileId) || bitmask == 0)
             return ResolveBackground(backgroundTileId);
@@ -86,7 +87,7 @@ internal sealed class TerrainQuadResolver
                ?? _transitionResolver.ResolveAsOuterTerrain(backgroundTileId, 0);
     }
 
-    private Vector2I? ResolveTransition(MeshQuad quad, string foregroundTileId, string backgroundTileId, int bitmask)
+    private Vector2I? ResolveTransition(IMeshQuad quad,string foregroundTileId, string backgroundTileId, int bitmask)
     {
         int positionSeed = TerrainPositionHash.Compute(quad.Centroid);
         return _transitionResolver.ResolveTransitionWithVariant(

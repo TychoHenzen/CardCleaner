@@ -10,14 +10,8 @@ using System.Linq;
 /// Quads form the "visual grid" - each quad renders an auto-tile
 /// based on the Corner16 bitmask computed from its corner terrain.
 /// </summary>
-public class MeshQuad
+public class MeshQuad : IMeshQuad
 {
-    // Corner16 bitmask constants (matching NeighborBitmaskCorner.cs)
-    public const int NE = 1;  // 0b0001
-    public const int SE = 2;  // 0b0010
-    public const int SW = 4;  // 0b0100
-    public const int NW = 8;  // 0b1000
-
     public int Id { get; }
 
     /// <summary>
@@ -47,6 +41,9 @@ public class MeshQuad
     /// Each quad (visual cell) has exactly one background tile.
     /// </summary>
     public string? BackgroundTileId { get; set; }
+
+    IReadOnlyList<int> IMeshQuad.VertexIds => VertexIds;
+    IReadOnlyList<int> IMeshQuad.AdjacentQuadIds => AdjacentQuadIds;
 
     private readonly IrregularMesh _mesh;
 
@@ -129,13 +126,13 @@ public class MeshQuad
         int mask = 0;
 
         if (sortedCorners.Length > 0 && sortedCorners[0].TerrainType == filledTerrainType)
-            mask |= SW;
+            mask |= IMeshQuad.SW;
         if (sortedCorners.Length > 1 && sortedCorners[1].TerrainType == filledTerrainType)
-            mask |= SE;
+            mask |= IMeshQuad.SE;
         if (sortedCorners.Length > 2 && sortedCorners[2].TerrainType == filledTerrainType)
-            mask |= NE;
+            mask |= IMeshQuad.NE;
         if (sortedCorners.Length > 3 && sortedCorners[3].TerrainType == filledTerrainType)
-            mask |= NW;
+            mask |= IMeshQuad.NW;
 
         return mask;
     }

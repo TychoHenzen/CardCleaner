@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 using Godot;
 
@@ -9,12 +10,12 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 /// </summary>
 public class IrregularMapEnemyManager
 {
-    private readonly IrregularMeshMapData _mapData;
+    private readonly IMapData _mapData;
     private readonly Node _parent;
     private readonly List<(int CellId, Sprite2D Sprite)> _enemySprites = new();
     private IrregularMeshFogOfWar? _fogOfWar;
 
-    public IrregularMapEnemyManager(IrregularMeshMapData mapData, Node parent)
+    public IrregularMapEnemyManager(IMapData mapData, Node parent)
     {
         _mapData = mapData;
         _parent = parent;
