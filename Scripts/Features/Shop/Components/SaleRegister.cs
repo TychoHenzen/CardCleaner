@@ -1,5 +1,4 @@
 using System.Linq;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
@@ -12,13 +11,14 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 ///     first sellable card on the nearest shelf. The price goes straight into <see cref="IMoneyService" />.
 ///     A label above the counter shows the balance and the result of the last sale.
 /// </summary>
-public partial class SaleRegister : StaticBody3D, IInteractable
+public partial class SaleRegister : StaticBody3D, IInteractable, IDependent
 {
     private const float DefaultInteractionRange = 4.5f;
     private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
 
     private IMoneyService? _money;
     private string _message = string.Empty;
+    private IServiceResolver? _services;
 
     /// <summary>The player's hand. Its top card is sold first.</summary>
     [Export]
@@ -33,7 +33,7 @@ public partial class SaleRegister : StaticBody3D, IInteractable
     [Export]
     public float InteractionRange { get; set; } = DefaultInteractionRange;
 
-    /// <summary>Resolved from the service locator at startup; assignable directly in tests.</summary>
+    /// <summary>Resolved through the injected service resolver at startup; assignable directly in tests.</summary>
     public IMoneyService? Money
     {
         get => _money;
@@ -50,11 +50,16 @@ public partial class SaleRegister : StaticBody3D, IInteractable
 
     public Node3D InteractionBody => this;
 
+    public void Inject(IServiceResolver services) => _services = services;
+
     public override void _Ready()
     {
         CollisionLayer |= InteractableLayerBit;
         ClearHighlight();
-        ServiceLocator.Get<IMoneyService>(money => Money = money);
+        if (_services == null)
+            ILog.Error($"{Name} was not injected");
+        else
+            _services.Get<IMoneyService>(money => Money = money);
         ShowIdle();
     }
 

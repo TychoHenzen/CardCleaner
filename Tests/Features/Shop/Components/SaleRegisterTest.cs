@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
@@ -9,6 +8,7 @@ using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.Mocking;
+using CardCleaner.Tests.TestUtilities;
 using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 
@@ -31,7 +31,7 @@ public class SaleRegisterTest
     [BeforeTest]
     public async Task Setup()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
         _world = new Node3D();
         _money = new MoneyService { StartingBalance = StartingBalance };
         _label = new Label3D();
@@ -41,8 +41,8 @@ public class SaleRegisterTest
         _holder = new CardHolder();
         _holder.SetReferences(hand);
         var spawner = new MockCardSpawner();
-        ServiceLocator.Container.RegisterSingleton<ICardSpawner>(spawner);
-        ServiceLocator.Container.RegisterSingleton<IMoneyService>(_money);
+        TestServices.Container.RegisterSingleton<ICardSpawner>(spawner);
+        TestServices.Container.RegisterSingleton<IMoneyService>(_money);
 
         foreach (var node in new Node[] { _money, spawner, hand, _holder, _label, _register, _shelf })
             _world.AddChild(node);
@@ -54,7 +54,7 @@ public class SaleRegisterTest
     [AfterTest]
     public static void Teardown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]

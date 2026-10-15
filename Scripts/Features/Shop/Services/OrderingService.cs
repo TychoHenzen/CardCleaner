@@ -14,7 +14,7 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 ///     slots, so two terminals with different markers never share a grid.
 /// </summary>
 [Service(typeof(IOrderingService))]
-public partial class OrderingService : Node, IOrderingService
+public partial class OrderingService : Node, IOrderingService, IDependent
 {
     public const int SlotColumns = 3;
     public const int SlotRows = 2;
@@ -32,6 +32,8 @@ public partial class OrderingService : Node, IOrderingService
 
     private const int SlotCount = SlotColumns * SlotRows;
 
+    private IServiceResolver? _services;
+
     /// <summary>Where ordered items appear when the ordering terminal names no area of its own.</summary>
     [Export]
     public DeliveryMarker? DeliveryPoint { get; set; }
@@ -40,15 +42,23 @@ public partial class OrderingService : Node, IOrderingService
     [Export]
     public Node? SpawnRoot { get; set; }
 
-    /// <summary>Resolved from the service locator at startup; assignable directly in tests.</summary>
+    /// <summary>Resolved through the injected service resolver at startup; assignable directly in tests.</summary>
     public IMoneyService? Money { get; set; }
 
     /// <summary>How many items this service has delivered so far, across every delivery point.</summary>
     public int DeliveredCount { get; private set; }
 
+    public void Inject(IServiceResolver services) => _services = services;
+
     public override void _Ready()
     {
-        ServiceLocator.Get<IMoneyService>(money => Money = money);
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<IMoneyService>(money => Money = money);
     }
 
     public OrderResult Order(OrderItem item, DeliveryMarker? deliveryPoint = null)
@@ -57,13 +67,21 @@ public partial class OrderingService : Node, IOrderingService
             return Fail(item, OrderStatus.InvalidItem);
 
         var point = deliveryPoint ?? DeliveryPoint;
-        var parent = SpawnRoot ?? point?.GetParent();
+        var parent = ParentFor(point);
         if (point == null || parent == null || Money == null)
             return Fail(item, OrderStatus.NoDeliveryPoint);
 
+        return Deliver(item, item.Scene, point, parent, Money);
+    }
+
+    private Node? ParentFor(DeliveryMarker? point) => SpawnRoot ?? point?.GetParent();
+
+    private OrderResult Deliver(OrderItem item, PackedScene scene, DeliveryMarker point, Node parent,
+        IMoneyService money)
+    {
         // Build the item first: an unusable scene must be rejected before the player is charged, and a
         // delivery area needs its size to find clearance.
-        var built = item.Scene.Instantiate();
+        var built = scene.Instantiate();
         if (built is not Node3D instance)
         {
             built.Free();
@@ -77,7 +95,7 @@ public partial class OrderingService : Node, IOrderingService
             return Fail(item, OrderStatus.DeliveryFull);
         }
 
-        if (!Money.TrySpend(item.Price))
+        if (!money.TrySpend(item.Price))
         {
             instance.Free();
             return Fail(item, OrderStatus.InsufficientFunds);
@@ -88,7 +106,7 @@ public partial class OrderingService : Node, IOrderingService
         point.Track(instance);
         DeliveredCount++;
 
-        ILog.Print($"Order succeeded: {item.Id} for {item.Price}, balance now {Money.Balance}");
+        ILog.Print($"Order succeeded: {item.Id} for {item.Price}, balance now {money.Balance}");
         return new OrderResult(OrderStatus.Success, instance);
     }
 
