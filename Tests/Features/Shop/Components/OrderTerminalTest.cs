@@ -1,8 +1,8 @@
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
@@ -35,9 +35,9 @@ public class OrderTerminalTest
         _world.AddChild(_ordering);
         _world.AddChild(_ui);
 
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<IMoneyService>(_money);
-        ServiceLocator.Container.RegisterSingleton<IOrderingService>(_ordering);
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<IMoneyService>(_money);
+        TestServices.Container.RegisterSingleton<IOrderingService>(_ordering);
 
         _world.AddChild(_terminal);
         AddNode(_world);
@@ -46,7 +46,7 @@ public class OrderTerminalTest
     [AfterTest]
     public static void Teardown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]
