@@ -20,8 +20,8 @@ public static class TestServices
     public static void Reset() => ServiceLocator.ResetForTesting();
 
     /// <summary>
-    ///     Runs the queued <c>Get&lt;T&gt;(callback)</c> lookups whose service is now registered, as the root does after
-    ///     composing.
+    ///     Runs the queued <c>Get&lt;T&gt;(callback)</c> lookups whose service is now registered, as the root does
+    ///     after composing.
     /// </summary>
     public static void ExecutePendingCallbacks() => ServiceLocator.ExecutePendingCallbacks();
 
