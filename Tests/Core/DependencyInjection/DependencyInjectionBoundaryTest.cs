@@ -32,9 +32,9 @@ public class DependencyInjectionBoundaryTest
         var types = typeof(ILog).Assembly.GetTypes().Where(type => IsIn(type, DiNamespace)).ToList();
         var hits = types.SelectMany(type => TypeReferences.Lines(type, IsForbiddenFromDi)).ToList();
 
-        // A scan that sees too few types passes trivially, so it must find the whole folder, the locator included.
+        // A scan that sees too few types passes trivially, so it must find the whole folder, the service host included.
         AssertInt(types.Count(type => !type.IsNested)).IsGreater(3);
-        AssertThat(types).Contains(typeof(ServiceLocator), typeof(ServiceContainer));
+        AssertThat(types).Contains(typeof(ServiceHost), typeof(ServiceContainer));
 
         // Joined into one string so a failure names every reference, not just how many there are.
         AssertThat(string.Join(System.Environment.NewLine, hits)).IsEmpty();
@@ -77,7 +77,7 @@ public class DependencyInjectionBoundaryTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void ContractAndLocatorReferencesAreNotReported()
+    public static void ContractAndHostReferencesAreNotReported()
     {
         AssertThat(ProbeHits(typeof(ProbeAllowed), IsForbiddenFromDi)).IsEmpty();
     }

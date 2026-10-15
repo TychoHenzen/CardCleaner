@@ -17,8 +17,9 @@ namespace CardCleaner.Scripts.Composition;
 ///     Composes the service container. Registered as the "Services" autoload, it registers the core services, then
 ///     every node in the "service_providers" group, then runs the pending callbacks. Before that it registers the
 ///     plain [Service] classes of the game lazily. From its _Ready on, it injects every IDependent node that enters
-///     the tree. Only that autoload composes and injects; any other instance logs an error and leaves ServiceLocator
-///     untouched.
+///     the tree. Only that autoload composes and injects; any other instance logs an error and composes nothing.
+///     Each instance owns one <see cref="ServiceHost" /> (the container, the pending callbacks and the resolver it
+///     injects), which exists from construction.
 /// </summary>
 public partial class CompositionRoot : Node
 {
@@ -30,6 +31,13 @@ public partial class CompositionRoot : Node
 
     // Only the autoload subscribes to NodeAdded; _ExitTree must not disconnect a handler it never connected.
     private bool _injecting;
+
+    /// <summary>The container, pending callbacks and resolver of this root; tests read the autoload's.</summary>
+    internal ServiceHost Host { get; } = new();
+
+    /// <summary>The "Services" autoload, found the way a test has to find it.</summary>
+    internal static CompositionRoot Autoload =>
+        ((SceneTree)Engine.GetMainLoop()).Root.GetNode<CompositionRoot>("Services");
 
     public override void _Ready()
     {
@@ -58,7 +66,7 @@ public partial class CompositionRoot : Node
     private void OnNodeAdded(Node node)
     {
         if (node is IDependent dependent)
-            dependent.Inject(LocatorServiceResolver.Instance);
+            dependent.Inject(Host);
     }
 
     // Injects once every IDependent node that entered the tree before the autoload subscribed to NodeAdded. That
@@ -74,7 +82,7 @@ public partial class CompositionRoot : Node
     }
 
     // ASSUMPTION: the deferred call runs after the main scene's service providers enter the tree, as the
-    // ServiceLocator._Ready call did before the split. No requirement states this ordering.
+    // static locator's _Ready call did before the split. No requirement states this ordering.
     internal void ScheduleCompose() => CallDeferred(MethodName.Compose);
 
     /// <summary>
@@ -83,8 +91,26 @@ public partial class CompositionRoot : Node
     /// </summary>
     public static void ReinitializeServices()
     {
-        ServiceLocator.ResetForTesting();
-        ((SceneTree)Engine.GetMainLoop()).Root.GetNode<CompositionRoot>("Services").Compose();
+        var root = Autoload;
+        root.ResetServices();
+        root.Compose();
+    }
+
+    /// <summary>
+    ///     Test-only: replaces the host's container with an empty one, drops its pending callbacks and clears the log
+    ///     sink, which no longer has a registered ILog to mirror. The host and the resolver injected from it stay.
+    /// </summary>
+    internal void ResetServices()
+    {
+        Host.Reset();
+        SyncLogSink();
+    }
+
+    // The sink mirrors the ILog in the host's current container, the same source that Has and Get read.
+    private void SyncLogSink()
+    {
+        var container = Host.Container;
+        ILog.Sink = container.IsRegistered<ILog>() ? container.Resolve<ILog>() : null;
     }
 
     private bool IsAutoload() => GetParent() == GetTree().Root && Name == "Services";
@@ -93,10 +119,10 @@ public partial class CompositionRoot : Node
     {
         FreeOwnedNodes();
         // First, so the explicit registrations below replace any scanned entry for the same service type.
-        RegisterGameServiceClasses(ServiceLocator.Container);
-        RegisterCoreServices(ServiceLocator.Container);
-        RegisterFromProviders(ServiceLocator.Container);
-        ServiceLocator.ExecutePendingCallbacks();
+        RegisterGameServiceClasses(Host.Container);
+        RegisterCoreServices(Host.Container);
+        RegisterFromProviders(Host.Container);
+        Host.ExecutePendingCallbacks();
     }
 
     /// <summary>Registers the plain [Service] classes of the game lazily, the scan Compose runs.</summary>
@@ -110,7 +136,7 @@ public partial class CompositionRoot : Node
 
         container.RegisterSingleton<ILog, LoggingService>();
         // Set before the services below are built: their constructors and _Ready already log through ILog.
-        ServiceLocator.SyncLogSink();
+        SyncLogSink();
 
         var inputService = new InputService();
         AddOwnedChild(inputService);
