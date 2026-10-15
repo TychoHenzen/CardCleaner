@@ -1,4 +1,6 @@
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Tests.Mocks;
 using GdUnit4;
 using Godot;
 using static GdUnit4.Assertions;
@@ -237,6 +239,45 @@ public class SimpleMapDataTest
         mapData.TileIds[2, 2] = Wall;
 
         AssertBool(mapData.IsTransparent(new Vector2I(2, 2))).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TestTileOutsidePassableTilesReadsHandedRegistry()
+    {
+        var registry = new MockTileRegistry();
+        registry.RegisterTile(MockTileRegistry.CreateGapTile(Floor));
+        var withRegistry = CreateMapDataWithUnlistedFloor(registry);
+        var withoutRegistry = CreateMapDataWithUnlistedFloor(null);
+        var unlisted = new Vector2I(1, 1);
+
+        AssertBool(withRegistry.IsTransparent(unlisted)).IsTrue();
+        AssertBool(withoutRegistry.IsTransparent(unlisted)).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TestIsPassableWithoutPassableTilesOrRegistryIsFalse()
+    {
+        var mapData = CreateMapData(3, 3);
+        mapData.TileIds[1, 1] = Floor;
+
+        AssertBool(mapData.IsPassable(new Vector2I(1, 1))).IsFalse();
+    }
+
+    private static SimpleMapData CreateMapDataWithUnlistedFloor(
+        ITileRegistry? registry)
+    {
+        var mapData = new SimpleMapData
+        {
+            TileIds = new string[3, 3],
+            Size = new Vector2I(3, 3),
+            TileRegistry = registry
+        };
+        FillWithWalls(mapData.TileIds);
+        SetFloor(mapData, 0, 0);
+        mapData.TileIds[1, 1] = Floor;
+        return mapData;
     }
 
     private static SimpleMapData CreateMapData(int width, int height)

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
@@ -11,8 +10,14 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 /// </summary>
 public class SimpleMapData : IGridMap
 {
-    private ITileRegistry? _tileRegistry;
     private HashSet<Vector2I>? _passableTilesSet;
+
+    /// <summary>
+    /// Registry the generator hands over for tile passability and transparency lookups.
+    /// Without one, positions outside <see cref="PassableTiles"/> are neither passable nor transparent.
+    /// </summary>
+    public ITileRegistry? TileRegistry { get; init; }
+
     public string[,] TileIds { get; set; } = new string[0, 0];
 
     /// <summary>
@@ -107,12 +112,11 @@ public class SimpleMapData : IGridMap
 
     /// <summary>
     /// Looks up the registry tile for an in-bounds position.
-    /// Returns null when the registry is unavailable, so callers default to false.
+    /// Returns null when no registry was handed over, so callers default to false.
     /// </summary>
     private TileDefinition? LookupTile(Vector2I pos)
     {
-        _tileRegistry ??= ServiceLocator.Has<ITileRegistry>() ? ServiceLocator.Get<ITileRegistry>() : null;
-        return _tileRegistry?.GetTile(TileIds[pos.Y, pos.X]);
+        return TileRegistry?.GetTile(TileIds[pos.Y, pos.X]);
     }
 
     /// <summary>
