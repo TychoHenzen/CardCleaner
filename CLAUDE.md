@@ -237,11 +237,12 @@ the baseline re-recorded to what the step achieved. The fixture suites beside it
 ### Quality Gate
 
 The `quality-guard` pull-request check (`.github/workflows/ci.yml`, dod-guard pinned by SHA) scans the `Scripts` files a
-pull request changes at their merge base and at HEAD. A medium or high finding that exists only at HEAD blocks (line
-length blocks only above 120 columns, as in `.editorconfig`); a finding that was already there never blocks. The pull
-request must also remove at least one medium/high finding that was already in those files. Every pre-existing finding is
-listed in the `quality-gate-report` artifact, linked from the pull request's single quality gate comment, so none of
-them needs an individual fix. Change the policy with the flags on the gate step (`--block-on`,
+pull request changes at their merge base and at HEAD. A high finding that exists only at HEAD blocks (for line length
+that means above 120 columns, as in `.editorconfig`); a finding that was already there never blocks. New medium findings
+do not block either, but they are counted and listed. The pull request must also remove at least one medium/high finding
+that was already in those files, so medium cleanups count toward the quota. Every pre-existing finding is listed in the
+`quality-gate-report` artifact, linked from the pull request's single quality gate comment, so none of them needs an
+individual fix. Tighten the policy with the flags on the gate step (`--block-on=medium`,
 `--rule-block-on=<rule>:<severity>`, `--fix-medium-high`, `--fix-low`). After moving the dod-guard pin, check that
 `.github/quality-guard-godot.patch` still applies; the job's own patch step fails when it does not.
 
