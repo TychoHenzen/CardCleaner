@@ -1,5 +1,4 @@
 using System;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using Godot;
@@ -10,13 +9,14 @@ namespace CardCleaner.Scripts.Features.Player.Services;
 ///     Orchestrates player safety resets by coordinating between position tracker and player controller.
 ///     Includes cooldown to prevent reset spam.
 /// </summary>
-public partial class PlayerResetService : Node, IPlayerResetService
+public partial class PlayerResetService : Node, IPlayerResetService, IDependent
 {
     private const float ResetCooldownDuration = 2.0f;
     private float _cooldownRemaining;
     private PlayerController? _playerController;
 
     private ISafePositionTracker? _positionTracker;
+    private IServiceResolver? _services;
 
     public event Action? PlayerReset;
 
@@ -64,7 +64,18 @@ public partial class PlayerResetService : Node, IPlayerResetService
         return true;
     }
 
-    public override void _Ready() => ServiceLocator.Get<ISafePositionTracker>(tracker => _positionTracker = tracker);
+    public void Inject(IServiceResolver services) => _services = services;
+
+    public override void _Ready()
+    {
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<ISafePositionTracker>(tracker => _positionTracker = tracker);
+    }
 
     public override void _Process(double delta)
     {

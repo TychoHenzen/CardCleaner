@@ -1,6 +1,5 @@
 ﻿// Debug version of InteractionSystem with detailed logging
 
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
@@ -9,7 +8,7 @@ namespace CardCleaner.Scripts.Features.Player.Controllers;
 /// <summary>
 /// Debug version of InteractionSystem with detailed logging to help identify issues
 /// </summary>
-public partial class InteractionSystem : Node3D
+public partial class InteractionSystem : Node3D, IDependent
 {
     // Default values as constants
     private const float DefaultRayLength = 100f;
@@ -17,12 +16,15 @@ public partial class InteractionSystem : Node3D
     private const float RaycastInterval = 0.05f; // 20Hz = 50ms interval
 
     private IInputService? _inputService;
-    private float _timeSinceLastRaycast = 0f;
+    private IServiceResolver? _services;
+    private float _timeSinceLastRaycast;
 
     [Export] public Camera3D? Camera { get; set; }
     [Export] public float RayLength { get; set; } = DefaultRayLength;
     [Export] public uint InteractableCollisionMask { get; set; } = DefaultInteractableCollisionMask;
     private IInteractable? CurrentTarget { get; set; }
+
+    public void Inject(IServiceResolver services) => _services = services;
 
     public override bool _PropertyCanRevert(StringName property)
     {
@@ -55,7 +57,13 @@ public partial class InteractionSystem : Node3D
         ILog.Print($"Camera: {Camera}");
         ILog.Print($"Collision Mask: {InteractableCollisionMask}");
 
-        ServiceLocator.Get<IInputService>(input =>
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<IInputService>(input =>
         {
             _inputService = input;
             _inputService.RegisterAction(this, "interact", MouseButton.Left, OnInteractPressed);

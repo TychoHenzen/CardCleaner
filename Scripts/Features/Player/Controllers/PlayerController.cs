@@ -1,12 +1,11 @@
-﻿using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Enumeration;
+﻿using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 using Saveable;
 
 namespace CardCleaner.Scripts.Features.Player.Controllers;
 
-public partial class PlayerController : CharacterBody3D, ISaveable
+public partial class PlayerController : CharacterBody3D, ISaveable, IDependent
 {
     private const float SafePositionRecordInterval = 1.0f; // Record safe position every 1 second
     private const float OutOfBoundsYThreshold = -50f; // Player falls below this Y and triggers reset
@@ -18,6 +17,7 @@ public partial class PlayerController : CharacterBody3D, ISaveable
     private float _pitchDeg;
     private IPlayerResetService? _playerResetService;
     private ISafePositionTracker? _safePositionTracker;
+    private IServiceResolver? _services;
     private IGameSettings? _settings;
     private PlayerLightController? _light;
     private float _timeSinceLastSafeRecord;
@@ -29,6 +29,8 @@ public partial class PlayerController : CharacterBody3D, ISaveable
     ///     Movement input, mouse look and jumping are ignored; gravity still applies.
     /// </summary>
     public bool ControlEnabled { get; set; } = true;
+
+    public void Inject(IServiceResolver services) => _services = services;
 
     public void Save(NodeSave save)
     {
@@ -74,20 +76,37 @@ public partial class PlayerController : CharacterBody3D, ISaveable
 
         _gravity = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 
-        ServiceLocator.Get<IGameSettings>(settings =>
+        ResolveServices();
+
+        // Add to group for easy finding
+        AddToGroup("player");
+
+        ILog.Print("Controls: F = Toggle Blacklight, +/- = Adjust Intensity");
+    }
+
+    // A separate method so the setup after it in _Ready still runs when not injected.
+    private void ResolveServices()
+    {
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<IGameSettings>(settings =>
         {
             _settings = settings;
             _light?.UseSettings(settings);
             _light?.Configure();
         });
 
-        ServiceLocator.Get<IInputService>(input =>
+        _services.Get<IInputService>(input =>
         {
             _inputService = input;
             RegisterInputActions();
         });
 
-        ServiceLocator.Get<ISafePositionTracker>(tracker =>
+        _services.Get<ISafePositionTracker>(tracker =>
         {
             _safePositionTracker = tracker;
             // Record initial spawn position
@@ -95,12 +114,7 @@ public partial class PlayerController : CharacterBody3D, ISaveable
             _safePositionTracker.RecordSafePosition(GlobalPosition);
         });
 
-        ServiceLocator.Get<IPlayerResetService>(resetService => _playerResetService = resetService);
-
-        // Add to group for easy finding
-        AddToGroup("player");
-
-        ILog.Print("Controls: F = Toggle Blacklight, +/- = Adjust Intensity");
+        _services.Get<IPlayerResetService>(resetService => _playerResetService = resetService);
     }
 
     private void RegisterInputActions()
