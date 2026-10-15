@@ -27,7 +27,7 @@ internal sealed class WorldMapRuntime : ISessionView
     private readonly WorldMapCombatUI _combatUI;
 
     // The grid of the shown map: converts the session's cell ids and world positions to tiles.
-    private RegularGridMapData? _grid;
+    private IGridMapData? _grid;
 
     // The screen acts only on a session it started: the link passes events on while the screen owns the session.
     private readonly SessionViewLink _link;
@@ -175,7 +175,7 @@ internal sealed class WorldMapRuntime : ISessionView
         ILog.Print($"[FOG] Initialized fog of war with {_components.Fog?.SpriteCount ?? 0} fog sprites");
     }
 
-    private void RenderMap(SimpleMapData mapData)
+    private void RenderMap(IGridMap mapData)
     {
         if (_screen.TerrainLayer == null || _components.Terrain == null)
         {

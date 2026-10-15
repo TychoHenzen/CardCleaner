@@ -1,6 +1,5 @@
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Components.WorldMapTerrainRendererSupport;
@@ -24,7 +23,7 @@ internal sealed class NonTerrainTileRenderer
         _tileInfoResolver = tileInfoResolver;
     }
 
-    public void Render(SimpleMapData mapData)
+    public void Render(IGridMap mapData)
     {
         SetLayerPositions();
         var counts = new RenderCounts();
@@ -43,7 +42,7 @@ internal sealed class NonTerrainTileRenderer
         if (_effectLayer != null) _effectLayer.Position = Vector2.Zero;
     }
 
-    private void RenderTile(SimpleMapData mapData, Vector2I position, RenderCounts counts)
+    private void RenderTile(IGridMap mapData, Vector2I position, RenderCounts counts)
     {
         var info = _tileInfoResolver.ResolveFull(mapData.GetTileId(position));
         if (info.Layer == TileLayer.Terrain)

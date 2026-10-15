@@ -1,6 +1,5 @@
 using System;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using Godot;
 
 namespace CardCleaner.Scripts.Core.Services;
@@ -40,8 +39,8 @@ public class SimpleVisibilityChecker : IVisibilityChecker
         if (fromCell.Value == toCell.Value)
             return true;
 
-        // For RegularGridMapData, use optimized Bresenham approach
-        if (mapData is RegularGridMapData regularGrid)
+        // For regular grids, use optimized Bresenham approach
+        if (mapData is IGridMapData regularGrid)
         {
             return CanSeeBresenham(fromCell.Value, toCell.Value, regularGrid);
         }
@@ -53,7 +52,7 @@ public class SimpleVisibilityChecker : IVisibilityChecker
     /// <summary>
     /// Optimized visibility check for regular grids using Bresenham's algorithm.
     /// </summary>
-    private static bool CanSeeBresenham(int fromCellId, int toCellId, RegularGridMapData gridData)
+    private static bool CanSeeBresenham(int fromCellId, int toCellId, IGridMapData gridData)
     {
         var from = gridData.CellIdToPosition(fromCellId);
         var to = gridData.CellIdToPosition(toCellId);
@@ -103,14 +102,14 @@ public class SimpleVisibilityChecker : IVisibilityChecker
 
     private static int StepToward(int from, int to) => from < to ? 1 : -1;
 
-    private static bool BlocksVisibility(RegularGridMapData gridData, Vector2I position, int fromCellId)
+    private static bool BlocksVisibility(IGridMapData gridData, Vector2I position, int fromCellId)
     {
         var cellId = gridData.PositionToCellId(position);
         return cellId != fromCellId && !gridData.IsTransparent(cellId);
     }
 
     private static bool IsDiagonalCornerBlocked(
-        RegularGridMapData gridData, Vector2I horizontalPos, Vector2I verticalPos)
+        IGridMapData gridData, Vector2I horizontalPos, Vector2I verticalPos)
     {
         var hCellId = gridData.PositionToCellId(horizontalPos);
         var vCellId = gridData.PositionToCellId(verticalPos);

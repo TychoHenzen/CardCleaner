@@ -68,7 +68,7 @@ public class GridMapGoldenTest
             MapSeeds = seeds
         });
 
-        return Describe(((SimpleGeneratedMap)generated).RawMapData);
+        return Describe((SimpleMapData)((SimpleGeneratedMap)generated).RawMapData);
     }
 
     private static string Describe(SimpleMapData map)

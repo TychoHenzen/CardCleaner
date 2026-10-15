@@ -17,7 +17,7 @@ public class ExplorationAIFrontierTest : ExplorationAITestBase
     public void TestExplorationStartsInFrontierMode()
     {
         var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker());
 
         AssertThat(ai.CurrentMode).IsEqual(ExplorationMode.FrontierExploration);
     }
@@ -44,7 +44,8 @@ public class ExplorationAIFrontierTest : ExplorationAITestBase
 
         mapData.EnemyPositions.Add(new Vector2I(4, 0));
 
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
+        var gridData = new RegularGridMapData(mapData);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
 
         // Enemy should not be visible through wall
         AssertThat(ai.CurrentMode).IsEqual(ExplorationMode.FrontierExploration);
@@ -62,7 +63,7 @@ public class ExplorationAIFrontierTest : ExplorationAITestBase
         var (mapData, gridData) = OpenFloorMap.Create(10, 10, new Vector2I(0, 0));
         mapData.EnemyPositions.Clear(); // No enemies, pure exploration
 
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 3);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 3);
 
         // Track position history to detect oscillation
         var positionHistory = new List<int>();
@@ -103,7 +104,7 @@ public class ExplorationAIFrontierTest : ExplorationAITestBase
         var (mapData, gridData) = OpenFloorMap.Create(10, 10, new Vector2I(0, 0));
         mapData.EnemyPositions.Clear();
 
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 2);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 2);
 
         // Initially no target
         AssertThat(ai.CurrentTargetCell).IsNull();
@@ -123,7 +124,7 @@ public class ExplorationAIFrontierTest : ExplorationAITestBase
         var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
         mapData.EnemyPositions.Clear();
 
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 2);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 2);
         var pathUpdatedCount = 0;
 
         ai.PathUpdated += () => pathUpdatedCount++;
@@ -143,7 +144,7 @@ public class ExplorationAIFrontierTest : ExplorationAITestBase
     public void TestExplorationFindAndReportsEnemy()
     {
         var (mapData, gridData) = CreateMapWithEnemy();
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker());
         var enemyFound = false;
         Vector2? foundPosition = null;
 
@@ -173,7 +174,7 @@ public class ExplorationAIFrontierTest : ExplorationAITestBase
         var (mapData, gridData) = OpenFloorMap.Create(10, 10, new Vector2I(0, 0));
         mapData.EnemyPositions.Add(new Vector2I(3, 0)); // Enemy directly visible
 
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 5);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 5);
         var enemySpotted = false;
 
         ai.EnemySpotted += _ => enemySpotted = true;
@@ -194,7 +195,7 @@ public class ExplorationAIFrontierTest : ExplorationAITestBase
 
         // Use small vision range to force AI to physically move and encounter enemies
         // With large vision on small maps, tiles become "trivially visible" without movement
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 2);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 2);
 
         var stepCount = 0;
         while (!ai.HasFoundEnemy && stepCount < 100)
@@ -219,7 +220,7 @@ public class ExplorationAIFrontierTest : ExplorationAITestBase
         var (mapData, gridData) = OpenFloorMap.Create(3, 3, new Vector2I(1, 1));
         mapData.EnemyPositions.Clear();
 
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
 
         var stepCount = 0;
         while (!ai.HasFinishedExploration && stepCount < 100)

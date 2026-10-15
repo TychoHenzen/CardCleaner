@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
@@ -8,7 +9,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 /// <summary>
 /// Simple map data structure using tile IDs
 /// </summary>
-public class SimpleMapData
+public class SimpleMapData : IGridMap
 {
     private ITileRegistry? _tileRegistry;
     private HashSet<Vector2I>? _passableTilesSet;
@@ -50,6 +51,12 @@ public class SimpleMapData
     /// </summary>
     public Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)>
         DecorationOverlays { get; set; } = new();
+
+    // ASSUMPTION (#241): readers get read-only views of the settable collections; the generator keeps writing.
+    IReadOnlyDictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> IGridMap.DecorationOverlays =>
+        DecorationOverlays;
+
+    IReadOnlyList<Vector2I> IGridMap.EnemyPositions => EnemyPositions;
 
     /// <summary>
     /// Whether decoration overlays use half-tile dual-grid positioning.

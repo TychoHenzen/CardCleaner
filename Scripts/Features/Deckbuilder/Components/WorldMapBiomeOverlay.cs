@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Components;
@@ -36,7 +35,7 @@ public class WorldMapBiomeOverlay
     /// <summary>
     /// Render biome overlay for the given map data.
     /// </summary>
-    public void Render(SimpleMapData mapData)
+    public void Render(IGridMap mapData)
     {
         Clear();
 

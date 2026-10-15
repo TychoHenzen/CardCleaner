@@ -6,10 +6,10 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 
 /// <summary>
-/// IMapData adapter that wraps SimpleMapData for regular grid maps.
+/// IGridMapData adapter that wraps SimpleMapData for regular grid maps.
 /// Cell IDs are linearized grid positions: cellId = y * width + x
 /// </summary>
-public class RegularGridMapData : IMapData
+public class RegularGridMapData : IGridMapData
 {
     private readonly SimpleMapData _simpleMapData;
     private readonly float _tileSize;

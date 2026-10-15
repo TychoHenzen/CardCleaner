@@ -25,7 +25,7 @@ public class ExplorationAIEnemyPursuitTest : ExplorationAITestBase
         mapData.EnemyPositions.Add(new Vector2I(7, 7)); // Enemy at far corner
 
         // Small vision range forces actual movement to find enemy
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 2);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 2);
 
         // Track mode changes to detect oscillation
         var modeChangeCount = 0;
@@ -80,7 +80,7 @@ public class ExplorationAIEnemyPursuitTest : ExplorationAITestBase
         mapData.EnemyPositions.Add(new Vector2I(9, 0));
 
         var gridData = new RegularGridMapData(mapData);
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
 
         // First step should find a target and start moving
         ai.StepExploration();
@@ -130,7 +130,8 @@ public class ExplorationAIEnemyPursuitTest : ExplorationAITestBase
 
         mapData.EnemyPositions.Add(new Vector2I(9, 0));
 
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
+        var gridData = new RegularGridMapData(mapData);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
 
         // Step to start pursuing
         ai.StepExploration();
@@ -194,7 +195,7 @@ public class ExplorationAIEnemyPursuitTest : ExplorationAITestBase
         mapData.EnemyPositions.Add(new Vector2I(9, 2));
 
         var gridData = new RegularGridMapData(mapData);
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
 
         // Run until we find the enemy
         var maxSteps = 50;
