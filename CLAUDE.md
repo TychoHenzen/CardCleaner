@@ -160,14 +160,19 @@ public partial class MyNode : Node3D
 
 ### Dependency Injection
 
-The project uses a custom service locator pattern, split into a static lookup and a composition root:
+The project uses a custom DI container with no static service state: an instance-owned host and a composition root:
 
-- **ServiceLocator** (`Scripts/Core/DependencyInjection/ServiceLocator.cs`): static lookup over the DI container.
-  It names no feature or composition type; `DependencyInjectionBoundaryTest` enforces that.
-- **CompositionRoot** (`Scripts/Composition/CompositionRoot.cs`): the "Services" autoload. It registers the plain
-  `[Service]` classes of `CardCleaner.Scripts` lazily, then the core services, then every node in the
-  `service_providers` group, then runs the pending callbacks. Only that autoload composes and injects; any other
-  instance logs an error and changes nothing.
+- **ServiceHost** (`Scripts/Core/DependencyInjection/ServiceHost.cs`): a plain class that implements
+  `IServiceResolver` and owns the container and the one pending-callback queue (`Container`, `Get<T>()`, `Has<T>()`,
+  `Get<T>(callback)`, `ExecutePendingCallbacks()`, `Reset()`). It exists from construction, `Reset()` replaces its
+  container and clears its queue but keeps the host, and it names no feature or composition type;
+  `DependencyInjectionBoundaryTest` enforces that. It does not touch `ILog.Sink`.
+- **CompositionRoot** (`Scripts/Composition/CompositionRoot.cs`): the "Services" autoload. It owns one `ServiceHost`
+  (`Host`) and registers the plain `[Service]` classes of `CardCleaner.Scripts` lazily into it, then the core
+  services, then every node in the `service_providers` group, then runs the pending callbacks. It also sets
+  `ILog.Sink` (a static property, because `ILog`'s static helpers have no instance) when it registers `ILog`, and
+  clears it when its services are reset. Only that autoload composes and injects; any other instance logs an error
+  and composes nothing.
 - **ServiceContainer**: singleton registrations, plus constructor injection. `Construct<T>()` and
   `RegisterSingleton<TInterface, TImplementation>()` build a plain class through its public constructor with the most
   parameters, resolving each parameter from the container; a missing one throws `InvalidOperationException` naming
@@ -184,16 +189,18 @@ The project uses a custom service locator pattern, split into a static lookup an
   Nodes already in the tree when the autoload starts are injected once by a startup pass
   (`CompositionRoot.InjectExistingNodes`), which runs after their `_Ready`, so an `IDependent` must never be an
   autoload ordered before Services.
-  The resolver (`LocatorServiceResolver`) holds no container and reads `ServiceLocator` at call time, so its
-  `Get<T>(callback)` shares the one pending-callback queue.
-- Services can use async resolution via `ServiceLocator.Get<T>(callback)` for services not yet registered
+  The injected resolver is the autoload's `ServiceHost`, which reads its current container at call time, so a
+  resolver injected before a reset reads the replacement container and its `Get<T>(callback)` shares the one
+  pending-callback queue.
+- Services can use async resolution via `IServiceResolver.Get<T>(callback)` for services not yet registered
 
-Access services via `ServiceLocator.Get<T>()` or `ServiceLocator.Container.Resolve<T>()`; features not yet moved to
-tree injection keep using `ServiceLocator` until #244. Tests go through `Tests/TestUtilities/TestServices`:
-`Container`, `Resolver` (the resolver the root injects), `Reinitialize()` (`CompositionRoot.ReinitializeServices()`),
-`Reset()` (`ServiceLocator.ResetForTesting()`), `RegisterGameServiceClasses(container)` (the root's `[Service]` scan
-into a container), `ExecutePendingCallbacks()` (runs the queued `Get<T>(callback)` lookups, as the root does after
-composing) and `Inject(node)` for a node built outside the tree.
+Nodes reach services only through the `IServiceResolver` they are injected with (`Get<T>()`, `Has<T>()`,
+`Get<T>(callback)`); nothing in `Scripts/` looks a container up statically. Tests go through
+`Tests/TestUtilities/TestServices`, which reads the autoload's host: `Container`, `Resolver` (the resolver the root
+injects), `Reinitialize()` (`CompositionRoot.ReinitializeServices()`), `Reset()` (empties the container and the queue
+and clears `ILog.Sink`), `RegisterGameServiceClasses(container)` (the root's `[Service]` scan into a container),
+`ExecutePendingCallbacks()` (runs the queued `Get<T>(callback)` lookups, as the root does after composing) and
+`Inject(node)` for a node built outside the tree. A unit test of the host itself builds one with `new ServiceHost()`.
 
 ### Dependency Gate
 

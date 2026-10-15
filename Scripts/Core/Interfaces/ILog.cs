@@ -21,28 +21,37 @@ public interface ILog
     public static void Print(string message)
     {
         var sink = Sink;
-        if (sink != null)
-            sink.LogMessage(message);
-        else
+        if (sink == null)
+        {
             GD.Print(message);
+            return;
+        }
+
+        sink.LogMessage(message);
     }
 
     public static void Warning(string message)
     {
         var sink = Sink;
-        if (sink != null)
-            sink.LogWarning(message);
-        else
+        if (sink == null)
+        {
             GD.PushWarning(message);
+            return;
+        }
+
+        sink.LogWarning(message);
     }
 
     public static void Error(string message)
     {
         var sink = Sink;
-        if (sink != null)
-            sink.LogError(message);
-        else
+        if (sink == null)
+        {
             GD.PushError(message);
+            return;
+        }
+
+        sink.LogError(message);
     }
 
     public static bool ExportCheck(Node? export, string name, Node target)
