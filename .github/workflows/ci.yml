@@ -187,6 +187,11 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # One gate run per pull request: a newer push cancels the older run, so an older run cannot overwrite the single
+    # quality gate comment with findings from a head that is no longer current.
+    concurrency:
+      group: quality-guard-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     permissions:
       contents: read
       pull-requests: write
