@@ -67,13 +67,21 @@ public partial class OrderingService : Node, IOrderingService, IDependent
             return Fail(item, OrderStatus.InvalidItem);
 
         var point = deliveryPoint ?? DeliveryPoint;
-        var parent = SpawnRoot ?? point?.GetParent();
+        var parent = ParentFor(point);
         if (point == null || parent == null || Money == null)
             return Fail(item, OrderStatus.NoDeliveryPoint);
 
+        return Deliver(item, item.Scene, point, parent, Money);
+    }
+
+    private Node? ParentFor(DeliveryMarker? point) => SpawnRoot ?? point?.GetParent();
+
+    private OrderResult Deliver(OrderItem item, PackedScene scene, DeliveryMarker point, Node parent,
+        IMoneyService money)
+    {
         // Build the item first: an unusable scene must be rejected before the player is charged, and a
         // delivery area needs its size to find clearance.
-        var built = item.Scene.Instantiate();
+        var built = scene.Instantiate();
         if (built is not Node3D instance)
         {
             built.Free();
@@ -87,7 +95,7 @@ public partial class OrderingService : Node, IOrderingService, IDependent
             return Fail(item, OrderStatus.DeliveryFull);
         }
 
-        if (!Money.TrySpend(item.Price))
+        if (!money.TrySpend(item.Price))
         {
             instance.Free();
             return Fail(item, OrderStatus.InsufficientFunds);
@@ -98,7 +106,7 @@ public partial class OrderingService : Node, IOrderingService, IDependent
         point.Track(instance);
         DeliveredCount++;
 
-        ILog.Print($"Order succeeded: {item.Id} for {item.Price}, balance now {Money.Balance}");
+        ILog.Print($"Order succeeded: {item.Id} for {item.Price}, balance now {money.Balance}");
         return new OrderResult(OrderStatus.Success, instance);
     }
 

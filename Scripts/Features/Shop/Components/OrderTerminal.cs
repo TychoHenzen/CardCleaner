@@ -27,7 +27,9 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
     [Export]
     public OrderCatalog? Catalog { get; set; }
 
-    /// <summary>Where this terminal's orders appear. Null falls back to the ordering service's own delivery point.</summary>
+    /// <summary>
+    ///     Where this terminal's orders appear. Null falls back to the ordering service's own delivery point.
+    /// </summary>
     [Export]
     public DeliveryMarker? DeliveryPoint { get; set; }
 
