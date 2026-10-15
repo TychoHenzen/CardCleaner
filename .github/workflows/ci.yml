@@ -187,18 +187,21 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
-      # Pinned to the dod-guard commit that ships quality-pr-gate.mjs.
+      # Pinned to the dod-guard commit that ships quality-pr-gate.mjs and quality-pr-gate-comment.mjs.
       - name: Check out dod-guard quality-guard gate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: TychoHenzen/dod-guard
-          ref: 52fb07d4f44e7cae1e42768d46b5c5f7e2a38880
+          ref: 9be9738711999948e065ce82d1e7918c2abe393c
           path: .dod-guard
 
       - name: Apply Godot quality-guard compatibility patch
@@ -214,5 +217,32 @@ jobs:
       - name: Test Godot quality-guard reachability compatibility
         run: node .github/quality-guard-godot.test.mjs --scanner-root=.dod-guard/packages/quality-guard/skills/quality-refactor/scripts
 
-      - name: Block high-severity findings in changed Scripts files
-        run: node .dod-guard/packages/quality-guard/skills/quality-refactor/scripts/quality-pr-gate.mjs --base=${{ github.event.pull_request.base.sha }} --root=Scripts
+      # Blocks medium and high findings this pull request adds to the Scripts files it changes, and asks it to
+      # remove at least one medium/high finding that was already there. Findings that were already there never
+      # block; the full list is the quality-gate-report artifact, referenced from one pull request comment.
+      # Lines up to 120 columns are allowed (.editorconfig), so only longer lines block.
+      - name: Block new findings in changed Scripts files
+        run: >-
+          node .dod-guard/packages/quality-guard/skills/quality-refactor/scripts/quality-pr-gate.mjs
+          --base=${{ github.event.pull_request.base.sha }} --root=Scripts
+          --rule-block-on=line-length:high
+          --report=quality-gate-report.md --comment=quality-gate-comment.md
+          --report-link=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      - name: Upload the quality gate report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: quality-gate-report
+          path: quality-gate-report.md
+          if-no-files-found: ignore
+
+      # Best effort: a token that cannot comment (forks, Dependabot) only logs a warning.
+      - name: Update the quality gate comment
+        if: always() && hashFiles('quality-gate-comment.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          node .dod-guard/packages/quality-guard/skills/quality-refactor/scripts/quality-pr-gate-comment.mjs
+          --repo=${{ github.repository }} --pr=${{ github.event.pull_request.number }}
+          --body=quality-gate-comment.md

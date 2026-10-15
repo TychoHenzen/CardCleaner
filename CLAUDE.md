@@ -234,6 +234,17 @@ the baseline re-recorded to what the step achieved. The fixture suites beside it
 (`LayerAnchorsTest`, `LouvainClusteringTest`, `ModuleOrderTest`, `SeamRaterTest`, `GateMetricsTest`,
 `ClassGraphExtractorTest`, `SceneLinkReaderTest`, `DependencyBaselineTest`) pin each rule on small graphs.
 
+### Quality Gate
+
+The `quality-guard` pull-request check (`.github/workflows/ci.yml`, dod-guard pinned by SHA) scans the `Scripts` files a
+pull request changes at their merge base and at HEAD. A medium or high finding that exists only at HEAD blocks (line
+length blocks only above 120 columns, as in `.editorconfig`); a finding that was already there never blocks. The pull
+request must also remove at least one medium/high finding that was already in those files. Every pre-existing finding is
+listed in the `quality-gate-report` artifact, linked from the pull request's single quality gate comment, so none of
+them needs an individual fix. Change the policy with the flags on the gate step (`--block-on`,
+`--rule-block-on=<rule>:<severity>`, `--fix-medium-high`, `--fix-low`). After moving the dod-guard pin, check that
+`.github/quality-guard-godot.patch` still applies; the job's own patch step fails when it does not.
+
 ### Card Signature System
 
 The core mechanic uses `CardSignature` - an 8-dimensional vector with values clamped to [-1, 1] representing elemental properties:
