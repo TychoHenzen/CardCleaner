@@ -58,7 +58,7 @@ public class ShopWorkshopMapSessionSceneTest
 
         // The core services the Services autoload composes in the game. Composing clears pending callbacks, so it
         // runs before the shop enters the tree; the shop's own providers then register as the game's do.
-        CompositionRoot.ReinitializeServices();
+        TestServices.Reinitialize();
         _coreServiceNodes.Add((Node)TestServices.Resolver.Get<IInputService>());
         _coreServiceNodes.Add((Node)TestServices.Resolver.Get<IPlayerResetService>());
 

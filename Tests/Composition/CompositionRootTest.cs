@@ -15,7 +15,7 @@ namespace CardCleaner.Tests.Composition;
 
 /// <summary>
 /// The "Services" autoload composes the container: in the game, in the deferred-call flush after its _Ready; in tests,
-/// synchronously through ReinitializeServices. Any other CompositionRoot logs an error and changes nothing (#168).
+/// synchronously through TestServices.Reinitialize. Any other CompositionRoot logs an error and changes nothing (#168).
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -38,7 +38,7 @@ public class CompositionRootTest
         try
         {
             // Act - the autoload composes synchronously, which calls RegisterServices on every provider in the group
-            CompositionRoot.ReinitializeServices();
+            TestServices.Reinitialize();
             created = ReinitializedNodes();
 
             // Assert
@@ -57,7 +57,7 @@ public class CompositionRootTest
     {
         // Arrange - the autoload has composed; a recording sink stands in for its logger so the error can be read,
         // and a callback waits for a service nobody has registered
-        CompositionRoot.ReinitializeServices();
+        TestServices.Reinitialize();
         var created = ReinitializedNodes();
         var composedSink = ILog.Sink;
         var recorder = Substitute.For<ILog>();
@@ -100,7 +100,7 @@ public class CompositionRootTest
     {
         // Arrange - an empty container, as it is before the autoload's first composition
         TestServices.Reset();
-        var root = Autoload();
+        var root = TestServices.Autoload;
         var created = Array.Empty<Node>();
         try
         {
@@ -131,13 +131,13 @@ public class CompositionRootTest
     public static void TestReinitializeLeavesOneLiveNodeServiceOfEachKind()
     {
         // Act - compose twice; the second composition must release the node services the first one added
-        CompositionRoot.ReinitializeServices();
-        CompositionRoot.ReinitializeServices();
+        TestServices.Reinitialize();
+        TestServices.Reinitialize();
         var created = ReinitializedNodes();
         try
         {
             // Assert - queued nodes stay children until the frame ends, so only unqueued ones count as live
-            var live = Autoload().GetChildren().Where(node => !node.IsQueuedForDeletion()).ToList();
+            var live = TestServices.Autoload.GetChildren().Where(node => !node.IsQueuedForDeletion()).ToList();
             Assertions.AssertInt(live.OfType<IInputService>().Count()).IsEqual(1);
             Assertions.AssertInt(live.OfType<IPlayerResetService>().Count()).IsEqual(1);
         }
@@ -152,7 +152,7 @@ public class CompositionRootTest
     public static void TestReinitializeRegistersTheMeshMapGenerator()
     {
         // Arrange and act - the autoload composes the core services, the irregular map's generator among them
-        CompositionRoot.ReinitializeServices();
+        TestServices.Reinitialize();
         var created = ReinitializedNodes();
         try
         {
@@ -164,9 +164,6 @@ public class CompositionRootTest
             QueueFreeAll(created);
         }
     }
-
-    private static CompositionRoot Autoload() =>
-        ((SceneTree)Engine.GetMainLoop()).Root.GetNode<CompositionRoot>("Services");
 
     // Reinitialize adds an input service and a player reset service to the autoload; the tests free them.
     private static Node[] ReinitializedNodes() =>

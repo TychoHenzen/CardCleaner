@@ -49,7 +49,7 @@ public class TreeInjectionTest
         try
         {
             Root().AddChild(probe);
-            Assertions.AssertThat(probe.Services).IsSame(CompositionRoot.Autoload.Host);
+            Assertions.AssertThat(probe.Services).IsSame(TestServices.Autoload.Host);
 
             TestServices.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
             TestServices.Reset();

@@ -197,7 +197,7 @@ The project uses a custom DI container with no static service state: an instance
 Nodes reach services only through the `IServiceResolver` they are injected with (`Get<T>()`, `Has<T>()`,
 `Get<T>(callback)`); nothing in `Scripts/` looks a container up statically. Tests go through
 `Tests/TestUtilities/TestServices`, which reads the autoload's host: `Container`, `Resolver` (the resolver the root
-injects), `Reinitialize()` (`CompositionRoot.ReinitializeServices()`), `Reset()` (empties the container and the queue
+injects), `Reinitialize()` (composes the autoload again), `Reset()` (empties the container and the queue
 and clears `ILog.Sink`), `RegisterGameServiceClasses(container)` (the root's `[Service]` scan into a container),
 `ExecutePendingCallbacks()` (runs the queued `Get<T>(callback)` lookups, as the root does after composing) and
 `Inject(node)` for a node built outside the tree. A unit test of the host itself builds one with `new ServiceHost()`.

@@ -12,7 +12,7 @@ namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 /// The shop PC and the workshop terminal reuse one ordering framework: two catalogs that never share an item,
-/// one money service resolved through the service locator, and one ordering service.
+/// one money service resolved through the test service container, and one ordering service.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -71,7 +71,7 @@ public class ShopOrderingEconomySceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void BothTerminalsUseTheOneMoneyServiceTheLocatorHandsOut()
+    public void BothTerminalsUseTheOneMoneyServiceTheContainerHandsOut()
     {
         var resolved = TestServices.Container.Resolve<IMoneyService>();
 

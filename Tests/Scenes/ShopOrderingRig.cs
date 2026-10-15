@@ -9,7 +9,7 @@ using CardCleaner.Tests.TestUtilities;
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// Loads the shop scene for the ordering suites and hands its scene-owned services to the service locator,
+/// Loads the shop scene for the ordering suites and hands its scene-owned services to the test service container,
 /// since a test scene is not the current scene and its autoload-style registration never runs.
 /// </summary>
 public static class ShopOrderingRig

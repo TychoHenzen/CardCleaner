@@ -35,10 +35,6 @@ public partial class CompositionRoot : Node
     /// <summary>The container, pending callbacks and resolver of this root; tests read the autoload's.</summary>
     internal ServiceHost Host { get; } = new();
 
-    /// <summary>The "Services" autoload, found the way a test has to find it.</summary>
-    internal static CompositionRoot Autoload =>
-        ((SceneTree)Engine.GetMainLoop()).Root.GetNode<CompositionRoot>("Services");
-
     public override void _Ready()
     {
         if (!IsAutoload())
@@ -82,29 +78,8 @@ public partial class CompositionRoot : Node
     }
 
     // ASSUMPTION: the deferred call runs after the main scene's service providers enter the tree, as the
-    // static locator's _Ready call did before the split. No requirement states this ordering.
+    // removed locator's _Ready call did before the split. No requirement states this ordering.
     internal void ScheduleCompose() => CallDeferred(MethodName.Compose);
-
-    /// <summary>
-    ///     Test-only: clears the container, then composes it again on the autoload synchronously. The new composition
-    ///     frees the node services the previous one added.
-    /// </summary>
-    public static void ReinitializeServices()
-    {
-        var root = Autoload;
-        root.ResetServices();
-        root.Compose();
-    }
-
-    /// <summary>
-    ///     Test-only: replaces the host's container with an empty one, drops its pending callbacks and clears the log
-    ///     sink, which no longer has a registered ILog to mirror. The host and the resolver injected from it stay.
-    /// </summary>
-    internal void ResetServices()
-    {
-        Host.Reset();
-        SyncLogSink();
-    }
 
     // The sink mirrors the ILog in the host's current container, the same source that Has and Get read.
     private void SyncLogSink()
@@ -115,7 +90,8 @@ public partial class CompositionRoot : Node
 
     private bool IsAutoload() => GetParent() == GetTree().Root && Name == "Services";
 
-    private void Compose()
+    // Internal so that TestServices can compose again on the autoload synchronously.
+    internal void Compose()
     {
         FreeOwnedNodes();
         // First, so the explicit registrations below replace any scanned entry for the same service type.

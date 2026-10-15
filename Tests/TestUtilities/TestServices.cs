@@ -12,15 +12,35 @@ namespace CardCleaner.Tests.TestUtilities;
 /// </summary>
 public static class TestServices
 {
-    private static ServiceHost Host => CompositionRoot.Autoload.Host;
+    private static ServiceHost Host => Autoload.Host;
+
+    /// <summary>The "Services" autoload, found through the main loop's root.</summary>
+    public static CompositionRoot Autoload =>
+        ((SceneTree)Engine.GetMainLoop()).Root.GetNode<CompositionRoot>("Services");
 
     public static IServiceContainer Container => Host.Container;
 
     public static IServiceResolver Resolver => Host;
 
-    public static void Reinitialize() => CompositionRoot.ReinitializeServices();
+    /// <summary>
+    ///     Clears the container, then composes it again on the autoload synchronously. The new composition frees the
+    ///     node services the previous one added.
+    /// </summary>
+    public static void Reinitialize()
+    {
+        Reset();
+        Autoload.Compose();
+    }
 
-    public static void Reset() => CompositionRoot.Autoload.ResetServices();
+    /// <summary>
+    ///     Replaces the host's container with an empty one, drops its pending callbacks and clears the log sink, which
+    ///     no longer has a registered ILog to mirror. The host and the resolver injected from it stay.
+    /// </summary>
+    public static void Reset()
+    {
+        Host.Reset();
+        ILog.Sink = null;
+    }
 
     /// <summary>
     ///     Runs the queued <c>Get&lt;T&gt;(callback)</c> lookups whose service is now registered, as the root does

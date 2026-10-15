@@ -16,7 +16,7 @@ namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 /// Shared harness for the shop scene seam suites: instantiates the shop scene, hands the scene-owned
-/// services to the service locator, and moves the player and holds cards so each suite only states its
+/// services to the test service container, and moves the player and holds cards so each suite only states its
 /// scenario.
 /// </summary>
 public sealed class ShopSeamRig
@@ -48,7 +48,8 @@ public sealed class ShopSeamRig
 
         // The test scene is not the current scene, so hand the scene-owned services over directly.
         TestServices.Reset();
-        TestServices.Container.RegisterSingleton<IGameSettings>(rig.Shop.GetNode<GameSettings>("Services/GameSettings"));
+        TestServices.Container.RegisterSingleton<IGameSettings>(
+            rig.Shop.GetNode<GameSettings>("Services/GameSettings"));
         TestServices.Container.RegisterSingleton<ICardSpawner>(rig.Shop.GetNode<Node3D>("World/Cards") as ICardSpawner
             ?? throw new System.InvalidOperationException("World/Cards must be the card spawner"));
 

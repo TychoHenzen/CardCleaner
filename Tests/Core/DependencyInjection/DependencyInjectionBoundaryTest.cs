@@ -108,7 +108,7 @@ public class DependencyInjectionBoundaryTest
 
     private static class ProbeComposition
     {
-        public static void Rebuild() => CompositionRoot.ReinitializeServices();
+        public static void Rebuild() => CompositionRoot.RegisterGameServiceClasses(new ServiceContainer());
     }
 
     private static class ProbeAllowed

@@ -37,9 +37,9 @@ public class ILogSinkTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void TestSinkIsTheRegisteredLoggerWhileTheLocatorRuns()
+    public static void TestSinkIsTheRegisteredLoggerWhileTheRootRuns()
     {
-        CompositionRoot.ReinitializeServices();
+        TestServices.Reinitialize();
 
         Assertions.AssertBool(ReferenceEquals(ILog.Sink, TestServices.Resolver.Get<ILog>())).IsTrue();
     }
@@ -57,7 +57,7 @@ public class ILogSinkTest
         }
         finally
         {
-            CompositionRoot.ReinitializeServices();
+            TestServices.Reinitialize();
         }
     }
 

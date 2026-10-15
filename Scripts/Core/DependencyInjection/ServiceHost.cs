@@ -20,7 +20,7 @@ public sealed class ServiceHost : IServiceResolver
     public IServiceContainer Container { get; private set; } = new ServiceContainer();
 
     /// <summary>Replaces the container with an empty one and drops every pending callback.</summary>
-    public void Reset()
+    internal void Reset()
     {
         Container = new ServiceContainer();
         _pendingCallbacks.Clear();
