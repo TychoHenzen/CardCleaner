@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Models;
 
@@ -33,20 +33,20 @@ public class SimpleWorldMapScreenInitializeTest
     [BeforeTest]
     public void Setup()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
         _states.Clear();
         _generator = new RecordingGenerator();
         _session = new GameSessionService();
         _session.StateChanged += _states.Add;
         AddNode(_session);
-        ServiceLocator.Container.RegisterSingleton<IGameSessionService>(_session);
+        TestServices.Container.RegisterSingleton<IGameSessionService>(_session);
     }
 
     [AfterTest]
     public void TearDown()
     {
         _session.StateChanged -= _states.Add;
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]
@@ -81,15 +81,15 @@ public class SimpleWorldMapScreenInitializeTest
     [TestCategory("Unit")]
     public async Task AScreenThatLeftTheTreeIgnoresALateSessionService()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
         var screen = new SimpleWorldMapScreen();
         AddNode(screen);
         await ISceneRunner.SyncProcessFrame;
 
         screen.Initialize(new[] { new CardSignature(SeedValues) }, new[] { new CardSignature() }, _generator);
         screen.GetParent().RemoveChild(screen);
-        ServiceLocator.Container.RegisterSingleton<IGameSessionService>(_session);
-        ServiceLocator.ExecutePendingCallbacks();
+        TestServices.Container.RegisterSingleton<IGameSessionService>(_session);
+        TestServices.ExecutePendingCallbacks();
         await ISceneRunner.SyncProcessFrame;
 
         AssertBool(_states.Contains(SessionState.GeneratingMap))

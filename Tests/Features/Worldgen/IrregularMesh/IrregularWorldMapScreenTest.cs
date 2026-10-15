@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -13,6 +11,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.Mocking;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
@@ -20,8 +19,8 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 
 /// <summary>
 /// The irregular screen as a view of a real <see cref="GameSessionService"/>: it shows the map of a session it
-/// started, animates the session's moves from cell to cell, ignores a session it did not start, and ends the session
-/// when the generator gives no irregular mesh map.
+/// started, animates the session's moves from cell to cell, and resets. Which sessions it takes is in
+/// <see cref="IrregularWorldMapScreenSessionTest"/>.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -55,10 +54,10 @@ public class IrregularWorldMapScreenTest
     [BeforeTest]
     public async Task Setup()
     {
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
         _session = new GameSessionService();
-        ServiceLocator.Container.RegisterSingleton<IGameSessionService>(_session);
+        TestServices.Container.RegisterSingleton<IGameSessionService>(_session);
         AddNode(_session);
         _screen = CreateScreen();
         AddNode(_screen);
@@ -66,7 +65,7 @@ public class IrregularWorldMapScreenTest
     }
 
     [AfterTest]
-    public static void Teardown() => ServiceLocator.ResetForTesting();
+    public static void Teardown() => TestServices.Reset();
 
     private static async Task WaitFor(Func<bool> condition)
     {
@@ -107,8 +106,8 @@ public class IrregularWorldMapScreenTest
         _screen.LootSpawnPoint = lootPoint;
 
         var spawning = new RecordingCardSpawner();
-        ServiceLocator.Container.RegisterSingleton<ICardSpawningService>(spawning);
-        ServiceLocator.Container.RegisterSingleton<ICardSpawner>(cardSpawner);
+        TestServices.Container.RegisterSingleton<ICardSpawningService>(spawning);
+        TestServices.Container.RegisterSingleton<ICardSpawner>(cardSpawner);
         var loot = new List<CardSignature>
         {
             new(new[] { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f }),
@@ -190,54 +189,21 @@ public class IrregularWorldMapScreenTest
     private static IrregularMeshNs.IrregularMeshMovementController FindMovement(Node root) =>
         root.FindChildren("*", "", true, false).OfType<IrregularMeshNs.IrregularMeshMovementController>().Single();
 
+    // Leaving the tree disconnects the screen from the session; entering it again must connect it again, or a start
+    // made after that waits for a service that never comes.
     [TestCase]
     [TestCategory("Unit")]
-    public async Task ASessionTheScreenDidNotStartLeavesItEmpty()
+    public async Task AScreenAddedBackToTheTreeConnectsToTheSessionAgain()
     {
-        _session.StartSession(
-            new List<CardSignature>(MeshMapGeneratorFixture.TerrainCards()),
-            new List<CardSignature>(Abilities),
-            SmallGenerator);
-
-        await WaitFor(() => _session.CurrentGeneratedMap != null);
+        var parent = _screen.GetParent();
+        parent.RemoveChild(_screen);
+        await ISceneRunner.SyncProcessFrame;
+        parent.AddChild(_screen);
         await ISceneRunner.SyncProcessFrame;
 
-        AssertThat(_session.CurrentGeneratedMap).IsNotNull();
-        AssertBool(_screen.IsInitialized).IsFalse();
-    }
+        await ShowMap();
 
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task AGeneratorThatGivesNoMeshMapEndsTheSession()
-    {
-        var states = new List<SessionState>();
-        _session.StateChanged += states.Add;
-
-        _screen.Initialize(MeshMapGeneratorFixture.TerrainCards(), Abilities, new PlainMapGenerator());
-        await WaitFor(() => states.Contains(SessionState.WaitingForCards));
-
-        AssertThat(states).Contains(SessionState.GeneratingMap, SessionState.WaitingForCards);
-        AssertThat(states).NotContains(SessionState.Exploring);
-        AssertThat(_session.CurrentState).IsEqual(SessionState.WaitingForCards);
-        AssertBool(_screen.IsInitialized).IsFalse();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task InitializeBeforeTheServiceResolvesStartsOnceItDoes()
-    {
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
-        var screen = CreateScreen();
-        AddNode(screen);
-        await ISceneRunner.SyncProcessFrame;
-
-        screen.Initialize(MeshMapGeneratorFixture.TerrainCards(), Abilities, SmallGenerator);
-        ServiceLocator.Container.RegisterSingleton<IGameSessionService>(_session);
-        ServiceLocator.ExecutePendingCallbacks();
-        await WaitFor(() => screen.IsInitialized);
-
-        AssertBool(screen.IsInitialized).IsTrue();
+        AssertBool(_screen.IsInitialized).IsTrue();
     }
 
     [TestCase]
@@ -295,25 +261,5 @@ public class IrregularWorldMapScreenTest
         await ShowMap();
 
         AssertBool(_screen.IsInitialized).IsTrue();
-    }
-
-    /// <summary>
-    /// A generator whose map is a real irregular map seen only as a plain <see cref="IGeneratedMap"/>.
-    /// </summary>
-    private sealed class PlainMapGenerator : IMapGenerator
-    {
-        public async Task<IGeneratedMap> GenerateAsync(
-            MapGenerationConfig config,
-            IProgress<float>? progress = null,
-            CancellationToken cancellationToken = default) =>
-            new PlainMap(await SmallGenerator.GenerateAsync(config, progress, cancellationToken));
-    }
-
-    private sealed class PlainMap(IGeneratedMap inner) : IGeneratedMap
-    {
-        public IMapData GetMapData() => inner.GetMapData();
-        public int EnemyCount => inner.EnemyCount;
-        public bool RemoveEnemyAt(int cellId) => inner.RemoveEnemyAt(cellId);
-        public Vector2 PlayerStartPosition => inner.PlayerStartPosition;
     }
 }

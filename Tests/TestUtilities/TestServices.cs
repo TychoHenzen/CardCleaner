@@ -19,6 +19,12 @@ public static class TestServices
 
     public static void Reset() => ServiceLocator.ResetForTesting();
 
+    /// <summary>
+    ///     Runs the queued <c>Get&lt;T&gt;(callback)</c> lookups whose service is now registered, as the root does
+    ///     after composing.
+    /// </summary>
+    public static void ExecutePendingCallbacks() => ServiceLocator.ExecutePendingCallbacks();
+
     /// <summary>Runs the composition root's [Service] scan of the game into the container.</summary>
     public static void RegisterGameServiceClasses(IServiceContainer container) =>
         CompositionRoot.RegisterGameServiceClasses(container);

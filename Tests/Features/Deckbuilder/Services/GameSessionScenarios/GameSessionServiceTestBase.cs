@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 
@@ -37,9 +37,8 @@ public abstract class GameSessionServiceTestBase
         // Load the real tile registry so map generation works
         _tileRegistry = new TileRegistry();
 
-        // Register with ServiceLocator so GameSessionService can resolve it
-        ServiceLocator.Container.RegisterSingleton<ITileRegistry>(_tileRegistry);
-        ServiceLocator.Container.RegisterSingleton<ITileMetadataProvider>(_tileRegistry);
+        // SimpleMapData looks the tile registry up in the container
+        TestServices.Container.RegisterSingleton<ITileRegistry>(_tileRegistry);
 
         _service = new GameSessionService();
         _generator = new FastMapGenerator();

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
@@ -32,10 +31,12 @@ internal sealed class WorldMapRuntime : ISessionView
 
     // The screen acts only on a session it started: the link passes events on while the screen owns the session.
     private readonly SessionViewLink _link;
+    private readonly IServiceResolver _services;
 
-    internal WorldMapRuntime(SimpleWorldMapScreen screen)
+    internal WorldMapRuntime(SimpleWorldMapScreen screen, IServiceResolver services)
     {
         _screen = screen;
+        _services = services;
         _components = new WorldMapComponents(screen);
         _cameraRig = new WorldMapCameraRig(screen.Viewport);
         _enemySprites = new EnemySpriteLayer(screen.Viewport);
@@ -50,8 +51,8 @@ internal sealed class WorldMapRuntime : ISessionView
         _cameraRig.ConfigureForPreview();
         ShowStatus("Waiting for map data...");
 
-        ServiceLocator.Get<ITileRegistry>(_components.Initialize);
-        ServiceLocator.Get<IGameSessionService>(_link.Connect);
+        _services.Get<ITileRegistry>(_components.Initialize);
+        _services.Get<IGameSessionService>(_link.Connect);
     }
 
     internal void Stop()
@@ -261,12 +262,12 @@ internal sealed class WorldMapRuntime : ISessionView
     }
 
     // Lays the loot cards out in a row that starts at the loot point and runs along that point's X axis.
-    private static void SpawnLootRow(List<CardSignature> lootSignatures, Transform3D lootPoint)
+    private void SpawnLootRow(List<CardSignature> lootSignatures, Transform3D lootPoint)
     {
         var rowDirection = lootPoint.Basis.Orthonormalized().X;
 
-        ServiceLocator.Get<ICardSpawningService>(spawningService =>
-            ServiceLocator.Get<ICardSpawner>(spawner =>
+        _services.Get<ICardSpawningService>(spawningService =>
+            _services.Get<ICardSpawner>(spawner =>
             {
                 for (var i = 0; i < lootSignatures.Count; i++)
                 {
@@ -279,8 +280,11 @@ internal sealed class WorldMapRuntime : ISessionView
             }));
     }
 
-    // The grid view sees with the session's own checker and clears its map when the new one arrives.
-    IVisibilityChecker? ISessionView.PrepareForSession() => null;
+    // The grid view hands over the registered checker (or none) and clears its map when the new one arrives.
+    // ASSUMPTION: the registered checker is the same stateless SimpleVisibilityChecker exploration falls back to, so
+    // handing it over leaves exploration unchanged.
+    IVisibilityChecker? ISessionView.PrepareForSession() =>
+        _services.Has<IVisibilityChecker>() ? _services.Get<IVisibilityChecker>() : null;
 
     // The grid view keeps nothing per session that Reset does not clear.
     void ISessionView.OnSessionReleased()
