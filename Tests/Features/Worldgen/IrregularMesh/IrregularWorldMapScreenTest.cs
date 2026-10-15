@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -13,6 +12,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.Mocking;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
@@ -55,10 +55,10 @@ public class IrregularWorldMapScreenTest
     [BeforeTest]
     public async Task Setup()
     {
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
         _session = new GameSessionService();
-        ServiceLocator.Container.RegisterSingleton<IGameSessionService>(_session);
+        TestServices.Container.RegisterSingleton<IGameSessionService>(_session);
         AddNode(_session);
         _screen = CreateScreen();
         AddNode(_screen);
@@ -66,7 +66,7 @@ public class IrregularWorldMapScreenTest
     }
 
     [AfterTest]
-    public static void Teardown() => ServiceLocator.ResetForTesting();
+    public static void Teardown() => TestServices.Reset();
 
     private static async Task WaitFor(Func<bool> condition)
     {
@@ -107,8 +107,8 @@ public class IrregularWorldMapScreenTest
         _screen.LootSpawnPoint = lootPoint;
 
         var spawning = new RecordingCardSpawner();
-        ServiceLocator.Container.RegisterSingleton<ICardSpawningService>(spawning);
-        ServiceLocator.Container.RegisterSingleton<ICardSpawner>(cardSpawner);
+        TestServices.Container.RegisterSingleton<ICardSpawningService>(spawning);
+        TestServices.Container.RegisterSingleton<ICardSpawner>(cardSpawner);
         var loot = new List<CardSignature>
         {
             new(new[] { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f }),
@@ -226,15 +226,15 @@ public class IrregularWorldMapScreenTest
     [TestCategory("Unit")]
     public async Task InitializeBeforeTheServiceResolvesStartsOnceItDoes()
     {
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
         var screen = CreateScreen();
         AddNode(screen);
         await ISceneRunner.SyncProcessFrame;
 
         screen.Initialize(MeshMapGeneratorFixture.TerrainCards(), Abilities, SmallGenerator);
-        ServiceLocator.Container.RegisterSingleton<IGameSessionService>(_session);
-        ServiceLocator.ExecutePendingCallbacks();
+        TestServices.Container.RegisterSingleton<IGameSessionService>(_session);
+        TestServices.ExecutePendingCallbacks();
         await WaitFor(() => screen.IsInitialized);
 
         AssertBool(screen.IsInitialized).IsTrue();

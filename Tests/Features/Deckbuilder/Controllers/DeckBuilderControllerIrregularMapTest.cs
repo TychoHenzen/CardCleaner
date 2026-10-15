@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Components;
@@ -9,6 +8,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Controllers;
@@ -34,15 +34,15 @@ public class DeckBuilderControllerIrregularMapTest
     [BeforeTest]
     public void RegisterServices()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
         _session = new FakeGameSession();
         _generator = MeshMapGeneratorFixture.Pending();
-        ServiceLocator.Container.RegisterSingleton<IGameSessionService>(_session);
-        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(_generator);
+        TestServices.Container.RegisterSingleton<IGameSessionService>(_session);
+        TestServices.Container.RegisterSingleton<IMeshMapGenerator>(_generator);
     }
 
     [AfterTest]
-    public static void ClearServices() => ServiceLocator.ResetForTesting();
+    public static void ClearServices() => TestServices.Reset();
 
     private async Task BuildController(bool withIrregularScreen)
     {

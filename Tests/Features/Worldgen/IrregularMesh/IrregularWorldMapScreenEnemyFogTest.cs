@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
@@ -35,10 +35,10 @@ public class IrregularWorldMapScreenEnemyFogTest
     [BeforeTest]
     public async Task Setup()
     {
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
         var session = new GameSessionService();
-        ServiceLocator.Container.RegisterSingleton<IGameSessionService>(session);
+        TestServices.Container.RegisterSingleton<IGameSessionService>(session);
         AddNode(session);
 
         var viewport = new SubViewport { Name = "Viewport" };
@@ -57,7 +57,7 @@ public class IrregularWorldMapScreenEnemyFogTest
     }
 
     [AfterTest]
-    public static void Teardown() => ServiceLocator.ResetForTesting();
+    public static void Teardown() => TestServices.Reset();
 
     private Sprite2D[] EnemySprites() =>
         _screen.GetNode("Viewport").GetChildren().OfType<Sprite2D>().Where(s => s.ZIndex == EnemyZIndex).ToArray();
