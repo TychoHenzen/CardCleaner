@@ -201,7 +201,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: TychoHenzen/dod-guard
-          ref: 9be9738711999948e065ce82d1e7918c2abe393c
+          ref: 28023b82249276c989cb9a642b665a1f219e6644
           path: .dod-guard
 
       - name: Apply Godot quality-guard compatibility patch
