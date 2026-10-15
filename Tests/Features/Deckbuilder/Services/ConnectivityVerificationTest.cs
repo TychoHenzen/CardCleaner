@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
@@ -144,8 +143,6 @@ public class ConnectivityVerificationTest
         // GATE TEST: Generate a deterministic sample with corridor fallback disabled
         // Verify WFC-native connectivity maintains connection
 
-        var profiler = new MapGenerationProfiler();
-
         var mapSize = new Vector2I(10, 10); // Sample connectivity without duplicating the performance gate
         var disconnectedMaps = new List<int>();
 
@@ -155,7 +152,6 @@ public class ConnectivityVerificationTest
             rng.Seed = (ulong)(i * 12345 + 7);
 
             var generator = CreateGeneratorWithWfcConnectivity(mapSize, rng);
-            generator.SetProfiler(profiler);
 
             var mapData = await Task.Run(() => generator.GenerateMap(mapSize));
 
@@ -176,8 +172,6 @@ public class ConnectivityVerificationTest
         {
             GD.Print($"Disconnected maps: {string.Join(", ", disconnectedMaps)}");
         }
-
-        profiler.PrintReport();
 
         // NOTE: WFC connectivity constraint does not guarantee 100% connectivity.
         // It encourages connectivity through soft constraints but cannot prevent
