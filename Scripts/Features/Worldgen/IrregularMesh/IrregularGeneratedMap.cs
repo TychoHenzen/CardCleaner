@@ -4,23 +4,23 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 /// <summary>
-/// Wrapper that adapts IrregularMesh to the IGeneratedMap interface.
+/// Wrapper that adapts the irregular mesh to the IGeneratedMap interface.
 /// </summary>
 public class IrregularGeneratedMap : IMeshGeneratedMap
 {
-    private readonly IrregularMesh _mesh;
+    private readonly IIrregularMesh _mesh;
     private readonly IrregularMeshMapData _mapData;
 
-    public IrregularGeneratedMap(IrregularMesh mesh, IrregularMeshMapData mapData)
+    public IrregularGeneratedMap(IIrregularMesh mesh, IrregularMeshMapData mapData)
     {
         _mesh = mesh;
         _mapData = mapData;
     }
 
     /// <summary>
-    /// Gets the underlying IrregularMesh for rendering.
+    /// Gets the underlying mesh for rendering.
     /// </summary>
-    public IrregularMesh RawMesh => _mesh;
+    public IIrregularMesh RawMesh => _mesh;
 
     /// <summary>
     /// Gets the map data adapter.

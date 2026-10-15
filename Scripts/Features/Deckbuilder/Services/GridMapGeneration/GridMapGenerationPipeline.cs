@@ -79,7 +79,8 @@ internal sealed class GridMapGenerationPipeline
             PerGenerationVariants = variants.PerGenerationVariants,
             PerGenerationGroupVariants = variants.PerGenerationGroupVariants,
             ContextualVariants = contextualVariants,
-            DecorationOverlays = decorationOverlays
+            DecorationOverlays = decorationOverlays,
+            TileRegistry = _context.TileRegistry
         };
 
         // The start and the enemies come from the rule both map kinds share, drawn after the terrain from the same

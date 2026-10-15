@@ -10,7 +10,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 /// </summary>
 public partial class IrregularMeshFogRenderer : Node2D
 {
-    private IrregularMesh? _mesh;
+    private IIrregularMesh? _mesh;
     private IrregularMeshFogOfWar? _fogOfWar;
     private MeshInstance2D? _fogMeshInstance;
     private bool _needsRebuild = true;
@@ -70,7 +70,7 @@ public partial class IrregularMeshFogRenderer : Node2D
     /// </summary>
     /// <param name="mesh">The irregular mesh.</param>
     /// <param name="fogOfWar">The fog of war state tracker.</param>
-    public void Initialize(IrregularMesh mesh, IrregularMeshFogOfWar fogOfWar)
+    public void Initialize(IIrregularMesh mesh,IrregularMeshFogOfWar fogOfWar)
     {
         _mesh = mesh;
         _fogOfWar = fogOfWar;
@@ -142,7 +142,7 @@ public partial class IrregularMeshFogRenderer : Node2D
         _fogMeshInstance.Mesh = arrayMesh;
     }
 
-    private void AddQuadToMesh(SurfaceTool surfaceTool, MeshQuad quad, Color baseColor)
+    private void AddQuadToMesh(SurfaceTool surfaceTool, IMeshQuad quad,Color baseColor)
     {
         var corners = quad.GetCornerPositions();
         if (corners.Length != 4)
@@ -190,7 +190,7 @@ public partial class IrregularMeshFogRenderer : Node2D
         surfaceTool.AddVertex(new Vector3(worldCorners[3].X, worldCorners[3].Y, 0));
     }
 
-    private Color[] GetSmoothVertexColors(MeshQuad quad, Color baseColor)
+    private Color[] GetSmoothVertexColors(IMeshQuad quad,Color baseColor)
     {
         var colors = new Color[4];
         var sortedCorners = quad.GetSortedCorners();

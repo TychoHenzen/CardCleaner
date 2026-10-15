@@ -8,10 +8,10 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug.Painting;
 internal sealed class PreviewMeshPainter
 {
     private readonly CanvasItem _canvas;
-    private readonly IrregularMesh _mesh;
+    private readonly IIrregularMesh _mesh;
     private readonly Transform2D _transform;
 
-    internal PreviewMeshPainter(CanvasItem canvas, IrregularMesh mesh, Transform2D transform)
+    internal PreviewMeshPainter(CanvasItem canvas, IIrregularMesh mesh, Transform2D transform)
     {
         _canvas = canvas;
         _mesh = mesh;

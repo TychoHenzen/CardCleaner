@@ -127,24 +127,6 @@ public class ExplorationAI
             $"Exploration AI initialized at cell {CurrentCellId} (position: {CurrentPosition})");
     }
 
-    /// <summary>
-    /// Backwards-compatible constructor that wraps SimpleMapData in RegularGridMapData.
-    /// </summary>
-    public ExplorationAI(
-        SimpleMapData simpleMapData,
-        Vector2I? startPosition = null,
-        IVisibilityChecker? visibilityChecker = null,
-        int visionRange = 5)
-        : this(
-            new RegularGridMapData(simpleMapData),
-            startPosition.HasValue
-                ? startPosition.Value.Y * simpleMapData.Size.X + startPosition.Value.X
-                : null,
-            visibilityChecker,
-            visionRange)
-    {
-    }
-
     private void UpdateInitialVision()
     {
         try

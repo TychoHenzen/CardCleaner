@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
@@ -23,7 +22,7 @@ internal sealed class TerrainTransitionRenderer
         _resolver = new TerrainTransitionResolver(usingCompiledAtlas);
     }
 
-    public void Render(SimpleMapData mapData)
+    public void Render(IGridMap mapData)
     {
         if (_terrainLayer == null || _tileRegistry == null)
             return;

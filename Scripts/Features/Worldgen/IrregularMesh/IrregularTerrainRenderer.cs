@@ -63,7 +63,7 @@ public partial class IrregularTerrainRenderer : Node2D
     /// Render the terrain mesh using the compiled atlas.
     /// Each quad determines its terrain transition from its 4 corner vertices.
     /// </summary>
-    public void RenderTerrain(IrregularMesh mesh)
+    public void RenderTerrain(IIrregularMesh mesh)
     {
         if (_tileRegistry == null)
         {
@@ -105,7 +105,7 @@ public partial class IrregularTerrainRenderer : Node2D
     /// <summary>
     /// Render terrain with a simple solid color per bitmask (for testing without atlas).
     /// </summary>
-    public void RenderTerrainSolid(IrregularMesh mesh)
+    public void RenderTerrainSolid(IIrregularMesh mesh)
     {
         var arrayMesh = SolidColorMeshBuilder.Build(mesh);
         if (arrayMesh == null)
@@ -148,7 +148,7 @@ public partial class IrregularTerrainRenderer : Node2D
         return true;
     }
 
-    private ArrayMesh? BuildTerrainMesh(IrregularMesh mesh)
+    private ArrayMesh? BuildTerrainMesh(IIrregularMesh mesh)
     {
         if (_transitionResolver == null || _atlasTexture == null || _tileRegistry == null)
             return null;

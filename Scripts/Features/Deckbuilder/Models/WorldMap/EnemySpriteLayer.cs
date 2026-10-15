@@ -23,7 +23,7 @@ internal sealed class EnemySpriteLayer
         _sprites.Clear();
     }
 
-    internal void Create(List<Vector2I> enemyPositions, int tileSize)
+    internal void Create(IReadOnlyList<Vector2I> enemyPositions, int tileSize)
     {
         foreach (var pos in enemyPositions)
         {

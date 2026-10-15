@@ -84,7 +84,7 @@ public class GameSessionSeedTest : GameSessionServiceTestBase
         var abilityCards = new List<CardSignature> { new() };
 
         SimpleMapData? firstMap = null;
-        _service.GeneratedMapReady += map => firstMap = ((IGridGeneratedMap)map).RawMapData;
+        _service.GeneratedMapReady += map => firstMap = (SimpleMapData)((IGridGeneratedMap)map).RawMapData;
 
         _service.StartSession(mapSeeds, abilityCards, _generator);
 
@@ -102,7 +102,7 @@ public class GameSessionSeedTest : GameSessionServiceTestBase
         _service.ResetSession();
 
         SimpleMapData? secondMap = null;
-        _service.GeneratedMapReady += map => secondMap = ((IGridGeneratedMap)map).RawMapData;
+        _service.GeneratedMapReady += map => secondMap = (SimpleMapData)((IGridGeneratedMap)map).RawMapData;
 
         _service.StartSession(mapSeeds, abilityCards, _generator);
 

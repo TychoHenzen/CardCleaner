@@ -93,7 +93,7 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
         var abilityCards = new List<CardSignature> { new() };
         SimpleMapData? generatedMap = null;
 
-        _service.GeneratedMapReady += map => generatedMap = ((IGridGeneratedMap)map).RawMapData;
+        _service.GeneratedMapReady += map => generatedMap = (SimpleMapData)((IGridGeneratedMap)map).RawMapData;
 
         _service.StartSession(mapSeeds, abilityCards, _generator);
 
@@ -150,7 +150,7 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
         var abilityCards = new List<CardSignature> { new() };
         SimpleMapData? generatedMap = null;
 
-        _service.GeneratedMapReady += map => generatedMap = ((IGridGeneratedMap)map).RawMapData;
+        _service.GeneratedMapReady += map => generatedMap = (SimpleMapData)((IGridGeneratedMap)map).RawMapData;
 
         _service.StartSession(mapSeeds, abilityCards, _generator);
 
@@ -179,7 +179,7 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
         var abilityCards = new List<CardSignature> { new() };
         SimpleMapData? generatedMap = null;
 
-        _service.GeneratedMapReady += map => generatedMap = ((IGridGeneratedMap)map).RawMapData;
+        _service.GeneratedMapReady += map => generatedMap = (SimpleMapData)((IGridGeneratedMap)map).RawMapData;
 
         _service.StartSession(mapSeeds, abilityCards, _generator);
 
@@ -278,7 +278,7 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
             {
                 var grid = (IGridGeneratedMap)generated;
                 Map = generated.GetMapData();
-                EnemyCell = grid.GridMapData.PositionToCellId(grid.RawMapData.EnemyPositions.First());
+                EnemyCell = grid.GridMapData.PositionToCellId(grid.RawMapData.EnemyPositions[0]);
             };
             service.PlayerMovedWorld += Moves.Add;
             service.VisitedCellsUpdated += cells => VisitedCells.UnionWith(cells);

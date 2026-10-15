@@ -8,7 +8,7 @@ internal static class QuadCornerCounter
     /// <summary>
     /// Corners with terrain type above zero (type 0 is impassable, any higher type is passable).
     /// </summary>
-    internal static int CountFilledCorners(IrregularMesh mesh, MeshQuad quad)
+    internal static int CountFilledCorners(IIrregularMesh mesh, IMeshQuad quad)
     {
         int count = 0;
         foreach (var vid in quad.VertexIds)

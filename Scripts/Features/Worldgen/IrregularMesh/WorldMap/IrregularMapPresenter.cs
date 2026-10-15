@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using Godot;
 
@@ -30,7 +31,7 @@ internal sealed class IrregularMapPresenter
 
     internal Sprite2D? PlayerSprite { get; set; }
 
-    internal IrregularMesh? Mesh { get; private set; }
+    internal IIrregularMesh? Mesh { get; private set; }
 
     internal IrregularMeshMapData? MapData { get; private set; }
 
@@ -54,7 +55,9 @@ internal sealed class IrregularMapPresenter
         }
 
         UpdatePlayerPosition(startCell);
-        GD.Print($"[IrregularWorldMapScreen] Showing map: {map.RawMesh.GetStatistics()}");
+        var mesh = map.RawMesh;
+        var statistics = MeshStatistics.Of(mesh.Vertices, mesh.Quads.Select(q => q.Area).ToList(), mesh.Bounds);
+        GD.Print($"[IrregularWorldMapScreen] Showing map: {statistics}");
     }
 
     internal void CloseView()

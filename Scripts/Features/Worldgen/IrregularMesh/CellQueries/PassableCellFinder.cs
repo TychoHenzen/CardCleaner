@@ -31,7 +31,7 @@ internal static class PassableCellFinder
     /// <summary>
     /// Finds the passable cell whose centroid is closest to a position in mesh coordinates.
     /// </summary>
-    internal static int? FindNearest(IMapData mapData, IrregularMesh mesh, Vector2 meshPos)
+    internal static int? FindNearest(IMapData mapData, IIrregularMesh mesh, Vector2 meshPos)
     {
         int? nearestCell = null;
         float nearestDist = float.MaxValue;

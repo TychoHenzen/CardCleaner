@@ -6,12 +6,12 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.CellQueries;
 
 /// <summary>
-/// IMapData implementation that wraps an IrregularMesh.
+/// IMapData implementation that wraps an irregular mesh.
 /// Cells are quad IDs, positions are quad centroids.
 /// </summary>
 public class IrregularMeshMapData : IMapData
 {
-    private readonly IrregularMesh _mesh;
+    private readonly IIrregularMesh _mesh;
     private readonly Dictionary<int, string> _terrainTypes = new();
     private readonly HashSet<int> _structureCells = new();
 
@@ -28,7 +28,7 @@ public class IrregularMeshMapData : IMapData
     /// </summary>
     public Vector2 WorldOffset { get; set; } = Vector2.Zero;
 
-    public IrregularMeshMapData(IrregularMesh mesh)
+    public IrregularMeshMapData(IIrregularMesh mesh)
     {
         _mesh = mesh;
     }
@@ -260,7 +260,7 @@ public class IrregularMeshMapData : IMapData
     /// <summary>
     /// Get the underlying mesh (for rendering and advanced operations).
     /// </summary>
-    public IrregularMesh GetMesh() => _mesh;
+    public IIrregularMesh GetMesh() => _mesh;
 
     /// <summary>
     /// Find a random passable cell.

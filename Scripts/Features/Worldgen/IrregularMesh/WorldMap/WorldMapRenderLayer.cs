@@ -10,12 +10,12 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 internal sealed class WorldMapRenderLayer
 {
     private readonly WorldMapSettings _settings;
-    private readonly IrregularMesh _mesh;
+    private readonly IIrregularMesh _mesh;
     private readonly IrregularMeshMapData _mapData;
 
     private readonly List<Node> _ownedNodes = new();
 
-    internal WorldMapRenderLayer(WorldMapSettings settings, IrregularMesh mesh, IrregularMeshMapData mapData)
+    internal WorldMapRenderLayer(WorldMapSettings settings, IIrregularMesh mesh, IrregularMeshMapData mapData)
     {
         _settings = settings;
         _mesh = mesh;

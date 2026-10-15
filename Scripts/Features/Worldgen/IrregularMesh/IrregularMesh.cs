@@ -10,10 +10,13 @@ using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Topology;
 /// An irregular quad mesh for terrain rendering.
 /// Contains vertices (data grid) and quads (visual grid) with precomputed adjacency.
 /// </summary>
-public class IrregularMesh
+public class IrregularMesh : IIrregularMesh
 {
     public List<MeshVertex> Vertices { get; } = new();
     public List<MeshQuad> Quads { get; } = new();
+
+    IReadOnlyList<MeshVertex> IIrregularMesh.Vertices => Vertices;
+    IReadOnlyList<IMeshQuad> IIrregularMesh.Quads => Quads;
 
     /// <summary>
     /// Axis-aligned bounding box of the mesh (min corner, max corner).
@@ -95,6 +98,12 @@ public class IrregularMesh
 
         return null;
     }
+
+    IMeshQuad? IIrregularMesh.GetQuadAtPosition(Vector2 worldPos) => GetQuadAtPosition(worldPos);
+
+    IEnumerable<IMeshQuad> IIrregularMesh.GetQuadsIntersectingRect(Rect2 rect) => GetQuadsIntersectingRect(rect);
+
+    IEnumerable<IMeshQuad> IIrregularMesh.GetAdjacentQuads(int quadId) => GetAdjacentQuads(quadId);
 
     /// <summary>
     /// Get the nearest vertex to a world position.
@@ -195,29 +204,6 @@ public class IrregularMesh
     /// <summary>
     /// Get statistics about the mesh.
     /// </summary>
-    internal MeshStatistics GetStatistics()
-    {
-        var areas = Quads.Select(q => q.Area).ToList();
-        int boundaryCount = Vertices.Count(v => v.IsBoundary);
-
-        return new MeshStatistics
-        {
-            VertexCount = Vertices.Count,
-            QuadCount = Quads.Count,
-            BoundaryVertexCount = boundaryCount,
-            MinArea = areas.Count > 0 ? areas.Min() : 0,
-            MaxArea = areas.Count > 0 ? areas.Max() : 0,
-            AvgArea = areas.Count > 0 ? areas.Average() : 0,
-            AreaStdDev = areas.Count > 0 ? ComputeStdDev(areas) : 0,
-            Bounds = Bounds
-        };
-    }
-
-    private static float ComputeStdDev(List<float> values)
-    {
-        if (values.Count == 0) return 0;
-        float avg = (float)values.Average();
-        float sumSquares = values.Sum(v => (v - avg) * (v - avg));
-        return Mathf.Sqrt(sumSquares / values.Count);
-    }
+    internal MeshStatistics GetStatistics() =>
+        MeshStatistics.Of(Vertices, Quads.Select(q => q.Area).ToList(), Bounds);
 }

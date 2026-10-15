@@ -1,6 +1,5 @@
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Components.WorldMapTerrainRendererSupport;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
@@ -63,7 +62,7 @@ public class WorldMapTerrainRenderer
     /// Render dual-grid terrain transitions.
     /// Uses pre-composited transition tiles from the compiled atlas.
     /// </summary>
-    public void RenderTerrainTransitions(SimpleMapData mapData)
+    public void RenderTerrainTransitions(IGridMap mapData)
     {
         _terrainTransitionRenderer.Render(mapData);
     }
@@ -71,7 +70,7 @@ public class WorldMapTerrainRenderer
     /// <summary>
     /// Render non-terrain tiles (structures, decorations, effects) from the data grid.
     /// </summary>
-    public void RenderNonTerrainTiles(SimpleMapData mapData)
+    public void RenderNonTerrainTiles(IGridMap mapData)
     {
         _nonTerrainTileRenderer.Render(mapData);
     }
@@ -95,7 +94,7 @@ public class WorldMapTerrainRenderer
     /// <summary>
     /// Log sample of tile rendering info for debugging.
     /// </summary>
-    public void LogTileRenderingSample(SimpleMapData mapData)
+    public void LogTileRenderingSample(IGridMap mapData)
     {
         if (_hasLoggedTileInfo) return;
         _hasLoggedTileInfo = true;

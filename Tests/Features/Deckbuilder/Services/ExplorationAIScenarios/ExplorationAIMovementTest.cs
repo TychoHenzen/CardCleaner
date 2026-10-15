@@ -17,7 +17,7 @@ public class ExplorationAIMovementTest : ExplorationAITestBase
     {
         var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
 
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker());
 
         AssertThat(GetCurrentGridPosition(ai, gridData)).IsEqual(new Vector2I(0, 0));
         AssertBool(ai.HasFoundEnemy).IsFalse();
@@ -28,7 +28,7 @@ public class ExplorationAIMovementTest : ExplorationAITestBase
     public void TestExplorationMovesToPassableTiles()
     {
         var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker());
 
         var moved = ai.StepExploration();
 
@@ -40,7 +40,7 @@ public class ExplorationAIMovementTest : ExplorationAITestBase
     public void TestExplorationPlayerMovedEventFires()
     {
         var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker());
         var moveCount = 0;
 
         ai.PlayerMoved += _ => moveCount++;
@@ -56,7 +56,7 @@ public class ExplorationAIMovementTest : ExplorationAITestBase
     public void TestExplorationEventuallyFinishes()
     {
         var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker());
 
         var stepCount = 0;
         while (!ai.HasFinishedExploration && stepCount < 1000)
@@ -74,7 +74,7 @@ public class ExplorationAIMovementTest : ExplorationAITestBase
         var (mapData, gridData) = OpenFloorMap.Create(3, 3, new Vector2I(1, 1));
         mapData.EnemyPositions.Clear();
 
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
 
         var stepCount = 0;
         while (!ai.HasFinishedExploration && stepCount < 100)
@@ -112,7 +112,7 @@ public class ExplorationAIMovementTest : ExplorationAITestBase
         mapData.PassableTiles.Add(new Vector2I(2, 2));
 
         var gridData = new RegularGridMapData(mapData);
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker());
         var stepCount = 0;
 
         while (!ai.HasFinishedExploration && stepCount < 100)
@@ -130,7 +130,7 @@ public class ExplorationAIMovementTest : ExplorationAITestBase
     {
         var (mapData, gridData) = OpenFloorMap.Create(2, 2, new Vector2I(0, 0));
         mapData.EnemyPositions.Clear();
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker(), visionRange: 10);
 
         var stepCount = 0;
         while (!ai.HasFinishedExploration && stepCount < 100)
@@ -155,7 +155,8 @@ public class ExplorationAIMovementTest : ExplorationAITestBase
         mapData.TileIds[0, 0] = Floor;
         mapData.PassableTiles.Add(new Vector2I(0, 0));
 
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
+        var gridData = new RegularGridMapData(mapData);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker());
 
         ai.StepExploration();
 
@@ -176,7 +177,8 @@ public class ExplorationAIMovementTest : ExplorationAITestBase
             mapData.PassableTiles.Add(new Vector2I(x, 0));
         }
 
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
+        var gridData = new RegularGridMapData(mapData);
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker());
 
         var stepCount = 0;
         while (!ai.HasFinishedExploration && stepCount < 100)
@@ -192,7 +194,7 @@ public class ExplorationAIMovementTest : ExplorationAITestBase
     public void TestExplorationPositionUpdates()
     {
         var (mapData, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
-        var ai = new ExplorationAI(mapData, visibilityChecker: new SimpleVisibilityChecker());
+        var ai = new ExplorationAI(gridData, visibilityChecker: new SimpleVisibilityChecker());
 
         var startCellId = ai.CurrentCellId;
         var positionChanged = false;

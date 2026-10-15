@@ -12,7 +12,7 @@ internal static class IrregularMeshNeighbors
     /// <summary>
     /// Builds the neighbor array of every vertex, indexed by vertex ID.
     /// </summary>
-    internal static int[][] BuildNeighbors(IrregularMesh mesh)
+    internal static int[][] BuildNeighbors(IIrregularMesh mesh)
     {
         var neighbors = new int[mesh.Vertices.Count][];
         for (var i = 0; i < mesh.Vertices.Count; i++)
@@ -30,7 +30,7 @@ internal static class IrregularMeshNeighbors
     /// This includes edge-adjacent vertices AND corner-adjacent vertices
     /// (any vertex in any quad that has this vertex as a corner).
     /// </summary>
-    private static HashSet<int> ComputeNeighborSet(IrregularMesh mesh, int vertexId)
+    private static HashSet<int> ComputeNeighborSet(IIrregularMesh mesh, int vertexId)
     {
         var neighbors = new HashSet<int>();
         var vertex = mesh.Vertices[vertexId];

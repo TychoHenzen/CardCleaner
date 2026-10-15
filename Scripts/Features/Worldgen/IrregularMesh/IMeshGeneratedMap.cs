@@ -8,7 +8,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 public interface IMeshGeneratedMap : IGeneratedMap
 {
     /// <summary>The mesh, for rendering.</summary>
-    IrregularMesh RawMesh { get; }
+    IIrregularMesh RawMesh { get; }
 
     /// <summary>
     /// The map data over the mesh: cells, passability, start and enemies, in the generator's world scale.
