@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -14,7 +16,8 @@ internal sealed class GridMapWfcGenerator
         _context = context;
     }
 
-    public TwoPhaseWfcResult Generate(Vector2I size)
+    /// <exception cref="OperationCanceledException">Thrown when the token is cancelled during a WFC solve.</exception>
+    public TwoPhaseWfcResult Generate(Vector2I size, CancellationToken cancellationToken = default)
     {
         var layers = new WfcLayerBuffers(size);
         if (_context.WfcGenerator == null || _context.BiomeRegistry == null)
@@ -24,8 +27,8 @@ internal sealed class GridMapWfcGenerator
         }
 
         _context.WfcGenerator.MaxRetries = _context.MaxWfcRetries;
-        GenerateBackground(size, layers);
-        GenerateForeground(size, layers);
+        GenerateBackground(size, layers, cancellationToken);
+        GenerateForeground(size, layers, cancellationToken);
         MergeLayers(size, layers);
         return ToResult(layers);
     }
@@ -44,7 +47,7 @@ internal sealed class GridMapWfcGenerator
         }
     }
 
-    private void GenerateBackground(Vector2I size, WfcLayerBuffers layers)
+    private void GenerateBackground(Vector2I size, WfcLayerBuffers layers, CancellationToken cancellationToken)
     {
         var result = _context.WfcGenerator!.GenerateMultiBiome(
             _context.BiomeRegistry!,
@@ -52,7 +55,8 @@ internal sealed class GridMapWfcGenerator
             size,
             _context.Rng.Randi(),
             _context.Gradient,
-            tileId => _context.TileRegistry.GetTile(tileId)?.HasAutoTileVariants == false);
+            tileId => _context.TileRegistry.GetTile(tileId)?.HasAutoTileVariants == false,
+            cancellationToken: cancellationToken);
 
         if (result.Success && result.TileIds != null)
         {
@@ -67,14 +71,15 @@ internal sealed class GridMapWfcGenerator
         FillLayer(layers.BackgroundLayer, size, _context.DefaultPassableTileId);
     }
 
-    private void GenerateForeground(Vector2I size, WfcLayerBuffers layers)
+    private void GenerateForeground(Vector2I size, WfcLayerBuffers layers, CancellationToken cancellationToken)
     {
         var result = _context.WfcGenerator!.GenerateMultiBiome(
             _context.BiomeRegistry!,
             position => _context.BiomeProvider.GetBiomeAt(position),
             size,
             _context.Rng.Randi(),
-            _context.Gradient);
+            _context.Gradient,
+            cancellationToken: cancellationToken);
 
         if (result.Success && result.TileIds != null)
         {

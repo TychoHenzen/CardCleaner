@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
@@ -72,8 +73,14 @@ public class WfcSolver
     /// <param name="topology">The WFC topology to solve</param>
     /// <param name="biome">Biome for soft rule weighting</param>
     /// <param name="rng">Random number generator for tile selection</param>
+    /// <param name="cancellationToken">Checked once per collapsed cell, before the next cell is chosen</param>
     /// <returns>Result indicating success or failure with details</returns>
-    public WfcSolveResult Solve(IWfcTopology topology, BiomeDefinition? biome, IRandom rng)
+    /// <exception cref="OperationCanceledException">Thrown when the token is cancelled during the solve.</exception>
+    public WfcSolveResult Solve(
+        IWfcTopology topology,
+        BiomeDefinition? biome,
+        IRandom rng,
+        CancellationToken cancellationToken = default)
     {
         var run = new WfcSolveRun(topology, biome, rng, topology.CellCount);
         PrepareForSolve(topology);
@@ -91,6 +98,7 @@ public class WfcSolver
         var iterations = 0;
         while (!topology.IsFullyCollapsed())
         {
+            cancellationToken.ThrowIfCancellationRequested();
             iterations++;
 
             if (iterations > MaxIterations)

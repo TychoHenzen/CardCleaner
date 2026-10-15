@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -53,13 +54,14 @@ internal sealed class GridMapGenerationPipeline
         _context.WfcGenerator?.SetProfiler(profiler);
     }
 
-    public SimpleMapData GenerateMap(Vector2I size)
+    /// <exception cref="OperationCanceledException">Thrown when the token is cancelled during a WFC solve.</exception>
+    public SimpleMapData GenerateMap(Vector2I size, CancellationToken cancellationToken = default)
     {
         ILog.Print($"Generating WFC-based map {size.X}x{size.Y}");
 
         var variants = SelectVariants();
         var biomeMap = BuildBiomeMap(size);
-        var twoPhaseResult = GenerateTwoPhaseWfc(size, biomeMap);
+        var twoPhaseResult = GenerateTwoPhaseWfc(size, biomeMap, cancellationToken);
         var passableTiles = CollectPassableTiles(size, twoPhaseResult.MergedGrid);
         var decorationOverlays = GenerateTerrainTransitions(
             twoPhaseResult.BackgroundLayer,
@@ -119,10 +121,13 @@ internal sealed class GridMapGenerationPipeline
         }
     }
 
-    private TwoPhaseWfcResult GenerateTwoPhaseWfc(Vector2I size, string[,] biomeMap)
+    private TwoPhaseWfcResult GenerateTwoPhaseWfc(
+        Vector2I size,
+        string[,] biomeMap,
+        CancellationToken cancellationToken)
     {
         using (_context.Profiler.BeginScope(TwoPhaseWfcScope))
-            return _wfcGenerator.Generate(size);
+            return _wfcGenerator.Generate(size, cancellationToken);
     }
 
     private List<Vector2I> CollectPassableTiles(Vector2I size, string[,] terrainGrid)
