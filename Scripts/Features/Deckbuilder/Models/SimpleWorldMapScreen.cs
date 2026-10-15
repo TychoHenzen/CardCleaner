@@ -11,12 +11,13 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 /// The Godot-facing surface lives here; the session and rendering runtime is <see cref="WorldMapRuntime"/>.
 /// </summary>
 [GlobalClass]
-public partial class SimpleWorldMapScreen : Node3D
+public partial class SimpleWorldMapScreen : Node3D, IDependent
 {
     // Default values as constants
     private const bool DefaultShowBiomeOverlay = true;
 
     private WorldMapRuntime? _runtime;
+    private IServiceResolver? _services;
     private (CardSignature[] MapSeed, CardSignature[] Abilities, IMapGenerator Generator)? _pendingSession;
 
     #region Export Properties
@@ -63,11 +64,23 @@ public partial class SimpleWorldMapScreen : Node3D
 
     #region Lifecycle
 
+    public void Inject(IServiceResolver services) => _services = services;
+
     public override void _Ready()
     {
-        _runtime = new WorldMapRuntime(this);
         CallDeferred(nameof(SetupScreenMesh));
         CallDeferred(nameof(SetupScreenMaterial));
+
+        // ASSUMPTION: the runtime needs the session service and tile registry for everything it does, so a screen
+        // that was not injected builds no runtime: it still sets up its mesh, but Initialize then only keeps the
+        // start as pending and the session never starts.
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _runtime = new WorldMapRuntime(this, _services);
         _runtime.Start();
 
         if (_pendingSession is var (mapSeed, abilities, generator))

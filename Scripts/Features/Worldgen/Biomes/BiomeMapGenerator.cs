@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
@@ -15,7 +14,15 @@ public class BiomeMapGenerator : IBiomeProvider
     private readonly Vector2I _mapSize;
     private readonly BiomeRegistry _registry;
 
-    public BiomeMapGenerator(BiomeRegistry registry, BaselineGradient gradient, Vector2I mapSize)
+    /// <param name="metadataProvider">
+    ///     Gives the fallback biome its default passable and solid tiles; without it the fallback biome's tile pools
+    ///     are empty.
+    /// </param>
+    public BiomeMapGenerator(
+        BiomeRegistry registry,
+        BaselineGradient gradient,
+        Vector2I mapSize,
+        ITileMetadataProvider? metadataProvider = null)
     {
         ArgumentNullException.ThrowIfNull(registry);
         ArgumentNullException.ThrowIfNull(gradient);
@@ -24,16 +31,11 @@ public class BiomeMapGenerator : IBiomeProvider
         _gradient = gradient;
         _mapSize = mapSize;
 
-        _fallbackBiome = CreateFallbackBiome();
+        _fallbackBiome = CreateFallbackBiome(metadataProvider);
     }
 
-    private static BiomeDefinition CreateFallbackBiome()
+    private static BiomeDefinition CreateFallbackBiome(ITileMetadataProvider? metadataProvider)
     {
-        // Try to get default tile IDs from metadata provider
-        var metadataProvider = ServiceLocator.Has<ITileMetadataProvider>()
-            ? ServiceLocator.Get<ITileMetadataProvider>()
-            : null;
-
         var passableTileId = metadataProvider?.GetDefaultPassableTileId();
         var solidTileId = metadataProvider?.GetDefaultSolidTileId();
 

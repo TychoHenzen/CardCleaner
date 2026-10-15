@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.Exploration;
@@ -75,7 +74,8 @@ public class ExplorationAI
     public event Action? PathUpdated;
 
     /// <summary>
-    /// Create exploration AI with a map data provider.
+    /// Create exploration AI with a map data provider. Without a <paramref name="visibilityChecker"/> it sees with a
+    /// new <see cref="SimpleVisibilityChecker"/>.
     /// </summary>
     public ExplorationAI(
         IMapData mapData,
@@ -86,9 +86,7 @@ public class ExplorationAI
         ArgumentNullException.ThrowIfNull(mapData);
 
         _mapData = mapData;
-        var resolvedVisibilityChecker = visibilityChecker ?? (ServiceLocator.Has<IVisibilityChecker>()
-            ? ServiceLocator.Get<IVisibilityChecker>()
-            : new SimpleVisibilityChecker());
+        var resolvedVisibilityChecker = visibilityChecker ?? new SimpleVisibilityChecker();
         _frontierBehavior = new FrontierExplorationBehavior(
             mapData,
             resolvedVisibilityChecker,

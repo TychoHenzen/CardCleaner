@@ -51,7 +51,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
         // so the same seed and cards always give the same map.
         var rng = RandomSources.Create(config.Seed);
         var gradient = new CardBasedGradient(config.MapSeeds, rng);
-        var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, config.Size);
+        var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, config.Size, _metadataProvider);
         var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),

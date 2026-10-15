@@ -192,7 +192,8 @@ Access services via `ServiceLocator.Get<T>()` or `ServiceLocator.Container.Resol
 tree injection keep using `ServiceLocator` until #244. Tests go through `Tests/TestUtilities/TestServices`:
 `Container`, `Resolver` (the resolver the root injects), `Reinitialize()` (`CompositionRoot.ReinitializeServices()`),
 `Reset()` (`ServiceLocator.ResetForTesting()`), `RegisterGameServiceClasses(container)` (the root's `[Service]` scan
-into a container) and `Inject(node)` for a node built outside the tree.
+into a container), `ExecutePendingCallbacks()` (runs the queued `Get<T>(callback)` lookups, as the root does after
+composing) and `Inject(node)` for a node built outside the tree.
 
 ### Dependency Gate
 

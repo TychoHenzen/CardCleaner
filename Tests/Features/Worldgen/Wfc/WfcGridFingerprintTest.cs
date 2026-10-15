@@ -55,7 +55,7 @@ public class WfcGridFingerprintTest
         var map = generator.GenerateMap(GridSize);
 
         // ASSUMPTION: the default biomes load in the test process, so the closest-biome lookup never
-        // reaches the fallback biome, whose tile pools come from ServiceLocator (absent in a test process).
+        // reaches the fallback biome, whose tile pools are empty because no ITileMetadataProvider is passed.
         AssertThat(biomeRegistry.Count).IsGreater(0);
         // ASSUMPTION: a real background WFC run on seed 4242 yields several tile ids; a failed phase writes one.
         AssertThat(Cells(map.BackgroundLayer).Where(id => !string.IsNullOrEmpty(id)).Distinct().Count())

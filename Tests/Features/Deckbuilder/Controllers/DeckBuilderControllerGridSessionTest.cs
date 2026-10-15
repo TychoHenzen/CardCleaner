@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
@@ -11,6 +10,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Controllers;
@@ -34,10 +34,10 @@ public class DeckBuilderControllerGridSessionTest
     [BeforeTest]
     public async Task Setup()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
         _session = new FakeGameSession();
-        ServiceLocator.Container.RegisterSingleton<IGameSessionService>(_session);
-        ServiceLocator.Container.RegisterSingleton<IGridMapGenerator>(new PendingGridGenerator());
+        TestServices.Container.RegisterSingleton<IGameSessionService>(_session);
+        TestServices.Container.RegisterSingleton<IGridMapGenerator>(new PendingGridGenerator());
 
         _abilitySlot = CreateSlot("AbilitySlot");
         _mapSlot = CreateSlot("MapSlot");
@@ -69,7 +69,7 @@ public class DeckBuilderControllerGridSessionTest
     [AfterTest]
     public static void Teardown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]
