@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Workshop.Components;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -43,8 +44,8 @@ public class ShopWorkshopBuildSpaceSceneTest
         _player = _shop.GetNode<CharacterBody3D>("Player");
 
         // The test scene is not the current scene, so hand the scene-owned settings to the player directly.
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;
@@ -56,7 +57,7 @@ public class ShopWorkshopBuildSpaceSceneTest
     {
         Input.ActionRelease("ui_up");
         Engine.TimeScale = 1.0;
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]

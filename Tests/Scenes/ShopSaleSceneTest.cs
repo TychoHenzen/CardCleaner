@@ -12,6 +12,7 @@ using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -43,11 +44,11 @@ public class ShopSaleSceneTest
         _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
 
         // The test scene is not the current scene, so hand the scene-owned services over directly.
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
-        ServiceLocator.Container.RegisterSingleton<IMoneyService>(_money);
-        ServiceLocator.Container.RegisterSingleton<IOrderingService>(_ordering);
-        ServiceLocator.Container.RegisterSingleton<ICardSpawner>(_shop.GetNode<Node3D>("World/Cards") as ICardSpawner
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
+        TestServices.Container.RegisterSingleton<IMoneyService>(_money);
+        TestServices.Container.RegisterSingleton<IOrderingService>(_ordering);
+        TestServices.Container.RegisterSingleton<ICardSpawner>(_shop.GetNode<Node3D>("World/Cards") as ICardSpawner
             ?? throw new System.InvalidOperationException("World/Cards must be the card spawner"));
 
         AddNode(_shop);
@@ -58,7 +59,7 @@ public class ShopSaleSceneTest
     [AfterTest]
     public static void Teardown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]

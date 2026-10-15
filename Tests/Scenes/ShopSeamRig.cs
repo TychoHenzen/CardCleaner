@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Portal.Components;
 using CardCleaner.Tests.Features.Shop;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -46,9 +47,9 @@ public sealed class ShopSeamRig
         var rig = new ShopSeamRig(GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>());
 
         // The test scene is not the current scene, so hand the scene-owned services over directly.
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<IGameSettings>(rig.Shop.GetNode<GameSettings>("Services/GameSettings"));
-        ServiceLocator.Container.RegisterSingleton<ICardSpawner>(rig.Shop.GetNode<Node3D>("World/Cards") as ICardSpawner
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<IGameSettings>(rig.Shop.GetNode<GameSettings>("Services/GameSettings"));
+        TestServices.Container.RegisterSingleton<ICardSpawner>(rig.Shop.GetNode<Node3D>("World/Cards") as ICardSpawner
             ?? throw new System.InvalidOperationException("World/Cards must be the card spawner"));
 
         AddNode(rig.Shop);

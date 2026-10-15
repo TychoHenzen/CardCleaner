@@ -15,6 +15,7 @@ using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using NSubstitute;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -51,13 +52,13 @@ public class ShopPackOpeningSceneTest
         _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
 
         // The test scene is not the current scene, so hand the scene-owned services over directly.
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
-        ServiceLocator.Container.RegisterSingleton<IMoneyService>(_money);
-        ServiceLocator.Container.RegisterSingleton<IOrderingService>(_ordering);
-        ServiceLocator.Container.RegisterSingleton(RandomSources.Create(Seed));
-        ServiceLocator.Container.RegisterSingleton(Substitute.For<ICardGenerator>());
-        ServiceLocator.Container.RegisterSingleton<ICardSpawningService>(
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
+        TestServices.Container.RegisterSingleton<IMoneyService>(_money);
+        TestServices.Container.RegisterSingleton<IOrderingService>(_ordering);
+        TestServices.Container.RegisterSingleton(RandomSources.Create(Seed));
+        TestServices.Container.RegisterSingleton(Substitute.For<ICardGenerator>());
+        TestServices.Container.RegisterSingleton<ICardSpawningService>(
             _shop.GetNode<CardSpawningService>("Services/SpawningService"));
 
         AddNode(_shop);
@@ -68,7 +69,7 @@ public class ShopPackOpeningSceneTest
     [AfterTest]
     public static void Teardown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]

@@ -4,6 +4,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -29,7 +30,7 @@ public class ShopWorkshopReliabilitySceneTest
     public static void Teardown()
     {
         Engine.TimeScale = 1;
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase(Timeout = 120000)]

@@ -160,11 +160,11 @@ public class ConstructorInjectionTest
         TestServices.Container.RegisterServiceClasses(new[] { typeof(ScannedConsumer) });
         TestServices.Resolver.Get<IScannedA>(_ => runs++);
 
-        ServiceLocator.ExecutePendingCallbacks();
+        TestServices.ExecutePendingCallbacks();
         Assertions.AssertInt(runs).IsEqual(0);
 
         TestServices.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
-        ServiceLocator.ExecutePendingCallbacks();
+        TestServices.ExecutePendingCallbacks();
         Assertions.AssertInt(runs).IsEqual(1);
     }
 

@@ -17,6 +17,7 @@ using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
 namespace CardCleaner.Tests.Scenes;
@@ -58,12 +59,12 @@ public class ShopWorkshopMapSessionSceneTest
         // The core services the Services autoload composes in the game. Composing clears pending callbacks, so it
         // runs before the shop enters the tree; the shop's own providers then register as the game's do.
         CompositionRoot.ReinitializeServices();
-        _coreServiceNodes.Add((Node)ServiceLocator.Get<IInputService>());
-        _coreServiceNodes.Add((Node)ServiceLocator.Get<IPlayerResetService>());
+        _coreServiceNodes.Add((Node)TestServices.Resolver.Get<IInputService>());
+        _coreServiceNodes.Add((Node)TestServices.Resolver.Get<IPlayerResetService>());
 
         // The irregular kind plays on the small map the workshop suites use: the game's full-size map takes far longer
         // to explore than the budget allows. Registered before the shop enters the tree, so the cabinet resolves it.
-        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(
+        TestServices.Container.RegisterSingleton<IMeshMapGenerator>(
             MeshMapGeneratorFixture.Create(WorkshopSceneRig.SmallMeshRings));
 
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
@@ -73,17 +74,17 @@ public class ShopWorkshopMapSessionSceneTest
         foreach (var node in _tree.GetNodesInGroup("service_providers"))
         {
             if (node is IServiceProvider provider)
-                provider.RegisterServices(ServiceLocator.Container);
+                provider.RegisterServices(TestServices.Container);
         }
 
-        ServiceLocator.ExecutePendingCallbacks();
+        TestServices.ExecutePendingCallbacks();
         await WorkshopSceneRig.Settle();
     }
 
     [AfterTest]
     public void Teardown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
         _tree.CurrentScene = _previousScene;
         _tree.Root.RemoveChild(_shop);
         _shop.Free();

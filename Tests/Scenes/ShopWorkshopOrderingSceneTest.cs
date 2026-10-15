@@ -52,7 +52,7 @@ public class ShopWorkshopOrderingSceneTest
     [AfterTest]
     public static void Teardown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]

@@ -14,6 +14,7 @@ using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -68,11 +69,11 @@ public sealed class WorkshopSceneRig
         var rig = new WorkshopSceneRig(GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>());
 
         // The test scene is not the current scene, so hand the services the cabinet needs over directly.
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<ICardSpawningService>(new TestCardSpawner());
-        ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
-        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(MeshMapGeneratorFixture.Create(SmallMeshRings));
-        ServiceLocator.Container.RegisterSingleton<IGameSessionService>(
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<ICardSpawningService>(new TestCardSpawner());
+        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
+        TestServices.Container.RegisterSingleton<IMeshMapGenerator>(MeshMapGeneratorFixture.Create(SmallMeshRings));
+        TestServices.Container.RegisterSingleton<IGameSessionService>(
             rig.Workshop.GetNode<GameSessionService>("GameSessionService"));
 
         AddNode(rig.Shop);

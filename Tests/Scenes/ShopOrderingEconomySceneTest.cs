@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -42,7 +43,7 @@ public class ShopOrderingEconomySceneTest
     [AfterTest]
     public static void Teardown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]
@@ -72,7 +73,7 @@ public class ShopOrderingEconomySceneTest
     [TestCategory("Unit")]
     public void BothTerminalsUseTheOneMoneyServiceTheLocatorHandsOut()
     {
-        var resolved = ServiceLocator.Container.Resolve<IMoneyService>();
+        var resolved = TestServices.Container.Resolve<IMoneyService>();
 
         AssertBool(ReferenceEquals(resolved, _money)).IsTrue();
         AssertThat(_shop.FindChildren("*", string.Empty, true, false).OfType<MoneyService>().Count()).IsEqual(1);
