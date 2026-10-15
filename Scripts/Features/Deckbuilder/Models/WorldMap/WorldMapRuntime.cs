@@ -31,8 +31,6 @@ internal sealed class WorldMapRuntime : ISessionView
 
     // The screen acts only on a session it started: the link passes events on while the screen owns the session.
     private readonly SessionViewLink _link;
-
-    // The resolver the screen was injected with; the runtime looks its services up through it.
     private readonly IServiceResolver _services;
 
     internal WorldMapRuntime(SimpleWorldMapScreen screen, IServiceResolver services)
@@ -282,8 +280,7 @@ internal sealed class WorldMapRuntime : ISessionView
             }));
     }
 
-    // The grid view hands the session the registered visibility checker, or none so the session uses its default, and
-    // clears its map when the new one arrives.
+    // The grid view hands over the registered checker (or none) and clears its map when the new one arrives.
     // ASSUMPTION: the registered checker is the same stateless SimpleVisibilityChecker exploration falls back to, so
     // handing it over leaves exploration unchanged.
     IVisibilityChecker? ISessionView.PrepareForSession() =>
