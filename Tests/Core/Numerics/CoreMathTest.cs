@@ -26,8 +26,6 @@ public class CoreMathTest
             AssertSame(Mathf.Log(x), CoreMath.Log(x), "Log", x);
             AssertSame(Mathf.Tan(x), CoreMath.Tan(x), "Tan", x);
             AssertSame(Mathf.DegToRad(x), CoreMath.DegToRad(x), "DegToRad", x);
-            Assertions.AssertBool(CoreMath.IsZeroApprox(x)).OverrideFailureMessage($"IsZeroApprox({x})")
-                .IsEqual(Mathf.IsZeroApprox(x));
         }
     }
 

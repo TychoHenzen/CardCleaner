@@ -182,6 +182,8 @@ The project uses a custom DI container with no static service state: an instance
   `Godot.Mathf`. Domain classes call `CoreMath`, not `Mathf`; add a member only together with its first caller (an
   unused public member is a `dead-export` finding). It lives in `Core/Numerics`, not `Core/Math`, so the namespace
   does not shadow `System.Math`.
+  A data struct that must stay pure data in the dependency gate (`CardSignature`) uses `System.Math` / `MathF`, not
+  `CoreMath`, because a static function class is not data there.
 - **ServiceContainer**: singleton registrations, plus constructor injection. `Construct<T>()` and
   `RegisterSingleton<TInterface, TImplementation>()` build a plain class through its public constructor with the most
   parameters, resolving each parameter from the container; a missing one throws `InvalidOperationException` naming

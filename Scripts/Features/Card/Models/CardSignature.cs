@@ -2,13 +2,14 @@ using System;
 using System.Globalization;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
-using CardCleaner.Scripts.Core.Numerics;
 using Newtonsoft.Json;
 
 namespace CardCleaner.Scripts.Features.Card.Models;
 
 public readonly struct CardSignature
 {
+    private const float ZeroTolerance = 1e-06f;
+
     public CardSignature(float[] elements)
     {
         if (elements.Length != 8)
@@ -63,7 +64,7 @@ public readonly struct CardSignature
         return new CardSignature(elements);
     }
 
-    public bool HasMagicalPotential() => Elements.Any(element => !CoreMath.IsZeroApprox(element));
+    public bool HasMagicalPotential() => Elements.Any(element => !IsNearZero(element));
 
     public float DistanceTo(CardSignature other)
     {
@@ -74,7 +75,7 @@ public readonly struct CardSignature
             sum += difference * difference;
         }
 
-        return CoreMath.Sqrt(sum);
+        return MathF.Sqrt(sum);
     }
 
     public CardSignature Subtract(CardSignature other)
@@ -85,7 +86,7 @@ public readonly struct CardSignature
         return new CardSignature(elements);
     }
 
-    public float GetIntensity(Element element) => CoreMath.Abs(this[element]);
+    public float GetIntensity(Element element) => MathF.Abs(this[element]);
 
     public bool IsSignificant(Element element, float threshold = 0.1f) => GetIntensity(element) >= threshold;
 
@@ -93,5 +94,7 @@ public readonly struct CardSignature
         $"Signature[{string.Join(", ", Elements.Select(element => element.ToString(
             "F2", CultureInfo.InvariantCulture)))}]";
 
-    private static float Clamp(float value) => CoreMath.Clamp(value, -1f, 1f);
+    private static float Clamp(float value) => Math.Clamp(value, -1f, 1f);
+
+    private static bool IsNearZero(float value) => MathF.Abs(value) < ZeroTolerance;
 }
