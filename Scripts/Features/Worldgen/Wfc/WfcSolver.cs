@@ -94,14 +94,24 @@ public class WfcSolver
         // Initial propagation to apply any pre-existing constraints
         var initialResult = _propagator.PropagateAll(topology);
         if (!initialResult.Success)
-        {
-            return WfcSolveResult.Failed(
-                "Initial propagation found contradiction",
-                0,
-                initialResult.ContradictionCellId,
-                StepTimings());
-        }
+            return FailInitialPropagation(initialResult);
 
+        return CollapseUntilComplete(run, cancellationToken);
+    }
+
+    private WfcSolveResult FailInitialPropagation(
+        PropagationResult initialResult) =>
+        WfcSolveResult.Failed(
+            "Initial propagation found contradiction",
+            0,
+            initialResult.ContradictionCellId,
+            StepTimings());
+
+    private WfcSolveResult CollapseUntilComplete(
+        WfcSolveRun run,
+        CancellationToken cancellationToken)
+    {
+        var topology = run.Topology;
         var iterations = 0;
         while (!topology.IsFullyCollapsed())
         {
