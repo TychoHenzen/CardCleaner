@@ -8,7 +8,8 @@ using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 namespace CardCleaner.Tests.Features.Worldgen.Wfc.SolverScenarios;
 
 /// <summary>
-///     A cancelled token stops a running solve within one collapsed cell.
+///     A cancelled token stops a solve: a running one within one
+///     collapsed cell, a pre-cancelled one before it starts.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -16,7 +17,13 @@ public class WfcSolverCancellationTest
 {
     private const ulong Seed = 7;
     private const int GridSize = 8;
+    private const string CollapsedTile = "grass";
     private static readonly string[] Tiles = { "grass", "wall" };
+
+    // A grid whose only tile is grass starts with every cell collapsed, so
+    // the solve loop is never entered.
+    private static WfcGrid CollapsedGrid() =>
+        new(GridSize, GridSize, new[] { CollapsedTile });
 
     // Every tile may border every other, so propagation never narrows a cell and the only collapsed cells are the
     // ones the solver collapsed itself.
@@ -74,5 +81,34 @@ public class WfcSolverCancellationTest
             .IsInstanceOf<OperationCanceledException>();
 
         AssertInt(CountCollapsed(grid)).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void Solve_CancelledBeforeTheSolve_ThrowsOnCollapsedGrid()
+    {
+        using var source = new CancellationTokenSource();
+        source.Cancel();
+        var grid = CollapsedGrid();
+        AssertBool(grid.IsFullyCollapsed()).IsTrue();
+
+        AssertThrown(() => CreateSolver(new WfcTileSelector())
+                .Solve(grid, null, RandomSources.Create(Seed), source.Token))
+            .IsInstanceOf<OperationCanceledException>();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void Solve_UncancelledTokenOnFullyCollapsedGrid_Succeeds()
+    {
+        using var source = new CancellationTokenSource();
+        var grid = CollapsedGrid();
+        AssertBool(grid.IsFullyCollapsed()).IsTrue();
+
+        var result = CreateSolver(new WfcTileSelector())
+            .Solve(grid, null, RandomSources.Create(Seed), source.Token);
+
+        AssertBool(result.Success).IsTrue();
+        AssertInt(result.Iterations).IsEqual(0);
     }
 }
