@@ -30,11 +30,6 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     public bool UsingCompiledAtlas { get; private set; }
 
     /// <summary>
-    /// The compiled TileSet if using atlas mode, null otherwise.
-    /// </summary>
-    public TileSet? CompiledTileSet { get; private set; }
-
-    /// <summary>
     /// Configuration for tileset-level spatial properties (tile size, grid offset).
     /// </summary>
     public TilesetConfig TilesetConfig { get; private set; } = TilesetConfig.Default;
@@ -142,12 +137,9 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
         _atlasMapping = CompiledAtlasLoader.LoadMapping();
         ILog.Print($"[TileRegistry] Atlas mapping loaded: {(_atlasMapping != null ? "YES" : "NULL")}");
 
-        CompiledTileSet = CompiledAtlasLoader.LoadCompiledTileSet();
-        ILog.Print($"[TileRegistry] Compiled TileSet loaded: {(CompiledTileSet != null ? "YES" : "NULL")}");
-
-        if (CompiledTileSet == null || _atlasMapping == null)
+        if (_atlasMapping == null)
         {
-            ILog.Print("[TileRegistry] FAILED: CompiledTileSet or mapping is null, falling back");
+            ILog.Print("[TileRegistry] FAILED: mapping is null, falling back");
             return false;
         }
 
@@ -185,7 +177,6 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     private void UseOriginalTileset(TileRegistryResult result)
     {
         UsingCompiledAtlas = false;
-        CompiledTileSet = null;
         TilesetPath = result.TilesetPath;
         TilesetConfig = result.TilesetConfig;
 

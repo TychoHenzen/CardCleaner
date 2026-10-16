@@ -129,7 +129,6 @@ public class TileRegistryAutoTileTest : TileRegistryTestBase
         // Registry should report whether it's using compiled atlas
         // (Will be true if compiled atlas files exist)
         GD.Print($"UsingCompiledAtlas: {_registry.UsingCompiledAtlas}");
-        GD.Print($"CompiledTileSet: {(_registry.CompiledTileSet != null ? "loaded" : "null")}");
         GD.Print($"TilesetPath: {_registry.TilesetPath}");
 
         // No assertion - just log the state for debugging

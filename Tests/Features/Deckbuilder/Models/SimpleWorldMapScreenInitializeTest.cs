@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.TestUtilities;
+using Godot;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Models;
 
@@ -119,6 +121,33 @@ public class SimpleWorldMapScreenInitializeTest
         AssertThat(_session.CurrentState).IsEqual(SessionState.WaitingForCards);
     }
 
+    [TestCase]
+    public void ACompiledAtlasRegistryGivesTheLayersTheLoadersTileSet()
+    {
+        var errors = new List<string>();
+        var previousSink = ILog.Sink;
+        var registry = new TileRegistry();
+        var layer = new TileMapLayer();
+        var screen = new SimpleWorldMapScreen { TerrainLayer = layer };
+        try
+        {
+            ILog.Sink = new ErrorRecorder(errors);
+
+            new WorldMapComponents(screen).Initialize(registry);
+
+            AssertBool(registry.UsingCompiledAtlas).IsTrue();
+            AssertThat(layer.TileSet).IsNotNull();
+            AssertThat(layer.TileSet).IsSame(CompiledAtlasLoader.LoadCompiledTileSet());
+            AssertThat(errors).IsEmpty();
+        }
+        finally
+        {
+            ILog.Sink = previousSink;
+            layer.Free();
+            screen.Free();
+        }
+    }
+
     /// <summary>Counts the generations the session asks for; the map never arrives.</summary>
     private sealed class RecordingGenerator : IMapGenerator
     {
@@ -132,5 +161,20 @@ public class SimpleWorldMapScreenInitializeTest
             Calls++;
             return new TaskCompletionSource<IGeneratedMap>().Task;
         }
+    }
+
+    private sealed class ErrorRecorder(List<string> errors) : ILog
+    {
+        public void LogMessage(string message)
+        {
+        }
+
+        public void LogWarning(string message)
+        {
+        }
+
+        public void LogError(string message) => errors.Add(message);
+
+        public void LogError(string message, Exception exception) => errors.Add(message);
     }
 }

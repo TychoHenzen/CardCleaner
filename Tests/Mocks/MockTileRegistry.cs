@@ -21,7 +21,6 @@ public class MockTileRegistry : ITileRegistry, ITileMetadataProvider
 
     public string TilesetPath => "res://test.tres";
     public bool UsingCompiledAtlas => false;
-    public TileSet? CompiledTileSet => null;
     public TilesetConfig TilesetConfig => TilesetConfig.Default;
 
     public void RegisterTile(TileDefinition tile) => _tiles[tile.Id] = tile;
