@@ -57,7 +57,9 @@ public sealed class ServiceHost : IServiceResolver
             foreach (var callback in callbacks)
             {
                 ILog.Print($"Running callback for {serviceType.Name}");
-                RunCallback(callback, service, serviceType, failures);
+                var error = Invoke(callback, service);
+                if (error != null)
+                    Report(serviceType, error, failures);
             }
         }
         catch (Exception error)
@@ -66,19 +68,16 @@ public sealed class ServiceHost : IServiceResolver
         }
     }
 
-    private static void RunCallback(
-        Action<object> callback,
-        object service,
-        Type serviceType,
-        List<Exception> failures)
+    private static Exception? Invoke(Action<object> callback, object service)
     {
         try
         {
             callback(service);
+            return null;
         }
         catch (Exception error)
         {
-            Report(serviceType, error, failures);
+            return error;
         }
     }
 
