@@ -1,9 +1,9 @@
+using CardCleaner.Scripts.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Core.Services.CompiledAtlas;
