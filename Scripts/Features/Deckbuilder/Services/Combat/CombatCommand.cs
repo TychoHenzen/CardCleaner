@@ -105,8 +105,12 @@ public class CombatCommand : ICombatCommand
         {
             var value = signature[i];
             if (value > 0.3f)
+            {
                 totalPower += value * 10f;
-            else if (value < -0.3f)
+                continue;
+            }
+
+            if (value < -0.3f)
                 totalHealing += CoreMath.Abs(value) * 8f;
         }
 
