@@ -115,31 +115,39 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     /// Loads tiles from Data/Tiles/tiles.json.
     /// Automatically uses compiled atlas if available for optimized runtime loading.
     /// </summary>
-    public void LoadFromData(string? path = null)
+    public void LoadFromData(string? path = null, string? atlasMappingPath = null)
     {
         var result = TileDataLoader.LoadTileRegistry(path);
 
-        if (!TryUseCompiledAtlas(result))
+        if (!TryUseCompiledAtlas(result, atlasMappingPath))
             UseOriginalTileset(result);
 
         VariationGroupBuilder.Rebuild(_tiles.Values, _variationGroups);
     }
 
-    private bool TryUseCompiledAtlas(TileRegistryResult result)
+    private bool TryUseCompiledAtlas(TileRegistryResult result, string? atlasMappingPath)
     {
         // Check if compiled atlas is available
-        var isAvailable = CompiledAtlasLoader.IsCompiledAtlasAvailable();
+        var isAvailable = CompiledAtlasLoader.IsCompiledAtlasAvailable(atlasMappingPath);
         ILog.Print($"[TileRegistry] Compiled atlas available: {isAvailable}");
 
         if (!isAvailable)
             return false;
 
-        _atlasMapping = CompiledAtlasLoader.LoadMapping();
+        _atlasMapping = CompiledAtlasLoader.LoadMapping(atlasMappingPath);
         ILog.Print($"[TileRegistry] Atlas mapping loaded: {(_atlasMapping != null ? "YES" : "NULL")}");
 
         if (_atlasMapping == null)
         {
             ILog.Print("[TileRegistry] FAILED: mapping is null, falling back");
+            return false;
+        }
+
+        // The loader owns the TileSet and caches it; the registry only asks whether it loads, so that an
+        // atlas whose image cannot be loaded falls back to the original tileset, as before the TileSet moved out.
+        if (CompiledAtlasLoader.LoadCompiledTileSet(atlasMappingPath) == null)
+        {
+            ILog.Print("[TileRegistry] FAILED: compiled TileSet does not load, falling back");
             return false;
         }
 
@@ -189,10 +197,10 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     /// <summary>
     /// Reloads all tiles from the data file, clearing existing tiles first
     /// </summary>
-    public void Reload(string? path = null)
+    public void Reload(string? path = null, string? atlasMappingPath = null)
     {
         Clear();
-        LoadFromData(path);
+        LoadFromData(path, atlasMappingPath);
     }
 
     #region ITileMetadataProvider Implementation
