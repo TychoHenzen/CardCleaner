@@ -2,6 +2,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.CellQueries;
 
@@ -95,11 +96,10 @@ public class IrregularMeshMapData : IMapData
         if (_structureCells.Contains(cellId))
             return false;
 
-        // Cell is passable if MAJORITY (at least 2 of 4) corner vertices have passable terrain
-        // This allows traversal near terrain edges and provides better connectivity
-        // NOTE: Terrain type 0 = impassable, any terrain type > 0 = passable; the terrain generator
-        // assigns unique types (1, 2, 3, etc.) to different passable terrain tiles
-        int passableCount = QuadCornerCounter.CountFilledCorners(_mesh, _mesh.Quads[cellId]);
+        // Passable when at least 2 of 4 corners have terrain type > 0
+        // (0 is impassable); this keeps edges traversable and connected.
+        int passableCount = QuadCornerCounter.CountFilledCorners(
+            _mesh, _mesh.Quads[cellId]);
         return passableCount >= 2;
     }
 
@@ -265,7 +265,14 @@ public class IrregularMeshMapData : IMapData
     /// <summary>
     /// Find a random passable cell.
     /// </summary>
-    public int? FindRandomPassableCell(int seed) => PassableCellFinder.FindRandom(this, seed);
+    public int? FindRandomPassableCell(int seed)
+    {
+        var cells = Enumerable.Range(0, CellCount).Where(IsPassable).ToList();
+        if (cells.Count == 0)
+            return null;
+
+        return cells[new System.Random(seed).Next(cells.Count)];
+    }
 
     /// <summary>
     /// Find the nearest passable cell to a world position.
@@ -273,7 +280,16 @@ public class IrregularMeshMapData : IMapData
     public int? FindNearestPassableCell(Vector2 worldPos)
     {
         var meshPos = (worldPos - WorldOffset) / WorldScale;
-        return PassableCellFinder.FindNearest(this, _mesh, meshPos);
+        int? nearest = null;
+        var nearestDist = float.MaxValue;
+        for (var i = 0; i < _mesh.Quads.Count; i++)
+        {
+            var dist = _mesh.Quads[i].Centroid.DistanceSquaredTo(meshPos);
+            if (IsPassable(i) && dist < nearestDist)
+                (nearestDist, nearest) = (dist, i);
+        }
+
+        return nearest;
     }
 
     #endregion
