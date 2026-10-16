@@ -7,20 +7,22 @@ using CardCleaner.Scripts.Core.Interfaces;
 namespace CardCleaner.Scripts.Core.DependencyInjection;
 
 /// <summary>
-///     Owns one service container and its pending-callback queue, and is the <see cref="IServiceResolver" /> that the
-///     composition root (the "Services" autoload in Scripts/Composition/CompositionRoot.cs) injects into every
-///     <see cref="IDependent" /> node. It registers nothing itself and names no feature or composition type.
-///     <see cref="Reset" /> replaces the container but keeps the host, so a resolver injected before a reset reads the
-///     replacement container.
+///     One container plus its pending-callback queue, and the resolver the
+///     composition root injects into every <see cref="IDependent" /> node.
+///     <see cref="Reset" /> keeps the host and swaps the container, so an
+///     earlier resolver reads the new one. Names no feature or composition
+///     type.
 /// </summary>
 public sealed class ServiceHost : IServiceResolver
 {
-    // Callbacks from Get<T>(callback), run by ExecutePendingCallbacks once their service is registered.
-    private readonly Dictionary<Type, List<Action<object>>> _pendingCallbacks = new();
+    // Callbacks from Get<T>(callback), run once their service exists.
+    private readonly Dictionary<Type, List<Action<object>>>
+        _pendingCallbacks = new();
 
-    public IServiceContainer Container { get; private set; } = new ServiceContainer();
+    public IServiceContainer Container { get; private set; } =
+        new ServiceContainer();
 
-    /// <summary>Replaces the container with an empty one and drops every pending callback.</summary>
+    /// <summary>Replaces the container and drops pending callbacks.</summary>
     internal void Reset()
     {
         Container = new ServiceContainer();
