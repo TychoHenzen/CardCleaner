@@ -18,7 +18,7 @@ public class WfcTerrainSolverCatalogTest
     public static void SolveGraphWithCatalogWithoutCatalogThrows()
     {
         var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
-        var solver = IWfcTerrainSolver.Create(transitionPairs, null);
+        var solver = WfcTerrainSolvers.Create(transitionPairs, null);
 
         AssertThrown(() => solver.SolveGraphWithCatalog(Array.Empty<int[]>(), Array.Empty<string>(), 1UL, null))
             .IsInstanceOf<InvalidOperationException>()

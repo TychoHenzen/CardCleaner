@@ -34,11 +34,4 @@ public interface IWfcTerrainSolver
         IReadOnlyCollection<string> initialTiles,
         ulong seed,
         Func<string, bool>? gapTileFilter);
-
-    /// <summary>
-    /// Creates a solver whose rules are the given transition pairs.
-    /// </summary>
-    static IWfcTerrainSolver Create(
-        IReadOnlyList<(string tileA, string tileB)> transitionPairs,
-        IWfcTileCatalog? tileCatalog) => new WfcTerrainSolver(transitionPairs, tileCatalog);
 }
