@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Tests.Mocking;
@@ -226,5 +227,216 @@ public class ServiceHostTest
         host.ExecutePendingCallbacks();
 
         Assertions.AssertInt(runs).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ThrowingCallbackDoesNotRerunEarlierCallbacks()
+    {
+        var host = new ServiceHost();
+        var runs = new int[3];
+        host.Get<ITestService>(_ => runs[0]++);
+        host.Get<ITestService>(_ =>
+        {
+            runs[1]++;
+            throw new InvalidOperationException("boom");
+        });
+        host.Get<ITestService>(_ => runs[2]++);
+        host.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
+
+        Assertions.AssertThrown(() => host.ExecutePendingCallbacks())
+            .IsInstanceOf<InvalidOperationException>()
+            .HasMessage("boom");
+        host.ExecutePendingCallbacks();
+
+        Assertions.AssertThat(runs).IsEqual(new[] { 1, 1, 1 });
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void SeveralFailuresAreRethrownTogether()
+    {
+        var host = new ServiceHost();
+        host.Get<ITestService>(_ => throw new InvalidOperationException("a"));
+        host.Get<ITestService>(_ => throw new ArgumentException("b"));
+        host.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
+
+        AggregateException? caught = null;
+        try
+        {
+            host.ExecutePendingCallbacks();
+        }
+        catch (AggregateException error)
+        {
+            caught = error;
+        }
+
+        Assertions.AssertThat(caught).IsNotNull();
+        Assertions.AssertInt(caught!.InnerExceptions.Count).IsEqual(2);
+        Assertions.AssertThat(caught.InnerExceptions[0])
+            .IsInstanceOf<InvalidOperationException>();
+        Assertions.AssertThat(caught.InnerExceptions[1])
+            .IsInstanceOf<ArgumentException>();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ThrowingTypeDoesNotStarveOtherRegisteredTypes()
+    {
+        var host = new ServiceHost();
+        var otherRuns = 0;
+        host.Get<IAsyncTestService>(
+            _ => throw new InvalidOperationException("boom"));
+        host.Get<ITestService>(_ => otherRuns++);
+        host.Container.RegisterSingleton<IAsyncTestService>(
+            new AsyncTestServiceImpl());
+        host.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
+
+        Assertions.AssertThrown(() => host.ExecutePendingCallbacks())
+            .IsInstanceOf<InvalidOperationException>();
+
+        Assertions.AssertInt(otherRuns).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ThrowingCallbackIsReportedThroughILogError()
+    {
+        var host = new ServiceHost();
+        host.Get<ITestService>(
+            _ => throw new InvalidOperationException("boom"));
+        host.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
+        var log = new RecordingLog();
+        var previous = ILog.Sink;
+        ILog.Sink = log;
+        try
+        {
+            Assertions.AssertThrown(() => host.ExecutePendingCallbacks())
+                .IsInstanceOf<InvalidOperationException>();
+        }
+        finally
+        {
+            ILog.Sink = previous;
+        }
+
+        Assertions.AssertInt(log.Errors.Count).IsEqual(1);
+        Assertions.AssertBool(log.Errors[0].Contains("ITestService")).IsTrue();
+        Assertions.AssertBool(log.Errors[0].Contains("boom")).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void CallbacksOfOneTypeRunInRegistrationOrder()
+    {
+        var host = new ServiceHost();
+        var order = new List<int>();
+        host.Get<ITestService>(_ => order.Add(1));
+        host.Get<ITestService>(_ => order.Add(2));
+        host.Get<ITestService>(_ => order.Add(3));
+        host.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
+
+        host.ExecutePendingCallbacks();
+
+        Assertions.AssertThat(order).IsEqual(new List<int> { 1, 2, 3 });
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void CallbackThatGetsARegisteredServiceRunsItOnce()
+    {
+        var host = new ServiceHost();
+        var innerRuns = 0;
+        host.Container.RegisterSingleton<IAsyncTestService>(
+            new AsyncTestServiceImpl());
+        host.Get<ITestService>(
+            _ => host.Get<IAsyncTestService>(inner => innerRuns++));
+        host.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
+
+        host.ExecutePendingCallbacks();
+        Assertions.AssertInt(innerRuns).IsEqual(1);
+
+        host.ExecutePendingCallbacks();
+        Assertions.AssertInt(innerRuns).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void
+        CallbackThatGetsAnUnregisteredServiceRunsItOnTheNextCall()
+    {
+        var host = new ServiceHost();
+        var innerRuns = 0;
+        host.Get<ITestService>(
+            _ => host.Get<IAsyncTestService>(inner => innerRuns++));
+        host.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
+
+        host.ExecutePendingCallbacks();
+        Assertions.AssertInt(innerRuns).IsEqual(0);
+
+        host.Container.RegisterSingleton<IAsyncTestService>(
+            new AsyncTestServiceImpl());
+        host.ExecutePendingCallbacks();
+        Assertions.AssertInt(innerRuns).IsEqual(1);
+
+        host.ExecutePendingCallbacks();
+        Assertions.AssertInt(innerRuns).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void CallbackThatExecutesPendingCallbacksDoesNotRerunItsType()
+    {
+        var host = new ServiceHost();
+        var runs = 0;
+        // The guard keeps the old behavior (a nested call re-running the
+        // callback) from recursing forever; it only nests on the first run.
+        host.Get<ITestService>(_ =>
+        {
+            if (runs++ == 0)
+                host.ExecutePendingCallbacks();
+        });
+        host.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
+
+        host.ExecutePendingCallbacks();
+
+        Assertions.AssertInt(runs).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void CallbackThatResetsTheHostLeavesNoStaleEntry()
+    {
+        var host = new ServiceHost();
+        var laterRuns = 0;
+        host.Get<ITestService>(_ => host.Reset());
+        host.Get<IAsyncTestService>(_ => laterRuns++);
+        host.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
+        host.Container.RegisterSingleton<IAsyncTestService>(
+            new AsyncTestServiceImpl());
+
+        host.ExecutePendingCallbacks();
+        host.Container.RegisterSingleton<IAsyncTestService>(
+            new AsyncTestServiceImpl());
+        host.ExecutePendingCallbacks();
+
+        Assertions.AssertInt(laterRuns).IsEqual(0);
+    }
+
+    private sealed class RecordingLog : ILog
+    {
+        public List<string> Errors { get; } = new();
+
+        public void LogMessage(string message)
+        {
+        }
+
+        public void LogWarning(string message)
+        {
+        }
+
+        public void LogError(string message) => Errors.Add(message);
+
+        public void LogError(string message, Exception exception) =>
+            Errors.Add(message);
     }
 }
