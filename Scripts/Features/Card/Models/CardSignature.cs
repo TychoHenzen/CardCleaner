@@ -2,15 +2,14 @@ using System;
 using System.Globalization;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Numerics;
-using CardCleaner.Scripts.Core.Utilities;
 using Newtonsoft.Json;
 
 namespace CardCleaner.Scripts.Features.Card.Models;
 
 public readonly struct CardSignature
 {
+    private const float ZeroTolerance = 1e-06f;
+
     public CardSignature(float[] elements)
     {
         if (elements.Length != 8)
@@ -65,23 +64,7 @@ public readonly struct CardSignature
         return new CardSignature(elements);
     }
 
-    public static CardSignature Random(IRandom random)
-    {
-        var elements = new float[8];
-        for (var index = 0; index < elements.Length; index++)
-            elements[index] = random.RandfRange(-1f, 1f);
-        return new CardSignature(elements);
-    }
-
-    public static CardSignature RandomSpecial(IRandom random)
-    {
-        var signature = Random(random);
-        while (!signature.HasMagicalPotential())
-            signature = Random(random);
-        return signature;
-    }
-
-    public bool HasMagicalPotential() => Elements.Any(element => !CoreMath.IsZeroApprox(element));
+    public bool HasMagicalPotential() => Elements.Any(element => !IsNearZero(element));
 
     public float DistanceTo(CardSignature other)
     {
@@ -92,7 +75,7 @@ public readonly struct CardSignature
             sum += difference * difference;
         }
 
-        return CoreMath.Sqrt(sum);
+        return MathF.Sqrt(sum);
     }
 
     public CardSignature Subtract(CardSignature other)
@@ -103,9 +86,7 @@ public readonly struct CardSignature
         return new CardSignature(elements);
     }
 
-    public Aspect GetDominantAspect(Element element) => this[element] >= 0 ? element.Positive() : element.Negative();
-
-    public float GetIntensity(Element element) => CoreMath.Abs(this[element]);
+    public float GetIntensity(Element element) => MathF.Abs(this[element]);
 
     public bool IsSignificant(Element element, float threshold = 0.1f) => GetIntensity(element) >= threshold;
 
@@ -113,5 +94,7 @@ public readonly struct CardSignature
         $"Signature[{string.Join(", ", Elements.Select(element => element.ToString(
             "F2", CultureInfo.InvariantCulture)))}]";
 
-    private static float Clamp(float value) => CoreMath.Clamp(value, -1f, 1f);
+    private static float Clamp(float value) => Math.Clamp(value, -1f, 1f);
+
+    private static bool IsNearZero(float value) => MathF.Abs(value) < ZeroTolerance;
 }

@@ -20,8 +20,8 @@ internal static class GateReport
             $"middle {m.LayerCount(Layer.Middle)}, ui {m.LayerCount(Layer.UI)}",
             $"modules {m.RealModuleCount}, loose {m.Modules.Loose.Count}",
             "gated: " + string.Join(", ", GatedNumbers.Fields.Select(f => $"{f.Name} {f.Value(gated)}")),
-            $"seams: defined {m.SeamCount(SeamKind.Defined)}, leaky {gated.SeamsLeaky}, " +
-            $"missing {gated.SeamsMissing}",
+            $"seams: defined {m.SeamCount(SeamKind.Defined)}, leaky {m.SeamCount(SeamKind.Leaky)}, " +
+            $"missing {m.SeamCount(SeamKind.Missing)}",
         };
 
         var sizes = m.Modules.Module.GroupBy(p => p.Value).ToDictionary(g => g.Key, g => g.Count());

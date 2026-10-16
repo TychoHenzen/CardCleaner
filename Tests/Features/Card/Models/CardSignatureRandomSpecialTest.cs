@@ -18,7 +18,7 @@ public class CardSignatureRandomSpecialTest
         var rng = RandomSources.Create(Seed);
 
         for (var i = 0; i < Samples; i++)
-            AssertBool(CardSignature.RandomSpecial(rng).HasMagicalPotential()).IsTrue();
+            AssertBool(SignatureRandom.CreateSpecial(rng).HasMagicalPotential()).IsTrue();
     }
 
     [TestCase]
@@ -29,7 +29,7 @@ public class CardSignatureRandomSpecialTest
 
         for (var i = 0; i < Samples; i++)
         {
-            var signature = CardSignature.RandomSpecial(rng);
+            var signature = SignatureRandom.CreateSpecial(rng);
             for (var element = 0; element < 8; element++)
                 AssertBool(signature[element] is >= -1f and <= 1f).IsTrue();
         }
@@ -39,8 +39,8 @@ public class CardSignatureRandomSpecialTest
     [TestCategory("Unit")]
     public static void SameSeedGivesTheSameSpecialSignature()
     {
-        var first = CardSignature.RandomSpecial(RandomSources.Create(Seed));
-        var second = CardSignature.RandomSpecial(RandomSources.Create(Seed));
+        var first = SignatureRandom.CreateSpecial(RandomSources.Create(Seed));
+        var second = SignatureRandom.CreateSpecial(RandomSources.Create(Seed));
 
         AssertThat(second.Elements).IsEqual(first.Elements);
     }

@@ -11,10 +11,10 @@ public class DependencyBaselineTest
 {
     private const string LoweringInstruction = "lower the baseline with";
 
-    private static readonly GatedNumbers Baseline = new(10, 4, 3, 2, 50);
+    private static readonly GatedNumbers Baseline = new(10, 4, 5, 50);
 
-    private const string BaselineJson = "{\"up_edges\": 10, \"biggest_loop\": 4, \"seams_leaky\": 3, " +
-                                        "\"seams_missing\": 2, \"refs_from_non_ui_to_ui\": 50}";
+    private const string BaselineJson = "{\"up_edges\": 10, \"biggest_loop\": 4, \"seams_leaky_or_missing\": 5, " +
+                                        "\"refs_from_non_ui_to_ui\": 50}";
 
     private string _path = null!;
 
@@ -33,7 +33,7 @@ public class DependencyBaselineTest
     public static void PriorityOrderIsPinned()
     {
         AssertThat(string.Join(",", GatedNumbers.Fields.Select(f => f.Name)))
-            .IsEqual("up_edges,biggest_loop,seams_leaky,seams_missing,refs_from_non_ui_to_ui");
+            .IsEqual("up_edges,biggest_loop,seams_leaky_or_missing,refs_from_non_ui_to_ui");
     }
 
     [TestCase]
@@ -66,11 +66,12 @@ public class DependencyBaselineTest
     {
         Record(BaselineJson);
 
-        var result = DependencyBaseline.Apply(_path, Baseline with { SeamsLeaky = 2 }, update: false);
+        var result = DependencyBaseline.Apply(_path, Baseline with { SeamsLeakyOrMissing = 4 }, update: false);
 
         AssertThat(result.Failures.Count).IsEqual(1);
-        AssertThat(result.Failures[0]).StartsWith("seams_leaky is 2, below the baseline 3: lower the baseline with " +
-                                                  DependencyBaseline.SwitchVariable + "=1");
+        AssertThat(result.Failures[0])
+            .StartsWith("seams_leaky_or_missing is 4, below the baseline 5: lower the baseline with " +
+                        DependencyBaseline.SwitchVariable + "=1");
         AssertThat(result.AcceptedRises.Count).IsEqual(0);
     }
 
@@ -80,13 +81,15 @@ public class DependencyBaselineTest
     {
         Record(BaselineJson);
 
-        var result = DependencyBaseline.Apply(_path, Baseline with { SeamsLeaky = 2, SeamsMissing = 3 },
-            update: false);
+        var changed = Baseline with { SeamsLeakyOrMissing = 4, RefsFromNonUiToUi = 51 };
+        var result = DependencyBaseline.Apply(_path, changed, update: false);
 
         AssertThat(result.Failures.Count).IsEqual(2);
-        AssertThat(result.Failures[0]).StartsWith("seams_leaky is 2, below the baseline 3: " + LoweringInstruction);
+        AssertThat(result.Failures[0])
+            .StartsWith("seams_leaky_or_missing is 4, below the baseline 5: " + LoweringInstruction);
         AssertThat(result.Failures[1])
-            .IsEqual("seams_missing is 3, above the baseline 2: accepted because seams_leaky went down");
+            .IsEqual("refs_from_non_ui_to_ui is 51, above the baseline 50: " +
+                     "accepted because seams_leaky_or_missing went down");
         AssertThat(result.AcceptedRises.Count).IsEqual(1);
         AssertThat(result.AcceptedRises[0]).IsEqual(result.Failures[1]);
     }
@@ -98,11 +101,11 @@ public class DependencyBaselineTest
         Record(BaselineJson);
 
         var result = DependencyBaseline.Apply(_path,
-            Baseline with { UpEdges = 11, SeamsLeaky = 2, SeamsMissing = 3 }, update: false);
+            Baseline with { UpEdges = 11, RefsFromNonUiToUi = 51 }, update: false);
 
         AssertThat(result.Failures.Count).IsEqual(2);
         AssertThat(result.Failures[0]).IsEqual("up_edges is 11, above the baseline 10");
-        AssertThat(result.Failures[1]).IsEqual("seams_missing is 3, above the baseline 2");
+        AssertThat(result.Failures[1]).IsEqual("refs_from_non_ui_to_ui is 51, above the baseline 50");
         AssertThat(result.Failures.Any(f => f.Contains(LoweringInstruction, StringComparison.Ordinal))).IsFalse();
         AssertThat(result.AcceptedRises.Count).IsEqual(0);
     }
@@ -112,7 +115,7 @@ public class DependencyBaselineTest
     public void SwitchRewritesOnlyWhenTheDecidingNumberWentDown()
     {
         Record(BaselineJson);
-        var accepted = Baseline with { SeamsLeaky = 2, SeamsMissing = 3 };
+        var accepted = Baseline with { SeamsLeakyOrMissing = 4, RefsFromNonUiToUi = 51 };
 
         var refused = DependencyBaseline.Apply(_path, accepted with { UpEdges = 11 }, update: true);
         AssertThat(refused.Failures.Count).IsEqual(2);
@@ -123,10 +126,11 @@ public class DependencyBaselineTest
         AssertThat(rewritten.Failures.Count).IsEqual(0);
         AssertThat(rewritten.AcceptedRises.Count).IsEqual(1);
         AssertThat(rewritten.AcceptedRises[0])
-            .IsEqual("seams_missing is 3, above the baseline 2: accepted because seams_leaky went down");
+            .IsEqual("refs_from_non_ui_to_ui is 51, above the baseline 50: " +
+                     "accepted because seams_leaky_or_missing went down");
         AssertThat(File.ReadAllText(_path)).IsEqual("{\n  \"up_edges\": 10,\n  \"biggest_loop\": 4,\n" +
-                                                    "  \"seams_leaky\": 2,\n  \"seams_missing\": 3,\n" +
-                                                    "  \"refs_from_non_ui_to_ui\": 50\n}\n");
+                                                    "  \"seams_leaky_or_missing\": 4,\n" +
+                                                    "  \"refs_from_non_ui_to_ui\": 51\n}\n");
         AssertThat(DependencyBaseline.Read(_path).Numbers!.ToString()).IsEqual(accepted.ToString());
         var after = DependencyBaseline.Apply(_path, accepted, update: false);
         AssertThat(after.Failures.Count).IsEqual(0);
@@ -151,21 +155,20 @@ public class DependencyBaselineTest
     [TestCategory("Unit")]
     public void IssueTwoFiftyFiveMeasurementsDecideByPriority()
     {
-        Record("{\"up_edges\": 33, \"biggest_loop\": 35, \"seams_leaky\": 21, \"seams_missing\": 0, " +
+        Record("{\"up_edges\": 33, \"biggest_loop\": 35, \"seams_leaky_or_missing\": 21, " +
                "\"refs_from_non_ui_to_ui\": 148}");
 
-        var fullStep = DependencyBaseline.Apply(_path, new GatedNumbers(33, 35, 17, 1, 143), update: false);
-        AssertThat(fullStep.Failures[0]).StartsWith("seams_leaky is 17, below the baseline 21: " + LoweringInstruction);
-        AssertThat(fullStep.AcceptedRises.Count).IsEqual(1);
-        AssertThat(fullStep.AcceptedRises[0])
-            .IsEqual("seams_missing is 1, above the baseline 0: accepted because seams_leaky went down");
+        var fullStep = DependencyBaseline.Apply(_path, new GatedNumbers(33, 35, 18, 143), update: false);
+        AssertThat(fullStep.Failures[0])
+            .StartsWith("seams_leaky_or_missing is 18, below the baseline 21: " + LoweringInstruction);
+        AssertThat(fullStep.AcceptedRises.Count).IsEqual(0);
 
-        var lootHalf = DependencyBaseline.Apply(_path, new GatedNumbers(34, 36, 17, 1, 144), update: false);
+        var lootHalf = DependencyBaseline.Apply(_path, new GatedNumbers(34, 36, 18, 144), update: false);
         AssertThat(lootHalf.Failures[0]).IsEqual("up_edges is 34, above the baseline 33");
         AssertThat(lootHalf.Failures.Any(f => f.Contains(LoweringInstruction, StringComparison.Ordinal))).IsFalse();
         AssertThat(lootHalf.AcceptedRises.Count).IsEqual(0);
 
-        var previewHalf = DependencyBaseline.Apply(_path, new GatedNumbers(32, 34, 21, 0, 147), update: false);
+        var previewHalf = DependencyBaseline.Apply(_path, new GatedNumbers(32, 34, 21, 147), update: false);
         AssertThat(previewHalf.Failures.Count).IsEqual(3);
         AssertThat(previewHalf.Failures.All(f => f.Contains(LoweringInstruction, StringComparison.Ordinal)))
             .IsTrue();

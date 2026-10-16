@@ -1,3 +1,4 @@
+using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -26,24 +27,16 @@ public class CardPackGenerator(IRandom rng)
     {
         // Randi covers 2^32 values, a multiple of SpecialCardOdds, so the modulo has no bias.
         var isSpecial = rng.Randi() % SpecialCardOdds == 0;
-        return isSpecial ? CardSignature.RandomSpecial(rng) : CommonSignature();
+        return isSpecial ? SignatureRandom.CreateSpecial(rng) : CommonSignature();
     }
 
     /// <summary>The signatures of the cards in one booster, in spawn order.</summary>
-    public CardSignature[] OpenBooster()
-    {
-        var cards = new CardSignature[CardContainerLayout.ItemsPerContainer];
-        for (var i = 0; i < cards.Length; i++)
-            cards[i] = NextCardSignature();
-        return cards;
-    }
+    public CardSignature[] OpenBooster() =>
+        Open(CardContainerLayout.ItemsPerContainer);
 
     /// <summary>Every card signature in a whole box (8 packs x 8 boosters x 8 cards), in opening order.</summary>
-    public CardSignature[] OpenBox()
-    {
-        var cards = new CardSignature[CardContainerLayout.CardsPerBox];
-        for (var i = 0; i < cards.Length; i++)
-            cards[i] = NextCardSignature();
-        return cards;
-    }
+    public CardSignature[] OpenBox() => Open(CardContainerLayout.CardsPerBox);
+
+    private CardSignature[] Open(int count) =>
+        Enumerable.Range(0, count).Select(_ => NextCardSignature()).ToArray();
 }

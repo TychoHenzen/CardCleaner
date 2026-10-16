@@ -182,6 +182,8 @@ The project uses a custom DI container with no static service state: an instance
   `Godot.Mathf`. Domain classes call `CoreMath`, not `Mathf`; add a member only together with its first caller (an
   unused public member is a `dead-export` finding). It lives in `Core/Numerics`, not `Core/Math`, so the namespace
   does not shadow `System.Math`.
+  A data struct that must stay pure data in the dependency gate (`CardSignature`) uses `System.Math` / `MathF`, not
+  `CoreMath`, because a static function class is not data there.
 - **ServiceContainer**: singleton registrations, plus constructor injection. `Construct<T>()` and
   `RegisterSingleton<TInterface, TImplementation>()` build a plain class through its public constructor with the most
   parameters, resolving each parameter from the container; a missing one throws `InvalidOperationException` naming
@@ -229,10 +231,12 @@ layer every loop of up to 20 modules takes the order with the fewest up edges, a
 
 The test prints a report (`dependency gate:` lines): counts, the module order, the loose classes, every up edge with
 its class pairs (heaviest first), every loop, and every leaky or missing seam with the concrete classes it crosses.
-It measures twice and fails if the two reports differ. It then ratchets five gated numbers (`up_edges`,
-`biggest_loop`, `seams_leaky`, `seams_missing`, `refs_from_non_ui_to_ui`) against
-`Tests/Architecture/dependency-baseline.json` in that priority order (#299). The first number that differs from its
-baseline decides; if no number differs, the test passes. If it went up, the test fails naming it (every other rise is
+It measures twice and fails if the two reports differ. It then ratchets four gated numbers (`up_edges`,
+`biggest_loop`, `seams_leaky_or_missing`, `refs_from_non_ui_to_ui`) against
+`Tests/Architecture/dependency-baseline.json` in that priority order (#299). The label of one seam can flip between
+leaky and missing when Louvain membership changes, so the report still prints both counts but only their sum,
+`seams_leaky_or_missing`, is gated (#278). The first number that differs from its baseline decides; if no number
+differs, the test passes. If it went up, the test fails naming it (every other rise is
 listed after it). If it went down, the step is accepted, and a rise in a lower-priority number is accepted with it:
 each such rise is named in the failure and printed as a `dependency gate:` line (`<name> is <m>, above the baseline
 <b>: accepted because <deciding> went down`). An accepted step still fails until the baseline is re-recorded with the
