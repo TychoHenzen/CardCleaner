@@ -34,6 +34,32 @@ public class GateMetricsTest
         AssertThat(upIntoUi).IsTrue();
     }
 
+    /// <summary>
+    /// Pins that the gated seam number is leaky plus missing, so the label of one seam can flip with Louvain membership
+    /// (#278) without moving the gated number, while a second defective seam still raises it by one.
+    /// </summary>
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void GatedSeamCountIgnoresWhetherASeamIsRatedMissingOrLeaky()
+    {
+        var measurement = GateMetrics.Measure(LayeredGraph());
+        var panelToRules = new EdgeKey("Panel", "Rules");
+        var rulesToButton = new EdgeKey("Rules", "Button");
+
+        var missing = measurement with { Seams = [Seam(panelToRules, SeamKind.Missing)] };
+        var leaky = measurement with { Seams = [Seam(panelToRules, SeamKind.Leaky)] };
+        var twoDefects = measurement with
+        {
+            Seams = [Seam(panelToRules, SeamKind.Missing), Seam(rulesToButton, SeamKind.Leaky)],
+        };
+
+        AssertThat(missing.Gated.SeamsLeakyOrMissing).IsEqual(1);
+        AssertThat(leaky.Gated.SeamsLeakyOrMissing).IsEqual(missing.Gated.SeamsLeakyOrMissing);
+        AssertThat(twoDefects.Gated.SeamsLeakyOrMissing).IsEqual(2);
+    }
+
+    private static SeamRating Seam(EdgeKey modules, SeamKind rating) => new(modules, rating, 0.5, [], false);
+
     private static string ModulesOf(GateMeasurement measurement, params string[] ids) =>
         string.Join(",", ids.Select(id => measurement.Modules.Module[id]).Distinct());
 
