@@ -173,6 +173,15 @@ The project uses a custom DI container with no static service state: an instance
   `ILog.Sink` (a static property, because `ILog`'s static helpers have no instance) when it registers `ILog`, and
   clears it when its services are reset. Only that autoload composes and injects; any other instance logs an error
   and composes nothing.
+- **ILog** (`Scripts/Core/Interfaces/ILog.cs`) names no Godot type: `ILog.Print` / `Warning` / `Error` go to
+  `ILog.Sink` (the `LoggingService` the root installs, which prints through `GD`) and fall back to `Console.Out` /
+  `Console.Error` while no sink is installed. Domain code logs through `ILog`, never `GD`. The node export check is
+  the UI-layer static `NodeExports.ExportCheck` (`Scripts/Core/Utilities`).
+- **CoreMath** (`Scripts/Core/Numerics/CoreMath.cs`): engine-free static math for domain code. Each member copies
+  the GodotSharp 4.7.1 `Mathf` body of the overload callers bind to, and `CoreMathTest` compares each with
+  `Godot.Mathf`. Domain classes call `CoreMath`, not `Mathf`; add a member only together with its first caller (an
+  unused public member is a `dead-export` finding). It lives in `Core/Numerics`, not `Core/Math`, so the namespace
+  does not shadow `System.Math`.
 - **ServiceContainer**: singleton registrations, plus constructor injection. `Construct<T>()` and
   `RegisterSingleton<TInterface, TImplementation>()` build a plain class through its public constructor with the most
   parameters, resolving each parameter from the container; a missing one throws `InvalidOperationException` naming
