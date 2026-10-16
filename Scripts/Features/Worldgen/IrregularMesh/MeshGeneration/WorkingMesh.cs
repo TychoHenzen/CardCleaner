@@ -3,6 +3,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshGeneration;
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Numerics;
 
 internal sealed class WorkingMesh
 {
@@ -18,10 +19,10 @@ internal sealed class WorkingMesh
 
     public int GetOrCreateVertex(Vector2 position)
     {
-        float scale = Mathf.Pow(10, PositionPrecision);
+        float scale = CoreMath.Pow(10, PositionPrecision);
         var key = new MeshPositionKey(
-            Mathf.Round(position.X * scale) / scale,
-            Mathf.Round(position.Y * scale) / scale);
+            CoreMath.Round(position.X * scale) / scale,
+            CoreMath.Round(position.Y * scale) / scale);
 
         if (_positionCache.TryGetValue(key, out int existingId))
         {

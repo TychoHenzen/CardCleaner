@@ -4,6 +4,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Numerics;
 
 /// <summary>
 /// A quad face in the irregular mesh, defined by 4 corner vertices.
@@ -69,7 +70,7 @@ public class MeshQuad : IMeshQuad
 
         // Step 1: Sort by angle from centroid to get consistent CCW winding
         var ccwSorted = vertices
-            .OrderBy(v => Mathf.Atan2(v.Position.Y - centroid.Y, v.Position.X - centroid.X))
+            .OrderBy(v => CoreMath.Atan2(v.Position.Y - centroid.Y, v.Position.X - centroid.X))
             .ToArray();
 
         // Step 2: Find the "most NW" vertex by spatial position
@@ -186,7 +187,7 @@ public class MeshQuad : IMeshQuad
             area -= vertices[j].X * vertices[i].Y;
         }
 
-        return Mathf.Abs(area) / 2f;
+        return CoreMath.Abs(area) / 2f;
     }
 
     private static bool IsPointInConvexPolygon(Vector2 point, Vector2[] polygon)

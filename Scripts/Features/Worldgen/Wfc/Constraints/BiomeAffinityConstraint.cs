@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
@@ -71,7 +71,7 @@ public class BiomeAffinityConstraint : IWfcConstraint
         // strength -1 → modifier = 1 - BoostFactor = -1.0, clamped to MinModifier = 0.1 (strong penalty)
         var modifier = 1.0f + maxStrength * BoostFactor;
 
-        return Mathf.Max(MinModifier, modifier);
+        return CoreMath.Max(MinModifier, modifier);
     }
 
     /// <summary>

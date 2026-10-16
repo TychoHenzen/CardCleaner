@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
@@ -37,10 +38,10 @@ internal static class MapSeeding
     internal static Vector2I CalculateMapSize(CardSignature signature)
     {
         var complexity = 0f;
-        for (var i = 0; i < 8; i++) complexity += Mathf.Abs(signature[i]);
+        for (var i = 0; i < 8; i++) complexity += CoreMath.Abs(signature[i]);
         complexity /= 8f;
 
-        var size = BaseMapSize + Mathf.RoundToInt(complexity * MapSizeVariation);
+        var size = BaseMapSize + CoreMath.RoundToInt(complexity * MapSizeVariation);
         return new Vector2I(size, size);
     }
 }

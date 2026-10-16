@@ -1,5 +1,5 @@
+using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Features.Card.Models;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Combat;
 
@@ -105,18 +105,22 @@ public class CombatCommand : ICombatCommand
         {
             var value = signature[i];
             if (value > 0.3f)
+            {
                 totalPower += value * 10f;
-            else if (value < -0.3f)
-                totalHealing += Mathf.Abs(value) * 8f;
+                continue;
+            }
+
+            if (value < -0.3f)
+                totalHealing += CoreMath.Abs(value) * 8f;
         }
 
         var strongestElementIndex = 0;
-        var strongestValue = Mathf.Abs(signature[0]);
+        var strongestValue = CoreMath.Abs(signature[0]);
         for (var i = 1; i < 8; i++)
         {
-            if (Mathf.Abs(signature[i]) > strongestValue)
+            if (CoreMath.Abs(signature[i]) > strongestValue)
             {
-                strongestValue = Mathf.Abs(signature[i]);
+                strongestValue = CoreMath.Abs(signature[i]);
                 strongestElementIndex = i;
             }
         }
@@ -134,8 +138,8 @@ public class CombatCommand : ICombatCommand
             _ => "Card Action"
         };
 
-        var damage = Mathf.RoundToInt(Mathf.Max(1, totalPower));
-        var healing = Mathf.RoundToInt(totalHealing);
+        var damage = CoreMath.RoundToInt(CoreMath.Max(1, totalPower));
+        var healing = CoreMath.RoundToInt(totalHealing);
 
         return new CombatCommand(
             actionName,

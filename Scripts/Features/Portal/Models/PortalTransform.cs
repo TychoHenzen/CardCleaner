@@ -1,5 +1,6 @@
-using Godot;
+using CardCleaner.Scripts.Core.Numerics;
 
+using Godot;
 namespace CardCleaner.Scripts.Features.Portal.Models;
 
 /// <summary>
@@ -33,7 +34,7 @@ public static class PortalTransform
         Transform3D doorway, Vector3 playerPosition, float halfWidth, float depth, float bottom, float top)
     {
         var local = doorway.AffineInverse() * playerPosition;
-        return Mathf.Abs(local.X) <= halfWidth
+        return CoreMath.Abs(local.X) <= halfWidth
                && local.Z <= depth && local.Z >= -depth
                && local.Y >= bottom && local.Y <= top;
     }
@@ -55,6 +56,6 @@ public static class PortalTransform
     private static float YawOf(Transform3D transform)
     {
         var forward = -transform.Basis.Z;
-        return Mathf.Atan2(-forward.X, -forward.Z);
+        return CoreMath.Atan2(-forward.X, -forward.Z);
     }
 }

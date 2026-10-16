@@ -3,13 +3,14 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshGeneration;
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Numerics;
 
 internal static class HexGridGenerator
 {
     public static WorkingMesh Generate(int rings, float radius)
     {
         var mesh = new WorkingMesh();
-        float horizontalSpacing = radius * Mathf.Sqrt(3);
+        float horizontalSpacing = radius * CoreMath.Sqrt(3);
         float verticalSpacing = radius * 1.5f;
 
         var coordinates = BuildCoordinates(rings);
@@ -32,7 +33,7 @@ internal static class HexGridGenerator
         {
             for (int r = -rings; r <= rings; r++)
             {
-                if (Mathf.Abs(q + r) <= rings)
+                if (CoreMath.Abs(q + r) <= rings)
                 {
                     coordinates.Add(new HexCoordinate(q, r));
                 }

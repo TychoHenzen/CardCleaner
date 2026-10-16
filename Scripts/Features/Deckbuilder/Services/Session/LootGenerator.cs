@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Core.Interfaces;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
 
@@ -35,7 +35,7 @@ internal static class LootGenerator
         for (var i = 0; i < 8; i++)
         {
             var variation = rng.Randfn(baseSeed[i], SignatureSpread);
-            elements[i] = Mathf.Clamp(variation, -1f, 1f);
+            elements[i] = CoreMath.Clamp(variation, -1f, 1f);
         }
 
         return new CardSignature(elements);

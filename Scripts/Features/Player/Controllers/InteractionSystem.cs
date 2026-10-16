@@ -1,6 +1,7 @@
 ﻿// Debug version of InteractionSystem with detailed logging
 
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Utilities;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Player.Controllers;
@@ -48,7 +49,7 @@ public partial class InteractionSystem : Node3D, IDependent
 
     public override void _Ready()
     {
-        if (ILog.ExportCheck(Camera, nameof(Camera), this))
+        if (NodeExports.ExportCheck(Camera, nameof(Camera), this))
             return;
 
         ILog.Print("Starting up...");

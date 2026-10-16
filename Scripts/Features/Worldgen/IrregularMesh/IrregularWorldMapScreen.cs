@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
@@ -210,7 +211,7 @@ public partial class IrregularWorldMapScreen : Node3D, ISessionView, IDependent
     void ISessionView.OnLootGenerated(List<CardSignature> lootSignatures)
     {
         ILog.Print($"Loot generated: {lootSignatures.Count} cards");
-        if (ILog.ExportCheck(LootSpawnPoint, nameof(LootSpawnPoint), this))
+        if (NodeExports.ExportCheck(LootSpawnPoint, nameof(LootSpawnPoint), this))
             return;
 
         SpawnLootRow(lootSignatures, LootSpawnPoint!.GlobalTransform);

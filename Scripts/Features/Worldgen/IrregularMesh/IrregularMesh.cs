@@ -4,6 +4,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Topology;
 
 /// <summary>
@@ -192,10 +193,10 @@ public class IrregularMesh : IIrregularMesh
 
         foreach (var vertex in Vertices)
         {
-            minX = Mathf.Min(minX, vertex.Position.X);
-            minY = Mathf.Min(minY, vertex.Position.Y);
-            maxX = Mathf.Max(maxX, vertex.Position.X);
-            maxY = Mathf.Max(maxY, vertex.Position.Y);
+            minX = CoreMath.Min(minX, vertex.Position.X);
+            minY = CoreMath.Min(minY, vertex.Position.Y);
+            maxX = CoreMath.Max(maxX, vertex.Position.X);
+            maxY = CoreMath.Max(maxY, vertex.Position.Y);
         }
 
         Bounds = (new Vector2(minX, minY), new Vector2(maxX, maxY));

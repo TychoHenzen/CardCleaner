@@ -3,6 +3,8 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshGeneration;
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Numerics;
 
 internal static class MeshRelaxer
 {
@@ -13,7 +15,7 @@ internal static class MeshRelaxer
             : new HashSet<int>();
         if (pinBoundary)
         {
-            GD.Print($"Relaxation: pinning {boundaryVertices.Count} boundary vertices");
+            ILog.Print($"Relaxation: pinning {boundaryVertices.Count} boundary vertices");
         }
 
         var vertexFaces = BuildVertexFaces(mesh);
@@ -159,7 +161,7 @@ internal static class MeshRelaxer
             .ToList();
         if (areas.Count > 0)
         {
-            GD.Print(
+            ILog.Print(
                 $"Relaxation iter {iteration}: area min={areas.Min():F4}, " +
                 $"max={areas.Max():F4}, ratio={areas.Max() / areas.Min():F2}x");
         }
@@ -182,7 +184,7 @@ internal static class MeshRelaxer
             area -= positions[nextIndex].X * positions[index].Y;
         }
 
-        return Mathf.Abs(area) / 2f;
+        return CoreMath.Abs(area) / 2f;
     }
 
     private static Vector2 ComputeFaceCentroid(WorkingFace face, WorkingMesh mesh)

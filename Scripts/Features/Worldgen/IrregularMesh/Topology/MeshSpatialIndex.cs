@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using CardCleaner.Scripts.Core.Numerics;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Topology;
 
@@ -24,7 +25,7 @@ internal sealed class MeshSpatialIndex
 
         float totalArea = quads.Sum(q => q.Area);
         float avgArea = totalArea / quads.Count;
-        _cellSize = Mathf.Max(10f, Mathf.Sqrt(avgArea) * 2f);
+        _cellSize = CoreMath.Max(10f, CoreMath.Sqrt(avgArea) * 2f);
 
         foreach (var quad in quads)
         {
@@ -37,8 +38,8 @@ internal sealed class MeshSpatialIndex
     /// </summary>
     internal List<int>? GetCandidates(Vector2 worldPos)
     {
-        int gridX = (int)Mathf.Floor(worldPos.X / _cellSize);
-        int gridY = (int)Mathf.Floor(worldPos.Y / _cellSize);
+        int gridX = (int)CoreMath.Floor(worldPos.X / _cellSize);
+        int gridY = (int)CoreMath.Floor(worldPos.Y / _cellSize);
 
         return _cells.TryGetValue((gridX, gridY), out var quadIds) ? quadIds : null;
     }
@@ -54,10 +55,10 @@ internal sealed class MeshSpatialIndex
         float minY = corners.Min(c => c.Y);
         float maxY = corners.Max(c => c.Y);
 
-        int startGridX = (int)Mathf.Floor(minX / _cellSize);
-        int endGridX = (int)Mathf.Floor(maxX / _cellSize);
-        int startGridY = (int)Mathf.Floor(minY / _cellSize);
-        int endGridY = (int)Mathf.Floor(maxY / _cellSize);
+        int startGridX = (int)CoreMath.Floor(minX / _cellSize);
+        int endGridX = (int)CoreMath.Floor(maxX / _cellSize);
+        int startGridY = (int)CoreMath.Floor(minY / _cellSize);
+        int endGridY = (int)CoreMath.Floor(maxY / _cellSize);
 
         for (int gx = startGridX; gx <= endGridX; gx++)
         {

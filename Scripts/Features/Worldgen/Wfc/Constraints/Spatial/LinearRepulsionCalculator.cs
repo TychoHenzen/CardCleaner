@@ -1,5 +1,6 @@
-using Godot;
+using CardCleaner.Scripts.Core.Numerics;
 
+using Godot;
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
 /// <summary>
@@ -37,7 +38,7 @@ internal sealed class LinearRepulsionCalculator
         }
 
         // Convert accumulated penalty to modifier (clamped to MinModifier)
-        return Mathf.Max(settings.MinModifier, 1.0f - totalPenalty);
+        return CoreMath.Max(settings.MinModifier, 1.0f - totalPenalty);
     }
 
     private float PenaltyAt(
@@ -61,7 +62,7 @@ internal sealed class LinearRepulsionCalculator
 
         // Chebyshev distance for grid. Penalty diminishes linearly with distance:
         // at distance 1 full penalty, at radius zero penalty.
-        var distance = Mathf.Max(Mathf.Abs(dx), Mathf.Abs(dy));
+        var distance = CoreMath.Max(CoreMath.Abs(dx), CoreMath.Abs(dy));
         var distanceFactor = 1.0f - (float)(distance - 1) / settings.Radius;
         return settings.Strength * distanceFactor;
     }

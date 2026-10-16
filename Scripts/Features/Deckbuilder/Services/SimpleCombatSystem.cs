@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.Combat;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
@@ -28,13 +28,13 @@ public class SimpleCombatSystem
 
         public void TakeDamage(int damage)
         {
-            Health = Mathf.Max(0, Health - damage);
+            Health = CoreMath.Max(0, Health - damage);
             ILog.Print($"{Name} takes {damage} damage! Health: {Health}/{MaxHealth}");
         }
 
         public void Heal(int amount)
         {
-            Health = Mathf.Min(MaxHealth, Health + amount);
+            Health = CoreMath.Min(MaxHealth, Health + amount);
             ILog.Print($"{Name} heals for {amount}! Health: {Health}/{MaxHealth}");
         }
     }
@@ -76,9 +76,9 @@ public class SimpleCombatSystem
         _enemy = new Combatant
         {
             Name = "Shadow Beast",
-            Health = Mathf.RoundToInt(30 + enemyPower * 5),
-            MaxHealth = Mathf.RoundToInt(30 + enemyPower * 5),
-            AttackPower = Mathf.RoundToInt(8 + enemyPower * 2),
+            Health = CoreMath.RoundToInt(30 + enemyPower * 5),
+            MaxHealth = CoreMath.RoundToInt(30 + enemyPower * 5),
+            AttackPower = CoreMath.RoundToInt(8 + enemyPower * 2),
             IsPlayer = false
         };
 
@@ -147,7 +147,7 @@ public class SimpleCombatSystem
     {
         // Simple enemy AI: just attack
         var damage = _enemy.AttackPower + _rng.RandiRange(-2, 3);
-        damage = Mathf.Max(1, damage);
+        damage = CoreMath.Max(1, damage);
 
         var context = new CombatContext { Source = _enemy, Target = _player };
         var attackCommand = new CombatCommand("Attack", damage, 0, $"Deals {damage} damage");
@@ -161,8 +161,8 @@ public class SimpleCombatSystem
     {
         // Calculate overall "intensity" of the signature to determine enemy strength
         var totalIntensity = 0f;
-        for (var i = 0; i < 8; i++) totalIntensity += Mathf.Abs(signature[i]);
-        return Mathf.Clamp(totalIntensity / 8f, 0.1f, 1.0f);
+        for (var i = 0; i < 8; i++) totalIntensity += CoreMath.Abs(signature[i]);
+        return CoreMath.Clamp(totalIntensity / 8f, 0.1f, 1.0f);
     }
 
     public CombatStatus GetCombatStatus()

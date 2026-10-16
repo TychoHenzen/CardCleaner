@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using CardCleaner.Scripts.Core.Numerics;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
@@ -68,7 +69,7 @@ public class WfcCellState
             if (weight <= 0f) continue;
 
             var p = weight / totalWeight;
-            entropy -= p * Mathf.Log(p);
+            entropy -= p * CoreMath.Log(p);
         }
 
         return entropy;

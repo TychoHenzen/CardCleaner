@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
+using CardCleaner.Scripts.Core.Numerics;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
@@ -74,7 +75,7 @@ internal static class WfcFrontierEntropySelector
                 candidates.Clear();
                 candidates.Add(pos);
             }
-            else if (Mathf.IsEqualApprox(entropy, lowestEntropy))
+            else if (CoreMath.IsEqualApprox(entropy, lowestEntropy))
             {
                 candidates.Add(pos);
             }

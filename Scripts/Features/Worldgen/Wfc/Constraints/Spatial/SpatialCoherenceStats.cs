@@ -1,4 +1,4 @@
-using Godot;
+using CardCleaner.Scripts.Core.Interfaces;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
@@ -31,7 +31,7 @@ internal sealed class SpatialCoherenceStats
 
         if (_callsWithMatch <= LoggedMatchCount)
         {
-            GD.Print(
+            ILog.Print(
                 $"[SpatialCoherence] Match #{_callsWithMatch}: tile={tileId}, " +
                 $"regionSize={regionSize}, isLinear={isLinear}");
         }
@@ -51,7 +51,7 @@ internal sealed class SpatialCoherenceStats
         {
             var matchRate = _callsWithMatch * 100f / _totalCalls;
             var avgBoost = _callsWithMatch > 0 ? _totalBoostApplied / _callsWithMatch : 0;
-            GD.Print(
+            ILog.Print(
                 $"[SpatialCoherence] Stats: {_totalCalls} calls, {_callsWithMatch} with match ({matchRate:F1}%), " +
                 $"{_callsNoCollapsedNeighbor} no collapsed neighbor, avg boost {avgBoost:F2}x");
         }

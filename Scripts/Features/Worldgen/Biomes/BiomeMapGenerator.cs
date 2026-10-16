@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
@@ -76,11 +77,11 @@ public class BiomeMapGenerator : IBiomeProvider
 
     public void LogBiomeStats()
     {
-        GD.Print("[BiomeMapGenerator] Biome distribution:");
+        ILog.Print("[BiomeMapGenerator] Biome distribution:");
         foreach (var (biomeId, count) in _biomeStats)
         {
             var percentage = (float)count / (_mapSize.X * _mapSize.Y) * 100;
-            GD.Print($"  {biomeId}: {count} tiles ({percentage:F1}%)");
+            ILog.Print($"  {biomeId}: {count} tiles ({percentage:F1}%)");
         }
     }
 
