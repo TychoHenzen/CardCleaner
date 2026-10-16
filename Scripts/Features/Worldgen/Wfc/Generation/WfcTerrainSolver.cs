@@ -2,10 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
-using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
-using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
-using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -49,41 +45,6 @@ internal sealed class WfcTerrainSolver : IWfcTerrainSolver
         var catalog = _tileCatalog
             ?? throw new InvalidOperationException("SolveGraphWithCatalog needs a tile catalog");
 
-        var topology = new WfcNeighborListTopology(neighbors, initialTiles);
-        var rules = new WfcAdjacencyRules(_transitionPairs);
-        GapTileAdjacencyConfigurator.Configure(rules, catalog, gapTileFilter, logSummary: false);
-
-        var propagator = new WfcPropagator(rules);
-        var selector = new WfcTileSelector();
-        var blobTracker = new BlobSizeTracker();
-        blobTracker.Initialize(neighbors.Length);
-        var spatialCoherence = new SpatialCoherenceConstraint(catalog);
-
-        selector.AddConstraint(new DiminishingReturnsSoftModifier(blobTracker));
-        selector.AddConstraint(spatialCoherence);
-        selector.AddConstraint(new AutoTileGapConstraint(catalog));
-        selector.AddConstraint(new NoSolidFillConstraint(catalog));
-        selector.AddConstraint(new TileProbabilityConstraint(catalog));
-
-        var solver = new WfcSolver(
-            propagator,
-            selector,
-            blobTracker,
-            spatialCoherence: spatialCoherence,
-            tileCatalog: catalog)
-        {
-            MaxIterations = neighbors.Length * 2
-        };
-        var result = solver.Solve(topology, null, RandomSources.Create(seed));
-        return ToGraphSolution(result, topology, neighbors.Length);
-    }
-
-    private static WfcGraphSolution ToGraphSolution(WfcSolveResult result, IWfcTopology topology, int cellCount)
-    {
-        var collapsedTiles = new string?[cellCount];
-        for (var cellId = 0; cellId < cellCount; cellId++)
-            collapsedTiles[cellId] = topology.GetCollapsedTileAt(cellId);
-
-        return new WfcGraphSolution(result.Success, result.Iterations, result.ErrorMessage, collapsedTiles);
+        return WfcRetrySolver.SolveGraph(neighbors, _transitionPairs, catalog, initialTiles, seed, gapTileFilter);
     }
 }
