@@ -6,12 +6,13 @@ using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 /// The shop PC and the workshop terminal reuse one ordering framework: two catalogs that never share an item,
-/// one money service resolved through the service locator, and one ordering service.
+/// one money service resolved through the test service container, and one ordering service.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -42,7 +43,7 @@ public class ShopOrderingEconomySceneTest
     [AfterTest]
     public static void Teardown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]
@@ -70,9 +71,9 @@ public class ShopOrderingEconomySceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void BothTerminalsUseTheOneMoneyServiceTheLocatorHandsOut()
+    public void BothTerminalsUseTheOneMoneyServiceTheContainerHandsOut()
     {
-        var resolved = ServiceLocator.Container.Resolve<IMoneyService>();
+        var resolved = TestServices.Container.Resolve<IMoneyService>();
 
         AssertBool(ReferenceEquals(resolved, _money)).IsTrue();
         AssertThat(_shop.FindChildren("*", string.Empty, true, false).OfType<MoneyService>().Count()).IsEqual(1);

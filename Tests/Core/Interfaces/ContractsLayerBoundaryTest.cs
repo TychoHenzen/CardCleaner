@@ -96,9 +96,9 @@ public class ContractsLayerBoundaryTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void ServiceLocatorInAMethodBodyIsReported()
+    public static void ServiceHostInAMethodBodyIsReported()
     {
-        AssertThat(ProbeHits(typeof(ProbeLocatorInBody))).IsEqual(Hit("ProbeLocatorInBody", typeof(ServiceLocator)));
+        AssertThat(ProbeHits(typeof(ProbeHostInBody))).IsEqual(Hit("ProbeHostInBody", typeof(ServiceHost)));
     }
 
     [TestCase]
@@ -148,9 +148,9 @@ public class ContractsLayerBoundaryTest
         IReadOnlyList<TileDefinition> Tiles { get; }
     }
 
-    private static class ProbeLocatorInBody
+    private static class ProbeHostInBody
     {
-        public static bool Ready() => ServiceLocator.Has<ILog>();
+        public static bool Ready() => new ServiceHost().Has<ILog>();
     }
 
     private static class ProbeCoreService

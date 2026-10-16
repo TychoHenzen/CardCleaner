@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Workshop.Components;
 using CardCleaner.Scripts.Features.Workshop.Models;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -45,8 +46,8 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
         _grid = _workshop.GetNode<WorkshopGrid>("WorkshopGrid");
         _player = _shop.GetNode<CharacterBody3D>("Player");
 
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;
@@ -56,7 +57,7 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
     [AfterTest]
     public static void Teardown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]

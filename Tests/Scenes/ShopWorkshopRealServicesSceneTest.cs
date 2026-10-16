@@ -41,12 +41,12 @@ public class ShopWorkshopRealServicesSceneTest
         _tree = (SceneTree)Engine.GetMainLoop();
         _previousScene = _tree.CurrentScene;
 
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
         // The composition root's own scan registers the card generator, first, as Compose does (#273).
         TestServices.RegisterGameServiceClasses(TestServices.Container);
-        ServiceLocator.Container.RegisterSingleton(new RandomNumberGenerator());
-        ServiceLocator.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
-        ServiceLocator.Container.RegisterSingleton<IMeshMapGenerator>(
+        TestServices.Container.RegisterSingleton(new RandomNumberGenerator());
+        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
+        TestServices.Container.RegisterSingleton<IMeshMapGenerator>(
             MeshMapGeneratorFixture.Create(WorkshopSceneRig.SmallMeshRings));
 
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
@@ -56,17 +56,17 @@ public class ShopWorkshopRealServicesSceneTest
         foreach (var node in _tree.GetNodesInGroup("service_providers"))
         {
             if (node is IServiceProvider provider)
-                provider.RegisterServices(ServiceLocator.Container);
+                provider.RegisterServices(TestServices.Container);
         }
 
-        ServiceLocator.ExecutePendingCallbacks();
+        TestServices.ExecutePendingCallbacks();
         await WorkshopSceneRig.Settle();
     }
 
     [AfterTest]
     public void Teardown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
         _tree.CurrentScene = _previousScene;
         _tree.Root.RemoveChild(_shop);
         _shop.Free();
@@ -76,9 +76,9 @@ public class ShopWorkshopRealServicesSceneTest
     [TestCategory("Unit")]
     public void RegistrationResolvesTheWorkshopSessionServiceAndTheShopSpawner()
     {
-        AssertBool(ReferenceEquals(ServiceLocator.Get<IGameSessionService>(),
+        AssertBool(ReferenceEquals(TestServices.Resolver.Get<IGameSessionService>(),
             _shop.GetNode("World/Workshop/GameSessionService"))).IsTrue();
-        AssertBool(ReferenceEquals(ServiceLocator.Get<ICardSpawningService>(),
+        AssertBool(ReferenceEquals(TestServices.Resolver.Get<ICardSpawningService>(),
             _shop.GetNode("Services/SpawningService"))).IsTrue();
     }
 

@@ -8,6 +8,7 @@ using CardCleaner.Scripts.Features.Portal.Components;
 using CardCleaner.Scripts.Features.Portal.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -34,7 +35,7 @@ public class ShopSeamSceneTest
     [AfterTest]
     public static void Teardown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]

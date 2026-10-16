@@ -4,11 +4,12 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// Loads the shop scene for the ordering suites and hands its scene-owned services to the service locator,
+/// Loads the shop scene for the ordering suites and hands its scene-owned services to the test service container,
 /// since a test scene is not the current scene and its autoload-style registration never runs.
 /// </summary>
 public static class ShopOrderingRig
@@ -17,10 +18,10 @@ public static class ShopOrderingRig
     {
         var shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
 
-        ServiceLocator.ResetForTesting();
-        ServiceLocator.Container.RegisterSingleton<IGameSettings>(shop.GetNode<GameSettings>("Services/GameSettings"));
-        ServiceLocator.Container.RegisterSingleton<IMoneyService>(shop.GetNode<MoneyService>("Services/MoneyService"));
-        ServiceLocator.Container.RegisterSingleton<IOrderingService>(
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<IGameSettings>(shop.GetNode<GameSettings>("Services/GameSettings"));
+        TestServices.Container.RegisterSingleton<IMoneyService>(shop.GetNode<MoneyService>("Services/MoneyService"));
+        TestServices.Container.RegisterSingleton<IOrderingService>(
             shop.GetNode<OrderingService>("Services/OrderingService"));
         return shop;
     }

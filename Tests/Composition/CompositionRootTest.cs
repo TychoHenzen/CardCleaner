@@ -9,12 +9,13 @@ using CardCleaner.Tests.Core.DependencyInjection;
 using CardCleaner.Tests.Mocking;
 using Godot;
 using NSubstitute;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Composition;
 
 /// <summary>
 /// The "Services" autoload composes the container: in the game, in the deferred-call flush after its _Ready; in tests,
-/// synchronously through ReinitializeServices. Any other CompositionRoot logs an error and changes nothing (#168).
+/// synchronously through TestServices.Reinitialize. Any other CompositionRoot logs an error and changes nothing (#168).
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -23,7 +24,7 @@ public class CompositionRootTest
     [AfterTest]
     public static void TearDown()
     {
-        ServiceLocator.ResetForTesting();
+        TestServices.Reset();
     }
 
     [TestCase]
@@ -37,12 +38,12 @@ public class CompositionRootTest
         try
         {
             // Act - the autoload composes synchronously, which calls RegisterServices on every provider in the group
-            CompositionRoot.ReinitializeServices();
+            TestServices.Reinitialize();
             created = ReinitializedNodes();
 
             // Assert
             Assertions.AssertBool(provider.RegisterServicesCalled).IsTrue();
-            Assertions.AssertBool(ServiceLocator.Has<IAsyncTestService>()).IsTrue();
+            Assertions.AssertBool(TestServices.Resolver.Has<IAsyncTestService>()).IsTrue();
         }
         finally
         {
@@ -56,16 +57,16 @@ public class CompositionRootTest
     {
         // Arrange - the autoload has composed; a recording sink stands in for its logger so the error can be read,
         // and a callback waits for a service nobody has registered
-        CompositionRoot.ReinitializeServices();
+        TestServices.Reinitialize();
         var created = ReinitializedNodes();
         var composedSink = ILog.Sink;
         var recorder = Substitute.For<ILog>();
         ILog.Sink = recorder;
-        var container = ServiceLocator.Container;
-        var log = ServiceLocator.Get<ILog>();
-        var input = ServiceLocator.Get<IInputService>();
+        var container = TestServices.Container;
+        var log = TestServices.Resolver.Get<ILog>();
+        var input = TestServices.Resolver.Get<IInputService>();
         var callbackRuns = 0;
-        ServiceLocator.Get<ITestService>(_ => callbackRuns++);
+        TestServices.Resolver.Get<ITestService>(_ => callbackRuns++);
         var second = Assertions.AddNode(new CompositionRoot(), autoFree: false);
         try
         {
@@ -75,12 +76,12 @@ public class CompositionRootTest
             // Assert - it reported itself and changed nothing; the callback is still queued and runs once later
             recorder.Received(1).LogError(Arg.Is<string>(message => message.Contains("is not the Services autoload")));
             Assertions.AssertThat(ILog.Sink).IsSame(recorder);
-            Assertions.AssertThat(ServiceLocator.Container).IsSame(container);
-            Assertions.AssertThat(ServiceLocator.Get<ILog>()).IsSame(log);
-            Assertions.AssertThat(ServiceLocator.Get<IInputService>()).IsSame(input);
+            Assertions.AssertThat(TestServices.Container).IsSame(container);
+            Assertions.AssertThat(TestServices.Resolver.Get<ILog>()).IsSame(log);
+            Assertions.AssertThat(TestServices.Resolver.Get<IInputService>()).IsSame(input);
             Assertions.AssertInt(callbackRuns).IsEqual(0);
-            ServiceLocator.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
-            ServiceLocator.ExecutePendingCallbacks();
+            TestServices.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
+            TestServices.ExecutePendingCallbacks();
             Assertions.AssertInt(callbackRuns).IsEqual(1);
         }
         finally
@@ -98,8 +99,8 @@ public class CompositionRootTest
     public static async Task TestAutoloadComposesInTheDeferredFlushAfterReady()
     {
         // Arrange - an empty container, as it is before the autoload's first composition
-        ServiceLocator.ResetForTesting();
-        var root = Autoload();
+        TestServices.Reset();
+        var root = TestServices.Autoload;
         var created = Array.Empty<Node>();
         try
         {
@@ -107,7 +108,7 @@ public class CompositionRootTest
             root.ScheduleCompose();
             var provider = Assertions.AddNode(new TestServiceProvider());
             provider.AddToGroup("service_providers");
-            var composedBeforeTheFlush = ServiceLocator.Has<ILog>();
+            var composedBeforeTheFlush = TestServices.Resolver.Has<ILog>();
             // Deferred calls run in the order they were queued, so this one completes after the scheduled Compose
             var flushed = new TaskCompletionSource();
             Callable.From(() => flushed.SetResult()).CallDeferred();
@@ -117,7 +118,7 @@ public class CompositionRootTest
             // Assert
             Assertions.AssertBool(composedBeforeTheFlush).IsFalse();
             Assertions.AssertBool(provider.RegisterServicesCalled).IsTrue();
-            Assertions.AssertBool(ServiceLocator.Has<IAsyncTestService>()).IsTrue();
+            Assertions.AssertBool(TestServices.Resolver.Has<IAsyncTestService>()).IsTrue();
         }
         finally
         {
@@ -130,13 +131,13 @@ public class CompositionRootTest
     public static void TestReinitializeLeavesOneLiveNodeServiceOfEachKind()
     {
         // Act - compose twice; the second composition must release the node services the first one added
-        CompositionRoot.ReinitializeServices();
-        CompositionRoot.ReinitializeServices();
+        TestServices.Reinitialize();
+        TestServices.Reinitialize();
         var created = ReinitializedNodes();
         try
         {
             // Assert - queued nodes stay children until the frame ends, so only unqueued ones count as live
-            var live = Autoload().GetChildren().Where(node => !node.IsQueuedForDeletion()).ToList();
+            var live = TestServices.Autoload.GetChildren().Where(node => !node.IsQueuedForDeletion()).ToList();
             Assertions.AssertInt(live.OfType<IInputService>().Count()).IsEqual(1);
             Assertions.AssertInt(live.OfType<IPlayerResetService>().Count()).IsEqual(1);
         }
@@ -151,12 +152,12 @@ public class CompositionRootTest
     public static void TestReinitializeRegistersTheMeshMapGenerator()
     {
         // Arrange and act - the autoload composes the core services, the irregular map's generator among them
-        CompositionRoot.ReinitializeServices();
+        TestServices.Reinitialize();
         var created = ReinitializedNodes();
         try
         {
             // Assert - the cabinet resolves the real generator for the irregular kind, not a test double
-            Assertions.AssertThat(ServiceLocator.Get<IMeshMapGenerator>()).IsInstanceOf<MeshMapGenerator>();
+            Assertions.AssertThat(TestServices.Resolver.Get<IMeshMapGenerator>()).IsInstanceOf<MeshMapGenerator>();
         }
         finally
         {
@@ -164,12 +165,12 @@ public class CompositionRootTest
         }
     }
 
-    private static CompositionRoot Autoload() =>
-        ((SceneTree)Engine.GetMainLoop()).Root.GetNode<CompositionRoot>("Services");
-
     // Reinitialize adds an input service and a player reset service to the autoload; the tests free them.
     private static Node[] ReinitializedNodes() =>
-        new[] { (Node)ServiceLocator.Get<IInputService>(), (Node)ServiceLocator.Get<IPlayerResetService>() };
+        new[]
+        {
+            (Node)TestServices.Resolver.Get<IInputService>(), (Node)TestServices.Resolver.Get<IPlayerResetService>()
+        };
 
     private static void QueueFreeAll(Node[] nodes)
     {

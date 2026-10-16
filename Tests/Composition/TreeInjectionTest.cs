@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Composition;
+using CardCleaner.Tests.Mocking;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 
@@ -33,6 +34,30 @@ public class TreeInjectionTest
             Assertions.AssertThat(probe.Log).ContainsExactly("probe.enter", "probe.inject", "probe.ready");
             Assertions.AssertThat(probe.Services).IsNotNull();
             Assertions.AssertThat(probe.Services).IsSame(TestServices.Resolver);
+        }
+        finally
+        {
+            probe.Free();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void InjectedResolverIsTheAutoloadHostAndResolvesAfterAReset()
+    {
+        var probe = new InjectionProbe();
+        try
+        {
+            Root().AddChild(probe);
+            Assertions.AssertThat(probe.Services).IsSame(TestServices.Autoload.Host);
+
+            TestServices.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
+            TestServices.Reset();
+            Assertions.AssertBool(probe.Services!.Has<ITestService>()).IsFalse();
+
+            var replacement = new TestServiceImpl();
+            TestServices.Container.RegisterSingleton<ITestService>(replacement);
+            Assertions.AssertThat(probe.Services.Get<ITestService>()).IsSame(replacement);
         }
         finally
         {

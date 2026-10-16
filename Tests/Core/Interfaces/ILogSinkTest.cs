@@ -4,6 +4,7 @@ using CardCleaner.Scripts.Composition;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Core.Interfaces;
 
@@ -36,11 +37,11 @@ public class ILogSinkTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void TestSinkIsTheRegisteredLoggerWhileTheLocatorRuns()
+    public static void TestSinkIsTheRegisteredLoggerWhileTheRootRuns()
     {
-        CompositionRoot.ReinitializeServices();
+        TestServices.Reinitialize();
 
-        Assertions.AssertBool(ReferenceEquals(ILog.Sink, ServiceLocator.Get<ILog>())).IsTrue();
+        Assertions.AssertBool(ReferenceEquals(ILog.Sink, TestServices.Resolver.Get<ILog>())).IsTrue();
     }
 
     [TestCase]
@@ -49,14 +50,14 @@ public class ILogSinkTest
     {
         try
         {
-            ServiceLocator.ResetForTesting();
+            TestServices.Reset();
 
             Assertions.AssertThat(ILog.Sink).IsNull();
             ILog.Print("ILog sink reset probe");
         }
         finally
         {
-            CompositionRoot.ReinitializeServices();
+            TestServices.Reinitialize();
         }
     }
 

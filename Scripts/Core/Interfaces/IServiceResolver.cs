@@ -4,11 +4,12 @@ using System.Diagnostics.CodeAnalysis;
 namespace CardCleaner.Scripts.Core.Interfaces;
 
 /// <summary>
-///     Looks services up for a node that the composition root injected (see <see cref="IDependent" />). It reads the
-///     current container at call time, so a resolver stays valid when the container is rebuilt.
+///     Looks services up for a node that the composition root injected (see <see cref="IDependent" />). The
+///     composition root's ServiceHost implements it and reads its current container at call time, so a resolver stays
+///     valid when the container is rebuilt.
 /// </summary>
 [SuppressMessage("Naming", "CA1716:Identifiers should not match keywords",
-    Justification = "Get mirrors ServiceLocator.Get, which every unmoved feature still calls; " +
+    Justification = "Get is the lookup verb of the container API that every injected node calls; " +
                     "C# is the only consumer.")]
 public interface IServiceResolver
 {

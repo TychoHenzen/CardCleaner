@@ -6,24 +6,47 @@ using Godot;
 namespace CardCleaner.Tests.TestUtilities;
 
 /// <summary>
-///     The single test entry point over the composition root's container: read or fill it, rebuild or clear it, and
-///     inject a node that a test builds outside the scene tree with the resolver the root injects.
+///     The single test entry point over the composition root's services: read or fill the container, rebuild or clear
+///     it, and inject a node that a test builds outside the scene tree with the resolver the root injects. All of it
+///     goes through the host of the "Services" autoload.
 /// </summary>
 public static class TestServices
 {
-    public static IServiceContainer Container => ServiceLocator.Container;
+    private static ServiceHost Host => Autoload.Host;
 
-    public static IServiceResolver Resolver => LocatorServiceResolver.Instance;
+    /// <summary>The "Services" autoload, found through the main loop's root.</summary>
+    public static CompositionRoot Autoload =>
+        ((SceneTree)Engine.GetMainLoop()).Root.GetNode<CompositionRoot>("Services");
 
-    public static void Reinitialize() => CompositionRoot.ReinitializeServices();
+    public static IServiceContainer Container => Host.Container;
 
-    public static void Reset() => ServiceLocator.ResetForTesting();
+    public static IServiceResolver Resolver => Host;
+
+    /// <summary>
+    ///     Clears the container, then composes it again on the autoload synchronously. The new composition frees the
+    ///     node services the previous one added.
+    /// </summary>
+    public static void Reinitialize()
+    {
+        Reset();
+        Autoload.Compose();
+    }
+
+    /// <summary>
+    ///     Replaces the host's container with an empty one, drops its pending callbacks and clears the log sink, which
+    ///     no longer has a registered ILog to mirror. The host and the resolver injected from it stay.
+    /// </summary>
+    public static void Reset()
+    {
+        Host.Reset();
+        ILog.Sink = null;
+    }
 
     /// <summary>
     ///     Runs the queued <c>Get&lt;T&gt;(callback)</c> lookups whose service is now registered, as the root does
     ///     after composing.
     /// </summary>
-    public static void ExecutePendingCallbacks() => ServiceLocator.ExecutePendingCallbacks();
+    public static void ExecutePendingCallbacks() => Host.ExecutePendingCallbacks();
 
     /// <summary>Runs the composition root's [Service] scan of the game into the container.</summary>
     public static void RegisterGameServiceClasses(IServiceContainer container) =>
