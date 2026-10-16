@@ -9,11 +9,11 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 
 /// <summary>
 /// Keeps Irregular Map on the WFC front door. Files under Scripts/Features/Worldgen/IrregularMesh may name only
-/// IWfcTerrainSolver, WfcTerrainSolver (the solver MeshTerrainWfcSetup creates), WfcGraphSolution and WfcGenerationResult from
+/// IWfcTerrainSolver, WfcTerrainSolver (the solver MeshTerrainWfcSetup creates; a temporary allowance that #281
+/// removes when Wfc becomes the single door), WfcGraphSolution and WfcGenerationResult from
 /// Scripts/Features/Worldgen/Wfc. Every other type declared there is a solver internal, and no Wfc sub-namespace
-/// may be imported. The check blanks comments and
-/// literals, then matches names in the text. It is a name match, not a symbol match, so a same-named type declared
-/// elsewhere is reported as well. Ambiguous names fail closed.
+/// may be imported. The check blanks comments and literals, then matches names in the text. It is a name match,
+/// not a symbol match, so a same-named type declared elsewhere is reported as well. Ambiguous names fail closed.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -25,6 +25,7 @@ public class IrregularMeshWfcSeamTest
     // A solver internal that must stay declared under Wfc. If the scan stops seeing it, the forbidden set is empty.
     private const string SolverInternal = "WfcSolver";
 
+    // WfcTerrainSolver is a temporary allowance: removed by #281 when Wfc becomes the single door.
     private static readonly string[] AllowedNames =
     {
         "IWfcTerrainSolver", "WfcTerrainSolver", "WfcGraphSolution", "WfcGenerationResult",
@@ -48,7 +49,7 @@ public class IrregularMeshWfcSeamTest
         RegexOptions.Multiline | RegexOptions.Compiled);
 
     // A Wfc sub-namespace reached by a using directive, an alias or a qualified name. The root namespace and the
-    // allowed names do not match.
+    // allowed names do not match. The WfcTerrainSolver lookahead is temporary too: removed by #281.
     private static readonly Regex SubNamespaceReference = new(
         @"\bCardCleaner\.Scripts\.Features\.Worldgen\.Wfc\."
         + @"(?!(?:IWfcTerrainSolver|WfcTerrainSolver|WfcGraphSolution|WfcGenerationResult)\b)[A-Za-z_][\w.]*",
