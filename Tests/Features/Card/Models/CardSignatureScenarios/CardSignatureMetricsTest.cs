@@ -1,6 +1,7 @@
 using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 using CardSignature = CardCleaner.Scripts.Features.Card.Models.CardSignature;
+using SignatureAspects = CardCleaner.Scripts.Features.Card.Models.SignatureAspects;
 
 namespace CardCleaner.Tests.Features.Card.Models.CardSignatureScenarios;
 
@@ -44,8 +45,8 @@ public class CardSignatureMetricsTest
         signature = signature.With(Element.Solidum, 0.7f); // Positive -> Tellus
         signature = signature.With(Element.Febris, -0.5f); // Negative -> Hydris
 
-        AssertThat(signature.GetDominantAspect(Element.Solidum)).IsEqual(Aspect.Tellus);
-        AssertThat(signature.GetDominantAspect(Element.Febris)).IsEqual(Aspect.Hydris);
+        AssertThat(SignatureAspects.GetDominantAspect(signature, Element.Solidum)).IsEqual(Aspect.Tellus);
+        AssertThat(SignatureAspects.GetDominantAspect(signature, Element.Febris)).IsEqual(Aspect.Hydris);
     }
 
     [TestCase]
@@ -120,6 +121,6 @@ public class CardSignatureMetricsTest
         var signature = new CardSignature();
         signature = signature.With(Element.Solidum, 0.0f);
 
-        AssertThat(signature.GetDominantAspect(Element.Solidum)).IsEqual(Aspect.Tellus);
+        AssertThat(SignatureAspects.GetDominantAspect(signature, Element.Solidum)).IsEqual(Aspect.Tellus);
     }
 }

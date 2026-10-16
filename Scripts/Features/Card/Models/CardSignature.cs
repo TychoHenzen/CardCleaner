@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Numerics;
-using CardCleaner.Scripts.Core.Utilities;
 using Newtonsoft.Json;
 
 namespace CardCleaner.Scripts.Features.Card.Models;
@@ -85,8 +84,6 @@ public readonly struct CardSignature
             elements[index] = this[index] - other[index];
         return new CardSignature(elements);
     }
-
-    public Aspect GetDominantAspect(Element element) => this[element] >= 0 ? element.Positive() : element.Negative();
 
     public float GetIntensity(Element element) => CoreMath.Abs(this[element]);
 

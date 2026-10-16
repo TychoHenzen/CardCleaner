@@ -49,7 +49,7 @@ public partial class DeterminismProperties : MapGenerationPropertyBase
 
     #endregion
 
-    #region CardSignature.Random Determinism
+    #region SignatureRandom.Create Determinism
 
     [TestCase]
     public void CardSignatureRandomIsDeterministic()
