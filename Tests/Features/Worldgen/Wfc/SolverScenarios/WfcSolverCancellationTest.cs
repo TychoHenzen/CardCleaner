@@ -17,8 +17,8 @@ public class WfcSolverCancellationTest
 {
     private const ulong Seed = 7;
     private const int GridSize = 8;
-    private static readonly string[] Tiles = { "grass", "wall" };
     private const string CollapsedTile = "grass";
+    private static readonly string[] Tiles = { "grass", "wall" };
 
     // A grid whose only tile is grass starts with every cell collapsed, so
     // the solve loop is never entered.
@@ -85,8 +85,7 @@ public class WfcSolverCancellationTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void
-        Solve_TokenCancelledBeforeTheSolve_ThrowsOnFullyCollapsedGrid()
+    public static void Solve_CancelledBeforeTheSolve_ThrowsOnCollapsedGrid()
     {
         using var source = new CancellationTokenSource();
         source.Cancel();
