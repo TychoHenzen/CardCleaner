@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using Godot;
 
@@ -35,7 +36,7 @@ internal sealed class IrregularMapPresenter
 
     internal IrregularMeshMapData? MapData { get; private set; }
 
-    internal IrregularMeshFogOfWar? FogOfWar => _view?.FogOfWar;
+    internal IPassiveFogOfWar? FogOfWar => _view?.FogOfWar;
 
     internal bool HasView => _view != null;
 

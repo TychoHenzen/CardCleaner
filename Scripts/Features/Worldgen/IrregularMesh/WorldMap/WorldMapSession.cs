@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
@@ -22,7 +23,7 @@ internal sealed class WorldMapSession
 
     internal IrregularMeshMapData MapData { get; }
 
-    internal IrregularMeshFogOfWar? FogOfWar { get; private set; }
+    internal IPassiveFogOfWar? FogOfWar { get; private set; }
 
     /// <summary>The player's movement animation; null when the screen has no viewport.</summary>
     internal IrregularMeshMovementController? Movement { get; private set; }
@@ -47,7 +48,7 @@ internal sealed class WorldMapSession
 
         if (_settings.FogOfWarEnabled)
         {
-            FogOfWar = new IrregularMeshFogOfWar(MapData);
+            FogOfWar = IrregularMeshFogsOfWar.Create(MapData);
             _enemyManager?.BindFog(FogOfWar);
         }
 

@@ -12,7 +12,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
 internal sealed class ExplorationSession : IExplorationSession
 {
     private readonly ISessionWorld _world;
-    private ExplorationAI? _explorationAI;
+    private IExplorationAI? _explorationAI;
     private Vector2? _playerWorldPosition;
     private int? _currentEnemyCellId;
     /// <summary>
@@ -50,7 +50,7 @@ internal sealed class ExplorationSession : IExplorationSession
             return false;
         }
 
-        _explorationAI = new ExplorationAI(_world.MapData, ResolveStartCellId(), VisibilityChecker);
+        _explorationAI = ExplorationAIs.Create(_world.MapData, ResolveStartCellId(), VisibilityChecker);
 
         _explorationAI.EnemyEncountered += OnEnemyEncounteredWorld;
         _explorationAI.PlayerMoved += OnPlayerMovedWorld;

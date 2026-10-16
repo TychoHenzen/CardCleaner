@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using Godot;
 
@@ -25,7 +26,7 @@ internal sealed class WorldMapRenderLayer
     /// <summary>
     /// Adds the renderers to the viewport and sizes the viewport and camera to the mesh.
     /// </summary>
-    internal void Build(IrregularMeshFogOfWar? fogOfWar)
+    internal void Build(IPassiveFogOfWar? fogOfWar)
     {
         var viewport = _settings.Viewport;
         if (viewport == null) return;
@@ -66,7 +67,7 @@ internal sealed class WorldMapRenderLayer
         _ownedNodes.Clear();
     }
 
-    private void BuildFogRenderer(SubViewport viewport, IrregularMeshFogOfWar fogOfWar)
+    private void BuildFogRenderer(SubViewport viewport, IPassiveFogOfWar fogOfWar)
     {
         var fogRenderer = new IrregularMeshFogRenderer { Name = "FogRenderer" };
         _ownedNodes.Add(fogRenderer);

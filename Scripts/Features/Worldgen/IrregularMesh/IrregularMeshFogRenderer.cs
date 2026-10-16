@@ -11,7 +11,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 public partial class IrregularMeshFogRenderer : Node2D
 {
     private IIrregularMesh? _mesh;
-    private IrregularMeshFogOfWar? _fogOfWar;
+    private IPassiveFogOfWar? _fogOfWar;
     private MeshInstance2D? _fogMeshInstance;
     private bool _needsRebuild = true;
 
@@ -70,7 +70,7 @@ public partial class IrregularMeshFogRenderer : Node2D
     /// </summary>
     /// <param name="mesh">The irregular mesh.</param>
     /// <param name="fogOfWar">The fog of war state tracker.</param>
-    public void Initialize(IIrregularMesh mesh,IrregularMeshFogOfWar fogOfWar)
+    public void Initialize(IIrregularMesh mesh,IPassiveFogOfWar fogOfWar)
     {
         _mesh = mesh;
         _fogOfWar = fogOfWar;

@@ -17,11 +17,11 @@ internal sealed class SessionFlow
     private const float CombatTurnDelay = 1.0f;
 
     private readonly Node _owner;
-    private readonly SessionWorld _world;
-    private readonly ExplorationSession _exploration;
+    private readonly ISessionWorld _world;
+    private readonly IExplorationSession _exploration;
     private Timer _gameTimer = null!;
     private SessionState _state = SessionState.WaitingForCards;
-    private SimpleCombatSystem? _combatSystem;
+    private ICombatSystem? _combatSystem;
     // Moves the view has reported shown. Exploration waits while the session is ahead of the view.
     private int _shownMoves;
     private bool _waitingForView;
@@ -31,8 +31,8 @@ internal sealed class SessionFlow
 
     internal SessionFlow(
         Node owner,
-        SessionWorld world,
-        ExplorationSession exploration)
+        ISessionWorld world,
+        IExplorationSession exploration)
     {
         _owner = owner;
         _world = world;
@@ -99,7 +99,7 @@ internal sealed class SessionFlow
     {
         ILog.Print($"Starting combat with {abilityCards.Count} ability cards...");
 
-        _combatSystem = new SimpleCombatSystem(abilityCards, enemySeed, _world.Rng);
+        _combatSystem = CombatSystems.Create(abilityCards, enemySeed, _world.Rng);
         _combatSystem.CombatEnded += OnCombatEnded;
 
         // Start combat timer

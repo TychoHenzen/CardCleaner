@@ -129,7 +129,7 @@ public partial class CompositionRoot : Node
         container.RegisterSingleton<IGridMapGenerator>(new GridMapGenerator(tileRegistry, tileRegistry, biomeRegistry));
         container.RegisterSingleton<IMeshMapGenerator>(new MeshMapGenerator(tileRegistry, biomeRegistry));
 
-        container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
+        container.RegisterSingleton<IVisibilityChecker>(VisibilityCheckers.CreateSimple());
         container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();
 
         var playerResetService = new PlayerResetService();

@@ -13,7 +13,7 @@ public class IrregularMapEnemyManager
     private readonly IMapData _mapData;
     private readonly Node _parent;
     private readonly List<(int CellId, Sprite2D Sprite)> _enemySprites = new();
-    private IrregularMeshFogOfWar? _fogOfWar;
+    private IPassiveFogOfWar? _fogOfWar;
 
     public IrregularMapEnemyManager(IMapData mapData, Node parent)
     {
@@ -52,7 +52,7 @@ public class IrregularMapEnemyManager
     /// <summary>
     /// Shows enemy sprites only while their cell is currently visible, so they never draw above the fog.
     /// </summary>
-    internal void BindFog(IrregularMeshFogOfWar fogOfWar)
+    internal void BindFog(IPassiveFogOfWar fogOfWar)
     {
         UnbindFog();
         _fogOfWar = fogOfWar;

@@ -47,7 +47,7 @@ public partial class IrregularWorldMapScreen : Node3D, ISessionView, IDependent
 
     public IIrregularMesh? Mesh => _presenter.Mesh;
     public IrregularMeshMapData? MapData => _presenter.MapData;
-    public IrregularMeshFogOfWar? FogOfWar => _presenter.FogOfWar;
+    public IPassiveFogOfWar? FogOfWar => _presenter.FogOfWar;
     public bool IsInitialized => _presenter.HasView;
 
     public event Action? MapGenerated;

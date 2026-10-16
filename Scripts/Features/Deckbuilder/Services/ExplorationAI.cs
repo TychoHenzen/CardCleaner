@@ -75,7 +75,7 @@ public class ExplorationAI : IExplorationAI
 
     /// <summary>
     /// Create exploration AI with a map data provider. Without a <paramref name="visibilityChecker"/> it sees with a
-    /// new <see cref="SimpleVisibilityChecker"/>.
+    /// new <see cref="VisibilityCheckers.CreateSimple"/>.
     /// </summary>
     public ExplorationAI(
         IMapData mapData,
@@ -86,7 +86,7 @@ public class ExplorationAI : IExplorationAI
         ArgumentNullException.ThrowIfNull(mapData);
 
         _mapData = mapData;
-        var resolvedVisibilityChecker = visibilityChecker ?? new SimpleVisibilityChecker();
+        var resolvedVisibilityChecker = visibilityChecker ?? VisibilityCheckers.CreateSimple();
         _frontierBehavior = new FrontierExplorationBehavior(
             mapData,
             resolvedVisibilityChecker,
@@ -109,7 +109,7 @@ public class ExplorationAI : IExplorationAI
             () => PathUpdated?.Invoke());
         _stepRunner = new ExplorationStepRunner(
             mapData,
-            new Pathfinder(mapData),
+            Pathfinders.Create(mapData),
             _frontierBehavior,
             _state,
             _visibleEnemyTracker,

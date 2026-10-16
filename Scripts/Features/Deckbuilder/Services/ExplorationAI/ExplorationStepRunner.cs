@@ -11,7 +11,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services.ExplorationAISupport
 internal sealed class ExplorationStepRunner
 {
     private readonly IMapData _mapData;
-    private readonly Pathfinder _pathfinder;
+    private readonly IPathfinder _pathfinder;
     private readonly FrontierExplorationBehavior _frontierBehavior;
     private readonly ExplorationState _state;
     private readonly VisibleEnemyTracker _visibleEnemyTracker;
@@ -19,7 +19,7 @@ internal sealed class ExplorationStepRunner
 
     public ExplorationStepRunner(
         IMapData mapData,
-        Pathfinder pathfinder,
+        IPathfinder pathfinder,
         FrontierExplorationBehavior frontierBehavior,
         ExplorationState state,
         VisibleEnemyTracker visibleEnemyTracker,

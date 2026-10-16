@@ -14,10 +14,10 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 [Service(typeof(IGameSessionService))]
 public partial class GameSessionService : Node, IGameSessionService
 {
-    private readonly SessionWorld _world = new();
+    private readonly ISessionWorld _world = SessionWorlds.Create();
     private readonly GenerationTracker _generationTracker = new();
     private readonly MapGenerationCoordinator _generation;
-    private readonly ExplorationSession _exploration;
+    private readonly IExplorationSession _exploration;
     private readonly SessionFlow _flow;
 
     private List<CardSignature> _mapSeeds = new();
@@ -27,7 +27,7 @@ public partial class GameSessionService : Node, IGameSessionService
     public GameSessionService()
     {
         _generation = new MapGenerationCoordinator(this, _world, _generationTracker);
-        _exploration = new ExplorationSession(_world);
+        _exploration = ExplorationSessions.Create(_world);
         _flow = new SessionFlow(this, _world, _exploration);
         ForwardGenerationEvents();
         ForwardExplorationEvents();
