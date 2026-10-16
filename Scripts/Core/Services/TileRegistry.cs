@@ -115,7 +115,12 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     /// Loads tiles from Data/Tiles/tiles.json.
     /// Automatically uses compiled atlas if available for optimized runtime loading.
     /// </summary>
-    public void LoadFromData(string? path = null, string? atlasMappingPath = null)
+    public void LoadFromData(string? path = null) => LoadFromData(path, null);
+
+    // Test seam: production always uses the default atlas mapping, because the UI-layer loader that
+    // WorldMapComponents calls only ever loads that one. Keep this internal so no production caller can choose
+    // a mapping the UI would not reuse.
+    internal void LoadFromData(string? path, string? atlasMappingPath)
     {
         var result = TileDataLoader.LoadTileRegistry(path);
 
@@ -143,11 +148,11 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
             return false;
         }
 
-        // The loader owns the TileSet and caches it; the registry only asks whether it loads, so that an
-        // atlas whose image cannot be loaded falls back to the original tileset, as before the TileSet moved out.
-        if (CompiledAtlasLoader.LoadCompiledTileSet(atlasMappingPath) == null)
+        // The loader owns the tile-set resource and caches it; the registry only asks whether it loads, so that
+        // an atlas whose image cannot be loaded falls back to the original tileset, as before it moved out.
+        if (!CompiledAtlasLoader.CanBuildAtlas(atlasMappingPath))
         {
-            ILog.Print("[TileRegistry] FAILED: compiled TileSet does not load, falling back");
+            ILog.Print("[TileRegistry] FAILED: compiled atlas resource does not load, falling back");
             return false;
         }
 
@@ -197,7 +202,9 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     /// <summary>
     /// Reloads all tiles from the data file, clearing existing tiles first
     /// </summary>
-    public void Reload(string? path = null, string? atlasMappingPath = null)
+    public void Reload(string? path = null) => Reload(path, null);
+
+    internal void Reload(string? path, string? atlasMappingPath)
     {
         Clear();
         LoadFromData(path, atlasMappingPath);

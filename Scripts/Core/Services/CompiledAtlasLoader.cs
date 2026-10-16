@@ -47,6 +47,11 @@ public static class CompiledAtlasLoader
     }
 
     /// <summary>
+    /// Whether the compiled atlas for the mapping can be built (the loader builds and caches it).
+    /// </summary>
+    public static bool CanBuildAtlas(string? mappingPath = null) => LoadCompiledTileSet(mappingPath) != null;
+
+    /// <summary>
     /// Loads the atlas mapping from JSON (a <c>res://</c> path is resolved here).
     /// Returns null if file doesn't exist or is invalid.
     /// </summary>
