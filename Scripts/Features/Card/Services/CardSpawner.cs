@@ -74,7 +74,7 @@ public partial class CardSpawner : Node3D, ICardSpawner, IDependent
     /// </summary>
     public Node3D? SpawnSpecialCard()
     {
-        return _rng == null ? null : SpawnSpecificCard(SignatureRandom.CreateSpecial(_rng));
+        return _rng == null ? null : SpawnSpecificCard(CardSignatureHash.CreateSpecial(_rng));
     }
 
     private void QueueCards(int count)

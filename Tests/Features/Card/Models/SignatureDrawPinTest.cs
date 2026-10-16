@@ -104,9 +104,9 @@ public class SignatureDrawPinTest
         AssertThat(at.HasMagicalPotential()).IsTrue();
     }
 
-    private static CardSignature Create(IRandom random) => SignatureRandom.Create(random);
+    private static CardSignature Create(IRandom random) => CardSignatureHash.Create(random);
 
-    private static CardSignature CreateSpecial(IRandom random) => SignatureRandom.CreateSpecial(random);
+    private static CardSignature CreateSpecial(IRandom random) => CardSignatureHash.CreateSpecial(random);
 
     private sealed class ScriptedRandom(params float[] values) : IRandom
     {

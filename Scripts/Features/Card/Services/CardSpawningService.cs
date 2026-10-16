@@ -75,7 +75,7 @@ public partial class CardSpawningService : Node, ICardSpawningService, IServiceP
 
     public Node3D? SpawnRandomCard(Transform3D spawnTransform, Node3D parent)
     {
-        var signature = SignatureRandom.Create(_rng);
+        var signature = CardSignatureHash.Create(_rng);
         return SpawnCard(signature, spawnTransform, parent);
     }
 

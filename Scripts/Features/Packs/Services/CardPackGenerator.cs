@@ -27,7 +27,7 @@ public class CardPackGenerator(IRandom rng)
     {
         // Randi covers 2^32 values, a multiple of SpecialCardOdds, so the modulo has no bias.
         var isSpecial = rng.Randi() % SpecialCardOdds == 0;
-        return isSpecial ? SignatureRandom.CreateSpecial(rng) : CommonSignature();
+        return isSpecial ? CardSignatureHash.CreateSpecial(rng) : CommonSignature();
     }
 
     /// <summary>The signatures of the cards in one booster, in spawn order.</summary>
