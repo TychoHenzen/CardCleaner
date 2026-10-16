@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using CardCleaner.Scripts.Core.Numerics;
 
 namespace CardCleaner.Scripts.Features.Workshop.Models;
 
@@ -88,7 +89,7 @@ public sealed class WorkshopHallLayout
     /// <summary>The cell (x, z) containing a workshop-local position in metres.</summary>
     public static Vector2I CellOf(Vector2 metres)
     {
-        return new Vector2I(Mathf.FloorToInt(metres.X * CellsPerMetre), Mathf.FloorToInt(metres.Y * CellsPerMetre));
+        return new Vector2I(CoreMath.FloorToInt(metres.X * CellsPerMetre), CoreMath.FloorToInt(metres.Y * CellsPerMetre));
     }
 
     /// <summary>The centre, in metres, of the cell (x, z).</summary>
@@ -123,10 +124,10 @@ public sealed class WorkshopHallLayout
     // float arithmetic puts a hair below a boundary still lands on it.
     private static IEnumerable<Vector2I> CellsIn(Rect2 metres)
     {
-        var minX = Mathf.RoundToInt(metres.Position.X * CellsPerMetre);
-        var minZ = Mathf.RoundToInt(metres.Position.Y * CellsPerMetre);
-        var maxX = Mathf.RoundToInt(metres.End.X * CellsPerMetre);
-        var maxZ = Mathf.RoundToInt(metres.End.Y * CellsPerMetre);
+        var minX = CoreMath.RoundToInt(metres.Position.X * CellsPerMetre);
+        var minZ = CoreMath.RoundToInt(metres.Position.Y * CellsPerMetre);
+        var maxX = CoreMath.RoundToInt(metres.End.X * CellsPerMetre);
+        var maxZ = CoreMath.RoundToInt(metres.End.Y * CellsPerMetre);
         for (var x = minX; x < maxX; x++)
         for (var z = minZ; z < maxZ; z++)
             yield return new Vector2I(x, z);

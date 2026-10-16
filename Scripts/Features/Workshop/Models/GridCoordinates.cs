@@ -1,5 +1,6 @@
-using Godot;
+using CardCleaner.Scripts.Core.Numerics;
 
+using Godot;
 namespace CardCleaner.Scripts.Features.Workshop.Models;
 
 /// <summary>
@@ -18,9 +19,9 @@ public readonly struct GridCoordinates(Vector3 cellSize)
     public Vector3I LocalToCell(Vector3 local)
     {
         return new Vector3I(
-            Mathf.FloorToInt(local.X / CellSize.X),
-            Mathf.FloorToInt(local.Y / CellSize.Y),
-            Mathf.FloorToInt(local.Z / CellSize.Z));
+            CoreMath.FloorToInt(local.X / CellSize.X),
+            CoreMath.FloorToInt(local.Y / CellSize.Y),
+            CoreMath.FloorToInt(local.Z / CellSize.Z));
     }
 
     /// <summary>The centre of <paramref name="cell" />.</summary>
