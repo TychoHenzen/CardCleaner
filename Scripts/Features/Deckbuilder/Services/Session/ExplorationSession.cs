@@ -50,7 +50,7 @@ internal sealed class ExplorationSession : IExplorationSession
             return false;
         }
 
-        _explorationAI = ExplorationAIs.Create(_world.MapData, ResolveStartCellId(), VisibilityChecker);
+        _explorationAI = SessionFactories.CreateExplorationAI(_world.MapData, ResolveStartCellId(), VisibilityChecker);
 
         _explorationAI.EnemyEncountered += OnEnemyEncounteredWorld;
         _explorationAI.PlayerMoved += OnPlayerMovedWorld;

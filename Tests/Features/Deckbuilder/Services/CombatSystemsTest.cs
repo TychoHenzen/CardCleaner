@@ -15,7 +15,7 @@ public class CombatSystemsTest
     {
         var abilities = new List<CardSignature> { new CardSignature() };
 
-        ICombatSystem combat = CombatSystems.Create(abilities, new CardSignature(), RandomSources.Create(12345));
+        ICombatSystem combat = SessionFactories.CreateCombat(abilities, new CardSignature(), RandomSources.Create(12345));
 
         var ended = 0;
         combat.CombatEnded += () => ended++;

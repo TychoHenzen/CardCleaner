@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Services.Session;

@@ -99,7 +99,7 @@ internal sealed class SessionFlow
     {
         ILog.Print($"Starting combat with {abilityCards.Count} ability cards...");
 
-        _combatSystem = CombatSystems.Create(abilityCards, enemySeed, _world.Rng);
+        _combatSystem = SessionFactories.CreateCombat(abilityCards, enemySeed, _world.Rng);
         _combatSystem.CombatEnded += OnCombatEnded;
 
         // Start combat timer
