@@ -18,7 +18,7 @@ public class PathfindersTest
         var start = gridData.PositionToCellId(new Vector2I(0, 0));
         var goal = gridData.PositionToCellId(new Vector2I(4, 4));
 
-        IPathfinder pathfinder = Pathfinders.Create(gridData);
+        IPathfinder pathfinder = ExplorationParts.CreatePathfinder(gridData);
 
         var path = pathfinder.FindPath(start, goal);
         AssertBool(pathfinder is Pathfinder).IsTrue();

@@ -16,7 +16,7 @@ public class ExplorationAIsTest
         var (_, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
         var start = gridData.PositionToCellId(new Vector2I(2, 2));
 
-        IExplorationAI ai = SessionFactories.CreateExplorationAI(gridData, start, VisibilityCheckers.CreateSimple());
+        IExplorationAI ai = SessionFactories.CreateExplorationAI(gridData, start, ExplorationParts.CreateSimpleVisibilityChecker());
 
         AssertBool(ai is ExplorationAI).IsTrue();
         AssertInt(((ExplorationAI)ai).CurrentCellId).IsEqual(start);
@@ -28,7 +28,7 @@ public class ExplorationAIsTest
     public void CreatedExplorationRaisesItsEventsThroughTheInterface()
     {
         var (_, gridData) = OpenFloorMap.Create(5, 5, new Vector2I(0, 0));
-        IExplorationAI ai = SessionFactories.CreateExplorationAI(gridData, null, VisibilityCheckers.CreateSimple());
+        IExplorationAI ai = SessionFactories.CreateExplorationAI(gridData, null, ExplorationParts.CreateSimpleVisibilityChecker());
         var moves = 0;
         ai.PlayerMoved += _ => moves++;
 

@@ -12,8 +12,8 @@ public class VisibilityCheckersTest
     [TestCategory("Unit")]
     public void CreateSimpleReturnsANewSimpleVisibilityCheckerEachCall()
     {
-        var first = VisibilityCheckers.CreateSimple();
-        var second = VisibilityCheckers.CreateSimple();
+        var first = ExplorationParts.CreateSimpleVisibilityChecker();
+        var second = ExplorationParts.CreateSimpleVisibilityChecker();
 
         AssertBool(first is SimpleVisibilityChecker).IsTrue();
         AssertBool(ReferenceEquals(first, second)).IsFalse();
@@ -26,6 +26,6 @@ public class VisibilityCheckersTest
         var (_, gridData) = OpenFloorMap.Create(5, 5);
         var cell = gridData.PositionToCellId(new Vector2I(2, 2));
 
-        AssertBool(VisibilityCheckers.CreateSimple().CanSee(cell, cell, gridData)).IsTrue();
+        AssertBool(ExplorationParts.CreateSimpleVisibilityChecker().CanSee(cell, cell, gridData)).IsTrue();
     }
 }
