@@ -28,7 +28,7 @@ public class MeshTerrainFailurePathTest
         // ASSUMPTION: seed 4242 with these cards reaches the foreground step, as MeshTerrainFingerprintTest pins.
         var registry = new TileRegistry();
         var solver = new FailingSolver(
-            IWfcTerrainSolver.Create(TransitionPairs(), new TileRegistryWfcCatalog(registry)),
+            new WfcTerrainSolver(TransitionPairs(), new TileRegistryWfcCatalog(registry)),
             AutoTileId(registry));
         var generator = new IrregularMeshNs.MeshTerrainGenerator(
             new MeshTerrainWfcSetup(solver, registry),
@@ -54,7 +54,7 @@ public class MeshTerrainFailurePathTest
     {
         var registry = new TileRegistry();
         var solver = new FailingSolver(
-            IWfcTerrainSolver.Create(TransitionPairs(), new TileRegistryWfcCatalog(registry)),
+            new WfcTerrainSolver(TransitionPairs(), new TileRegistryWfcCatalog(registry)),
             AutoTileId(registry));
         var mesh = IrregularMeshNs.MeshGenerator.Generate(new IrregularMeshNs.MeshGenerator.GenerationConfig
         {

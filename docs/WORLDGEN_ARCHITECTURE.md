@@ -950,7 +950,8 @@ public interface IProceduralStructure
 ```
 
 Irregular Map reaches WFC only through the front door in `Scripts/Features/Worldgen/Wfc/`. It may name only
-`IWfcTerrainSolver`, `WfcGraphSolution` and `WfcGenerationResult` from Wfc, and no Wfc sub-namespace.
+`IWfcTerrainSolver`, `WfcTerrainSolver` (the solver that `MeshTerrainWfcSetup.ForRegistry` creates),
+`WfcGraphSolution` and `WfcGenerationResult` from Wfc, and no Wfc sub-namespace.
 `IrregularMeshWfcSeamTest` fails when a file under `Scripts/Features/Worldgen/IrregularMesh/` names any other type
 declared under Wfc or references a Wfc sub-namespace.
 
