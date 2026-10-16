@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
-using Godot;
+using CardCleaner.Scripts.Core.Numerics;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services.FrontierExploration;
 
@@ -68,6 +68,6 @@ internal sealed class LocalVisionTracker
             return DefaultCellSize;
 
         // Sample first cell to estimate size
-        return Mathf.Sqrt(_mapData.GetCellArea(0));
+        return CoreMath.Sqrt(_mapData.GetCellArea(0));
     }
 }

@@ -3,6 +3,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 using Godot;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Core.Services;
 
 /// <summary>
@@ -64,8 +65,8 @@ public class RegularGridMapData : IGridMapData
     public Vector2I WorldToGrid(Vector2 worldPos)
     {
         return new Vector2I(
-            Mathf.FloorToInt(worldPos.X / _tileSize),
-            Mathf.FloorToInt(worldPos.Y / _tileSize)
+            CoreMath.FloorToInt(worldPos.X / _tileSize),
+            CoreMath.FloorToInt(worldPos.Y / _tileSize)
         );
     }
 
@@ -170,7 +171,7 @@ public class RegularGridMapData : IGridMapData
     public IEnumerable<int> GetCellsInRadius(Vector2 center, float radius)
     {
         var gridCenter = WorldToGrid(center);
-        int gridRadius = Mathf.CeilToInt(radius / _tileSize);
+        int gridRadius = CoreMath.CeilToInt(radius / _tileSize);
         float radiusSq = radius * radius;
 
         for (int dy = -gridRadius; dy <= gridRadius; dy++)
@@ -199,17 +200,17 @@ public class RegularGridMapData : IGridMapData
         var minGrid = WorldToGrid(rect.Position);
         var exclusiveMax = rect.Position + rect.Size;
         var maxGrid = new Vector2I(
-            Mathf.Max(minGrid.X, Mathf.CeilToInt(exclusiveMax.X / _tileSize) - 1),
-            Mathf.Max(minGrid.Y, Mathf.CeilToInt(exclusiveMax.Y / _tileSize) - 1)
+            CoreMath.Max(minGrid.X, CoreMath.CeilToInt(exclusiveMax.X / _tileSize) - 1),
+            CoreMath.Max(minGrid.Y, CoreMath.CeilToInt(exclusiveMax.Y / _tileSize) - 1)
         );
 
         minGrid = new Vector2I(
-            Mathf.Max(0, minGrid.X),
-            Mathf.Max(0, minGrid.Y)
+            CoreMath.Max(0, minGrid.X),
+            CoreMath.Max(0, minGrid.Y)
         );
         maxGrid = new Vector2I(
-            Mathf.Min(_simpleMapData.Size.X - 1, maxGrid.X),
-            Mathf.Min(_simpleMapData.Size.Y - 1, maxGrid.Y)
+            CoreMath.Min(_simpleMapData.Size.X - 1, maxGrid.X),
+            CoreMath.Min(_simpleMapData.Size.Y - 1, maxGrid.Y)
         );
 
         for (int y = minGrid.Y; y <= maxGrid.Y; y++)
