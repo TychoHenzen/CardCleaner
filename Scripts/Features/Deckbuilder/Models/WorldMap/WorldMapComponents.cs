@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
@@ -29,7 +30,8 @@ internal sealed class WorldMapComponents
     // Get tile registry for rendering and assign TileSet to layers
     internal void Initialize(ITileRegistry registry)
     {
-        var usingCompiledAtlas = registry.UsingCompiledAtlas && registry.CompiledTileSet != null;
+        var tileSet = LoadCompiledTileSet(registry);
+        var usingCompiledAtlas = tileSet != null;
         TileSize = registry.TilesetConfig.BaseTileSize.X;
 
         ILog.Print($"[SimpleWorldMapScreen] TileRegistry: UsingCompiledAtlas={registry.UsingCompiledAtlas}, " +
@@ -44,14 +46,29 @@ internal sealed class WorldMapComponents
             _screen.TerrainLayer, _screen.DecorationLayer, _screen.StructureLayer,
             _screen.EffectLayer, _screen.OverlayLayer, _screen.BiomeOverlayLayer
         ];
-        if (usingCompiledAtlas)
+        AssignTileSet(tileSet, registry.TilesetPath, layers);
+    }
+
+    // The registry only decides the mode; the UI-layer loader owns the compiled TileSet.
+    private static TileSet? LoadCompiledTileSet(ITileRegistry registry)
+    {
+        if (!registry.UsingCompiledAtlas) return null;
+
+        var tileSet = CompiledAtlasLoader.LoadCompiledTileSet();
+        if (tileSet == null)
+            ILog.Error("[SimpleWorldMapScreen] Compiled atlas registry but no compiled TileSet");
+        return tileSet;
+    }
+
+    private static void AssignTileSet(TileSet? compiled, string tilesetPath, TileMapLayer?[] layers)
+    {
+        if (compiled == null)
         {
-            LayerTileSets.Assign(registry.CompiledTileSet!, layers);
+            LayerTileSets.LoadAndAssign(tilesetPath, layers);
+            return;
         }
-        else
-        {
-            LayerTileSets.LoadAndAssign(registry.TilesetPath, layers);
-        }
+
+        LayerTileSets.Assign(compiled, layers);
     }
 
     private void CreateComponents(ITileRegistry registry, bool usingCompiledAtlas)

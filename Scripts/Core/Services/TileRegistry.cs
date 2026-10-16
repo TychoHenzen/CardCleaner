@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Features.Deckbuilder.Tiles;
@@ -29,11 +30,6 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     public bool UsingCompiledAtlas { get; private set; }
 
     /// <summary>
-    /// The compiled TileSet if using atlas mode, null otherwise.
-    /// </summary>
-    public TileSet? CompiledTileSet { get; private set; }
-
-    /// <summary>
     /// Configuration for tileset-level spatial properties (tile size, grid offset).
     /// </summary>
     public TilesetConfig TilesetConfig { get; private set; } = TilesetConfig.Default;
@@ -41,7 +37,7 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     /// <summary>
     /// Atlas coordinate mapping for translating original coords to compiled coords.
     /// </summary>
-    private CompiledAtlasLoader.AtlasMappingData? _atlasMapping;
+    private AtlasMapping.AtlasMappingData? _atlasMapping;
 
     private readonly TileCatalogQueries _queries;
 
@@ -119,34 +115,44 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     /// Loads tiles from Data/Tiles/tiles.json.
     /// Automatically uses compiled atlas if available for optimized runtime loading.
     /// </summary>
-    public void LoadFromData(string? path = null)
+    public void LoadFromData(string? path = null) => LoadFromData(path, null);
+
+    // Test seam: production always uses the default atlas mapping, because the UI-layer loader that
+    // WorldMapComponents calls only ever loads that one. Keep this internal so no production caller can choose
+    // a mapping the UI would not reuse.
+    internal void LoadFromData(string? path, string? atlasMappingPath)
     {
         var result = TileDataLoader.LoadTileRegistry(path);
 
-        if (!TryUseCompiledAtlas(result))
+        if (!TryUseCompiledAtlas(result, atlasMappingPath))
             UseOriginalTileset(result);
 
         VariationGroupBuilder.Rebuild(_tiles.Values, _variationGroups);
     }
 
-    private bool TryUseCompiledAtlas(TileRegistryResult result)
+    private bool TryUseCompiledAtlas(TileRegistryResult result, string? atlasMappingPath)
     {
         // Check if compiled atlas is available
-        var isAvailable = CompiledAtlasLoader.IsCompiledAtlasAvailable();
+        var isAvailable = CompiledAtlasLoader.IsCompiledAtlasAvailable(atlasMappingPath);
         ILog.Print($"[TileRegistry] Compiled atlas available: {isAvailable}");
 
         if (!isAvailable)
             return false;
 
-        _atlasMapping = CompiledAtlasLoader.LoadMapping();
+        _atlasMapping = CompiledAtlasLoader.LoadMapping(atlasMappingPath);
         ILog.Print($"[TileRegistry] Atlas mapping loaded: {(_atlasMapping != null ? "YES" : "NULL")}");
 
-        CompiledTileSet = CompiledAtlasLoader.LoadCompiledTileSet();
-        ILog.Print($"[TileRegistry] Compiled TileSet loaded: {(CompiledTileSet != null ? "YES" : "NULL")}");
-
-        if (CompiledTileSet == null || _atlasMapping == null)
+        if (_atlasMapping == null)
         {
-            ILog.Print("[TileRegistry] FAILED: CompiledTileSet or mapping is null, falling back");
+            ILog.Print("[TileRegistry] FAILED: mapping is null, falling back");
+            return false;
+        }
+
+        // The loader owns the tile-set resource and caches it; the registry only asks whether it loads, so that
+        // an atlas whose image cannot be loaded falls back to the original tileset, as before it moved out.
+        if (!CompiledAtlasLoader.CanBuildAtlas(atlasMappingPath))
+        {
+            ILog.Print("[TileRegistry] FAILED: compiled atlas resource does not load, falling back");
             return false;
         }
 
@@ -156,7 +162,7 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
 
     // Use compiled atlas mode - transition_map.json has all auto-tile transitions
     // Even if some base tiles can't be translated, auto-tiles will work
-    private void UseCompiledAtlas(TileRegistryResult result, CompiledAtlasLoader.AtlasMappingData atlasMapping)
+    private void UseCompiledAtlas(TileRegistryResult result, AtlasMapping.AtlasMappingData atlasMapping)
     {
         UsingCompiledAtlas = true;
         TilesetPath = atlasMapping.Atlas?.Path ?? result.TilesetPath;
@@ -184,7 +190,6 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     private void UseOriginalTileset(TileRegistryResult result)
     {
         UsingCompiledAtlas = false;
-        CompiledTileSet = null;
         TilesetPath = result.TilesetPath;
         TilesetConfig = result.TilesetConfig;
 
@@ -197,10 +202,12 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     /// <summary>
     /// Reloads all tiles from the data file, clearing existing tiles first
     /// </summary>
-    public void Reload(string? path = null)
+    public void Reload(string? path = null) => Reload(path, null);
+
+    internal void Reload(string? path, string? atlasMappingPath)
     {
         Clear();
-        LoadFromData(path);
+        LoadFromData(path, atlasMappingPath);
     }
 
     #region ITileMetadataProvider Implementation

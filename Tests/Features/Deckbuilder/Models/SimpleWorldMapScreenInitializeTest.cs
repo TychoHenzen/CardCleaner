@@ -1,13 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.TestUtilities;
+using Godot;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Models;
 
@@ -119,6 +124,74 @@ public class SimpleWorldMapScreenInitializeTest
         AssertThat(_session.CurrentState).IsEqual(SessionState.WaitingForCards);
     }
 
+    [TestCase]
+    public void ACompiledAtlasRegistryGivesTheLayersTheLoadersTileSet()
+    {
+        var errors = new List<string>();
+        var previousSink = ILog.Sink;
+        var registry = new TileRegistry();
+        var layer = new TileMapLayer();
+        var screen = new SimpleWorldMapScreen { TerrainLayer = layer };
+        try
+        {
+            ILog.Sink = new ErrorRecorder(errors);
+
+            new WorldMapComponents(screen).Initialize(registry);
+
+            AssertBool(registry.UsingCompiledAtlas).IsTrue();
+            AssertThat(layer.TileSet).IsNotNull();
+            AssertThat(layer.TileSet).IsSame(CompiledAtlasLoader.LoadCompiledTileSet());
+            AssertThat(errors).IsEmpty();
+        }
+        finally
+        {
+            ILog.Sink = previousSink;
+            layer.Free();
+            screen.Free();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AnAtlasWhoseImageDoesNotLoadLeavesTheRegistryOnTheOriginalTileset()
+    {
+        var mappingPath = $"user://world-map-atlas-{Guid.NewGuid():N}.json";
+        var absolutePath = ProjectSettings.GlobalizePath(mappingPath);
+        var registry = new TileRegistry();
+        var layer = new TileMapLayer();
+        var screen = new SimpleWorldMapScreen { TerrainLayer = layer };
+        try
+        {
+            var mapping = new AtlasMapping.AtlasMappingData
+            {
+                Version = "test",
+                Atlas = new AtlasMapping.AtlasInfo
+                {
+                    Path = "user://missing-atlas.png", Width = 16, Height = 16, TileSize = 16
+                },
+                Sources = new Dictionary<string, Dictionary<string, AtlasMapping.TileAtlasRect>>()
+            };
+            File.WriteAllText(absolutePath, JsonSerializer.Serialize(mapping));
+            registry.Reload(null, mappingPath);
+
+            var components = new WorldMapComponents(screen);
+            components.Initialize(registry);
+
+            AssertBool(registry.UsingCompiledAtlas).IsFalse();
+            AssertString(registry.TilesetPath).IsEqual(TileDataLoader.LoadTileRegistry().TilesetPath);
+            AssertInt(components.TileSize).IsEqual(registry.TilesetConfig.BaseTileSize.X);
+            AssertThat(layer.TileSet).IsNotSame(CompiledAtlasLoader.LoadCompiledTileSet());
+        }
+        finally
+        {
+            if (File.Exists(absolutePath))
+                File.Delete(absolutePath);
+            CompiledAtlasLoader.ClearCache();
+            layer.Free();
+            screen.Free();
+        }
+    }
+
     /// <summary>Counts the generations the session asks for; the map never arrives.</summary>
     private sealed class RecordingGenerator : IMapGenerator
     {
@@ -132,5 +205,20 @@ public class SimpleWorldMapScreenInitializeTest
             Calls++;
             return new TaskCompletionSource<IGeneratedMap>().Task;
         }
+    }
+
+    private sealed class ErrorRecorder(List<string> errors) : ILog
+    {
+        public void LogMessage(string message)
+        {
+        }
+
+        public void LogWarning(string message)
+        {
+        }
+
+        public void LogError(string message) => errors.Add(message);
+
+        public void LogError(string message, Exception exception) => errors.Add(message);
     }
 }

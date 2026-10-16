@@ -2,14 +2,13 @@ using System.Collections.Generic;
 using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Core.Interfaces;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
 public interface ITileRegistry
 {
     /// <summary>
-    /// Path to the TileSet resource used by these tiles.
+    /// Path to the tileset resource used by these tiles.
     /// When using compiled atlas, this returns the atlas path.
     /// </summary>
     string TilesetPath { get; }
@@ -18,12 +17,6 @@ public interface ITileRegistry
     /// Whether the registry is using a compiled atlas instead of source textures.
     /// </summary>
     bool UsingCompiledAtlas { get; }
-
-    /// <summary>
-    /// The compiled TileSet if using atlas mode. Use this instead of loading TilesetPath
-    /// when UsingCompiledAtlas is true.
-    /// </summary>
-    TileSet? CompiledTileSet { get; }
 
     /// <summary>
     /// Configuration for tileset-level spatial properties (tile size, grid offset).

@@ -1,4 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
+using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
@@ -25,6 +31,48 @@ public class TileRegistryLookupTest : TileRegistryTestBase
         foreach (var tile in allTiles.Take(5))
         {
             GD.Print($"  - {tile.Id}: {tile.Name}");
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AnAtlasWhoseImageDoesNotLoadFallsBackToTheOriginalTileset()
+    {
+        var mappingPath = $"user://tile-registry-atlas-{Guid.NewGuid():N}.json";
+        var absolutePath = ProjectSettings.GlobalizePath(mappingPath);
+        try
+        {
+            var mapping = new AtlasMapping.AtlasMappingData
+            {
+                Version = "test",
+                Atlas = new AtlasMapping.AtlasInfo
+                {
+                    Path = "user://missing-atlas.png", Width = 16, Height = 16, TileSize = 16
+                },
+                Sources = new Dictionary<string, Dictionary<string, AtlasMapping.TileAtlasRect>>()
+            };
+            File.WriteAllText(absolutePath, JsonSerializer.Serialize(mapping));
+            var original = TileDataLoader.LoadTileRegistry();
+
+            _registry.Reload(null, mappingPath);
+
+            AssertBool(_registry.UsingCompiledAtlas).IsFalse();
+            AssertString(_registry.TilesetPath).IsEqual(original.TilesetPath);
+            AssertThat(_registry.TilesetConfig).IsEqual(original.TilesetConfig);
+            AssertInt(_registry.GetAllTiles().Count()).IsEqual(original.Tiles.Count);
+            foreach (var tile in original.Tiles)
+            {
+                var registered = _registry.GetTile(tile.Id);
+                AssertThat(registered).IsNotNull();
+                AssertThat(registered!.AtlasCoords).IsEqual(tile.AtlasCoords);
+                AssertInt(registered.SourceId).IsEqual(tile.SourceId);
+            }
+        }
+        finally
+        {
+            if (File.Exists(absolutePath))
+                File.Delete(absolutePath);
+            CompiledAtlasLoader.ClearCache();
         }
     }
 

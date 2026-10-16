@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
@@ -28,9 +26,13 @@ public static class CompiledAtlasLoader
         AllowTrailingCommas = true
     };
 
-    private static AtlasMappingData? _cachedMapping;
     private static TileSet? _cachedTileSet;
-    private static string? _cachedAtlasPath;
+    private static string? _cachedTileSetPath;
+
+    static CompiledAtlasLoader()
+    {
+        AssemblyUnloadCleanup.Register(ClearCache);
+    }
 
     /// <summary>
     /// Checks if a compiled atlas is available.
@@ -45,67 +47,18 @@ public static class CompiledAtlasLoader
     }
 
     /// <summary>
-    /// Loads the atlas mapping from JSON.
+    /// Whether the compiled atlas for the mapping can be built (the loader builds and caches it).
+    /// </summary>
+    public static bool CanBuildAtlas(string? mappingPath = null) => LoadCompiledTileSet(mappingPath) != null;
+
+    /// <summary>
+    /// Loads the atlas mapping from JSON (a <c>res://</c> path is resolved here).
     /// Returns null if file doesn't exist or is invalid.
     /// </summary>
-    public static AtlasMappingData? LoadMapping(string? mappingPath = null)
+    public static AtlasMapping.AtlasMappingData? LoadMapping(string? mappingPath = null)
     {
-        ILog.Print("[CompiledAtlasLoader] LoadMapping called");
         mappingPath ??= DefaultMappingPath;
-
-        // Return cached mapping if already loaded
-        if (_cachedMapping != null && _cachedAtlasPath == mappingPath)
-        {
-            ILog.Print("[CompiledAtlasLoader] Returning cached mapping");
-            return _cachedMapping;
-        }
-
-        var absolutePath = ProjectSettings.GlobalizePath(mappingPath);
-        ILog.Print($"[CompiledAtlasLoader] LoadMapping absolutePath: {absolutePath}");
-
-        if (!File.Exists(absolutePath))
-        {
-            ILog.Print($"[CompiledAtlasLoader] Mapping file not found: {absolutePath}");
-            return null;
-        }
-
-        try
-        {
-            var json = File.ReadAllText(absolutePath);
-            ILog.Print($"[CompiledAtlasLoader] Read {json.Length} chars from mapping file");
-
-            var loadedMapping = JsonSerializer.Deserialize<AtlasMappingData>(json, CreateJsonOptions());
-            if (loadedMapping?.Atlas == null)
-            {
-                ILog.Print("[CompiledAtlasLoader] Mapping JSON has no atlas root");
-                return null;
-            }
-
-            if (_cachedAtlasPath != null && _cachedAtlasPath != mappingPath)
-                _cachedTileSet = null;
-
-            _cachedMapping = loadedMapping;
-            _cachedAtlasPath = mappingPath;
-
-            if (_cachedMapping != null)
-            {
-                ILog.Print($"[CompiledAtlasLoader] Loaded mapping: version={_cachedMapping.Version}, " +
-                           $"atlas={((_cachedMapping.Atlas != null) ? "present" : "NULL")}, " +
-                           $"sources={_cachedMapping.Sources?.Count ?? 0}");
-            }
-            else
-            {
-                ILog.Print("[CompiledAtlasLoader] JsonSerializer.Deserialize returned null");
-            }
-
-            return _cachedMapping;
-        }
-        catch (Exception ex)
-        {
-            ILog.Print($"[CompiledAtlasLoader] Error loading mapping: {ex.Message}");
-            ILog.Print($"[CompiledAtlasLoader] Stack: {ex.StackTrace}");
-            return null;
-        }
+        return AtlasMapping.Load(ProjectSettings.GlobalizePath(mappingPath));
     }
 
     /// <summary>
@@ -117,7 +70,7 @@ public static class CompiledAtlasLoader
         ILog.Print("[CompiledAtlasLoader] LoadCompiledTileSet called");
 
         // Return cached TileSet if available
-        if (_cachedTileSet != null && _cachedAtlasPath == (mappingPath ?? DefaultMappingPath))
+        if (_cachedTileSet != null && _cachedTileSetPath == (mappingPath ?? DefaultMappingPath))
         {
             ILog.Print("[CompiledAtlasLoader] Returning cached TileSet");
             return _cachedTileSet;
@@ -149,6 +102,7 @@ public static class CompiledAtlasLoader
             var tileSet = CompiledAtlasTileSetBuilder.Build(mapping, atlasTexture, CreateJsonOptions());
 
             _cachedTileSet = tileSet;
+            _cachedTileSetPath = mappingPath ?? DefaultMappingPath;
             LogTileSetDetails(tileSet);
 
             return tileSet;
@@ -226,68 +180,13 @@ public static class CompiledAtlasLoader
     }
 
     /// <summary>
-    /// Translates original tile coordinates to compiled atlas coordinates.
-    /// Returns the original coordinates if no mapping exists.
-    /// </summary>
-    internal static AtlasCoordinateTranslation TranslateCoordinates(
-        int originalSourceId,
-        Vector2I originalAtlasCoords,
-        AtlasMappingData? mapping = null)
-    {
-        mapping ??= _cachedMapping;
-
-        if (mapping?.Sources == null)
-            return new AtlasCoordinateTranslation(originalSourceId, originalAtlasCoords);
-
-        var sourceKey = originalSourceId.ToString();
-        var coordKey = $"{originalAtlasCoords.X},{originalAtlasCoords.Y}";
-
-        if (mapping.Sources.TryGetValue(sourceKey, out var coordMappings) &&
-            coordMappings.TryGetValue(coordKey, out var rect))
-        {
-            // When using compiled atlas, all tiles use sourceId 0
-            return new AtlasCoordinateTranslation(0, new Vector2I(rect.X, rect.Y));
-        }
-
-        // No mapping found - return original (will fail at runtime if atlas-only mode)
-        ILog.Print($"[CompiledAtlasLoader] No mapping for source {originalSourceId} coord {originalAtlasCoords}");
-        return new AtlasCoordinateTranslation(originalSourceId, originalAtlasCoords);
-    }
-
-    /// <summary>
     /// Clears the cached mapping and tileset.
     /// Call this if the compiled atlas has been regenerated.
     /// </summary>
     public static void ClearCache()
     {
-        _cachedMapping = null;
+        AtlasMapping.ClearCache();
         _cachedTileSet = null;
-        _cachedAtlasPath = null;
+        _cachedTileSetPath = null;
     }
-
-    // JSON deserialization classes (matching compiler output)
-    public class AtlasMappingData
-    {
-        [JsonPropertyName("version")] public string? Version { get; set; }
-        [JsonPropertyName("atlas")] public AtlasInfo? Atlas { get; set; }
-        [JsonPropertyName("sources")]
-        public Dictionary<string, Dictionary<string, TileAtlasRect>>? Sources { get; set; }
-    }
-
-    public class AtlasInfo
-    {
-        [JsonPropertyName("path")] public string Path { get; set; } = "";
-        [JsonPropertyName("width")] public int Width { get; set; }
-        [JsonPropertyName("height")] public int Height { get; set; }
-        [JsonPropertyName("tileSize")] public int TileSize { get; set; }
-    }
-
-    public class TileAtlasRect
-    {
-        [JsonPropertyName("x")] public int X { get; set; }
-        [JsonPropertyName("y")] public int Y { get; set; }
-        [JsonPropertyName("w")] public int W { get; set; }
-        [JsonPropertyName("h")] public int H { get; set; }
-    }
-
 }

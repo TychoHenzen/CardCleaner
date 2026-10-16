@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.IO;
 using System.Text.Json;
 using CardCleaner.Scripts.Core.Services;
@@ -19,7 +20,7 @@ public abstract class BlackTileReproductionTestBase
 
     protected CompiledTransitionResolver _resolver = null!;
 
-    protected CompiledAtlasLoader.AtlasMappingData? _atlasMapping;
+    protected AtlasMapping.AtlasMappingData? _atlasMapping;
 
     protected CompiledTransitionMap? _transitionMap;
 

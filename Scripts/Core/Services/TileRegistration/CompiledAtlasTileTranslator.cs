@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
@@ -8,9 +9,9 @@ namespace CardCleaner.Scripts.Core.Services;
 /// </summary>
 internal sealed class CompiledAtlasTileTranslator
 {
-    private readonly CompiledAtlasLoader.AtlasMappingData _mapping;
+    private readonly AtlasMapping.AtlasMappingData _mapping;
 
-    internal CompiledAtlasTileTranslator(CompiledAtlasLoader.AtlasMappingData mapping)
+    internal CompiledAtlasTileTranslator(AtlasMapping.AtlasMappingData mapping)
     {
         _mapping = mapping;
     }
@@ -18,7 +19,7 @@ internal sealed class CompiledAtlasTileTranslator
     internal TileDefinition Translate(TileDefinition original)
     {
         // Translate base coordinates
-        var (newSourceId, newCoords) = CompiledAtlasLoader.TranslateCoordinates(
+        var (newSourceId, newCoords) = AtlasMapping.Translate(
             original.SourceId,
             original.AtlasCoords,
             _mapping);
@@ -53,7 +54,7 @@ internal sealed class CompiledAtlasTileTranslator
 
     private Vector2I TranslateCoords(int sourceId, Vector2I coords)
     {
-        var (_, translated) = CompiledAtlasLoader.TranslateCoordinates(sourceId, coords, _mapping);
+        var (_, translated) = AtlasMapping.Translate(sourceId, coords, _mapping);
         return translated;
     }
 
