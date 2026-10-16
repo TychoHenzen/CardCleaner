@@ -11,7 +11,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 /// <summary>
 /// Simple turn-based combat system
 /// </summary>
-public class SimpleCombatSystem
+public class SimpleCombatSystem : ICombatSystem
 {
     /// <summary>
     /// Combat participant that implements ICombatant for command pattern integration.

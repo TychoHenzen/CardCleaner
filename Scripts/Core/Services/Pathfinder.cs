@@ -8,7 +8,7 @@ using Godot;
 /// Generic A* pathfinder that works with any IMapData implementation.
 /// Operates on cell IDs rather than Vector2I positions.
 /// </summary>
-public class Pathfinder
+public class Pathfinder : IPathfinder
 {
     private readonly IMapData _mapData;
 

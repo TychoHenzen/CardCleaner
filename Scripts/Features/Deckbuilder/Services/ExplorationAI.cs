@@ -14,7 +14,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 /// switching to enemy targeting when enemies become visible.
 /// Now works with any IMapData implementation (regular or irregular grids).
 /// </summary>
-public class ExplorationAI
+public class ExplorationAI : IExplorationAI
 {
     private readonly IMapData _mapData;
     private readonly FrontierExplorationBehavior _frontierBehavior;
