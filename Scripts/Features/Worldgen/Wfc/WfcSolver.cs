@@ -70,15 +70,24 @@ public class WfcSolver
     /// <param name="topology">The WFC topology to solve</param>
     /// <param name="biome">Biome for soft rule weighting</param>
     /// <param name="rng">Random number generator for tile selection</param>
-    /// <param name="cancellationToken">Checked once per collapsed cell, before the next cell is chosen</param>
+    /// <param name="cancellationToken">
+    /// Checked at the start of the call and once per collapsed cell,
+    /// before the next cell is chosen.
+    /// </param>
     /// <returns>Result indicating success or failure with details</returns>
-    /// <exception cref="OperationCanceledException">Thrown when the token is cancelled during the solve.</exception>
+    /// <exception cref="OperationCanceledException">
+    /// Thrown when the token is cancelled before the call or during the
+    /// solve. A token cancelled before the call throws before any solver
+    /// state is reset or any cell changes.
+    /// </exception>
     public WfcSolveResult Solve(
         IWfcTopology topology,
         BiomeDefinition? biome,
         IRandom rng,
         CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var run = new WfcSolveRun(topology, biome, rng, topology.CellCount);
         PrepareForSolve(topology);
 
