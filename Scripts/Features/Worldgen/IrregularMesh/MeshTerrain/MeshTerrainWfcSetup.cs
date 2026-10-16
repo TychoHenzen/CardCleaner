@@ -19,7 +19,7 @@ internal sealed record MeshTerrainWfcSetup(
         IReadOnlyList<(string tileA, string tileB)> transitionPairs,
         ITileRegistry? registry)
     {
-        var solver = WfcTerrainSolvers.Create(
+        var solver = new WfcTerrainSolver(
             transitionPairs,
             registry != null ? new TileRegistryWfcCatalog(registry) : null);
         return new MeshTerrainWfcSetup(solver, registry);

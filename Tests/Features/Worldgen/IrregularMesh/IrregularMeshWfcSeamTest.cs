@@ -9,7 +9,7 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 
 /// <summary>
 /// Keeps Irregular Map on the WFC front door. Files under Scripts/Features/Worldgen/IrregularMesh may name only
-/// IWfcTerrainSolver, WfcTerrainSolvers (its creator), WfcGraphSolution and WfcGenerationResult from
+/// IWfcTerrainSolver, WfcTerrainSolver (the solver MeshTerrainWfcSetup creates), WfcGraphSolution and WfcGenerationResult from
 /// Scripts/Features/Worldgen/Wfc. Every other type declared there is a solver internal, and no Wfc sub-namespace
 /// may be imported. The check blanks comments and
 /// literals, then matches names in the text. It is a name match, not a symbol match, so a same-named type declared
@@ -27,7 +27,7 @@ public class IrregularMeshWfcSeamTest
 
     private static readonly string[] AllowedNames =
     {
-        "IWfcTerrainSolver", "WfcTerrainSolvers", "WfcGraphSolution", "WfcGenerationResult",
+        "IWfcTerrainSolver", "WfcTerrainSolver", "WfcGraphSolution", "WfcGenerationResult",
     };
 
     // ASSUMPTION: every type declaration starts its own line after optional attributes and modifiers, as this repo's
@@ -51,7 +51,7 @@ public class IrregularMeshWfcSeamTest
     // allowed names do not match.
     private static readonly Regex SubNamespaceReference = new(
         @"\bCardCleaner\.Scripts\.Features\.Worldgen\.Wfc\."
-        + @"(?!(?:IWfcTerrainSolver|WfcTerrainSolvers|WfcGraphSolution|WfcGenerationResult)\b)[A-Za-z_][\w.]*",
+        + @"(?!(?:IWfcTerrainSolver|WfcTerrainSolver|WfcGraphSolution|WfcGenerationResult)\b)[A-Za-z_][\w.]*",
         RegexOptions.Compiled);
 
     [TestCase]
