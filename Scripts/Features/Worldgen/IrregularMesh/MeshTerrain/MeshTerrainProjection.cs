@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
@@ -32,7 +34,7 @@ internal sealed class MeshTerrainProjection
             quad.BackgroundTileId = tileIds[gridPosition.Y, gridPosition.X];
         }
 
-        GD.Print($"[MeshTerrainGen] Mapped {mesh.Quads.Count} quads with backgrounds");
+        ILog.Print($"[MeshTerrainGen] Mapped {mesh.Quads.Count} quads with backgrounds");
     }
 
     public static void ClearForeground(IrregularMesh mesh)
@@ -63,7 +65,7 @@ internal sealed class MeshTerrainProjection
         }
 
         mesh.UpdateAllCachedProperties();
-        GD.PrintErr("[MeshTerrainGen] Applied fallback terrain");
+        ILog.Error("[MeshTerrainGen] Applied fallback terrain");
     }
 
     private int GetFallbackTerrainType(string fallbackId)
@@ -82,8 +84,8 @@ internal sealed class MeshTerrainProjection
     {
         var normalizedX = (position.X - minPosition.X) / meshSize.X;
         var normalizedY = (position.Y - minPosition.Y) / meshSize.Y;
-        var gridX = Mathf.Clamp((int)(normalizedX * wfcSize.X), 0, wfcSize.X - 1);
-        var gridY = Mathf.Clamp((int)(normalizedY * wfcSize.Y), 0, wfcSize.Y - 1);
+        var gridX = CoreMath.Clamp((int)(normalizedX * wfcSize.X), 0, wfcSize.X - 1);
+        var gridY = CoreMath.Clamp((int)(normalizedY * wfcSize.Y), 0, wfcSize.Y - 1);
         return new Vector2I(gridX, gridY);
     }
 }

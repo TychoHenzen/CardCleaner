@@ -1,7 +1,7 @@
 {
-  "up_edges": 23,
-  "biggest_loop": 20,
-  "seams_leaky": 16,
-  "seams_missing": 2,
-  "refs_from_non_ui_to_ui": 94
+  "up_edges": 20,
+  "biggest_loop": 16,
+  "seams_leaky": 22,
+  "seams_missing": 0,
+  "refs_from_non_ui_to_ui": 76
 }

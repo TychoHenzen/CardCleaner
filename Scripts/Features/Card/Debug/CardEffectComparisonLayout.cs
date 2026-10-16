@@ -1,5 +1,6 @@
 using System;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Models.Effects;
 using Godot;
@@ -87,8 +88,8 @@ public static class CardEffectComparisonLayout
     public static float CameraDistance(Vector2 contentSize, float verticalFovDegrees, float aspect)
     {
         var framed = contentSize * (1f + 2f * FrameMargin);
-        var tanHalfHeight = Mathf.Tan(Mathf.DegToRad(verticalFovDegrees) / 2f);
-        return Mathf.Max(framed.Y / 2f / tanHalfHeight, framed.X / 2f / (tanHalfHeight * aspect));
+        var tanHalfHeight = CoreMath.Tan(CoreMath.DegToRad(verticalFovDegrees) / 2f);
+        return CoreMath.Max(framed.Y / 2f / tanHalfHeight, framed.X / 2f / (tanHalfHeight * aspect));
     }
 
     private static float GridBottom()

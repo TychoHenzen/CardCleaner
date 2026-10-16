@@ -4,7 +4,6 @@ using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Selectors;
 using CardCleaner.Scripts.Core.Interfaces;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
@@ -28,7 +27,7 @@ public class WfcTileSelector
     public void AddConstraint(IWfcConstraint constraint)
     {
         _constraints.Add(constraint);
-        GD.Print($"[WfcTileSelector] Added constraint: {constraint.GetType().Name}, total: {_constraints.Count}");
+        ILog.Print($"[WfcTileSelector] Added constraint: {constraint.GetType().Name}, total: {_constraints.Count}");
     }
 
     /// <summary>
@@ -41,7 +40,7 @@ public class WfcTileSelector
     /// </summary>
     public void ClearConstraints()
     {
-        GD.Print($"[WfcTileSelector] ClearConstraints called, had {_constraints.Count} constraints");
+        ILog.Print($"[WfcTileSelector] ClearConstraints called, had {_constraints.Count} constraints");
         _constraints.Clear();
         _loggedConstraintCount = false;
     }
@@ -206,8 +205,8 @@ public class WfcTileSelector
             return;
 
         _loggedConstraintCount = true;
-        GD.Print($"[WfcTileSelector] SelectTile called with cellId, constraints: {_constraints.Count}");
+        ILog.Print($"[WfcTileSelector] SelectTile called with cellId, constraints: {_constraints.Count}");
         foreach (var constraint in _constraints)
-            GD.Print($"  - {constraint.GetType().Name}");
+            ILog.Print($"  - {constraint.GetType().Name}");
     }
 }

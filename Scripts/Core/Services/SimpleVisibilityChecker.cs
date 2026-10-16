@@ -1,6 +1,7 @@
 using System;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
+using CardCleaner.Scripts.Core.Numerics;
 
 namespace CardCleaner.Scripts.Core.Services;
 
@@ -128,10 +129,10 @@ public class SimpleVisibilityChecker : IVisibilityChecker
 
         // Estimate cell size from area
         var fromArea = mapData.GetCellArea(fromCellId);
-        var cellSize = Mathf.Sqrt(fromArea);
+        var cellSize = CoreMath.Sqrt(fromArea);
 
         // Calculate number of sample points
-        var numSteps = Mathf.Max(2, Mathf.CeilToInt(distance / cellSize) * StepsPerCell);
+        var numSteps = CoreMath.Max(2, CoreMath.CeilToInt(distance / cellSize) * StepsPerCell);
         var stepVector = (to - from) / numSteps;
 
         int? lastCellId = fromCellId;

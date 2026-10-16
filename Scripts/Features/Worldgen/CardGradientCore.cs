@@ -1,7 +1,7 @@
 using System.Linq;
+using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Core.Interfaces;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen;
 
@@ -42,8 +42,8 @@ public class CardGradientCore
         if (_sampleGrid == null || _inputCards.Length == 0)
             return new CardSignature();
 
-        var gridX = Mathf.Clamp(normalizedX, 0, 1) * (GridResolution - 1);
-        var gridY = Mathf.Clamp(normalizedY, 0, 1) * (GridResolution - 1);
+        var gridX = CoreMath.Clamp(normalizedX, 0, 1) * (GridResolution - 1);
+        var gridY = CoreMath.Clamp(normalizedY, 0, 1) * (GridResolution - 1);
 
         return BilinearInterpolate(gridX, gridY);
     }
@@ -144,11 +144,11 @@ public class CardGradientCore
 
             if (lengthSquared <= 1f && lengthSquared > 0f)
             {
-                var actualRadius = Mathf.Pow(_rng.Randf(), 1f / 8f) * radius;
-                var scale = actualRadius / Mathf.Sqrt(lengthSquared);
+                var actualRadius = CoreMath.Pow(_rng.Randf(), 1f / 8f) * radius;
+                var scale = actualRadius / CoreMath.Sqrt(lengthSquared);
 
                 for (var i = 0; i < 8; i++)
-                    elements[i] = Mathf.Clamp(center[i] + components[i] * scale, -1f, 1f);
+                    elements[i] = CoreMath.Clamp(center[i] + components[i] * scale, -1f, 1f);
 
                 break;
             }
@@ -207,10 +207,10 @@ public class CardGradientCore
 
     private CardSignature BilinearInterpolate(float x, float y)
     {
-        var x0 = Mathf.FloorToInt(x);
-        var y0 = Mathf.FloorToInt(y);
-        var x1 = Mathf.Min(x0 + 1, GridResolution - 1);
-        var y1 = Mathf.Min(y0 + 1, GridResolution - 1);
+        var x0 = CoreMath.FloorToInt(x);
+        var y0 = CoreMath.FloorToInt(y);
+        var x1 = CoreMath.Min(x0 + 1, GridResolution - 1);
+        var y1 = CoreMath.Min(y0 + 1, GridResolution - 1);
 
         var fx = x - x0;
         var fy = y - y0;
@@ -229,7 +229,7 @@ public class CardGradientCore
     {
         var elements = new float[8];
         for (var i = 0; i < 8; i++)
-            elements[i] = Mathf.Lerp(a[i], b[i], t);
+            elements[i] = CoreMath.Lerp(a[i], b[i], t);
         return new CardSignature(elements);
     }
 }

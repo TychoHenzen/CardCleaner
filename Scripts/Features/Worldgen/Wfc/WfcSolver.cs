@@ -7,7 +7,6 @@ using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Contracts;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
@@ -113,7 +112,7 @@ public class WfcSolver
                 return outcome.Failure.WithTimings(StepTimings());
         }
 
-        GD.Print($"[WFC] Success! Completed {iterations} iterations for {run.TotalCells} cells");
+        ILog.Print($"[WFC] Success! Completed {iterations} iterations for {run.TotalCells} cells");
         return WfcSolveResult.Succeeded(iterations, StepTimings());
     }
 
@@ -146,7 +145,7 @@ public class WfcSolver
 
     private WfcSolveResult FailIterationBudget(int iterations, int totalCells)
     {
-        GD.Print($"[WFC] Exceeded MaxIterations at {iterations}, collapsed ~{iterations}/{totalCells}");
+        ILog.Print($"[WFC] Exceeded MaxIterations at {iterations}, collapsed ~{iterations}/{totalCells}");
         return WfcSolveResult.Failed(
             $"Exceeded maximum iterations ({MaxIterations})",
             iterations,
@@ -157,7 +156,7 @@ public class WfcSolver
     {
         // Progress logging every 100 iterations (iterations ~ collapsed cells)
         if (iterations % 100 == 0)
-            GD.Print($"[WFC] Progress: {iterations}/{totalCells} cells ({100 * iterations / totalCells}%)");
+            ILog.Print($"[WFC] Progress: {iterations}/{totalCells} cells ({100 * iterations / totalCells}%)");
     }
 
     /// <summary>
@@ -177,7 +176,7 @@ public class WfcSolver
         // Check for contradiction before collapse
         if (targetCell.IsContradiction())
         {
-            GD.Print($"[WFC] Contradiction at cell {targetCellId} after {iterations}/{run.TotalCells} cells");
+            ILog.Print($"[WFC] Contradiction at cell {targetCellId} after {iterations}/{run.TotalCells} cells");
             return WfcStepOutcome.Failed(WfcSolveResult.Failed(
                 "Found cell with no valid options",
                 iterations,
@@ -187,7 +186,7 @@ public class WfcSolver
         var selectedTile = SelectTileFor(run, targetCellId.Value);
         if (selectedTile == null)
         {
-            GD.Print(
+            ILog.Print(
                 $"[WFC] Selector returned null at cell {targetCellId} after " +
                 $"{iterations}/{run.TotalCells} cells, validTiles={targetCell.GetPossibleTiles().Count}");
             return WfcStepOutcome.Failed(WfcSolveResult.Failed(
@@ -206,7 +205,7 @@ public class WfcSolver
         if (propResult.Success)
             return WfcStepOutcome.Collapsed;
 
-        GD.Print(
+        ILog.Print(
             $"[WFC] Propagation failed at cell {propResult.ContradictionCellId} after placing " +
             $"{selectedTile} at cell {targetCellId}, {iterations}/{run.TotalCells} cells");
         return WfcStepOutcome.Failed(WfcSolveResult.Failed(

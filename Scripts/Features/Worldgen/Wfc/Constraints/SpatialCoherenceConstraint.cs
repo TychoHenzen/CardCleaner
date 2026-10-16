@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Godot;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Numerics;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 
@@ -78,7 +80,7 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
         // RegionTracker is only used for grid topologies - mesh topologies use neighbor-count approximation
         if (_regionTracker == null && context.Topology is WfcGrid)
         {
-            GD.Print("[SpatialCoherence] RegionTracker is null for grid topology!");
+            ILog.Print("[SpatialCoherence] RegionTracker is null for grid topology!");
             return 1.0f;
         }
 
@@ -98,7 +100,7 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
 
         var modifier = CalculateRegionBoost(scan.LargestMatchingRegion);
         _stats.RecordBoost(modifier);
-        return Mathf.Max(MinModifier, modifier);
+        return CoreMath.Max(MinModifier, modifier);
     }
 
     /// <summary>
@@ -143,14 +145,14 @@ public class SpatialCoherenceConstraint : IWfcConstraint, IEntropyInvalidator
             // Taper off for oversized regions to encourage new regions
             // At 2x target size, boost drops to ~50%
             var oversize = (float)largestMatchingRegion / TargetRegionSize;
-            var taperStrength = Mathf.Max(0.0f, 1.0f - (oversize - 1.0f) * 0.5f);
+            var taperStrength = CoreMath.Max(0.0f, 1.0f - (oversize - 1.0f) * 0.5f);
             return 1.0f + taperStrength * BoostFactor;
         }
 
         // Square root scaling: small regions get meaningful boost, larger regions get more
         // 1-tile: 2.4x, 10-tile: 5.5x, 25-tile: 8.1x, 50-tile: 11x
         // This allows regions to seed while giving larger regions competitive advantage
-        var regionProgress = Mathf.Sqrt((float)largestMatchingRegion / TargetRegionSize);
+        var regionProgress = CoreMath.Sqrt((float)largestMatchingRegion / TargetRegionSize);
         return 1.0f + regionProgress * BoostFactor;
     }
 

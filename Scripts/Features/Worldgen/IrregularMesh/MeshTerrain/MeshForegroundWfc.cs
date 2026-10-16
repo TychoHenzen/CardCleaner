@@ -1,7 +1,7 @@
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 
@@ -21,18 +21,18 @@ internal sealed class MeshForegroundWfc
         var tileRegistry = _tileRegistry;
         if (tileRegistry == null)
         {
-            GD.PrintErr("[MeshTerrainGen] Cannot run direct mesh WFC without tile registry");
+            ILog.Error("[MeshTerrainGen] Cannot run direct mesh WFC without tile registry");
             return false;
         }
 
         var initialTiles = MeshForegroundTileCandidates.Collect(tileRegistry, biomeRegistry);
         if (initialTiles.Count == 0)
         {
-            GD.PrintErr("[MeshTerrainGen] No valid tiles for mesh WFC");
+            ILog.Error("[MeshTerrainGen] No valid tiles for mesh WFC");
             return false;
         }
 
-        GD.Print(
+        ILog.Print(
             $"[MeshTerrainGen] Starting direct mesh WFC with {initialTiles.Count} tiles " +
             $"on {mesh.Vertices.Count} vertices");
 
@@ -44,11 +44,11 @@ internal sealed class MeshForegroundWfc
 
         if (!solution.Success)
         {
-            GD.PrintErr($"[MeshTerrainGen] Direct mesh WFC failed: {solution.ErrorMessage}");
+            ILog.Error($"[MeshTerrainGen] Direct mesh WFC failed: {solution.ErrorMessage}");
             return false;
         }
 
-        GD.Print($"[MeshTerrainGen] Direct mesh WFC succeeded in {solution.Iterations} iterations");
+        ILog.Print($"[MeshTerrainGen] Direct mesh WFC succeeded in {solution.Iterations} iterations");
         AssignTiles(mesh, solution.CollapsedTiles, tileRegistry);
         return true;
     }
@@ -84,7 +84,7 @@ internal sealed class MeshForegroundWfc
             vertex.TerrainType = tile?.IsPassable == true ? 1 : 0;
         }
 
-        GD.Print($"[MeshTerrainGen] Assigned {autoTileCount}/{mesh.Vertices.Count} vertices with auto-tiles");
+        ILog.Print($"[MeshTerrainGen] Assigned {autoTileCount}/{mesh.Vertices.Count} vertices with auto-tiles");
     }
 
     private static void ClearVertex(MeshVertex vertex, int terrainType)

@@ -1,4 +1,4 @@
-using Godot;
+using CardCleaner.Scripts.Core.Numerics;
 
 namespace CardCleaner.Scripts.Features.Card.Models;
 
@@ -12,7 +12,7 @@ public static class CardSignatureHash
     {
         var seed = 17UL;
         foreach (var v in signature.Elements)
-            seed = seed * 23UL + (ulong)Mathf.RoundToInt(v * 1000);
+            seed = seed * 23UL + (ulong)CoreMath.RoundToInt(v * 1000);
         return seed;
     }
 }

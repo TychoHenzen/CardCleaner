@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 using CardCleaner.Scripts.Core.Interfaces;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
@@ -144,7 +144,7 @@ public class EntropyCache
                 candidates.Clear();
                 candidates.Add(cellId);
             }
-            else if (Mathf.IsEqualApprox(entropy, minEntropy))
+            else if (CoreMath.IsEqualApprox(entropy, minEntropy))
             {
                 candidates.Add(cellId);
             }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -45,14 +46,14 @@ public class MeshTerrainGenerator
         var biomeRegistry = _biomeRegistry;
         if (biomeRegistry.Count == 0)
         {
-            GD.PrintErr("[MeshTerrainGen] No biomes registered, using fallback terrain");
+            ILog.Error("[MeshTerrainGen] No biomes registered, using fallback terrain");
             _terrainWfc.ApplyFallbackTerrain(mesh);
             return mesh;
         }
 
         if (inputCards.Length == 0)
         {
-            GD.PrintErr("[MeshTerrainGen] No input cards, using fallback terrain");
+            ILog.Error("[MeshTerrainGen] No input cards, using fallback terrain");
             _terrainWfc.ApplyFallbackTerrain(mesh);
             return mesh;
         }
@@ -63,7 +64,7 @@ public class MeshTerrainGenerator
         var gradient = new CardBasedGradient(inputCards, rng);
         var getBiomeAt = CreateBiomeSelector(gradient, effectiveSize, biomeRegistry);
 
-        GD.Print(
+        ILog.Print(
             $"[MeshTerrainGen] Generating with {inputCards.Length} cards, " +
             $"{biomeRegistry.Count} biomes, effective size: {effectiveSize}");
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
@@ -110,7 +111,7 @@ public class BiomeStrengthGrid
         var distance = positionSignature.DistanceTo(biomeSignature);
 
         // Normalize distance to [0, 1] range
-        var normalizedDistance = Mathf.Clamp(distance / MaxDistance, 0f, 1f);
+        var normalizedDistance = CoreMath.Clamp(distance / MaxDistance, 0f, 1f);
 
         // Convert to [-1, 1] range: 0 distance → +1, max distance → -1
         return 1f - 2f * normalizedDistance;

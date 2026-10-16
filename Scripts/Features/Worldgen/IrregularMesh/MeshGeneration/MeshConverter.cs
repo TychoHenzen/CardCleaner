@@ -1,7 +1,7 @@
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshGeneration;
 
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
-using Godot;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -36,7 +36,7 @@ internal static class MeshConverter
         {
             if (!face.IsQuad)
             {
-                GD.PrintErr($"Non-quad face found in final mesh: {face.VertexIds.Length} vertices");
+                ILog.Error($"Non-quad face found in final mesh: {face.VertexIds.Length} vertices");
                 continue;
             }
 

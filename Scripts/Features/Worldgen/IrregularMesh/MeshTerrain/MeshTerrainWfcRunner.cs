@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -39,17 +40,17 @@ internal sealed class MeshTerrainWfcRunner
 
         if (!backgroundResult.Success || backgroundResult.TileIds == null)
         {
-            GD.PrintErr($"[MeshTerrainGen] Background WFC failed: {backgroundResult.ErrorMessage}");
+            ILog.Error($"[MeshTerrainGen] Background WFC failed: {backgroundResult.ErrorMessage}");
             _projection.ApplyFallbackTerrain(mesh);
             return mesh;
         }
 
-        GD.Print($"[MeshTerrainGen] Background WFC succeeded in {backgroundResult.Iterations} iterations");
+        ILog.Print($"[MeshTerrainGen] Background WFC succeeded in {backgroundResult.Iterations} iterations");
         MeshTerrainProjection.MapBackgroundToQuads(mesh, backgroundResult.Size, backgroundResult.TileIds, bounds);
 
         if (!_foregroundWfc.Generate(mesh, biomeRegistry, seed + 1))
         {
-            GD.PrintErr("[MeshTerrainGen] Direct mesh foreground WFC failed, clearing foreground");
+            ILog.Error("[MeshTerrainGen] Direct mesh foreground WFC failed, clearing foreground");
             MeshTerrainProjection.ClearForeground(mesh);
         }
 

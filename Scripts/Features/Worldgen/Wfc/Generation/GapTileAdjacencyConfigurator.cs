@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Godot;
+using CardCleaner.Scripts.Core.Interfaces;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
@@ -64,7 +64,7 @@ internal static class GapTileAdjacencyConfigurator
 
         if (logSummary)
         {
-            GD.Print(
+            ILog.Print(
                 $"[WFC] Configured {gapTiles.Count} gap tiles for adjacency " +
                 $"(can be next to {autoTiles.Count} auto-tiles)");
         }

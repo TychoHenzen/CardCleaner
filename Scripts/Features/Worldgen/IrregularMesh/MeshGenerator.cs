@@ -1,7 +1,7 @@
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshGeneration;
-using Godot;
 using System;
 using System.Linq;
 
@@ -50,16 +50,16 @@ public static class MeshGenerator
             : new Random();
 
         var workingMesh = HexGridGenerator.Generate(config.Rings, config.HexRadius);
-        GD.Print($"Step 1: Generated {workingMesh.Vertices.Count} vertices, {workingMesh.Faces.Count} triangles");
+        ILog.Print($"Step 1: Generated {workingMesh.Vertices.Count} vertices, {workingMesh.Faces.Count} triangles");
 
         TriangleMerger.Merge(workingMesh, config.MergeProbability, random);
         int numTris = workingMesh.Faces.Count(f => f.IsTriangle);
         int numQuads = workingMesh.Faces.Count(f => f.IsQuad);
-        GD.Print($"Step 2: After merging - {numQuads} quads, {numTris} remaining triangles");
+        ILog.Print($"Step 2: After merging - {numQuads} quads, {numTris} remaining triangles");
 
         MeshSubdivider.SubdivideAllFaces(workingMesh);
         numQuads = workingMesh.Faces.Count(f => f.IsQuad);
-        GD.Print($"Step 3: After subdivision - {numQuads} quads, {workingMesh.Vertices.Count} vertices");
+        ILog.Print($"Step 3: After subdivision - {numQuads} quads, {workingMesh.Vertices.Count} vertices");
 
         if (config.RelaxationIterations > 0)
         {
@@ -67,7 +67,7 @@ public static class MeshGenerator
         }
 
         var finalMesh = MeshConverter.Convert(workingMesh);
-        GD.Print($"Final mesh: {finalMesh.GetStatistics()}");
+        ILog.Print($"Final mesh: {finalMesh.GetStatistics()}");
 
         return finalMesh;
     }
