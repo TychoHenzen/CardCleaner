@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Player.Controllers;
@@ -26,10 +27,10 @@ public partial class CardHighlighter : Node3D, IDependent
         }
 
         // Get reference to the generic interaction system
-        if (ILog.ExportCheck(CardDropper, nameof(CardDropper), this) ||
-            ILog.ExportCheck(CardHolder, nameof(CardHolder), this) ||
-            ILog.ExportCheck(Preview, nameof(Preview), this) ||
-            ILog.ExportCheck(InteractionSystem, nameof(InteractionSystem), this))
+        if (NodeExports.ExportCheck(CardDropper, nameof(CardDropper), this) ||
+            NodeExports.ExportCheck(CardHolder, nameof(CardHolder), this) ||
+            NodeExports.ExportCheck(Preview, nameof(Preview), this) ||
+            NodeExports.ExportCheck(InteractionSystem, nameof(InteractionSystem), this))
             return;
 
         // Initialize card systems

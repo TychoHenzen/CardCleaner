@@ -1,5 +1,4 @@
 ﻿using System;
-using Godot;
 
 namespace CardCleaner.Scripts.Core.Interfaces;
 
@@ -7,7 +6,7 @@ public interface ILog
 {
     /// <summary>
     /// Logger that the static helpers below write to. The composition root sets it to the ILog it registers and
-    /// clears it when its services are reset. While it is null, the helpers fall back to GD output.
+    /// clears it when its services are reset. While it is null, the helpers write to the console.
     /// </summary>
     public static ILog? Sink { get; set; }
 
@@ -17,13 +16,13 @@ public interface ILog
     void LogError(string message, Exception exception);
 
     // ASSUMPTION: LoggingService.GetCallerPrefix reads stack frame 3, so Print, Warning and Error each call the sink
-    // directly. ExportCheck goes through Error, so its lines name ILog:ExportCheck, as they did before the sink.
+    // directly; NodeExports.ExportCheck goes through Error, so its lines name NodeExports:ExportCheck.
     public static void Print(string message)
     {
         var sink = Sink;
         if (sink == null)
         {
-            GD.Print(message);
+            Console.Out.WriteLine(message);
             return;
         }
 
@@ -35,7 +34,7 @@ public interface ILog
         var sink = Sink;
         if (sink == null)
         {
-            GD.PushWarning(message);
+            Console.Out.WriteLine(message);
             return;
         }
 
@@ -47,18 +46,10 @@ public interface ILog
         var sink = Sink;
         if (sink == null)
         {
-            GD.PushError(message);
+            Console.Error.WriteLine(message);
             return;
         }
 
         sink.LogError(message);
-    }
-
-    public static bool ExportCheck(Node? export, string name, Node target)
-    {
-        if (export != null)
-            return false;
-        Error($"{name} not assigned to {target.Name}");
-        return true;
     }
 }

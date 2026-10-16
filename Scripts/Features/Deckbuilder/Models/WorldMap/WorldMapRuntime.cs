@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -255,7 +256,7 @@ internal sealed class WorldMapRuntime : ISessionView
     void ISessionView.OnLootGenerated(List<CardSignature> lootSignatures)
     {
         ILog.Print($"Loot generated: {lootSignatures.Count} cards");
-        if (ILog.ExportCheck(_screen.LootSpawnPoint, nameof(SimpleWorldMapScreen.LootSpawnPoint), _screen))
+        if (NodeExports.ExportCheck(_screen.LootSpawnPoint, nameof(SimpleWorldMapScreen.LootSpawnPoint), _screen))
             return;
 
         SpawnLootRow(lootSignatures, _screen.LootSpawnPoint!.GlobalTransform);

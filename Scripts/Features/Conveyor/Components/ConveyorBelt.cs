@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Utilities;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Conveyor.Components;
@@ -22,8 +23,8 @@ public partial class ConveyorBelt : Node3D
 
     public override void _Ready()
     {
-        if (ILog.ExportCheck(DetectionArea, nameof(DetectionArea), this) ||
-            ILog.ExportCheck(DestinationMarker, nameof(DestinationMarker), this))
+        if (NodeExports.ExportCheck(DetectionArea, nameof(DetectionArea), this) ||
+            NodeExports.ExportCheck(DestinationMarker, nameof(DestinationMarker), this))
             return;
 
         var collision = DetectionArea.GetNodeOrNull<CollisionShape3D>("CollisionShape3D");
