@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +17,7 @@ public abstract class CompiledAtlasLoaderTestBase
     protected const string TransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";
     protected const string AtlasPngPath = "res://Data/CompiledAtlas/terrain_atlas.png";
 
-    protected CompiledAtlasLoader.AtlasMappingData? _mapping;
+    protected AtlasMapping.AtlasMappingData? _mapping;
     protected JsonDocument? _transitionDoc;
     protected Image? _atlasImage;
     protected readonly List<string> _temporaryPaths = new();
@@ -66,17 +67,17 @@ public abstract class CompiledAtlasLoaderTestBase
 
     protected static void WriteMapping(string mappingPath, string atlasPath)
     {
-        var mapping = new CompiledAtlasLoader.AtlasMappingData
+        var mapping = new AtlasMapping.AtlasMappingData
         {
             Version = "test",
-            Atlas = new CompiledAtlasLoader.AtlasInfo
+            Atlas = new AtlasMapping.AtlasInfo
             {
                 Path = atlasPath,
                 Width = 16,
                 Height = 16,
                 TileSize = 16
             },
-            Sources = new Dictionary<string, Dictionary<string, CompiledAtlasLoader.TileAtlasRect>>()
+            Sources = new Dictionary<string, Dictionary<string, AtlasMapping.TileAtlasRect>>()
         };
 
         File.WriteAllText(

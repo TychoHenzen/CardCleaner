@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Linq;
 using System.Text.Json;
 using CardCleaner.Scripts.Core.Services;
@@ -27,7 +28,7 @@ public class CompiledAtlasCoordinateTest : CompiledAtlasLoaderTestBase
         var parts = coordKey.Split(',');
         var originalCoords = new Vector2I(int.Parse(parts[0]), int.Parse(parts[1]));
 
-        var (newSourceId, newCoords) = CompiledAtlasLoader.TranslateCoordinates(
+        var (newSourceId, newCoords) = AtlasMapping.Translate(
             sourceId, originalCoords, _mapping);
 
         // Should return sourceId 0 for compiled atlas
@@ -43,7 +44,7 @@ public class CompiledAtlasCoordinateTest : CompiledAtlasLoaderTestBase
         AssertThat(_mapping).IsNotNull();
 
         // Use an obviously invalid source ID
-        var (newSourceId, newCoords) = CompiledAtlasLoader.TranslateCoordinates(
+        var (newSourceId, newCoords) = AtlasMapping.Translate(
             99999, new Vector2I(999, 999), _mapping);
 
         // Should return original coords when no mapping exists
@@ -54,7 +55,7 @@ public class CompiledAtlasCoordinateTest : CompiledAtlasLoaderTestBase
     [TestCase]
     public void TestTranslateCoordinatesHandlesNullMapping()
     {
-        var (newSourceId, newCoords) = CompiledAtlasLoader.TranslateCoordinates(
+        var (newSourceId, newCoords) = AtlasMapping.Translate(
             4, new Vector2I(5, 5), null);
 
         // Should return original coords when mapping is null

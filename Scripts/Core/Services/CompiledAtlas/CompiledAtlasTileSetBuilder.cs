@@ -14,7 +14,7 @@ internal static class CompiledAtlasTileSetBuilder
     private const string DefaultTransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";
 
     internal static TileSet Build(
-        CompiledAtlasLoader.AtlasMappingData mapping,
+        AtlasMapping.AtlasMappingData mapping,
         Texture2D atlasTexture,
         JsonSerializerOptions jsonOptions)
     {
@@ -43,7 +43,7 @@ internal static class CompiledAtlasTileSetBuilder
 
     private static void CreateMappedTiles(
         TileSetAtlasSource atlasSource,
-        Dictionary<string, Dictionary<string, CompiledAtlasLoader.TileAtlasRect>>? sources)
+        Dictionary<string, Dictionary<string, AtlasMapping.TileAtlasRect>>? sources)
     {
         var tilesCreated = 0;
         var tilesSkipped = 0;
@@ -67,7 +67,7 @@ internal static class CompiledAtlasTileSetBuilder
 
     private static void AddMappedTile(
         TileSetAtlasSource atlasSource,
-        CompiledAtlasLoader.TileAtlasRect rect,
+        AtlasMapping.TileAtlasRect rect,
         ref int tilesCreated,
         ref int tilesSkipped)
     {

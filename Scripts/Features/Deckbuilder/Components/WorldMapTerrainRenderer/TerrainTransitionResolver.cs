@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
@@ -64,7 +65,7 @@ internal sealed class TerrainTransitionResolver
         if (solidFillCoords.HasValue)
             return new TileRenderCoordinates(resolver.CompiledAtlasSourceId, solidFillCoords.Value);
 
-        var translated = CompiledAtlasLoader.TranslateCoordinates(
+        var translated = AtlasMapping.Translate(
             baseTile.SourceId,
             baseTile.AtlasCoords);
         return new TileRenderCoordinates(translated.SourceId, translated.AtlasCoords);

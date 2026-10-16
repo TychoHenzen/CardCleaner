@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Features.Deckbuilder.Tiles;
@@ -41,7 +42,7 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     /// <summary>
     /// Atlas coordinate mapping for translating original coords to compiled coords.
     /// </summary>
-    private CompiledAtlasLoader.AtlasMappingData? _atlasMapping;
+    private AtlasMapping.AtlasMappingData? _atlasMapping;
 
     private readonly TileCatalogQueries _queries;
 
@@ -156,7 +157,7 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
 
     // Use compiled atlas mode - transition_map.json has all auto-tile transitions
     // Even if some base tiles can't be translated, auto-tiles will work
-    private void UseCompiledAtlas(TileRegistryResult result, CompiledAtlasLoader.AtlasMappingData atlasMapping)
+    private void UseCompiledAtlas(TileRegistryResult result, AtlasMapping.AtlasMappingData atlasMapping)
     {
         UsingCompiledAtlas = true;
         TilesetPath = atlasMapping.Atlas?.Path ?? result.TilesetPath;
