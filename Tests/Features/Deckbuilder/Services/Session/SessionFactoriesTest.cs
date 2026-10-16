@@ -10,7 +10,7 @@ public class SessionFactoriesTest
     [TestCategory("Unit")]
     public void SessionWorldsCreateReturnsAnEmptyWorld()
     {
-        ISessionWorld world = SessionWorlds.Create();
+        ISessionWorld world = SessionFactories.CreateWorld();
 
         AssertBool(world is SessionWorld).IsTrue();
         AssertThat(world.MapData).IsNull();
@@ -22,8 +22,8 @@ public class SessionFactoriesTest
     [TestCategory("Unit")]
     public void ExplorationSessionsCreateStartsOnlyWhenTheWorldHasAMap()
     {
-        var world = SessionWorlds.Create();
-        var session = ExplorationSessions.Create(world);
+        var world = SessionFactories.CreateWorld();
+        var session = SessionFactories.CreateExploration(world);
 
         AssertBool(session is ExplorationSession).IsTrue();
         AssertBool(session.Start()).IsFalse();

@@ -14,7 +14,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 [Service(typeof(IGameSessionService))]
 public partial class GameSessionService : Node, IGameSessionService
 {
-    private readonly ISessionWorld _world = SessionWorlds.Create();
+    private readonly ISessionWorld _world = SessionFactories.CreateWorld();
     private readonly GenerationTracker _generationTracker = new();
     private readonly MapGenerationCoordinator _generation;
     private readonly IExplorationSession _exploration;
@@ -27,7 +27,7 @@ public partial class GameSessionService : Node, IGameSessionService
     public GameSessionService()
     {
         _generation = new MapGenerationCoordinator(this, _world, _generationTracker);
-        _exploration = ExplorationSessions.Create(_world);
+        _exploration = SessionFactories.CreateExploration(_world);
         _flow = new SessionFlow(this, _world, _exploration);
         ForwardGenerationEvents();
         ForwardExplorationEvents();
