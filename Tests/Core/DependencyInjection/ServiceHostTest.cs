@@ -303,7 +303,8 @@ public class ServiceHostTest
     public static void ThrowingCallbackIsReportedThroughILogError()
     {
         var host = new ServiceHost();
-        host.Get<ITestService>(_ => throw new InvalidOperationException("boom"));
+        host.Get<ITestService>(
+            _ => throw new InvalidOperationException("boom"));
         host.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
         var log = new RecordingLog();
         var previous = ILog.Sink;
@@ -360,7 +361,8 @@ public class ServiceHostTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void CallbackThatGetsAnUnregisteredServiceRunsItOnTheNextCall()
+    public static void
+        CallbackThatGetsAnUnregisteredServiceRunsItOnTheNextCall()
     {
         var host = new ServiceHost();
         var innerRuns = 0;

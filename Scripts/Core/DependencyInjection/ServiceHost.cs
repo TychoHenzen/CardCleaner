@@ -22,7 +22,7 @@ public sealed class ServiceHost : IServiceResolver
     public IServiceContainer Container { get; private set; } =
         new ServiceContainer();
 
-    /// <summary>Replaces the container and drops pending callbacks.</summary>
+    /// <summary>Replaces the container with an empty one and drops every pending callback.</summary>
     internal void Reset()
     {
         Container = new ServiceContainer();
