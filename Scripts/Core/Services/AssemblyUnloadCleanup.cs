@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
@@ -19,7 +20,21 @@ namespace CardCleaner.Scripts.Core.Services;
 /// </summary>
 internal static class AssemblyUnloadCleanup
 {
+    private static readonly List<Action> Clears = new();
+    private static readonly object ClearsLock = new();
     private static bool _initialized;
+
+    /// <summary>
+    /// Registers a cache clear to run when the assembly unloads. Each cache owner registers its own
+    /// from a static constructor; this works whether or not <see cref="Initialize"/> has run.
+    /// </summary>
+    internal static void Register(Action clear)
+    {
+        lock (ClearsLock)
+        {
+            Clears.Add(clear);
+        }
+    }
 
     /// <summary>
     /// Called automatically when the assembly is loaded.
@@ -82,16 +97,24 @@ internal static class AssemblyUnloadCleanup
     /// <summary>
     /// Clears project-specific static caches that could hold type references.
     /// </summary>
-    private static void ClearProjectCaches()
+    internal static void ClearProjectCaches()
     {
-        try
+        Action[] snapshot;
+        lock (ClearsLock)
         {
-            // Clear CompiledAtlasLoader caches
-            CompiledAtlasLoader.ClearCache();
+            snapshot = Clears.ToArray();
         }
-        catch (Exception)
+
+        foreach (var clear in snapshot)
         {
-            // Silently ignore
+            try
+            {
+                clear();
+            }
+            catch (Exception)
+            {
+                // Silently ignore - one failing cache must not stop the others
+            }
         }
     }
 

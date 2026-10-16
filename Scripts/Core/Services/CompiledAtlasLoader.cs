@@ -32,6 +32,11 @@ public static class CompiledAtlasLoader
     private static TileSet? _cachedTileSet;
     private static string? _cachedAtlasPath;
 
+    static CompiledAtlasLoader()
+    {
+        AssemblyUnloadCleanup.Register(ClearCache);
+    }
+
     /// <summary>
     /// Checks if a compiled atlas is available.
     /// </summary>
