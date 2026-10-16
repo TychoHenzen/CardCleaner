@@ -72,9 +72,12 @@ public class SignatureDrawPinTest
     {
         var rng = RandomSources.Create(Seed);
 
-        AssertThat(Create(rng).Elements).IsEqual(new[] { -0.795537233f, 0.495647311f, -0.871603727f, 0.541520834f, 0.985523105f, 0.00482690334f, 0.265921116f, 0.152097583f });
-        AssertThat(Create(rng).Elements).IsEqual(new[] { 0.434692383f, 0.570616722f, 0.654587865f, 0.987582922f, -0.331046402f, -0.158083737f, -0.09206599f, 0.386302948f });
-        AssertThat(CreateSpecial(rng).Elements).IsEqual(new[] { 0.484570742f, 0.473117232f, -0.963312507f, 0.574622869f, 0.953571916f, -0.677119255f, 0.567402959f, -0.687358022f });
+        AssertThat(Create(rng).Elements).IsEqual(new[] { -0.795537233f, 0.495647311f, -0.871603727f, 0.541520834f,
+            0.985523105f, 0.00482690334f, 0.265921116f, 0.152097583f });
+        AssertThat(Create(rng).Elements).IsEqual(new[] { 0.434692383f, 0.570616722f, 0.654587865f, 0.987582922f,
+            -0.331046402f, -0.158083737f, -0.09206599f, 0.386302948f });
+        AssertThat(CreateSpecial(rng).Elements).IsEqual(new[] { 0.484570742f, 0.473117232f, -0.963312507f, 0.574622869f,
+            0.953571916f, -0.677119255f, 0.567402959f, -0.687358022f });
     }
 
     [TestCategory("Unit")]
@@ -101,9 +104,9 @@ public class SignatureDrawPinTest
         AssertThat(at.HasMagicalPotential()).IsTrue();
     }
 
-    private static CardSignature Create(IRandom random) => CardSignature.Random(random);
+    private static CardSignature Create(IRandom random) => SignatureRandom.Create(random);
 
-    private static CardSignature CreateSpecial(IRandom random) => CardSignature.RandomSpecial(random);
+    private static CardSignature CreateSpecial(IRandom random) => SignatureRandom.CreateSpecial(random);
 
     private sealed class ScriptedRandom(params float[] values) : IRandom
     {

@@ -106,6 +106,21 @@ public class CardSpawningServiceTest
         Assertions.AssertThat(spawnedCard.GlobalTransform.Origin).IsEqual(spawnTransform.Origin);
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TestSpawnRandomCardGivesTheSignatureRandomCreateSignature()
+    {
+        _rng.Seed = 42;
+        var expected = SignatureRandom.Create(_rng);
+        _rng.Seed = 42;
+
+        var spawnedCard = _service.SpawnRandomCard(Transform3D.Identity, _cardParent);
+
+        Assertions.AssertThat(spawnedCard is CardController).IsTrue();
+        var signature = ((CardController)spawnedCard!).Signature;
+        Assertions.AssertThat(signature.Elements).IsEqual(expected.Elements);
+    }
+
 
     [TestCase]
     [TestCategory("Unit")]

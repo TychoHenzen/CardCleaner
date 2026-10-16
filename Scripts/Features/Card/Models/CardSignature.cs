@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Core.Utilities;
 using Newtonsoft.Json;
@@ -63,22 +62,6 @@ public readonly struct CardSignature
         var elements = Elements;
         elements[index] = value;
         return new CardSignature(elements);
-    }
-
-    public static CardSignature Random(IRandom random)
-    {
-        var elements = new float[8];
-        for (var index = 0; index < elements.Length; index++)
-            elements[index] = random.RandfRange(-1f, 1f);
-        return new CardSignature(elements);
-    }
-
-    public static CardSignature RandomSpecial(IRandom random)
-    {
-        var signature = Random(random);
-        while (!signature.HasMagicalPotential())
-            signature = Random(random);
-        return signature;
     }
 
     public bool HasMagicalPotential() => Elements.Any(element => !CoreMath.IsZeroApprox(element));
