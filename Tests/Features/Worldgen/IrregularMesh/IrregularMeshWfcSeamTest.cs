@@ -9,8 +9,9 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 
 /// <summary>
 /// Keeps Irregular Map on the WFC front door. Files under Scripts/Features/Worldgen/IrregularMesh may name only
-/// IWfcTerrainSolver, WfcGraphSolution and WfcGenerationResult from Scripts/Features/Worldgen/Wfc. Every other type
-/// declared there is a solver internal, and no Wfc sub-namespace may be imported. The check blanks comments and
+/// IWfcTerrainSolver, WfcTerrainSolvers (its creator), WfcGraphSolution and WfcGenerationResult from
+/// Scripts/Features/Worldgen/Wfc. Every other type declared there is a solver internal, and no Wfc sub-namespace
+/// may be imported. The check blanks comments and
 /// literals, then matches names in the text. It is a name match, not a symbol match, so a same-named type declared
 /// elsewhere is reported as well. Ambiguous names fail closed.
 /// </summary>
@@ -24,7 +25,10 @@ public class IrregularMeshWfcSeamTest
     // A solver internal that must stay declared under Wfc. If the scan stops seeing it, the forbidden set is empty.
     private const string SolverInternal = "WfcSolver";
 
-    private static readonly string[] AllowedNames = { "IWfcTerrainSolver", "WfcGraphSolution", "WfcGenerationResult" };
+    private static readonly string[] AllowedNames =
+    {
+        "IWfcTerrainSolver", "WfcTerrainSolvers", "WfcGraphSolution", "WfcGenerationResult",
+    };
 
     // ASSUMPTION: every type declaration starts its own line after optional attributes and modifiers, as this repo's
     // C# style does. A regex finds declarations without a parser, so a declaration written another way is missed.
@@ -47,7 +51,7 @@ public class IrregularMeshWfcSeamTest
     // allowed names do not match.
     private static readonly Regex SubNamespaceReference = new(
         @"\bCardCleaner\.Scripts\.Features\.Worldgen\.Wfc\."
-        + @"(?!(?:IWfcTerrainSolver|WfcGraphSolution|WfcGenerationResult)\b)[A-Za-z_][\w.]*",
+        + @"(?!(?:IWfcTerrainSolver|WfcTerrainSolvers|WfcGraphSolution|WfcGenerationResult)\b)[A-Za-z_][\w.]*",
         RegexOptions.Compiled);
 
     [TestCase]
