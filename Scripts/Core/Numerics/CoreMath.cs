@@ -39,6 +39,8 @@ public static class CoreMath
         return MathF.Abs(a - b) < tolerance;
     }
 
+    public static bool IsZeroApprox(float s) => MathF.Abs(s) < Epsilon;
+
     public static float Lerp(float from, float to, float weight) => from + (to - from) * weight;
 
     public static float Log(float s) => MathF.Log(s);
