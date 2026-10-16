@@ -5,8 +5,8 @@ namespace CardCleaner.Scripts.Core.Interfaces;
 public interface ILog
 {
     /// <summary>
-    /// Logger that the static helpers below write to. The composition root sets it to the ILog it registers and
-    /// clears it when its services are reset. While it is null, the helpers write to the console.
+    /// Logger the static helpers write to, set by the composition root; only TestServices.Reset clears it.
+    /// While it is null, the helpers write to the console.
     /// </summary>
     public static ILog? Sink { get; set; }
 

@@ -89,7 +89,9 @@ public sealed class WorkshopHallLayout
     /// <summary>The cell (x, z) containing a workshop-local position in metres.</summary>
     public static Vector2I CellOf(Vector2 metres)
     {
-        return new Vector2I(CoreMath.FloorToInt(metres.X * CellsPerMetre), CoreMath.FloorToInt(metres.Y * CellsPerMetre));
+        return new Vector2I(
+            CoreMath.FloorToInt(metres.X * CellsPerMetre),
+            CoreMath.FloorToInt(metres.Y * CellsPerMetre));
     }
 
     /// <summary>The centre, in metres, of the cell (x, z).</summary>
